@@ -198,9 +198,9 @@ void func_0206f958(void) {
 }
 
 s32 func_0206f95c(s32 arg0, M2C_UNK arg1) {
-    s32 func_02074224(M2C_UNK, M2C_UNK *);
+    s32 TypeInfoEquals(M2C_UNK, M2C_UNK *);
     extern M2C_UNK data_02100708;
-    if (func_02074224(arg1, &data_02100708) != 0) {
+    if (TypeInfoEquals(arg1, &data_02100708) != 0) {
         return arg0 + 0xC;
     }
     return 0;

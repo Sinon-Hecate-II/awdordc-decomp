@@ -145,8 +145,8 @@ void func_ov006_0221507c(void **arg0) {
 
 void func_ov006_02215090(void *arg0) {
     M2C_UNK DeleteSpriteObject(s32);
-    M2C_UNK func_020af1e4();
-    func_020af1e4();
+    M2C_UNK DeleteWallpaperSpritesOnAllEngines();
+    DeleteWallpaperSpritesOnAllEngines();
     DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x38));
 }
 

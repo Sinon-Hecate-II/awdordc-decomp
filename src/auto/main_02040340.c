@@ -305,7 +305,7 @@ s32 CancelJoinRequest(s32 peerId) {
 s32 func_02040e1c(M2C_UNK arg0) {
     u64 GetSystemTick(void);
     M2C_UNK TryConnectToPeer(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02041be0(M2C_UNK);
+    M2C_UNK RefreshConnection(M2C_UNK);
     M2C_UNK ReconnectUnlessServing(void);
     M2C_UNK ClosePeerConnection(M2C_UNK);
     s32 SendPeerSyncNotice(s32, M2C_UNK);
@@ -378,7 +378,7 @@ s32 func_02040e1c(M2C_UNK arg0) {
             }
         }
         if (M2C_FIELD(GetConnection(), u8 *, 0xD) == 0) {
-            func_02041be0(2);
+            RefreshConnection(2);
         }
         goto done;
     }

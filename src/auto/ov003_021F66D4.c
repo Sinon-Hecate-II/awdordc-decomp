@@ -70,7 +70,7 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     void Set3DSpriteSlideTargetAndStart(void *, s16, s16, s16, s32);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
-    void func_02087d84(void *, s32, s32, s32, u16, u16);
+    void SpriteCellListSetCellRect(void *, s32, s32, s32, u16, u16);
     void AddSprite(s32, s32, u16, void *, s32);
     s32 func_ov003_021f400c(void);
     s32 func_ov003_021f4064(void);
@@ -263,7 +263,7 @@ L3:
                     temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
                     temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
                     temp_r9 = GetUnitSpriteWidth(temp_r6);
-                    func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
+                    SpriteCellListSetCellRect(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
                 }
                 M2C_FIELD(temp_r6, s16 *, 0x34) = 0x38;
                 M2C_FIELD(temp_r6, s16 *, 0x36) = temp_r4;
@@ -276,7 +276,7 @@ L3:
                     temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
                     temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
                     temp_r9 = GetUnitSpriteWidth(temp_r6);
-                    func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
+                    SpriteCellListSetCellRect(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
                 }
                 temp_r6 = M2C_FIELD(arg0->f68, void **, 0x14);
                 Set3DSpriteSlideTargetAndStart(temp_r6, 0xA8, temp_r4, 0xA8, temp_r4);
@@ -289,7 +289,7 @@ L3:
                     temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
                     temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
                     temp_r9 = GetUnitSpriteWidth(temp_r6);
-                    func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
+                    SpriteCellListSetCellRect(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
                 }
                 M2C_FIELD(temp_r6, s16 *, 0x34) = 0xA8;
                 M2C_FIELD(temp_r6, s16 *, 0x36) = temp_r4;
@@ -302,7 +302,7 @@ L3:
                     temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
                     temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
                     temp_r9 = GetUnitSpriteWidth(temp_r6);
-                    func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
+                    SpriteCellListSetCellRect(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
                 }
             }
         }

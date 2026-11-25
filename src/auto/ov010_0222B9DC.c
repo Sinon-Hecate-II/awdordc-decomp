@@ -111,19 +111,19 @@ void RefreshOnlinePlayerAnnounce(M2C_UNK owner) {
 
 void SpawnOnlinePlayerAnnounceRefresher(M2C_UNK arg0) {
     extern M2C_UNK data_ov010_0222c93c;
-    extern M2C_UNK data_ov010_0222c4dc;
+    extern M2C_UNK gOnlineAnnounceRefresherClass;
     M2C_UNK **temp_r0;
 
-    temp_r0 = CreateSpriteFromClass(&data_ov010_0222c4dc, arg0);
+    temp_r0 = CreateSpriteFromClass(&gOnlineAnnounceRefresherClass, arg0);
     if (temp_r0 != NULL) {
         *temp_r0 = &data_ov010_0222c93c;
     }
 }
 
-void func_ov010_0222bb8c(void) {
+void DeleteOnlineAnnounceRefreshers(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_ov010_0222c4dc;
-    DeleteSpriteObjectsOfClass(&data_ov010_0222c4dc);
+    extern M2C_UNK gOnlineAnnounceRefresherClass;
+    DeleteSpriteObjectsOfClass(&gOnlineAnnounceRefresherClass);
 }
 
 s32 func_ov010_0222bba0(s32 arg0) {
@@ -173,15 +173,18 @@ void *StringStorageAssign(void *dst, void *src) {
     return StringStorageReplaceWith(dst, 0, removeLength, src);
 }
 
-void func_ov010_0222bc54(void *arg0, M2C_UNK arg1) {
+/* Set the stored string `storage` to the NUL-terminated C string `text`:
+ * replace everything the string currently holds with it. */
+void StringStorageAssignText(void *storage, M2C_UNK text) {
     M2C_UNK StringStorageReplaceWithText(void *, M2C_UNK, u32, M2C_UNK);
-    u32 var_r2;
-    if (((u32)(M2C_FIELD(arg0, s32 *, 0) << 0x1F) >> 0x1F) == 0) {
-        var_r2 = (u32)(M2C_FIELD(arg0, u8 *, 0) << 0x18) >> 0x19;
+    u32 length;
+
+    if (((StringStorage *)storage)->large.flag == 0) {
+        length = ((StringStorage *)storage)->small.length;
     } else {
-        var_r2 = M2C_FIELD(arg0, u32 *, 4);
+        length = ((StringStorage *)storage)->large.length;
     }
-    StringStorageReplaceWithText(arg0, 0, var_r2, arg1);
+    StringStorageReplaceWithText(storage, 0, length, text);
 }
 
 /* Replace the range [pos, pos+remove) of the stored string `dst` with the whole

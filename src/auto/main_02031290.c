@@ -9,7 +9,7 @@ s32 Wfc_StepMatch(void) {
     s32 Wfc_GetLinkState();
     s32 Wfc_GetSessionState();
     s32 Wfc_StepFriendConnect(void *);
-    s32 func_0203152c();
+    s32 Wfc_StepCloseNetwork();
     M2C_UNK Wfc_AbortNetworkSession();
     s32 state;
     u32 tmp;
@@ -38,7 +38,7 @@ s32 Wfc_StepMatch(void) {
             state = func_02031518(ctx);
             break;
         case 1:                                 /* switch 1 */
-            state = func_0203152c();
+            state = Wfc_StepCloseNetwork();
             break;
         }
     } else {
@@ -47,7 +47,7 @@ s32 Wfc_StepMatch(void) {
             state = func_02031518(ctx);
             break;
         case 11:                               /* switch 2 */
-            state = func_0203152c();
+            state = Wfc_StepCloseNetwork();
             break;
         case 14:                               /* switch 2 */
             Wfc_AbortNetworkSession();
@@ -154,10 +154,16 @@ s32 func_02031518(void *arg0) {
     return 0x10;
 }
 
-s32 func_0203152c(void) {
- s32 NetworkPollClosing(void);s32 func_02021c04(void);
- u32 v; if(NetworkPollClosing()!=0)return 11;
- v=func_02021c04();return v==0 || v==(u32)-39 ?9:11;
+/* Session step 0xB (connection error): wait for the closing sockets to go, then
+ * shut the network stack down.  Returns the link-wait state once it is down, but
+ * stays in the error state while the teardown runs or when the shutdown fails. */
+s32 Wfc_StepCloseNetwork(void) {
+    s32 NetworkPollClosing(void);
+    s32 ghiShutdown(void);
+    u32 v;
+    if (NetworkPollClosing() != 0) return WFC_SESSION_STATE_ERROR;
+    v = ghiShutdown();
+    return v == 0 || v == (u32)WFC_NET_ALREADY_DOWN ? WFC_SESSION_STATE_LINKING : WFC_SESSION_STATE_ERROR;
 }
 
 /* Build the WFC host configuration block (WFC work block 4) for the save slot the
@@ -261,14 +267,16 @@ void func_020316c4(void *arg0) {
     SetDnsServerAddressesFromHostOrder(&sp4, &sp0);
 }
 #pragma opt_strength_reduction reset
-s32 Wfc_IsSharedApCode(M2C_UNK arg0) {
+/* Decode a WFC connection code and report whether it is the built-in shared
+ * access point code: the decoded bytes begin with the "NDWCSHAP" tag. */
+s32 Wfc_IsSharedApCode(M2C_UNK connCode) {
     M2C_UNK Wfc_DecodeSharedApCode(M2C_UNK, M2C_UNK *);
     s32 ByteCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK gWfcSharedApCodeTag;
-    M2C_UNK buf[6];
+    extern M2C_UNK gWfcSharedApCodeTag; /* "NDWCSHAP" */
+    M2C_UNK decoded[6];
 
-    Wfc_DecodeSharedApCode(arg0, &buf[0]);
-    if (ByteCompareN((M2C_UNK) &buf[0], &gWfcSharedApCodeTag, 8) == 0) {
+    Wfc_DecodeSharedApCode(connCode, &decoded[0]);
+    if (ByteCompareN((M2C_UNK) &decoded[0], &gWfcSharedApCodeTag, 8) == 0) {
         return 1;
     }
     return 0;
@@ -610,11 +618,13 @@ void MarkPlayerRecordJoined(M2C_UNK arg0) {
     func_02031e7c(arg0, res);
 }
 
-void func_02031ee4(M2C_UNK arg0) {
-    if (GetPlayerRecordKind() != 3) {
+/* Clear the joined mark of a profile-type player record: the inverse of
+ * MarkPlayerRecordJoined.  Other record kinds are left alone. */
+void ClearPlayerRecordJoined(M2C_UNK record) {
+    if (GetPlayerRecordKind() != PLAYER_RECORD_KIND_PROFILE) {
         return;
     }
-    func_02031e7c(arg0, GetPlayerRecordTypeWord((u32 *)arg0) & ~4);
+    func_02031e7c(record, GetPlayerRecordTypeWord((u32 *)record) & ~PLAYER_RECORD_JOINED);
 }
 
 /* Build a 64-bit player code from a GameSpy profile id and the game id: the low

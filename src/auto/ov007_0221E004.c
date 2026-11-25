@@ -34,7 +34,7 @@ M2C_UNK MapEditorTypeCharacter(void *arg0) {
 extern u32 gGlyphDakuten, gGlyphHandakuten;
 extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineMain;
 void MI_CpuCopy32(const void*,void*,u32);
-void func_02019424(void*,u32);
+void Mb_StringCopy(void*,u32);
 int IsLeadByte(void*); int MeasureStringWidth(s32*);
 void func_020b269c(void);
 void *CreateTextLayer(void*);
@@ -69,7 +69,7 @@ gCur3DSpriteEngine=savedEngine;GotoSpriteAnimationLabel(editor,5);return PlaySou
 }
 MI_CpuCopy32(&gMapEditObjectList,line,0x44);
 line[M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)]=0;
-func_02019424(line+M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX),glyph);
+Mb_StringCopy(line+M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX),glyph);
 width=0;glyphPtr=line;
 if(*glyphPtr){do{if(!IsLeadByte(glyphPtr)&&width)width++;width+=MeasureStringWidth((s32*)glyphPtr);glyphPtr++;}while(*glyphPtr);}
 if(width>64){
@@ -214,11 +214,11 @@ void MapEditorInitGlyphKeyboard(void *editor) {
 }
 
 void func_ov007_0221e85c(void *arg0) {
-    M2C_UNK func_02087e34(s32);
+    M2C_UNK SpriteCellListClear(s32);
     M2C_UNK func_020b2140();
     M2C_UNK HideAllSpriteSlots();
     HideAllSpriteSlots();
-    func_02087e34(M2C_FIELD(arg0, s32 *, 0x38));
+    SpriteCellListClear(M2C_FIELD(arg0, s32 *, 0x38));
     func_020b2140();
 }
 

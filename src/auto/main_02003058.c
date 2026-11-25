@@ -4,8 +4,20 @@
 
 extern u16 data_0212dbc2;
 
-s32 GX_GetMatrixStackLevel(s32 *a){if(*(volatile u32 *)0x4000600&0x4000)return -1;*a=(*(volatile u32 *)0x4000600&0x1f00)>>8;return 0;}
-s32 GX_GetMatrixStackOverflow(s32 *a){if(*(volatile u32 *)0x4000600&0x4000)return -1;*a=(*(volatile u32 *)0x4000600&0x2000)>>13;return 0;}
+/* Read the geometry engine's matrix stack level into *level.  Returns -1 when
+ * the stack underflowed, its state then being unreliable, 0 otherwise. */
+s32 GX_GetMatrixStackLevel(s32 *level) {
+    if (REG_GXSTAT & GXSTAT_STACK_UNDERFLOW) return -1;
+    *level = (REG_GXSTAT & GXSTAT_STACK_LEVEL_MASK) >> GXSTAT_STACK_LEVEL_SHIFT;
+    return 0;
+}
+/* Read the geometry engine's matrix stack overflow flag into *overflow.  Returns
+ * -1 when the stack underflowed, its state then being unreliable, 0 otherwise. */
+s32 GX_GetMatrixStackOverflow(s32 *overflow) {
+    if (REG_GXSTAT & GXSTAT_STACK_UNDERFLOW) return -1;
+    *overflow = (REG_GXSTAT & GXSTAT_STACK_OVERFLOW) >> GXSTAT_STACK_OVERFLOW_SHIFT;
+    return 0;
+}
 void func_02003f34(void *arg0) {
     s32 *p = (s32 *)arg0;
     s32 i;
@@ -95,58 +107,61 @@ void GX_SetBankForOBJExtPlttSub(u32 banks) {
     GX_ReleaseBanks(M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING));
 }
 
-s32 func_0200333c(M2C_UNK *a) {
+/* Release the VRAM bank grant of one display purpose: clear the grant word,
+ * add its banks to the allocator's pending-release mask and set their control
+ * registers back to the unassigned value.  Returns the banks that were held. */
+s32 GX_ReleaseBankForPurpose(M2C_UNK *grant) {
     extern M2C_UNK gVramBankState;
-    u16 v = M2C_FIELD(a, u16 *, 0);
-    M2C_FIELD(a, u16 *, 0) = 0;
-    M2C_FIELD(&gVramBankState, u16 *, 0) = (u16)(M2C_FIELD(&gVramBankState, u16 *, 0) | v);
-    GX_ReleaseBanks((s32)v);
-    return (s32)v;
+    u16 banks = M2C_FIELD(grant, u16 *, 0);
+    M2C_FIELD(grant, u16 *, 0) = 0;
+    M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING) = (u16)(M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING) | banks);
+    GX_ReleaseBanks((s32)banks);
+    return (s32)banks;
 }
 
 void func_02003370(void) {
     extern M2C_UNK data_0212dbd2;
     *(s32 *)0x04000000 &= ~0x40000000;
-    func_0200333c(&data_0212dbd2);
+    GX_ReleaseBankForPurpose(&data_0212dbd2);
 }
 
 void func_02003394(void) {
     extern M2C_UNK data_0212dbd4;
     *(s32 *)0x04000000 &= ~0x80000000;
-    func_0200333c(&data_0212dbd4);
+    GX_ReleaseBankForPurpose(&data_0212dbd4);
 }
 
 void func_020033b8(void) {
-    M2C_UNK func_0200333c(M2C_UNK *);
+    M2C_UNK GX_ReleaseBankForPurpose(M2C_UNK *);
     extern M2C_UNK data_0212dbcc;
-    func_0200333c(&data_0212dbcc);
+    GX_ReleaseBankForPurpose(&data_0212dbcc);
 }
 
 void GX_ReleaseBankForOBJExtPltt(void) {
     extern M2C_UNK data_0212dbce;
-    func_0200333c(&data_0212dbce);
+    GX_ReleaseBankForPurpose(&data_0212dbce);
 }
 
 void func_020033e0(void) {
     extern M2C_UNK data_0212dbd6;
-    func_0200333c(&data_0212dbd6);
+    GX_ReleaseBankForPurpose(&data_0212dbd6);
 }
 
 void func_020033f4(void) {
     extern M2C_UNK data_0212dbd8;
-    func_0200333c(&data_0212dbd8);
+    GX_ReleaseBankForPurpose(&data_0212dbd8);
 }
 
 void func_02003408(void) {
     extern M2C_UNK data_0212dbda;
     *(s32 *)0x04001000 &= ~0x40000000;
-    func_0200333c(&data_0212dbda);
+    GX_ReleaseBankForPurpose(&data_0212dbda);
 }
 
 void func_02003430(void) {
     extern M2C_UNK data_0212dbdc;
     *(s32 *)0x04001000 &= ~0x80000000;
-    func_0200333c(&data_0212dbdc);
+    GX_ReleaseBankForPurpose(&data_0212dbdc);
 }
 
 /* Release the VRAM grant kept in *grant: clear the grant and set each bank's
@@ -167,36 +182,36 @@ s32 GX_ReleaseBankGrant(M2C_UNK *grant) {
     return banks;
 }
 
-void func_02003538(void) {
+void GX_ReleaseBankGrantForBG(void) {
     M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
     extern M2C_UNK data_0212dbc6;
     GX_ReleaseBankGrant(&data_0212dbc6);
 }
 
-void func_0200354c(void) {
+void GX_ReleaseBankGrantForOBJ(void) {
     extern M2C_UNK data_0212dbc8;
     GX_ReleaseBankGrant(&data_0212dbc8);
 }
 
-void func_02003560(void) {
+void GX_ReleaseBankGrantForBGExtPalette(void) {
     extern M2C_UNK data_0212dbd2;
     *(s32 *)0x04000000 &= ~0x40000000;
     GX_ReleaseBankGrant(&data_0212dbd2);
 }
 
-void func_02003584(void) {
+void GX_ReleaseBankGrantForObjExtPalette(void) {
     extern M2C_UNK data_0212dbd4;
     *(s32 *)0x04000000 &= ~0x80000000;
     GX_ReleaseBankGrant(&data_0212dbd4);
 }
 
-void func_020035a8(void) {
+void GX_ReleaseBankGrantForTex(void) {
     M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
     extern M2C_UNK data_0212dbcc;
     GX_ReleaseBankGrant(&data_0212dbcc);
 }
 
-void func_020035bc(void) {
+void GX_ReleaseBankGrantForOBJExtPltt(void) {
     M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
     extern M2C_UNK data_0212dbce;
     GX_ReleaseBankGrant(&data_0212dbce);
@@ -217,37 +232,53 @@ void func_020035f8(void) {
     GX_ReleaseBankGrant(&gVramBankState);
 }
 
-void func_0200360c(void) {
+void GX_ReleaseBankGrantForSubBG(void) {
     M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
     extern M2C_UNK data_0212dbd6;
     GX_ReleaseBankGrant(&data_0212dbd6);
 }
 
-void func_02003620(void) {
+void GX_ReleaseBankGrantForSubOBJ(void) {
     M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
     extern M2C_UNK data_0212dbd8;
     GX_ReleaseBankGrant(&data_0212dbd8);
 }
 
-void func_02003634(void) {
+void GX_ReleaseBankGrantForBGExtPlttSub(void) {
     extern M2C_UNK data_0212dbda;
     *(s32 *)0x04001000 &= ~0x40000000;
     GX_ReleaseBankGrant(&data_0212dbda);
 }
 
-void func_0200365c(void) {
+void GX_ReleaseBankGrantForOBJExtPlttSub(void) {
     extern M2C_UNK data_0212dbdc;
     *(s32 *)0x04001000 &= ~0x80000000;
     GX_ReleaseBankGrant(&data_0212dbdc);
 }
 
-s32 func_02003684(void){s32 b=*(volatile u16 *)0x4000008;u32 a=(*(volatile u32 *)0x4000000&0x38000000)>>27;b=(b&0x1f00)>>8;return (a<<16)+0x6000000+(b<<11);}
+/* Address of BG0's map data in the main engine's background VRAM: the display's
+ * VRAM bank plus BG0's screen base block (in 2 KiB units). */
+s32 GX_GetBG0ScrPtr(void) {
+    s32 scrBase = REG_BG0CNT;
+    u32 bank = (REG_DISPCNT & DISPCNT_BG_VRAM_MASK) >> DISPCNT_BG_VRAM_SHIFT;
+
+    scrBase = (scrBase & BGCNT_SCR_BASE_MASK) >> BGCNT_SCR_BASE_SHIFT;
+    return (bank << 16) + GX_MAIN_VRAM_BASE + (scrBase << BG_SCR_BLOCK_SHIFT);
+}
 
 s32 func_020036b8(void) {
     return (((s32) (*(u16 *)0x04001008 & 0x1F00) >> 8) << 0xB) + 0x06200000;
 }
 
-s32 GX_GetBG1ScrPtr(void){s32 b=*(volatile u16 *)0x400000a;u32 a=(*(volatile u32 *)0x4000000&0x38000000)>>27;b=(b&0x1f00)>>8;return (a<<16)+0x6000000+(b<<11);}
+/* Address of BG1's map data in the main engine's background VRAM: the display's
+ * VRAM base (DISPCNT bits 27..29) plus BG1's screen base block. */
+s32 GX_GetBG1ScrPtr(void) {
+    s32 index = REG_BG1CNT;
+    u32 base = (REG_DISPCNT & DISPCNT_BG_VRAM_MASK) >> DISPCNT_BG_VRAM_SHIFT;
+
+    index = (index & BGCNT_SCR_BASE_MASK) >> BGCNT_SCR_BASE_SHIFT;
+    return (base << 16) + GX_MAIN_VRAM_BASE + (index << BG_SCR_BLOCK_SHIFT);
+}
 
 s32 GX_GetBG1ScrPtrSub(void) {
     return (((s32) (*(u16 *)0x0400100A & 0x1F00) >> 8) << 0xB) + 0x06200000;
@@ -277,13 +308,29 @@ u32 index=(b&BGCNT_SCR_BASE_MASK)>>BGCNT_SCR_BASE_SHIFT;
 s32 r;
 switch(mode){case GX_MODE_0:case GX_MODE_1:case GX_MODE_2:return base+GX_MAIN_VRAM_BASE+(index<<BG_SCR_BLOCK_SHIFT);case GX_MODE_3:case GX_MODE_4:case GX_MODE_5:if(b&BGCNT_BITMAP_DIRECT)r=(index<<BG_BITMAP_BLOCK_SHIFT)+GX_MAIN_VRAM_BASE;else r=base+GX_MAIN_VRAM_BASE+(index<<BG_SCR_BLOCK_SHIFT);return r;case GX_MODE_6:return 0;default:return 0;}}
 
-s32 GX_GetBG0CharPtr(void){s32 b=*(volatile u16 *)0x4000008;u32 a=(*(volatile u32 *)0x4000000&0x7000000)>>24;b=(b&0x3c)>>2;return (a<<16)+0x6000000+(b<<14);}
+/* Return the main-engine BG0 character base address: the display's background
+ * VRAM bank plus BG0's character base block (in 16 KiB units). */
+s32 GX_GetBG0CharPtr(void) {
+    s32 charBase = REG_BG0CNT;
+    u32 bank = (REG_DISPCNT & DISPCNT_BG_CHAR_BASE_MASK) >> DISPCNT_BG_CHAR_BASE_SHIFT;
+
+    charBase = (charBase & BGCNT_CHAR_BASE_MASK) >> BGCNT_CHAR_BASE_SHIFT;
+    return (bank << 16) + GX_MAIN_VRAM_BASE + (charBase << 14);
+}
 
 s32 GX_GetBG0CharPtrSub(void) {
     return (((s32) (*(u16 *)0x04001008 & 0x3C) >> 2) << 0xE) + 0x06200000;
 }
 
-s32 GX_GetBG1CharPtr(void){s32 b=*(volatile u16 *)0x400000a;u32 a=(*(volatile u32 *)0x4000000&0x7000000)>>24;b=(b&0x3c)>>2;return (a<<16)+0x6000000+(b<<14);}
+/* Return the main-engine BG1 character base address: the display's background
+ * VRAM bank plus BG1's character base block (in 16 KiB units). */
+s32 GX_GetBG1CharPtr(void) {
+    s32 charBase = REG_BG1CNT;
+    u32 bank = (REG_DISPCNT & DISPCNT_BG_CHAR_BASE_MASK) >> DISPCNT_BG_CHAR_BASE_SHIFT;
+
+    charBase = (charBase & BGCNT_CHAR_BASE_MASK) >> BGCNT_CHAR_BASE_SHIFT;
+    return (bank << 16) + GX_MAIN_VRAM_BASE + (charBase << 14);
+}
 
 s32 GX_GetBG1CharPtrSub(void) {
     return (((s32) (*(u16 *)0x0400100A & 0x3C) >> 2) << 0xE) + 0x06200000;

@@ -13,6 +13,7 @@
 #define PANEL_OTHER        0x60 /* void *the other player's panel */
 #define PANEL_PLAYER       0x64 /* u8 player index (0 or 1) this panel belongs to */
 #define PANEL_ENTRY_COUNT  0x66 /* u8 number of stat entries filled in */
+#define PANEL_ENTRY_MAX    5    /* stat entries a panel can list (PanelStat[5] arrays) */
 #define PANEL_STAT_SOURCE  0x36 /* PanelStat[5]: the player's own stat values, compared against the other panel's */
 #define PANEL_STAT_DISPLAY 0x4a /* PanelStat[5]: those values rebased onto the other player and drawn as the gauge entries */
 #define PANEL_GAUGES_SHOWN 0x65 /* u8 nonzero when the player's CO gauge entries are drawn (CO record byte 0x3C) */

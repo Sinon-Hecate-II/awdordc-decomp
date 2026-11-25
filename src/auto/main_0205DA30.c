@@ -181,14 +181,17 @@ s32 NatNeg_BeginNegotiation(s32 reportSocket, s32 peerAddress, s32 isJoin, s32 e
     return 0;
 }
 #pragma scheduling reset
+/* Release the NAT-negotiation peer the caller's address selects (it is still in
+ * r0 when FindNatNegPeer is called): close the peer's socket and mark it
+ * finished, so the peer poll frees it. */
 void NatNeg_ReleasePeer(void) {
- void *FindNatNegPeer(void);
- void ghiCloseSocket(s32);
- void *p=FindNatNegPeer();
- if(p==NULL)return;
- if(M2C_FIELD(p,s32 *,0)!=-1) ghiCloseSocket(M2C_FIELD(p,s32 *,0));
- M2C_FIELD(p,s32 *,0)=-1;
- M2C_FIELD(p,s32 *,16)=4;
+    void *FindNatNegPeer(void);
+    void ghiCloseSocket(s32);
+    void *peer = FindNatNegPeer();
+    if (peer == NULL) return;
+    if (M2C_FIELD(peer, s32 *, NATNEG_PEER_SOCKET) != -1) ghiCloseSocket(M2C_FIELD(peer, s32 *, NATNEG_PEER_SOCKET));
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_SOCKET) = -1;
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_STATE) = NATNEG_STATE_DONE;
 }
 
 /* Polls one NAT-negotiation peer: drains its socket, retries the current step
@@ -574,13 +577,21 @@ void func_0205e864(void *arg0, s32 arg1) {
  M2C_FIELD(arg0,s32 *,0xA8)=arg1;
 }
 
-void Qr2_Think(void *p) {
- extern void *gQr2Connection;
- void func_0205e95c(void *);
- void Qr2_ReadPackets(void *);
- if(p==NULL)p=gQr2Connection;
- if(M2C_FIELD(p,s32 *,0xbc))func_0205e95c(p);
- Qr2_ReadPackets(p);
+/* Service a QR2 connection (the global one when `qr2` is NULL): while it reports
+ * its state to the master, run its timeout and keep-alive checks, then drain the
+ * replies that arrived on its socket. */
+void Qr2_Think(void *qr2) {
+    extern void *gQr2Connection;
+    void Qr2_CheckTimeouts(void *);
+    void Qr2_ReadPackets(void *);
+
+    if (qr2 == NULL) {
+        qr2 = gQr2Connection;
+    }
+    if (M2C_FIELD(qr2, s32 *, QR2_REPORT_TO_MASTER) != 0) {
+        Qr2_CheckTimeouts(qr2);
+    }
+    Qr2_ReadPackets(qr2);
 }
 
 /* Drain the QR2 socket: while it has data, receive one reply from the master into
@@ -609,7 +620,7 @@ void Qr2_ReadPackets(void *qr2) {
 #pragma opt_propagation off
 #pragma scheduling on
 void NatNeg_SendInitRequests(void *arg0) {
-s32 GetPreferredLocalIp(void); s32 func_0205d9fc(s32); s32 GetSystemTickMilliseconds(void);
+s32 GetPreferredLocalIp(void); s32 GetSocketLocalPort(s32); s32 GetSystemTickMilliseconds(void);
 void func_0205d944(s32,s32,u16,void *,s32);
 s32 StringCopy(void *,s32); s32 StringLength(void *);
 extern M2C_UNK gServiceNameBuffer,gNatNegManager;
@@ -640,8 +651,8 @@ if(M2C_FIELD(arg0,s32 *,24)==0){
 buf[12]=1;func_0205d944(M2C_FIELD(arg0,s32 *,0),M2C_FIELD(&gNatNegManager,s32 *,12),0x6cfd,buf,len);
 }
 sock=p->flag?M2C_FIELD(arg0,s32 *,4):M2C_FIELD(arg0,s32 *,0);
-pa=func_0205d9fc(p->flag?M2C_FIELD(arg0,s32 *,4):M2C_FIELD(arg0,s32 *,0));
-pb=func_0205d9fc(sock);
+pa=GetSocketLocalPort(p->flag?M2C_FIELD(arg0,s32 *,4):M2C_FIELD(arg0,s32 *,0));
+pb=GetSocketLocalPort(sock);
 port=((pa>>8)&255)|((pb<<8)&0xff00);
 packet.bytes[20]=port;packet.bytes[19]=port>>8;
 if(M2C_FIELD(arg0,s32 *,28)==0){

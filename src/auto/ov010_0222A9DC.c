@@ -501,13 +501,16 @@ void Ov010_ConfirmMapChoiceLabel(void *label) {
     GotoSpriteAnimationLabel(label, 1);
 }
 
-void func_ov010_0222b8ec(M2C_UNK arg0) {
-    s32 IsMapConfirmEnabled();
+/* Play the online map-choice label's animation: its confirmed animation (3)
+ * when the current map may be confirmed, its normal one (1) otherwise. */
+void Ov010_PlayMapChoiceLabel(void *label) {
+    s32 IsMapConfirmEnabled(void);
+
     if (IsMapConfirmEnabled() != 0) {
-        GotoSpriteAnimationLabel(arg0, 3);
+        GotoSpriteAnimationLabel(label, 3);
         return;
     }
-    GotoSpriteAnimationLabel(arg0, 1);
+    GotoSpriteAnimationLabel(label, 1);
 }
 
 void func_ov010_0222b91c(M2C_UNK arg0) {

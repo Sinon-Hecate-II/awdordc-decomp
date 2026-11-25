@@ -157,12 +157,14 @@ DrawPanelText(panel,20,0,216,64,2,Ov001_GetTextFontId(),text);CloseTextPanel(pan
 gOv001MessagePanelActive=1;return 1;
 }
 
-s32 Ov001_FreeOptionBackground(void) {
- void Ov001_FreePageBackground(s32);
- if((u8)gOv001MessagePanelActive==0) return 0;
- Ov001_FreePageBackground(1);
- gOv001MessagePanelActive=0;
- return 1;
+/* Free the message panel background built by Ov001_ShowMessagePanel, if one is
+ * showing: returns 1 when a panel was released, 0 when none was up. */
+s32 Ov001_FreeMessagePanel(void) {
+    void Ov001_FreePageBackground(s32);
+    if ((u8)gOv001MessagePanelActive == 0) return 0;
+    Ov001_FreePageBackground(OV001_MESSAGE_PANEL);
+    gOv001MessagePanelActive = 0;
+    return 1;
 }
 
 /* Copy the asset path template `pathTemplate` into the shared localized-path

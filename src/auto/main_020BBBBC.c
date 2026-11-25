@@ -186,7 +186,7 @@ void func_020bc0e0(void) {
     extern s32 *gCurrentMap;
     s32 GetUnitCaptureRate(void *, s32, s32);
     void ClearCursorUnitCapture(void);
-    void func_020baaac(void);
+    void SyncCursorOldPosition(void);
     s32 IsPlayerHuman();
     s32 AddRecordValue(s32, s32);
     s32 func_020cd5d8(void);
@@ -211,7 +211,7 @@ void func_020bc0e0(void) {
     unit = CURSOR_UNIT(map);
     unitId = unit ? (s32)(unit - (map + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE : 0;
     ClearCursorUnitCapture();
-    func_020baaac();
+    SyncCursorOldPosition();
     map = (u8 *)*gCurrentMap;
     points += CAPTURE(M2C_FIELD(CURSOR_UNIT(map), u16 *, MAP_UNIT_CAPTURE));
     if (points >= MAP_UNIT_CAPTURE_COMPLETE)
@@ -488,15 +488,18 @@ s32 GetAimCursorKeyAction(void) {
     return 0;
 }
 
-s32 func_020bcac0(void) {
+/* Selection-settle key check, the key counterpart of GetMapSelectionTouchAction:
+ * MAP_ACTION_CANCEL (nonzero) once the B key that picked the tile is released,
+ * 0 while it is still held down from a previous frame. */
+s32 GetMapSelectionKeyAction(void) {
     extern void *gKeyState;
-    if (M2C_FIELD(gKeyState, u16 *, 0) & 2) {
-        return 0x20;
+    if (((KeyState *)gKeyState)->pressed & KEY_B) {
+        return MAP_ACTION_CANCEL;
     }
-    if (M2C_FIELD(gKeyState, u16 *, 6) & 2) {
+    if (((KeyState *)gKeyState)->held & KEY_B) {
         return 0;
     }
-    return 0x20;
+    return MAP_ACTION_CANCEL;
 }
 
 /* The unit-select cursor's action for the key pressed this frame: A confirms,

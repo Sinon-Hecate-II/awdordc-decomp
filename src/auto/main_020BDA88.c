@@ -187,24 +187,37 @@ s32 func_020bdf7c(s32 arg0, s32 arg1) {
     return 0;
 }
 
+/* Draw a 32x16 UI sprite at screen position (112, 0), with OAM flags 0x9000 and
+ * base tile 0x1F0 (one of the small pieces the unit-info panel's cancel path
+ * draws). */
 void func_020bdfa8(void) {
     M2C_UNK DrawSizedOamSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     DrawSizedOamSprite(0x70, 0, 0x20, 0x10, 0x9000, 0x1F0);
 }
 
-void func_020bdfdc(void) {
+/* Draw the unit-info panel's 32x16 "next target" button sprite at (112, 0) using
+ * base tile 0x1F8 (the tile sits inside the button's touch region, x 0x70..0x90). */
+void DrawNextButtonSprite(void) {
     DrawSizedOamSprite(0x70, 0, 0x20, 0x10, 0x9000, 0x1F8);
 }
 
+/* Draw a 32x16 UI sprite at screen position (112, 0), with OAM flags 0x9000 and
+ * base tile 0x1E8 (one of the small pieces the unit-info panel's cancel path
+ * draws). */
 void func_020be010(void) {
     DrawSizedOamSprite(0x70, 0, 0x20, 0x10, 0x9000, 0x1E8);
 }
 
+/* Draw a 32x16 UI sprite at screen position (64, 0), with OAM flags 0x9000 and
+ * base tile 0x200 (one of the small pieces the unit-info panel's cancel path
+ * draws). */
 void func_020be044(void) {
     DrawSizedOamSprite(0x40, 0, 0x20, 0x10, 0x9000, 0x200);
 }
 
-void func_020be078(void) {
+/* Draw the map-menu touch button: a 32x16 sprite at screen position (160, 0) with
+ * OAM flags 0x9000 and base tile 0x208. Touching its region opens the map menu. */
+void DrawMapMenuButtonSprite(void) {
     DrawSizedOamSprite(0xA0, 0, 0x20, 0x10, 0x9000, 0x208);
 }
 
@@ -266,19 +279,22 @@ void func_020be168(M2C_UNK arg0) {
     DeleteSpriteObject(arg0);
 }
 
-void func_020be188(s32 arg0) {
+void CreateSaveIndicator(s32 arg0) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gSaveIndicatorClass;
     M2C_FIELD(CreateSpriteFromClass(&gSaveIndicatorClass, 6), s32 *, 0x54) = arg0;
 }
 
-u8 func_020be1a8(void) {
- s32 FindObjectByClass(M2C_UNK *);
- extern M2C_UNK gSaveIndicatorClass;
- u8 result;
- if (FindObjectByClass(&gSaveIndicatorClass)) return 1;
- if (IsSaveTaskRunning()) result=1; else result=0;
- return result;
+/* Whether a save is in progress: the save indicator sprite exists, or the save
+ * task is still running. */
+u8 IsSaveInProgress(void) {
+    s32 FindObjectByClass(M2C_UNK *);
+    extern M2C_UNK gSaveIndicatorClass;
+    u8 result;
+
+    if (FindObjectByClass(&gSaveIndicatorClass)) return 1;
+    if (IsSaveTaskRunning()) result = 1; else result = 0;
+    return result;
 }
 
 void func_020be1dc(s32 arg0) {
@@ -338,22 +354,28 @@ void WriteSaveRecord(s32 saveType, void *buffer, s32 size) {
         QueueSettingsRecord(block);
     }
     SaveList_StartFlush();
-    func_020be188(block);
+    CreateSaveIndicator(block);
 }
 
-void func_020be488(s32 a) {
+/* Delete the previously saved record of `saveType` (the old copy of a record
+ * about to be replaced or cleared) and then write the current game-settings
+ * snapshot as the shared settings record, unless `saveType` is that settings
+ * record itself: start the save and hand the settings block to the save
+ * progress indicator. */
+void DeleteSaveRecordAndSaveSettings(s32 saveType) {
     s32 HeapAllocBlock(s32);
-    s32 v=0;
-    func_020be1dc(a);
-    if(a!=4) {
-        v=HeapAllocBlock(0x6000);
-        QueueSettingsRecord(v);
+    s32 block = 0;
+
+    func_020be1dc(saveType);
+    if (saveType != SAVE_TYPE_SETTINGS) {
+        block = HeapAllocBlock(0x6000);
+        QueueSettingsRecord(block);
     }
     SaveList_StartFlush();
-    func_020be188(v);
+    CreateSaveIndicator(block);
 }
 
-s32 func_020be4c0(s32 arg0) { void *GetSaveRecordList(void); s32 GetSaveRecordCount(void); u8 *p,*best; s32 n,i,better,id;u32 b,a,high;
+s32 SaveRecordExistsForType(s32 arg0) { void *GetSaveRecordList(void); s32 GetSaveRecordCount(void); u8 *p,*best; s32 n,i,better,id;u32 b,a,high;
 p=GetSaveRecordList();best=0;n=GetSaveRecordCount();i=0;
 if(n>0)do{if(arg0==p[2]){if(best){a=M2C_FIELD(p,u32 *,4);b=M2C_FIELD(best,u32 *,4);high=a&0xffff0000;
 if(high==0xffff0000 && !(b&0xffff0000) && b!=0)better=0;
@@ -363,18 +385,21 @@ if(!better)goto next;
 }best=p;}next:i++;p+=40;}while(i<n);
 if(best)id=*(u16 *)best;else id=-1;return id!=-1; }
 
-void func_020be59c(void) {
+/* Erase the save directory: prune every record of each save type from the shared
+ * settings type (SAVE_TYPE_SETTINGS) up to 0x3A down to none, then start the save
+ * flush and show the save indicator. */
+void EraseAllSaveData(void) {
     M2C_UNK PruneSaveRecords(s32, M2C_UNK);
     M2C_UNK SaveList_StartFlush();
-    s32 var_r5;
+    s32 saveType;
 
-    var_r5 = 4;
+    saveType = SAVE_TYPE_SETTINGS;
     do {
-        PruneSaveRecords(var_r5, 0);
-        var_r5 += 1;
-    } while (var_r5 < 0x3B);
+        PruneSaveRecords(saveType, 0);
+        saveType += 1;
+    } while (saveType < 0x3B);
     SaveList_StartFlush();
-    func_020be188(0);
+    CreateSaveIndicator(0);
 }
 
 /* Restore the game settings to their defaults: mark the settings block valid,

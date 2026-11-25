@@ -136,10 +136,16 @@ void ExplosionEffect_Start(ExplosionEffect *effect) {
     sprite->flags = (sprite->flags & ~0x03000000) | 0x02000000;
 }
 
-M2C_UNK CreateExplosionEffect(s32 a,s32 b,s32 c,s32 d) {
-void *CreateSpriteForOwner(M2C_UNK *,s32); extern M2C_UNK data_02128c6c;
-void *p=CreateSpriteForOwner(&data_02128c6c,d);
-M2C_FIELD(p,s32 *,0x38)=a; M2C_FIELD(p,s32 *,0x3c)=b; M2C_FIELD(p,s32 *,0x5c)=c;
+/* Spawn an explosion effect task of `type` on map tile (tileX, tileY), owned by
+ * `owner`; its class start handler then spawns the animated explosion sprite. */
+M2C_UNK CreateExplosionEffect(s32 tileX, s32 tileY, s32 type, s32 owner) {
+    void *CreateSpriteForOwner(M2C_UNK *, s32);
+    extern M2C_UNK gExplosionTaskClass;
+    ExplosionEffect *effect = CreateSpriteForOwner(&gExplosionTaskClass, owner);
+
+    effect->tileX = tileX;
+    effect->tileY = tileY;
+    effect->type = type;
 }
 
 /* Finishing step of a unit removal effect: play the explosion on the unit's tile,

@@ -3,7 +3,7 @@
 
 #pragma opt_strength_reduction off
 void func_ov007_02212200(M2C_UNK arg0) {
-    M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
+    M2C_UNK SpriteCellListSetCellRect(void *, M2C_UNK, s16, s16, s32, s32);
     void Hide3DSprite(void *);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -35,7 +35,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             x = M2C_FIELD(sprite, s16 *, 0x50);
             width = GetUnitSpriteWidth(sprite);
             height = GetUnitSpriteHeight(sprite);
-            func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+            SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
     CreateUnitSpriteButtonTask((void *)gMapEditorButtonSprites[0], 8);
@@ -50,7 +50,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             s16 x = M2C_FIELD(sprite, s16 *, 0x50);
             u32 width = GetUnitSpriteWidth(sprite);
             u32 height = GetUnitSpriteHeight(sprite);
-            func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+            SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
     CreateUnitSpriteButtonTask((void *)gMapEditorButtonSprites[1], 256);
@@ -65,7 +65,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             s16 x = M2C_FIELD(sprite, s16 *, 0x50);
             u32 width = GetUnitSpriteWidth(sprite);
             u32 height = GetUnitSpriteHeight(sprite);
-            func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+            SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
     CreateUnitSpriteButtonTask((void *)gMapEditorButtonSprites[2], 4);
@@ -80,7 +80,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             s16 x = M2C_FIELD(sprite, s16 *, 0x50);
             u32 width = GetUnitSpriteWidth(sprite);
             u32 height = GetUnitSpriteHeight(sprite);
-            func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+            SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
     CreateUnitSpriteButtonTask((void *)gMapEditorButtonSprites[3], 1);
@@ -96,7 +96,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             s16 x = M2C_FIELD(sprite, s16 *, 0x50);
             u32 width = GetUnitSpriteWidth(sprite);
             u32 height = GetUnitSpriteHeight(sprite);
-            func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+            SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
     CreateUnitSpriteButtonTask((void *)gMapEditorButtonSprites[4], 2);
@@ -112,7 +112,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             s16 x = M2C_FIELD(sprite, s16 *, 0x50);
             u32 width = GetUnitSpriteWidth(sprite);
             u32 height = GetUnitSpriteHeight(sprite);
-            func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+            SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
     CreateUnitSpriteButtonTask((void *)gMapEditorButtonSprites[5], 1024);
@@ -128,7 +128,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             s16 x = M2C_FIELD(sprite, s16 *, 0x50);
             u32 width = GetUnitSpriteWidth(sprite);
             u32 height = GetUnitSpriteHeight(sprite);
-            func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+            SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
     CreateUnitSpriteButtonTask((void *)gMapEditorButtonSprites[6], 2048);
@@ -144,7 +144,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             s16 x = M2C_FIELD(sprite, s16 *, 0x50);
             u32 width = GetUnitSpriteWidth(sprite);
             u32 height = GetUnitSpriteHeight(sprite);
-            func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+            SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
     CreateUnitSpriteButtonTask((void *)gMapEditorButtonSprites[7], 512);
@@ -159,7 +159,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             s16 x = M2C_FIELD(sprite, s16 *, 0x50);
             u32 width = GetUnitSpriteWidth(sprite);
             u32 height = GetUnitSpriteHeight(sprite);
-            func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+            SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
     CreateUnitSpriteButtonTask((void *)gMapEditorButtonSprites[8], 1);
@@ -175,7 +175,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             s16 x = M2C_FIELD(sprite, s16 *, 0x50);
             u32 width = GetUnitSpriteWidth(sprite);
             u32 height = GetUnitSpriteHeight(sprite);
-            func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+            SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
     CreateUnitSpriteButtonTask((void *)gMapEditorButtonSprites[9], 2);
@@ -191,7 +191,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             s16 x = M2C_FIELD(sprite, s16 *, 0x50);
             u32 width = GetUnitSpriteWidth(sprite);
             u32 height = GetUnitSpriteHeight(sprite);
-            func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+            SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
     CreateUnitSpriteButtonTask((void *)gMapEditorButtonSprites[10], 1024);
@@ -207,7 +207,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             s16 x = M2C_FIELD(sprite, s16 *, 0x50);
             u32 width = GetUnitSpriteWidth(sprite);
             u32 height = GetUnitSpriteHeight(sprite);
-            func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+            SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
     CreateUnitSpriteButtonTask((void *)gMapEditorButtonSprites[11], 2048);
@@ -223,7 +223,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             s16 x = M2C_FIELD(sprite, s16 *, 0x50);
             u32 width = GetUnitSpriteWidth(sprite);
             u32 height = GetUnitSpriteHeight(sprite);
-            func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+            SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
     CreateUnitSpriteButtonTask((void *)gMapEditorButtonSprites[12], 512);

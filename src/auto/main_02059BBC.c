@@ -62,18 +62,30 @@ u8 *gti2ComputeResponse(void *out_, void *in_)
   return out;
 }
 
-s32 gti2CheckResponse(u8 *a,u8 *b) {s32 i=0;do{if(i!=0&&i!=13&&a[i]!=b[i])return 0;i++;}while(i<32);return 1;}
+/* Whether `received` is the challenge response this side expects (`expected`).
+ * Bytes 0 and 13 are random printable fillers the peer picked, so they are
+ * skipped; every other differing byte rejects the response. */
+s32 gti2CheckResponse(u8 *received, u8 *expected) {
+    s32 i = 0;
+    do {
+        if (i != 0 && i != 13 && received[i] != expected[i]) return 0;
+        i++;
+    } while (i < GT2_RESPONSE_SIZE);
+    return 1;
+}
 
-s32 func_02059cf8(void *arg0, s32 arg1) {
+/* Allocate the byte store for a GT2 buffer and record its capacity; fails when
+ * the allocation does. */
+s32 gti2AllocateBuffer(Gt2Buffer *buffer, s32 size) {
     s32 gpiMalloc(s32);
-    s32 temp_r0;
+    s32 data;
 
-    temp_r0 = gpiMalloc(arg1);
-    M2C_FIELD(arg0, s32 *, 0) = temp_r0;
-    if (temp_r0 == 0) {
+    data = gpiMalloc(size);
+    buffer->data = (u8 *) data;
+    if (data == 0) {
         return 0;
     }
-    M2C_FIELD(arg0, s32 *, 4) = arg1;
+    buffer->size = size;
     return 1;
 }
 
@@ -378,9 +390,32 @@ if(M2C_FIELD(p,int *,0x14)&&!M2C_FIELD(p,int *,0x1c)){gti2FreeSocket(p);return 0
 return 1;
 }
 
-s32 func_0205a830(s32 a,void **p) {s32 gti2CreateConnection(s32);s32 r=gti2CreateConnection(a);if(r)return r;M2C_FIELD(*p,s32 *,12)=0;M2C_FIELD(*p,s32 *,16)=1;return 0;}
+/* Create a GT2 connection record this side opens (the client): after the shared
+ * constructor, mark it as waiting for the server's CONNECT_ACCEPT and as the
+ * initiator.  Returns the constructor's error code, 0 on success. */
+s32 gti2CreateClientConnection(s32 owner, void **connectionOut) {
+    s32 gti2CreateConnection(s32);
+    s32 result = gti2CreateConnection(owner);
 
-s32 func_0205a860(s32 a,void **p) {s32 gti2CreateConnection(s32);s32 r=gti2CreateConnection(a);if(r)return r;M2C_FIELD(*p,s32 *,12)=2;M2C_FIELD(*p,s32 *,16)=0;return 0;}
+    if (result) return result;
+    M2C_FIELD(*connectionOut, s32 *, GT2_CONNECTION_STATE) = GT2_STATE_AWAIT_CONNECT_ACCEPT;
+    M2C_FIELD(*connectionOut, s32 *, GT2_CONNECTION_INITIATOR) = 1;
+    return 0;
+}
+
+/* Create a GT2 connection record for an incoming connection this side accepts
+ * (the server): after the shared constructor, mark it as waiting for the
+ * client's CONNECT and as not the initiator.  Returns the constructor's error
+ * code, 0 on success. */
+s32 gti2CreateServerConnection(s32 owner, void **connectionOut) {
+    s32 gti2CreateConnection(s32);
+    s32 result = gti2CreateConnection(owner);
+
+    if (result) return result;
+    M2C_FIELD(*connectionOut, s32 *, GT2_CONNECTION_STATE) = GT2_STATE_AWAIT_CLIENT_CONNECT;
+    M2C_FIELD(*connectionOut, s32 *, GT2_CONNECTION_INITIATOR) = 0;
+    return 0;
+}
 
 /* Start a client-side GT2 connection attempt: store the connect message and the
  * callbacks on the connection, generate our challenge, compute the response the
@@ -497,5 +532,13 @@ s32 gti2CheckDelayedAck(void *connection, u32 now) {
     return 1;
 }
 
-s32 gti2CheckPing(void *p,u32 t) {s32 gti2SendPing(void *,u32);if(t-M2C_FIELD(p,u32 *,0x88)>30000){if(!gti2SendPing(p,t-M2C_FIELD(p,u32 *,0x88)))return 0;}return 1;}
+/* Send a ping on `connection` once it has been silent for more than
+ * GT2_PING_INTERVAL ms; returns 0 when the ping could not be sent. */
+s32 gti2CheckPing(void *connection, u32 now) {
+    s32 gti2SendPing(void *, u32);
+    if (now - M2C_FIELD(connection, u32 *, GT2_CONNECTION_LAST_SENT) > GT2_PING_INTERVAL) {
+        if (!gti2SendPing(connection, now - M2C_FIELD(connection, u32 *, GT2_CONNECTION_LAST_SENT))) return 0;
+    }
+    return 1;
+}
 

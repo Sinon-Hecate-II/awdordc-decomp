@@ -4,6 +4,8 @@
 void OS_EnableIrqMask(s32);
 extern s32 gOv001TilePools;
 
+/* A node of the overlay's circular doubly-linked lists (the Ov001_List* helpers),
+ * which also serves as each list's sentinel.  prev/next are 0 on a removed node. */
 typedef struct ListLink { struct ListLink *prev; struct ListLink *next; } ListLink;
 extern s32 gOv001SavedVBlankIrq[2];
 
@@ -489,10 +491,33 @@ void func_ov001_0218bf30(s32 arg0, ...) {
  Ov001_FreeAlloc(&arg0);
 }
 
-void Ov001_ListRemove(ListLink *node){s32 OS_DisableIrqMask(s32);void OS_EnableIrqMask(s32);s32 state=OS_DisableIrqMask(1);node->prev->next=node->next;node->next->prev=node->prev;node->next=0;node->prev=0;OS_EnableIrqMask(state);}
+/* Unlink `node` from its circular doubly-linked list with IRQ 1 (DMA0) masked, then
+ * clear the node's own links so it can be reused. */
+void Ov001_ListRemove(ListLink *node) {
+    s32 OS_DisableIrqMask(s32);
+    void OS_EnableIrqMask(s32);
+    s32 saved = OS_DisableIrqMask(1);
+    node->prev->next = node->next;
+    node->next->prev = node->prev;
+    node->next = 0;
+    node->prev = 0;
+    OS_EnableIrqMask(saved);
+}
 
-M2C_UNK Ov001_ListInsertBefore(a,b)
-s32 a; s32 b;{s32 OS_DisableIrqMask(s32);s32 state=OS_DisableIrqMask(1);ListLink *head=(ListLink *)a,*node=(ListLink *)b;head->prev->next=node;node->prev=head->prev;node->next=head;head->prev=node;OS_EnableIrqMask(state);}
+/* Insert `node` just before the list node `head` in one of the overlay's
+ * doubly-linked lists, with IRQ 1 (DMA0) masked. */
+M2C_UNK Ov001_ListInsertBefore(listNode, newLink)
+s32 listNode; s32 newLink;
+{
+    s32 OS_DisableIrqMask(s32);
+    s32 savedIrq = OS_DisableIrqMask(1);
+    ListLink *head = (ListLink *)listNode, *node = (ListLink *)newLink;
+    head->prev->next = node;
+    node->prev = head->prev;
+    node->next = head;
+    head->prev = node;
+    OS_EnableIrqMask(savedIrq);
+}
 
 void Ov001_ListPushBack(s32 arg0) {
     Ov001_ListInsertBefore(arg0 + 8);

@@ -145,14 +145,19 @@ void Ov000_InfoWindow_ShowUnitStats(void *window, s32 player, s32 unitKind) {
     M2C_FIELD(window, s32 *, 0xC) = 4;
 }
 
-void Ov000_InfoWindow_ShowTerrain(void *arg0, s32 arg1) {
-    M2C_UNK func_ov000_0217272c(s32);
-    if (arg1 == -1) {
-        M2C_FIELD(arg0, s32 *, 0xC) = 3;
+/* Show the terrain panel for `terrainId`, or ask for the panel with nothing
+ * selected when `terrainId` is -1: store the terrain in the panel's record block
+ * and have the update loop switch to the terrain panel, or back to the empty one. */
+void Ov000_InfoWindow_ShowTerrain(void *menuPtr, s32 terrainId) {
+    void Ov000_InfoPanel_SetTerrain(void *, s32);
+    Ov000InfoMenu *menu = (Ov000InfoMenu *)menuPtr;
+
+    if (terrainId == -1) {
+        menu->pendingState = OV000_INFO_NO_TERRAIN;
         return;
     }
-    func_ov000_0217272c(M2C_FIELD(arg0, s32 *, 4));
-    M2C_FIELD(arg0, s32 *, 0xC) = 2;
+    Ov000_InfoPanel_SetTerrain(menu->panel, terrainId);
+    menu->pendingState = OV000_INFO_TERRAIN;
 }
 
 /* Confirm action of the map info window: toggles the panel under the cursor
@@ -201,8 +206,8 @@ void func_ov000_02174be8(void) {
 }
 
 void func_ov000_02174c00(void) {
-    M2C_UNK func_020af1e4();
-    func_020af1e4();
+    M2C_UNK DeleteWallpaperSpritesOnAllEngines();
+    DeleteWallpaperSpritesOnAllEngines();
 }
 
 u8 Ov000_InfoWindow_Exists(void) {
@@ -448,12 +453,12 @@ void func_ov000_02175234(void *arg0){
     switch (M2C_FIELD(arg0, s32 *, 4)) {
         case 1:
             ClearTileRect(M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), 32, 32);
-            func_ov000_021769dc(arg0);
+            Ov000_StatsWindow_RedrawPanelTheme(arg0);
             Ov000Info_DrawFullPanel(arg0);
             M2C_FIELD(arg0, s32 *, 4) = 0;
             break;
         case 2:
-            func_ov000_021769dc(arg0);
+            Ov000_StatsWindow_RedrawPanelTheme(arg0);
             Ov000Info_DrawFullPanel(arg0);
             M2C_FIELD(arg0, s32 *, 4) = 0;
             break;

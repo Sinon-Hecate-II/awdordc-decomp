@@ -2,7 +2,7 @@
 #include "common.h"
 #include "gx.h"
 extern M2C_UNK gMapListState;
-extern const u8 data_ov001_0218f9bc[];
+extern const u8 gMapListChoiceRow[];
 void MapList_DismissMessage(void);
 void func_ov001_0217ded8(void);
 void MapListSetExtraEmptyA(s32);
@@ -77,12 +77,18 @@ DrawPanelText(panel,13,60,230,94,2,Ov001_GetTextFontId(),messageText);
 CloseTextPanel(panel);
 }
 
+/* Step that brings up the ov001 Wi-Fi error screen: fade the main engine's
+ * background layers and objects in from white, make those planes visible, and
+ * hand over to the step that waits for the fade and then draws the error
+ * panel. */
 void Ov001_FadeInWfcErrorScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK Ov001_WfcErrorFadeDone;
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(0, 0x15);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN,
+                    OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN,
+                              OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
     Ov001_SetStepCallback(&Ov001_WfcErrorFadeDone);
 }
 
@@ -170,7 +176,7 @@ void Ov001_FadeOutWfcErrorScreen(void) {
  * list otherwise. */
 void Ov001_LeaveWfcErrorScreen(void) {
     s32 Ov001_IsIconRowIdle();
-    M2C_UNK Ov001_FreeOptionBackground();
+    M2C_UNK Ov001_FreeMessagePanel();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
     M2C_UNK SetMapListMode(M2C_UNK);
@@ -191,7 +197,7 @@ void Ov001_LeaveWfcErrorScreen(void) {
         return;
     }
     Ov001_FreePageBackground(0);
-    Ov001_FreeOptionBackground();
+    Ov001_FreeMessagePanel();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
     Ov001_GetNameEntryMode(0, &nameEntryVariant);
@@ -369,18 +375,21 @@ void Ov001_FadeInMapList(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_StartMapListInput);
 }
 
+/* Step that follows the ov001 map list's fade-in: wait until both the sub and the
+ * main fade have finished, then hand the step over to the per-frame map list
+ * input update. */
 void Ov001_StartMapListInput(void) {
-    extern M2C_UNK func_ov001_0217d744;
-    if (Ov001_IsFadeActive(1) != 0) {
+    extern M2C_UNK Ov001_UpdateMapListInput;
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_0217d744);
+    Ov001_SetStepCallback(&Ov001_UpdateMapListInput);
 }
 
-void func_ov001_0217d744(void) {
+void Ov001_UpdateMapListInput(void) {
     M2C_UNK MapListHandleState();
     void func_ov001_0217d754(void);
     func_ov001_0217d754();
@@ -525,13 +534,13 @@ case 0:case 1:case 4:case 5:case 6:break;
 }
 M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)=a;
 if(a-11<=1){
-func_ov001_0217f4e0();
+MapList_UploadSubScreenIcon();
 if(IsCurrentSaveSlotValid()==0){
 Ov001_PlaySound(9);Ov001_ShowMessage(6,1,1,-1,0);Ov001_SetStepCallback((M2C_UNK *)MapList_DismissMessage);return;
 }
 if(a==11)Ov001_PlaySound(6);else Ov001_PlaySound(14);
-}else if(a==13){func_ov001_0217f4e0();Ov001_PlaySound(7);}
-else {Ov001_PlaySound(6);func_ov001_0217e67c(0,1,GetMapListScreenRow(data_ov001_0218f9bc[a]));MapListUpdateRowSprites();}
+}else if(a==13){MapList_UploadSubScreenIcon();Ov001_PlaySound(7);}
+else {Ov001_PlaySound(6);func_ov001_0217e67c(0,1,GetMapListScreenRow(gMapListChoiceRow[a]));MapListUpdateRowSprites();}
 Ov001_BlockScrollBar();Ov001_SetStepCallback((M2C_UNK *)func_ov001_0217ded8);
 }
 

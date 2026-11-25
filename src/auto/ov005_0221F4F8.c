@@ -326,13 +326,20 @@ M2C_UNK **ResultSpark_Destroy(M2C_UNK **spark) {
     return spark;
 }
 
-void *func_ov005_0221ff38(void *arg0) {
+/* Deleting destructor of the result slide object: restore its vtable, drop
+ * the child count of the owner sprite it was created for, then free it. */
+void *ResultSlide_Delete(void *slide) {
     M2C_UNK DecrementSpriteChildCount();
     extern M2C_UNK gResultSlideSpriteVtbl;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gResultSlideSpriteVtbl;
-    if (M2C_FIELD(arg0, s32 *, 0x38) != 0) DecrementSpriteChildCount();
-    MemFree(arg0);
-    return arg0;
+    void *owner;
+
+    M2C_FIELD(slide, M2C_UNK **, DS3D_SPRITE_CLASS) = &gResultSlideSpriteVtbl;
+    owner = M2C_FIELD(slide, void **, RESULT_SLIDE_OWNER);
+    if (owner != 0) {
+        DecrementSpriteChildCount(owner);
+    }
+    MemFree(slide);
+    return slide;
 }
 
 void *func_ov005_0221ff6c(void *arg0) {

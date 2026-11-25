@@ -172,12 +172,12 @@ void ReceiveWfcHttpResponse(void) {
 /* Parses the server's RFC-1123 Date header and records the local clock, the
  * server time and their difference in the server-time sync record. */
 s32 ParseHttpDate(const char *text){
-s32 StringLength(M2C_UNK *);s32 GetLocalTime(void *,void *);s64 MakeTime(void *,void *);void StringCopy(void *,const char *);s32 ParseInt();s32 StringCompare(void *,void *);
+s32 StringLength(M2C_UNK *);s32 GetRtcDateTime(void *,void *);s64 MakeTime(void *,void *);void StringCopy(void *,const char *);s32 ParseInt();s32 StringCompare(void *,void *);
 extern M2C_UNK gHttpDateTemplate,gServerTimeSync;extern s32 gErrno;extern char *gMonthNames[];
 s32 date[4],time[3];char buf[32];s64 now,serverTime;s32 i,n;
 n=StringLength((M2C_UNK *)text);
 if(n!=StringLength(&gHttpDateTemplate)||text[HTTP_DATE_DAY_SPACE]!=32||text[HTTP_DATE_MONTH_SPACE]!=32||text[HTTP_DATE_YEAR_SPACE]!=32||text[HTTP_DATE_HOUR_COLON]!=58||text[HTTP_DATE_MIN_COLON]!=58||text[HTTP_DATE_TZ_SPACE]!=32)goto fail;
-if(GetLocalTime(date,time))goto fail;
+if(GetRtcDateTime(date,time))goto fail;
 now=MakeTime(date,time);if(now==-1)goto fail;
 StringCopy(buf,text);buf[7]=0;buf[11]=0;buf[16]=0;buf[19]=0;buf[22]=0;buf[25]=0;
 gErrno=0;date[0]=ParseInt(buf+12);if(gErrno==34)goto fail;date[0]-=2000;
@@ -196,10 +196,10 @@ fail:return 0;
  * profile, then uploads the region, type and tab-separated player-name
  * parameters. Returns 1 on success, 0 on failure. */
 M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOut,s32 countOut,s8 *region) {
- s32 func_0206cd90();void func_0206cdac();void MI_CpuFill8();M2C_UNK HeapAlloc();M2C_UNK HeapFree();void StringCopyPad();void *StringFind();void MI_CpuCopy8();s32 HttpClientInit();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 HttpBufferAppendString();s32 HttpAppendConnectionHeaders();s32 GetThreadPriority();void HttpClientStartTask();M2C_UNK HttpClientCleanup(void *);void func_020371f4();void func_02037204();
+ s32 StringLengthWide();void StringCopyWide();void MI_CpuFill8();M2C_UNK HeapAlloc();M2C_UNK HeapFree();void StringCopyPad();void *StringFind();void MI_CpuCopy8();s32 HttpClientInit();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 HttpBufferAppendString();s32 HttpAppendConnectionHeaders();s32 GetThreadPriority();void HttpClientStartTask();M2C_UNK HttpClientCleanup(void *);void func_020371f4();void func_02037204();
  s32 options[7];u8 work[0x94];s32 totalLen,i,pos,n;u16 *namesBuf=0;void *p;
  if(!names||count<=0||count>50||!flagsOut||!countOut)return 0;
- totalLen=0;for(i=0;i<count;i++)totalLen+=func_0206cd90(((s32 *)names)[i])+1;
+ totalLen=0;for(i=0;i<count;i++)totalLen+=StringLengthWide(((s32 *)names)[i])+1;
  if(totalLen-1<=0||totalLen-1>500)return 0;
  if(gWfcMatchSession)return 0;
  MI_CpuFill8(flagsOut,0,count);
@@ -228,7 +228,7 @@ M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOu
  if(HttpBufferAppendString(gWfcMatchSession,sWfcTypeQuery))goto fail;
  namesBuf=(u16 *)HeapAlloc(0,totalLen*2);
  if(!namesBuf)goto fail;
- pos=0;for(i=0;i<count;i++){func_0206cdac(namesBuf+pos,((s32 *)names)[i]);n=pos+func_0206cd90(((s32 *)names)[i]);if(n>=totalLen-1)break;namesBuf[n]=9;pos=n+1;}
+ pos=0;for(i=0;i<count;i++){StringCopyWide(namesBuf+pos,((s32 *)names)[i]);n=pos+StringLengthWide(((s32 *)names)[i]);if(n>=totalLen-1)break;namesBuf[n]=9;pos=n+1;}
  if(func_020346d0(gWfcMatchSession,sWfcParamWords,namesBuf,(totalLen-1)*2))goto fail;
  HeapFree(0,namesBuf,0);namesBuf=0;
  if(HttpAppendConnectionHeaders(gWfcMatchSession))goto fail;

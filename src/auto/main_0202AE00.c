@@ -36,7 +36,7 @@ void Sound_InitVoices(void) {
     }
 }
 
-/* Per-frame driver voice update (func_0202a9f0): start each pending voice once
+/* Per-frame driver voice update (Sound_UpdateDriver): start each pending voice once
  * its start command has been processed by the ARM7, drop voices whose hardware
  * channel the ARM7 no longer reports, fold the channel, voice and envelope levels
  * into each voice's channel volume and release the voices whose fade-out ended. */
@@ -390,11 +390,11 @@ s32 Sound_AssignPlayerChannels(void *player, s32 count, u8 *channels) {
 }
 
 void Sound_StopVoices(void *arg0) {
-    M2C_UNK func_0202aaac();
+    M2C_UNK Sound_ReleaseChannels();
     if (M2C_FIELD(arg0, s32 *, 0x44) == 0) {
         return;
     }
-    func_0202aaac();
+    Sound_ReleaseChannels();
     M2C_FIELD(arg0, s32 *, 0x44) = 0;
     M2C_FIELD(arg0, s32 *, 0x48) = 0;
 }
@@ -535,12 +535,15 @@ r=SND_CalcVolume(M2C_FIELD(a,s32 *,60)+c);
 func_02008dfc(1<<b,(u8)r,(s32)r>>8);
 }
 #pragma opt_common_subs on
-void Sound_SetChannelVolume(void *arg0, s32 arg1, M2C_UNK arg2) {
-    M2C_UNK func_02008e24(s32, M2C_UNK);
-    if (arg1 > (s32) (M2C_FIELD(arg0, s32 *, 0x48) - 1)) {
+/* Set the volume of the hardware channel that the sound player maps note `note`
+ * to: do nothing when the note index is past the player's note count, otherwise
+ * send the ARM7 the volume for the channel selected by the note's id. */
+void Sound_SetChannelVolume(void *player, s32 note, M2C_UNK volume) {
+    M2C_UNK Sound_SetHwChannelVolume(s32, M2C_UNK);
+    if (note > (s32) (M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_COUNT) - 1)) {
         return;
     }
-    func_02008e24(1 << M2C_FIELD((arg0 + arg1), u8 *, 0x4C), arg2);
+    Sound_SetHwChannelVolume(1 << M2C_FIELD((player + note), u8 *, SOUND_PLAYER_NOTES), volume);
 }
 
 /* Stops an active voice, unregisters its sleep hooks and waits for ARM7 before unlinking it. */
@@ -566,13 +569,15 @@ void Sound_StopVoice(void *player) {
     Sound_UnlinkPlayingVoice(player);
 }
 
-void Sound_UnlinkPlayingVoice(void *arg0) {
+/* Detach a player's voice from the sound driver: free the hardware channel it was
+ * allocated, drop it from the playing-voice list and clear its playing flag. */
+void Sound_UnlinkPlayingVoice(void *player) {
     M2C_UNK ListRemove(M2C_UNK *, void *);
-    M2C_UNK func_0202ab40(s32);
+    M2C_UNK Sound_FreeChannel(s32);
     extern M2C_UNK gPlayingVoices;
-    func_0202ab40(M2C_FIELD(arg0, s32 *, 0x40));
-    ListRemove(&gPlayingVoices, arg0);
-    M2C_FIELD(arg0, s32 *, 0x24) = (s32) (M2C_FIELD(arg0, s32 *, 0x24) & ~1);
+    Sound_FreeChannel(M2C_FIELD(player, s32 *, SOUND_PLAYER_HW_CHANNEL));
+    ListRemove(&gPlayingVoices, player);
+    M2C_FIELD(player, s32 *, SOUND_PLAYER_FLAGS) = (s32)(M2C_FIELD(player, s32 *, SOUND_PLAYER_FLAGS) & ~SOUND_PLAYER_FLAG_PLAYING);
 }
 
 void Sound_AdvanceVoice(M2C_UNK arg0) {
@@ -677,7 +682,7 @@ void UpdateStreamVoiceVolume(void){
  * voice. */
 void StopStreamVoice(void) {
 extern M2C_UNK gStreamSoundState,gStreamVoice,gSoundCommandQueue;
-s32 OS_ReceiveMessage(); M2C_UNK func_0202aadc(); M2C_UNK func_0202aaac(); M2C_UNK func_0202ab40(s32); M2C_UNK func_02008f10();
+s32 OS_ReceiveMessage(); M2C_UNK func_0202aadc(); M2C_UNK Sound_ReleaseChannels(); M2C_UNK Sound_FreeChannel(s32); M2C_UNK func_02008f10();
 s32 Sound_GetCommandCounter(); M2C_UNK Sound_FlushCommands(M2C_UNK); M2C_UNK Sound_WaitForCommand(s32);
 void *voice=&gStreamVoice; s32 channelUsed,mark;
 if(!M2C_FIELD(&gStreamSoundState,s32 *,STREAM_STATE_VOICE))return;
@@ -685,8 +690,8 @@ channelUsed=M2C_FIELD(voice,s32 *,STREAM_VOICE_CHANNEL)>=0;
 Sound_StopChannels(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_A),M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_B),channelUsed?1<<M2C_FIELD(voice,s32 *,STREAM_VOICE_CHANNEL):0,0);
 if(channelUsed){mark=Sound_GetCommandCounter();Sound_FlushCommands(1);Sound_WaitForCommand(mark);while(OS_ReceiveMessage(&gSoundCommandQueue,0,0)){}}
 if(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_B))func_0202aadc(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_B));
-if(M2C_FIELD(voice,s32 *,STREAM_VOICE_RESERVED))func_0202aaac(M2C_FIELD(voice,s32 *,STREAM_VOICE_RESERVED));
-if(channelUsed)func_0202ab40(M2C_FIELD(voice,s32 *,STREAM_VOICE_CHANNEL));
+if(M2C_FIELD(voice,s32 *,STREAM_VOICE_RESERVED))Sound_ReleaseChannels(M2C_FIELD(voice,s32 *,STREAM_VOICE_RESERVED));
+if(channelUsed)Sound_FreeChannel(M2C_FIELD(voice,s32 *,STREAM_VOICE_CHANNEL));
 if(M2C_FIELD(voice,s32 *,STREAM_VOICE_ENDED)==1)func_02008f10(0,0,0,0);
 M2C_FIELD(voice,s32 *,STREAM_VOICE_ACTIVE)=0;
 }

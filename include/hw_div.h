@@ -11,6 +11,9 @@
 #define REG_DIV_DENOM   (*(volatile s64 *)0x04000298)
 #define REG_DIV_RESULT  (*(volatile s32 *)0x040002A0)
 #define REG_DIVREM_RESULT (*(volatile s32 *)0x040002A8)
+/* The 32-bit quotient and remainder read together as one 64-bit value (the
+ * matrix code does this when it scales a quotient before splitting it). */
+#define REG_DIV_RESULT64 (*(volatile u64 *)0x040002A0)
 #define DIVCNT_BUSY     0x8000
 
 #endif

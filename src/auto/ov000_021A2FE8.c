@@ -113,14 +113,17 @@ M2C_FIELD(&gAiCommand,u8 *,AI_COMMAND_UNIT)=13;
 CommitAiAction(targetIndex);return 1;
 }
 
-u8 IsKind24TerrainPassable(s32 a) {
-extern M2C_UNK gUnitKindStats;
-extern M2C_UNK gMovementCostTable;
-u8 result;
-u32 row = M2C_FIELD(&gUnitKindStats,u8 *,0xa92);
-s8 *table = M2C_FIELD(&gMovementCostTable, s8 **, 0x64) + row*32;
-if (table[a&31] > 0) result=1; else result=0;
-return result;
+/* Whether unit kind 24 can enter terrain type `terrain`: look up the kind's
+ * movement type, then that type's row in the army's movement-cost table, and
+ * require a positive cost. */
+u8 IsKind24TerrainPassable(s32 terrain) {
+    extern M2C_UNK gUnitKindStats;
+    extern M2C_UNK gMovementCostTable;
+    u8 result;
+    u32 row = M2C_FIELD(&gUnitKindStats, u8 *, 24 * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_MOVETYPE);
+    s8 *table = M2C_FIELD(&gMovementCostTable, s8 **, ARMY_DATA_MOVE_COSTS) + row * 32;
+    if (table[terrain & MAP_TERRAIN_KIND_MASK] > 0) result = 1; else result = 0;
+    return result;
 }
 
 #pragma push

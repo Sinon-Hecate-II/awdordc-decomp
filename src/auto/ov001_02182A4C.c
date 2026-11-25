@@ -28,12 +28,16 @@ void func_ov001_02182a88(void) {}
 
 void func_ov001_02182a8c(void) {}
 
+/* Save-slot menu fade-out step: wait until the region menu has fully closed, then
+ * fade the main screen out to white over its BG2 and OBJ planes and hand over to
+ * the step that reveals the Wi-Fi connection screen.  Idle while the region menu
+ * is still open. */
 void Ov001_FadeOutSaveSlotMenu(void) {
     s32 Ov001_IsRegionMenuActive();
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void Ov001_WaitWfcConnectFadeOut(void);
     if (Ov001_IsRegionMenuActive() != 0) return;
-    Ov001_StartFade(3, 0, 0x14, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitWfcConnectFadeOut);
 }
 
@@ -85,10 +89,17 @@ void Ov001_LoadWfcConnectDoneBg(void) {
     REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
+/* Fade the Wi-Fi connection-complete message in from white, showing the main
+ * screen's BG0/BG2 and sprite planes, then hand over to the step that waits for
+ * the fade to finish. */
 void Ov001_FadeInWfcConnectDoneScreen(void) {
-M2C_UNK Ov001_StartFade(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
-M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK,M2C_UNK);void Ov001_WaitWfcConnectDoneFadeIn(void);
-Ov001_StartFade(2,0,0x15,8);Ov001_EnableVisiblePlanes(0,0x15);Ov001_SetStepCallback((M2C_UNK*)&Ov001_WaitWfcConnectDoneFadeIn);
+    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
+    void Ov001_WaitWfcConnectDoneFadeIn(void);
+
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitWfcConnectDoneFadeIn);
 }
 
 void Ov001_WaitWfcConnectDoneFadeIn(void) {
@@ -125,7 +136,7 @@ void Ov001_CloseWfcConnectDoneScreen(void) {
 
 void Ov001_CloseSaveNameEntry(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
-    M2C_UNK Ov001_FreeOptionBackground(void);
+    M2C_UNK Ov001_FreeMessagePanel(void);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
@@ -136,7 +147,7 @@ void Ov001_CloseSaveNameEntry(void) {
     if (Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsFadeActive(0) != 0) return;
     Ov001_FreePageBackground(0);
-    Ov001_FreeOptionBackground();
+    Ov001_FreeMessagePanel();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
     Ov001_SetNextScreenMode(0, 0);
@@ -144,10 +155,13 @@ void Ov001_CloseSaveNameEntry(void) {
     Ov001_SetStepCallback(&Ov001_PrepareSaveSlotMenu);
 }
 #pragma pop
+/* Count the ticks the ov001 Wi-Fi connection-complete screen has waited: once
+ * the message has been up for OV001_WFC_CONNECT_DONE_FRAMES, hand over to the
+ * step that fades the screen out to white. */
 void Ov001_TickWfcConnectDoneDelay(void) {
     extern u8 gOv001WfcConnectDoneFrames;
     gOv001WfcConnectDoneFrames = gOv001WfcConnectDoneFrames + 1;
-    if ((u32)gOv001WfcConnectDoneFrames < 120U) return;
+    if ((u32)gOv001WfcConnectDoneFrames < OV001_WFC_CONNECT_DONE_FRAMES) return;
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_CloseWfcConnectDoneScreen);
 }
 
@@ -306,7 +320,7 @@ void Ov001_StartCloseWfcMenu(void) {
  * connect to Nintendo WFC. */
 void Ov001_CloseWfcMenuScreen(void) {
     s32 Ov001_IsIconRowIdle();
-    M2C_UNK Ov001_FreeOptionBackground();
+    M2C_UNK Ov001_FreeMessagePanel();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
@@ -320,7 +334,7 @@ void Ov001_CloseWfcMenuScreen(void) {
     if (Ov001_IsIconRowIdle() == 0) return;
     Ov001_FreePageBackground(0);
     if (gOv001WfcConnectChosen == 0) {
-        Ov001_FreeOptionBackground();
+        Ov001_FreeMessagePanel();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
@@ -359,7 +373,7 @@ void Ov001_OpenUsbConnectScreen(void) {
     M2C_UNK Ov001_ConnectToWfcServer(M2C_UNK *);
     extern u8 gOv001WfcScreenState;
     extern M2C_UNK Ov001_HandleConnectionStatus;
-    extern M2C_UNK func_ov001_021831f4;
+    extern M2C_UNK Ov001_FadeInUsbConnectScreen;
     u8 nameBuffer[0x6C];
 
     gOv001WfcScreenState = 0;
@@ -373,7 +387,7 @@ void Ov001_OpenUsbConnectScreen(void) {
     Ov001_CreateAnimSprite(0);
     Ov001_ConnectToWfcServer((M2C_UNK *) &Ov001_HandleConnectionStatus);
     Ov001_PlaySound(0xB);
-    Ov001_SetStepCallback(&func_ov001_021831f4);
+    Ov001_SetStepCallback(&Ov001_FadeInUsbConnectScreen);
 }
 
 /* Loads the background of the screen that connects to WFC through the Nintendo
@@ -394,17 +408,20 @@ void Ov001_LoadUsbConnectBg(void) {
     REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
-void func_ov001_021831f4(void) {
+/* Fade in the Nintendo USB-connector WFC connect screen from white and show its
+ * planes (the main screen's BG0, BG2 and sprites), then hand over to the step
+ * that shows the screen's icon row. */
+void Ov001_FadeInUsbConnectScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    extern M2C_UNK func_ov001_02183228;
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_02183228);
+    extern M2C_UNK Ov001_UsbConnectFadeDone;
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
+    Ov001_SetStepCallback(&Ov001_UsbConnectFadeDone);
 }
 
-void func_ov001_02183228(void) {
+void Ov001_UsbConnectFadeDone(void) {
     M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
     extern M2C_UNK func_ov001_02183254;
     if (Ov001_IsFadeActive(0) != 0) {
@@ -502,7 +519,7 @@ void Ov001_StartConnectionFadeOut(void) {
 void Ov001_CloseConnectionScreen(void) {
     M2C_UNK Ov001_FreeOptionSprites(void);
     s32 Ov001_IsIconRowIdle(void);
-    M2C_UNK Ov001_FreeOptionBackground(void);
+    M2C_UNK Ov001_FreeMessagePanel(void);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_IsFadeActive(M2C_UNK);
@@ -527,7 +544,7 @@ void Ov001_CloseConnectionScreen(void) {
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
     if (gOv001WfcScreenState == 2 || gOv001WfcScreenState == 3) {
-        Ov001_FreeOptionBackground();
+        Ov001_FreeMessagePanel();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
@@ -729,14 +746,17 @@ Ov001_PostTaskMessage(1,a);
 }
 
 void Ov001_LoadMainPalette(s32 a){
-extern void *gOv001MapPreview;void func_ov001_02183878();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
+extern void *gOv001MapPreview;void Ov001_LoadMainPaletteTask();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
 M2C_FIELD(&gOv001MapPreview,s32 *,4)=a;
-Ov001_AddTask(1,func_ov001_02183878,0,0x78);
+Ov001_AddTask(1,Ov001_LoadMainPaletteTask,0,0x78);
 }
 
-void func_ov001_02183878(s32 a){
-extern void *gOv001MapPreview;
-CopyU16(M2C_FIELD(&gOv001MapPreview,s32 *,4),0x5000000,0x200);Ov001_PostTaskMessage(1,a);
+/* Task that copies the main palette set staged at gOv001MapPreview+4 into the
+ * main engine's palette RAM, then posts the task's done message. */
+void Ov001_LoadMainPaletteTask(s32 task) {
+    extern void *gOv001MapPreview;
+    CopyU16(M2C_FIELD(&gOv001MapPreview, s32 *, 4), GX_MAIN_PALETTE_BASE, GX_PALETTE_SIZE / 2);
+    Ov001_PostTaskMessage(1, task);
 }
 
 /* Build the ov001 friend-roster screen's vertical scroll bar: allocate its

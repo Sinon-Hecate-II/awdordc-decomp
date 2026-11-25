@@ -97,15 +97,18 @@ for(i=0;i<6;i++) {
     return self;
 }
 
-void *func_ov003_0220f080(void *arg0) {
+/* Non-deleting destructor of a generic scroll bar: restore the bar's vtable and
+ * delete the thumb it owns through the thumb's own deleting destructor
+ * (vtable[1]), leaving the bar itself to the caller. */
+void *ScrollBar_Destroy(void *bar) {
     extern M2C_UNK gScrollBarVTable;
-    void **temp_r0;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gScrollBarVTable;
-    temp_r0 = M2C_FIELD(arg0, void ***, 0x1C);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(*temp_r0, void (**)(void *), 4)(temp_r0);
+    void **thumb;
+    M2C_FIELD(bar, M2C_UNK **, 0) = &gScrollBarVTable;
+    thumb = M2C_FIELD(bar, void ***, SCROLLBAR_THUMB);
+    if (thumb != NULL) {
+        M2C_FIELD(*thumb, void (**)(void *), 4)(thumb);
     }
-    return arg0;
+    return bar;
 }
 
 void func_ov003_0220f0b4(void) {

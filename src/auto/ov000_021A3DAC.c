@@ -336,17 +336,19 @@ s32 IsUnitKindRatioSatisfied(s32 mode, s32 kind) {
     return 1;
 }
 
-u8 IsGroupIndirectUnitRatioOk(s32 arg0) {
+/* Army-composition gate for an AI target group building an indirect-attack unit:
+ * the group's direct units may be at most three times its indirect units. */
+u8 IsGroupIndirectUnitRatioOk(s32 groupIndex) {
     extern u8 gAiGroupDirectUnits[];
     extern u8 gAiGroupIndirectUnits[];
-    u8 var_r0;
+    u8 ok;
 
-    if (gAiGroupDirectUnits[arg0 * 8] <= gAiGroupIndirectUnits[arg0 * 8] * 3) {
-        var_r0 = 1;
+    if (gAiGroupDirectUnits[groupIndex * AI_GROUP_STRIDE] <= gAiGroupIndirectUnits[groupIndex * AI_GROUP_STRIDE] * 3) {
+        ok = 1;
     } else {
-        var_r0 = 0;
+        ok = 0;
     }
-    return var_r0;
+    return ok;
 }
 
 u8 IsGroupSubmarineRatioOk(s32 arg0) {

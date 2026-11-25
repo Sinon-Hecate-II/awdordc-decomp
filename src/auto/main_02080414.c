@@ -77,15 +77,17 @@ void Set3DSpriteOffset(s16 target, u16 scale, s32 x, s32 y) {
     }
 }
 
-void func_0208066c(void *arg0) {
+void Clear3DSpriteOffset(void *arg0) {
     void Set3DSpriteOffset(s16, u16, M2C_UNK, M2C_UNK);
     Set3DSpriteOffset(M2C_FIELD(arg0, s16 *, 0x50), M2C_FIELD(arg0, u16 *, 0x52), 0, 0);
 }
 
-void func_0208068c(void *arg0) {
-    Set3DSpriteOffset(M2C_FIELD(arg0, s16 *, 0x50), M2C_FIELD(arg0, u16 *, 0x52), 0, 0);
-    M2C_FIELD(arg0, s32 *, 0x5C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x60) = 0;
+/* Zero the engine offsets a screen-offset track drives and rewind it: its path
+ * starts again at the first point with no points shown yet. */
+void Reset3DSpriteOffsetTrack(DS3DSpriteOffsetTrack *track) {
+    Set3DSpriteOffset(track->target, track->scale, 0, 0);
+    track->index = 0;
+    track->elapsed = 0;
 }
 
 /* Update callback of a screen-offset track sprite: move the tracked engine
@@ -244,15 +246,17 @@ void func_02080b38(u16 *p,u32 w,s32 h){
  }
 }
 
-void func_02080bd4(void) {
-    M2C_UNK func_0200b74c(M2C_UNK);
-    s32 func_0200beec(s32, s32);
+/* Mount the card archive if needed, then move its FAT/FNT index tables into a
+ * heap block: ask for the aligned size, allocate it, load the tables there. */
+void LoadCardArchiveIndexToHeap(void) {
+    M2C_UNK InitCardArchiveOnce(M2C_UNK);
+    s32 LoadCardArchiveIndex(s32, s32);
     s32 HeapAllocBlock();
-    s32 temp_r4;
+    s32 indexSize;
 
-    func_0200b74c(-1);
-    temp_r4 = func_0200beec(0, 0);
-    func_0200beec(HeapAllocBlock(), temp_r4);
+    InitCardArchiveOnce(-1);
+    indexSize = LoadCardArchiveIndex(0, 0);
+    LoadCardArchiveIndex(HeapAllocBlock(), indexSize);
 }
 
 /* Return the size in bytes of the file at `path`, or 0 when it cannot be

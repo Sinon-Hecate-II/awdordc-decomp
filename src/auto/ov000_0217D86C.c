@@ -12,7 +12,7 @@ s32 func_ov000_0217d86c(void) {
     extern void *gAiCommandState;
     extern u8 gUnitKindFlags[];
     s32 GetUnitAttackClass(void);
-    s32 func_ov000_021a9014(s32);
+    s32 IsCapturablePropertyTerrain(s32);
     s32 IsCurrentPlayerUnit(s16);
     s32 IsFootUnitKind(s32);
     void FloodFillUnitRange(s32,s32,s32,s32,s32);
@@ -61,7 +61,7 @@ s32 func_ov000_0217d86c(void) {
             if (rowp[x] < 0) continue;
             rowoff = M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758);
             tile = M2C_FIELD((u8 *)*gCurrentMap + x + rowoff, u8 *, 0x1420);
-            if (func_ov000_021a9014(tile)) {
+            if (IsCapturablePropertyTerrain(tile)) {
                 tile = M2C_FIELD((u8 *)*gCurrentMap + x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x1420);
             team = M2C_FIELD(*gCurrentMap, u16 *, 0x52a6);
             if (team != (tile & 0xe0)) continue;

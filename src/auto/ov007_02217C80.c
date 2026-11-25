@@ -18,16 +18,16 @@ static inline MenuList007 *InitMenuList007(MenuList007 *p, s32 count) {
 
 
 s32 func_ov007_02217c80(void *arg0) {
-    s32 func_ov007_02217c50(void *);
+    s32 MapEditor_GetPageOwnerColorCount(void *);
     s32 result = M2C_FIELD(arg0 + M2C_FIELD(arg0, u8 *, 0x37), u8 *, 0x38) + 1;
-    if (result >= func_ov007_02217c50(arg0)) result = 0;
+    if (result >= MapEditor_GetPageOwnerColorCount(arg0)) result = 0;
     return result;
 }
 
 s32 func_ov007_02217ca8(void *arg0) {
-    s32 func_ov007_02217c50(void *);
+    s32 MapEditor_GetPageOwnerColorCount(void *);
     s32 result = M2C_FIELD(arg0 + M2C_FIELD(arg0, u8 *, 0x37), u8 *, 0x38) - 1;
-    if (result < 0) result = func_ov007_02217c50(arg0) - 1;
+    if (result < 0) result = MapEditor_GetPageOwnerColorCount(arg0) - 1;
     return result;
 }
 
@@ -156,7 +156,7 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
-    M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
+    M2C_UNK SpriteCellListSetCellRect(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_02089424();
@@ -174,7 +174,7 @@ void func_ov007_02217f8c(void *arg0) {
     s32 GetMapEditorTerrainKind();
     M2C_UNK GetMapEditorTerrainOwner();
     s8 MapEditor_FindPaletteEntryIndex(M2C_UNK, s32);
-    s8 func_ov007_02217c1c();
+    s8 MapEditor_GetOwnerColorIndex();
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov007_02220030;
@@ -235,9 +235,9 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x3A) = MapEditor_FindPaletteEntryIndex(0, GetMapEditorTerrainKind());
     M2C_FIELD(arg0, s8 *, 0x3B) = MapEditor_FindPaletteEntryIndex(1, GetMapEditorUnitKind());
     GetMapEditorTerrainOwner();
-    M2C_FIELD(arg0, s8 *, 0x38) = func_ov007_02217c1c();
+    M2C_FIELD(arg0, s8 *, 0x38) = MapEditor_GetOwnerColorIndex();
     GetMapEditorUnitOwner();
-    M2C_FIELD(arg0, s8 *, 0x39) = func_ov007_02217c1c();
+    M2C_FIELD(arg0, s8 *, 0x39) = MapEditor_GetOwnerColorIndex();
     M2C_FIELD(arg0, s16 *, 0x3C) = 0;
     M2C_FIELD(arg0, s16 *, 0x3E) = 0;
     M2C_FIELD(arg0, s16 *, 0x40) = 0;
@@ -260,7 +260,7 @@ void func_ov007_02217f8c(void *arg0) {
         temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
         temp_r9 = GetUnitSpriteWidth(temp_r6);
         height = GetUnitSpriteHeight(temp_r6);
-        func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
     }
     CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x44), 1);
     M2C_FIELD(arg0, void **, 0x48) = CreateUnitSprite(arg0);
@@ -277,7 +277,7 @@ void func_ov007_02217f8c(void *arg0) {
         temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
         temp_r9 = GetUnitSpriteWidth(temp_r6);
         height = GetUnitSpriteHeight(temp_r6);
-        func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
     }
     CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x48), 2);
     M2C_FIELD(arg0, void **, 0x4C) = CreateUnitSprite(arg0);
@@ -294,7 +294,7 @@ void func_ov007_02217f8c(void *arg0) {
         temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
         temp_r9 = GetUnitSpriteWidth(temp_r6);
         height = GetUnitSpriteHeight(temp_r6);
-        func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
     }
     CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x4C), 0x304);
     SetFileDirectory(&data_ov007_02220030);
@@ -413,7 +413,7 @@ void MapEditor_ApplyPaletteSelection(void *editor) {
 void func_ov007_0221863c(void *arg0) {
     s8 *MapEditor_GetPaletteEntries(u8);
     M2C_UNK MapEditor_GetPaletteOwner(M2C_UNK, s32, u8);
-    s32 func_ov007_02217c50(void *);
+    s32 MapEditor_GetPageOwnerColorCount(void *);
     void *MemAlloc(s32);
     M2C_UNK MemFree(void *);
     M2C_UNK AddSpriteCell(M2C_UNK, s16, s16, s32, s32, s32, s32);
@@ -456,7 +456,7 @@ void func_ov007_0221863c(void *arg0) {
     M2C_FIELD(arg0, void **, 0x58) = node0;
 
     node1 = MemAlloc(0x24);
-    if(node1) InitMenuList007(node1,func_ov007_02217c50(arg0));
+    if(node1) InitMenuList007(node1,MapEditor_GetPageOwnerColorCount(arg0));
     M2C_FIELD(arg0, void **, 0x5C) = node1;
 
     savedEngine = gCur3DSpriteEngine;
@@ -511,12 +511,12 @@ void func_ov007_0221863c(void *arg0) {
     }
     }
     i=0;
-    if(func_ov007_02217c50(arg0)>0) {
+    if(MapEditor_GetPageOwnerColorCount(arg0)>0) {
         offset=8;
         do {
         AddSpriteCell((s32)M2C_FIELD(arg0,void **,0x5c),(s16)offset,140,16,16,(u16)i,14);
         i++;offset+=24;
-        } while(i<func_ov007_02217c50(arg0));
+        } while(i<MapEditor_GetPageOwnerColorCount(arg0));
     }
     }
     gCur3DSpriteEngine=savedEngine;

@@ -2,6 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ov000_unit_entry.h"
+#include "sound.h"
 typedef struct {u16 hp:7;u16 ammo:4;u16 flags:5;} DisplayHealth;
 typedef struct {u8 fuel:7;u8 flag:1;} DisplayFuel;
 extern void **gCurrentMap;
@@ -280,41 +281,54 @@ void ScrollListDrawTabs(ScrollList *list) {
     gCur3DSpriteEngine = saved;
 }
 
+/* Scroll the unit list up one row, unless it is already showing the first row;
+ * the move plays the menu-selection sound. */
 s32 ScrollListScrollUp(void *arg0) {
-    s16 temp_r1;
+    ScrollList *list = arg0;
+    s16 scrollPos;
 
-    temp_r1 = M2C_FIELD(arg0, s16 *, 0x3A);
-    if (temp_r1 == 0) {
+    scrollPos = list->scrollPos;
+    if (scrollPos == 0) {
         return 0;
     }
-    M2C_FIELD(arg0, s16 *, 0x3A) = (s16) (temp_r1 - 1);
-    PlaySoundEffect(0x10019);
+    list->scrollPos = (s16) (scrollPos - 1);
+    PlaySoundEffect(SOUND_MENU_SELECT);
     return 1;
 }
 
-s16 ScrollListPageUp(void *a) {
-s16 old=M2C_FIELD(a,s16 *,0x3a);
-M2C_FIELD(a,s16 *,0x3a)=old-6;
-if(M2C_FIELD(a,s16 *,0x3a)<0) M2C_FIELD(a,s16 *,0x3a)=0;
-return M2C_FIELD(a,s16 *,0x3a)-old;
+/* Page the unit list up one screenful, stopping at the first row; returns how
+ * many rows it moved (negative). */
+s16 ScrollListPageUp(ScrollList *list) {
+    s16 old = list->scrollPos;
+    list->scrollPos = old - SCROLL_LIST_VISIBLE_ROWS;
+    if (list->scrollPos < 0) list->scrollPos = 0;
+    return list->scrollPos - old;
 }
 
-s32 ScrollListScrollDown(void *arg0) {
-s16 n=M2C_FIELD(arg0,s16 *,0x3a);
-s32 next=n+6;
-if(next>=M2C_FIELD(arg0,s16 *,0x3c))return 0;
-M2C_FIELD(arg0,s16 *,0x3a)++;
-PlaySoundEffect(0x10019);
-return 1;
+/* Scroll the unit list down one row, unless the last row is already on screen;
+ * the move plays the selection sound. */
+s32 ScrollListScrollDown(ScrollList *list) {
+    s16 scrollPos = list->scrollPos;
+    s32 next = scrollPos + SCROLL_LIST_VISIBLE_ROWS;
+
+    if (next >= list->count) {
+        return 0;
+    }
+    list->scrollPos++;
+    PlaySoundEffect(SOUND_MENU_SELECT);
+    return 1;
 }
 
-s16 ScrollListPageDown(void *a) {
-s16 old=M2C_FIELD(a,s16 *,0x3a);
-s32 max;
-M2C_FIELD(a,s16 *,0x3a)=old+6;
-max=M2C_FIELD(a,s16 *,0x3c)-6;
-if(M2C_FIELD(a,s16 *,0x3a)>max) M2C_FIELD(a,s16 *,0x3a)=max;
-return M2C_FIELD(a,s16 *,0x3a)-old;
+/* Page the unit list down one screenful, stopping at the last page; returns how
+ * many rows it moved. */
+s16 ScrollListPageDown(ScrollList *list) {
+    s16 old = list->scrollPos;
+    s32 max;
+
+    list->scrollPos = old + SCROLL_LIST_VISIBLE_ROWS;
+    max = list->count - SCROLL_LIST_VISIBLE_ROWS;
+    if (list->scrollPos > max) list->scrollPos = (s16)max;
+    return list->scrollPos - old;
 }
 
 /* Step the map view to the tile of the unit the list's info panel shows (nothing

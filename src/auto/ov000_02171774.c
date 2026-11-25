@@ -19,7 +19,7 @@ void func_ov000_02171774(void *p) {
  extern u8 data_ov000_021b8d60[],data_ov000_021b8d68[],data_ov000_021b8d7c[],data_ov000_021b8d8c[],data_ov000_021b8d9c[],data_ov000_021b8dac[],data_ov000_021b8db4[],data_ov000_021b8dc4[],data_ov000_021b8dd4[],data_ov000_021b8de4[];
  void *GetLocalizedFileName(void*);void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);
  void SetFileDirectory(void*);void OpenNarcArchive(void*);void LoadNarcFileDecompressed(void*,void*);void LoadNarcFileToSpriteBuffer(void*,s32,s32);void CloseNarcArchive(void);
- s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void*,u16,s32);
+ s32 Get3DSpriteLayerSize(u8,s32);void OffsetTileIndices(void*,u16,s32);
  s32 IsPlayerPresent(s32);s32 IsPlayerActive(s32);void CopyTileRect(void*,s32,s32,void*);
  void MI_CpuCopy32(void*,void*,s32);void CopyToObjPaletteShadow(void*,s32,s32);void DimPalette(void*);
  void LoadSpriteResource(s32,s32,s32,void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void CreateMenuUnitSprite(void*);
@@ -33,7 +33,7 @@ void func_ov000_02171774(void *p) {
  LoadNarcFileToSpriteBuffer(GetLocalizedFileName(data_ov000_021b8d9c),96,32);
  CloseNarcArchive();
  {u16 v=Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,0)<<29)>>29),2);
- AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28),v,0x3000);}
+ OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28),v,0x3000);}
  i=1;k=140;do{
   if(IsPlayerPresent(i)){
    a=M2C_FIELD((u8*)*gCurrentMap+k,u8*,0x67cb);
@@ -192,7 +192,7 @@ q=(u8*)q+0x38;
 loop1:t=(u8*)p+(i<<2);i++;M2C_FIELD(t,s32 *,12)=9;if(i<4)goto loop1;
 k=0;loop2:t=(u8*)p+(k<<2);k++;M2C_FIELD(t,s32 *,0x1c)=0;if(k<8)goto loop2;
 }
-M2C_FIELD(arg0,void **,0x18)=p;func_ov000_02172754(arg0);return arg0;
+M2C_FIELD(arg0,void **,0x18)=p;Ov000_InfoPanel_UpdateData(arg0);return arg0;
 }
 #pragma opt_strength_reduction reset
 
@@ -235,14 +235,14 @@ void func_ov000_02172654(void *entry) {
     case 1:
         RemoveMapViewSprites(entry);
         ClearTileRect(M2C_FIELD(g3DSpriteEngineSub, void **, 0x24), 32, 32);
-        func_ov000_02173290(entry);
+        RedrawTerrainInfoPanel(entry);
         DrawMapInfoWindow(entry);
         M2C_FIELD(entry, s32 *, 8) = 0;
         M2C_FIELD(entry, s32 *, 12) = 0;
         M2C_FIELD(entry, s32 *, 4) = 0;
         break;
     case 2:
-        func_ov000_02173290(entry);
+        RedrawTerrainInfoPanel(entry);
         DrawMapInfoWindow(entry);
         M2C_FIELD(entry, s32 *, 8) = 0;
         M2C_FIELD(entry, s32 *, 12) = 0;
@@ -255,15 +255,15 @@ void func_ov000_02172654(void *entry) {
         func_ov000_02172dc0(entry);
     }
     func_ov000_02172e90(entry);
-    if (func_ov000_02172754(entry)) {
+    if (Ov000_InfoPanel_UpdateData(entry)) {
         M2C_FIELD(entry, s32 *, 4) = 1;
     }
 }
 
-void func_ov000_0217272c(void *arg0, s32 arg1) {
-    M2C_UNK func_ov000_02172754(void *);
+void Ov000_InfoPanel_SetTerrain(void *arg0, s32 arg1) {
+    M2C_UNK Ov000_InfoPanel_UpdateData(void *);
     *M2C_FIELD(arg0, s32 **, 0x18) = arg1;
-    func_ov000_02172754(arg0);
+    Ov000_InfoPanel_UpdateData(arg0);
     if (M2C_FIELD(arg0, s32 *, 4) == 0) {
         M2C_FIELD(arg0, s32 *, 4) = 1;
     }

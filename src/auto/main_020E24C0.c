@@ -2,7 +2,7 @@
 #include "common.h"
 typedef struct { u8 low:4; u8 high:4; } MenuNibble;
 typedef struct { u32 x:9; u32 y:9; u32 layer:8; u32 rest:6; } MenuSpriteFlags;
-extern M2C_UNK data_0212c6a8, data_0212d1e8, gSpriteDesc64x32, data_0212c5c4;
+extern M2C_UNK data_0212c6a8, gPlayerLabelVTable, gSpriteDesc64x32, data_0212c5c4;
 extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
 static inline void MenuSpriteOrigin(void *p,u16 x,u16 y) { M2C_FIELD(p,MenuSpriteFlags*,0x40).x=x; M2C_FIELD(p,MenuSpriteFlags*,0x40).y=y; }
 static inline void MenuSetFrame(void *p,u16 frame) { M2C_FIELD(p,u16*,0x3e)=frame; }
@@ -16,11 +16,11 @@ void func_020e24c0(s32 arg0) {
 void *CreateSpriteObject(void*,s32); void *MemAlloc(s32);
 void *CreateUnitSprite(s32); s32 InitUnitSprite(void*,s32,s32,u8,s32);
 s32 Set3DSpriteSlideTargetAndStart(void*,s16,s16,s16,s32); s32 GetUnitSpriteWidth(void*); s32 GetUnitSpriteHeight(void*);
-s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
-void *Create3DSprite(void*); void *func_0208bc24(void*); s32 SetSpriteText(void*,void*); s32 Hide3DSprite(void*); void AcquireUsernameFont(void);
+s32 SpriteCellListSetCellRect(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
+void *Create3DSprite(void*); void *CreateScrollingTextSprite(void*); s32 SetSpriteText(void*,void*); s32 Hide3DSprite(void*); void AcquireUsernameFont(void);
 void *obj=CreateSpriteObject(&data_0212c6a8,arg0); void *saved; void *p; void *q;
 if(!obj)return;
-M2C_FIELD(obj,void**,0)=&data_0212d1e8;
+M2C_FIELD(obj,void**,0)=&gPlayerLabelVTable;
 M2C_FIELD(obj,s32*,0x34)=2; M2C_FIELD(obj,s32*,0x38)=0;M2C_FIELD(obj,s32*,0x3c)=0;
 M2C_FIELD(obj,u8*,0x40)=0;M2C_FIELD(obj,u8*,0x41)=0;M2C_FIELD(obj,u8*,0x42)=0;M2C_FIELD(obj,u8*,0x43)=4;M2C_FIELD(obj,u8*,0x44)=0;
 M2C_FIELD(obj,u16*,0x46)=0x3a8;M2C_FIELD(obj,u16*,0x48)=0;M2C_FIELD(obj,u16*,0x4a)=0;M2C_FIELD(obj,u16*,0x4c)=0x708;
@@ -35,7 +35,7 @@ M2C_FIELD(obj,void**,80)=CreateUnitSprite((s32)obj);
 InitUnitSprite(M2C_FIELD(obj,void**,80),0,832,3,1);
 p=M2C_FIELD(obj,void**,80);Set3DSpriteSlideTargetAndStart(p,192,160,192,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,80);M2C_FIELD(q,s16*,0x34)=192;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,80));
 q=M2C_FIELD(obj,void**,80);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|((u32)((u16)(M2C_FIELD(q,MenuNibble*,0x59).low+2)<<24)>>6);M2C_FIELD(q,u8*,0x5a)=0;
@@ -45,7 +45,7 @@ M2C_FIELD(obj,void**,84)=CreateUnitSprite((s32)obj);
 InitUnitSprite(M2C_FIELD(obj,void**,84),1,848,3,0);
 p=M2C_FIELD(obj,void**,84);Set3DSpriteSlideTargetAndStart(p,192,160,192,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,84);M2C_FIELD(q,s16*,0x34)=192;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,84));
 q=M2C_FIELD(obj,void**,84);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|((u32)((u16)(M2C_FIELD(q,MenuNibble*,0x59).low+2)<<24)>>6);M2C_FIELD(q,u8*,0x5a)=0;
@@ -55,7 +55,7 @@ M2C_FIELD(obj,void**,88)=CreateUnitSprite((s32)obj);
 InitUnitSprite(M2C_FIELD(obj,void**,88),2,864,3,0);
 p=M2C_FIELD(obj,void**,88);Set3DSpriteSlideTargetAndStart(p,224,160,224,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,88);M2C_FIELD(q,s16*,0x34)=224;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,88));
 
@@ -65,7 +65,7 @@ M2C_FIELD(obj,void**,92)=CreateUnitSprite((s32)obj);
 InitUnitSprite(M2C_FIELD(obj,void**,92),42,880,3,0);
 p=M2C_FIELD(obj,void**,92);Set3DSpriteSlideTargetAndStart(p,96,164,-159,164);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,92);M2C_FIELD(q,s16*,0x34)=-159;M2C_FIELD(q,s16*,0x36)=164;
 func_020aad18(M2C_FIELD(obj,void**,92));
 
@@ -79,7 +79,7 @@ M2C_FIELD(M2C_FIELD(obj,void**,0x60),u16*,0x3c)=0;
 q=M2C_FIELD(obj,void**,0x60);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|0x180000;
 M2C_FIELD(M2C_FIELD(obj,void**,0x60),u16*,0x3e)=0x388;M2C_FIELD(M2C_FIELD(obj,void**,0x60),void**,0x44)=&gSpriteDesc64x32;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-p=func_0208bc24(obj);M2C_FIELD(obj,void**,0x64)=p;M2C_FIELD(p,u16*,0x3e)=0x140;
+p=CreateScrollingTextSprite(obj);M2C_FIELD(obj,void**,0x64)=p;M2C_FIELD(p,u16*,0x3e)=0x140;
 q=M2C_FIELD(obj,void**,0x64);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|0x180000;
 SetSpriteText(M2C_FIELD(obj,void**,0x64),&data_0212c5c4);Hide3DSprite(M2C_FIELD(obj,void**,0x64));
 gCur3DSpriteEngine=saved;AcquireUsernameFont();
@@ -89,11 +89,11 @@ void func_020e2a2c(s32 arg0) {
 void *CreateSpriteObject(void*,s32); void *MemAlloc(s32);
 void *CreateUnitSprite(s32); s32 InitUnitSprite(void*,s32,s32,u8,s32);
 s32 Set3DSpriteSlideTargetAndStart(void*,s16,s16,s16,s32); s32 GetUnitSpriteWidth(void*); s32 GetUnitSpriteHeight(void*);
-s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
-void *Create3DSprite(void*); void *func_0208bc24(void*); s32 SetSpriteText(void*,void*); s32 Hide3DSprite(void*); void AcquireUsernameFont(void);
+s32 SpriteCellListSetCellRect(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
+void *Create3DSprite(void*); void *CreateScrollingTextSprite(void*); s32 SetSpriteText(void*,void*); s32 Hide3DSprite(void*); void AcquireUsernameFont(void);
 void *obj=CreateSpriteObject(&data_0212c6a8,arg0); void *p; void *q; void *saved;
 if(!obj)return;
-M2C_FIELD(obj,void**,0)=&data_0212d1e8;
+M2C_FIELD(obj,void**,0)=&gPlayerLabelVTable;
 M2C_FIELD(obj,s32*,0x34)=2; M2C_FIELD(obj,s32*,0x38)=1;M2C_FIELD(obj,s32*,0x3c)=0;
 M2C_FIELD(obj,u8*,0x40)=0;M2C_FIELD(obj,u8*,0x41)=0;M2C_FIELD(obj,u8*,0x42)=0;M2C_FIELD(obj,u8*,0x43)=4;M2C_FIELD(obj,u8*,0x44)=0;
 M2C_FIELD(obj,u16*,0x46)=0x3a8;M2C_FIELD(obj,u16*,0x48)=0;M2C_FIELD(obj,u16*,0x4a)=0;M2C_FIELD(obj,u16*,0x4c)=0x708;
@@ -108,7 +108,7 @@ M2C_FIELD(obj,void**,80)=CreateUnitSprite((s32)obj);
 InitUnitSprite(M2C_FIELD(obj,void**,80),0,832,3,1);
 p=M2C_FIELD(obj,void**,80);Set3DSpriteSlideTargetAndStart(p,192,160,192,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,80);M2C_FIELD(q,s16*,0x34)=192;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,80));
 q=M2C_FIELD(obj,void**,80);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|((u32)((u16)(M2C_FIELD(q,MenuNibble*,0x59).low+2)<<24)>>6);M2C_FIELD(q,u8*,0x5a)=0;
@@ -118,7 +118,7 @@ M2C_FIELD(obj,void**,84)=CreateUnitSprite((s32)obj);
 InitUnitSprite(M2C_FIELD(obj,void**,84),1,848,3,0);
 p=M2C_FIELD(obj,void**,84);Set3DSpriteSlideTargetAndStart(p,192,160,192,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,84);M2C_FIELD(q,s16*,0x34)=192;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,84));
 q=M2C_FIELD(obj,void**,84);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|((u32)((u16)(M2C_FIELD(q,MenuNibble*,0x59).low+2)<<24)>>6);M2C_FIELD(q,u8*,0x5a)=0;
@@ -128,7 +128,7 @@ M2C_FIELD(obj,void**,88)=CreateUnitSprite((s32)obj);
 InitUnitSprite(M2C_FIELD(obj,void**,88),2,864,3,0);
 p=M2C_FIELD(obj,void**,88);Set3DSpriteSlideTargetAndStart(p,224,160,224,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,88);M2C_FIELD(q,s16*,0x34)=224;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,88));
 
@@ -138,7 +138,7 @@ M2C_FIELD(obj,void**,92)=CreateUnitSprite((s32)obj);
 InitUnitSprite(M2C_FIELD(obj,void**,92),42,880,3,0);
 p=M2C_FIELD(obj,void**,92);Set3DSpriteSlideTargetAndStart(p,96,164,-159,164);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,92);M2C_FIELD(q,s16*,0x34)=-159;M2C_FIELD(q,s16*,0x36)=164;
 func_020aad18(M2C_FIELD(obj,void**,92));
 
@@ -152,33 +152,38 @@ M2C_FIELD(M2C_FIELD(obj,void**,0x60),u16*,0x3c)=0;
 q=M2C_FIELD(obj,void**,0x60);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|0x180000;
 M2C_FIELD(M2C_FIELD(obj,void**,0x60),u16*,0x3e)=0x388;M2C_FIELD(M2C_FIELD(obj,void**,0x60),void**,0x44)=&gSpriteDesc64x32;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-p=func_0208bc24(obj);M2C_FIELD(obj,void**,0x64)=p;M2C_FIELD(p,u16*,0x3e)=0x140;
+p=CreateScrollingTextSprite(obj);M2C_FIELD(obj,void**,0x64)=p;M2C_FIELD(p,u16*,0x3e)=0x140;
 q=M2C_FIELD(obj,void**,0x64);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|0x180000;
 SetSpriteText(M2C_FIELD(obj,void**,0x64),&data_0212c5c4);Hide3DSprite(M2C_FIELD(obj,void**,0x64));
 gCur3DSpriteEngine=saved;AcquireUsernameFont();
 }
 
-void *func_020e2f9c(void *arg0) {
- M2C_UNK MemFree();
- M2C_UNK ReleaseUsernameFont();
- extern M2C_UNK data_0212d1e8;
- M2C_FIELD(arg0,M2C_UNK **,0)=&data_0212d1e8;
- if(M2C_FIELD(arg0,void **,0x68)!=0)MemFree(M2C_FIELD(arg0,void **,0x68));
- ReleaseUsernameFont();
- MemFree(arg0);
- return arg0;
-}
-
-void *func_020e2fd4(void *arg0) {
+/* Deleting destructor of a scene player label: restore the class vtable, free
+ * the label's heap block, release the shared username font and free the object.
+ * (PlayerLabel_Destroy is the non-deleting twin.) */
+void *PlayerLabel_DestroyAndFree(void *label) {
     M2C_UNK MemFree();
     M2C_UNK ReleaseUsernameFont();
-    extern M2C_UNK data_0212d1e8;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_0212d1e8;
-    if (M2C_FIELD(arg0, s32 *, 0x68) != 0) {
-        MemFree();
+    extern M2C_UNK gPlayerLabelVTable;
+    M2C_FIELD(label, M2C_UNK **, PLAYER_LABEL_VTABLE) = &gPlayerLabelVTable;
+    if (M2C_FIELD(label, void **, PLAYER_LABEL_BUFFER) != 0) MemFree(M2C_FIELD(label, void **, PLAYER_LABEL_BUFFER));
+    ReleaseUsernameFont();
+    MemFree(label);
+    return label;
+}
+
+/* Non-deleting destructor of a scene player label: restore the class vtable,
+ * free the label's heap block and release the shared username font. */
+void *PlayerLabel_Destroy(void *label) {
+    M2C_UNK MemFree();
+    M2C_UNK ReleaseUsernameFont();
+    extern M2C_UNK gPlayerLabelVTable;
+    M2C_FIELD(label, M2C_UNK **, PLAYER_LABEL_VTABLE) = &gPlayerLabelVTable;
+    if (M2C_FIELD(label, void **, PLAYER_LABEL_BUFFER) != 0) {
+        MemFree(M2C_FIELD(label, void **, PLAYER_LABEL_BUFFER));
     }
     ReleaseUsernameFont();
-    return arg0;
+    return label;
 }
 
 void SetShogunInfoFileDirectory(void) {
@@ -187,18 +192,21 @@ void SetShogunInfoFileDirectory(void) {
     SetFileDirectory(&data_0212d678);
 }
 
-s32 GetNameFileForFace(s32 arg0) {
- extern u8 data_0212d600[];
- s32 i;
- u8 *p;
- p=data_0212d600;
- i=0;
- do {
- if(arg0==M2C_FIELD(p,s16*,0))return M2C_FIELD(p,s32*,4);
- i++;
- p+=8;
- }while(i<15);
- return 0;
+/* Returns the name-graphic file (.cg) of the CO whose face id is `faceId`, or
+ * NULL when no CO has that face. */
+s32 GetNameFileForFace(s32 faceId) {
+    extern FaceNameFile gShogunNameFiles[];
+    s32 i;
+    FaceNameFile *entry;
+
+    entry = gShogunNameFiles;
+    i = 0;
+    do {
+        if (faceId == entry->faceId) return (s32)entry->nameFile;
+        i++;
+        entry++;
+    } while (i < FACE_NAME_FILE_COUNT);
+    return 0;
 }
 
 M2C_UNK *func_020e304c(void) {
@@ -210,7 +218,7 @@ M2C_UNK *func_020e304c(void) {
  * style, clips and draws it, and stores it in *outSprite.  When `value` is not
  * -1 the sprite is also given that value to display. */
 void CreateMenuTextSprite(void **outSprite, s32 x, s32 y, M2C_UNK kind, s32 resourceId, u8 style, s32 value, s32 owner, u8 secondLayer) {
-    M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
+    M2C_UNK SpriteCellListSetCellRect(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Show3DSprite(void *);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, s16, s16, s16, s32);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, s32, u8, s32);
@@ -248,7 +256,7 @@ void CreateMenuTextSprite(void **outSprite, s32 x, s32 y, M2C_UNK kind, s32 reso
         fh1 = M2C_FIELD(sprite, s16 *, 0x52);
         fw1 = M2C_FIELD(sprite, s16 *, 0x50);
         fw = GetUnitSpriteWidth(sprite);
-        func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, fw1, fh1, (s32)(u16) fw, (s32)(u16) GetUnitSpriteHeight(sprite));
+        SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, fw1, fh1, (s32)(u16) fw, (s32)(u16) GetUnitSpriteHeight(sprite));
     }
     M2C_FIELD(sprite, s16 *, 0x34) = xPos;
     M2C_FIELD(sprite, s16 *, 0x36) = yPos;
@@ -261,7 +269,7 @@ void CreateMenuTextSprite(void **outSprite, s32 x, s32 y, M2C_UNK kind, s32 reso
         fh2 = M2C_FIELD(sprite, s16 *, 0x52);
         fw2 = M2C_FIELD(sprite, s16 *, 0x50);
         fw3 = GetUnitSpriteWidth(sprite);
-        func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, fw2, fh2, (s32)(u16) fw3, (s32)(u16) GetUnitSpriteHeight(sprite));
+        SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, fw2, fh2, (s32)(u16) fw3, (s32)(u16) GetUnitSpriteHeight(sprite));
     }
     Show3DSprite(*outSprite);
     func_020aad18(*outSprite);
@@ -276,7 +284,7 @@ u8 GetLanguage(void) {
     return gLanguage;
 }
 
-void func_020e31f0(s32 arg0) {
+void SetLanguage(s32 arg0) {
  extern u8 gLanguage;
  gLanguage=1;
  if(arg0==1 || arg0==2 || arg0==5)gLanguage=arg0;
@@ -325,14 +333,18 @@ M2C_UNK *GetLocalizedFileName(s32 fileName) {
     return &gLocalizedFileName;
 }
 
-M2C_UNK *GetLocalizedFileNameDefault(s32 arg0) {
- M2C_UNK *r;
- u8 old;
- old=((s32 (*)(void))GetLanguage)();
- if(old==0)func_020e31f0(1);
- r=GetLocalizedFileName(arg0);
- func_020e31f0(old);
- return r;
+/* Format the file name with the console's language prefix; while no language is
+ * set yet (LANGUAGE_UNSET) the English prefix is used, then the old language is
+ * restored. */
+M2C_UNK *GetLocalizedFileNameDefault(s32 fileName) {
+    M2C_UNK *localizedName;
+    u8 language;
+
+    language = ((s32 (*)(void))GetLanguage)();
+    if (language == LANGUAGE_UNSET) SetLanguage(LANGUAGE_ENGLISH);
+    localizedName = GetLocalizedFileName(fileName);
+    SetLanguage(language);
+    return localizedName;
 }
 
 void ClearNameGraphicFiles(void) {
@@ -363,14 +375,20 @@ void LoadNameGraphicFiles(void) {
  CloseNarcArchive();
 }
 
+/* Frees the five name/character graphics buffers loaded by LoadNameGraphicFiles
+ * (the two standalone .cg files and the terrain, unit and weapon name tables)
+ * and clears their slots. */
 void FreeNameGraphicFiles(void) {
- void HeapFreeBlock(s32);
- s32 i=0;
- do {
- if(gNameGraphicFiles[i]!=0)HeapFreeBlock(gNameGraphicFiles[i]);
- gNameGraphicFiles[i]=0;
- i++;
- }while(i<5);
+    void HeapFreeBlock(s32);
+    s32 file = 0;
+
+    do {
+        if (gNameGraphicFiles[file] != 0) {
+            HeapFreeBlock(gNameGraphicFiles[file]);
+        }
+        gNameGraphicFiles[file] = 0;
+        file++;
+    } while (file < 5);
 }
 
 s32 GetNameGraphicFile(s32 arg0) {

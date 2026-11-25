@@ -200,13 +200,16 @@ s32 ghiAppendCharToBuffer(s32 buffer, s32 c) {
     return ghiAppendDataToBuffer(buffer, (s32 *)&v, 1);
 }
 
-void AppendInt(s32 a,s32 b) {
-void StringFormat(void *,void *,s32);
-s32 ghiAppendDataToBuffer(s32,s32 *,s32,...);
-extern M2C_UNK data_020fcf80;
-s32 buf[4];
-StringFormat(buf,&data_020fcf80,b);
-ghiAppendDataToBuffer(a,buf,0);
+/* Append the decimal text of `value` to a GHI buffer: format it with "%d", then
+ * append the text (length 0 tells ghiAppendDataToBuffer to stop at the NUL). */
+void ghiAppendInt(s32 buffer, s32 value) {
+    void StringFormat(void *, void *, s32);
+    s32 ghiAppendDataToBuffer(s32, s32 *, s32, ...);
+    extern M2C_UNK gIntFormat;
+    s32 text[4];
+
+    StringFormat(text, &gIntFormat, value);
+    ghiAppendDataToBuffer(buffer, text, 0);
 }
 
 /* ghttp ghiResetBuffer: empty a GHIBuffer -- clear its used length and read

@@ -252,14 +252,20 @@ s32 FileStreamRead(void *stream, void *buffer, s32 length) {
     return result;
 }
 
-void StartDirectoryRead(void *arg0, s32 arg1) {
+/* Start reading directory `index`: point the request's directory block at its
+ * file, clear the record resolved so far, remember the index and run the
+ * directory-read command (2), whose caller waits for the result. */
+void StartDirectoryRead(void *requestArg, s32 index) {
     M2C_UNK ExecuteFileCommand(void *, M2C_UNK);
-    M2C_FIELD(arg0, s32 *, 0xC) = (s32) (M2C_FIELD(arg0, s32 *, 0xC) | 4);
-    M2C_FIELD(arg0, s32 *, 0x30) = (s32) M2C_FIELD(arg0, s32 *, 8);
-    M2C_FIELD(arg0, s32 *, 0x38) = 0;
-    M2C_FIELD(arg0, s16 *, 0x36) = 0;
-    M2C_FIELD(arg0, s16 *, 0x34) = arg1;
-    ExecuteFileCommand(arg0, 2);
+    FSFileRequest *request = (FSFileRequest *)requestArg;
+    FSDirectoryBlock *block = (FSDirectoryBlock *)((u8 *)request + FS_REQ_DIR_BLOCK);
+
+    request->flags |= FS_REQ_COMPLETED;
+    block->file = request->file;
+    block->nameOffset = 0;
+    block->firstFileId = 0;
+    block->index = (u16)index;
+    ExecuteFileCommand(request, 2);
 }
 
 void func_0200a380(void *p){

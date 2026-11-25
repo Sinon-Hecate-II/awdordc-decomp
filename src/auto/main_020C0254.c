@@ -13,11 +13,11 @@ typedef struct {
     u8 pad01[3];
     s32 (*getStatus)(void);           /* +0x04 returns the row's status byte (2 = hidden) */
     void (*drawIcon)(s32, u8, u8);    /* +0x08 draws the row's icon */
-    void (*field0C)(s32, u8, u8);     /* +0x0C */
+    void (*update)(s32, u8, u8);      /* +0x0C run every frame by the row's slot */
     void (*highlight)(s32, u8, u8);   /* +0x10 highlights the row in the sprite batch */
     u8 pad14[4];
     void (*action)(s32, u8, u8);      /* +0x18 the row's confirm action */
-    void (*field1C)(s32, u8, u8);     /* +0x1C */
+    void (*cancel)(s32, u8, u8);      /* +0x1C the row's cancel action */
     u8 pad20[4];
     u16 slot;                         /* +0x24 sprite-slot id of the row */
     u16 icon;                         /* +0x26 icon kind the row draws */
@@ -135,40 +135,55 @@ void HighlightListMenuRow(void *menu, s32 row) {
     highlight((s32)entry, row, M2C_FIELD(menu + row, u8 *, 0x38));
 }
 
-void DrawListMenuRowIcon(void *arg0, s32 arg1) {
-    s32 temp_r0;
-    void (*temp_r3)(s32, u8, u8);
-    temp_r0 = GetCarriedUnitListEntry(arg0, arg1);
-    temp_r3 = M2C_FIELD(temp_r0, void (**)(s32, u8, u8), 8);
-    if (temp_r3 == 0) return;
-    temp_r3(temp_r0, arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
+/* Draw the icon of carried-unit list row `row`: run the row's icon callback,
+ * when it has one, with the row's entry, its index and its status byte. */
+void DrawListMenuRowIcon(void *menu, s32 row) {
+    void (*drawIcon)(s32, u8, u8);
+    MenuRowC0634 *entry;
+
+    entry = (MenuRowC0634 *)GetCarriedUnitListEntry(menu, row);
+    drawIcon = entry->drawIcon;
+    if (drawIcon == NULL) return;
+    drawIcon((s32)entry, (u8)row, M2C_FIELD(menu + row, u8 *, 0x38));
 }
 
-void func_020c0454(void *arg0, s32 arg1) {
-    s32 temp_r0;
-    void (*temp_r3)(s32, u8, u8);
-    temp_r0 = GetCarriedUnitListEntry(arg0, arg1);
-    temp_r3 = M2C_FIELD(temp_r0, void (**)(s32, u8, u8), 0xC);
-    if (temp_r3 == 0) return;
-    temp_r3(temp_r0, arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
+/* Run the per-frame update of carried-unit list row `row`: look the row's entry
+ * table row up and, when it has an update callback, run it with the row's entry,
+ * its index and its status byte. */
+void UpdateListMenuRow(void *menu, s32 row) {
+    void (*update)(s32, u8, u8);
+    MenuRowC0634 *entry;
+
+    entry = (MenuRowC0634 *)GetCarriedUnitListEntry(menu, row);
+    update = entry->update;
+    if (update == NULL) return;
+    update((s32)entry, (u8)row, M2C_FIELD(menu + row, u8 *, 0x38));
 }
 
-void RunCarriedUnitRowAction(void *arg0, s32 arg1) {
-    void (*callback)(s32, u8, u8);
-    s32 entry;
-    entry = GetCarriedUnitListEntry(arg0, arg1);
-    callback = M2C_FIELD(entry, void (**)(s32, u8, u8), 0x18);
-    if (callback == NULL) return;
-    callback(entry, (u8)arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
+/* Run the confirm action of carried-unit list row `row`: look the row's entry
+ * table row up and, when it has an action callback, run it with the row's entry,
+ * its index and its status byte. */
+void RunCarriedUnitRowAction(void *menu, s32 row) {
+    void (*action)(s32, u8, u8);
+    MenuRowC0634 *entry;
+
+    entry = (MenuRowC0634 *)GetCarriedUnitListEntry(menu, row);
+    action = entry->action;
+    if (action == NULL) return;
+    action((s32)entry, (u8)row, M2C_FIELD(menu + row, u8 *, 0x38));
 }
 
-void RunListMenuRowCancelAction(void *arg0, s32 arg1) {
-    void (*callback)(s32, u8, u8);
-    s32 entry;
-    entry = GetCarriedUnitListEntry(arg0, arg1);
-    callback = M2C_FIELD(entry, void (**)(s32, u8, u8), 0x1C);
-    if (callback == NULL) return;
-    callback(entry, (u8)arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
+/* Run the cancel action of carried-unit list row `row`: look the row's entry
+ * table row up and, when it has a cancel callback, run it with the row's entry,
+ * its index and its status byte. */
+void RunListMenuRowCancelAction(void *menu, s32 row) {
+    void (*cancel)(s32, u8, u8);
+    MenuRowC0634 *entry;
+
+    entry = (MenuRowC0634 *)GetCarriedUnitListEntry(menu, row);
+    cancel = entry->cancel;
+    if (cancel == NULL) return;
+    cancel((s32)entry, (u8)row, M2C_FIELD(menu + row, u8 *, 0x38));
 }
 
 void UpdateListMenu(void) {
@@ -528,17 +543,22 @@ if(!IsCarriedUnitListOpen())return 0;
 DeleteTextSprites();PlaySoundEffect(0x10018);RunListMenuRowCancelAction(menu,index);return 1;
 }
 
-void func_020c0e38(void *arg0) {
-u8 index=M2C_FIELD(arg0,u8 *,0); void *p=M2C_FIELD(arg0,void **,0x10);
-if(!IsCarriedUnitListOpen())return;
-PlaySoundEffect(0x10019); HighlightListMenuRow(p,index);
+/* Focus handler of a list-menu row: when the carried-unit list is still open,
+ * play the menu select sound and highlight the row under the slot. */
+void FocusListMenuRow(void *slot) {
+    u8 index = M2C_FIELD(slot, u8 *, SPRITE_SLOT_ID);
+    void *menu = M2C_FIELD(slot, void **, SPRITE_SLOT_OWNER);
+
+    if (!IsCarriedUnitListOpen()) return;
+    PlaySoundEffect(SOUND_MENU_SELECT);
+    HighlightListMenuRow(menu, index);
 }
 
-void func_020c0e6c(void *arg0) {
+void UpdateListMenuRowSlot(void *arg0) {
 u8 index = M2C_FIELD(arg0,u8 *,0);
 void *p = M2C_FIELD(arg0,void **,0x10);
 if (!IsCarriedUnitListOpen()) return;
-func_020c0454(p,index);
+UpdateListMenuRow(p,index);
 }
 
 /* Create one sprite slot per visible row of the carried-unit list: stack them
@@ -592,7 +612,7 @@ void *CreateUnitSprite(s32);
 void InitUnitSprite(void *,s32,s32,s32,s32);
 void Set3DSpriteSlideTargetAndStart(void *,s16,s16,s16,s32);
 u32 GetUnitSpriteWidth(void *); u32 GetUnitSpriteHeight(void *);
-void func_02087d84(void *,s32,s32,s32,u16,u16);
+void SpriteCellListSetCellRect(void *,s32,s32,s32,u16,u16);
 void CreateUnitSpriteButtonTask(void *,s16); void func_020aad18(void *);void Show3DSpriteSlide(void *);
 void *unit; s16 y; s16 x; u32 width,height; u32 visible;
 unit=CreateUnitSprite((s32)owner);
@@ -602,7 +622,7 @@ visible=M2C_FIELD(M2C_FIELD(unit,void **,0x64),u8 *,0x12)!=0?1:0;
 if(visible & 0xff){
 y=M2C_FIELD(unit,s16 *,0x52);x=M2C_FIELD(unit,s16 *,0x50);
 width=GetUnitSpriteWidth(unit);height=GetUnitSpriteHeight(unit);
-func_02087d84(M2C_FIELD(unit,void **,0x64),1,x,y,(u16)width,(u16)height);
+SpriteCellListSetCellRect(M2C_FIELD(unit,void **,0x64),1,x,y,(u16)width,(u16)height);
 }
 CreateUnitSpriteButtonTask(unit,2);func_020aad18(unit);Show3DSpriteSlide(unit);return unit;
 }
@@ -676,15 +696,21 @@ void UpdateMapPreviewLayer(void *sprite) {
     }
 }
 
-s32 CreateMapPreviewLayerSprite(s32 a) {
-extern M2C_UNK data_02129690;
-s32 FindObjectByClass(M2C_UNK *);
-M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
-void *p;
-if(FindObjectByClass(&data_02129690))return 0;
-p=(void *)CreateSpriteFromClass(&data_02129690,7);
-M2C_FIELD(p,s32 *,0x34)=a;
-return 1;
+/* Create the map-preview layer sprite at `vram` unless one already exists; the
+ * sprite's per-frame step copies the map's tiles to that VRAM offset.  Returns 1
+ * when it was created, 0 when a preview layer is already up. */
+s32 CreateMapPreviewLayerSprite(s32 vram) {
+    extern M2C_UNK data_02129690;
+    s32 FindObjectByClass(M2C_UNK *);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    void *sprite;
+
+    if (FindObjectByClass(&data_02129690)) {
+        return 0;
+    }
+    sprite = (void *)CreateSpriteFromClass(&data_02129690, 7);
+    M2C_FIELD(sprite, s32 *, MAP_PREVIEW_SPRITE_VRAM) = vram;
+    return 1;
 }
 
 void func_020c121c(void) {

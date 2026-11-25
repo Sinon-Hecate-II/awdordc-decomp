@@ -9,7 +9,7 @@ s32 gpiProcessConnect(void **a, void *b, char *text) {
 s32 gpiProcessErrorReply(void **,char *,s32);
 s32 gpiValueForKey(char *,M2C_UNK *,void *,s32);
 s32 ParseInt(char *);
-M2C_UNK func_02055bc0(void **,s32);
+M2C_UNK gpiRemoveBuddyStatus(void **,s32);
 s32 StringFind(char *,M2C_UNK *);
 M2C_UNK gpiSetError(void **,s32,M2C_UNK *);
 M2C_UNK gpiCallErrorCallback(void **,s32,s32);
@@ -36,7 +36,7 @@ s32 result;
 Callback518 callback;
 if(gpiProcessErrorReply(a,text,0)){
 if(M2C_FIELD(p,s32 *,0x418)==0x106 && M2C_FIELD(p,s32 *,0x1a0)){
-func_02055bc0(a,M2C_FIELD(p,s32 *,0x1a0));
+gpiRemoveBuddyStatus(a,M2C_FIELD(p,s32 *,0x1a0));
 M2C_FIELD(p,s32 *,0x19c)=0;M2C_FIELD(p,s32 *,0x1a0)=0;
 }else if(M2C_FIELD(p,s32 *,0x418)==0x201){
 if(gpiValueForKey(text,&data_020fe564,work.buf,512))M2C_FIELD(p,s32 *,0x1a0)=ParseInt(work.buf);

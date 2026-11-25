@@ -50,8 +50,8 @@ void func_ov005_0221e5a0(M2C_UNK parent) {
     SetFileDirectory(data_ov005_02220a3c);
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    SetLayerSize(1, 2);
-    SetLayerSize(0, 2);
+    Set3DSpriteLayerSize(1, 2);
+    Set3DSpriteLayerSize(0, 2);
     Clear3DSpriteLayer(1);
     Clear3DSpriteLayer(0);
     OpenNarcArchive(GetLocalizedFileName(data_ov005_02220f2c));
@@ -68,8 +68,8 @@ void func_ov005_0221e5a0(M2C_UNK parent) {
         }
     }
     CloseNarcArchive();
-    AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), 0x800, 0x2000);
-    AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x800, 0x2000);
+    OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), 0x800, 0x2000);
+    OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x800, 0x2000);
     DS3D_ENGINE(gCur3DSpriteEngine)->layerDirty |= DS3D_DIRTY_LAYER2;
     DS3D_ENGINE(gCur3DSpriteEngine)->layerDirty |= DS3D_DIRTY_LAYER1;
     DS3D_ENGINE(gCur3DSpriteEngine)->layerDirty |= DS3D_DIRTY_LAYER0;
@@ -142,19 +142,19 @@ saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220eac),M2C_FIELD(gCur3DSpriteEngine,s32 *,20));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220ecc),M2C_FIELD(gCur3DSpriteEngine,s32 *,40));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220f0c),M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+1280);
-AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),0x800,0x2000);
-AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+0x500,0x100,0x2000);
+OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),0x800,0x2000);
+OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+0x500,0x100,0x2000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 LoadDecompressedFileTo(data_ov005_02220e8c,M2C_FIELD(gCur3DSpriteEngine,s32 *,28)+0x7300);
 LoadFileToSpriteBuffer(data_ov005_02220e3c,0x380,0x20);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-SetLayerSize(2,2); Clear3DSpriteLayer(2);
+Set3DSpriteLayerSize(2,2); Clear3DSpriteLayer(2);
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220e6c),M2C_FIELD(gCur3DSpriteEngine,s32 *,20));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220e4c),M2C_FIELD(gCur3DSpriteEngine,s32 *,40));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220edc),M2C_FIELD(gCur3DSpriteEngine,s32 *,36));
-AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),0x800,0x2000);
-AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,36),0x100,0x2000);
+OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),0x800,0x2000);
+OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,s32 *,36),0x100,0x2000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved; CloseNarcArchive();
@@ -206,7 +206,7 @@ if(v==0) { LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220e5c),M2
  } else { LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220eec),M2C_FIELD(gCur3DSpriteEngine,s32 *,40));
  }
 CloseNarcArchive();
-AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),0x800,0x2000);
+OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,s32 *,40),0x800,0x2000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(p,u8 *,0x58)=1;
 }
@@ -315,7 +315,7 @@ void func_ov005_0221f084(void *arg0) {
     M2C_UNK Apply3DSpriteDisplayConfig();
     M2C_UNK Configure3DSpriteLayer(M2C_UNK, u16 *);
     M2C_UNK Set3DSpriteVramBanks();
-    M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
+    M2C_UNK SpriteCellListSetCellRect(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK LoadScenePanelGraphicsOnBothEngines();
@@ -422,7 +422,7 @@ void func_ov005_0221f084(void *arg0) {
         s16 temp_r5 = M2C_FIELD(temp_r4, s16 *, 0x52);
         s16 temp_r6 = M2C_FIELD(temp_r4, s16 *, 0x50);
         temp_r7 = GetUnitSpriteWidth(temp_r4);
-        func_02087d84(M2C_FIELD(temp_r4, void **, 0x64), 1, temp_r6, temp_r5, (u16) temp_r7, (u16) GetUnitSpriteHeight(temp_r4));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r4, void **, 0x64), 1, temp_r6, temp_r5, (u16) temp_r7, (u16) GetUnitSpriteHeight(temp_r4));
     }
     }
     CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x34), 1);

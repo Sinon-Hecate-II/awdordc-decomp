@@ -39,7 +39,7 @@ void func_ov001_02171100(M2C_UNK a,M2C_UNK b,M2C_UNK c){
 void WhGetTime(void){u64 GetSystemTick(void);void U64Divide(u64,u64);U64Divide(GetSystemTick()<<6,0x82ea);}
 
 #pragma thumb on
-s32 func_ov001_02171178(s8 *a, s32 b) {
+s32 Ov001_FormatHexByte(s8 *a, s32 b) {
     s32 v, ch, i;
     u8 t = (u8)b;
     s8 *p;
@@ -55,10 +55,12 @@ s32 func_ov001_02171178(s8 *a, s32 b) {
     *p = 0;
     return (s32)(p - a);
 }
-s32 func_ov001_021711ac(s8 *arg0,s8 *arg1){
- s8 *sp0=arg0; s8 *p=arg0; s32 i; s8 *q=arg1,*t;s8 v;
- for(i=0;i<6;i++){v=*q++;t=p+func_ov001_02171178(p,v);p=t;if(i<5){p=t+1;*t=0x3a;}}
- *p=0;return p-sp0;
+/* Format the six bytes of `bytes` as a colon-separated hex MAC address
+ * ("XX:XX:XX:XX:XX:XX") into `out`, NUL terminated; return its length. */
+s32 Ov001_FormatMacAddress(s8 *out,s8 *bytes){
+ s8 *start=out; s8 *p=out; s32 i; s8 *q=bytes,*t;s8 v;
+ for(i=0;i<6;i++){v=*q++;t=p+Ov001_FormatHexByte(p,v);p=t;if(i<5){p=t+1;*t=':';}}
+ *p=0;return p-start;
 }
 
 void *memset(void *,s32,u32);
@@ -165,10 +167,15 @@ void Ov001_CreateIconRow(s32 id) {
     M2C_FIELD(gOv001IconRow, s32 *, 12) = Ov001_AddTask(0, Ov001_IconRow_SlideOut, 0, 120);
 }
 
-void Ov001_StartIconRowSlideOut(void){
- extern void *gOv001IconRow;void Ov001_SetSlideStep(s32,void (*)(void));void Ov001_IconRow_Dismiss(void);
- M2C_FIELD(gOv001IconRow,u8 *,0x19)=1;
- Ov001_SetSlideStep(M2C_FIELD(gOv001IconRow,s32 *,12),Ov001_IconRow_Dismiss);
+/* Start the icon row's slide-out: mark the row active and point its intro task
+ * at the dismiss step, which slides the row off and frees it. */
+void Ov001_StartIconRowSlideOut(void) {
+    void Ov001_SetSlideStep(s32, void (*)(void));
+    void Ov001_IconRow_Dismiss(void);
+    extern void *gOv001IconRow;
+
+    ((Ov001IconRow *) gOv001IconRow)->active = 1;
+    Ov001_SetSlideStep(((Ov001IconRow *) gOv001IconRow)->introTimer, Ov001_IconRow_Dismiss);
 }
 
 #pragma thumb off

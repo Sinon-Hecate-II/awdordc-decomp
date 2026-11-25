@@ -98,18 +98,26 @@ CpuFill(0,(void *)0x4001000,0x70);
 *(volatile u16 *)0x4001036=0x100;
 }
 
-s32 func_02002428(s32 a) {
-s32 v=*(volatile u16 *)0x4000004 & 0x10;
-if(a!=0){*(volatile u16 *)0x4000004 |= 0x10;return v;}
-*(volatile u16 *)0x4000004 &= ~0x10;
-return v;
+/* Enable or disable the H-blank interrupt (DISPSTAT bit 4); return the bit's
+ * previous state. */
+s32 GX_SetHBlankIrq(s32 enable) {
+s32 old=REG_DISPSTAT & DISPSTAT_HBLANK_IRQ;
+if(enable!=0){REG_DISPSTAT |= DISPSTAT_HBLANK_IRQ;return old;}
+REG_DISPSTAT &= ~DISPSTAT_HBLANK_IRQ;
+return old;
 }
 
-s32 GX_SetVBlankIrq(s32 a) {
-s32 v=*(volatile u16 *)0x4000004 & 8;
-if(a!=0){*(volatile u16 *)0x4000004 |= 8;return v;}
-*(volatile u16 *)0x4000004 &= ~8;
-return v;
+/* Enable (enable != 0) or disable the VBlank interrupt and return whether it was
+ * enabled before the call. */
+s32 GX_SetVBlankIrq(s32 enable) {
+    s32 wasEnabled = REG_DISPSTAT & DISPSTAT_VBLANK_IRQ;
+
+    if (enable != 0) {
+        REG_DISPSTAT |= DISPSTAT_VBLANK_IRQ;
+        return wasEnabled;
+    }
+    REG_DISPSTAT &= ~DISPSTAT_VBLANK_IRQ;
+    return wasEnabled;
 }
 
 /* Save the main display's 2D mode, turn that mode off in DISPCNT and mark the

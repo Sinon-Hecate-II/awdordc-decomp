@@ -1,6 +1,7 @@
 /* 50 functions from 0x020C4D28 to 0x020C5D0C (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov009_link.h"
 static inline s32 IsNewerValue(u32 b, u32 a) {
 register u32 result asm("lr") = a & 0xffff0000;
 if(result==0xffff0000 && !(b&0xffff0000) && b!=0) result=0;
@@ -319,16 +320,19 @@ s32 SetBattleSlotRecord(s32 slot, M2C_UNK record) {
     return recordBase + offset;
 }
 
-s32 func_020c53ac(s32 arg0) {
-s32 p=GetBattleSaveBlock();
-if(!p)return 0;
-p+=0x2d4;
-if(M2C_FIELD(p+arg0*0x28,u16 *,0)==0)return 0;
-return p+arg0*0x28;
+/* Return battle-save slot `slot`'s custom name text (the 26-byte text at the
+ * start of its 0x28-byte slot record), or NULL when there is no battle save
+ * block or the slot holds no custom name. */
+s32 GetBattleSlotCustomName(s32 slot) {
+    s32 records = GetBattleSaveBlock();
+    if (!records) return 0;
+    records += SAVE_RECORDS_OFFSET;
+    if (M2C_FIELD(records + slot * SAVE_SLOT_RECORD_SIZE, u16 *, 0) == 0) return 0;
+    return records + slot * SAVE_SLOT_RECORD_SIZE;
 }
 
 void GetOwnFriendCode(s32 arg0) {
-    M2C_UNK func_02032604(s32);
+    M2C_UNK BuildProfilePlayerCode(s32);
     s32 GetProfileSaveBlock();
     s32 var_r0;
 
@@ -336,7 +340,7 @@ void GetOwnFriendCode(s32 arg0) {
     if (var_r0 == 0) {
         var_r0 = GetProfileSaveBlock();
     }
-    func_02032604(var_r0 + 4);
+    BuildProfilePlayerCode(var_r0 + 4);
 }
 
 void CopyLocalPlayerRecord(M2C_UNK arg0) {
@@ -388,17 +392,20 @@ void func_020c54ac(void) {
     ParseFriendCodeDigits();
 }
 
+/* Whether the battle save may be modified right now: always outside an online
+ * session, and inside one only while it is still making a match (once the match
+ * session has settled the save is locked). */
 s32 CanModifyBattleSave(void) {
-    s32 func_0203a8dc();
+    s32 MatchSession_IsSettled();
     s32 GetActiveOverlay();
     s32 IsOnlineSessionFlagSet(M2C_UNK);
-    if (GetActiveOverlay() != 2) {
+    if (GetActiveOverlay() != NET_OVERLAY_ONLINE) {
         return 1;
     }
-    if (IsOnlineSessionFlagSet(2) == 0) {
+    if (IsOnlineSessionFlagSet(OV010_FLAG_MATCHMAKING) == 0) {
         return 1;
     }
-    return func_0203a8dc();
+    return MatchSession_IsSettled();
 }
 
 /* Whether the battle save block already holds a slot for this 12-byte NAS player

@@ -244,25 +244,28 @@ void func_020d88ac(void) {
     CreateSpriteFromClass(&data_0212c020, 7);
 }
 
-M2C_UNK func_020d88c4(void) {
- M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
- extern u16 gMapConfig; extern M2C_UNK data_0212bfb8;
- gMapConfig=(gMapConfig&~7)|4;
- CreateSpriteFromClass(&data_0212bfb8,7);
+/* Select battle mode 4 in the map configuration and open the map-list screen
+ * sprite for that map category (class data_0212bfb8). */
+M2C_UNK OpenMode4MapList(void) {
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    extern u16 gMapConfig;
+    extern M2C_UNK data_0212bfb8;
+    gMapConfig = (gMapConfig & ~MAPCONFIG_MODE_MASK) | 4;
+    CreateSpriteFromClass(&data_0212bfb8, 7);
 }
 
 void func_020d88f4(void) {
-    M2C_UNK func_020d895c();
+    M2C_UNK SetMapConfigMode1();
     M2C_UNK func_020d8cc4();
     func_020d8cc4();
-    func_020d895c();
+    SetMapConfigMode1();
 }
 
 void func_020d8904(void) {
-    M2C_UNK func_020d895c();
+    M2C_UNK SetMapConfigMode1();
     M2C_UNK func_020d8cc4();
     func_020d8cc4();
-    func_020d895c();
+    SetMapConfigMode1();
 }
 
 void func_020d8914(void) {
@@ -272,22 +275,27 @@ void func_020d8914(void) {
     ApplyMapSettingsToPlayers(0);
 }
 
-void func_020d8928(void) {
+/* Marks the battle as ended (with no end condition recorded, so the outcome is
+ * decided by the players still in it) when a link or online session is active;
+ * a no-op otherwise. */
+void SetBattleEndedForSession(void) {
     s32 IsLinkSessionActive();
     extern M2C_UNK gBattleEndState;
     if (IsLinkSessionActive() == 0) {
         return;
     }
-    M2C_FIELD(&gBattleEndState, s8 *, 0) = 1;
-    M2C_FIELD(&gBattleEndState, s8 *, 1) = 0;
-    M2C_FIELD(&gBattleEndState, s8 *, 2) = 0;
-    M2C_FIELD(&gBattleEndState, s8 *, 3) = 1;
+    M2C_FIELD(&gBattleEndState, s8 *, BATTLE_END_ENDED) = 1;
+    M2C_FIELD(&gBattleEndState, s8 *, BATTLE_END_FLAG1) = 0;
+    M2C_FIELD(&gBattleEndState, s8 *, BATTLE_END_FLAG2) = 0;
+    M2C_FIELD(&gBattleEndState, s8 *, BATTLE_END_FLAG3) = 1;
 }
 
-M2C_UNK func_020d895c(void) {
+/* Set the map config's battle-mode field (the low three bits of MAPCONFIG_FLAGS)
+ * to 1 and create the map sprite class of that mode. */
+M2C_UNK SetMapConfigMode1(void) {
  M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
  extern u16 gMapConfig; extern M2C_UNK data_0212c1a0;
- gMapConfig=(gMapConfig&~7)|1;
+ gMapConfig=(gMapConfig&~MAPCONFIG_MODE_MASK)|1;
  CreateSpriteFromClass(&data_0212c1a0,7);
 }
 
@@ -298,14 +306,18 @@ void func_020d898c(void) {
         func_020d4ac8(8);
         return;
     }
-    func_020d895c();
+    SetMapConfigMode1();
 }
 
-M2C_UNK func_020d89b8(void) {
- M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
- extern u16 gMapConfig; extern M2C_UNK data_0212c098;
- gMapConfig=(gMapConfig&~7)|2;
- CreateSpriteFromClass(&data_0212c098,7);
+/* Enter the map editor's screen: switch the battle config to map mode 2 (the
+ * map editor's mode) and create the map editor screen object. */
+void EnterMapEditorScreen(void) {
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    extern u16 gMapConfig;
+    extern M2C_UNK gMapEditorScreenAnim;
+
+    gMapConfig = (gMapConfig & ~MAPCONFIG_MODE_MASK) | 2;
+    CreateSpriteFromClass(&gMapEditorScreenAnim, 7);
 }
 
 void func_020d89e8(void) {
@@ -351,16 +363,20 @@ u8 func_020d8a60(void) {
     return var_r0;
 }
 
-M2C_UNK func_020d8a8c(void) {
- M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
- extern u16 gMapConfig; extern M2C_UNK data_0212c0d8;
- gMapConfig=(gMapConfig&~7)|6;
- CreateSpriteFromClass(&data_0212c0d8,7);
+/* Set the map config's battle mode to 6 (the low bits of MAPCONFIG_FLAGS) and
+ * create the map-list screen of that mode. */
+M2C_UNK SetMapConfigMode6(void) {
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    extern u16 gMapConfig;
+    extern M2C_UNK data_0212c0d8;
+
+    gMapConfig = (gMapConfig & ~MAPCONFIG_MODE_MASK) | 6;
+    CreateSpriteFromClass(&data_0212c0d8, 7);
 }
 
 void func_020d8abc(void) {
-    M2C_UNK func_020d8a8c();
-    func_020d8a8c();
+    M2C_UNK SetMapConfigMode6();
+    SetMapConfigMode6();
 }
 
 void func_020d8ac8(void) {
@@ -369,11 +385,14 @@ void func_020d8ac8(void) {
     CreateSpriteFromClass(&data_0212bf98, 7);
 }
 
-M2C_UNK func_020d8ae0(void) {
- M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
- extern u16 gMapConfig; extern M2C_UNK data_0212c0d8;
- gMapConfig=(gMapConfig&~7)|7;
- CreateSpriteFromClass(&data_0212c0d8,7);
+/* Select battle mode 7 in the map configuration and open the map-list screen
+ * sprite for that map category (class data_0212c0d8, shared with mode 6). */
+M2C_UNK OpenMode7MapList(void) {
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    extern u16 gMapConfig;
+    extern M2C_UNK data_0212c0d8;
+    gMapConfig = (gMapConfig & ~MAPCONFIG_MODE_MASK) | 7;
+    CreateSpriteFromClass(&data_0212c0d8, 7);
 }
 
 void func_020d8b10(void) {
@@ -402,14 +421,17 @@ void ApplyMapCategorySelection(void) {
     setupCallback();
 }
 
-s32 func_020d8b84(s32 arg0) {
+/* For the versus save-list entry (kind 1) load the newest versus battle save
+ * (SAVE_RECORD_TYPE_VERSUS) into the shared save buffer so its record can be read;
+ * the entry is always reported present. */
+s32 CheckVersusSaveSlot(s32 kind) {
     s32 GetSaveRecordBuffer();
     M2C_UNK LoadNewestSaveRecord(M2C_UNK, s32);
     GetSaveRecordBuffer();
-    if (arg0 != 1) {
+    if (kind != 1) {
         return 1;
     }
-    LoadNewestSaveRecord(8, GetSaveRecordBuffer());
+    LoadNewestSaveRecord(SAVE_RECORD_TYPE_VERSUS, GetSaveRecordBuffer());
     return 1;
 }
 

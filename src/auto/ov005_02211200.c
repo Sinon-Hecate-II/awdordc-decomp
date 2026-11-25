@@ -33,7 +33,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     void CreateUnitSpriteButtonTask(void *, s32);
     void Show3DSpriteSlide(void *);
     void func_020aad18(void *);
-    void func_02087d84(void *, s32, s32, s32, s32, s32);
+    void SpriteCellListSetCellRect(void *, s32, s32, s32, s32, s32);
     void CreateWallpaperSprite(s32, s32, s32, s32);
     void SetFileDirectory(void *);
     s32 GetLocalizedFileName(void *);
@@ -75,7 +75,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         s16 a = M2C_FIELD(sprite, s16 *, 0x52);
         s16 b = M2C_FIELD(sprite, s16 *, 0x50);
         s32 w=GetUnitSpriteWidth(sprite);
-        func_02087d84(M2C_FIELD(sprite, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(sprite));
+        SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(sprite));
     }
     CreateUnitSpriteButtonTask(sprite, 1);
     Show3DSpriteSlide(sprite);
@@ -89,7 +89,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         s16 a = M2C_FIELD(sprite2, s16 *, 0x52);
         s16 b = M2C_FIELD(sprite2, s16 *, 0x50);
         s32 w=GetUnitSpriteWidth(sprite2);
-        func_02087d84(M2C_FIELD(sprite2, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(sprite2));
+        SpriteCellListSetCellRect(M2C_FIELD(sprite2, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(sprite2));
     }
     CreateUnitSpriteButtonTask(sprite2, 2);
     Show3DSpriteSlide(sprite2);
@@ -113,7 +113,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
                 s16 a = M2C_FIELD(spSprite, s16 *, 0x52);
                 s16 b = M2C_FIELD(spSprite, s16 *, 0x50);
                 s32 w=GetUnitSpriteWidth(spSprite);
-        func_02087d84(M2C_FIELD(spSprite, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(spSprite));
+        SpriteCellListSetCellRect(M2C_FIELD(spSprite, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(spSprite));
                 }
             M2C_FIELD(spSprite, s16 *, 0x34) = pos;
             M2C_FIELD(spSprite, s16 *, 0x36) = 0x58;
@@ -121,7 +121,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
                 s16 a = M2C_FIELD(spSprite, s16 *, 0x52);
                 s16 b = M2C_FIELD(spSprite, s16 *, 0x50);
                 s32 w=GetUnitSpriteWidth(spSprite);
-        func_02087d84(M2C_FIELD(spSprite, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(spSprite));
+        SpriteCellListSetCellRect(M2C_FIELD(spSprite, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(spSprite));
             }
             M2C_FIELD(M2C_FIELD((u8 *)(void *)arg0+r9*4,void**,0x38),u8*,0x5a)=neg;
             func_020aad18(M2C_FIELD((u8 *)(void *)arg0+r9*4,void**,0x38));
@@ -164,8 +164,8 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
 s32 func_ov005_0221174c(void) {
-s32 FreeUiGraphicsBank(s32); s32 func_020af1e4(); s32 func_ov003_021ff7ac(); s32 func_02088624();
-FreeUiGraphicsBank(4); func_020af1e4(); func_ov003_021ff7ac(); func_02088624();
+s32 FreeUiGraphicsBank(s32); s32 DeleteWallpaperSpritesOnAllEngines(); s32 func_ov003_021ff7ac(); s32 func_02088624();
+FreeUiGraphicsBank(4); DeleteWallpaperSpritesOnAllEngines(); func_ov003_021ff7ac(); func_02088624();
 }
 
 #pragma opt_strength_reduction off
@@ -309,13 +309,17 @@ s32 HistoryTabAt(s32 arg0) {
     return (0xA * arg0) + (gHistoryMenu + 0x10);
 }
 
-u8 func_ov005_02211a54(s32 arg0,s32 arg1) {
-s32 GetRecordValue(s32,s32);
-extern s32 gHistoryMenu;
-u8 result;
-if(M2C_FIELD(gHistoryMenu,u8 *,0)!=0)return 0;
-if(GetRecordValue(arg0,arg1)==0)result=1;else result=0;
-return result;
+/* Whether the records menu shows record (group, index) as blank: true when the
+ * menu is displaying values and the record's accumulated value is 0.  While the
+ * menu's value-suppression flag is set every record instead reads as unset. */
+u8 IsRecordValueUnset(s32 group, s32 index) {
+    s32 GetRecordValue(s32, s32);
+    extern s32 gHistoryMenu;
+    u8 unset;
+
+    if (((HistoryMenu *)gHistoryMenu)->unk00 != 0) return 0;
+    if (GetRecordValue(group, index) == 0) unset = 1; else unset = 0;
+    return unset;
 }
 
 void HistoryMenu_SetRecordText(void) {
@@ -333,7 +337,7 @@ q = GetRecordDefinition(M2C_FIELD(p,s8 *,1), a+b);
 index = GetRecordTier(M2C_FIELD(gHistoryMenu,s8 *,1), a+b);
 old = gCur3DSpriteEngine;
 gCur3DSpriteEngine = g3DSpriteEngineSub;
-if (func_ov005_02211a54(M2C_FIELD(gHistoryMenu,s8 *,1),a+b)==0)
+if (IsRecordValueUnset(M2C_FIELD(gHistoryMenu,s8 *,1),a+b)==0)
 SetTextById(M2C_FIELD(gHistoryMenu,s32 *,0x48),M2C_FIELD(q+index*4,s32 *,0x1c));
 else SetSpriteText(M2C_FIELD(gHistoryMenu,s32 *,0x48),&data_ov005_02220270);
 gCur3DSpriteEngine = old;
@@ -366,7 +370,7 @@ void CountTabRecords(s32 tabId) {
     ((HistoryMenuTab *)p)->count = 0;
     ((HistoryMenuTab *)p)->selectable = 0;
     while (M2C_FIELD(q, s32 *, 0)) {
-        if (!func_ov005_02211a54(tabId, ((HistoryMenuTab *)p)->count)) ((HistoryMenuTab *)p)->selectable++;
+        if (!IsRecordValueUnset(tabId, ((HistoryMenuTab *)p)->count)) ((HistoryMenuTab *)p)->selectable++;
         ((HistoryMenuTab *)p)->count++;
         q += 0x30;
     }

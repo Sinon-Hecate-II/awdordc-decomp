@@ -104,7 +104,7 @@ void func_ov005_0221339c(u8 *arg0) {
 #pragma opt_common_subs on
 #pragma opt_instruction_scheduling on
 void func_ov005_022133c8(void *arg0) {
-void HistoryMenu_RefreshTab(void);void LoadScenePanelGraphicsOnBothEngines(void);void *Create3DSprite(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *HeapAllocBlock(s32);void *HistoryTabAt(s32);void *GetLocalizedFileName(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 GetUiColor(s32);
+void HistoryMenu_RefreshTab(void);void LoadScenePanelGraphicsOnBothEngines(void);void *Create3DSprite(void *);void *CreateScrollingTextSprite(void *);s32 func_020aaf74(void *);void *HeapAllocBlock(s32);void *HistoryTabAt(s32);void *GetLocalizedFileName(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 GetUiColor(s32);
 MenuInit a={0,1,0x1c0,0x9d0,0x11e5,0x19f6};
 MenuInit b={0,1,1,0x813,0x1024,0x1836};
 void *dst; s32 n; s32 i,j;void *p,*save;
@@ -190,7 +190,7 @@ M2C_FIELD(p,s32 *,0x44)=func_020aaf74(p);
 M2C_FIELD(p,u16 *,0x3e)=0x13c;
 ((MenuAnimSprite *)p)->frame=22;
 M2C_FIELD(p,u16 *,0x3c)=0xc00;
-M2C_FIELD(gHistoryMenu,void **,0x48)=func_0208bc24(arg0);
+M2C_FIELD(gHistoryMenu,void **,0x48)=CreateScrollingTextSprite(arg0);
 M2C_FIELD(M2C_FIELD(gHistoryMenu,void **,0x48),u16 *,0x3e)=0xdc;
 ((MenuAnimSprite *)M2C_FIELD(gHistoryMenu,void **,0x48))->frame=7;
 Show3DSpriteSlide(M2C_FIELD(gHistoryMenu,void **,0x48));
@@ -351,13 +351,13 @@ sprite=M2C_FIELD(gHistoryMenu,void **,0x5c);SetMenuAnimFrame(sprite,((MenuAnimSp
  * the sub engine, hide the sprite slots and free the menu object. Does nothing
  * when no menu is open. */
 void HistoryMenu_Close(void) {
-    M2C_UNK func_020af1e4();
-    M2C_UNK func_020842d4();
+    M2C_UNK DeleteWallpaperSpritesOnAllEngines();
+    M2C_UNK DeleteSubScreenSpriteTextClasses();
     M2C_UNK HideAllSpriteSlots();
     M2C_UNK HeapFreeBlock();
     extern void *gHistoryMenu;
-    func_020af1e4();
-    func_020842d4();
+    DeleteWallpaperSpritesOnAllEngines();
+    DeleteSubScreenSpriteTextClasses();
     HideAllSpriteSlots();
     if (gHistoryMenu == NULL) return;
     HeapFreeBlock();

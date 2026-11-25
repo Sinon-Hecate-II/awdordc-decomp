@@ -13,13 +13,13 @@ extern const DisplayUnitKindList gUnitKindMenuList;
  * player's terrain effect and the terrain penalty of the destination.  A player
  * without a terrain category (weather-type 2) only gets the destination penalty. */
 s32 GetUnitMoveScore(s32 arg0,s32 a,s32 b,u8 mode) {
-M2C_UNK GetUnitOwner(); u8 GetUnitKindByte0(s32); s32 func_020a26f8(void *,u8,u8);
+M2C_UNK GetUnitOwner(); u8 GetUnitKindByte0(s32); s32 GetUnitTerrainBonus(void *,u8,u8);
 extern void **gCurrentMap;
 u8 *p=(u8 *)arg0;
 s32 power,terrain,result,player;
 GetUnitOwner(p);
 power=GetUnitKindByte0((u32)(p[0]<<26)>>26);
-terrain=func_020a26f8(p,p[1],p[2]);
+terrain=GetUnitTerrainBonus(p,p[1],p[2]);
 result=GetUnitTerrainPenalty(p,a,b);
 result+=power+terrain;
 if(p){if(!p)player=0;else player=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;player=(player>>6)+1;}else player=0;
@@ -79,14 +79,14 @@ u32 func_020a78ec(u8 *arg0) {
 }
 
 s32 func_020a78fc(void *arg0) {
-    s32 func_020a2728(void *, u8, u8);
-    return func_020a2728(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 0xA;
+    s32 GetUnitMaxLuckBonus(void *, u8, u8);
+    return GetUnitMaxLuckBonus(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 0xA;
 }
 
 s32 func_020a7914(void *arg0) {
- s32 func_020a2758(void *, u8, u8);
+ s32 GetUnitDamageVarianceMin(void *, u8, u8);
  s32 result = 0;
- result += func_020a2758(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
+ result += GetUnitDamageVarianceMin(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
  return result;
 }
 
@@ -103,10 +103,13 @@ s32 GetWeaponDamagePercent(s32 attackerKind, s32 targetKind, s32 weaponIndex, s3
  return *(damageRow + (gUnitKindDamageTable + attackerKind * 0x70 + (weaponIndex << 5)));
 }
 
-u8 GetKindWeaponDamagePercent(s32 arg0, s32 arg1, s32 arg2) {
+/* Damage percentage of one weapon of attacker kind `attackerKind` against
+ * `target`, a map-order target id mapped to its damage-table row: the
+ * `weaponIndex` (0 primary, 1 secondary) block of the kind's damage table. */
+u8 GetKindWeaponDamagePercent(s32 attackerKind, s32 target, s32 weaponIndex) {
  s32 GetDamageTargetIndex(s32);
  extern u8 gUnitKindDamageTable[];
- return *(GetDamageTargetIndex(arg1) + (gUnitKindDamageTable + arg0 * 0x70 + (arg2 << 5)));
+ return *(GetDamageTargetIndex(target) + (gUnitKindDamageTable + attackerKind * 0x70 + (weaponIndex << 5)));
 }
 
 /* The damage percent of the better of a unit kind's two weapons against a target
@@ -357,13 +360,22 @@ u8 IsUnitLowOnAmmo(void *unit) {
  return result;
 }
 
-u8 IsSupplyUnitKind(u8 *p){extern u8 data_ov000_021b5c65[];u8 r;if(data_ov000_021b5c65[((u32)(*p<<26)>>26)*0x70])r=1;else r=0;return r;}
+/* Whether `unit`'s kind is a supply unit (a rig or carrier, the kinds whose
+ * Supply command resupplies and repairs its neighbours). */
+u8 IsSupplyUnitKind(u8 *unit) {
+    extern u8 gUnitKindSupplyUnit[];
+    u8 result;
+
+    if (gUnitKindSupplyUnit[((u32)(*unit << 26) >> 26) * 0x70]) result = 1;
+    else result = 0;
+    return result;
+}
 
 /* If `unit` is the unit its player has selected, drops that selection: the
  * selected-unit slot is cleared and, when `clearState` is set, the selection
  * state is cleared too; a human player's selection is counted in the records. */
 void ClearPlayerSelectedUnit(s32 unit,s32 clearState){
-s32 SetCoPowerMeterPoints(s32,s32);void func_020a3128(s32);s32 IsPlayerHuman(s32);void AddRecordValue(s32,s32);
+s32 SetCoPowerMeterPoints(s32,s32);void DisablePlayerSelection(s32);s32 IsPlayerHuman(s32);void AddRecordValue(s32,s32);
 extern void **gCurrentMap;
 s32 player;u8 *map,*record;
 if(!unit)return;
@@ -375,7 +387,7 @@ if(!((u32)(*(s32 *)(record+PLAYER_REC_SPRITE)<<24)>>24))return;
 if(unit!=(s32)(map+MAP_UNIT_RECORDS+record[PLAYER_REC_SELECTED_UNIT]*MAP_UNIT_STRIDE))return;
 record[PLAYER_REC_SELECTED_UNIT]=0;
 if(clearState){
-SetCoPowerMeterPoints(player,0);func_020a3128(player);
+SetCoPowerMeterPoints(player,0);DisablePlayerSelection(player);
 }
 if(!IsPlayerHuman(player))return;
 AddRecordValue(28,1);
@@ -383,7 +395,7 @@ AddRecordValue(28,1);
 
 void func_020a7f18(void *p,u32 a){u16 v=M2C_FIELD(p,u16 *,6); a=(u16)a; M2C_FIELD(p,u16 *,6)=(v&~0xf800)|((a<<27)>>16);}
 
-u32 func_020a7f38(void *arg0) {
+u32 GetUnitCapturePoints(void *arg0) {
     return (u32) (M2C_FIELD(arg0, u16 *, 6) << 0x10) >> 0x1B;
 }
 
@@ -435,7 +447,7 @@ u8 IsEnemyUnit(s32 unit, s32 other) {
     s32 owner;
     u8 result;
 
-    if ((other == 0) || (func_020a81c8(other) == 0)) {
+    if ((other == 0) || (IsUnitPresent(other) == 0)) {
         return 0U;
     }
     if (unit == 0) {
@@ -456,7 +468,7 @@ u8 AreUnitsEnemies(s32 unit, s32 other) {
     s32 owner;
     u8 result;
 
-    if ((unit == 0) || (func_020a81c8(unit) == 0)) {
+    if ((unit == 0) || (IsUnitPresent(unit) == 0)) {
         return 0U;
     }
     if (other == 0) {
@@ -471,22 +483,24 @@ u8 AreUnitsEnemies(s32 unit, s32 other) {
     return result;
 }
 
-s32 func_020a81c8(void) {
+s32 IsUnitPresent(void) {
     return 0;
 }
 
-u8 func_020a81d0(M2C_UNK arg0) {
-    u8 var_r0;
+/* Nonzero when the unit is present (the guard IsUnitPresent, stubbed to false in
+ * this build) and has accumulated capture points. */
+u8 IsUnitCapturing(void *unit) {
+    u8 result;
 
-    if (func_020a81c8() == 0) {
+    if (IsUnitPresent() == 0) {
         return 0U;
     }
-    if (func_020a7f38(arg0) != 0) {
-        var_r0 = 1;
+    if (GetUnitCapturePoints(unit) != 0) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 /* True when `unit` still has primary-weapon ammo and its kind carries a primary
@@ -576,7 +590,17 @@ u8 IsUnitKindClass4(void) {
     return var_r0;
 }
 
-s32 IsUnitKindClass3Or4(void *a){u8 IsUnitKindClass3();u8 IsUnitKindClass4();s32 v;if(IsUnitKindClass3(a)||IsUnitKindClass4(a))v=1;else v=0;return (u8)v;}
+/* Whether the unit kind given is of class 3 or 4.  The class accessors take the
+ * kind word implicitly (it is still in r0), so it is passed through unchanged. */
+s32 IsUnitKindClass3Or4(void *kind) {
+    u8 IsUnitKindClass3();
+    u8 IsUnitKindClass4();
+    s32 isClass;
+
+    if (IsUnitKindClass3(kind) || IsUnitKindClass4(kind)) isClass = 1;
+    else isClass = 0;
+    return (u8) isClass;
+}
 
 u8 IsUnitKindClass6(void) {
     u8 var_r0;
@@ -641,11 +665,12 @@ u8 IsUnitKindCarrier(s32 arg0) {
     return var_r0;
 }
 
-s32 UnitKindCanSupply(s32 arg0) {
-    switch (arg0) {                                 /* irregular */
-    case 13:
+/* True for the unit kinds that resupply adjacent units: the Rig and the Carrier. */
+s32 UnitKindCanSupply(s32 unitKind) {
+    switch (unitKind) {
+    case UNIT_KIND_RIG:
         return 1;
-    case 21:
+    case UNIT_KIND_CARRIER:
         return 1;
     default:
         return 0;

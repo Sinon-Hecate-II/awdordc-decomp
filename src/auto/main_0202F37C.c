@@ -98,11 +98,13 @@ u32 Wfc_FriendIdToSlot(u32 arg0) {
  return arg0;
 }
 
+/* Release the WFC callbacks and friend-roster work blocks (the blocks a friend
+ * session owns), leaving the session, control and auxiliary blocks allocated. */
 void Wfc_ClearWorkFlags(void) {
  void Wfc_ReleaseWorkBlock(s32, void *, s32);
  extern M2C_UNK gWfcManager;
- Wfc_ReleaseWorkBlock(8, M2C_FIELD(&gWfcManager, void **, 0xC), 0xC);
- Wfc_ReleaseWorkBlock(0x10, M2C_FIELD(&gWfcManager, void **, 0), 0xD18);
+ Wfc_ReleaseWorkBlock(WFC_WORK_CALLBACKS, ((WfcManager *)&gWfcManager)->callbacks, WFC_CALLBACKS_SIZE);
+ Wfc_ReleaseWorkBlock(WFC_WORK_FRIENDS, ((WfcManager *)&gWfcManager)->friends, WFC_FRIENDS_SIZE);
 }
 
 /* Whether the selected friend record may be connected to: returns 2 when another
@@ -629,12 +631,16 @@ s32 Wfc_UpdateSession(void) {
     return 0;
 }
 
+/* Whether the network stack is down: nothing is being closed and shutting it
+ * down reports success (or that it was not up in the first place). */
 s32 Wfc_IsNetworkDown(void) {
- s32 NetworkPollClosing(void); s32 func_02021c04(void);
- s32 v;
- if(NetworkPollClosing()!=0) return 0;
- v=func_02021c04();
- return v==0 || v==-39;
+    s32 NetworkPollClosing(void);
+    s32 ghiShutdown(void);
+    s32 status;
+
+    if (NetworkPollClosing() != 0) return 0;
+    status = ghiShutdown();
+    return status == 0 || status == WFC_NET_ALREADY_DOWN;
 }
 
 s32 Wfc_StepWait(void) {

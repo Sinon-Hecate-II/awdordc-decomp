@@ -82,8 +82,8 @@ void Ov001_SetProfileScreenCallback(s32 arg0) {
 }
 
 void Ov001_AdvanceProfileSetup(void) {
-    M2C_UNK func_ov001_02188f0c();
-    func_ov001_02188f0c();
+    M2C_UNK Ov001_AdvanceLinkState();
+    Ov001_AdvanceLinkState();
 }
 
 void *func_ov001_02176114(void) {
@@ -603,7 +603,7 @@ void Ov001_FadeOutWifiMenu(void) {
 void Ov001_FinishWifiMenu(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
     M2C_UNK Ov001_FreeSpriteObjects();
-    M2C_UNK Ov001_FreeOptionBackground();
+    M2C_UNK Ov001_FreeMessagePanel();
     M2C_UNK Ov001_FreeFile(s32);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
@@ -619,7 +619,7 @@ void Ov001_FinishWifiMenu(void) {
         return;
     }
     Ov001_FreeSpriteObjects();
-    Ov001_FreeOptionBackground();
+    Ov001_FreeMessagePanel();
     Ov001_FreeFile(M2C_FIELD(&gOv001WifiMenuSelection, s32 *, OV001_WIFI_MENU_TEXT));
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x14);

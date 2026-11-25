@@ -141,7 +141,7 @@ s32 SocketFcntl(void *socket, s32 command, s32 flags) {
     }
 }
 
-s32 *func_02021a38(s32 a){
+s32 *NetworkMalloc(s32 a){
 extern M2C_UNK gHostRecord;
 s32 *p; s32 size=a+4;
 p=M2C_FIELD(&gHostRecord,s32 *(**)(M2C_UNK,s32),12)(0,size);
@@ -149,20 +149,22 @@ if(p){*p=size;p++;}
 return p;
 }
 
-void func_02021a64(void *arg0) {
+/* Free a block from NetworkMalloc: its 4-byte header holds the size, so hand the
+ * host record's sized free callback the block before the header and that size. */
+void NetworkFree(void *block) {
     extern M2C_UNK gHostRecord;
-    if (arg0 == NULL) {
+    if (block == NULL) {
         return;
     }
-    M2C_FIELD(&gHostRecord, M2C_UNK (**)(M2C_UNK, s32, s32), 4)(0, arg0 - 4, M2C_FIELD(arg0, s32 *, -4));
+    M2C_FIELD(&gHostRecord, M2C_UNK (**)(M2C_UNK, s32, s32), 4)(0, block - 4, M2C_FIELD(block, s32 *, -4));
 }
 
 /* Copy a (possibly network) configuration record into the shared context and
    initialise its allocator/free callbacks plus the byte-swapped endpoint fields. */
 void func_02021a90(void *cfg) {
 extern M2C_UNK data_02138b74;
-s32 *func_02021a38(s32);
-void func_02021a64(void *);
+s32 *NetworkMalloc(s32);
+void NetworkFree(void *);
 void NetworkInit(void *);
 u32 v;
 M2C_FIELD(&gHostRecord,u32 *,0x40)=M2C_FIELD(cfg,u32 *,12)==1;
@@ -171,8 +173,8 @@ v=M2C_FIELD(cfg,u32 *,20);M2C_FIELD(&gHostRecord,u32 *,72)=((v<<24)&0xff000000)|
 v=M2C_FIELD(cfg,u32 *,24);M2C_FIELD(&gHostRecord,u32 *,76)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
 v=M2C_FIELD(cfg,u32 *,28);M2C_FIELD(&gHostRecord,u32 *,80)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
 v=M2C_FIELD(cfg,u32 *,32);M2C_FIELD(&gHostRecord,u32 *,84)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
-M2C_FIELD(&gHostRecord,s32 *(**)(s32),0x58)=func_02021a38;
-M2C_FIELD(&gHostRecord,void (**)(void *),0x5c)=func_02021a64;
+M2C_FIELD(&gHostRecord,s32 *(**)(s32),0x58)=NetworkMalloc;
+M2C_FIELD(&gHostRecord,void (**)(void *),0x5c)=NetworkFree;
 M2C_FIELD(&gHostRecord,u32 *,12)=M2C_FIELD(cfg,u32 *,4);
 M2C_FIELD(&gHostRecord,u32 *,4)=M2C_FIELD(cfg,u32 *,8);
 M2C_FIELD(&gHostRecord,u32 *,0x60)=0x40;
@@ -181,16 +183,19 @@ M2C_FIELD(&gHostRecord,u32 *,0x74)=M2C_FIELD(cfg,u32 *,0x30);
 NetworkInit(&data_02138b74);
 }
 
-void func_02021c04(void) {
+void ghiShutdown(void) {
     M2C_UNK NetworkShutdown();
     NetworkShutdown();
 }
 
-M2C_UNK *IpToString(s32 a,...){
-M2C_UNK FormatIpAddress(M2C_UNK,void *,void *,M2C_UNK);
-extern M2C_UNK data_02138bac;
-FormatIpAddress(2,&a,&data_02138bac,16);
-return &data_02138bac;
+/* Format the IPv4 address passed in as a dotted-decimal string in a shared
+ * static buffer and return that buffer, like inet_ntoa. */
+M2C_UNK *IpToString(u32 address, ...) {
+    M2C_UNK FormatIpAddress(M2C_UNK, void *, void *, M2C_UNK);
+    extern u8 sIpToStringBuffer[];
+
+    FormatIpAddress(2, &address, sIpToStringBuffer, 16);
+    return (M2C_UNK *) sIpToStringBuffer;
 }
 
 /* GameSpy inet_addr helper: turn the address string `hostname` into a
@@ -344,10 +349,18 @@ void TlsSessionCacheDiscard(void *channel) {
     OS_RestoreInterrupts(old);
 }
 
-s32 GetUnixTime(void){
-void GetRtcDate(void *);void GetRtcTime(void *);s32 MakeTime(void *,void *);
-s32 a[4],b[3];
-GetRtcDate(a);GetRtcTime(b);return MakeTime(a,b)+0x386d4380;
+/* Return the current time as seconds since the Unix epoch: read the RTC's date
+ * and time and add the offset from 1970/01/01 to the RTC's 2000/01/01. */
+s32 GetUnixTime(void) {
+    void GetRtcDate(void *);
+    void GetRtcTime(void *);
+    s32 MakeTime(void *, void *);
+    RtcDate date;
+    RtcTime time;
+
+    GetRtcDate(&date);
+    GetRtcTime(&time);
+    return MakeTime(&date, &time) + RTC_EPOCH_OFFSET;
 }
 
 void func_020220a8(s32 arg0) {

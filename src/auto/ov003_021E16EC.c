@@ -7,12 +7,12 @@ void *GetCampaignMapHeader(u16);void MI_CpuCopy32(void*,void*,s32);
 void func_ov003_021f14a0(void);void Apply3DSpriteBanks(void);
 void *CreateUnitSprite(void*);void InitUnitSprite(void*,s32,s32,s32,s32);
 void Set3DSpriteSlideTargetAndStart(void*,s32,s32,s32,s32);void Hide3DSprite(void*);
-s32 GetUnitSpriteWidth(void*);s32 GetUnitSpriteHeight(void*);void func_02087d84(void*,s32,s16,s16,u16,u16);
-void *func_0208bc24(void*);s32 Divide(s32,s32);s32 Modulo(s32,s32);
+s32 GetUnitSpriteWidth(void*);s32 GetUnitSpriteHeight(void*);void SpriteCellListSetCellRect(void*,s32,s16,s16,u16,u16);
+void *CreateScrollingTextSprite(void*);s32 Divide(s32,s32);s32 Modulo(s32,s32);
 void func_ov003_021e1530(void*,u8);void *CreateFrameBorderSprite(void*);void LoadFrameBorderSpritePattern(void*,s32,s32);void Sync3DSpriteToTarget(void*);
 static inline void RefreshSprite(void *sprite) {
 u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;
-if(active){s16 y=M2C_FIELD(sprite,s16*,0x52),x=M2C_FIELD(sprite,s16*,0x50);s32 w=GetUnitSpriteWidth(sprite),h=GetUnitSpriteHeight(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,x,y,(u16)w,(u16)h);}
+if(active){s16 y=M2C_FIELD(sprite,s16*,0x52),x=M2C_FIELD(sprite,s16*,0x50);s32 w=GetUnitSpriteWidth(sprite),h=GetUnitSpriteHeight(sprite);SpriteCellListSetCellRect(M2C_FIELD(sprite,void**,0x64),1,x,y,(u16)w,(u16)h);}
 }
 static inline u8 CountEntries(void *object) {
 u8 n=0;u8 i=0;for(;i<5;i++)if(M2C_FIELD(M2C_FIELD(object,u8**,0x6c)+i*0x6f8,u8*,0x27))n++;return n;
@@ -50,10 +50,10 @@ for(i=0;i<VisibleEntries(p);i++)MI_CpuCopy32(M2C_FIELD(p,u8**,0x6c)+i*0x6f8,GetC
 func_ov003_021f14a0();Apply3DSpriteBanks();
 q=M2C_FIELD(p,u8**,0x44);
 M2C_FIELD(q,void**,0)=CreateUnitSprite(p);InitUnitSprite(M2C_FIELD(q,void**,0),32,320,3,0);
-sprite=M2C_FIELD(q,u8**,0);Set3DSpriteSlideTargetAndStart(sprite,112,164,112,192);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=GetUnitSpriteWidth(sprite);s32 sh=GetUnitSpriteHeight(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}Hide3DSprite(M2C_FIELD(q,void**,0));
+sprite=M2C_FIELD(q,u8**,0);Set3DSpriteSlideTargetAndStart(sprite,112,164,112,192);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=GetUnitSpriteWidth(sprite);s32 sh=GetUnitSpriteHeight(sprite);SpriteCellListSetCellRect(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}Hide3DSprite(M2C_FIELD(q,void**,0));
 M2C_FIELD(q,void**,4)=CreateUnitSprite(p);InitUnitSprite(M2C_FIELD(q,void**,4),2,332,3,0);
-sprite=M2C_FIELD(q,u8**,4);Set3DSpriteSlideTargetAndStart(sprite,224,160,224,192);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=GetUnitSpriteWidth(sprite);s32 sh=GetUnitSpriteHeight(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}Hide3DSprite(M2C_FIELD(q,void**,4));
-M2C_FIELD(p,void**,0x58)=func_0208bc24(p);M2C_FIELD(M2C_FIELD(p,void**,0x58),u16*,0x3e)=876;
+sprite=M2C_FIELD(q,u8**,4);Set3DSpriteSlideTargetAndStart(sprite,224,160,224,192);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=GetUnitSpriteWidth(sprite);s32 sh=GetUnitSpriteHeight(sprite);SpriteCellListSetCellRect(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}Hide3DSprite(M2C_FIELD(q,void**,4));
+M2C_FIELD(p,void**,0x58)=CreateScrollingTextSprite(p);M2C_FIELD(M2C_FIELD(p,void**,0x58),u16*,0x3e)=876;
 sprite=M2C_FIELD(p,u8**,0x58);M2C_FIELD(sprite,u32*,0x40)=(M2C_FIELD(sprite,u32*,0x40)&~0x3fc0000)|0x300000;
 ResetAnim(M2C_FIELD(p,void**,0x3c));ResetAnim(M2C_FIELD(p,void**,0x40));
 n=VisibleEntries(p);menu=M2C_FIELD(p,u8**,0x48);menu[11]=n;n=func_ov003_021f2560();
@@ -75,10 +75,10 @@ if(!n)down=up=i;else if((u8)(i-5)>=n)down=up=(u16)(n-1);break;
 case 10:down=up=10;if(n){left=(u16)(n-1);right=0;}else if(!menu[11]){left=right=10;}else{left=(u16)(menu[11]+4);right=5;}break;
 }
 M2C_FIELD(menu+i*4,void**,12)=CreateUnitSprite(p);sprite=M2C_FIELD(menu+i*4,u8**,12);M2C_FIELD(sprite,u16*,0x2e)=i;
-InitUnitSprite(sprite,71,0,0,0);sprite=M2C_FIELD(menu+i*4,u8**,12);Set3DSpriteSlideTargetAndStart(sprite,x,y,x,y);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=GetUnitSpriteWidth(sprite);s32 sh=GetUnitSpriteHeight(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
-M2C_FIELD(sprite,s16*,0x34)=x;M2C_FIELD(sprite,s16*,0x36)=y;{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=GetUnitSpriteWidth(sprite);s32 sh=GetUnitSpriteHeight(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
+InitUnitSprite(sprite,71,0,0,0);sprite=M2C_FIELD(menu+i*4,u8**,12);Set3DSpriteSlideTargetAndStart(sprite,x,y,x,y);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=GetUnitSpriteWidth(sprite);s32 sh=GetUnitSpriteHeight(sprite);SpriteCellListSetCellRect(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
+M2C_FIELD(sprite,s16*,0x34)=x;M2C_FIELD(sprite,s16*,0x36)=y;{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=GetUnitSpriteWidth(sprite);s32 sh=GetUnitSpriteHeight(sprite);SpriteCellListSetCellRect(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
 M2C_FIELD(sprite,u32*,0x40)=(M2C_FIELD(sprite,u32*,0x40)&~511)|(w&511);
-M2C_FIELD(sprite,u32*,0x40)=(M2C_FIELD(sprite,u32*,0x40)&0xfffc01ff)|((u32)(h<<23)>>14);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=GetUnitSpriteWidth(sprite);s32 sh=GetUnitSpriteHeight(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
+M2C_FIELD(sprite,u32*,0x40)=(M2C_FIELD(sprite,u32*,0x40)&0xfffc01ff)|((u32)(h<<23)>>14);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=GetUnitSpriteWidth(sprite);s32 sh=GetUnitSpriteHeight(sprite);SpriteCellListSetCellRect(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}
 sprite=M2C_FIELD(menu+i*4,u8**,12);M2C_FIELD(sprite,u16*,0x68)=left;M2C_FIELD(sprite,u16*,0x6a)=right;M2C_FIELD(sprite,u16*,0x6c)=up;M2C_FIELD(sprite,u16*,0x6e)=down;
 }
 func_ov003_021e1530(menu,10);

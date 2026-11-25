@@ -105,13 +105,15 @@ OS_RestoreInterrupts(key);
 return FinishFileRequest(req);
 }
 
-void InitArchive(void *arg0) {
+/* Reset an archive handle: zero the whole 0x5C-byte handle and then clear the
+ * four work words at +0x0C..+0x18 again. */
+void InitArchive(FSArchive *archive) {
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
-    MI_CpuFill8(arg0, 0, 0x5C);
-    M2C_FIELD(arg0, s32 *, 0x10) = 0;
-    M2C_FIELD(arg0, s32 *, 0xC) = 0;
-    M2C_FIELD(arg0, s32 *, 0x18) = 0;
-    M2C_FIELD(arg0, s32 *, 0x14) = 0;
+    MI_CpuFill8((void *)archive, 0, 0x5C);
+    archive->unk10 = 0;
+    archive->unk0C = 0;
+    archive->unk18 = 0;
+    archive->unk14 = 0;
 }
 
 /* Find the open archive registered under the packed form of `name`/`length`,
@@ -393,7 +395,7 @@ M2C_UNK FileOperationCompleted(M2C_UNK file, s32 result) {
     OS_RestoreInterrupts(key);
 }
 
-void func_0200b74c(s32 a){void InitCardArchive(s32);extern s32 data_0212fbf8;if(data_0212fbf8)return;data_0212fbf8=1;InitCardArchive(a);}
+void InitCardArchiveOnce(s32 a){void InitCardArchive(s32);extern s32 data_0212fbf8;if(data_0212fbf8)return;data_0212fbf8=1;InitCardArchive(a);}
 
 void InitFileRequest(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = 0;

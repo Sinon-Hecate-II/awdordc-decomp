@@ -305,11 +305,13 @@ s32 HasScreenTransitionSprite(void) {
  return var_r0;
 }
 
+/* Whether the screen-change split transition is enabled: it has a sprite and a
+ * state block, and the block's TRANSITION_ENABLED flag is set. */
 s32 IsScreenTransitionEnabled(void) {
  extern s32 gScreenTransition;
  if(HasScreenTransitionSprite()==0) return 0;
  if(gScreenTransition==0) return 0;
- return *(s16 *)gScreenTransition & 2;
+ return ((ScreenTransition *)gScreenTransition)->flags & TRANSITION_ENABLED;
 }
 
 /* Enable or disable the screen-change split transition: while its sprite and state
@@ -340,11 +342,14 @@ s32 CancelScreenTransition(void) {
     return 0;
 }
 
+/* The active screen-change transition's variant (an index into
+ * gScreenTransitionNames), or -1 when there is no transition running. */
 s32 GetScreenTransitionType(void) {
+    s32 HasScreenTransitionSprite(void);
     extern s32 gScreenTransition;
     if (HasScreenTransitionSprite() == 0) return -1;
     if (gScreenTransition == 0) return -1;
-    return *(s16 *)(gScreenTransition + 2);
+    return ((ScreenTransition *)gScreenTransition)->type;
 }
 
 /* Start the split screen-change transition of `type` over `length` frames:

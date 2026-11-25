@@ -825,19 +825,21 @@ void func_020e4304(void) {
     gOnlinePlayerCount = -1;
 }
 
-void *func_020e4318(void *arg0) {
+/* Destructor of an online-player list node: reset its vtable, free the player-id
+ * array it collected, then release the node itself. */
+void *OnlinePlayerList_DestroyAndFree(void *node) {
     void MemFree(void *);
     extern M2C_UNK gOnlinePlayerListVtable;
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gOnlinePlayerListVtable;
-    if (M2C_FIELD(arg0, s32 *, 0x44) != 0) {
-        HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x44));
+    M2C_FIELD(node, M2C_UNK **, 0) = &gOnlinePlayerListVtable;
+    if (M2C_FIELD(node, s32 *, LIST_IDS) != 0) {
+        HeapFreeBlock(M2C_FIELD(node, s32 *, LIST_IDS));
     }
-    MemFree(arg0);
-    return arg0;
+    MemFree(node);
+    return node;
 }
 
-void *func_020e434c(void *arg0) {
+void *OnlinePlayerList_Destroy(void *arg0) {
     void HeapFreeBlock();
     extern M2C_UNK gOnlinePlayerListVtable;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &gOnlinePlayerListVtable;

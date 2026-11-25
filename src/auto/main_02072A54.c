@@ -39,12 +39,14 @@ s32 __read_console(s32 handle, u8 *buffer, u32 *count) {
     return 0;
 }
 
-s32 func_02072ac8(s32 unused,u8 *p,u32 *count) {
-void func_02072a40(u8 *);
-u32 i;
-u32 n=*count;
-for(i=0;i<n;i++) func_02072a40(p+i);
-return 0;
+/* Console output hook of the MSL stdio streams: send each of the *count
+ * characters in `buffer` through the per-character hook.  `handle` is not used. */
+s32 __write_console(s32 handle, u8 *buffer, u32 *count) {
+    void func_02072a40(u8 *);
+    u32 i;
+    u32 n = *count;
+    for (i = 0; i < n; i++) func_02072a40(buffer + i);
+    return 0;
 }
 
 s32 func_02072afc(void) {

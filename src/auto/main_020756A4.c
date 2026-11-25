@@ -7,7 +7,7 @@ typedef struct { u8 pad[0x2050]; u8 active, unk2051, state, unk2053; u8 queue[0x
 #pragma push
 #pragma opt_common_subs off
 void func_020756a4(void *a) {
-void *HeapAllocBlock(s32);void HeapFreeBlock(void *);s32 FindFreeNode(void *);void MI_CpuCopy32(void *,void *,s32);s32 func_020746fc(void *,void *);s32 OS_GetLockID(void);void MI_CpuCopy8(void *,void *);
+void *HeapAllocBlock(s32);void HeapFreeBlock(void *);s32 FindFreeNode(void *);void MI_CpuCopy32(void *,void *,s32);s32 SaveArchive_ComputeChecksum(void *,void *);s32 OS_GetLockID(void);void MI_CpuCopy8(void *,void *);
 s32 i,state;u8 *p; s32 shift;u8 byte;u32 mask;u8 *out;u16 id;u8 ok;u32 seq;
 if(!M2C_FIELD(a,u8 *,0x2050)||M2C_FIELD(a,u8 *,0x2052)==1)return;
 for(i=0;i<256;i++){
@@ -23,7 +23,7 @@ M2C_FIELD(out,u32 *,0)=0x32777364;
 if(M2C_FIELD(a,s32 *,0xc04)==0)M2C_FIELD(out,u32 *,8)=M2C_FIELD((u8 *)a+M2C_FIELD(a,s32 *,0xc00)*12,u32 *,0)+1;
 M2C_FIELD(out,u16 *,12)=0x54;MI_CpuCopy32((u8 *)a+0xc0c,out+20,64);
 out[14]=1;out[15]=1;seq=M2C_FIELD(a,u32 *,0xc08);M2C_FIELD(out,u16 *,16)=seq;M2C_FIELD(out,u16 *,18)=seq>>16;
-M2C_FIELD(out,s32 *,4)=func_020746fc(a,out);
+M2C_FIELD(out,s32 *,4)=SaveArchive_ComputeChecksum(a,out);
 id=OS_GetLockID();CARD_LockBackup(id);
 SaveDevice_Transfer(out,(M2C_FIELD(a,s32 *,0xc00)<<10)+(M2C_FIELD(a,s32 *,0xc04)<<8),M2C_FIELD(out,u16 *,12),0,0,1,7,10,2);
 ok=func_02010584()!=0;CARD_UnlockBackup(id);OS_ReleaseLockID(id);

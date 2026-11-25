@@ -346,11 +346,11 @@ void Ov003_RefreshMapPreview(void *obj) {
     if(((u8)(kind==2)||(u8)(kind==4)||(u8)(kind==6)||(u8)(kind==7)||(u8)(kind==8)) && (u8)IsUnavailable92(id)) {
         SetFileDirectory(data_ov003_02210398);
         LoadDecompressedFileTo(GetLocalizedFileName(data_ov003_022103a0),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));
-        AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,0x20),(u16)Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),0),0);
+        OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,void **,0x20),(u16)Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),0),0);
     } else if(!func_ov003_021f400c() && IsLinkSessionActive() && (u32)id>=225 && (u32)id<425 && !IsCampaignMapForLocalPlayer(id)) {
         SetFileDirectory(data_ov003_022103b0);
         LoadDecompressedFileTo(GetLocalizedFileName(data_ov003_022103b8),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));
-        AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,0x20),(u16)Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),0),0);
+        OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,void **,0x20),(u16)Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),0),0);
     } else {
         DrawMapPreviewLayer(M2C_FIELD(gCur3DSpriteEngine,void **,12),M2C_FIELD(gCur3DSpriteEngine,void **,0x20),(((u32)M2C_FIELD(obj,u8 *,0x3b)<<24)>>31)*322+1,5);
         M2C_FIELD(obj,u8 *,0x3b)=(M2C_FIELD(obj,u8 *,0x3b)&~0x80)|((u8)!(((u32)M2C_FIELD(obj,u8 *,0x3b)<<24)>>31)<<7);

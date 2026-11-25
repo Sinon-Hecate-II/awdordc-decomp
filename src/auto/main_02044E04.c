@@ -274,7 +274,7 @@ s32 GetWebResponseHeader(s32 *header) {
 s32 RegisterWebRequest(s32 requestStr, s32 context) {
     s32 HasNetError(void);
     s32 VerifyProfileIdBlockCrc(void *);
-    s32 func_020323f4(void *);
+    s32 HasResolvedNasProfileKey(void *);
     u32 StringLength(void *);
     void *StringCopyPad(void *, void *, s32);
     s32 strtoul(void *, s32, s32);
@@ -295,7 +295,7 @@ s32 RegisterWebRequest(s32 requestStr, s32 context) {
     if (M2C_FIELD(&gWebTransaction, s32 *, 0) != 0) {
         return 3;
     }
-    if (VerifyProfileIdBlockCrc((void *)context) == 0 || func_020323f4((void *)context) == 0) {
+    if (VerifyProfileIdBlockCrc((void *)context) == 0 || HasResolvedNasProfileKey((void *)context) == 0) {
         return 6;
     }
     if (StringLength((void *)requestStr) >= 0x54u) {
@@ -550,10 +550,15 @@ s32 GetWebResponseOnlinePlayerCount(s32 *online) {
  return 0;
 }
 
-s32 func_02045c90(M2C_UNK arg0) {
+/* Read the three player save-slot images that hold the friend codes from the save
+ * area over the FIFO into `slots` (the front of the WFC friends block), which is
+ * WFC_SAVE_SLOT_COUNT images of WFC_STATE_SLOT_STRIDE bytes.  Returns 1 when the
+ * read succeeded. */
+s32 FifoReadWfcSaveSlots(void *slots) {
     s32 FifoReadBlock(s32, M2C_UNK, M2C_UNK);
     extern M2C_UNK gFifoBlockTransfer;
-    if (FifoReadBlock(M2C_FIELD(&gFifoBlockTransfer, s32 *, 8), 0x300, arg0) != 0) {
+    if (FifoReadBlock(M2C_FIELD(&gFifoBlockTransfer, s32 *, FIFO_XFER_ADDRESS),
+                      WFC_SAVE_SLOT_COUNT * WFC_STATE_SLOT_STRIDE, slots) != 0) {
         return 1;
     }
     return 0;

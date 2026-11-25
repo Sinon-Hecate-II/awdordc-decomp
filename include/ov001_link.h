@@ -15,6 +15,11 @@
 #define OV001_LINK_READY         0x0a /* players ready to start */
 #define OV001_LINK_JOINED_COPY   0x0c /* second joined map, must equal +2 when the link ends */
 
+/* Value of the OV001_LINK_STATUS word once the link is set up and every joined
+ * player is ready: the parent waits there for the game to start (a teardown then
+ * moves it on to 5) and Ov001_TryStartTransfer closes the link from it. */
+#define OV001_LINK_STATUS_READY 4
+
 /* Per-player records that follow the header, OV001_LINK_RECORD_SIZE bytes each,
  * player 1 first. */
 #define OV001_LINK_RECORDS          0x0e /* work-block offset of the first record */

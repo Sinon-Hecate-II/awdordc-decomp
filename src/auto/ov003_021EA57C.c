@@ -23,13 +23,13 @@ void func_ov003_021ea57c(void *arg0) {
     s32 GetSpriteAnimValue(s32);
     M2C_UNK func_020abbfc(void *);
     s32 IsRectOnScreen(M2C_UNK, s32, M2C_UNK, M2C_UNK);
-    s32 func_ov003_021e6d28();
+    s32 IsSessionGuest();
     s32 IsMapListCategory3();
     M2C_UNK GetWaypointOptionTextId(s8);
     M2C_UNK func_ov003_021ef210(void *, s32, s32, M2C_UNK);
     M2C_UNK func_ov003_021ef758(void *, s32);
     s32 func_ov003_022004d0();
-    s32 func_ov003_022004f0(M2C_UNK);
+    s32 GetWaypointSlotOffsetX(M2C_UNK);
     s32 GetWaypointOptionCoId(u8);
     extern M2C_UNK gSpriteDesc64x32;
     extern u16 **g3DSpriteEngineSub;
@@ -121,7 +121,7 @@ void func_ov003_021ea57c(void *arg0) {
                 if (var_r9 < 2U) {
                     var_r7 = 0;
                 } else {
-                    var_r7 = (s32) ((u32) (func_ov003_022004f0(2) << 0x10) >> 3) >> 0x10;
+                    var_r7 = (s32) ((u32) (GetWaypointSlotOffsetX(2) << 0x10) >> 3) >> 0x10;
                 }
                 temp_r0_2 = GetWaypointOptionCoId(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r9), u8 *, 0xA));
                 if (temp_r0_2 == 0) {
@@ -145,7 +145,7 @@ void func_ov003_021ea57c(void *arg0) {
                     var_r0_3 = 0;
                 }
                 if (var_r9 >= 2U) {
-                    func_ov003_022004f0(2);
+                    GetWaypointSlotOffsetX(2);
                 }
                 temp_r0_3 = GetWaypointOptionCoId(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r9), u8 *, 0xA));
                 if (var_r9 == M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7)) goto zero_37;
@@ -177,7 +177,7 @@ after_37:
                     var_r0_4 = 0;
                 }
                 if (var_r8 >= 2U) {
-                    func_ov003_022004f0(2);
+                    GetWaypointSlotOffsetX(2);
                 }
                 temp_r0_4 = GetWaypointOptionCoId(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0xA));
                 if (var_r8 == M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7)) goto zero_56;
@@ -213,7 +213,7 @@ after_56:
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x38) = (s16) (0 - (temp_r4_2 + func_ov003_022004d0()));
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x40) = 0xFFF0;
     temp_r5_2 = func_ov003_022004d0();
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x3A) = (s16) (0 - (temp_r4_2 + temp_r5_2 + func_ov003_022004f0(1)));
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x3A) = (s16) (0 - (temp_r4_2 + temp_r5_2 + GetWaypointSlotOffsetX(1)));
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x42) = 0xFFF0;
     temp_r8_2 = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x48));
     temp_r5_3 = M2C_FIELD(arg0, void **, 0x68);
@@ -245,7 +245,7 @@ after_56:
     if (!(var_r0_5 & 0xFF)) {
         func_ov003_021ef758(arg0, (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), s8 *, 4));
     }
-    if (func_ov003_021e6d28() != 0) {
+    if (IsSessionGuest() != 0) {
         if (((u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1C) >> 0x1E) == 1) {
             var_r0_6 = 1;
         } else {

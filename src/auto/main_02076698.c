@@ -21,8 +21,17 @@ void BuildCrc8Table(u8 *table, u32 polynomial) {
     }
 }
 
-s32 Crc8Update(s32 table,u8 *crc,s32 data,s32 size){u32 v,i;u8 *p=(u8*)data;v=*crc;
-for(i=0;i<(u32)size;i++)v=((u8*)table)[(u8)(v^*p++)];*crc=v;
+/* Fold `size` bytes at `data` through the CRC-8 lookup table and store the
+ * updated checksum back in *state. */
+s32 Crc8Update(s32 table, u8 *state, s32 data, s32 size) {
+    u32 crc = *state;
+    u32 i;
+    u8 *bytes = (u8 *)data;
+
+    for (i = 0; i < (u32)size; i++) {
+        crc = ((u8 *)table)[(u8)(crc ^ *bytes++)];
+    }
+    *state = crc;
 }
 
 /* Build the reflected CRC-16 lookup table used for save and map-record checksums. */
@@ -110,13 +119,15 @@ u16 Crc16Block(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     return sp0;
 }
 
-s32 Crc32Block(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK Crc32Update(M2C_UNK, s32 *, M2C_UNK, M2C_UNK);
-    s32 sp0;
+/* CRC-32 of `size` bytes at `data` through `table`, preset to all ones and
+ * complemented at the end, as the ZIP/PNG CRC-32. */
+s32 Crc32Block(s32 table, s32 data, s32 size) {
+    s32 Crc32Update(s32, s32 *, s32, s32);
+    s32 crc;
 
-    sp0 = -1;
-    Crc32Update(arg0, &sp0, arg1, arg2);
-    return ~sp0;
+    crc = -1;
+    Crc32Update(table, &crc, data, size);
+    return ~crc;
 }
 
 /* Clears the map view's render caches: the per-cell corner colour codes, the

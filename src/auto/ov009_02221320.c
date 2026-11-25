@@ -216,7 +216,7 @@ M2C_FIELD(arg0,u32*,0x40)=M2C_FIELD(packet,u32*,8)+12;
 M2C_FIELD(arg0,u32*,0x34)=0;
 p=M2C_FIELD(arg0,s32*,0x38);
 if(p){FreeLinkPacket(p);M2C_FIELD(arg0,s32*,0x38)=0;}
-func_ov009_02224cd8();
+RequestRemoveLinkEventListener();
 }
 }else{
 M2C_FIELD(arg0,u16*,0x44)=QueueMask215a4();
@@ -228,7 +228,7 @@ packet=func_ov009_02224d0c(length);
 M2C_FIELD(arg0,s32*,0x3c)=packet;
 PopQueue215a4(packet);
 if(M2C_FIELD(arg0,u32*,0x40)>192){
-func_ov009_02224ca4();
+RequestAddLinkEventListener();
 p=M2C_FIELD(arg0,s32*,0x3c);
 M2C_FIELD(arg0,u32*,0x34)=0;
 M2C_FIELD(arg0,s32*,0x38)=p;
@@ -291,7 +291,7 @@ loop:
 void func_ov009_02221ae8(Receive21ae8 *state){
 s32 GetLinkPhase(void);s32 func_ov009_02224d0c(u32);M2C_UNK FreeLinkPacket(s32);
 s32 IsLinkHost(void);s32 QueueHostLinkPacket(s32,s32,s32,u16);s32 ClearPlayerActive(s32,s32,s32,u8,s32);
-s32 SetConnectedPlayers(u16);s32 GetConnectedPlayers(void);s32 func_ov009_02224ca4(void);s32 func_ov009_02224cd8(void);
+s32 SetConnectedPlayers(u16);s32 GetConnectedPlayers(void);s32 RequestAddLinkEventListener(void);s32 RequestRemoveLinkEventListener(void);
 M2C_UNK MI_CpuCopy8();void SetLinkPlayerRecord(s32,M2C_UNK);
 s32 GetLinkLocalPlayerId(void);s32 GetLinkPlayerSlot(void);s32 GetBattleSaveBlock(void);s32 func_020c5640(s32);s32 SetBattleSlotRecord(s32,s32);s32 SendLinkPlayerInfo(u8);
 u32 func_ov009_022250f8(u8);s32 func_ov009_02225178(u8,s32);
@@ -320,7 +320,7 @@ SetConnectedPlayers(M2C_FIELD(packet,u16 *,12));p=M2C_FIELD(gLinkState,s32 *,0x2
 if(p){M2C_FIELD(p,u8 *,0)=1;M2C_FIELD(M2C_FIELD(gLinkState,s32 *,0x24),u16 *,2)=GetConnectedPlayers();}break;
 case 7:SetConnectedPlayers(M2C_FIELD(packet,u16 *,12));break;
 case 8:
-func_ov009_02224ca4();MI_CpuCopy8(packet+12,&desc,12);p=func_ov009_02224d0c(desc.length+12);
+RequestAddLinkEventListener();MI_CpuCopy8(packet+12,&desc,12);p=func_ov009_02224d0c(desc.length+12);
 WriteLinkPacketHeader(p,desc.type,desc.flags.low,desc.flags.high,0,desc.length,desc.mask);
 state->channels[channel].offset=0;state->channels[channel].packet=p;break;
 case 9:
@@ -330,7 +330,7 @@ case 10:
 p=state->channels[channel].packet;
 if(M2C_FIELD(p,u8 *,4)<16)Push21ae8(data_ov009_02226980,channel,p);else Push21ae8(data_ov009_022269b0,channel,p);
 state->channels[channel].offset=0;p=state->channels[channel].packet;
-if(p){FreeLinkPacket(p);state->channels[channel].packet=0;}func_ov009_02224cd8();break;
+if(p){FreeLinkPacket(p);state->channels[channel].packet=0;}RequestRemoveLinkEventListener();break;
 case 11:
 SetLinkPlayerRecord((u8)channel,packet+12);GetLinkLocalPlayerId();p=GetLinkPlayerSlot();QueueHostLinkPacket(12,p,96,(u16)(1<<channel));break;
 case 12:
@@ -363,14 +363,18 @@ void SetLinkPlayerRecord(s32 arg0, M2C_UNK arg1) {
     MI_CpuCopy8(arg1, (arg0 * 0x60) + (s32) &gLinkPlayers);
 }
 
-s32 func_ov009_0222229c(s32 arg0, s32 arg1) {
+/* Link phase-wait callback: the first argument is unused (a callback self
+ * pointer).  Returns nonzero while the link's current phase differs from
+ * `expectedPhase`, but 0 for the terminal ERROR and ABORTED phases so a failed
+ * link is never read as the phase having changed. */
+s32 IsLinkWaitingForPhase(s32 self, s32 expectedPhase) {
     s32 GetLinkPhase();
     switch (GetLinkPhase()) {
-    case 8:
-    case 9:
+    case LINK_PHASE_ERROR:
+    case LINK_PHASE_ABORTED:
         return 0;
     default:
-        return arg1 != GetLinkPhase();
+        return expectedPhase != GetLinkPhase();
     }
 }
 

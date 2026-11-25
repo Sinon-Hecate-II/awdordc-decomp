@@ -202,10 +202,12 @@ s32 IsAiMap175Player2Override(void) {
  return 0;
 }
 
+/* AI override for map 0xAF (175): on that map only, clear the influence maps
+ * and plan the AI unit's move. */
 void RunAiMap175MoveOverride(void) {
     M2C_UNK PlanAiUnitMove();
     extern void **gCurrentMap;
-    if (M2C_FIELD(*gCurrentMap, u16 *, 0x5142) != 0xAF) {
+    if (M2C_FIELD(*gCurrentMap, u16 *, MAP_ID) != 0xAF) {
         return;
     }
     ClearAiInfluenceMaps();

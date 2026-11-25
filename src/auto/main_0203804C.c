@@ -60,7 +60,7 @@ void TeardownNetSession(void) {
     void func_0203bd0c(void);
     void gpiInfoCloseSocket(void);
     s32 gpiSetPeerCallback(void *channel, s32 a, s32 b, s32 c);
-    void func_0204db50(void *channel);
+    void gpiThinkConnection(void *channel);
     void func_0204db34(void *channel);
     void FreeNasLoginContext(void);
     void func_0203b088(void);
@@ -85,7 +85,7 @@ void TeardownNetSession(void) {
         gpiSetPeerCallback(gNetSession + 0x1C, 3, 0, 0);
         gpiSetPeerCallback(gNetSession + 0x1C, 1, 0, 0);
         gpiSetPeerCallback(gNetSession + 0x1C, 2, 0, 0);
-        func_0204db50(gNetSession + 0x1C);
+        gpiThinkConnection(gNetSession + 0x1C);
         func_0204db34(gNetSession + 0x1C);
         M2C_FIELD(gNetSession, s32 *, 0x1C) = 0;
     }
@@ -103,7 +103,7 @@ void TeardownNetSession(void) {
 /* Advances the online connection state, installs callbacks after the availability check, and releases deferred network resources. */
 void TickNetSession(void) {
     extern void *gNetSession;
-    extern M2C_UNK func_02039698;
+    extern M2C_UNK HandleConnectionErrorCallback;
     extern M2C_UNK HandleGpcmMatMessage;
     extern M2C_UNK HandleBuddyAddRequest;
     extern M2C_UNK MatchSession_ReportBuddyStatus;
@@ -113,13 +113,13 @@ void TickNetSession(void) {
     s32 func_0204837c(void);
     s32 ReportNetErrorForState(s32);
     void SetNetState(s32);
-    void func_02039c68(void);
+    void StartNasLoginRequest(void);
     void func_02039ca0(void);
     void ReportNasLoginError(s32, s32);
     void func_0203aabc(void);
     void func_0203cb38(s32);
     void UpdateTransferSlots(void);
-    s32 func_0204db04(s32, s32, s32);
+    s32 gpiInitializeConnection(s32, s32, s32);
     s32 gpiSetPeerCallback(void *, s32, s32, s32);
     void Qr2_DestroyConnection(void *);
 
@@ -130,13 +130,13 @@ void TickNetSession(void) {
     case 1:
         switch (func_0204837c()) {
         case 1:
-            if (ReportNetErrorForState(func_0204db04((s32)gNetSession + 0x1c, M2C_FIELD(gNetSession, s32 *, 0xa0), 0))) return;
-            if (ReportNetErrorForState(gpiSetPeerCallback((u8 *)gNetSession + 0x1c, 0, (s32)&func_02039698, 0))) return;
+            if (ReportNetErrorForState(gpiInitializeConnection((s32)gNetSession + 0x1c, M2C_FIELD(gNetSession, s32 *, 0xa0), 0))) return;
+            if (ReportNetErrorForState(gpiSetPeerCallback((u8 *)gNetSession + 0x1c, 0, (s32)&HandleConnectionErrorCallback, 0))) return;
             if (ReportNetErrorForState(gpiSetPeerCallback((u8 *)gNetSession + 0x1c, 3, (s32)&HandleGpcmMatMessage, 0))) return;
             if (ReportNetErrorForState(gpiSetPeerCallback((u8 *)gNetSession + 0x1c, 1, (s32)&HandleBuddyAddRequest, 0))) return;
             if (ReportNetErrorForState(gpiSetPeerCallback((u8 *)gNetSession + 0x1c, 2, (s32)&MatchSession_ReportBuddyStatus, 0))) return;
             SetNetState(2);
-            func_02039c68();
+            StartNasLoginRequest();
             break;
         case 2:
             ReportNasLoginError(3, -0x4e8e);
@@ -453,9 +453,32 @@ s32 GetActiveConnectionList(s32 *outList) {
     return GetPeerSlotList(outList);
 }
 
-s32 func_02038f00(void){extern void *gNetSession;s32 GetActiveConnectionList(s32 *);s32 MaskPlayerIds(s32,s32);s32 a,b;if(!gNetSession)return 0;b=GetActiveConnectionList(&a);return MaskPlayerIds(a,b);}
+/* Bit mask of the player ids that hold an active connection in the online
+ * session (0 when there is no session): the ids of GetActiveConnectionList,
+ * folded into one bit each by MaskPlayerIds. */
+s32 GetOnlinePlayerMask(void) {
+    extern void *gNetSession;
+    s32 GetActiveConnectionList(s32 *);
+    u32 MaskPlayerIds(u8 *, s32);
+    s32 playerIds;
+    s32 count;
 
-s32 IsConnectionActive(s32 a){extern void *gNetSession;s32 HasPlayerConnection(s32);if(!gNetSession)return 0;if(!(M2C_FIELD(gNetSession,u32 *,0x664)&(1<<a)))return 0;return HasPlayerConnection(a);}
+    if (!gNetSession) {
+        return 0;
+    }
+    count = GetActiveConnectionList(&playerIds);
+    return MaskPlayerIds((u8 *) playerIds, count);
+}
+
+/* Whether session player `playerId` is in the connected-player mask and reports
+ * an active connection. */
+s32 IsConnectionActive(s32 playerId) {
+    extern void *gNetSession;
+    s32 HasPlayerConnection(s32);
+    if (!gNetSession) return 0;
+    if (!(M2C_FIELD(gNetSession, u32 *, NET_SESSION_CONNECTED_MASK) & (1 << playerId))) return 0;
+    return HasPlayerConnection(playerId);
+}
 
 s32 GetNetSessionState(void) {
     extern void *gNetSession;

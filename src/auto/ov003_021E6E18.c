@@ -4,7 +4,7 @@
 #include "sprite_grid.h"
 #include "waypoint_panel.h"
 s32 IsSessionHost(void);
-s32 func_ov003_021e6d28(void);
+s32 IsSessionGuest(void);
 s32 GetLocalPlayerIdForOverlay(void);
 s32 IsWaypointOptionValid(s32);
 static inline u8 SlotOwner(void *p, s32 i) {return M2C_FIELD(p+i,u8 *,0x74);}
@@ -12,7 +12,7 @@ static inline u8 SlotEmpty(void *p,s32 i) {u8 result;if(SlotOwner(p,i)==255)resu
 static inline void SetSlotValue(void *p,u8 v) {
 u8 owner;
 if(IsSessionHost()) {owner=SlotOwner(p,M2C_FIELD(p,u8 *,7));if(owner!=GetLocalPlayerIdForOverlay() && !SlotEmpty(p,M2C_FIELD(p,u8 *,7)))goto store;}
-if(func_ov003_021e6d28()) {owner=SlotOwner(p,M2C_FIELD(p,u8 *,7));if(owner!=GetLocalPlayerIdForOverlay())goto store;}
+if(IsSessionGuest()) {owner=SlotOwner(p,M2C_FIELD(p,u8 *,7));if(owner!=GetLocalPlayerIdForOverlay())goto store;}
 if(!IsWaypointOptionValid(v))return;
 store:
 M2C_FIELD(p+M2C_FIELD(p,u8 *,7),u8 *,10)=v;M2C_FIELD(p,u8 *,8)=v;
@@ -79,7 +79,7 @@ s32 IsWaypointOptionValid(s32 option) {
  * slot, or scroll the map view. The selected action is then passed to the
  * display refresh (FindObjectByZ) and stored as the list's current handle. */
 void HandleWaypointInput(void *arg0,int action){
-s32 IsSessionHost(void);s32 func_ov003_021e6d28(void);s32 GetLocalPlayerIdForOverlay(void);s32 IsLinkSessionActive(void);
+s32 IsSessionHost(void);s32 IsSessionGuest(void);s32 GetLocalPlayerIdForOverlay(void);s32 IsLinkSessionActive(void);
 s32 FindObjectByZ(s32);
 u8 *list=arg0;
 switch((u32)action){

@@ -7,12 +7,12 @@ typedef struct { u8 pad[0x40]; u32 tile:9; u32 palette:9; u32 priority:8; u32 ot
 void func_020e0f14(M2C_UNK arg0) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
-    M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
+    M2C_UNK SpriteCellListSetCellRect(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void *Create3DSprite(void *);
     M2C_UNK SetSpriteText(void *, M2C_UNK *);
-    void *func_0208bc24(void *);
+    void *CreateScrollingTextSprite(void *);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(void *);
     s32 GetUnitSpriteWidth(void *);
@@ -21,7 +21,7 @@ void func_020e0f14(M2C_UNK arg0) {
     M2C_UNK AcquireUsernameFont();
     extern M2C_UNK data_0212c5c4;
     extern M2C_UNK data_0212c6a8;
-    extern M2C_UNK data_0212d1e8;
+    extern M2C_UNK gPlayerLabelVTable;
     extern M2C_UNK gSpriteDesc64x32;
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
@@ -65,7 +65,7 @@ void func_020e0f14(M2C_UNK arg0) {
     if (temp_r0 == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_0212d1e8;
+    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gPlayerLabelVTable;
     M2C_FIELD(temp_r0, s32 *, 0x34) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x38) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x3C) = 0;
@@ -114,7 +114,7 @@ void func_020e0f14(M2C_UNK arg0) {
         temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
         temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
         temp_r9 = GetUnitSpriteWidth(temp_r6);
-        func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
     }
     temp_r1 = M2C_FIELD(temp_r0, void **, 0x50);
     M2C_FIELD(temp_r1, s16 *, 0x34) = 0xC0;
@@ -136,7 +136,7 @@ void func_020e0f14(M2C_UNK arg0) {
         temp_r7_2 = M2C_FIELD(temp_r6_2, s16 *, 0x52);
         temp_r8_2 = M2C_FIELD(temp_r6_2, s16 *, 0x50);
         temp_r9_2 = GetUnitSpriteWidth(temp_r6_2);
-        func_02087d84(M2C_FIELD(temp_r6_2, void **, 0x64), 1, temp_r8_2, temp_r7_2, (u16) temp_r9_2, (u16) GetUnitSpriteHeight(temp_r6_2));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6_2, void **, 0x64), 1, temp_r8_2, temp_r7_2, (u16) temp_r9_2, (u16) GetUnitSpriteHeight(temp_r6_2));
     }
     temp_r1_3 = M2C_FIELD(temp_r0, void **, 0x54);
     M2C_FIELD(temp_r1_3, s16 *, 0x34) = 0xC0;
@@ -158,7 +158,7 @@ void func_020e0f14(M2C_UNK arg0) {
         temp_r7_3 = M2C_FIELD(temp_r6_3, s16 *, 0x52);
         temp_r8_3 = M2C_FIELD(temp_r6_3, s16 *, 0x50);
         temp_r9_3 = GetUnitSpriteWidth(temp_r6_3);
-        func_02087d84(M2C_FIELD(temp_r6_3, void **, 0x64), 1, temp_r8_3, temp_r7_3, (u16) temp_r9_3, (u16) GetUnitSpriteHeight(temp_r6_3));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6_3, void **, 0x64), 1, temp_r8_3, temp_r7_3, (u16) temp_r9_3, (u16) GetUnitSpriteHeight(temp_r6_3));
     }
     temp_r1_5 = M2C_FIELD(temp_r0, void **, 0x58);
     M2C_FIELD(temp_r1_5, s16 *, 0x34) = 0xE0;
@@ -177,7 +177,7 @@ void func_020e0f14(M2C_UNK arg0) {
         temp_r7_4 = M2C_FIELD(temp_r6_4, s16 *, 0x52);
         temp_r8_4 = M2C_FIELD(temp_r6_4, s16 *, 0x50);
         temp_r9_4 = GetUnitSpriteWidth(temp_r6_4);
-        func_02087d84(M2C_FIELD(temp_r6_4, void **, 0x64), 1, temp_r8_4, temp_r7_4, (u16) temp_r9_4, (u16) GetUnitSpriteHeight(temp_r6_4));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6_4, void **, 0x64), 1, temp_r8_4, temp_r7_4, (u16) temp_r9_4, (u16) GetUnitSpriteHeight(temp_r6_4));
     }
     temp_r1_6 = M2C_FIELD(temp_r0, void **, 0x5C);
     M2C_FIELD(temp_r1_6, s16 *, 0x34) = -0x9F;
@@ -197,7 +197,7 @@ void func_020e0f14(M2C_UNK arg0) {
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), s16 *, 0x3E) = 0x388;
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), M2C_UNK **, 0x44) = &gSpriteDesc64x32;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    temp_r0_4 = func_0208bc24(temp_r0);
+    temp_r0_4 = CreateScrollingTextSprite(temp_r0);
     M2C_FIELD(temp_r0, void **, 0x64) = temp_r0_4;
     M2C_FIELD(temp_r0_4, s16 *, 0x3E) = 0x140;
     temp_r2 = M2C_FIELD(temp_r0, void **, 0x64);
@@ -211,12 +211,12 @@ void func_020e0f14(M2C_UNK arg0) {
 void func_020e147c(M2C_UNK arg0) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
-    M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
+    M2C_UNK SpriteCellListSetCellRect(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void *Create3DSprite(void *);
     M2C_UNK SetSpriteText(void *, M2C_UNK *);
-    void *func_0208bc24(void *);
+    void *CreateScrollingTextSprite(void *);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(void *);
     s32 GetUnitSpriteWidth(void *);
@@ -225,7 +225,7 @@ void func_020e147c(M2C_UNK arg0) {
     M2C_UNK AcquireUsernameFont();
     extern M2C_UNK data_0212c5c4;
     extern M2C_UNK data_0212c6a8;
-    extern M2C_UNK data_0212d1e8;
+    extern M2C_UNK gPlayerLabelVTable;
     extern M2C_UNK gSpriteDesc64x32;
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
@@ -270,7 +270,7 @@ void func_020e147c(M2C_UNK arg0) {
     if (temp_r0 == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_0212d1e8;
+    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gPlayerLabelVTable;
     M2C_FIELD(temp_r0, s32 *, 0x34) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x38) = 1;
     M2C_FIELD(temp_r0, s32 *, 0x3C) = 0;
@@ -319,7 +319,7 @@ void func_020e147c(M2C_UNK arg0) {
         temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
         temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
         temp_r9 = GetUnitSpriteWidth(temp_r6);
-        func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
     }
     temp_r1 = M2C_FIELD(temp_r0, void **, 0x50);
     M2C_FIELD(temp_r1, s16 *, 0x34) = 0xC0;
@@ -341,7 +341,7 @@ void func_020e147c(M2C_UNK arg0) {
         temp_r7_2 = M2C_FIELD(temp_r6_2, s16 *, 0x52);
         temp_r8_2 = M2C_FIELD(temp_r6_2, s16 *, 0x50);
         temp_r9_2 = GetUnitSpriteWidth(temp_r6_2);
-        func_02087d84(M2C_FIELD(temp_r6_2, void **, 0x64), 1, temp_r8_2, temp_r7_2, (u16) temp_r9_2, (u16) GetUnitSpriteHeight(temp_r6_2));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6_2, void **, 0x64), 1, temp_r8_2, temp_r7_2, (u16) temp_r9_2, (u16) GetUnitSpriteHeight(temp_r6_2));
     }
     temp_r1_3 = M2C_FIELD(temp_r0, void **, 0x54);
     M2C_FIELD(temp_r1_3, s16 *, 0x34) = 0xC0;
@@ -363,7 +363,7 @@ void func_020e147c(M2C_UNK arg0) {
         temp_r7_3 = M2C_FIELD(temp_r6_3, s16 *, 0x52);
         temp_r8_3 = M2C_FIELD(temp_r6_3, s16 *, 0x50);
         temp_r9_3 = GetUnitSpriteWidth(temp_r6_3);
-        func_02087d84(M2C_FIELD(temp_r6_3, void **, 0x64), 1, temp_r8_3, temp_r7_3, (u16) temp_r9_3, (u16) GetUnitSpriteHeight(temp_r6_3));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6_3, void **, 0x64), 1, temp_r8_3, temp_r7_3, (u16) temp_r9_3, (u16) GetUnitSpriteHeight(temp_r6_3));
     }
     temp_r1_5 = M2C_FIELD(temp_r0, void **, 0x58);
     M2C_FIELD(temp_r1_5, s16 *, 0x34) = 0xE0;
@@ -382,7 +382,7 @@ void func_020e147c(M2C_UNK arg0) {
         temp_r7_4 = M2C_FIELD(temp_r6_4, s16 *, 0x52);
         temp_r8_4 = M2C_FIELD(temp_r6_4, s16 *, 0x50);
         temp_r9_4 = GetUnitSpriteWidth(temp_r6_4);
-        func_02087d84(M2C_FIELD(temp_r6_4, void **, 0x64), 1, temp_r8_4, temp_r7_4, (u16) temp_r9_4, (u16) GetUnitSpriteHeight(temp_r6_4));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6_4, void **, 0x64), 1, temp_r8_4, temp_r7_4, (u16) temp_r9_4, (u16) GetUnitSpriteHeight(temp_r6_4));
     }
     temp_r1_6 = M2C_FIELD(temp_r0, void **, 0x5C);
     M2C_FIELD(temp_r1_6, s16 *, 0x34) = -0x9F;
@@ -403,7 +403,7 @@ void func_020e147c(M2C_UNK arg0) {
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), s16 *, 0x3E) = 0x388;
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), M2C_UNK **, 0x44) = &gSpriteDesc64x32;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    temp_r0_4 = func_0208bc24(temp_r0);
+    temp_r0_4 = CreateScrollingTextSprite(temp_r0);
     M2C_FIELD(temp_r0, void **, 0x64) = temp_r0_4;
     M2C_FIELD(temp_r0_4, s16 *, 0x3E) = 0x140;
     temp_r2 = M2C_FIELD(temp_r0, void **, 0x64);

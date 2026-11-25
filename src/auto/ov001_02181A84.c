@@ -267,7 +267,7 @@ s32 Ov001_IsFadeActive(s32);s32 Ov001_IsIconRowIdle(void);
 if(Ov001_IsFadeActive(1))return;
 if(Ov001_IsFadeActive(0))return;
 if(!Ov001_IsIconRowIdle())return;
-Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();Ov001_FreeFile(M2C_FIELD(&gOv001IconMenuState,void **,4));
+Ov001_FreeSpriteObjects();Ov001_FreeMessagePanel();Ov001_FreeFile(M2C_FIELD(&gOv001IconMenuState,void **,4));
 Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,20);
 if(!M2C_FIELD(&gOv001IconMenuState,u8 *,2)){Ov001_SetNextScreenMode(2,0);Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);return;}
 switch(M2C_FIELD(&gOv001IconMenuState,s8 *,1)){
@@ -438,18 +438,20 @@ void Ov001_FadeInWfcConnectScreen(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitWfcConnectFadeIn);
 }
 
+/* Step that waits for the Wi-Fi connect screen's sub and main fades to finish, then
+ * hands over to the step that runs once the screen is ready. */
 void Ov001_WaitWfcConnectFadeIn(void) {
-    extern M2C_UNK func_ov001_021824a8;
-    if (Ov001_IsFadeActive(1) != 0) {
+    extern M2C_UNK Ov001_WfcConnectFadeDone;
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_021824a8);
+    Ov001_SetStepCallback(&Ov001_WfcConnectFadeDone);
 }
 
-void func_ov001_021824a8(void) {
+void Ov001_WfcConnectFadeDone(void) {
     void func_ov001_021824bc(void);
     void func_ov001_021824c0(void);
     void func_ov001_021824c4(void);
@@ -553,15 +555,17 @@ void func_ov001_02182628(s32 arg0, s32 arg1) {
     Ov001_FreeHeapBlock(arg1);
 }
 
+/* Open the Wi-Fi success screen: load its background, show its message box and
+ * start the screen's fade-in. */
 void Ov001_ShowWfcSuccessScreen(void) {
     M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
     void Ov001_LoadWfcSuccessBackground();
     extern u8 gOv001WfcSuccessFrames;
-    extern M2C_UNK func_ov001_021826d4;
+    extern M2C_UNK Ov001_FadeInWfcSuccessScreen;
     gOv001WfcSuccessFrames = 0;
     Ov001_LoadWfcSuccessBackground();
-    Ov001_ShowMessageBox(0x2D);
-    Ov001_SetStepCallback(&func_ov001_021826d4);
+    Ov001_ShowMessageBox(OV001_MSG_WFC_SUCCESS);
+    Ov001_SetStepCallback(&Ov001_FadeInWfcSuccessScreen);
 }
 
 /* Load the WFC success screen's background map into BG2 and give the sub- and
@@ -577,16 +581,19 @@ void Ov001_LoadWfcSuccessBackground(void) {
     REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_021826d4(void) {
+/* Fade in the WFC success screen: fade the main screen in from white with its
+ * BG0/BG2 and OBJ planes, show those planes, then hand over to the step that
+ * waits for the fade to finish. */
+void Ov001_FadeInWfcSuccessScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_02182708;
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_02182708);
+    extern M2C_UNK Ov001_WaitWfcSuccessFadeIn;
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
+    Ov001_SetStepCallback(&Ov001_WaitWfcSuccessFadeIn);
 }
 
-void func_ov001_02182708(void) {
+void Ov001_WaitWfcSuccessFadeIn(void) {
     extern M2C_UNK func_ov001_0218272c;
     if (Ov001_IsFadeActive(0) != 0) {
         return;
@@ -627,7 +634,7 @@ void Ov001_LeaveWfcSuccessScreen(void) {
    layout to settle, frees the screen's backgrounds and hides its planes, then goes to
    the map list when the name entry mode is 0 and to the Wi-Fi menu otherwise. */
 void Ov001_FinishWfcScreen(void) {
-    M2C_UNK Ov001_FreeOptionBackground();
+    M2C_UNK Ov001_FreeMessagePanel();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
     s32 Ov001_IsMenuLayoutReady();
@@ -647,7 +654,7 @@ void Ov001_FinishWfcScreen(void) {
         return;
     }
     Ov001_FreePageBackground(0);
-    Ov001_FreeOptionBackground();
+    Ov001_FreeMessagePanel();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
     Ov001_SetNextScreenMode(2, 1);

@@ -122,14 +122,24 @@ void func_020e0368(void) {
 }
 
 s32 IsMapConfirmEnabled();
-M2C_UNK SlideOutOnlineMenu(void *arg0) { s16 v; void *q; u16 value; HideOnlineMenuSprites(arg0);  v=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x68));
- q=M2C_FIELD(arg0,void**,0x68);
- M2C_FIELD(q,s16*,0xe)=v;
- M2C_FIELD(q,s16*,0x10)=-255;
- M2C_FIELD(q,s16*,0xc)=12;
- value=M2C_FIELD(q,u16*,4);
-M2C_FIELD(q,u16*,2)=value;
- return value;
+/* Close the online session: hide the menu's sprites and spawn its departure
+ * object (HideOnlineMenuSprites), then start the menu panel's slide-out tween
+ * from the current animation value down to -255 over 12 frames.  Returns the
+ * tween's start value. */
+M2C_UNK SlideOutOnlineMenu(void *menu) {
+    s16 value;
+    SpriteTween *slide;
+    u16 start;
+
+    HideOnlineMenuSprites(menu);
+    value = GetSpriteAnimValue(M2C_FIELD(menu, void **, 0x68));
+    slide = M2C_FIELD(menu, void **, 0x68);
+    slide->from = value;
+    slide->to = -255;
+    slide->duration = 12;
+    start = slide->start;
+    slide->current = start;
+    return start;
 }
 
 void func_020e03ac(void) {
@@ -213,10 +223,10 @@ void func_020e048c(void *entity) {
 /* Record the local player's ready mask in the per-player mask table, then start
  * syncing that table (2 bytes of mask per player) with the other link players. */
 M2C_UNK CreateLinkPlayerMaskListener(s32 owner) {
- s32 GetLocalPlayerIdForOverlay(); s16 GetReadyPlayerMask(); M2C_UNK CreateLinkPlayerDataListener();
+ s32 GetLocalPlayerIdForOverlay(); s16 GetSessionPlayerMask(); M2C_UNK CreateLinkPlayerDataListener();
  extern u16 *gLinkPlayerMasks[];
  s32 localPlayerId=GetLocalPlayerIdForOverlay();
- *gLinkPlayerMasks[localPlayerId]=GetReadyPlayerMask();
+ *gLinkPlayerMasks[localPlayerId]=GetSessionPlayerMask();
  return CreateLinkPlayerDataListener(gLinkPlayerMasks,gLinkPlayerMasks[GetLocalPlayerIdForOverlay()],2,owner);
 }
 

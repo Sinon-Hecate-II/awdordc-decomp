@@ -173,14 +173,16 @@ void LoadNarcFileToBuffer(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3
  LoadDecompressedFileAndDrawTilemapBlock(BuildNarcPath(arg0), arg1, arg2, arg3);
 }
 
-s32 BuildNarcPath(M2C_UNK arg0) {
+/* Build a NARC member path in the shared 64-byte path buffer: the "ARC:/" archive
+ * prefix followed by `memberPath`.  Returns the buffer. */
+s32 BuildNarcPath(M2C_UNK memberPath) {
     M2C_UNK StringCopy(M2C_UNK *, M2C_UNK *);
     M2C_UNK StringAppend(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02101e7c;
-    extern M2C_UNK data_0214c14c;
-    StringCopy(&data_0214c14c, &data_02101e7c);
-    StringAppend(&data_0214c14c, arg0);
-    return (s32)&data_0214c14c;
+    extern M2C_UNK gNarcPathPrefix;
+    extern M2C_UNK gNarcPathBuffer;
+    StringCopy(&gNarcPathBuffer, &gNarcPathPrefix);
+    StringAppend(&gNarcPathBuffer, memberPath);
+    return (s32)&gNarcPathBuffer;
 }
 
 /* Clear the key and touch input state at startup: zero every key mask, seed the
@@ -426,22 +428,34 @@ u8 func_02081d18(void) {
     return var_r0;
 }
 
-void func_02081d38(void) {
+void CreateSleepScreenSprites(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02101e8c;
-    CreateSpriteFromClass(&data_02101e8c, 7);
+    extern M2C_UNK gSleepScreenSpriteClass;
+    CreateSpriteFromClass(&gSleepScreenSpriteClass, 7);
 }
 
-void func_02081d50(void){extern M2C_UNK data_02101e8c;M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);M2C_UNK SetLcdEnabled(s32);DeleteSpriteObjectsOfClass(&data_02101e8c);SetLcdEnabled(0);}
+void DeleteSleepScreenSprites(void){extern M2C_UNK gSleepScreenSpriteClass;M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);M2C_UNK SetLcdEnabled(s32);DeleteSpriteObjectsOfClass(&gSleepScreenSpriteClass);SetLcdEnabled(0);}
 
-void EnterDisplaySleep(void){extern M2C_UNK gInputBlockState;GX_TurnOffDisplay();*(volatile u32 *)0x4001000 &=~0x10000;func_02081d50();M2C_FIELD(&gInputBlockState,u8 *,1)=1;}
+/* Put the display to sleep: turn the display off, switch the sub engine's display
+ * mode from graphics to off, delete the sleep screen's sprites and shut the LCD
+ * down, then disable input until the display wakes again. */
+void EnterDisplaySleep(void) {
+    extern M2C_UNK gInputBlockState;
 
-void func_02081da0(void) {
+    GX_TurnOffDisplay();
+    REG_DISPCNT_SUB &= ~DISPCNT_DISPLAY_MODE_GRAPHICS;
+    DeleteSleepScreenSprites();
+    ((InputBlockState *)&gInputBlockState)->inputDisabled = 1;
+}
+
+/* Wake the display: recreate its sprite objects and turn it back on, restore the
+ * graphics display mode, then clear the input-disabled flag EnterDisplaySleep set. */
+void ExitDisplaySleep(void) {
 extern M2C_UNK gInputBlockState;
-func_02081d38(); GX_TurnOnDisplay();
-*(s32 *)0x04001000 |= 0x10000;
-func_020863f0();
-M2C_FIELD(&gInputBlockState,u8 *,1) = 0;
+CreateSleepScreenSprites(); GX_TurnOnDisplay();
+REG_DISPCNT_SUB |= DISPCNT_DISPLAY_MODE_GRAPHICS;
+RestartVoiceChatCooldown();
+((InputBlockState *)&gInputBlockState)->inputDisabled = 0;
 }
 
 /* Whether the sleep screen should be shown: only when no input-lock countdown is
@@ -503,10 +517,10 @@ void UpdateSleepScreen(void *screen) {
 }
 
 void func_02081ec8(void *arg0) {
-    void func_02081da0(void);
+    void ExitDisplaySleep(void);
     M2C_UNK StartMicTestMeasurement();
     if (M2C_FIELD(arg0, s16 *, 0x56) != 0) {
-        func_02081da0();
+        ExitDisplaySleep();
     }
     StartMicTestMeasurement();
 }
@@ -627,24 +641,28 @@ void Set3DSpriteLayerBank(u32 layer, u32 bank) {
         (old & ~DS3D_TILE_BANK_MASK) | (bits >> 26);
 }
 
-void Set3DSpriteLayerPalette(u32 arg0,u32 arg1) {
-extern void *gCur3DSpriteEngine;
-u32 index=arg0*2;
-void *engine=gCur3DSpriteEngine;
-u32 bits=arg1<<27;
-u16 *p=(u16 *)((u8 *)M2C_FIELD(engine,void **,0)+6);
-u32 old=M2C_FIELD(p,u16 *,index);
-M2C_FIELD(p,u16 *,index)=(old&~0x1f00)|(bits>>19);
+/* Point one 3D sprite layer at a palette: store the palette index in bits 8..12 of
+ * the layer's packed tile word (DS3D_BANK_LAYER_TILES). */
+void Set3DSpriteLayerPalette(u32 layer, u32 palette) {
+    extern void *gCur3DSpriteEngine;
+    u32 index = layer * 2;
+    void *engine = gCur3DSpriteEngine;
+    u32 bits = palette << 27; /* only its low 5 bits survive, into bits 8..12 */
+    u16 *tile = (u16 *)((u8 *)M2C_FIELD(engine, void **, 0) + DS3D_BANK_LAYER_TILES);
+    u32 old = M2C_FIELD(tile, u16 *, index);
+    M2C_FIELD(tile, u16 *, index) = (old & ~DS3D_TILE_PALETTE_MASK) | (bits >> 19);
 }
 
-void SetLayerSize(s32 arg0, u32 arg1) {
+/* Point one 3D sprite layer at a tile size class: store the size in bits 14..15 of
+ * the layer's packed tile word (DS3D_BANK_LAYER_TILES). */
+void Set3DSpriteLayerSize(s32 layer, u32 size) {
     extern void *gCur3DSpriteEngine;
-    u32 index = arg0 * 2;
+    u32 index = layer * 2;
     void *engine = gCur3DSpriteEngine;
-    u32 bits = arg1 << 30;
-    u16 *p = (u16 *)((u8 *)M2C_FIELD(engine, void **, 0) + 6);
-    u32 old = M2C_FIELD(p, u16 *, index);
-    M2C_FIELD(p, u16 *, index) = (old & ~0xc000) | (bits >> 16);
+    u32 bits = size << 30; /* only its low 2 bits survive, into bits 14..15 */
+    u16 *tile = (u16 *)((u8 *)M2C_FIELD(engine, void **, 0) + DS3D_BANK_LAYER_TILES);
+    u32 old = M2C_FIELD(tile, u16 *, index);
+    M2C_FIELD(tile, u16 *, index) = (old & ~DS3D_TILE_SIZE_MASK) | (bits >> 16);
 }
 
 #pragma optimization_level 2

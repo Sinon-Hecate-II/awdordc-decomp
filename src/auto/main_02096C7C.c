@@ -364,7 +364,7 @@ void Build3DSpriteScene(s32 spriteData) {
     void SetMenuCursor(s32);
     M2C_UNK func_02098e04(void *, s32, u16);
     M2C_UNK func_020990d4(void *, s32, u16);
-    M2C_UNK func_0209e184(void *, M2C_UNK, M2C_UNK, u16);
+    M2C_UNK ConfigureScenePanelSprite(void *, M2C_UNK, M2C_UNK, u16);
     void *Alloc3DSprite(s32);
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
@@ -407,7 +407,7 @@ void Build3DSpriteScene(s32 spriteData) {
             switch (spriteCount) {                  /* irregular */
             case 0:
                 sprite = Alloc3DSprite(unused);
-                func_0209e184(sprite, 1, 0, 8U);
+                ConfigureScenePanelSprite(sprite, 1, 0, 8U);
                 M2C_FIELD(sprite, s16 *, 0x2E) = 2;
                 M2C_FIELD(sprite, s16 *, 0x3C) = 0x400;
                 break;
@@ -417,7 +417,7 @@ void Build3DSpriteScene(s32 spriteData) {
                 tileOff = 0x9800;
                 do {
                     sprite1 = Alloc3DSprite(unused);
-                    func_0209e184(sprite1, 1, 0x8000, (u16) (row + 0xD));
+                    ConfigureScenePanelSprite(sprite1, 1, 0x8000, (u16) (row + 0xD));
                     slot = 0;
                     rowId = (u16) row;
                     M2C_FIELD(sprite1, u16 *, 0x2E) = rowId;
@@ -441,7 +441,7 @@ loop_17:
                 break;
             case 2:
                 sprite2 = Alloc3DSprite(unused);
-                func_0209e184(sprite2, 2, 0, 0xDU);
+                ConfigureScenePanelSprite(sprite2, 2, 0, 0xDU);
                 M2C_FIELD(sprite2, s16 *, 0x2E) = 2;
                 M2C_FIELD(sprite2, s16 *, 0x3C) = 0x400;
                 slot2 = 0;
@@ -674,16 +674,19 @@ void ClearTilemapRows(s32 tilemapAddress, u8 rowPairs) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void ClearScenePanelRows(M2C_UNK arg0) {
-    s32 GetScenePanelTextLineX(M2C_UNK);
+/* Clear the tile rows of scene panel `panelIndex`'s message area: the panel's
+ * tilemap starts at its message text line, and the 3D-sprite manager gives the
+ * number of text row pairs to clear. */
+void ClearScenePanelRows(s32 panelIndex) {
     s32 *GetScenePanelState();
+    s32 GetScenePanelTextLineX(s32);
     void ClearTilemapRows(s32, u8);
-    s32 *temp_r5;
-    s32 temp_r4;
+    ScenePanelState *panelState;
+    s32 textLineX;
 
-    temp_r5 = GetScenePanelState();
-    temp_r4 = GetScenePanelTextLineX(arg0);
-    ClearTilemapRows(*temp_r5 + (temp_r4 * 2), M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4A));
+    panelState = (ScenePanelState *) GetScenePanelState(panelIndex);
+    textLineX = GetScenePanelTextLineX(panelIndex);
+    ClearTilemapRows((s32) panelState->tiles + (textLineX * 2), M2C_FIELD(Get3DSpriteManager(), u8 *, DS3D_MANAGER_PANEL_ROW_PAIRS));
 }
 
 /* Returns nonzero while any of the three scene panels or their two child

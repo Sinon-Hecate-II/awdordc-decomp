@@ -11,6 +11,7 @@
 #define SB_LIST_QUERY_LIMIT 0x04  /* s32 most detail queries allowed in flight at once */
 #define SB_LIST_WAITING     0x14  /* s32[3]: the waiting queries (head, tail, count at +0x1C) */
 #define SB_LIST_WAITING_COUNT 0x1C /* s32 queued queries still waiting to be sent */
+#define SB_LIST_QUERY_SOCKET 0x20 /* s32 UDP socket the QR2 queries are sent from, -1 when closed */
 #define SB_LIST_ON_QUERY_DONE 0x44 /* void (*)(void *list, s32 event, void *server, void *instance): a pending query got its reply */
 #define SB_LIST_QUERY_DATA  0x48  /* void *instance passed to SB_LIST_ON_QUERY_DONE */
 #define SB_LIST_FIELDS      0x2C  /* u8[SB_LIST_MAX_FIELDS]: key ids asked of the master */
@@ -123,6 +124,10 @@ typedef struct QueryQueue {
 #define SB_QUERY_STAGE_FAILED      1    /* SB_LIST_ON_QUERY_DONE stage of a query that got no reply */
 #define SB_QUERY_STAGE_COMPLETE    2    /* SB_LIST_ON_QUERY_DONE stage once every pending query has finished */
 
+/* SBServerListConnectAndQuery's queryFlags: with SB_QUERY_FLAG_MAX_SERVERS set the
+ * connect/query packet appends the caller's maxServers value, limiting the reply. */
+#define SB_QUERY_FLAG_MAX_SERVERS  0x80
+
 /* Events the list reports through SB_SLIST_CALLBACK:
  * (list, event, server, SB_SLIST_INSTANCE). */
 #define SB_LIST_EVENT_SERVER_ADDED   0 /* a server was added to the list */
@@ -136,6 +141,15 @@ typedef struct QueryQueue {
 #define SB_SLIST_STATE_IDLE      1 /* disconnected, ready for a new query */
 #define SB_SLIST_STATE_CONNECTED 2 /* connected: master replies are decrypted and parsed */
 #define SB_SLIST_STATE_QUERYING  3 /* a query/connect handshake is in flight */
+
+/* The activity code the server browser's status query (main_0206080C) reports,
+ * derived from SB_LIST_PENDING and the list's SB_SLIST_STATE. */
+enum {
+    SB_BROWSER_STATUS_IDLE      = 0, /* disconnected, ready for a new query */
+    SB_BROWSER_STATUS_SEARCHING = 1, /* collecting ad-hoc servers or a master query in flight */
+    SB_BROWSER_STATUS_QUERIES   = 2, /* server records still waiting on detail-query replies */
+    SB_BROWSER_STATUS_CONNECTED = 3  /* connected to the master with no query running */
+};
 
 /* The QR2 reply parser's shared state (gQr2ParseState): wherever a reply is
  * split into backslash-separated fields, the tokenizer keeps its position here. */

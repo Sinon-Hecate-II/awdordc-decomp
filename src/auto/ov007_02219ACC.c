@@ -249,7 +249,7 @@ void func_ov007_0221a160(void) {
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK, M2C_UNK);
     void LoadFileToSpriteBuffer(M2C_UNK, s32, s32);
     s32 Get3DSpriteLayerSize(u8, s32);
-    void AddToU16Array(M2C_UNK, u16, s32);
+    void OffsetTileIndices(M2C_UNK, u16, s32);
     void DrawMapPreview(s32, s32, s32, s32);
     void CreateWallpaperSprite(s32, s32, s32);
     void InitTextTiles(s32, s32, s32);
@@ -330,7 +330,7 @@ void func_ov007_0221a160(void) {
     {
         MapEditorBankFlags *flags = M2C_FIELD(gCur3DSpriteEngine, MapEditorBankFlags **, 0);
         s32 sh = Get3DSpriteLayerSize(flags->mode, 1);
-        AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), (u16)sh, 0x2000);
+        OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), (u16)sh, 0x2000);
     }
 
     two = 2;
@@ -391,17 +391,20 @@ void func_ov007_0221a160(void) {
     MapEditor_FitPreviewToMap();
 }
 
-void func_ov007_0221a568(void) {
-    M2C_UNK func_020af1e4();
+/* Remove the map editor scene's sprites: switch to the sub engine, remove the
+ * map view's sprites and their cursor animation and delete the wallpaper
+ * sprites, then restore the previously current engine. */
+void MapEditor_ClearSceneSprites(void) {
+    M2C_UNK DeleteWallpaperSpritesOnAllEngines();
     M2C_UNK RemoveMapViewSprites();
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
-    s32 temp_r4;
+    s32 savedEngine;
 
-    temp_r4 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     RemoveMapViewSprites();
-    func_020af1e4();
-    gCur3DSpriteEngine = temp_r4;
+    DeleteWallpaperSpritesOnAllEngines();
+    gCur3DSpriteEngine = savedEngine;
 }
 

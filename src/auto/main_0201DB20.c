@@ -328,18 +328,20 @@ u8 *BuildDhcpPacket(u8 *packet, s32 msgType, s32 xidOut) {
     return packet + 0x10d;
 }
 #pragma opt_common_subs reset
-s32 PadPacket(M2C_UNK arg0, u32 arg1, s32 arg2, u32 arg3) {
+/* Grow a packet that ends at `end` and is `length` bytes long to `minLength` bytes
+ * with `padByte` fill, and return the packet's new end. */
+s32 PadPacket(s32 padByte, u32 minLength, s32 end, u32 length) {
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
-    s32 temp_r4;
-    s32 var_r5;
+    s32 extra;
+    s32 newEnd;
 
-    var_r5 = arg2;
-    if (arg3 < arg1) {
-        temp_r4 = arg1 - arg3;
-        MI_CpuFill8(var_r5, arg0, temp_r4);
-        var_r5 += temp_r4;
+    newEnd = end;
+    if (length < minLength) {
+        extra = minLength - length;
+        MI_CpuFill8(newEnd, padByte, extra);
+        newEnd += extra;
     }
-    return var_r5;
+    return newEnd;
 }
 
 #pragma opt_common_subs off
@@ -626,12 +628,15 @@ void SendDhcpRelease(void) {
     CloseRawConnection();
 }
 
+/* Skip over a DNS name in a response: walk its length-prefixed labels and stop
+ * after the two bytes of a compression pointer (top bits 11) or at the
+ * terminating zero label; returns the pointer just past the name. */
 u8 *DnsSkipName(u8 *p) {
-    u32 c = *p++;
-    while (c) {
-        if ((c & 0xC0) == 0xC0) return p + 1;
-        p += c;
-        c = *p++;
+    u32 len = *p++;
+    while (len) {
+        if ((len & 0xC0) == 0xC0) return p + 1;
+        p += len;
+        len = *p++;
     }
     return p;
 }

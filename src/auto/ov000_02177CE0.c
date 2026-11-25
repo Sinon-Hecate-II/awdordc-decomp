@@ -9,7 +9,7 @@ s32 ScoreMoveDestination(s32 x,s32 y){
 extern u8 gUnitKindFlags[], gAiRangeBitmap[];
 extern void **gCurrentMap;extern void *gAiCommandState;extern s8 gTerrainPropertyType[];
 s32 IsAllyUnitAtCell(s16,s16);s32 IsTerrainOnUnitTeam(s32,s32,s32);
-s32 GetTerrainMoveCost(s32,s32,s32);s32 Divide(s32,s32);
+s32 GetTerrainDefenseFromStars(s32,s32,s32);s32 Divide(s32,s32);
 s32 IsCellInPlayerMoveRange(s32,s32,s32);s32 IsCaptureTargetAt(void *,s32,s32);s32 func_ov000_021a93a8(void *,s32,s32);
 void *base,*cell; s32 moveCost,score,terrain,threat;
 if(x<0||y<0||x>=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)||y>=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT))return -1;
@@ -28,7 +28,7 @@ if((u8)((1<<(index&7))&gAiRangeBitmap[index>>3]))score+=16;
 }
 if(!gTerrainPropertyType[terrain]||!IsTerrainOnUnitTeam(M2C_FIELD(base,u8 *,MAP_CURSOR_UNIT_ID),M2C_FIELD(cell,u8 *,MAP_CELL_TERRAIN),gTerrainPropertyType[terrain])){
 base=*gCurrentMap;
-score+=(Divide(GetTerrainMoveCost(M2C_FIELD(base,u16 *,MAP_CURRENT_PLAYER),(u32)(*M2C_FIELD(base,u8 **,MAP_CURSOR_UNIT)<<26)>>26,terrain),10)+1)<<5;
+score+=(Divide(GetTerrainDefenseFromStars(M2C_FIELD(base,u16 *,MAP_CURRENT_PLAYER),(u32)(*M2C_FIELD(base,u8 **,MAP_CURSOR_UNIT)<<26)>>26,terrain),10)+1)<<5;
 }
 if(IsCellInPlayerMoveRange(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),x,y))score+=0x200;
 score+=(0x300-threat)<<10;
@@ -103,7 +103,7 @@ s32 FindBestAdjacentTile(s32 originX, s32 originY, s16 *outBuf) {
 s32 ScoreMoveTile(s32 x,s32 y){
 extern void **gCurrentMap;extern void *gAiCommandState;extern s8 gTerrainPropertyType[];
 s32 IsAllyUnitAtCell(s16,s16);s32 IsTerrainOnUnitTeam(s32,s32,s32);
-s32 GetTerrainMoveCost(s32,s32,s32);s32 Divide(s32,s32);
+s32 GetTerrainDefenseFromStars(s32,s32,s32);s32 Divide(s32,s32);
 s32 IsCellInPlayerMoveRange(s32,s32,s32);s32 IsCaptureTargetAt(void *,s32,s32);s32 func_ov000_021a93a8(void *,s32,s32);
 void *base,*cell; s32 moveCost,score,terrain,threat;
 /* Score a tile as a movement destination for the AI unit under the cursor:
@@ -120,7 +120,7 @@ threat=M2C_FIELD(cell,u8 *,MAP_CELL_THREAT_DIRECT)+M2C_FIELD(cell,u8 *,MAP_CELL_
 if(score<0)score=0;
 if(!gTerrainPropertyType[terrain]||!IsTerrainOnUnitTeam(M2C_FIELD(base,u8 *,MAP_CURSOR_UNIT_ID),M2C_FIELD(cell,u8 *,MAP_CELL_TERRAIN),gTerrainPropertyType[terrain])){
 base=*gCurrentMap;
-score+=(Divide(GetTerrainMoveCost(M2C_FIELD(base,u16 *,MAP_CURRENT_PLAYER),(u32)(*M2C_FIELD(base,u8 **,MAP_CURSOR_UNIT)<<26)>>26,terrain),10)+1)<<5;
+score+=(Divide(GetTerrainDefenseFromStars(M2C_FIELD(base,u16 *,MAP_CURRENT_PLAYER),(u32)(*M2C_FIELD(base,u8 **,MAP_CURSOR_UNIT)<<26)>>26,terrain),10)+1)<<5;
 }
 if(IsCellInPlayerMoveRange(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),x,y))score+=0x200;
 score+=(0x300-threat)<<10;

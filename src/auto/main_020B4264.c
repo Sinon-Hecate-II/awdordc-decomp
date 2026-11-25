@@ -28,7 +28,7 @@ s32 func_020b4264(u8 *arg0) {
     void SetPlayerIdForSlot(s32, s32);
     void SetPlayerArmyId(s32, s32);
     void func_020a233c(s32, s32);
-    void func_020a44fc(u8 *, s32);
+    void SetMapOrderRecord(u8 *, s32);
     void DecodeTerrainHitPoints(u8 *);
     extern void *gCurrentMap;
     extern M2C_UNK gOptionBits;
@@ -276,7 +276,7 @@ s32 func_020b4264(u8 *arg0) {
     }
     dst = arg0 + 0x1094;
     for (j = 0; j < 0x20; j++) {
-        func_020a44fc(dst, j);
+        SetMapOrderRecord(dst, j);
         dst += 8;
     }
     DecodeTerrainHitPoints(arg0 + 0x1194);
@@ -339,8 +339,8 @@ void RestoreBattleFromRecord(void *record) {
 }
 
 void func_020b4b20(void) {
-    M2C_UNK func_0208f8ec(M2C_UNK, M2C_UNK);
-    func_0208f8ec(0, 8);
+    M2C_UNK FadeMusicToVolume(M2C_UNK, M2C_UNK);
+    FadeMusicToVolume(0, 8);
 }
 
 void func_020b4b34(void) {
@@ -366,9 +366,11 @@ void SaveCurrentBattle(void *state) {
     WriteSaveRecord(saveType, GetSaveRecordBuffer(), 0x125c);
 }
 
-void func_020b4b98(void *arg0) {
-    if (func_020be4c0((u8) M2C_FIELD(arg0, s32 *, 0x5C)) == 0) {
-        SetUiMessageText(0xC000034C);
+/* Show the message for the battle saved under `panel`'s save type: the
+ * "no save data" text when no record of that type exists, nothing otherwise. */
+void UpdateSavedBattleMessage(void *panel) {
+    if (SaveRecordExistsForType((u8) M2C_FIELD(panel, s32 *, 0x5C)) == 0) {
+        SetUiMessageText(TEXT_ID_NO_SAVE_DATA);
         return;
     }
     SetUiMessageText(0);
@@ -408,10 +410,12 @@ void ResumeSavedBattle(u8 saveType) {
     LoadUiSpritePalette(3);
 }
 
-void func_020b4ca0(void) {
-    s32 IsUnitAvailable();
-    GetCurrentSaveType();
-    if (IsUnitAvailable() == 0) {
+/* Update the continue-battle message for the current save type: show 0xC000032D
+ * when there is no saved battle to resume, 0xC000032E when there is. */
+void UpdateContinueBattleMessage(void) {
+    s32 IsUnitAvailable(s32);
+    s32 GetCurrentSaveType(void);
+    if (IsUnitAvailable(GetCurrentSaveType()) == 0) {
         SetUiMessageText(0xC000032D);
         return;
     }
@@ -469,11 +473,13 @@ void StartBattleAndSaveProgress(void *state) {
     SaveGameSettings();
 }
 
-void func_020b4d80(void) {
+/* Show the "no save data" message while the shared game-settings record is
+ * missing, and clear it once the settings have been saved. */
+void UpdateNoSaveDataMessage(void) {
     M2C_UNK SetUiMessageText(s32);
-    s32 func_020be4c0(M2C_UNK);
-    if (func_020be4c0(4) == 0) {
-        SetUiMessageText(0xC000034C);
+    s32 SaveRecordExistsForType(M2C_UNK);
+    if (SaveRecordExistsForType(SAVE_TYPE_SETTINGS) == 0) {
+        SetUiMessageText(TEXT_ID_NO_SAVE_DATA);
         return;
     }
     SetUiMessageText(0);
@@ -514,7 +520,7 @@ void func_020b4e10(M2C_UNK arg0) {
 void Init3DSpriteDisplay(void) {
     void Set3DSpriteVramBanks(void);
     void Apply3DSpriteDisplayConfig(void);
-    void func_020d4d78(void);
+    void ScheduleBattleEndSpriteRemoval(void);
     void ResetTextTiles(s32);
     void LoadUiGraphics(void);
     void CopyToObjPaletteShadow(void *, s32, s32);
@@ -547,7 +553,7 @@ void Init3DSpriteDisplay(void) {
         i++;
     } while (i < 2);
     gCur3DSpriteEngine = saved;
-    func_020d4d78();
+    ScheduleBattleEndSpriteRemoval();
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~1) | 1;
     ResetTextTiles(0);
     LoadUiGraphics();

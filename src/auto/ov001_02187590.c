@@ -2,6 +2,7 @@
 #include "common.h"
 #include "ov001_wh.h"
 #include "ov001_link.h"
+#include "wfc.h"
 
 #pragma merge_duplicate_code off
 /* Callback the multiboot command layer runs for the ov001 Download Play link.
@@ -178,10 +179,12 @@ s32 Ov001_GetPlayerStage(s32 player) {
     return OV001_STAGE_JOINED;
 }
 #pragma scheduling reset
-s32 Ov001_GetLinkPlayerRecord(s32 arg0) {
+/* Record of link player `player` (its OV001_LINK_RECORD_* fields), player 1
+ * first, or 0 when that player is not in the link. */
+s32 Ov001_GetLinkPlayerRecord(s32 player) {
 extern s16 *gOv001LinkWork;
-if(((u16)gOv001LinkWork[1] & (1<<arg0)) !=0) {
-return (arg0-1)*30+(s32)((u8 *)gOv001LinkWork+14);
+if(((u16)gOv001LinkWork[OV001_LINK_JOINED/2] & (1<<player)) !=0) {
+return (player-1)*OV001_LINK_RECORD_SIZE+(s32)((u8 *)gOv001LinkWork+OV001_LINK_RECORDS);
 }
 return 0;
 }
@@ -470,12 +473,24 @@ s32 Ov001_StartKeySharing(void){
     return 0;
 }
 
-s32 func_ov001_021880d0(void){extern M2C_UNK gWhWork;s32 func_02013b48(void *);if(func_02013b48((u8 *)M2C_FIELD(&gWhWork,void **,4)+0x1e00)==2)return 1;SetWhError();return 0;}
+/* Close the WH key-sharing channel while tearing the session down: return 1 when
+ * the close was queued (result 2), otherwise raise the WH error and return 0. */
+s32 Ov001_CloseKeySharingChannel(void) {
+    extern M2C_UNK gWhWork;
+    s32 WFC_CloseChannelThunk(void *);
+    if (WFC_CloseChannelThunk((u8 *)M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION) + WH_KEY_CHANNEL) == 2) return 1;
+    SetWhError();
+    return 0;
+}
 
-s32 func_ov001_02188100(void) {
+/* Reset the WH session this console hosts (a Download Play parent): mark the
+ * connection busy and tear the link down.  Its completion,
+ * DWCi_MOV_WH_StateInEndParent, sends the reset command and returns the
+ * connection to idle; returns 0 when the teardown cannot be queued. */
+s32 Ov001_ResetWhHostSession(void) {
     s32 WFC_SendTeardownCommand(M2C_UNK *);
     extern M2C_UNK DWCi_MOV_WH_StateInEndParent;
-    SetWhStatus(3);
+    SetWhStatus(WH_STATUS_BUSY);
     if (WFC_SendTeardownCommand(&DWCi_MOV_WH_StateInEndParent) == 2) {
         return 1;
     }
@@ -525,28 +540,36 @@ void func_ov001_021881ac(void *arg0) {
  * when the stop was queued, 0 when it failed. */
 s32 Ov001_EndKeySharing(void) {
     extern M2C_UNK gWhWork;
-    s32 func_02013b48(void *);
+    s32 WFC_CloseChannelThunk(void *);
     if (M2C_FIELD(M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION), s32 *, WH_LINK_STATUS) != WH_STATUS_KEYSHARING) return 0;
     SetWhStatus(WH_STATUS_BUSY);
-    if (func_02013b48((u8 *)M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION) + WH_KEY_CHANNEL) == 2) return 1;
+    if (WFC_CloseChannelThunk((u8 *)M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION) + WH_KEY_CHANNEL) == 2) return 1;
     SetWhError();
     return 0;
 }
 
-s32 func_ov001_02188220(void) {
-    extern M2C_UNK func_ov001_02188250;
-    SetWhStatus(3);
-    if (WFC_SendTeardownCommand(&func_ov001_02188250) == 2) {
+/* Tear the WH connection's current step down and queue the setup again: mark
+ * the connection busy and send the WFC teardown command (its completion,
+ * Ov001_HandleTeardownResult, queues the next setup command).  Returns 1 when
+ * the command was queued, 0 when it failed. */
+s32 Ov001_TeardownAndQueueSetup(void) {
+    extern M2C_UNK Ov001_HandleTeardownResult;
+    SetWhStatus(WH_STATUS_BUSY);
+    if (WFC_SendTeardownCommand(&Ov001_HandleTeardownResult) == 2) {
         return 1;
     }
     SetWhError();
     return 0;
 }
 
-void func_ov001_02188250(void *arg0) {
+/* Completion handler of the WH teardown command (WFC command 0x10): on a reported
+ * step error record it and advance the state machine; otherwise queue the next
+ * setup command and, when that cannot be queued, put the connection into its
+ * failure state. */
+void Ov001_HandleTeardownResult(void *event) {
     s32 QueueWhSetupCommand();
     M2C_UNK func_ov001_02188b20();
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
+    if (M2C_FIELD(event, u16 *, WH_EVENT_STATUS) != 0) {
         SetWhError();
         func_ov001_02188b20();
         return;
@@ -554,7 +577,7 @@ void func_ov001_02188250(void *arg0) {
     if (QueueWhSetupCommand() != 0) {
         return;
     }
-    SetWhStatus(9);
+    SetWhStatus(WH_STATUS_PARENT_START);
 }
 
 /* Queue the WH connection's next setup command, a WFC command whose completion
@@ -580,24 +603,30 @@ void FinishWhSetupCommand(void *arg0) {
     SetWhStatus(1);
 }
 
-s32 func_ov001_021882e0(void) {
+/* Mark the WH connection busy and queue the WFC stop command; FinishWhStopCommand
+ * handles its completion.  Returns 1 once the command is queued, 0 (with the WH
+ * error recorded) when it cannot be sent. */
+s32 QueueWhStopCommand(void) {
     s32 WFC_SendCommand1(M2C_UNK *);
-    extern M2C_UNK func_ov001_02188310;
-    SetWhStatus(3);
-    if (WFC_SendCommand1(&func_ov001_02188310) == 2) {
+    extern M2C_UNK FinishWhStopCommand;
+    SetWhStatus(WH_STATUS_BUSY);
+    if (WFC_SendCommand1(&FinishWhStopCommand) == WFC_CMD_OK) {
         return 1;
     }
     SetWhError();
     return 0;
 }
 
-void func_ov001_02188310(void *arg0) {
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
-        SetWhStatus(9);
-        SetWhError(M2C_FIELD(arg0, u16 *, 2));
+/* Completion callback of the WH stop command: when the command reported an
+ * error, record the error code and fail the connection (the parent-start
+ * status); otherwise the connection returns to idle. */
+void FinishWhStopCommand(void *event) {
+    if (M2C_FIELD(event, u16 *, WH_EVENT_STATUS) != 0) {
+        SetWhStatus(WH_STATUS_PARENT_START);
+        SetWhError(M2C_FIELD(event, u16 *, WH_EVENT_STATUS));
         return;
     }
-    SetWhStatus(1);
+    SetWhStatus(WH_STATUS_IDLE);
 }
 
 void Ov001_HandleEndLinkResult(void *arg0) {

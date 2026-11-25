@@ -148,12 +148,15 @@ void gpiPlayerSetString(GpiPlayer *player, const char *key, const char *value) {
     TableEnter(player->keyValues, values);
 }
 
-void gpiPlayerSetInt(M2C_UNK a,M2C_UNK *b){
- s32 StringFormat(void *,void *,...);
- extern M2C_UNK data_02100060;
- u8 buf[20];
- StringFormat(buf,&data_02100060);
- gpiPlayerSetString(a,b,(M2C_UNK *)buf);
+/* Format an integer as decimal text and store it as the string value of `key`
+ * in a gpi player record's key/value table. */
+void gpiPlayerSetInt(GpiPlayer *player, const char *key, s32 value) {
+    s32 StringFormat(void *, void *, ...);
+    extern M2C_UNK gGpiIntFormat;
+    char buf[20];
+
+    StringFormat(buf, &gGpiIntFormat, value);
+    gpiPlayerSetString(player, key, buf);
 }
 
 /* GameSpy SBServerGetStringValue: look up the interned key `key` in the server's
@@ -194,11 +197,13 @@ s32 SBServerGetIntValue(GpiPlayer *server, s32 key, s32 defaultVal) {
     return ParseInt(p);
 }
 
-double SBServerGetFloatValue(void *arg0,s32 arg1,double arg2){
- double atof(s32);
- s32 p=SBServerGetStringValue(arg0,arg1,0);
- if(p)arg2=atof(p);
- return arg2;
+/* GameSpy sb_sbGetFloat: look up the server key `key`, parse its string value as a
+ * floating-point number and return it, or `def` when the key is absent. */
+double SBServerGetFloatValue(GpiPlayer *server, s32 key, double def) {
+    double atof(s32);
+    s32 text = SBServerGetStringValue(server, key, 0);
+    if (text) def = atof(text);
+    return def;
 }
 
 s32 SBServerGetIp(s32 *arg0) {
@@ -234,7 +239,7 @@ u16 func_02060c98(void *arg0) {
     return (u16) ((u8) ((s32) temp_r0 >> 8) | ((temp_r0 << 8) & 0xFF00));
 }
 
-void func_02060cbc(void *arg0, s32 arg1) {
+void SBServerSetNext(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x20) = arg1;
 }
 
@@ -483,10 +488,10 @@ void *func_020613dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4
 }
 
 void DestroyServerBrowser(s32 arg0) {
-    M2C_UNK func_02060430(s32);
+    M2C_UNK Qr2Query_CloseSocket(s32);
     M2C_UNK SBServerListClear(s32);
     SBServerListClear(arg0 + 0x4C);
-    func_02060430(arg0);
+    Qr2Query_CloseSocket(arg0);
     gpiFree(arg0);
 }
 
@@ -522,9 +527,10 @@ s32 SBServerListQuery(s32 serverList,s32 async,s32 disconnect,s32 fieldIds,s32 f
  return result;
 }
 
-void SendToPlayerList(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){
-
- SBServerListQuery(a,b,c,d,e,f,128,g);
+/* Start a QR2 server-list query through SBServerListQuery with the max-servers
+ * limit flag set, so the query packet carries `maxServers`. */
+void SendToPlayerList(s32 serverList, s32 async, s32 disconnect, s32 fieldIds, s32 fieldCount, s32 fields, s32 maxServers) {
+    SBServerListQuery(serverList, async, disconnect, fieldIds, fieldCount, fields, SB_QUERY_FLAG_MAX_SERVERS, maxServers);
 }
 
 /* Resolve `host` to a numeric address and send `length` bytes of `packet` to that
@@ -558,8 +564,8 @@ s32 SBServerListThink(s32 arg0) {
 }
 
 M2C_UNK func_0206171c(void *p){
- M2C_UNK SBServerListDisconnect(void *);M2C_UNK func_02060414(void *);
- SBServerListDisconnect((u8 *)p+0x4c);func_02060414(p);
+ M2C_UNK SBServerListDisconnect(void *);M2C_UNK Qr2Query_ResetQueues(void *);
+ SBServerListDisconnect((u8 *)p+0x4c);Qr2Query_ResetQueues(p);
 }
 
 void ResetSessionList(s32 arg0) {
@@ -569,13 +575,16 @@ void ResetSessionList(s32 arg0) {
     SBServerListClearRemovedServers(arg0 + 0x4C);
 }
 
-s32 func_02061750(void *arg0){
- s32 n;
- if(M2C_FIELD(arg0,s32 *,0x10)>0)return 2;
- n=M2C_FIELD(arg0,s32 *,0x4c);
- if(n==3 || n==0)return 1;
- if(n==1)return 0;
- return 3;
+/* The server browser's activity code, from its count of pending detail queries and
+ * the list state machine's state at SB_LIST_QUERY. */
+s32 SBServerListGetStatus(void *browser) {
+    s32 state;
+
+    if (M2C_FIELD(browser, s32 *, SB_LIST_PENDING) > 0) return SB_BROWSER_STATUS_QUERIES;
+    state = M2C_FIELD(browser, s32 *, SB_LIST_QUERY);
+    if (state == SB_SLIST_STATE_QUERYING || state == SB_SLIST_STATE_AD_HOC) return SB_BROWSER_STATUS_SEARCHING;
+    if (state == SB_SLIST_STATE_IDLE) return SB_BROWSER_STATUS_IDLE;
+    return SB_BROWSER_STATUS_CONNECTED;
 }
 
 void SBServerListGetServer(s32 arg0) {

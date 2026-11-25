@@ -148,17 +148,19 @@ loop_2:
     }
 }
 
-void func_020883bc(void) {
+/* Reset the resource manager at boot: clear every slot's loaded flag, then load
+ * the two resources the game starts with (slots 0 and 4). */
+void InitResourceSystem(void) {
     M2C_UNK LoadResource(M2C_UNK);
     extern M2C_UNK gResourceLoaded;
-    s32 i;
-    u8 *p;
-    i = 0;
-    p = (u8 *)&gResourceLoaded;
+    s32 slot;
+    u8 *flag;
+    slot = 0;
+    flag = (u8 *)&gResourceLoaded;
     do {
-        *p++ = 0;
-        i++;
-    } while (i < 12);
+        *flag++ = 0;
+        slot++;
+    } while (slot < RESOURCE_SLOT_COUNT);
     LoadResource(0);
     LoadResource(4);
 }
@@ -583,7 +585,7 @@ void Set3DSpriteSlideStart(void *arg0, s16 arg1, s32 arg2) {
     M2C_FIELD(arg0, s16 *, 0x56) = arg2;
 }
 
-void func_02088e7c(void *arg0, s32 arg1) {
+void Set3DSpriteSlideBackLength(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s8 *, 0x4F) = arg1;
 }
 
@@ -599,7 +601,14 @@ void Slide3DSpriteIn(void *sprite, s16 startX, s32 startY, s32 targetX, s32 targ
     Show3DSpriteSlide(sprite);
 }
 
-void func_02088eec(void *p,s8 a){void Show3DSpriteSlide(void *);Set3DSpriteSlideTarget(p,M2C_FIELD(p,s16 *,0x50),M2C_FIELD(p,s16 *,0x52));Set3DSpriteSlideLength(p,a);Show3DSpriteSlide(p);}
+/* Show a 3D sprite actor by sliding it in: keep the actor's current slide target,
+ * give the slide `frames` frames and start it (mode SPRITE_SLIDE_SHOW). */
+void Start3DSpriteSlideIn(void *sprite, s8 frames) {
+    void Show3DSpriteSlide(void *);
+    Set3DSpriteSlideTarget(sprite, M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_TARGET_X), M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_TARGET_Y));
+    Set3DSpriteSlideLength(sprite, frames);
+    Show3DSpriteSlide(sprite);
+}
 
 /* Show a 3D sprite by sliding it in: with no slide length, place it straight at
  * its target and show it; otherwise start the forward slide (mode SPRITE_SLIDE_SHOW). */
@@ -620,7 +629,22 @@ void Show3DSpriteSlide(void *sprite) {
     M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) = (u8)((M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) & ~SPRITE_ACTOR_SLIDE_MODE_MASK) | 0x80);
 }
 
-void func_02088f8c(void *p,s32 a,s32 b,s16 c,s32 d,s32 e){void Hide3DSpriteSlide(void *);Set3DSpriteSlideTarget(p,a,b);Set3DSpriteSlideStart(p,c,d);func_02088e7c(p,e);Hide3DSpriteSlide(p);}
+/* Slide a sprite out of view: start from the slide target (where it currently
+ * sits) and move back to the slide start over `frames`, then hide it. */
+void Slide3DSpriteOut(void *sprite, s32 targetX, s32 targetY, s16 startX, s32 startY, s32 frames) {
+void Hide3DSpriteSlide(void *);
+Set3DSpriteSlideTarget(sprite, targetX, targetY);
+Set3DSpriteSlideStart(sprite, startX, startY);
+Set3DSpriteSlideBackLength(sprite, frames);
+Hide3DSpriteSlide(sprite);
+}
 
-void Start3DSpriteSlideOut(void *p,s8 a){void Hide3DSpriteSlide(void *);Set3DSpriteSlideStart(p,M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56));func_02088e7c(p,a);Hide3DSpriteSlide(p);}
+/* Slide a 3D sprite back out: start from the origin it was slid in from, move
+ * back over `frames` frames and hide it. */
+void Start3DSpriteSlideOut(void *sprite, s8 frames) {
+    void Hide3DSpriteSlide(void *);
+    Set3DSpriteSlideStart(sprite, M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_START_X), M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_START_Y));
+    Set3DSpriteSlideBackLength(sprite, frames);
+    Hide3DSpriteSlide(sprite);
+}
 

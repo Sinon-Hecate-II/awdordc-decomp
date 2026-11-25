@@ -229,14 +229,17 @@ void HeapAlloc(M2C_UNK arg0, M2C_UNK arg1) {
     HeapAllocAligned(arg0, arg1, 0x20);
 }
 
-M2C_UNK HeapAllocAligned(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
+/* Allocate `size` bytes aligned to `align` from heap `heap` through the heap's
+ * allocator callback, asking for the block header's space as well, then stamp the
+ * new block's header.  NULL when the allocator has nothing to give. */
+M2C_UNK HeapAllocAligned(M2C_UNK heap, s32 size, M2C_UNK align) {
     extern M2C_UNK gHeapCallbacks;
-    void *temp_r0;
-    temp_r0 = M2C_FIELD(&gHeapCallbacks, void *(**)(M2C_UNK, s32, M2C_UNK), 4)(arg0, arg1 + 0x20, arg2);
-    if (temp_r0 == NULL) {
+    void *block;
+    block = M2C_FIELD(&gHeapCallbacks, void *(**)(M2C_UNK, s32, M2C_UNK), 4)(heap, size + HEAP_BLOCK_HEADER, align);
+    if (block == NULL) {
         return 0;
     }
-    return (s32)InitHeapBlock(temp_r0, arg1);
+    return (s32)InitHeapBlock(block, size);
 }
 
 /* Free an allocator block: a null block is a no-op, otherwise the block's header
@@ -464,9 +467,11 @@ s32 Wfc_PollSessionEnd(void) {
     return 1;
 }
 
+/* Whether a WFC connection exists and its link has settled ready. */
 s32 Wfc_IsLinkReady(void) {
     extern void *gWfcConnection;
-    if ((gWfcConnection != NULL) && (M2C_FIELD(gWfcConnection, u16 *, 4) == 6)) {
+
+    if ((gWfcConnection != NULL) && (M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) == WFC_CONN_READY)) {
         return 1;
     }
     return 0;
@@ -545,12 +550,12 @@ s32 GetLastNasError(void) {
 s32 GetServerTime(s32 *date, s32 *time) {
     extern s32 gServerTimeSync;
     extern s64 gServerTimeNow, gServerTimeOffset;
-    s32 GetLocalTime(void *, void *);
+    s32 GetRtcDateTime(void *, void *);
     s64 MakeTime(void *, void *);
     void RtcSecondsToDateTime(void *, s32 *, s64);
     s64 serverTime, elapsed;
     if (!gServerTimeSync) return 0;
-    if (GetLocalTime(date, time)) return 0;
+    if (GetRtcDateTime(date, time)) return 0;
     serverTime = MakeTime(date, time);
     if (serverTime == -1) return 0;
     /* A date before the local clock means the RTC wrapped into the next century. */
@@ -561,9 +566,15 @@ s32 GetServerTime(s32 *date, s32 *time) {
     return 1;
 }
 
-M2C_UNK FormatKeyValue(s32 a,s32 b,s32 c,s32 d){
- M2C_UNK StringFormatN(s32,s32,void *,...);M2C_UNK StringLength(s32);extern M2C_UNK data_020fc884;
- StringFormatN(c,0x1000,&data_020fc884,d,a,d,b);StringLength(c);
+/* Append a `separator key separator value` field at `text` (a pointer to the end
+ * of the accumulated status text) and return the text's new length. */
+s32 FormatKeyValue(s32 key, s32 value, s32 text, s32 separator) {
+    s32 StringFormatN(s32, s32, void *, ...);
+    s32 StringLength(s32);
+    extern s8 sKeyValueFormat[];
+
+    StringFormatN(text, 0x1000, sKeyValueFormat, separator, key, separator, value);
+    StringLength(text);
 }
 
 /* Append a "separator key separator value" field to the end of the accumulated

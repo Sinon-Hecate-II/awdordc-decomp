@@ -403,9 +403,13 @@ M2C_UNK MultiBoot_CloseLink();M2C_UNK Ov001_SetLinkStatus(M2C_UNK);
 Ov001_SetLinkStatus(6);MultiBoot_CloseLink();
 }
 
+/* Close the Download Play link once every joined player has been given up on:
+ * in the ready-to-start state, when the joined bitmap equals its kick copy (no
+ * joined player is left to transfer), close the link's connection. */
 void Ov001_TryStartTransfer(void) {
-    extern void *gOv001LinkWork;
-    if ((M2C_FIELD(gOv001LinkWork, u16 *, 0) == 4) && (M2C_FIELD(gOv001LinkWork, u16 *, 2) == M2C_FIELD(gOv001LinkWork, u16 *, 0xC))) {
+    if ((M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_STATUS) == OV001_LINK_STATUS_READY) &&
+        (M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_JOINED) ==
+         M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_JOINED_COPY))) {
         MultiBoot_CloseLink();
     }
 }

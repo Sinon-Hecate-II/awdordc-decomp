@@ -99,7 +99,7 @@ break;
 case 12:
 if(M2C_FIELD(GetConnection(),s32 *,244)!=peer)break;
 if(!M2C_FIELD(GetConnection(),u8 *,21)||M2C_FIELD(GetConnection(),u8 *,21)==1){if(!RestartConnection(peer))return 0;}
-else if(M2C_FIELD(GetConnection(),u8 *,21)==3){M2C_FIELD(GetConnection(),s32 *,524)=peer;CloseGt2Connection();func_02041be0(0);}
+else if(M2C_FIELD(GetConnection(),u8 *,21)==3){M2C_FIELD(GetConnection(),s32 *,524)=peer;CloseGt2Connection();RefreshConnection(0);}
 break;
 case 13:case 14:case 15:if(!HandlePeerSyncNotice(peer,type,payload[0]))return 0;break;
 case 16:

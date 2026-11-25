@@ -354,9 +354,11 @@ void func_02074220(void) {
 
 }
 
-s32 func_02074224(void *arg0, void *arg1) {
+/* True when two C++ type_info objects are equal (the comparison dynamic_cast
+ * relies on): the same object, or the same mangled type name. */
+s32 TypeInfoEquals(TypeInfo *typeInfo, TypeInfo *other) {
     s32 StringCompare(s32, s32);
-    if ((arg0 == arg1) || (StringCompare(M2C_FIELD(arg0, s32 *, 4), M2C_FIELD(arg1, s32 *, 4)) == 0)) {
+    if ((typeInfo == other) || (StringCompare((s32) typeInfo->name, (s32) other->name) == 0)) {
         return 1;
     }
     return 0;
@@ -553,18 +555,22 @@ M2C_FIELD(arg0,void **,16)=&__exception_table_end__;
 return 1;
 }
 
-void SkipExceptionDataHeader(u8 *arg0) {
+/* Skip the header of a CodeWarrior exception data block: decode the first value
+ * at +2 (the register mask) and, when the block's flags mark an immediate
+ * operand (JS_KIND_IMMEDIATE), the value that operand takes from the frame.
+ * Returns the cursor just past the header. */
+u8 *SkipExceptionDataHeader(u8 *data) {
     void *DecodeExceptionValue(void *, M2C_UNK *);
-    M2C_UNK sp0;
-    u8 temp_r4;
-    void *temp_r0;
+    M2C_UNK value;
+    u8 flags;
+    u8 *cursor;
 
-    temp_r4 = *arg0;
-    temp_r0 = DecodeExceptionValue(arg0 + 2, &sp0);
-    if (!(temp_r4 & 0x40)) {
-        return;
+    flags = *data;
+    cursor = (u8 *)DecodeExceptionValue(data + 2, &value);
+    if (!(flags & JS_KIND_IMMEDIATE)) {
+        return cursor;
     }
-    DecodeExceptionValue(temp_r0, &sp0);
+    return (u8 *)DecodeExceptionValue(cursor, &value);
 }
 
 void func_020746f0(void) {
@@ -572,12 +578,15 @@ void func_020746f0(void) {
     func_02072a68();
 }
 
-s32 func_020746fc(s32 unused,u8 *arg1) {
-u32 n=M2C_FIELD(arg1,u16 *,12);
+/* Checksum of an archive block: the sum of its bytes from SAVE_ARCHIVE_SUMMARY
+ * up to its SAVE_ARCHIVE_LENGTH, stored at SAVE_ARCHIVE_CHECKSUM.  A block that
+ * claims to be longer than SAVE_ARCHIVE_MAX_SIZE has no valid checksum (0). */
+s32 SaveArchive_ComputeChecksum(s32 unused,u8 *block) {
+u32 length=M2C_FIELD(block,u16 *,SAVE_ARCHIVE_LENGTH);
 s32 sum=0,i;
-if(n>0x400)return 0;
-arg1+=8;
-for(i=8;i<(s32)n;i++)sum+=*arg1++;
+if(length>SAVE_ARCHIVE_MAX_SIZE)return 0;
+block+=SAVE_ARCHIVE_SUMMARY;
+for(i=SAVE_ARCHIVE_SUMMARY;i<(s32)length;i++)sum+=*block++;
 return sum;
 }
 
@@ -603,7 +612,7 @@ return 1;
 
 u8 func_020747c8(s32 arg0,void *arg1) {
 u8 result;
-if(M2C_FIELD(arg1,s32 *,4)==func_020746fc(arg0,arg1))result=1;else result=0;
+if(M2C_FIELD(arg1,s32 *,4)==SaveArchive_ComputeChecksum(arg0,arg1))result=1;else result=0;
 return result;
 }
 

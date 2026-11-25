@@ -15,7 +15,7 @@ extern u8 gConnectionMgr[];
 void OnPeerConnect(s32,s32,s32,void *);
 s32 SBServerListThink(s32);
 s32 DestroyServerBrowser(s32);
-s32 func_02061750(s32);
+s32 SBServerListGetStatus(s32);
 void Qr2_ServiceConnection(s32);
 void NatNeg_Think(void);
 void func_0205d8f4(void);
@@ -30,7 +30,7 @@ void func_0203cb38(void *arg0) {
     u64 GetSystemTick(void);
     u64 U64Divide(u64, u64);
     s32 Qr2_Think(s32);
-    s32 func_0205ad78(s32);
+    s32 gti2SocketThink(s32);
     s32 SendJoinRequest(s32, s32);
     s32 ReportConnectionCommandResult(void);
     s32 StartConnection(s32);
@@ -55,7 +55,7 @@ void func_0203cb38(void *arg0) {
         if (M2C_FIELD(GetConnection(), s32 *, 0x10))
             Qr2_Think(M2C_FIELD(GetConnection(), s32 *, 0x10));
         if (M2C_FIELD(GetConnection(), s32 *, 0x4) == 0) return;
-        func_0205ad78(M2C_FIELD(M2C_FIELD(GetConnection(), s32 *, 0x4), s32 *, 0));
+        gti2SocketThink(M2C_FIELD(M2C_FIELD(GetConnection(), s32 *, 0x4), s32 *, 0));
         return;
     }
     if (M2C_FIELD(GetConnection(), s32 *, 0x1a0) == 0) return;
@@ -185,7 +185,7 @@ void func_0203cb38(void *arg0) {
             M2C_FIELD(GetConnection(),s32 *,0xe4)=0;
         }
         if(M2C_FIELD(GetConnection(),s32 *,0xe4) &&
-           func_02061750(M2C_FIELD(GetConnection(),s32 *,0xe4)) &&
+           SBServerListGetStatus(M2C_FIELD(GetConnection(),s32 *,0xe4)) &&
            M2C_FIELD(GetConnection(),u64 *,0x174)) {
             now=GetSystemTick();
             if(now>M2C_FIELD(GetConnection(),u64 *,0x174))ReportConnectionError(6,0xfffeb3ee);
@@ -201,7 +201,7 @@ void func_0203cb38(void *arg0) {
         func_0205d8f4();
     }
     if(M2C_FIELD(GetConnection(),s32 *,4))
-        func_0205ad78(M2C_FIELD(M2C_FIELD(GetConnection(),s32 *,4),s32 *,0));
+        gti2SocketThink(M2C_FIELD(M2C_FIELD(GetConnection(),s32 *,4),s32 *,0));
     if(M2C_FIELD(GetConnection(),s32 *,0x1a0)==18) {
         now=GetSystemTick();
         if(U64Divide((now-M2C_FIELD(GetConnection(),u64 *,0x1f0))<<6,0x82ea)>3000 && StartMatchmaking())return;

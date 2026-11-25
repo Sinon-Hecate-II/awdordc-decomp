@@ -76,7 +76,9 @@ goto done;
 }i++; test: if(i<n)goto loop; done: return 1;
 }
 #pragma intrinsic reset
-void func_ov010_022232e0(void) {
+/* Initialise the pending-send queue: empty its head and tail (gLinkPendingList)
+ * and zero every link channel's queued-packet count. */
+void Link_InitPendingPackets(void) {
     extern s32 gLinkPendingList;
     extern s32 gLinkPendingCounts[];
     s32 i;
@@ -86,7 +88,7 @@ void func_ov010_022232e0(void) {
     do {
         gLinkPendingCounts[i] = 0;
         i++;
-    } while (i < 3);
+    } while (i < LINK_CHANNEL_COUNT);
 }
 
 /* Free every packet still waiting to be sent on link channel `channel`, then
@@ -150,14 +152,19 @@ s32 Link_GetPendingCount(s32 arg0) {
     return gLinkPendingCounts[arg0];
 }
 
-void *Link_FindPendingPacket(s32 a) {
-extern s32 gLinkPendingList;
-void *p=(void *)gLinkPendingList;
-while(p) {
-if(M2C_FIELD(p,u8 *,0x11)==a) return p;
-p=M2C_FIELD(p,void **,8);
-}
-return NULL;
+/* Find the first packet still waiting to be sent on link channel `channel`
+ * (the queue head is gLinkPendingList), or NULL when that channel has none. */
+void *Link_FindPendingPacket(s32 channel) {
+    extern s32 gLinkPendingList;
+    void *packet = (void *)gLinkPendingList;
+
+    while (packet) {
+        if (M2C_FIELD(packet, u8 *, LINK_PACKET_CHANNEL) == channel) {
+            return packet;
+        }
+        packet = M2C_FIELD(packet, void **, LINK_PACKET_NEXT);
+    }
+    return NULL;
 }
 
 /* Unlinks a packet from the pending-send list (head at gLinkPendingList, tail at
@@ -211,7 +218,14 @@ u32 i; for(i=0;i<n;i++) out[i]=in[i]>>8;
 }
 
 #pragma opt_strength_reduction off
-s32 VoiceCodec_DecodePcm8(void *src,void *dst,s32 count){u32 i;for(i=0;i<(u32)count;i++)((s16 *)dst)[i]=((s8 *)src)[i]<<8;}
+/* Decode `count` bytes of 8-bit signed PCM voice samples (the VOICE_CODEC_PCM8
+ * codec) into signed 16-bit samples: each byte becomes the high half of a sample,
+ * with the low half zero. */
+s32 VoiceCodec_DecodePcm8(void *srcBytes, void *dstSamples, s32 count) {
+    u32 i;
+
+    for (i = 0; i < (u32)count; i++) ((s16 *)dstSamples)[i] = ((s8 *)srcBytes)[i] << 8;
+}
 #pragma opt_strength_reduction reset
 void func_ov010_02223654(s32 arg0) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);

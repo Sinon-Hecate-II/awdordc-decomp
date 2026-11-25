@@ -118,7 +118,7 @@ u8 Ov003_GetSelectedRowIndex(void *arg0) {
 }
 
 void func_ov003_02207c7c(void *arg0) {
-void func_02087d84(void *,u16,s32,s16,u16,s32);
+void SpriteCellListSetCellRect(void *,u16,s32,s16,u16,s32);
 s32 func_020a8ce4(s32,s32);
 s32 func_020a8e28(s32,s32);
 s32 Ov003_IsValueInRange(s32,s32,s32);
@@ -151,10 +151,10 @@ cond3=(cond2&255) && Ov003_IsValueInRange(idx,2,4)!=0;
 if(cond3&255)goto half;
 }else {half: width>>=1;}
 p=M2C_FIELD(arg0,void **,0x44);
-func_02087d84(M2C_FIELD(arg0,void **,0x5c),(u16)i,16,(s16)(M2C_FIELD(p,u8 *,4)*(i-11)+2),(u16)width,M2C_FIELD(p,u8 *,2));
+SpriteCellListSetCellRect(M2C_FIELD(arg0,void **,0x5c),(u16)i,16,(s16)(M2C_FIELD(p,u8 *,4)*(i-11)+2),(u16)width,M2C_FIELD(p,u8 *,2));
 }else{
 p=M2C_FIELD(arg0,void **,0x44);
-func_02087d84(M2C_FIELD(arg0,void **,0x5c),(u16)i,x,(s16)(M2C_FIELD(p,u8 *,4)*(i-11)+2),(u16)value,M2C_FIELD(p,u8 *,2));
+SpriteCellListSetCellRect(M2C_FIELD(arg0,void **,0x5c),(u16)i,x,(s16)(M2C_FIELD(p,u8 *,4)*(i-11)+2),(u16)value,M2C_FIELD(p,u8 *,2));
 }
 i++;
 }while(i<M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,0)+11);

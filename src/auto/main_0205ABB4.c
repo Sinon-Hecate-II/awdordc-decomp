@@ -88,17 +88,20 @@ void func_0205ad60(M2C_UNK arg0) {
     gti2FreeSocket(arg0);
 }
 
-void func_0205ad78(M2C_UNK arg0) {
-    s32 func_0205c344();
+/* Per-frame update of one GT2 socket: drain its incoming datagrams, advance the
+ * timers and retries of every connection it owns, then reap the connections that
+ * closed.  Stops early when a callback has freed the socket or a connection. */
+void gti2SocketThink(void *socket) {
+    s32 gti2SocketReceiveData(void *);
     s32 gti2ThinkSocketConnections(M2C_UNK);
     M2C_UNK gti2RemoveClosedConnections(M2C_UNK);
-    if (func_0205c344() == 0) {
+    if (gti2SocketReceiveData(socket) == 0) {
         return;
     }
-    if (gti2ThinkSocketConnections(arg0) == 0) {
+    if (gti2ThinkSocketConnections(socket) == 0) {
         return;
     }
-    gti2RemoveClosedConnections(arg0);
+    gti2RemoveClosedConnections(socket);
 }
 
 void Gt2SocketSetConnectAttempt(void) {
@@ -118,16 +121,16 @@ void func_0205adc0(void) {
 
 #pragma scheduling off
 s32 func_0205adcc(s32 a,void **b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
-void func_02049260(s32);s32 func_0205a830(s32,void **);s32 func_0205a890(void *,s32,s32,s32);void func_0205d164(s32);s32 func_0205d588(s32,u32 *,u16 *);
+void func_02049260(s32);s32 gti2CreateClientConnection(s32,void **);s32 func_0205a890(void *,s32,s32,s32);void func_0205d164(s32);s32 func_0205d588(s32,u32 *,u16 *);
 void *p;u32 ip;u16 port;s32 result,done;
 if(!func_0205d588(c,&ip,&port)||!ip||!port)return 4;
 if(((((ip<<24)&0xff000000)|(((ip<<8)&0xff0000)|((u8)(ip>>24)|((ip>>8)&0xff00))))&0xe0000000)==0xe0000000)return 4;
-result=func_0205a830(a,&p);if(result)return result;
+result=gti2CreateClientConnection(a,&p);if(result)return result;
 M2C_FIELD(p,s32 *,32)=f;
 result=func_0205a890(p,d,e,g);if(result){func_0205d164((s32)p);return result;}
 if(!h){if(b)*b=p;return 0;}
 M2C_FIELD(p,s32 *,36)++;
-do{func_0205ad78(a);if(M2C_FIELD(p,s32 *,12)>=5)done=1;else done=0;if(!done)func_02049260(1);}while(!done);
+do{gti2SocketThink(a);if(M2C_FIELD(p,s32 *,12)>=5)done=1;else done=0;if(!done)func_02049260(1);}while(!done);
 M2C_FIELD(p,s32 *,36)--;
 if(M2C_FIELD(p,s32 *,12)==5)*b=p;
 return M2C_FIELD(p,s32 *,24);
@@ -251,12 +254,14 @@ s32 Gt2CloseConnection(M2C_UNK arg0) {
     return gti2CloseConnection(arg0, 7, 2);
 }
 
-s32 gti2SendClosedAndClose(M2C_UNK arg0) {
+/* Send the CLOSED message on a connection and then close it, reporting connect
+ * event 1 to its callback and close reason 4 to its closed callback. */
+s32 gti2SendClosedAndClose(void *connection) {
     s32 gti2SendClosed();
-    if (gti2SendClosed() == 0) {
+    if (gti2SendClosed(connection) == 0) {
         return 0;
     }
-    return gti2CloseConnection(arg0, 1, 4);
+    return gti2CloseConnection(connection, 1, 4);
 }
 
 /* Drop the leading entries of the sorted list a->list whose key is below b,

@@ -135,8 +135,8 @@ SetWhError();return 0;
 
 void func_ov001_02188b04(void) {
     M2C_UNK SetWhStatus(M2C_UNK);
-    s32 func_ov001_021882e0();
-    if (func_ov001_021882e0() != 0) {
+    s32 QueueWhStopCommand();
+    if (QueueWhStopCommand() != 0) {
         return;
     }
     SetWhStatus(0xA);
@@ -145,7 +145,7 @@ void func_ov001_02188b04(void) {
 void func_ov001_02188b20(void) {
 extern M2C_UNK data_ov001_0219174c;
 extern M2C_UNK data_ov001_02191770;
-s32 Ov001_EndKeySharing(void); s32 func_ov001_02188220(void); s32 func_ov001_021880d0(void); s32 func_ov001_02188100(void);
+s32 Ov001_EndKeySharing(void); s32 Ov001_TeardownAndQueueSetup(void); s32 Ov001_CloseKeySharingChannel(void); s32 Ov001_ResetWhHostSession(void);
 s32 state=M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x40);
 if((state == 1) ? 1 : 0) {
 void (*cb1)(s32,void *)=M2C_FIELD(&gWhWork,void (* volatile *)(s32,void *),0); if(cb1) cb1(0x8000000,&data_ov001_0219174c);
@@ -156,9 +156,9 @@ if(state!=6 && state!=5 && state!=4){SetWhStatus(3);func_ov001_02188b04();return
 SetWhStatus(3);
 switch(M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u32 *,0x44)){
 case 3: if(!Ov001_EndKeySharing())func_ov001_02188b04();break;
-case 1:case 5: if(!func_ov001_02188220())func_ov001_02188b04();break;
-case 2: if(!func_ov001_021880d0())func_ov001_02188b04();break;
-case 0:case 4: if(!func_ov001_02188100())func_ov001_02188b04();break;
+case 1:case 5: if(!Ov001_TeardownAndQueueSetup())func_ov001_02188b04();break;
+case 2: if(!Ov001_CloseKeySharingChannel())func_ov001_02188b04();break;
+case 0:case 4: if(!Ov001_ResetWhHostSession())func_ov001_02188b04();break;
 }
 }
 }
@@ -257,11 +257,16 @@ Ov001_BeginProfileTransfer();Ov001_ResetLinkWork();
 M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_STATE)=2;return 1;
 }
 
-s32 func_ov001_02188f0c(void){
+/* Leave the download-play link's joining state: move the profile setup from state
+ * 5 on to state 6 and drop the players that never acknowledged, so the setup's
+ * update task can carry on.  Returns 1 when the state allowed the move. */
+s32 Ov001_AdvanceLinkState(void) {
 extern void *gOv001ProfileState;
-if(M2C_FIELD(gOv001ProfileState,u8 *,0xa90)!=5)return 0;
-M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=6;
-Ov001_DropUnacknowledgedPlayers();return 1;
+void Ov001_DropUnacknowledgedPlayers(void);
+if (M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) != 5) return 0;
+M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) = 6;
+Ov001_DropUnacknowledgedPlayers();
+return 1;
 }
 
 /* Per-frame state machine of the ov001 profile / download-play setup screen.
@@ -277,7 +282,7 @@ void Ov001_UpdateProfileSetup(void) {
     void func_ov001_0218959c(void);
     void Ov001_UpdateProfileTask(void);
     void func_ov001_021897a4(void);
-    s32 func_ov001_021897bc(void);
+    s32 Ov001_FinishLinkTeardown(void);
     s32 Ov001_GetTaskStep(void);
     s32 Ov001_EndLink(void);
     void func_ov001_02188b20(void);
@@ -326,7 +331,7 @@ void Ov001_UpdateProfileSetup(void) {
         return;
     case 17:
         if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY)
-            func_ov001_021897bc();
+            Ov001_FinishLinkTeardown();
         return;
     case 18:
         MultiBoot_CloseLink();

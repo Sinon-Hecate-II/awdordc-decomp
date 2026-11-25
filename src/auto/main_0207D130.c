@@ -232,15 +232,18 @@ projected[1]=((s64)projected[1]<<12)/pw;
 projected[2]=((s64)projected[2]<<12)/pw;
 }
 
-void func_0207d95c(M2C_UNK *arg0) {
-    extern M2C_UNK data_02101874;
-    M2C_UNK *var_r0;
+/* Set the 3D viewport from `viewport` (x1, y1, x2, y2 in screen pixels),
+ * packing the four values into REG_GX_VIEWPORT; a NULL viewport selects the
+ * full-screen default. */
+void SetGxViewport(GxViewport *viewport) {
+    extern GxViewport gDefaultViewport;
+    GxViewport *vp;
 
-    var_r0 = arg0;
-    if (var_r0 == NULL) {
-        var_r0 = &data_02101874;
+    vp = viewport;
+    if (vp == NULL) {
+        vp = &gDefaultViewport;
     }
-    *(s32 *)0x04000580 = M2C_FIELD(var_r0, s32 *, 0) | (M2C_FIELD(var_r0, s32 *, 4) << 8) | (M2C_FIELD(var_r0, s32 *, 8) << 0x10) | (M2C_FIELD(var_r0, s32 *, 0xC) << 0x18);
+    REG_GX_VIEWPORT = vp->x1 | (vp->y1 << 8) | (vp->x2 << 16) | (vp->y2 << 24);
 }
 
 /* Build the map view's orthographic projection matrix: load the fixed Q12
@@ -260,12 +263,15 @@ void BuildMapViewProjection(s32 *matrix, s32 *zoom, s32 *offset) {
     REG_GX_MTX_STORE = 0;
 }
 
-void UploadTextureBank(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK GX_BeginLoadTex();
-    M2C_UNK LoadTextureBankBlock(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK GX_EndLoadTex();
+/* Upload `size` bytes from `src` into the main-engine texture region at byte
+ * `offset`, between a texture-load begin/end pair. */
+void UploadTextureBank(void *src, u32 offset, u32 size) {
+    void GX_BeginLoadTex(void);
+    void LoadTextureBankBlock(void *, u32, u32);
+    void GX_EndLoadTex(void);
+
     GX_BeginLoadTex();
-    LoadTextureBankBlock(arg0, arg1, arg2);
+    LoadTextureBankBlock(src, offset, size);
     GX_EndLoadTex();
 }
 

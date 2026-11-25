@@ -43,10 +43,10 @@ s32 WhInitNetwork(s32 address0, s32 address1, s32 address2) {
 }
 
 s32 func_ov001_0216cd90(void) {
-    s32 func_02021c04();
-    s32 func_ov001_0216d1e4();
-    if (func_02021c04() < 0) return -1;
-    return -(func_ov001_0216d1e4() != 0);
+    s32 ghiShutdown();
+    s32 WhConnTaskReceiveLinkStatus();
+    if (ghiShutdown() < 0) return -1;
+    return -(WhConnTaskReceiveLinkStatus() != 0);
 }
 
 s32 func_ov001_0216cdb4(u8 *arg0, u8 *arg1, s32 arg2) {
@@ -105,9 +105,9 @@ void func_ov001_0216ce6c(void) {
 }
 
 void func_ov001_0216ce74(M2C_UNK arg0, void *arg1, u8 arg2) {
-    void func_0202152c(M2C_UNK, void *);
+    void SocketBindAddress(M2C_UNK, void *);
     M2C_FIELD(arg1, u8 *, 0) = arg2;
-    func_0202152c(arg0, arg1);
+    SocketBindAddress(arg0, arg1);
 }
 
 void func_ov001_0216ce80(void) {
@@ -211,22 +211,26 @@ void func_ov001_0216d074(s32 arg0) {
  OS_SendMessage(&gWhConnTaskQueue, arg0, 0);
 }
 
-s32 func_ov001_0216d1e4(void) {
+/* After WhConnTaskProcessLinkStep reports that a WFC link step was queued, wait
+ * for the connection task's next message and report success (0) only when it is
+ * the link-status notification.  Returns -1 when no step was queued or the
+ * message is another event. */
+s32 WhConnTaskReceiveLinkStatus(void) {
     s32 OS_ReceiveMessage(void *, s32 *, s32);
     extern s32 gWhConnTaskQueue;
-    s32 msg;
+    s32 message;
     s32 result = -1;
-    s32 again;
+    s32 keepPolling;
     if (WhConnTaskProcessLinkStep()) {
         do {
-            OS_ReceiveMessage(&gWhConnTaskQueue, &msg, 1);
-            if (msg == 14) {
-                again = 0;
-                result = again;
+            OS_ReceiveMessage(&gWhConnTaskQueue, &message, 1);
+            if (message == WH_MSG_LINK_STATUS) {
+                keepPolling = 0;
+                result = keepPolling;
             } else {
-                again = 0;
+                keepPolling = 0;
             }
-        } while (again != 0);
+        } while (keepPolling != 0);
     }
     return result;
 }

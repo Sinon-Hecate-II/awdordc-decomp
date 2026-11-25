@@ -432,7 +432,16 @@ case 3:default:WFC_SetState(11);OS_RestoreInterrupts(irq);return 7;
 OS_RestoreInterrupts(irq);return 3;
 }
 
-s32 Wfc_GetLinkState(void){s32 s=OS_DisableInterrupts();s32 r=0;void *p=(void *)gWfcSession;if(p)r=M2C_FIELD(p,s32 *,0x2260);OS_RestoreInterrupts(s);return r;}
+/* The current WFC session's link state (one of WFC_SESSION_STATE_*), read with
+ * interrupts disabled; WFC_SESSION_STATE_NONE when no session exists. */
+s32 Wfc_GetLinkState(void) {
+    s32 irq = OS_DisableInterrupts();
+    s32 state = WFC_SESSION_STATE_NONE;
+    void *session = (void *)gWfcSession;
+    if (session) state = M2C_FIELD(session, s32 *, WFC_SESSION_STATE);
+    OS_RestoreInterrupts(irq);
+    return state;
+}
 
 u32 WFC_SetStatusBits(u32 v){
 u32 old; s32 s=OS_DisableInterrupts();u32 mask=0;void *p=(void *)gWfcSession;

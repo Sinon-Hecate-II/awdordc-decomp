@@ -29,9 +29,9 @@ s32 Ov010_InitVoiceChat(void) {
     s32 func_ov010_02225640(void *);
     void Ov010_SetVoiceChatCallback();
     void func_ov010_02222c9c();
-    void func_ov010_02225d00();
+    void StartStreamSoundChannels();
     void DisableVoiceStream();
-    s32 func_ov010_02229bf4();
+    s32 IsOnlineGuest();
     void VoiceChat_SetCodecMode();
     s32 AllocAlignedBuffer(s32, s32);
 
@@ -56,9 +56,9 @@ s32 Ov010_InitVoiceChat(void) {
     Ov010_SetVoiceChatCallback(func_ov010_02225f54);
     func_ov010_02222c9c(1);
     M2C_FIELD(&gVoiceChatLink, s32 *, 4) = 0;
-    func_ov010_02225d00();
+    StartStreamSoundChannels();
     DisableVoiceStream();
-    if (func_ov010_02229bf4()) {
+    if (IsOnlineGuest()) {
         VoiceChat_ConnectPeer(0);
     }
     VoiceChat_SetCodecMode(1);
@@ -263,14 +263,17 @@ s32 CompleteWebPutRequest(void) {
     return inFlight;
 }
 
-s32 SubmitWebPutRequestAndCreateSprite(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, void *arg5) {
+/* Submit a profile PUT request with the given fields and create the request's
+ * waiting sprite, owned by `owner`: returns 0 when the request could not be
+ * sent, else the new sprite's id. */
+s32 SubmitWebPutRequestAndCreateSprite(s32 playerId, s32 field2, s32 field3, s32 payload, s32 payloadSize, void *owner) {
     s32 CreateSpriteObject(M2C_UNK *, s32);
     s32 SubmitWebPutRequest(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    extern M2C_UNK data_ov010_0222c080;
-    if (SubmitWebPutRequest(arg0, arg1, arg2, arg3, arg4) == 0) {
+    extern M2C_UNK sOv010PutRequestSpriteClass;
+    if (SubmitWebPutRequest(playerId, field2, field3, payload, payloadSize) == 0) {
         return 0;
     }
-    return CreateSpriteObject(&data_ov010_0222c080, arg5);
+    return CreateSpriteObject(&sOv010PutRequestSpriteClass, owner);
 }
 
 /* Whether the local profile's sync time is out of date: the server's time must be
@@ -440,9 +443,9 @@ s32 CompleteWebSyncRequest(void) {
 s32 SubmitWebSyncRequestAndCreateSprite(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 CreateSpriteObject(M2C_UNK *, s32);
     s32 SubmitWebSyncRequest();
-    extern M2C_UNK data_ov010_0222c060;
+    extern M2C_UNK sOv010SyncRequestSpriteClass;
     if (SubmitWebSyncRequest() == 0) return 0;
-    return CreateSpriteObject(&data_ov010_0222c060, arg4);
+    return CreateSpriteObject(&sOv010SyncRequestSpriteClass, arg4);
 }
 
 /* Copy of IsProfileSyncOverdue used by the record-sync wait state: whether the

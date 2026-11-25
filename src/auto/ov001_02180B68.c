@@ -68,7 +68,7 @@ void Ov001_FadeOutFriendList(void) {
 void Ov001_LeaveFriendList(void) {
     M2C_UNK Ov001_FreeOptionSprites();
     s32 Ov001_IsIconRowIdle();
-    M2C_UNK Ov001_FreeOptionBackground();
+    M2C_UNK Ov001_FreeMessagePanel();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_FreeFriendRoster();
@@ -94,7 +94,7 @@ void Ov001_LeaveFriendList(void) {
     } while (Ov001_CloseFriendRoster() == 0);
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
-    Ov001_FreeOptionBackground();
+    Ov001_FreeMessagePanel();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
     if (gOv001FriendListState != OV001_FRIEND_LIST_AVAILABLE) {
@@ -240,7 +240,7 @@ void Ov001_FadeInAccessPointMenu(void) {
 void Ov001_WaitAccessPointMenuFadeIn(void) {
     M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
-    void func_ov001_0218104c(void);
+    void Ov001_AccessPointWaitIconRow(void);
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
@@ -248,16 +248,19 @@ void Ov001_WaitAccessPointMenuFadeIn(void) {
         return;
     }
     Ov001_CreateMenuIconRow(0);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0218104c);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_AccessPointWaitIconRow);
 }
 
-void func_ov001_0218104c(void) {
+/* Access-point (region) menu step: wait until the icon row has slid in (its
+ * selection is no longer OV001_ICON_ROW_NOT_READY) and the menu's previous slide
+ * has stopped, then unlock the row and hand over to the menu's input step. */
+void Ov001_AccessPointWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection(void);
-    s32 func_ov001_02185714(void);
+    s32 Ov001_IsMenuAnimating(void);
     M2C_UNK Ov001_UnlockIconRow();
     void func_ov001_02181080(void);
-    if (Ov001_GetIconRowSelection() == -2) return;
-    if (func_ov001_02185714() == 1) return;
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) return;
+    if (Ov001_IsMenuAnimating() == 1) return;
     Ov001_UnlockIconRow();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02181080);
 }
@@ -408,7 +411,7 @@ if(!Ov001_IsMenuLayoutReady())return;
 if(!Ov001_IsIconRowIdle())return;
 for(i=0;i<3;i++){p=(s32)((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->top[i];if(p)Ov001_DestroySprite(p);}
 for(i=0;i<3;i++){p=(s32)((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->middle[i];if(p)Ov001_DestroySprite(p);}
-Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();
+Ov001_FreeSpriteObjects();Ov001_FreeMessagePanel();
 Ov001_FreeFile(((Ov001MenuRegion*)&gOv001MenuRegion)->sprites->obj);
 Ov001_LoadAsset(&data_ov001_021909f4,&GX_LoadOBJPltt);
 Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,20);

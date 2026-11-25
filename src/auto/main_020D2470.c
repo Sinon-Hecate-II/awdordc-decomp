@@ -386,16 +386,16 @@ s32 GetUnitActionCost(void) {
 
 void func_020d2d60(M2C_UNK arg0) {
     s32 HasPlayerSelectedUnit();
-    M2C_UNK func_020a3100(M2C_UNK);
+    M2C_UNK EnablePlayerSelection(M2C_UNK);
     if (HasPlayerSelectedUnit() != 0) {
         return;
     }
-    func_020a3100(arg0);
+    EnablePlayerSelection(arg0);
 }
 
 void func_020d2d80(M2C_UNK arg0) {
-    M2C_UNK func_020a33f0(M2C_UNK, M2C_UNK);
-    func_020a33f0(arg0, 0);
+    M2C_UNK SetPlayerSpriteAuxBits(M2C_UNK, M2C_UNK);
+    SetPlayerSpriteAuxBits(arg0, 0);
 }
 
 /* Pay `player` its per-turn property income, once the battle has started. */
@@ -545,18 +545,20 @@ s32 CountPlayerUnitsLost(s32 player) {
     return totalLost;
 }
 
-void IncrementPlayerUnitCount(s32 a) {
+/* Bump `player`'s live unit count, saturating at 255. */
+void IncrementPlayerUnitCount(s32 player) {
 extern s32 *gCurrentMap;
-u8 *p=(u8 *)*gCurrentMap+0x67a4+a*0x8c;
-if((u32)p[0x31]<255)p[0x31]++;
+u8 *p = (u8 *)*gCurrentMap + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
+if ((u32)p[PLAYER_REC_UNIT_COUNT] < 255) p[PLAYER_REC_UNIT_COUNT]++;
 }
 
-s32 DecrementPlayerUnitCount(s32 a) {
+/* Drop `player`'s live unit count, stopping at 0; returns the new count. */
+s32 DecrementPlayerUnitCount(s32 player) {
 extern s32 *gCurrentMap;
-u8 *p=(u8 *)*gCurrentMap+0x67a4+a*0x8c;
-s32 v=p[0x31];
-if(v!=0){v--;p[0x31]=v;}
-return v;
+u8 *p = (u8 *)*gCurrentMap + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
+s32 count = p[PLAYER_REC_UNIT_COUNT];
+if (count != 0) { count--; p[PLAYER_REC_UNIT_COUNT] = count; }
+return count;
 }
 
 /* Add a newly created unit of `kind` to `player`'s tallies: bump the player's
@@ -594,20 +596,25 @@ extern s32 *gCurrentMap;
 M2C_FIELD(a*0x8c+*gCurrentMap,u8 *,0x67d3)=b;
 }
 
-u8 HasPlayerGivenUp(s32 a){extern s32 *gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67d3]!=0;}
+/* Whether `player` has given up (its record's PLAYER_REC_GAVE_UP flag is set). */
+u8 HasPlayerGivenUp(s32 player) {
+    extern s32 *gCurrentMap;
+    return ((u8 *)*gCurrentMap + player * MAP_PLAYER_STRIDE)[MAP_PLAYER_STATES + PLAYER_REC_GAVE_UP] != 0;
+}
 
-u8 HasActivePlayerGivenUp(M2C_UNK arg0) {
-    u8 var_r0;
+/* Whether `player` is still in the battle but has given up. */
+u8 HasActivePlayerGivenUp(s32 player) {
+    u8 givenUp;
 
-    if (IsPlayerActive() == 0) {
+    if (IsPlayerActive(player) == 0) {
         return 0U;
     }
-    if (HasPlayerGivenUp(arg0) != 0) {
-        var_r0 = 1;
+    if (HasPlayerGivenUp(player) != 0) {
+        givenUp = 1;
     } else {
-        var_r0 = 0;
+        givenUp = 0;
     }
-    return var_r0;
+    return givenUp;
 }
 
 void SetPlayerLost(s32 a,u8 b) {
@@ -615,7 +622,13 @@ extern s32 *gCurrentMap;
 M2C_FIELD(a*0x8c+*gCurrentMap,u8 *,0x67d4)=b;
 }
 
-u8 HasPlayerLost(s32 a){extern s32 *gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67d4]!=0;}
+/* Whether the player's HQ has been captured: its record's lost flag is set. */
+u8 HasPlayerLost(s32 player) {
+    extern s32 *gCurrentMap;
+    u8 *record = (u8 *)*gCurrentMap + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
+
+    return record[PLAYER_REC_LOST] != 0;
+}
 
 /* Return whether the player remains undefeated under the map's HQ-loss rule. */
 u8 IsPlayerHqIntact(s32 player) {
@@ -663,7 +676,7 @@ void EnableBattleTurnTimer(void) {
     M2C_FIELD(&gMapData, s32 *, 8) = 1;
 }
 
-void func_020d33ec(void) {
+void DisableBattleTurnTimer(void) {
     extern M2C_UNK gMapData;
     M2C_FIELD(&gMapData, s32 *, 8) = 0;
 }

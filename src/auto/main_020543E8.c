@@ -602,10 +602,18 @@ s32 func_0205519c(void **manager) {
     return 0;
 }
 
-void *gpiFindConnectedPeer(void **a,s32 b) {
- void *p=M2C_FIELD(*a,void **,0x434);
- while(p) {if(M2C_FIELD(p,s32 *,12)==b && M2C_FIELD(p,s32 *,0)==105) return p; p=M2C_FIELD(p,void **,60);}
- return NULL;
+/* Find the connected peer that speaks for player `playerId`: walk the
+ * connection's peer list for a peer in GPI_PEER_STATE_CONNECTED whose
+ * GPI_PEER_PLAYER_ID is `playerId`; NULL when there is none. */
+void *gpiFindConnectedPeer(void **connectionRef, s32 playerId) {
+    void *peer = M2C_FIELD(*connectionRef, void **, GPI_CONN_PEER_HEAD);
+
+    while (peer) {
+        if (M2C_FIELD(peer, s32 *, GPI_PEER_PLAYER_ID) == playerId
+            && M2C_FIELD(peer, s32 *, GPI_PEER_STATE) == GPI_PEER_STATE_CONNECTED) return peer;
+        peer = M2C_FIELD(peer, void **, GPI_PEER_NEXT);
+    }
+    return NULL;
 }
 
 void FreeGpiPeerCallbackEntry(s32 *arg0) {

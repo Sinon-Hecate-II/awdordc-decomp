@@ -280,7 +280,7 @@ void WFC_ProcessSendDataCallback(u16 *p) {
     void WFC_Finish(void);
     void func_02029bd0(M2C_UNK);
     void DC_InvalidateRange(M2C_UNK, M2C_UNK);
-    void func_020296e0(M2C_UNK);
+    void WFC_QueueReceivedFrame(M2C_UNK);
 
     switch (p[1]) {
     case 0:
@@ -297,7 +297,7 @@ void WFC_ProcessSendDataCallback(u16 *p) {
         case 0xf:
             func_02029bd0((*(u16 *)((u8 *)*(void **)((u8 *)p + 8) + 0xe) >> 8) & 0xff);
             DC_InvalidateRange(*(void **)((u8 *)p + 8), 0x620);
-            func_020296e0(*(void **)((u8 *)p + 8));
+            WFC_QueueReceivedFrame(*(void **)((u8 *)p + 8));
             return;
         default:
             WFC_SetState(WFC_SESSION_STATE_ERROR);

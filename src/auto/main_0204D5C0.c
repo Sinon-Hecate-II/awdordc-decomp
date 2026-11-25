@@ -1,6 +1,7 @@
 /* 19 functions from 0x0204D5C0 to 0x0204E408 (main), found by ds-decomp. */
 #include "common.h"
 #include "ghttp.h"
+#include "net_socket.h"
 void gpiSetErrorString(void **,void *);
 static inline s32 char_space(s32 c) { extern u16 gCharClassTable[]; if(c<0 || c>=128) return 0; return gCharClassTable[c] & 256; }
 
@@ -183,12 +184,15 @@ elapsed=GetSystemTickMilliseconds()-startTime;
 gpiFree(readBuf);
 }
 
-s32 func_0204db04(s32 arg0,s32 arg1,s32 arg2) {
- extern s32 gDnsQueryState;
- s32 gpiInitialize(s32,s32,s32);
- if(gDnsQueryState!=1) return 2;
- if(arg0==0) return 2;
- return gpiInitialize(arg0,arg1,arg2);
+/* Initialize the online session's gpi connection, but only while the
+ * service-availability DNS lookup is idle and an output slot was given; returns
+ * GPI_ERROR_REFUSED in either of those cases, otherwise gpiInitialize's result. */
+s32 gpiInitializeConnection(void **out, s32 peerCallback, s32 peerCallbackData) {
+    extern s32 gDnsQueryState;
+    s32 gpiInitialize(void **, s32, s32);
+    if (gDnsQueryState != DNS_QUERY_IDLE) return GPI_ERROR_REFUSED;
+    if (out == 0) return GPI_ERROR_REFUSED;
+    return gpiInitialize(out, peerCallback, peerCallbackData);
 }
 
 void func_0204db34(s32 *arg0) {
@@ -197,11 +201,13 @@ void func_0204db34(s32 *arg0) {
  gpiFreeConnection(arg0);
 }
 
-s32 func_0204db50(void **arg0) {
+/* Pump one GameSpy connection: 2 for a missing connection, 0 in simulation mode
+ * (there is nothing to do), otherwise step the connection's engine once. */
+s32 gpiThinkConnection(void **connection) {
  s32 gpiThink(void **,s32);
- if(arg0==0 || *arg0==0) return 2;
- if(M2C_FIELD(*arg0,s32 *,0x108)!=0) return 0;
- return gpiThink(arg0,0);
+ if(connection==0 || *connection==0) return 2;
+ if(M2C_FIELD(*connection,s32 *,GPI_CONN_SIMULATION)!=0) return 0;
+ return gpiThink(connection,0);
 }
 
 /* Registers callback `index` of the connection: stores `handler` and the `data`
@@ -239,19 +245,21 @@ s32 gpiStartConnectionRaw(void **p,s8 *a,s8 *b,s32 c,s32 d,void (*cb)(void **,s3
  return gpiStartConnection(p,&data_020fda44,&data_020fda44,&data_020fda44,&data_020fda44,a,b,0,c,0,d,cb,e);
 }
 
-void gpiCloseConnection(void **arg0) {
+/* Close a GameSpy connection: a live (non-simulation) connection is disconnected
+ * and reset; a NULL handle or one in simulation mode is left alone. */
+void gpiCloseConnection(void **connection) {
     M2C_UNK gpiResetConnection(void **);
     M2C_UNK gpiDisconnect(void **, M2C_UNK);
-    void *temp_r1;
+    void *session;
 
-    if (arg0 != NULL) {
-        temp_r1 = *arg0;
-        if (temp_r1 != NULL) {
-            if (M2C_FIELD(temp_r1, s32 *, 0x108) != 0) {
+    if (connection != NULL) {
+        session = *connection;
+        if (session != NULL) {
+            if (M2C_FIELD(session, s32 *, GPI_CONN_SIMULATION) != 0) {
                 return;
             }
-            gpiDisconnect(arg0, 1);
-            gpiResetConnection(arg0);
+            gpiDisconnect(connection, 1);
+            gpiResetConnection(connection);
         }
     }
 }
@@ -324,7 +332,7 @@ s32 gpiSetInfoString(void **connection, s32 field, s8 *value) {
     return gpiSetInfoField(connection, field, value);
 }
 
-s32 func_0204df00(void **connection, s32 newProfileId, s8 *reason) {
+s32 gpiAddBuddy(void **connection, s32 newProfileId, s8 *reason) {
     /* Build an add-buddy request in the connection's send buffer from the session key, new profile id and reason string. */
     void gpiAppendStringField(void **, void *, s8 *);
     void gpiAppendIntField(void **, void *, s32);
@@ -404,12 +412,18 @@ s32 gpiReleaseProfile(void **connection, s32 profileId) {
     return 0;
 }
 
-s32 func_0204e184(void **arg0,volatile s32 *arg1) {
- void *p;
- if(arg0==0 || (p=*arg0)==0) return 2;
- if(M2C_FIELD(p,s32 *,0x108)!=0) {*arg1=0; return 0;}
- *arg1=M2C_FIELD(p,s32 *,0x430);
- return 0;
+/* Write the number of buddies on the gpi connection's list to `count`: 0 in
+ * simulation mode.  Returns 2 when there is no connection, 0 otherwise. */
+s32 gpiGetBuddyCount(void **connection, volatile s32 *count) {
+    void *gpi;
+
+    if (connection == 0 || (gpi = *connection) == 0) return GPI_ERROR_REFUSED;
+    if (M2C_FIELD(gpi, s32 *, GPI_CONN_SIMULATION) != 0) {
+        *count = 0;
+        return 0;
+    }
+    *count = M2C_FIELD(gpi, s32 *, GPI_CONN_BUDDY_COUNT);
+    return 0;
 }
 
 /* Copies the GameSpy buddy at `index` into `status`: the buddy's profile id,

@@ -92,42 +92,48 @@ void func_02006120(void)
 
 }
 
+/* Disable the cooperative scheduler: step its thread-lock count up (unless it is
+ * already at its maximum, -1) under an interrupt lock, and return the count
+ * before the change (0 when the scheduler was enabled). */
 s32 OS_DisableScheduler(void) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern M2C_UNK gThreadManager;
-    s32 state;
-    s32 r;
-    s32 v;
-    s32 limit = -1;
+    s32 intrMode;
+    s32 previous;
+    s32 lock;
+    s32 maxLock = -1;
 
-    state = OS_DisableInterrupts();
-    v = M2C_FIELD(&gThreadManager, s32 *, 4);
-    if ((u32)v < (u32)limit) {
-        r = v;
-        M2C_FIELD(&gThreadManager, s32 *, 4) = v + 1;
+    intrMode = OS_DisableInterrupts();
+    lock = M2C_FIELD(&gThreadManager, s32 *, THREAD_MANAGER_LOCK);
+    if ((u32)lock < (u32)maxLock) {
+        previous = lock;
+        M2C_FIELD(&gThreadManager, s32 *, THREAD_MANAGER_LOCK) = lock + 1;
     }
-    OS_RestoreInterrupts(state);
-    return r;
+    OS_RestoreInterrupts(intrMode);
+    return previous;
 }
 
+/* Let the cooperative scheduler run again: under an interrupt lock, decrement
+ * its disable count and return the count before the change (0 when it was
+ * already enabled). */
 s32 OS_EnableScheduler(void) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern M2C_UNK gThreadManager;
     s32 state;
-    s32 r;
-    s32 v;
+    s32 previous;
+    s32 lock;
 
     state = OS_DisableInterrupts();
-    r = 0;
-    v = M2C_FIELD(&gThreadManager, s32 *, 4);
-    if (v != 0) {
-        r = v;
-        M2C_FIELD(&gThreadManager, s32 *, 4) = v - 1;
+    previous = 0;
+    lock = M2C_FIELD(&gThreadManager, s32 *, THREAD_MANAGER_LOCK);
+    if (lock != 0) {
+        previous = lock;
+        M2C_FIELD(&gThreadManager, s32 *, THREAD_MANAGER_LOCK) = lock - 1;
     }
     OS_RestoreInterrupts(state);
-    return r;
+    return previous;
 }
 
 void func_02006198(void *arg0, s32 arg1) {

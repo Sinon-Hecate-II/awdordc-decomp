@@ -1,5 +1,7 @@
 /* 5 functions from 0x0220856C to 0x02209310 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_menu.h"
+#include "ov003_menu.h"
 
 s16 GetSpriteAnimValue(void *);
 void func_02086e9c(void);
@@ -117,32 +119,40 @@ u8 func_ov003_02209258(void *arg0) {
     return var_r0;
 }
 
-u8 func_ov003_02209274(void *arg0, s32 arg1) {
+/* True when the unit-list menu is in its split-row mode and `row` is the first
+ * split option row (MENU_SPLIT_ROW_FIRST), the row whose option counter the
+ * left/right keys step (Ov003_StepOptionCounter0). */
+u8 IsMenuSplitCounter0Row(void *menu, s32 row) {
+    s32 active;
+    s32 result;
+
+    if (M2C_FIELD(M2C_FIELD(menu, void **, MENU_SELECTION), u8 *, MENU_SELECTION_MODE) == MENU_SELECT_MODE_SPLIT_ROWS) active = 1;
+    else active = 0;
+    if ((active & 0xFF) && row == MENU_SPLIT_ROW_FIRST) result = 1;
+    else result = 0;
+    return result;
+}
+
+/* Whether `row` is the second split option row (row 3) of the unit list while
+ * the selection context is in the split-row layout. */
+u8 IsMenuSplitCounter1Row(void *menu, s32 row) {
  s32 active;
  s32 result;
- if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) active = 1;
+ if (M2C_FIELD(M2C_FIELD(menu, void **, MENU_SELECTION), u8 *, MENU_SELECTION_MODE) == MENU_SELECT_MODE_SPLIT_ROWS) active = 1;
  else active = 0;
- if ((active & 0xFF) && arg1 == 2) result = 1;
+ if ((active & 0xFF) && row == MENU_SPLIT_ROW_FIRST + 1) result = 1;
  else result = 0;
  return result;
 }
 
-u8 func_ov003_022092a8(void *arg0, s32 arg1) {
+/* Whether `row` is the third split option row (row 4) of the unit list while the
+ * selection context is in the split-row layout. */
+u8 IsMenuSplitCounter2Row(void *menu, s32 row) {
  s32 active;
  s32 result;
- if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) active = 1;
+ if (M2C_FIELD(M2C_FIELD(menu, void **, MENU_SELECTION), u8 *, MENU_SELECTION_MODE) == MENU_SELECT_MODE_SPLIT_ROWS) active = 1;
  else active = 0;
- if ((active & 0xFF) && arg1 == 3) result = 1;
- else result = 0;
- return result;
-}
-
-u8 func_ov003_022092dc(void *arg0, s32 arg1) {
- s32 active;
- s32 result;
- if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) active = 1;
- else active = 0;
- if ((active & 0xFF) && arg1 == 4) result = 1;
+ if ((active & 0xFF) && row == MENU_SPLIT_ROW_LAST) result = 1;
  else result = 0;
  return result;
 }

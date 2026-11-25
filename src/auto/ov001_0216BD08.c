@@ -203,14 +203,17 @@ int Ov001UnpackPlayerRecord(void *packet,int record) {
  }
  return 0;
 }
-int func_ov001_0216c3d0(unsigned char *p, void *out) {
+/* Copies the payload of the user-data packet a room chunk embeds to `out`:
+ * the chunk must carry a wrapped 0x70 packet with a non-zero payload; returns
+ * -1 when it carries no such packet. */
+int Ov001_UnpackUserDataPacket(unsigned char *chunk, void *out) {
  int Ov001SwapEndian16(unsigned short);
  void Ov001MemCopy();
- unsigned char *q = p + 6;
- int n = Ov001SwapEndian16(*(unsigned short *)(q+2));
- if (n <= 0) return -1;
- if (*q != 0x70) return -1;
- Ov001MemCopy(out,q+6,n);
+ unsigned char *packet = chunk + OV001_CHUNK_DATA;
+ int length = Ov001SwapEndian16(*(unsigned short *)(packet + OV001_PACKET_LENGTH));
+ if (length <= 0) return -1;
+ if (*packet != OV001_USER_DATA_PACKET) return -1;
+ Ov001MemCopy(out,packet+OV001_PACKET_DATA,length);
  return 0;
 }
 
@@ -219,7 +222,7 @@ s32 func_ov001_0216c400(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
 s32 Ov001UnpackPlayerStrings(void *,s32);
 s32 Ov001UnpackPlayerRecord(void *,s32);
 s32 Ov001SwapEndian16(u16);
-s32 func_ov001_0216c3d0(u8 *,void *);
+s32 Ov001_UnpackUserDataPacket(u8 *,void *);
 s32 sp0=arg0;
 u8 *p=arg1;
 s32 rem=arg2;
@@ -251,7 +254,7 @@ case 3:result=Ov001UnpackPlayerStrings(p,sp10);flags|=1;break;
 case 4:result=Ov001UnpackPlayerStrings(p,base+0x138);flags|=2;break;
 case 5:result=Ov001UnpackPlayerRecord(p,base+0x268);flags|=4;break;
 case 6:result=Ov001UnpackPlayerRecord(p,base+0x2d8);flags|=8;break;
-case 10:result=func_ov001_0216c3d0(p,(void *)(sp8+spC));break;
+case 10:result=Ov001_UnpackUserDataPacket(p,(void *)(sp8+spC));break;
 default:result=-3;break;
 }
 if(result!=0)return result;

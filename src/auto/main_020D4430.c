@@ -54,17 +54,27 @@ void MapStateReturnStep(void) {
     CheckBattleEnd();
 }
 
-void func_020d4614(void){extern void **gCurrentMap;if(IsDialogActive())return;func_020d33ec();func_020cce4c();M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;}
+/* Battle-finish step (MAP_STATE_BATTLE_FINISH): wait while a dialog is still up,
+ * then stop the battle turn timer, create the battle-finish sprite and leave the
+ * map state machine stopped (MAP_STATE_NONE). */
+void BattleFinishStep(void) {
+    extern void **gCurrentMap;
+
+    if (IsDialogActive()) return;
+    DisableBattleTurnTimer();
+    func_020cce4c();
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = MAP_STATE_NONE;
+}
 
 void func_020d464c(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b0)=20;}
 
 void func_020d466c(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b0)=13;}
 
-void func_020d468c(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ac)=1;}
+void SetMapCommandPending(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ac)=1;}
 
-void func_020d46ac(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ac)=0;}
+void ClearMapCommandPending(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ac)=0;}
 
-u8 func_020d46cc(void) {
+u8 IsMapCommandPending(void) {
     extern void **gCurrentMap;
     return M2C_FIELD(*gCurrentMap, u8 *, 0x52AC);
 }
@@ -154,7 +164,7 @@ void FinishBattle(void) {
     M2C_UNK func_020cd5ac();
     M2C_UNK func_020d887c();
     M2C_UNK func_020d88ac();
-    M2C_UNK func_020d895c();
+    M2C_UNK SetMapConfigMode1();
     M2C_UNK func_020d8cc8();
     s32 IsFinalCampaignMap();
     extern s32 gSaveSlotSummary;
@@ -177,7 +187,7 @@ void FinishBattle(void) {
             if ((M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_FLAG1) != 0) || ((M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_FLAG2) != 0) && (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_FLAG3) == 0))) {
                 func_020d887c();
             } else {
-                func_020d895c();
+                SetMapConfigMode1();
             }
             func_020d8cc8();
             ResetBattleEndState();
@@ -265,15 +275,45 @@ int InitBattleMapPresentation(void) {
     PlaySlotScriptedSoundAtVolume(2, -1, 0x109, 0);
 }
 
-int func_020d4ba4(void){func_020a44e8();func_020d4d78();func_020d33ec();func_ov000_021696d4();StopSlotSound(1,10);StopSlotSound(2,10);}
+/* Tear down the main engine's battle presentation: drop the weather-effect and
+ * battle-end sprites, stop the unit-move objects and the battle turn timer, and
+ * silence the battle's two scripted sound slots. */
+int ShutdownBattleMapPresentation(void) {
+    DeleteWeatherEffectSprites();
+    ScheduleBattleEndSpriteRemoval();
+    DisableBattleTurnTimer();
+    DeleteAllUnitMoveObjects();
+    StopSlotSound(1, 10);
+    StopSlotSound(2, 10);
+}
 
-M2C_UNK RestoreBattleMapView(void){extern void **gCurrentMap;void (*cb)(void)=M2C_FIELD(gCurrentMap[1],void (**)(void),0x50);if(cb)cb();LoadScenePanelGraphicsOnBothEngines();InitBattleMapPresentation();RefreshMapView();}
+/* Restore the battle map view (save resume): run the view's restore callback,
+ * then rebuild the scene panel graphics and the battle map view. */
+M2C_UNK RestoreBattleMapView(void) {
+    extern void **gCurrentMap;
+    M2C_UNK LoadScenePanelGraphicsOnBothEngines();
+    M2C_UNK RefreshMapView();
+    void (*restoreView)(void);
+    void *viewController;
+
+    viewController = (void *)gCurrentMap;
+    viewController = ((void **)viewController)[MAPVIEW_CONTROLLER_INDEX];
+    restoreView = M2C_FIELD(viewController, void (**)(void), MAPVIEW_RESTORE_CB);
+
+    if (restoreView != 0) {
+        restoreView();
+    }
+
+    LoadScenePanelGraphicsOnBothEngines();
+    InitBattleMapPresentation();
+    RefreshMapView();
+}
 
 void func_020d4c08(void) {
-    M2C_UNK func_020d4ba4();
+    M2C_UNK ShutdownBattleMapPresentation();
     M2C_UNK RebuildSubScreenUi();
     RebuildSubScreenUi();
-    func_020d4ba4();
+    ShutdownBattleMapPresentation();
 }
 
 void func_020d4c18(void) {
@@ -291,12 +331,22 @@ void func_020d4c44(void) {
     StepBattleMap();
 }
 
-void *func_020d4cd4(void);
-u8 func_020d4cb0(void *);
-void func_020d4cc8(void *);
-void func_020d4c50(void){void *p=func_020d4cd4();if(!p)return;if(!func_020d4cb0(p))return;func_02077c64();func_02077c78();func_020d4cc8(p);}
+void *FindBattleMapObject(void);
+u8 IsBattleMapFramePending(void *);
+void ClearBattleMapFramePending(void *);
+/* Draw the battle map's requested frame: when the map's sprite object (at
+ * BATTLE_END_SPRITE_Z) exists and has a frame pending, reset the renderer, render
+ * the map, swap the display buffers and clear the pending request. */
+void DrawBattleMapFrame(void){
+    void *map = FindBattleMapObject();
+    if(!map) return;
+    if(!IsBattleMapFramePending(map)) return;
+    func_02077c64();
+    func_02077c78();
+    ClearBattleMapFramePending(map);
+}
 
-void func_020d4c80(void *arg0) {
+void RemoveBattleEndSpritesTask(void *arg0) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK DeleteSpriteObjectsWithZ(u16);
     DeleteSpriteObjectsWithZ((u16) M2C_FIELD(arg0, s32 *, 0x5C));
@@ -307,7 +357,7 @@ void func_020d4ca4(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x5C) = 1;
 }
 
-u8 func_020d4cb0(void *arg0) {
+u8 IsBattleMapFramePending(void *arg0) {
     u8 var_r0;
 
     if (M2C_FIELD(arg0, s32 *, 0x5C) != 0) {
@@ -318,11 +368,11 @@ u8 func_020d4cb0(void *arg0) {
     return var_r0;
 }
 
-void func_020d4cc8(void *arg0) {
+void ClearBattleMapFramePending(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x5C) = 0;
 }
 
-void *func_020d4cd4(void) {
+void *FindBattleMapObject(void) {
     void *Find3DSpriteByClassAndZ(M2C_UNK *, s32);
     extern M2C_UNK data_0212bd84;
     return Find3DSpriteByClassAndZ(&data_0212bd84, 0xFF03);
@@ -336,7 +386,7 @@ void CreateBattleMapViewSprites(void) {
     s32 FindObjectByZ(s32);
     s32 CreateSpriteFromClass(void *, s32);
     void SetSpriteZ(s32, s32);
-    void func_020d4cc8(void *);
+    void ClearBattleMapFramePending(void *);
     extern M2C_UNK data_0212bd84, data_0212bdb4, data_0212bd9c;
     extern M2C_UNK gBattleEndState;
     s32 map;
@@ -344,13 +394,20 @@ void CreateBattleMapViewSprites(void) {
     if (FindObjectByZ(BATTLE_END_SPRITE_Z)) return;
     map = CreateSpriteFromClass(&data_0212bd84, 4);
     SetSpriteZ(map, BATTLE_END_SPRITE_Z);
-    func_020d4cc8((void *)map);
+    ClearBattleMapFramePending((void *)map);
     SetSpriteZ(CreateSpriteFromClass(&data_0212bdb4, 6), BATTLE_END_SPRITE_Z);
     SetSpriteZ(CreateSpriteFromClass(&data_0212bd9c, 10), BATTLE_END_SPRITE_Z);
     if (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_ENDED)) CreateSubScreenLinkIndicator();
 }
 
-int func_020d4d78(void){s32 FindObjectByZ(s32);void *CreateFrameCallbackTask(void (*)(void *),int);if(!FindObjectByZ(0xff03))return;M2C_FIELD(CreateFrameCallbackTask(func_020d4c80,2),s32*,0x5c)=0xff03;}
+/* When the battle-end sprite set is present, queue a frame-callback task that
+ * removes it: the task deletes every sprite object at BATTLE_END_SPRITE_Z. */
+int ScheduleBattleEndSpriteRemoval(void) {
+    s32 FindObjectByZ(s32);
+    void *CreateFrameCallbackTask(void (*)(void *), int);
+    if (!FindObjectByZ(BATTLE_END_SPRITE_Z)) return;
+    M2C_FIELD(CreateFrameCallbackTask(RemoveBattleEndSpritesTask, 2), s32 *, 0x5C) = BATTLE_END_SPRITE_Z;
+}
 
 u8 func_020d4dac(void) {
     s32 FindObjectByZ(s32);
@@ -435,26 +492,28 @@ case 0x80: break;
 }
 DrawUnitInfoPanel(0);
 if(!cancelled) return;
-func_020bdfa8(); func_020be078();
+func_020bdfa8(); DrawMapMenuButtonSprite();
 if(!hadSelection) return;
 func_020be044();
 }
 
 void func_020d5068(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b4)=0;}
 
-u8 func_020d5088(void *arg0) {
-    s32 func_020a735c();
-    u8 var_r0;
+/* Whether the unit under the cursor is a mobile indirect unit that still has ammo
+ * (so the aiming cursor cycles tiles by its attack range). */
+u8 IsMobileIndirectUnitWithAmmo(void *unit) {
+    s32 GetMapUnitKind(void *);
+    u8 hasAmmo;
 
-    if (func_020a735c() != 0x14) {
+    if (GetMapUnitKind(unit) != 0x14) {
         return 0U;
     }
-    if (((u32) (M2C_FIELD(arg0, u16 *, 6) << 0x15) >> 0x1C) != 0) {
-        var_r0 = 1;
+    if (((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_AMMO) << 0x15) >> 0x1C) != 0) {
+        hasAmmo = 1;
     } else {
-        var_r0 = 0;
+        hasAmmo = 0;
     }
-    return var_r0;
+    return hasAmmo;
 }
 
 /* Update the battle-map aiming cursor each frame: choose the cursor graphic for
@@ -474,14 +533,14 @@ void UpdateAimingCursor(void) {
  map=*gCurrentMap;
  if (M2C_FIELD(M2C_FIELD((u8*)map+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)*4, s8 **,MAP_GRID)+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),s8*,0)>110) {
  MapCursor_StepTowardTarget(2);
- } else if(func_020d5088(M2C_FIELD(map,void**,MAP_CURSOR_UNIT))) {
+ } else if(IsMobileIndirectUnitWithAmmo(M2C_FIELD(map,void**,MAP_CURSOR_UNIT))) {
  map=*gCurrentMap;
  if(M2C_FIELD((u8*)map+(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X)+M2C_FIELD((u8*)map+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)*2,u16*,MAP_ROW_OFFSETS)),s8*,MAP_CELL_ORDER)>=0) {
  StepMapCursorAndNotifyOffset(1,GetUnitAttackRangeMax(M2C_FIELD(map,void**,MAP_CURSOR_UNIT)));
  } else MapCursor_StepTowardTarget(1);
  } else {
  map=*gCurrentMap;
- if(func_020ba790(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)))MapCursor_StepTowardTarget(2);
+ if(CanLoadUnitAt(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)))MapCursor_StepTowardTarget(2);
  else MapCursor_StepTowardTarget(1);
  }
  if(IsMapCursorIdle()){
@@ -495,7 +554,7 @@ void UpdateAimingCursor(void) {
  } else if(keys&0x20) { /* select the unit under the cursor */
  map=M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT);
  StepMapViewToTile(M2C_FIELD(map,u8*,MAP_UNIT_X),M2C_FIELD(map,u8*,MAP_UNIT_Y));
- func_ov000_021696d4();
+ DeleteAllUnitMoveObjects();
  map=*gCurrentMap;
  if(M2C_FIELD(map,u8*,MAP_CURSOR_CARRIER)) {
  map=M2C_FIELD(map,void**,MAP_CURSOR_UNIT);
@@ -511,7 +570,14 @@ void UpdateAimingCursor(void) {
  DrawUnitInfoPanel(2);
 }
 
-void CloseAimingCursor(void){extern void **gCurrentMap;CloseAllActiveSpriteSlots();PlaySoundEffect(0x1000f);M2C_FIELD(*gCurrentMap,u16*,0x52b4)=0;}
+/* Leave the battle-map aiming cursor: close its sprite slots, play the cancel
+ * sound and drop the map back to its idle input mode (MAP_MODE). */
+void CloseAimingCursor(void) {
+    extern void **gCurrentMap;
+    CloseAllActiveSpriteSlots();
+    PlaySoundEffect(0x1000f); /* SOUND_MENU_CANCEL */
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_MODE) = 0;
+}
 
 /* Aim-cursor handler for battle-map mode 3: shows the cursor over the aimed tile
    and, when that tile holds one of the current player's ready units, on confirm

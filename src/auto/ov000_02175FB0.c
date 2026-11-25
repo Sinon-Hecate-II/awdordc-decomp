@@ -93,15 +93,21 @@ func_ov000_02174da4(0,182);
 gCur3DSpriteEngine=old;
 }
 #pragma opt_strength_reduction reset
-void func_ov000_021769dc(void *arg0) {
+/* Apply the unit panel's staged army/CO choice and redraw its theme: copy the
+ * panel's pending index (+0x08) into the one on show (+0x04), re-upload that CO's
+ * name graphics, reload the panel's graphics block and palette, then toggle the
+ * window's colour-theme flag used by the next redraw. */
+void Ov000_StatsWindow_RedrawPanelTheme(void *arg0) {
+    Ov000StatsWindow *window = (Ov000StatsWindow *)arg0;
     M2C_UNK func_ov000_02175878(void *);
     M2C_UNK func_ov000_02175ed8(void *);
-    void *temp_r2;
-    temp_r2 = M2C_FIELD(arg0, void **, 0x10);
-    M2C_FIELD(temp_r2, s32 *, 4) = M2C_FIELD(temp_r2, s32 *, 8);
+    void *panel;
+
+    panel = window->panel;
+    M2C_FIELD(panel, s32 *, 4) = M2C_FIELD(panel, s32 *, 8);
     func_ov000_02175ed8(arg0);
     func_ov000_02175878(arg0);
-    M2C_FIELD(arg0, s32 *, 0) = 1 - M2C_FIELD(arg0, s32 *, 0);
+    window->toggle = 1 - window->toggle;
 }
 
 /* Full redraw of the ov000 unit info panel on the sub engine: offset layer 0

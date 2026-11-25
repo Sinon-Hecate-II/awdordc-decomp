@@ -1,7 +1,8 @@
 /* 47 functions from 0x02227D34 to 0x02228D1C (ov010), found by ds-decomp. */
 #include "common.h"
+#include "online_link.h"
 M2C_UNK func_ov010_02226a88();
-M2C_UNK func_ov010_02229a50();
+M2C_UNK ClearOnlineEventFlags();
 #pragma cplusplus on
 class Ov010Callback { public: void run(); };
 typedef void (Ov010Callback::*Ov010CallbackFn)();
@@ -282,7 +283,7 @@ s32 func_ov010_02228180(void) {
     M2C_UNK DC_InvalidateRange(M2C_UNK, s32);
     M2C_UNK func_ov010_02226a88();
     s32 func_02044658(u16);
-    M2C_UNK func_ov010_02229a50();
+    M2C_UNK ClearOnlineEventFlags();
     void func_ov010_02228280(M2C_UNK);
     extern M2C_UNK gOv010OnlineSession;
     M2C_UNK statusBuffer;
@@ -317,13 +318,13 @@ s32 func_ov010_02228180(void) {
         M2C_FIELD(&gOv010OnlineSession, s32 *, 0x58) = 0;
         M2C_FIELD(&gOv010OnlineSession, s32 *, 0x1c) = 0;
         M2C_FIELD(&gOv010OnlineSession, s32 *, 0x50) = 0;
-        func_ov010_02229a50();
+        ClearOnlineEventFlags();
         func_ov010_02228280(0);
     }
     return status;
 }
 
-void func_ov010_0222826c(void) {
+void Ov010Online_ResetStepFlags(void) {
     extern M2C_UNK gOv010OnlineSession;
     M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) = 0;
 }
@@ -570,7 +571,7 @@ extern "C" void Ov010Online_InitSession(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f
     void func_ov010_022269dc(void *, void *);
     void MI_CpuFill32(s32, void *, s32);
     void func_ov010_02228a38(void *);
-    void *func_ov010_02228a48(void *);
+    void *FreePacketAssemblySlot(void *);
     extern M2C_UNK gOv010PacketAssemblyClass, data_ov010_0222c3d0;
     void *r4;
     void *obj;
@@ -593,7 +594,7 @@ extern "C" void Ov010Online_InitSession(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f
     func_ov010_02229498(h);
     func_ov010_022294b0(i);
     SetOnlineMessageHandler(j);
-    func_ov010_02229a50();
+    ClearOnlineEventFlags();
     state=&gOv010OnlineSession;
     M2C_FIELD(state,s32 *,0x18)=0;
     M2C_FIELD(state,s32 *,0x24)=0;
@@ -640,7 +641,7 @@ extern "C" void Ov010Online_InitSession(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f
     obj=CreateSpriteFromClass(&gOv010PacketAssemblyClass,3);
     if(obj) {
         M2C_FIELD(obj,void **,0)=&data_ov010_0222c3d0;
-        ConstructArray((u8 *)obj+0x34,4,8,(void *)func_ov010_02228a38,(void *)func_ov010_02228a48);
+        ConstructArray((u8 *)obj+0x34,4,8,(void *)func_ov010_02228a38,(void *)FreePacketAssemblySlot);
     }
 }
 #pragma pop
@@ -649,7 +650,7 @@ void func_ov010_02228a38(void *arg0) {
     M2C_FIELD(arg0, s32 *, 4) = 0;
 }
 
-void *func_ov010_02228a48(void *arg0) {
+void *FreePacketAssemblySlot(void *arg0) {
     M2C_UNK Ov010Online_FreePacket();
     if (M2C_FIELD(arg0, s32 *, 4) != 0) {
         Ov010Online_FreePacket();
@@ -812,11 +813,13 @@ end:
     Sprite_ResumeAnimation(sprite);
 }
 
-void CreateOnlineDepartureObject(M2C_UNK arg0) {
+/* Leave the online match: tell every peer the local player is departing, then
+ * create the departure sprite (owned by `owner`) that tears the session down. */
+void CreateOnlineDepartureObject(M2C_UNK owner) {
     M2C_UNK QueueOnlineLinkPacket(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    extern M2C_UNK data_ov010_0222c140;
-    QueueOnlineLinkPacket(9, 0, 0, 0xFFFF);
-    CreateSpriteObject(&data_ov010_0222c140, arg0);
+    extern M2C_UNK gOnlineDepartureSpriteClass;
+    QueueOnlineLinkPacket(ONLINE_PACKET_DEPARTURE, 0, 0, 0xFFFF);
+    CreateSpriteObject(&gOnlineDepartureSpriteClass, owner);
 }
 
 void func_ov010_02228cbc(void) {
@@ -835,14 +838,17 @@ void func_ov010_02228cd4(void) {
     Ov010Online_EndSession();
 }
 
-void func_ov010_02228ce4(void) {
+/* Tear down the online session's own work: flush its queued packets and reset
+ * its objects, hand the session's work block back to the allocator, and clear
+ * the session's step flags. */
+void Ov010Online_FreeWorkBlock(void) {
     M2C_UNK func_ov010_02226a88();
     M2C_UNK Ov010_FreeBlock(M2C_UNK, s32, s32);
-    void func_ov010_0222826c(void);
+    void Ov010Online_ResetStepFlags(void);
     extern M2C_UNK gOv010OnlineSession;
     func_ov010_02226a88();
-    Ov010_FreeBlock(0, M2C_FIELD(&gOv010OnlineSession, s32 *, 0x3c), 0x10e0);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x3c) = 0;
-    func_ov010_0222826c();
+    Ov010_FreeBlock(0, M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_WORK_BLOCK), OV010_SESSION_WORK_SIZE);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_WORK_BLOCK) = 0;
+    Ov010Online_ResetStepFlags();
 }
 

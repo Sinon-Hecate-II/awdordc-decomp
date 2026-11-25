@@ -21,7 +21,7 @@ s32 EaseInterpolate(s32,s32,s32,s32,s32);
 void Set3DSpriteSlideTargetAndStart(void*,s32,s16,s32,s32);
 s32 GetUnitSpriteWidth(void*);
 s32 GetUnitSpriteHeight(void*);
-void func_02087d84(void*,s32,s16,s16,s32,s32);
+void SpriteCellListSetCellRect(void*,s32,s16,s16,s32,s32);
 /* Results screen intro animation: over 32 frames it cuts the cell grid of the 3D sprite into
    an upper and a lower half (the cut travels down), scrolls the results in from the right and
    from below, slides the two marker sprites up into place and finally clears the 3D sprite
@@ -77,12 +77,12 @@ void ResultsScreenAnimate(void *arg0) {
   if((u8)(M2C_FIELD(M2C_FIELD(leftSprite,void**,0x64),u8*,18)!=0)){
   spriteY=M2C_FIELD(leftSprite,s16*,0x52); spriteX=M2C_FIELD(leftSprite,s16*,0x50);
   width=GetUnitSpriteWidth(leftSprite); height=GetUnitSpriteHeight(leftSprite);
-  func_02087d84(M2C_FIELD(leftSprite,void**,0x64),1,spriteX,spriteY,(u16)width,(u16)height); }
+  SpriteCellListSetCellRect(M2C_FIELD(leftSprite,void**,0x64),1,spriteX,spriteY,(u16)width,(u16)height); }
   M2C_FIELD(leftSprite,s16*,0x34)=160; M2C_FIELD(leftSprite,s16*,0x36)=panelY;
   if((u8)(M2C_FIELD(M2C_FIELD(leftSprite,void**,0x64),u8*,18)!=0)){
   spriteY=M2C_FIELD(leftSprite,s16*,0x52); spriteX=M2C_FIELD(leftSprite,s16*,0x50);
   width=GetUnitSpriteWidth(leftSprite); height=GetUnitSpriteHeight(leftSprite);
-  func_02087d84(M2C_FIELD(leftSprite,void**,0x64),1,spriteX,spriteY,(u16)width,(u16)height); }
+  SpriteCellListSetCellRect(M2C_FIELD(leftSprite,void**,0x64),1,spriteX,spriteY,(u16)width,(u16)height); }
   { void *rightSprite; s16 spriteY2,spriteX2,panelY2; s32 width2,height2;
   panelY2=(s16)M2C_FIELD(arg0,s32*,0x44);
   rightSprite=M2C_FIELD(FindObjectByClass(gResultsScreenClass),void**,64);
@@ -90,12 +90,12 @@ void ResultsScreenAnimate(void *arg0) {
   if((u8)(M2C_FIELD(M2C_FIELD(rightSprite,void**,0x64),u8*,18)!=0)){
   spriteY2=M2C_FIELD(rightSprite,s16*,0x52); spriteX2=M2C_FIELD(rightSprite,s16*,0x50);
   width2=GetUnitSpriteWidth(rightSprite); height2=GetUnitSpriteHeight(rightSprite);
-  func_02087d84(M2C_FIELD(rightSprite,void**,0x64),1,spriteX2,spriteY2,(u16)width2,(u16)height2); }
+  SpriteCellListSetCellRect(M2C_FIELD(rightSprite,void**,0x64),1,spriteX2,spriteY2,(u16)width2,(u16)height2); }
   M2C_FIELD(rightSprite,s16*,0x34)=224; M2C_FIELD(rightSprite,s16*,0x36)=panelY2;
   if((u8)(M2C_FIELD(M2C_FIELD(rightSprite,void**,0x64),u8*,18)!=0)){
   spriteY2=M2C_FIELD(rightSprite,s16*,0x52); spriteX2=M2C_FIELD(rightSprite,s16*,0x50);
   width2=GetUnitSpriteWidth(rightSprite); height2=GetUnitSpriteHeight(rightSprite);
-  func_02087d84(M2C_FIELD(rightSprite,void**,0x64),1,spriteX2,spriteY2,(u16)width2,(u16)height2); }
+  SpriteCellListSetCellRect(M2C_FIELD(rightSprite,void**,0x64),1,spriteX2,spriteY2,(u16)width2,(u16)height2); }
   }
   if(M2C_FIELD(arg0,s32*,0x3c)!=32)return;
   /* the animation is over: clear the 3D sprite of both screens */
@@ -147,11 +147,11 @@ void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void);
 void LoadNarcFileDecompressed(void *,void *);
 void CloseNarcArchive(void);
-void AddToU16Array(void *,s32,s32);
+void OffsetTileIndices(void *,s32,s32);
 void PlaySoundEffect(s32);
 void *FindObjectByClass(void *);
 void RemoveSpriteCell(void *,s32);
-void func_02087e34(void *);
+void SpriteCellListClear(void *);
 void Sprite_ResumeAnimation(void *);
 #pragma push
 #pragma opt_common_subs off
@@ -236,7 +236,7 @@ void func_ov005_0221d160(void *arg0){
         else
             LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220eec), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
         CloseNarcArchive();
-        AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 2048, 8192);
+        OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 2048, 8192);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
         sound = 0x10020;
     }
@@ -250,7 +250,7 @@ void func_ov005_0221d160(void *arg0){
         else
             LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_02220eec), M2C_FIELD(gCur3DSpriteEngine, void **, 0x28));
         CloseNarcArchive();
-        AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 2048, 8192);
+        OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine, void **, 0x28), 2048, 8192);
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
         sound = 0x10020;
     }
@@ -274,7 +274,7 @@ void func_ov005_0221d160(void *arg0){
         if ((u8)(M2C_FIELD(p, u8 *, 18) != 0))
             RemoveSpriteCell(p, 1);
     }
-    func_02087e34(M2C_FIELD(arg0, void **, 0x34));
+    SpriteCellListClear(M2C_FIELD(arg0, void **, 0x34));
     Sprite_ResumeAnimation(arg0);
 }
 #pragma pop

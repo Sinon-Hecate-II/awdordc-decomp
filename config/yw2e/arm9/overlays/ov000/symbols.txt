@@ -7,7 +7,7 @@ func_ov000_02169070 kind:function(arm,size=0xc8) addr:0x02169070
 UnitMove_ReadCommand kind:function(arm,size=0x170) addr:0x02169138
 func_ov000_021692a8 kind:function(arm,size=0x18) addr:0x021692a8
 UnitMove_Update kind:function(arm,size=0x74) addr:0x021692c0
-func_ov000_02169334 kind:function(arm,size=0x34) addr:0x02169334
+UnitMove_Destroy kind:function(arm,size=0x34) addr:0x02169334
 ClearUnitMoveSlots kind:function(arm,size=0x34) addr:0x02169368
 CreateUnitMoveForUnit kind:function(arm,size=0x80) addr:0x0216939c
 CreateUnitMove kind:function(arm,size=0x94) addr:0x0216941c
@@ -16,7 +16,7 @@ GetPlayerUnitFacing kind:function(arm,size=0x30) addr:0x021694e8
 BeginUnitMove kind:function(arm,size=0x28) addr:0x02169518
 StartUnitMove kind:function(arm,size=0x170) addr:0x02169540
 func_ov000_021696b0 kind:function(arm,size=0x24) addr:0x021696b0
-func_ov000_021696d4 kind:function(arm,size=0x24) addr:0x021696d4
+DeleteAllUnitMoveObjects kind:function(arm,size=0x24) addr:0x021696d4
 DeleteUnitMoveObject kind:function(arm,size=0x24) addr:0x021696f8
 func_ov000_0216971c kind:function(arm,size=0x24) addr:0x0216971c
 func_ov000_02169740 kind:function(arm,size=0x1c) addr:0x02169740
@@ -32,7 +32,7 @@ func_ov000_02169a24 kind:function(arm,size=0x4) addr:0x02169a24
 DrawUnitMoveSprite kind:function(arm,size=0xbc) addr:0x02169a28
 UnitMove_CanStepOntoCell kind:function(arm,size=0xe0) addr:0x02169ae4
 InitUnitMoveSprites kind:function(arm,size=0x110) addr:0x02169bc4
-func_ov000_02169cd4 kind:function(arm,size=0x2c) addr:0x02169cd4
+UnitMove_FreeGraphics kind:function(arm,size=0x2c) addr:0x02169cd4
 LoadUnitMoveGfx kind:function(arm,size=0x28) addr:0x02169d00
 LoadUnitMoveAnim kind:function(arm,size=0x28) addr:0x02169d28
 UnitMoveTileOffset kind:function(arm,size=0x14) addr:0x02169d50
@@ -84,7 +84,7 @@ IsOv000BoxOnScreen kind:function(arm,size=0x38) addr:0x0216b15c
 func_ov000_0216b194 kind:function(arm,size=0x704) addr:0x0216b194
 func_ov000_0216b898 kind:function(arm,size=0x70c) addr:0x0216b898
 ArmyInfo_UpdateWindow kind:function(arm,size=0xc4) addr:0x0216bfa4
-func_ov000_0216c068 kind:function(arm,size=0x34) addr:0x0216c068
+ExitArmyInfoView kind:function(arm,size=0x34) addr:0x0216c068
 EnterArmyInfoView kind:function(arm,size=0x128) addr:0x0216c09c
 func_ov000_0216c1c4 kind:function(arm,size=0xc) addr:0x0216c1c4
 func_ov000_0216c1d0 kind:function(arm,size=0xc) addr:0x0216c1d0
@@ -126,7 +126,7 @@ ArmyInfo_CreatePlayerSlots kind:function(arm,size=0x68) addr:0x0216e110
 func_ov000_0216e178 kind:function(arm,size=0x898) addr:0x0216e178
 func_ov000_0216ea10 kind:function(arm,size=0xc) addr:0x0216ea10
 func_ov000_0216ea1c kind:function(arm,size=0x160) addr:0x0216ea1c
-func_ov000_0216eb7c kind:function(arm,size=0x30) addr:0x0216eb7c
+ArmyInfo_Close kind:function(arm,size=0x30) addr:0x0216eb7c
 func_ov000_0216ebac kind:function(arm,size=0x2c) addr:0x0216ebac
 ArmyInfo_OpenScreen kind:function(arm,size=0x44) addr:0x0216ebd8
 CountCurrentPlayerUnits kind:function(arm,size=0xac) addr:0x0216ec1c
@@ -189,8 +189,8 @@ Ov000_InfoPanel_FreeEntries kind:function(arm,size=0x18) addr:0x021725c8
 Ov000_InfoPanel_Refresh kind:function(arm,size=0x68) addr:0x021725e0
 func_ov000_02172648 kind:function(arm,size=0xc) addr:0x02172648
 func_ov000_02172654 kind:function(arm,size=0xd8) addr:0x02172654
-func_ov000_0217272c kind:function(arm,size=0x28) addr:0x0217272c
-func_ov000_02172754 kind:function(arm,size=0x34c) addr:0x02172754
+Ov000_InfoPanel_SetTerrain kind:function(arm,size=0x28) addr:0x0217272c
+Ov000_InfoPanel_UpdateData kind:function(arm,size=0x34c) addr:0x02172754
 DrawInfoWindowFrame kind:function(arm,size=0xac) addr:0x02172aa0
 DrawTerrainInfoBanner kind:function(arm,size=0x1dc) addr:0x02172b4c
 DrawTerrainInfoIcon kind:function(arm,size=0x98) addr:0x02172d28
@@ -198,7 +198,7 @@ func_ov000_02172dc0 kind:function(arm,size=0xd0) addr:0x02172dc0
 func_ov000_02172e90 kind:function(arm,size=0x1c8) addr:0x02172e90
 DrawTerrainInfoNameGraphic kind:function(arm,size=0x74) addr:0x02173058
 DrawPlayerArmyList kind:function(arm,size=0x1c4) addr:0x021730cc
-func_ov000_02173290 kind:function(arm,size=0x30) addr:0x02173290
+RedrawTerrainInfoPanel kind:function(arm,size=0x30) addr:0x02173290
 DrawMapInfoWindow kind:function(arm,size=0x1a8) addr:0x021732c0
 func_ov000_02173468 kind:function(arm,size=0xa04) addr:0x02173468
 Ov000_InfoPanel_ShouldShowHints kind:function(arm,size=0x3c) addr:0x02173e6c
@@ -238,7 +238,7 @@ DrawInfoPanelUnitFrame kind:function(arm,size=0x68) addr:0x021759b8
 Ov000Info_DrawUnitPanel kind:function(arm,size=0x4b8) addr:0x02175a20
 func_ov000_02175ed8 kind:function(arm,size=0xd8) addr:0x02175ed8
 func_ov000_02175fb0 kind:function(arm,size=0xa2c) addr:0x02175fb0
-func_ov000_021769dc kind:function(arm,size=0x30) addr:0x021769dc
+Ov000_StatsWindow_RedrawPanelTheme kind:function(arm,size=0x30) addr:0x021769dc
 Ov000Info_DrawFullPanel kind:function(arm,size=0x90) addr:0x02176a0c
 Ov000Info_DrawBlinkPanel kind:function(arm,size=0x5c) addr:0x02176a9c
 BuildUnitRecommendations kind:function(arm,size=0x2d4) addr:0x02176af8
@@ -729,7 +729,7 @@ func_ov000_021a8d7c kind:function(arm,size=0x134) addr:0x021a8d7c
 func_ov000_021a8eb0 kind:function(arm,size=0x110) addr:0x021a8eb0
 IsCurrentPlayerUnit kind:function(arm,size=0x30) addr:0x021a8fc0
 IsPropertyTerrain kind:function(arm,size=0x24) addr:0x021a8ff0
-func_ov000_021a9014 kind:function(arm,size=0x30) addr:0x021a9014
+IsCapturablePropertyTerrain kind:function(arm,size=0x30) addr:0x021a9014
 IsTerrainPassableForUnitKind kind:function(arm,size=0x40) addr:0x021a9044
 IsUnitProductionTerrain kind:function(arm,size=0x24) addr:0x021a9084
 IsCellOwnedByOtherArmy kind:function(arm,size=0x74) addr:0x021a90a8
@@ -1488,14 +1488,14 @@ gUnitKindFuelCost kind:data(any) addr:0x021b5c58
 gUnitKindCargoCount kind:data(any) addr:0x021b5c5c
 gUnitKindLoadClass kind:data(any) addr:0x021b5c5d
 gUnitKindLoadMask kind:data(any) addr:0x021b5c5e
-data_ov000_021b5c65 kind:data(any) addr:0x021b5c65
+gUnitKindSupplyUnit kind:data(any) addr:0x021b5c65
 gUnitKindSupplyFlag kind:data(any) addr:0x021b5c66
 gUnitKindTable kind:data(any) addr:0x021b5c67
 data_ov000_021b5c69 kind:data(any) addr:0x021b5c69
 data_ov000_021b5c6a kind:data(any) addr:0x021b5c6a
 gUnitKindInfo kind:data(any) addr:0x021b5c6c
 data_ov000_021b5efc kind:data(any) addr:0x021b5efc
-data_ov000_021b67cc kind:data(any) addr:0x021b67cc
+gRecordRankTable kind:data(any) addr:0x021b67cc
 gRecordTable kind:data(any) addr:0x021b686c
 gRankIconGfxFile kind:data(any) addr:0x021b7e5c
 gRankIconPaletteFile kind:data(any) addr:0x021b7e6c

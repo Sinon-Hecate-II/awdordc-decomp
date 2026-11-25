@@ -15,7 +15,7 @@ extern void **gCurrentMap;extern M2C_UNK gInfoFrameGfxUnset, gInfoFrameGfxEnglis
 extern M2C_UNK data_ov000_021d841c, data_ov000_021b8f5c;
 
 #pragma opt_strength_reduction off
-s32 func_ov000_02172754(void *arg0) {
+s32 Ov000_InfoPanel_UpdateData(void *arg0) {
     s32 GetTerrainKindFromInfoId(s32);
     s32 func_020a86c4(s32, s32);
     s32 Divide(s32, s32);
@@ -402,15 +402,18 @@ void DrawPlayerArmyList(void *info) {
     gCur3DSpriteEngine = saved;
 }
 #pragma opt_strength_reduction reset
-void func_ov000_02173290(void *arg0) {
-     void DrawTerrainInfoBanner(void *);
- void DrawTerrainInfoNameGraphic();
- DrawTerrainInfoNameGraphic();
-    if (M2C_FIELD(arg0, u8 *, 0x15) != 0) {
+/* Redraw the map info panel's terrain name graphic and, when a terrain is
+ * selected, its banner; then flip the panel's two-way display selector for the
+ * next redraw. */
+void RedrawTerrainInfoPanel(void *panel) {
+    void DrawTerrainInfoBanner(void *);
+    void DrawTerrainInfoNameGraphic();
+    DrawTerrainInfoNameGraphic();
+    if (M2C_FIELD(panel, u8 *, OV000_INFO_PANEL_NO_TERRAIN) != 0) {
         return;
     }
-    DrawTerrainInfoBanner(arg0);
-    M2C_FIELD(arg0, s32 *, 0) = (s32) (1 - M2C_FIELD(arg0, s32 *, 0));
+    DrawTerrainInfoBanner(panel);
+    M2C_FIELD(panel, s32 *, 0) = (s32) (1 - M2C_FIELD(panel, s32 *, 0));
 }
 
 /* Draws the map info window on the lower screen: first the window frame, then

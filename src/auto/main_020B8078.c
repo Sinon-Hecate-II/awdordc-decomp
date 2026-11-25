@@ -152,17 +152,19 @@ void UpdateMapClearFade(void *effect) {
     DeleteSpriteObject(effect);
 }
 
-u8 func_020b846c(M2C_UNK arg0) {
+/* True when the menu list's row `row` cannot be picked: either its per-row flag
+ * is set or the whole list carries the unavailable mark (both draw it greyed). */
+u8 IsListRowUnavailable(M2C_UNK row) {
     void *GetMenuList(void);
     s32 IsListRowFlagSet(M2C_UNK);
-    void *temp_r4;
-    temp_r4 = GetMenuList();
-    return (IsListRowFlagSet(arg0) != 0) || (M2C_FIELD(temp_r4, u8 *, 0x34) != 0);
+    void *list;
+    list = GetMenuList();
+    return (IsListRowFlagSet(row) != 0) || (M2C_FIELD(list, u8 *, MENU_LIST_ROW_MARK) != 0);
 }
 
 void DrawListRowsAtOffset(s32 arg0, s32 arg1) {
     void DrawTilemapNumber(s32, s32, void *, s32, s32, s32);
-    u8 func_020b846c(s32);
+    u8 IsListRowUnavailable(s32);
     M2C_UNK DrawLocalizedTextLine(M2C_UNK, s16, M2C_UNK, s32, s32, s32, s32);
     extern M2C_UNK data_02127c0c;
     extern s32 gListRowDrawOffset;
@@ -172,7 +174,7 @@ void DrawListRowsAtOffset(s32 arg0, s32 arg1) {
     u16 var_r4;
     void *temp_r6;
 
-    if (func_020b846c(arg1) == 0) {
+    if (IsListRowUnavailable(arg1) == 0) {
         var_r5 = 0x4100002E;
         var_r4 = 3;
     } else {
@@ -245,14 +247,15 @@ s32 ScrollListUp(void *arg0) {
     return 0;
 }
 #pragma optimization_level 4
-s16 PageListUp(void *arg0) {
-    s16 temp_r2;
-    temp_r2 = M2C_FIELD(arg0, s16 *, 0x40);
-    M2C_FIELD(arg0, s16 *, 0x40) = (s16)(temp_r2 - 6);
-    if (M2C_FIELD(arg0, s16 *, 0x40) < 0) {
-        M2C_FIELD(arg0, s16 *, 0x40) = 0;
+/* Scroll the menu list up one page: move the first visible row back by a page,
+ * clamped at the first row, and return how far it moved (0 when already at the top). */
+s16 PageListUp(void *list) {
+    s16 old = M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW);
+    M2C_FIELD(list, volatile s16 *, MENU_LIST_FIRST_ROW) = old - MENU_LIST_VISIBLE_ROWS;
+    if (M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW) < 0) {
+        M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW) = 0;
     }
-    return (s16)(M2C_FIELD(arg0, s16 *, 0x40) - temp_r2);
+    return M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW) - old;
 }
 
 s32 ScrollListDown(void *arg0) {
@@ -264,12 +267,17 @@ done:
     return 0;
 }
 
-s16 PageListDown(void *arg0){
-s16 old=M2C_FIELD(arg0,s16*,0x40);s32 max;
-M2C_FIELD(arg0,volatile s16*,0x40)=old+6;
-max=M2C_FIELD(arg0,volatile s16*,0x42)-6;
-if(M2C_FIELD(arg0,s16*,0x40)>max)M2C_FIELD(arg0,s16*,0x40)=max;
-return M2C_FIELD(arg0,s16*,0x40)-old;
+/* Page the list down: move the window's first visible row down by
+ * MENU_LIST_VISIBLE_ROWS, clamped so the window still holds a full page, and
+ * return by how many rows the window actually moved. */
+s16 PageListDown(void *list) {
+    s16 old = M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW);
+    s32 max;
+
+    M2C_FIELD(list, volatile s16 *, MENU_LIST_FIRST_ROW) = old + MENU_LIST_VISIBLE_ROWS;
+    max = M2C_FIELD(list, volatile s16 *, MENU_LIST_ROW_COUNT) - MENU_LIST_VISIBLE_ROWS;
+    if (M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW) > max) M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW) = max;
+    return M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW) - old;
 }
 
 M2C_UNK func_020b8740(void) {
@@ -350,7 +358,7 @@ void func_020b8970(void *arg0) {
     void Clear3DSpriteLayer(s32);
     void AddTileRectPalette(void *, s32, s32, s32);
     void LoadDecompressedFileTo(void *, void *);
-    void func_02087d84(void *, s32, s32, s32, s32, s32);
+    void SpriteCellListSetCellRect(void *, s32, s32, s32, s32, s32);
     void Set3DSpriteSlideTargetAndStart(void *, s32, s32, s32, s32);
     void Show3DSpriteSlide(void *);
     void Load3DSpritePattern(void *, s32, s32, s32);
@@ -361,11 +369,11 @@ void func_020b8970(void *arg0) {
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
     s32 GetUiColor(s32);
-    u8 func_020b846c(s32);
+    u8 IsListRowUnavailable(s32);
     void RedrawListRows(s32);
     void CreateMenuListRowSlots(void);
     void CreateMenuUnitSprite(void *);
-    s32 func_020cd6fc(void);
+    s32 IsFreePlayBattleMode(void);
     void CreateMenuTextSprite(void *, s32, s32, s32, s32, s32, s32, void *, s32);
     void *GetLocalizedFileName(void *);
     void *temp_r4;
@@ -389,13 +397,13 @@ void func_020b8970(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x44) = 0;
     M2C_FIELD(arg0, s16 *, 0x3c) = 0;
     M2C_FIELD(arg0, s16 *, 0x46) = 0;
-    if (func_020cd6fc() != 0) {
+    if (IsFreePlayBattleMode() != 0) {
         M2C_FIELD(arg0, u8 *, 0x34) = 1;
     }
     var_r5 = 0;
     if (M2C_FIELD(arg0, s16 *, 0x42) > 0) {
         do {
-            if (func_020b846c(var_r5) != 0) {
+            if (IsListRowUnavailable(var_r5) != 0) {
                 M2C_FIELD(arg0, s16 *, 0x44) = (s16) (M2C_FIELD(arg0, s16 *, 0x44) + 1);
             }
             var_r5++;
@@ -420,7 +428,7 @@ void func_020b8970(void *arg0) {
         temp_r7 = M2C_FIELD(temp_r5, s16 *, 0x50);
         temp_r9 = GetUnitSpriteWidth(temp_r5);
         temp_r10 = GetUnitSpriteHeight(temp_r5);
-        func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7, temp_r6, (u16) temp_r9, (u16) temp_r10);
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7, temp_r6, (u16) temp_r9, (u16) temp_r10);
     }
     Show3DSpriteSlide(M2C_FIELD(arg0, void **, 0x50));
     CreateMenuUnitSprite(arg0);

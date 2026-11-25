@@ -327,19 +327,24 @@ void GsCryptData(void *cipher, u8 *data, s32 length) {
     for (i = 0; i < length; i++) data[i] = GsCryptByte(cipher, data[i]);
 }
 
-void QueryQueue_Append(void *arg0, void *arg1) {
-    void *temp_r2;
+/* Append a server record to the tail of a query queue: link it after the old
+ * tail, make it the new tail, clear its link and bump the count (setting the
+ * head too when the queue was empty). */
+void QueryQueue_Append(void *queuePtr, void *serverPtr) {
+    QueryQueue *queue = (QueryQueue *)queuePtr;
+    GpiPlayer *server = (GpiPlayer *)serverPtr;
+    GpiPlayer *oldTail;
 
-    temp_r2 = M2C_FIELD(arg0, void **, 4);
-    if (temp_r2 != NULL) {
-        M2C_FIELD(temp_r2, void **, 0x20) = arg1;
+    oldTail = queue->tail;
+    if (oldTail != NULL) {
+        oldTail->next = server;
     }
-    M2C_FIELD(arg0, void **, 4) = arg1;
-    M2C_FIELD(arg1, s32 *, 0x20) = 0;
-    if (M2C_FIELD(arg0, void **, 0) == NULL) {
-        M2C_FIELD(arg0, void **, 0) = arg1;
+    queue->tail = server;
+    server->next = NULL;
+    if (queue->head == NULL) {
+        queue->head = server;
     }
-    M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + 1);
+    queue->count = (s32)(queue->count + 1);
 }
 
 void QueryQueue_PushFront(void *arg0, void *arg1) {
@@ -351,20 +356,24 @@ void QueryQueue_PushFront(void *arg0, void *arg1) {
     M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + 1);
 }
 
-void *QueryQueue_Pop(void *arg0) {
-    void *temp_r1;
-    void *temp_r2;
+/* Take the head server record off a query queue: advance the head to its link,
+ * clear the tail when that empties the queue and decrement the count; returns
+ * the removed record, or NULL when the queue was empty. */
+void *QueryQueue_Pop(void *queuePtr) {
+    QueryQueue *queue = (QueryQueue *)queuePtr;
+    GpiPlayer *entry;
+    GpiPlayer *next;
 
-    temp_r2 = M2C_FIELD(arg0, void **, 0);
-    if (temp_r2 != NULL) {
-        temp_r1 = M2C_FIELD(temp_r2, void **, 0x20);
-        M2C_FIELD(arg0, void **, 0) = temp_r1;
-        if (temp_r1 == NULL) {
-            M2C_FIELD(arg0, s32 *, 4) = 0;
+    entry = queue->head;
+    if (entry != NULL) {
+        next = entry->next;
+        queue->head = next;
+        if (next == NULL) {
+            queue->tail = NULL;
         }
-        M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) - 1);
+        queue->count = (s32)(queue->count - 1);
     }
-    return temp_r2;
+    return entry;
 }
 
 /* Take `request` off a server-browser query queue (a GpiPlayer chain through
@@ -393,7 +402,7 @@ s32 Qr2Query_RemoveRequest(void *queuePtr, void *requestPtr) {
     return 0;
 }
 
-void func_020601a4(void *arg0) {
+void QueryQueue_Reset(void *arg0) {
     M2C_FIELD(arg0, s32 *, 4) = 0;
     M2C_FIELD(arg0, s32 *, 0) = 0;
     M2C_FIELD(arg0, s32 *, 8) = 0;
@@ -440,25 +449,27 @@ void func_02060398(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5)
     M2C_FIELD(arg0, s32 *, 0x48) = arg5;
     M2C_FIELD(arg0, s32 *, 0x28) = 0;
     M2C_FIELD(arg0, s32 *, 0x20) = func_020496a4(2, 2);
-    func_020601a4(arg0 + 0x14);
-    func_020601a4(arg0 + 8);
+    QueryQueue_Reset(arg0 + 0x14);
+    QueryQueue_Reset(arg0 + 8);
 }
 #pragma opt_common_subs reset
 void func_0206040c(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x28) = arg1;
 }
 
-void func_02060414(s32 arg0) {
-    func_020601a4(arg0 + 0x14);
-    func_020601a4(arg0 + 8);
+void Qr2Query_ResetQueues(s32 arg0) {
+    QueryQueue_Reset(arg0 + 0x14);
+    QueryQueue_Reset(arg0 + 8);
 }
 
-void func_02060430(void *arg0) {
+/* Tear down the server browser's QR2 query socket: close it, mark it invalid and
+ * empty the in-flight and waiting query queues. */
+void Qr2Query_CloseSocket(void *list) {
     M2C_UNK ghiCloseSocket(s32);
-    ghiCloseSocket(M2C_FIELD(arg0, s32 *, 0x20));
-    M2C_FIELD(arg0, s32 *, 0x20) = -1;
-    func_020601a4(arg0 + 0x14);
-    func_020601a4(arg0 + 8);
+    ghiCloseSocket(M2C_FIELD(list, s32 *, SB_LIST_QUERY_SOCKET));
+    M2C_FIELD(list, s32 *, SB_LIST_QUERY_SOCKET) = -1;
+    QueryQueue_Reset((u8 *)list + SB_LIST_WAITING);
+    QueryQueue_Reset((u8 *)list + SB_LIST_REQUESTS);
 }
 
 /* Start a detail query for one server of the list: clear the record's query state

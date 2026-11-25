@@ -302,22 +302,32 @@ void Ov001_SetScrollbarHandlePos(s32 handlePos) {
     M2C_FIELD(gOv001Scrollbar, s8 *, OV001_SCROLLBAR_HANDLE_POS) = (s8)handlePos;
 }
 
+/* Allocate the Wi-Fi friend roster buffer once, a 32-byte-aligned
+ * WFC_FRIEND_ROSTER_SIZE block, and keep its handle in gWfcFriendRoster. */
 void Ov001_AllocFriendRoster(void) {
     s32 Ov001_Alloc(s32, M2C_UNK);
     extern s32 gWfcFriendRoster;
     if (gWfcFriendRoster != 0) {
         return;
     }
-    gWfcFriendRoster = Ov001_Alloc(0x1E60, 0x20);
+    gWfcFriendRoster = Ov001_Alloc(WFC_FRIEND_ROSTER_SIZE, 0x20);
 }
 
 #pragma opt_common_subs off
 #pragma pool_constants off
+/* Free the Wi-Fi friend roster buffer once the WFC connection is up: the handle
+ * Ov001_AllocFriendRoster allocated (the word just before gSaveData, which the
+ * file reuses so the address shares its literal pool entry), or nothing when the
+ * roster was never allocated. */
 void Ov001_FreeFriendRoster(void) {
- u16 WFC_GetPlayerMask(void); M2C_UNK Ov001_FreeAlloc(M2C_UNK *); extern M2C_UNK gWfcFriendRoster; extern s32 gSaveData;
- if(*(volatile M2C_UNK *)&gWfcFriendRoster==0)return;
- while(WFC_GetPlayerMask()!=0x8000){}
- Ov001_FreeAlloc(&gSaveData-1);
+    u16 WFC_GetPlayerMask(void);
+    M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
+    extern M2C_UNK gWfcFriendRoster; /* roster handle, 0 while not allocated */
+    extern s32 gSaveData;
+
+    if (*(volatile M2C_UNK *)&gWfcFriendRoster == 0) return;
+    while (WFC_GetPlayerMask() != WFC_PLAYER_MASK_READY) {}
+    Ov001_FreeAlloc(&gSaveData - 1);
 }
 #pragma pool_constants reset
 #pragma opt_common_subs reset
@@ -349,12 +359,15 @@ s32 Ov001_OpenFriendRoster(void) {
     return Ov001_SendFriendRosterRequest() ? 1 : 0;
 }
 
+/* Ask the WFC server for the friend roster by posting the roster request packet
+ * at WFC_FRIEND_REQUEST; returns 1 once the request is queued (WFC_CMD_OK). */
 s32 Ov001_SendFriendRosterRequest(void) {
     s32 WFC_SendRequestPacket(void (*)(void), void *);
     void Ov001_HandleFriendRosterReply();
     extern s32 gWfcFriendRoster;
-    void *base = (void *)gWfcFriendRoster;
-    if (WFC_SendRequestPacket(Ov001_HandleFriendRosterReply, (s8 *)base + 0x1648) == 2) {
+    void *roster = (void *)gWfcFriendRoster;
+
+    if (WFC_SendRequestPacket(Ov001_HandleFriendRosterReply, (s8 *)roster + WFC_FRIEND_REQUEST) == WFC_CMD_OK) {
         return 1;
     }
     return 0;
@@ -588,11 +601,13 @@ void Ov001_SetSaveExtraEmptyB(s8 arg0) {
     M2C_FIELD((void *)gSaveData, s8 *, 0x4f6) = arg0;
 }
 
-void func_ov001_02184498(void *arg0) {
+/* Store a 32-byte map name in the working save slot and mark the slot unwritten. */
+void Ov001_SetSaveMapName(void *name) {
     void MI_CpuCopy8(void *, void *, u32);
     extern s32 gSaveData;
-    MI_CpuCopy8(arg0, (void *)((s8 *)gSaveData + 0x440), 0x20);
-    *(u8 *)((s8 *)gSaveData + 0x4e7) = 0;
+
+    MI_CpuCopy8(name, (void *)((s8 *)gSaveData + SAVE_MAP_NAME), SAVE_MAP_NAME_SIZE);
+    *(u8 *)((s8 *)gSaveData + SAVE_SLOT_STATUS) = 0;
 }
 
 /* Store a player name in the working save slot: even-length hex text is decoded
@@ -768,7 +783,7 @@ u8 Ov001_GetSaveSlotStatus(s32 arg0) {
  * sentinel, and rebuilds the working code from the slot's set-bit count. */
 void LoadSaveSlot(s32 slotIndex) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_02046058(u8, M2C_UNK *);
+    void BuildSaveCodeWord(u8, M2C_UNK *);
     extern s32 gSaveData;
     extern u8 gEmptyPlayerCode[];
     u32 count;
@@ -803,6 +818,6 @@ void LoadSaveSlot(s32 slotIndex) {
     } else {
         ((u8 *)gSaveData)[SAVE_EXTRA_EMPTY_B] = 1;
     }
-    func_02046058(page[SAVE_SLOT_CODE_BITS], (M2C_UNK *)((u8 *)gSaveData + SAVE_CODE));
+    BuildSaveCodeWord(page[SAVE_SLOT_CODE_BITS], (M2C_UNK *)((u8 *)gSaveData + SAVE_CODE));
 }
 #pragma opt_common_subs reset

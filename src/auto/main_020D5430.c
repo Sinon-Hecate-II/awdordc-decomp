@@ -10,9 +10,9 @@
 void UpdateMapSelectionCursor(void) {
  extern void *gCurrentMap;
  func_020cf850(0x1001a);func_0207a7a4(1,4);MapCursor_StepTowardTarget(1);
- if(!func_020bcac0())return;
- if(!func_020bd650())return;
- HideTouchCursor();func_ov000_021696d4();RefreshMapView();func_0207a768();
+ if(!GetMapSelectionKeyAction())return;
+ if(!GetMapSelectionTouchAction())return;
+ HideTouchCursor();DeleteAllUnitMoveObjects();RefreshMapView();func_0207a768();
  M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,MAP_MODE)=MAP_MODE_CURSOR;
 }
 
@@ -62,7 +62,7 @@ void StartEmptyTileSettle(void) {
 void ShowCursorUnitRanges(s32 x, s32 y) {
     extern void *gCurrentMap;
     M2C_UNK CanUnitAttackDirectly();
-    M2C_UNK func_020ba414();
+    M2C_UNK CanUnitAttackIndirectly();
     M2C_UNK SelectMapLayer();
     M2C_UNK BuildUnitMoveRangeBlockingUnits();
     void MarkUnitMoveRangeCells(s32);
@@ -75,7 +75,7 @@ void ShowCursorUnitRanges(s32 x, s32 y) {
     s32 showMoveRange, showAttackRange;
 
     showMoveRange = CanUnitAttackDirectly(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
-    showAttackRange = func_020ba414(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    showAttackRange = CanUnitAttackIndirectly(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CELL_ORDER);
     if (showMoveRange) {
         map = M2C_FIELD(gCurrentMap, u8 **, 0);
@@ -168,7 +168,7 @@ s32 SelectCursorTarget(s32 x, s32 y) {
         return 1;
     }
     a = CanUnitAttackDirectly(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
-    b = func_020ba414(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    b = CanUnitAttackIndirectly(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     if (a == 0 && b == 0) {
         PlaySoundEffect(0x1001d);
         return 0;
@@ -193,7 +193,7 @@ finish:
 s32 ConfirmCursorTile(u8 x,u8 y,s32 playMoveEffect,s32 consumeInvalid,u8 menuMode){
 extern void *gCurrentMap; extern M2C_UNK data_0211fbc4; extern u16 gMapConfig;
 M2C_UNK (*cb)();
-func_020c93cc();
+ClearHeldDirections();
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_UNIT_ID)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS));
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)=(u8 *)M2C_FIELD(gCurrentMap,void **,0)+MAP_UNIT_RECORDS+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_UNIT_ID)*14;
 
@@ -231,7 +231,7 @@ void SelectCarriedUnit(u8 *transport, s32 cargoSlot, s32 menuMode) {
     M2C_UNK (*cb)();
     void *unit;
 
-    func_020c93cc();
+    ClearHeldDirections();
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_UNIT_ID) = (transport + cargoSlot)[MAP_UNIT_CARRIED];
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT) = (u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_UNIT_RECORDS + M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_UNIT_ID) * MAP_UNIT_STRIDE;
     carrier = transport ? ((s32)transport - (s32)((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE : 0;
@@ -264,9 +264,9 @@ void MoveCursorTo(s32 x, s32 y) {
     M2C_UNK CanMoveCursorTo(s32, s32);
     M2C_UNK func_0207a768();
     M2C_UNK ChooseAttackPosition();
-    M2C_UNK func_020d468c();
+    M2C_UNK SetMapCommandPending();
     M2C_UNK func_020a0d18();
-    M2C_UNK func_020d46ac();
+    M2C_UNK ClearMapCommandPending();
     M2C_UNK BuildMovePathDirections();
     M2C_UNK func_01ffb3d0();
     M2C_UNK CreateTargetSelectionSprite();
@@ -304,7 +304,7 @@ void MoveCursorTo(s32 x, s32 y) {
     }
     if (occupied != 0) {
         ChooseAttackPosition(x, y, (u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CURSOR_X);
-        func_020d468c();
+        SetMapCommandPending();
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_TARGET_X) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_X);
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_TARGET_Y) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_Y);
         func_020a0d18();
@@ -314,7 +314,7 @@ void MoveCursorTo(s32 x, s32 y) {
     } else {
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_X) = (s16)x;
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_Y) = (s16)y;
-        func_020d46ac();
+        ClearMapCommandPending();
         func_020a0d18();
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = 4;
     }
@@ -368,10 +368,10 @@ void OpenMapActionMenuAtCursor(void) {
 
 void func_020d61f0(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    M2C_UNK func_ov000_021696d4();
+    M2C_UNK DeleteAllUnitMoveObjects();
     extern M2C_UNK data_0211fbc4;
     DeleteSpriteObjectsOfClass(&data_0211fbc4);
-    func_ov000_021696d4();
+    DeleteAllUnitMoveObjects();
 }
 
 void UpdateMapCommandReplay(void);
@@ -383,8 +383,8 @@ void UpdateMapTargetCursor(void) {
     extern void *gCurrentMap;
     extern u8 data_02168f24;
 
-    if (func_020d46cc() == 0) {
-        if (func_020c9550() != 0) {
+    if (IsMapCommandPending() == 0) {
+        if (CountHeldDirections() != 0) {
             func_020c95e4();
             OpenMapActionMenuAtCursor();
             return;
@@ -392,7 +392,7 @@ void UpdateMapTargetCursor(void) {
         func_020d61f0();
         RefreshMapView();
         if (data_02168f24 != 0) {
-            func_ov000_021696d4();
+            DeleteAllUnitMoveObjects();
             M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = 0;
             return;
         }
@@ -442,7 +442,7 @@ void UpdateMapCursorReturn(void) {
     extern void *gCurrentMap;
     void *map = M2C_FIELD(gCurrentMap, void **, 0);
     SetMapCursorTargetTile(M2C_FIELD(map, s16 *, MAP_CURSOR_X), M2C_FIELD(map, s16 *, MAP_CURSOR_Y));
-    func_020d468c();
+    SetMapCommandPending();
     BattleUpdateUnitCursor();
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = MAP_MODE_CURSOR;
 }

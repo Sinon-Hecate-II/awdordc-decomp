@@ -440,14 +440,17 @@ void Sound_StartFade(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s32 *, 8) = 0;
 }
 
-s32 GetFadeValue(void *arg0) {
- s32 RuntimeIntDivMod(s32,s32);
- s32 n=M2C_FIELD(arg0,s32 *,0xC);
- s32 t=M2C_FIELD(arg0,s32 *,8);
- s32 start;
- if(t>=n)return M2C_FIELD(arg0,s32 *,4);
- start=M2C_FIELD(arg0,s32 *,0);
- return start+RuntimeIntDivMod(t*(M2C_FIELD(arg0,s32 *,4)-start),n);
+/* The fade envelope's current value: `start` plus the elapsed fraction of the
+ * ramp to `target`, or `target` once the fade's full length has elapsed. */
+s32 GetFadeValue(FadeEnvelope *fade) {
+    s32 RuntimeIntDivMod(s32, s32);
+    s32 length = fade->length;
+    s32 elapsed = fade->elapsed;
+    s32 start;
+
+    if (elapsed >= length) return fade->target;
+    start = fade->start;
+    return start + RuntimeIntDivMod(elapsed * (fade->target - start), length);
 }
 
 void AdvanceFade(void *arg0) {
@@ -472,7 +475,7 @@ s32 IsFadeDone(void *arg0) {
  * session. Returns 1 on success, or 0 after tearing the resources down again
  * when the session cannot start. */
 s32 WFC_Init(void *params) {
-void CpuFill(s32,void *,s32);s32 Wfc_AcquireWorkBlock(s32,M2C_UNK);void func_02045c90(void);s32 WFC_InitSession(void *,s32);void Wfc_FreeWorkBlocks(void);
+void CpuFill(s32,void *,s32);s32 Wfc_AcquireWorkBlock(s32,M2C_UNK);void FifoReadWfcSaveSlots(void);s32 WFC_InitSession(void *,s32);void Wfc_FreeWorkBlocks(void);
 extern M2C_UNK data_0213d100;
 void *block,*buffer;Config0202ef *config;s32 status;
 block=M2C_FIELD(params,void *(**)(s32,s32),0)(1,24);
@@ -492,7 +495,7 @@ config=M2C_FIELD(&data_0213d100,Config0202ef **,0);
 config->a=M2C_FIELD(params,u8 *,8);config->b=M2C_FIELD(params,u8 *,9);
 buffer=M2C_FIELD(&data_0213d100,void **,12);M2C_FIELD(buffer,s32 *,0)=M2C_FIELD(params,s32 *,0);M2C_FIELD(buffer,s32 *,4)=M2C_FIELD(params,s32 *,4);M2C_FIELD(buffer,s32 *,8)=0;
 config->c=M2C_FIELD(params,u8 *,10);config->d=M2C_FIELD(params,u8 *,11);
-func_02045c90();
+FifoReadWfcSaveSlots();
 status=WFC_InitSession(M2C_FIELD(&data_0213d100,void **,4),0x2300);
 if(status==1 || status>=4){Wfc_FreeWorkBlocks();return 0;}return 1;
 }
@@ -577,10 +580,12 @@ s32 Wfc_EndSession(void) {
     return 0;
 }
 
-void Wfc_SetSlotImage(s32 arg0, M2C_UNK arg1) {
+/* Store one save slot's 0xF0-byte image in the friend roster's copy of it, at
+ * slot * WFC_STATE_SLOT_STRIDE of the WFC friends work block. */
+void Wfc_SetSlotImage(s32 slotIndex, M2C_UNK slotImage) {
     M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, M2C_UNK);
     s32 Wfc_GetWorkBlock(M2C_UNK);
-    MIi_CpuCopy32(arg1, Wfc_GetWorkBlock(0x10) + (arg0 << 8), 0xF0);
+    MIi_CpuCopy32(slotImage, Wfc_GetWorkBlock(WFC_WORK_FRIENDS) + (slotIndex << 8), SAVE_SLOT_IMAGE_SIZE);
 }
 
 /* Claim an owned WFC work block: set `tag`'s bit in the control block's ownership

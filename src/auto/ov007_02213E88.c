@@ -188,10 +188,12 @@ void MapEditor_OpenTileCursor(void) {
     MapEditor_CreateTileCursor();
 }
 
-void func_ov007_02214324(M2C_UNK arg0) {
+/* Build the map editor's edit list from the current map's name and flag the map
+ * as modified (the gMapEditListMenuClass open callback). */
+void MapEditor_BuildEditList(M2C_UNK arg0) {
     M2C_UNK CreateMapEditList(s32, M2C_UNK);
     extern s32 *gCurrentMap;
-    CreateMapEditList(*gCurrentMap + 0x5120, arg0);
+    CreateMapEditList(*gCurrentMap + MAP_NAME, arg0);
     MapEditor_SetMapModified(1);
 }
 
@@ -226,12 +228,15 @@ void func_ov007_022143a8(void) {
     MapEditor_SetMapModified(1);
 }
 
-void func_ov007_022143bc(void) {
+/* Finish editing a confirmed map: apply the map's value limit, capture the
+ * edited map and its settings back into the settings record, then unload the
+ * map editor's resource. */
+void MapEditor_ConfirmMapSettings(void) {
     M2C_UNK MapSettings_Capture(M2C_UNK);
     M2C_UNK func_02088624();
     extern u16 gMapConfig;
     if (IsMapConfirmEnabled() != 0) {
-        gMapConfig = (u16) (gMapConfig | 0x40);
+        gMapConfig = (u16) (gMapConfig | MAPCONFIG_LIMIT_FLAG);
         MapSettings_Capture(0);
     }
     func_02088624();
@@ -309,11 +314,16 @@ void func_ov007_022144ec(void) {
     CreateMenuAt(&data_ov007_0221fc20, 0x50, 0x18, 0x50);
 }
 
-void func_ov007_0221450c(void) {
+/* Map-editor action: clear the AI action step (the low nibble of
+ * MAP_UNIT_AI_STATE) of the unit under the cursor, then mark the map as modified
+ * and close the editor's menu sprites. */
+void MapEditor_ClearCursorUnitAiStep(void) {
     M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     M2C_UNK DeleteMapMenuSprites();
     extern s32 *gCurrentMap;
-    M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) = (u8) (M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) & ~0xF);
+
+    M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) =
+        (u8) (M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) & ~MAP_UNIT_AI_STATE_MASK);
     MapEditor_SetMapModified(1);
     DeleteMapMenuSprites();
 }
@@ -392,9 +402,11 @@ void func_ov007_0221470c(void) {
     DeleteMapMenuSprites();
 }
 
-/* Spawn an object on the map tile (x,y) if that tile is non-empty,
-   returning 1 on success and 0 when the tile has no entry. */
-s32 func_ov007_02214718(s32 x, s32 y) {
+/* Open the unit AI-order menu at the cursor's cell (x,y): selects the cell's unit
+   (MAP_CURSOR_UNIT records 0x52D0) and creates the AI-step menu with its entry
+   pre-selected from the unit's current AI step (0, AI_STEP_FIRST, AI_STEP_CAPTURE
+   or AI_STEP_ATTACK).  Returns 1 when a unit stands on the cell, 0 when it is empty. */
+s32 MapEditor_OpenUnitAiMenu(s32 x, s32 y) {
     void GetMapCursorScreenPosition(s32, s32, s32 *);
     s32 CreateMenuAt(s32 *, s32, s32, s32);
     extern s32 *gCurrentMap;

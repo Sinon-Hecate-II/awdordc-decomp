@@ -1,6 +1,20 @@
 /* 3 functions from 0x02099E6C to 0x0209ACC4 (main), found by ds-decomp. */
 #include "common.h"
 
+/* Glyph text object state (the TextState the text engine uses; same layout as
+ * the one in main_0209ACC4.c): the glyph cell buffer of the current line, the
+ * attribute OR-ed into every cell and the line's tile/pixel offset. */
+typedef struct TextState {
+    u8   pad_00[0x40];
+    u16 *cells;      /* +0x40 glyph cell buffer base */
+    u16  baseAttr;   /* +0x44 attribute OR-ed into every cell */
+    u8   pad_46[6];
+    u16  linePixel;  /* +0x4C pixel/tile offset of the current line */
+} TextState;
+/* Byte offset from a cell to the cell directly below it: the buffer is 32 u16
+ * entries (0x40 bytes) wide. */
+#define TEXT_CELL_ROW_BYTES 0x40
+
 #pragma push
 #pragma scheduling off
 s32 func_02099e6c(void *arg0, s32 arg1) {
@@ -14,7 +28,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     M2C_UNK func_02094410(s32);
     M2C_UNK func_02094a74();
     M2C_UNK CloseScenePanel();
-    M2C_UNK func_02094af8(s32, s32, s32);
+    M2C_UNK SetScenePanelFaceUnlessMessageBox(s32, s32, s32);
     M2C_UNK func_02094b28(s32, u8);
     M2C_UNK func_02094b50(s32, s32);
     M2C_UNK func_02094b78(s32, M2C_UNK);
@@ -22,7 +36,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     M2C_UNK func_02094bc0();
     M2C_UNK func_02094be0();
     M2C_UNK CallScenePanelFaceOp(s32, s32, s32, s32);
-    M2C_UNK func_02094c38(s32, s32, s32);
+    M2C_UNK SetScenePanelFaceSlotUnlessMessageBox(s32, s32, s32);
     M2C_UNK func_02094c68(s32, M2C_UNK);
     M2C_UNK func_02094c90(s32, void *);
     M2C_UNK func_02094d8c();
@@ -34,11 +48,11 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     M2C_UNK func_020953d0();
     M2C_UNK func_0209544c(s32);
     M2C_UNK CreateScreenSplitSprite(M2C_UNK, s32, void *);
-    M2C_UNK func_02095f94(u8 *);
-    s32 func_020999b8(void *);
+    M2C_UNK ShowTelopText(u8 *);
+    s32 IsTextWaitingForMessageBox(void *);
     s32 func_020999e8(void *);
     s32 func_02099a0c(void *);
-    M2C_UNK func_02099a6c(void *);
+    M2C_UNK EndTextLine(void *);
     M2C_UNK func_02099ac4(void *);
     s32 IsLeadByte();
     s32 IsGlyphEscape(void *);
@@ -105,7 +119,7 @@ loop_1:
         return func_02099e6c(arg0, arg1);
     case 5:
     case 6:
-        if (func_020999b8(arg0) == 0) {
+        if (IsTextWaitingForMessageBox(arg0) == 0) {
             temp_r0_2 = CreateSpriteFromClass(&data_02102e74, 7);
             M2C_FIELD(temp_r0_2, s32 *, 0x4C) = arg1;
             M2C_FIELD(temp_r0_2, s32 *, 0x3C) = func_02099a0c(arg0);
@@ -128,15 +142,15 @@ loop_1:
         if (func_020999e8(arg0) == 0) {
             return 0;
         }
-        if (func_020999b8(arg0) == 0) {
+        if (IsTextWaitingForMessageBox(arg0) == 0) {
             M2C_FIELD(arg0, u8 *, 0x4B) = (u8) (M2C_FIELD(arg0, u8 *, 0x4B) + 2);
             M2C_FIELD(arg0, u16 *, 0x4C) = (u16) (M2C_FIELD(arg0, u16 *, 0x4C) + 2);
-            func_02099a6c(arg0);
+            EndTextLine(arg0);
         }
         func_0209c418(arg0);
         return 3;
     case 2:
-        if (func_020999b8(arg0) == 0) {
+        if (IsTextWaitingForMessageBox(arg0) == 0) {
             temp_r0_4 = CreateSpriteFromClass(&data_02102eac, 7);
             M2C_FIELD(temp_r0_4, s32 *, 0x4C) = arg1;
             M2C_FIELD(temp_r0_4, s32 *, 0x3C) = func_02099a0c(arg0);
@@ -150,7 +164,7 @@ loop_1:
         func_0209c428(arg0);
         return 2;
     case 4:
-        if (func_020999b8(arg0) == 0) {
+        if (IsTextWaitingForMessageBox(arg0) == 0) {
             M2C_FIELD(arg0, u16 *, 0x4C) = (u16) M2C_FIELD(arg0, u16 *, 0x4E);
             func_02099ac4(arg0);
         }
@@ -160,13 +174,13 @@ loop_1:
         temp_r4 = M2C_FIELD(temp_r1, u8 *, 1) & 0x7F;
         func_0209c418(arg0);
         func_0209c428(arg0);
-        if (func_020999b8(arg0) != 0) {
+        if (IsTextWaitingForMessageBox(arg0) != 0) {
             return 3;
         }
         func_0209544c(temp_r4);
         return 2;
     case 12:
-        if (func_020999b8(arg0) == 0) {
+        if (IsTextWaitingForMessageBox(arg0) == 0) {
             temp_r0_5 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 1);
             switch(temp_r0_5){case 0:StopTextObject(arg0);break;default:M2C_FIELD(arg0,u8 *,0x55)=temp_r0_5;M2C_FIELD(arg0,s8 *,0x54)=0;break;}
         }
@@ -177,7 +191,7 @@ loop_1:
         temp_r0_6 = M2C_FIELD(temp_r1, u8 *, 1) - 0x80;
         switch (temp_r0_6) {
         case 0:
-            if (func_020999b8(arg0) == 0) {
+            if (IsTextWaitingForMessageBox(arg0) == 0) {
                 temp_r3 = *gCurrentMap;
                 temp_r4_2 = (M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0xC) * 0xE) + (s32) (temp_r3 + 0x59A4);
                 temp_r0_7 = (u32) (M2C_FIELD(temp_r4_2, u16 *, 6) << 0x19) >> 0x19;
@@ -193,7 +207,7 @@ loop_1:
             func_0209c418(arg0);
             return 3;
         case 1:
-            if (func_020999b8(arg0) == 0) {
+            if (IsTextWaitingForMessageBox(arg0) == 0) {
                 temp_r3_2 = *gCurrentMap;
                 temp_r4_3 = (M2C_FIELD(M2C_FIELD(temp_r3_2, void **, 0x52D0), u8 *, 0xD) * 0xE) + (s32) (temp_r3_2 + 0x59A4);
                 temp_r0_8 = (u32) (M2C_FIELD(temp_r4_3, u16 *, 6) << 0x19) >> 0x19;
@@ -233,7 +247,7 @@ loop_1:
                 default:
                     break;
                 case 0:
-                    func_02094af8(temp_r0_9, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 3) & 0x7F, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 4) & 0x7F);
+                    SetScenePanelFaceUnlessMessageBox(temp_r0_9, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 3) & 0x7F, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 4) & 0x7F);
                     func_0209c418(arg0);
                     func_0209c418(arg0);
                     func_0209c418(arg0);
@@ -308,7 +322,7 @@ loop_1:
                 default:
                     break;
                 case 0:
-                    func_02094c38(temp_r0_10, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 3) & 0x7F, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 4) & 0x7F);
+                    SetScenePanelFaceSlotUnlessMessageBox(temp_r0_10, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 3) & 0x7F, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 4) & 0x7F);
                     func_0209c418(arg0);
                     func_0209c418(arg0);
                     func_0209c418(arg0);
@@ -484,7 +498,7 @@ loop_1:
             } while (M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 0) != 0x1E);
         }
         *var_r4 = 0;
-        func_02095f94(sp1C);
+        ShowTelopText(sp1C);
         M2C_FIELD(arg0, u8 *, 0x5C) = (u8) (M2C_FIELD(arg0, u8 *, 0x5C) | 8);
         func_0209c428(arg0);
         return 3;
@@ -521,12 +535,17 @@ return_two:
     return 2;
 }
 #pragma pop
-void func_0209ac6c(void *arg0, void *arg1) {
-    if (arg1 == NULL) {
+/* Write the two tilemap entries of the glyph cell at `cell` in the text object's
+ * cell buffer: the current line's tile (linePixel) and the tile directly below it
+ * (linePixel + 1), each OR-ed with the text's base attribute. */
+void WriteTextCellTilePair(void *textObject, void *cell) {
+    TextState *text = textObject;
+
+    if (cell == NULL) {
         return;
     }
-    M2C_FIELD(arg1, s16 *, 0) = (s16) (M2C_FIELD(arg0, u16 *, 0x4C) | M2C_FIELD(arg0, u16 *, 0x44));
-    M2C_FIELD(arg1, s16 *, 0x40) = (s16) ((M2C_FIELD(arg0, u16 *, 0x4C) + 1) | M2C_FIELD(arg0, u16 *, 0x44));
+    M2C_FIELD(cell, s16 *, 0) = (s16) (text->linePixel | text->baseAttr);
+    M2C_FIELD(cell, s16 *, TEXT_CELL_ROW_BYTES) = (s16) ((text->linePixel + 1) | text->baseAttr);
 }
 
 void func_0209ac9c(void *arg0) {

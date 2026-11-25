@@ -39,7 +39,7 @@ void InitUnitSprite(void *,s32,s32,s32,s32);
 void Set3DSpriteSlideTargetAndStart(void *,s32,s32,s32,s32);
 s32 GetUnitSpriteWidth(void *);
 s32 GetUnitSpriteHeight(void *);
-void func_02087d84(void *,s32,s32,s32,s32,s32);
+void SpriteCellListSetCellRect(void *,s32,s32,s32,s32,s32);
 void func_020aad18(void *);
 void SetTextSpriteValue(void *,s32);
 static inline u8 Visible02211388(void *p){return M2C_FIELD(M2C_FIELD(p,void **,0x64),u8 *,0x12)!=0;}
@@ -50,7 +50,7 @@ static inline u8 Visible02211388(void *p){return M2C_FIELD(M2C_FIELD(p,void **,0
 void func_ov006_02211200(void *arg0) {
 M2C_UNK Apply3DSpriteBanks();
 M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
-M2C_UNK func_02003560();
+M2C_UNK GX_ReleaseBankGrantForBGExtPalette();
 M2C_UNK Apply3DSpriteLayout(M2C_UNK *);
 M2C_UNK Set3DSpriteVramBanks();
 void *Create3DSprite(M2C_UNK);
@@ -66,7 +66,7 @@ extern M2C_UNK data_ov006_022183d4;
 s32 saved; void *p;
 s32 engine, destination;
 s32 resource = 6;
-Set3DSpriteVramBanks();func_02003560();GX_SetBankForObjExtPalette(64);
+Set3DSpriteVramBanks();GX_ReleaseBankGrantForBGExtPalette();GX_SetBankForObjExtPalette(64);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 Apply3DSpriteLayout(&data_ov006_022183c8);CreateMainWallpaperSprite(2,15,5);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
@@ -107,19 +107,19 @@ void ShowFriendCodePrompt(void *owner) {
     }
 }
 
-void func_ov006_02211388(void *arg0){void **items=M2C_FIELD(arg0,void ***,0x3c);void *w; s32 y,x,a,b,saved;items[0]=CreateUnitSprite(arg0);InitUnitSprite(items[0],2,336,3,1);w=items[0];Set3DSpriteSlideTargetAndStart(w,224,160,224,192);if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);func_02087d84(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
+void func_ov006_02211388(void *arg0){void **items=M2C_FIELD(arg0,void ***,0x3c);void *w; s32 y,x,a,b,saved;items[0]=CreateUnitSprite(arg0);InitUnitSprite(items[0],2,336,3,1);w=items[0];Set3DSpriteSlideTargetAndStart(w,224,160,224,192);if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);SpriteCellListSetCellRect(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
 w=items[0];a=(u16)(((u32)(M2C_FIELD(w,u8 *,0x59)<<28)>>28)+2);M2C_FIELD(w,u32 *,0x40)=(M2C_FIELD(w,u32 *,0x40)&~0x3fc0000)|((u32)(a<<24)>>6);M2C_FIELD(w,u8 *,0x5a)=0;func_020aad18(items[0]);
-items[1]=CreateUnitSprite(arg0);InitUnitSprite(items[1],10,352,3,0);w=items[1];Set3DSpriteSlideTargetAndStart(w,94,142,94,142);if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);func_02087d84(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
-M2C_FIELD(w,u16 *,0x34)=94;M2C_FIELD(w,u16 *,0x36)=142;if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);func_02087d84(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
+items[1]=CreateUnitSprite(arg0);InitUnitSprite(items[1],10,352,3,0);w=items[1];Set3DSpriteSlideTargetAndStart(w,94,142,94,142);if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);SpriteCellListSetCellRect(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
+M2C_FIELD(w,u16 *,0x34)=94;M2C_FIELD(w,u16 *,0x36)=142;if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);SpriteCellListSetCellRect(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
 w=items[1];a=(u16)(((u32)(M2C_FIELD(w,u8 *,0x59)<<28)>>28)+2);M2C_FIELD(w,u32 *,0x40)=(M2C_FIELD(w,u32 *,0x40)&~0x3fc0000)|((u32)(a<<24)>>6);M2C_FIELD(w,u8 *,0x5a)=0;func_020aad18(items[1]);
-items[2]=CreateUnitSprite(arg0);InitUnitSprite(items[2],11,360,3,0);w=items[2];Set3DSpriteSlideTargetAndStart(w,130,142,130,142);if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);func_02087d84(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
-M2C_FIELD(w,u16 *,0x34)=130;M2C_FIELD(w,u16 *,0x36)=142;if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);func_02087d84(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
+items[2]=CreateUnitSprite(arg0);InitUnitSprite(items[2],11,360,3,0);w=items[2];Set3DSpriteSlideTargetAndStart(w,130,142,130,142);if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);SpriteCellListSetCellRect(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
+M2C_FIELD(w,u16 *,0x34)=130;M2C_FIELD(w,u16 *,0x36)=142;if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);SpriteCellListSetCellRect(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
 w=items[2];a=(u16)(((u32)(M2C_FIELD(w,u8 *,0x59)<<28)>>28)+2);M2C_FIELD(w,u32 *,0x40)=(M2C_FIELD(w,u32 *,0x40)&~0x3fc0000)|((u32)(a<<24)>>6);M2C_FIELD(w,u8 *,0x5a)=0;func_020aad18(items[2]);
-items[3]=CreateUnitSprite(arg0);InitUnitSprite(items[3],39,368,3,0);w=items[3];Set3DSpriteSlideTargetAndStart(w,48,164,48,192);if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);func_02087d84(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
+items[3]=CreateUnitSprite(arg0);InitUnitSprite(items[3],39,368,3,0);w=items[3];Set3DSpriteSlideTargetAndStart(w,48,164,48,192);if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);SpriteCellListSetCellRect(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
 w=items[3];a=(u16)(((u32)(M2C_FIELD(w,u8 *,0x59)<<28)>>28)+2);M2C_FIELD(w,u32 *,0x40)=(M2C_FIELD(w,u32 *,0x40)&~0x3fc0000)|((u32)(a<<24)>>6);M2C_FIELD(w,u8 *,0x5a)=0;func_020aad18(items[3]);
-items[4]=CreateUnitSprite(arg0);InitUnitSprite(items[4],41,404,3,0);w=items[4];Set3DSpriteSlideTargetAndStart(w,104,164,104,192);if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);func_02087d84(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
+items[4]=CreateUnitSprite(arg0);InitUnitSprite(items[4],41,404,3,0);w=items[4];Set3DSpriteSlideTargetAndStart(w,104,164,104,192);if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);SpriteCellListSetCellRect(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
 w=items[4];a=(u16)(((u32)(M2C_FIELD(w,u8 *,0x59)<<28)>>28)+2);M2C_FIELD(w,u32 *,0x40)=(M2C_FIELD(w,u32 *,0x40)&~0x3fc0000)|((u32)(a<<24)>>6);M2C_FIELD(w,u8 *,0x5a)=0;func_020aad18(items[4]);
-items[5]=CreateUnitSprite(arg0);InitUnitSprite(items[5],40,386,3,0);w=items[5];Set3DSpriteSlideTargetAndStart(w,160,164,160,192);if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);func_02087d84(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
+items[5]=CreateUnitSprite(arg0);InitUnitSprite(items[5],40,386,3,0);w=items[5];Set3DSpriteSlideTargetAndStart(w,160,164,160,192);if(Visible02211388(w)){y=M2C_FIELD(w,s16 *,0x52);x=M2C_FIELD(w,s16 *,0x50);a=GetUnitSpriteWidth(w);b=GetUnitSpriteHeight(w);SpriteCellListSetCellRect(M2C_FIELD(w,void **,0x64),1,x,y,(u16)a,(u16)b);}
 w=items[5];a=(u16)(((u32)(M2C_FIELD(w,u8 *,0x59)<<28)>>28)+2);M2C_FIELD(w,u32 *,0x40)=(M2C_FIELD(w,u32 *,0x40)&~0x3fc0000)|((u32)(a<<24)>>6);M2C_FIELD(w,u8 *,0x5a)=0;func_020aad18(items[5]);
 M2C_FIELD(M2C_FIELD(arg0,void **,64),u8 *,0x16)=2;M2C_FIELD(M2C_FIELD(arg0,void **,64),u8 *,0x14)=8;M2C_FIELD(M2C_FIELD(arg0,void **,64),u8 *,0x17)=8;SetTextSpriteValue(M2C_FIELD(arg0,void **,64),0);
 w=M2C_FIELD(arg0,void **,64);M2C_FIELD(w,u8 *,0x20)=(M2C_FIELD(w,u8 *,0x20)&~0xe0)|64;

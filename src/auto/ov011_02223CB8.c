@@ -320,15 +320,15 @@ void HandleIntroInput(void *entry) {
 /* Configure an overlay entry's display state: set up sprite slots, refresh masks, or tear down depending on the command. */
 void func_ov011_02224aac(void *entry, s32 command) {
     s32 EaseInterpolate(s32, s32, s32, u16, s32);
-    void func_ov011_022216d8(void *, s32, s32, s32);
+    void LoadOpeningAssetSet(void *, s32, s32, s32);
     void func_ov011_02222830(void *, s32, s32, s32, s32);
     void G3_SetSpriteTransformScale(void *, s32, s32);
     switch (command) {
     case 0:
-        func_ov011_022216d8(entry, 11, 0, 2);
-        func_ov011_022216d8(entry, 12, 1, 2);
-        func_ov011_022216d8(entry, 17, 0, 3);
-        func_ov011_022216d8(entry, 18, 1, 3);
+        LoadOpeningAssetSet(entry, 11, 0, 2);
+        LoadOpeningAssetSet(entry, 12, 1, 2);
+        LoadOpeningAssetSet(entry, 17, 0, 3);
+        LoadOpeningAssetSet(entry, 18, 1, 3);
         gIntroAnimState[4] = 1;
     case 2:
         func_ov011_02222830(entry, 2, 3, 2, (u16)EaseInterpolate(0, 16, 0, M2C_FIELD(entry, u16 *, 0x34), 0x154));

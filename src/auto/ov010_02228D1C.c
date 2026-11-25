@@ -62,7 +62,7 @@ extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     void Ov010Online_ClearStepFlag(s32);
     s32 func_ov010_02229450(s32);
     s32 func_ov010_02229438(s32);
-    void func_ov010_02229a50(void);
+    void ClearOnlineEventFlags(void);
     s32 GetEarnedRecordTierTotal(void);
     s32 GetRecordRank(void);
     s32 GetFavouriteRecordGroup(void);
@@ -106,7 +106,7 @@ volatile Ov010CallbackFn d;
     Ov010Online_ClearStepFlag(4);
     func_ov010_02229450(arg2);
     func_ov010_02229438(arg4);
-    func_ov010_02229a50();
+    ClearOnlineEventFlags();
     a = *(Ov010CallbackFn *)&data_ov010_0222c128;
     b = a;
     c = b;
@@ -157,7 +157,7 @@ extern "C" void func_ov010_02228f80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     void Ov010Online_ClearStepFlag(s32);
     s32 func_ov010_02229450(s32);
     s32 func_ov010_02229438(s32);
-    void func_ov010_02229a50(void);
+    void ClearOnlineEventFlags(void);
     s32 GetEarnedRecordTierTotal(void);
     s32 GetRecordRank(void);
     s32 GetFavouriteRecordGroup(void);
@@ -201,7 +201,7 @@ volatile Ov010CallbackFn d;
     Ov010Online_ClearStepFlag(4);
     func_ov010_02229450(arg3);
     func_ov010_02229438(arg5);
-    func_ov010_02229a50();
+    ClearOnlineEventFlags();
     a = *(Ov010CallbackFn *)&data_ov010_0222c128;
     b = a;
     c = b;
@@ -243,7 +243,7 @@ volatile Ov010CallbackFn d;
 #pragma opt_dead_assignments off
 extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5) {
  void func_ov010_02226a88(void);
- void func_ov010_02229a50(void);
+ void ClearOnlineEventFlags(void);
  s32 func_ov010_02229468(s32);
  s32 func_ov010_02229480(s32);
  void Ov010Online_ClearStepFlag(s32);
@@ -269,7 +269,7 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  Ov010Online_ClearStepFlag(4);
  func_ov010_02229468(arg2);
  func_ov010_02229480(arg4);
- func_ov010_02229a50();
+ ClearOnlineEventFlags();
  a = *(Ov010CallbackFn *)&data_ov010_0222c128;
  b = a;
  c = b;
@@ -291,7 +291,7 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
 #pragma opt_dead_assignments reset
 extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5) {
  void func_ov010_02226a88(void);
- void func_ov010_02229a50(void);
+ void ClearOnlineEventFlags(void);
  s32 func_ov010_02229468(s32);
  s32 func_ov010_02229480(s32);
  void Ov010Online_ClearStepFlag(s32);
@@ -316,7 +316,7 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  Ov010Online_ClearStepFlag(4);
  func_ov010_02229468(arg2);
  func_ov010_02229480(arg4);
- func_ov010_02229a50();
+ ClearOnlineEventFlags();
  a = *(Ov010CallbackFn *)&data_ov010_0222c128;
  b = a;
  c = b;
@@ -623,8 +623,8 @@ u8 GetOnlineLocalPlayerSlot(void) {
 }
 
 u16 GetOnlinePeerMask(void) {
-    s32 func_02038f00();
-    return (u16)func_02038f00();
+    s32 GetOnlinePlayerMask();
+    return (u16)GetOnlinePlayerMask();
 }
 
 s32 GetLinkPlayerCount(void) {
@@ -636,12 +636,12 @@ s32 GetConnectedPlayerCount(void) {
     return GetNetSessionPlayerCount() & 0xFF;
 }
 
-void func_ov010_02229a50(void) {
+void ClearOnlineEventFlags(void) {
     extern u16 gOv010OnlineSession;
     gOv010OnlineSession = 0;
 }
 
-u16 func_ov010_02229a64(void) {
+u16 GetOnlineEventFlags(void) {
     extern u16 gOv010OnlineSession;
     return gOv010OnlineSession;
 }
@@ -688,16 +688,19 @@ s32 GetOnlinePlayerSlot(s32 arg0) {
     return (0x6C * arg0) + (s32) &gOv010PlayerRecords;
 }
 
-s32 CopyOnlineLocalPlayerRecord(s32 arg0, M2C_UNK arg1) {
+/* Copy the local player's network panel record (the ONLINE_PLAYER_PANEL block of
+ * the player status) into `buffer`, `length` bytes, and return `buffer`; 0 when
+ * there is no local player status. */
+s32 CopyOnlineLocalPlayerRecord(s32 buffer, M2C_UNK length) {
     M2C_UNK MI_CpuCopy8(s32, s32, M2C_UNK);
-    s32 temp_r0;
+    s32 panel;
 
-    temp_r0 = GetLocalPlayerStatus();
-    if (temp_r0 == 0) {
+    panel = GetLocalPlayerStatus();
+    if (panel == 0) {
         return 0;
     }
-    MI_CpuCopy8(temp_r0 + 0x2C, arg0, arg1);
-    return arg0;
+    MI_CpuCopy8(panel + ONLINE_PLAYER_PANEL, buffer, length);
+    return buffer;
 }
 
 s32 GetActiveOnlinePlayerRecord(void) {
@@ -711,9 +714,19 @@ s32 GetActiveOnlinePlayerRecord(void) {
     return 0;
 }
 
-s32 CopyActiveOnlinePlayerRecord(s32 a,s32 b,s32 c) {
-s32 p=GetOnlinePlayerRecord(a);
-if(!p)return 0;MI_CpuCopy8(p+0x2c,b,c);return b;
+/* Copy the network panel record (the ONLINE_PLAYER_PANEL block) of player
+ * `playerId` into `buffer`, `length` bytes, and return `buffer`; 0 when that
+ * player has no connected record. */
+s32 CopyActiveOnlinePlayerRecord(s32 playerId, s32 buffer, s32 length) {
+    M2C_UNK MI_CpuCopy8(s32, s32, M2C_UNK);
+    s32 record;
+
+    record = GetOnlinePlayerRecord(playerId);
+    if (record == 0) {
+        return 0;
+    }
+    MI_CpuCopy8(record + ONLINE_PLAYER_PANEL, buffer, length);
+    return buffer;
 }
 
 s32 IsOnlineSessionHost(void) {
@@ -721,7 +734,7 @@ s32 IsOnlineSessionHost(void) {
     return 0;
 }
 
-s32 func_ov010_02229bf4(void) {
+s32 IsOnlineGuest(void) {
     if (GetOnlineTransportPlayerId() != 0) return 1;
     return 0;
 }

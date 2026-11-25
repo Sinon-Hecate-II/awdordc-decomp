@@ -20,10 +20,10 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
     s32 GetLocalPlayerName();
-    M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
+    M2C_UNK SpriteCellListSetCellRect(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    void *func_0208bc24(void *);
+    void *CreateScrollingTextSprite(void *);
     M2C_UNK Load3DSpritePattern(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     void *DrawLocalizedText(s16, M2C_UNK, M2C_UNK, s32, s32, u32);
@@ -117,10 +117,10 @@ void func_ov003_021e5118(void *arg0) {
         temp_r6 = M2C_FIELD(temp_r5, s16 *, 0x52);
         temp_r7 = M2C_FIELD(temp_r5, s16 *, 0x50);
         temp_r9 = GetUnitSpriteWidth(temp_r5);
-        func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7, temp_r6, (s32) temp_r9, (s32) GetUnitSpriteHeight(temp_r5));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7, temp_r6, (s32) temp_r9, (s32) GetUnitSpriteHeight(temp_r5));
     }
     Hide3DSprite(*temp_r4);
-    temp_r0 = func_0208bc24(arg0);
+    temp_r0 = CreateScrollingTextSprite(arg0);
     M2C_FIELD(arg0, void **, 0x5C) = temp_r0;
     M2C_FIELD(temp_r0, s16 *, 0x3E) = 0x36C;
     temp_r1 = M2C_FIELD(arg0, void **, 0x5C);

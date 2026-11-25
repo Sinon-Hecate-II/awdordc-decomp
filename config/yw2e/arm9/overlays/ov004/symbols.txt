@@ -1,9 +1,9 @@
 func_ov004_02211200 kind:function(arm,size=0xc) addr:0x02211200
 func_ov004_0221120c kind:function(arm,size=0x20) addr:0x0221120c
-func_ov004_0221122c kind:function(arm,size=0x34) addr:0x0221122c
+CreateMapEventSprite kind:function(arm,size=0x34) addr:0x0221122c
 func_ov004_02211260 kind:function(arm,size=0xc) addr:0x02211260
 Ov004_StartFinalMapEnding kind:function(arm,size=0x48) addr:0x0221126c
-func_ov004_022112b4 kind:function(arm,size=0x34) addr:0x022112b4
+Ov004_CreateEndingSprite kind:function(arm,size=0x34) addr:0x022112b4
 Ov004_InitUraPlaneEffect kind:function(arm,size=0x70) addr:0x022112e8
 func_ov004_02211358 kind:function(arm,size=0x1c) addr:0x02211358
 func_ov004_02211374 kind:function(arm,size=0x3cc) addr:0x02211374
@@ -54,7 +54,7 @@ IsPlayerTwoDefeatedFlagClear kind:function(arm,size=0x88) addr:0x02213798
 func_ov004_02213820 kind:function(arm,size=0x20) addr:0x02213820
 Ov004_IsPlayerTwoArmyEmpty_02213840 kind:function(arm,size=0x70) addr:0x02213840
 IsAiBuildingOnPlayerOneCityOrBase kind:function(arm,size=0x7c) addr:0x022138b0
-func_ov004_0221392c kind:function(arm,size=0x30) addr:0x0221392c
+IsCursorUnitCarryingUnit kind:function(arm,size=0x30) addr:0x0221392c
 IsSetAiModeCommandOnRig kind:function(arm,size=0x4c) addr:0x0221395c
 IsSetAiModeCommandOnPlayerOneTempAirfield kind:function(arm,size=0x74) addr:0x022139a8
 CheckPlayerOneOpeningFormation kind:function(arm,size=0xbc) addr:0x02213a1c
@@ -65,14 +65,14 @@ func_ov004_02213d90 kind:function(arm,size=0x20) addr:0x02213d90
 func_ov004_02213db0 kind:function(arm,size=0x20) addr:0x02213db0
 Ov004_MarkChosenKindActed kind:function(arm,size=0xc4) addr:0x02213dd0
 IsTurnThirdOfFour kind:function(arm,size=0x3c) addr:0x02213e94
-func_ov004_02213ed0 kind:function(arm,size=0x38) addr:0x02213ed0
+IsTurnFourthOfFour kind:function(arm,size=0x38) addr:0x02213ed0
 IsPlayerTwoUnitGroupEmpty kind:function(arm,size=0x70) addr:0x02213f08
-func_ov004_02213f78 kind:function(arm,size=0x34) addr:0x02213f78
-func_ov004_02213fac kind:function(arm,size=0x34) addr:0x02213fac
-func_ov004_02213fe0 kind:function(arm,size=0x30) addr:0x02213fe0
+IsCurrentPlayerUnitSelected kind:function(arm,size=0x34) addr:0x02213f78
+Ov004_MarkSelectedUnitActed kind:function(arm,size=0x34) addr:0x02213fac
+IsCursorAtScriptedTile kind:function(arm,size=0x30) addr:0x02213fe0
 func_ov004_02214010 kind:function(arm,size=0x20) addr:0x02214010
 func_ov004_02214030 kind:function(arm,size=0x20) addr:0x02214030
-func_ov004_02214050 kind:function(arm,size=0x30) addr:0x02214050
+IsPlayerOneCoMeterAtDualCost kind:function(arm,size=0x30) addr:0x02214050
 IsPlayerTwoGroupEmpty kind:function(arm,size=0x70) addr:0x02214080
 Ov004_IsHqOrBaseOccupied kind:function(arm,size=0xcc) addr:0x022140f0
 IsPlayerOneCoPowerReady kind:function(arm,size=0x40) addr:0x022141bc
@@ -84,7 +84,7 @@ Ov004_IsPlayerTwoArmyEmpty_0221435C kind:function(arm,size=0x70) addr:0x0221435c
 IsPlayerTwoDefeated kind:function(arm,size=0x88) addr:0x022143cc
 func_ov004_02214454 kind:function(arm,size=0x8) addr:0x02214454
 func_ov004_0221445c kind:function(arm,size=0x20) addr:0x0221445c
-func_ov004_0221447c kind:function(arm,size=0x38) addr:0x0221447c
+IsTurnThreeToFive kind:function(arm,size=0x38) addr:0x0221447c
 ScriptCmd_ShowAreaEffectTarget kind:function(arm,size=0x5c) addr:0x022144b4
 Ov004_IsPlayerTwoArmyEmpty_02214510 kind:function(arm,size=0x70) addr:0x02214510
 Ov004_IsPlayerTwoUnitCountAtMostThree kind:function(arm,size=0x70) addr:0x02214580
@@ -97,7 +97,7 @@ func_ov004_02214740 kind:function(arm,size=0x28) addr:0x02214740
 func_ov004_02214768 kind:function(arm,size=0x28) addr:0x02214768
 func_ov004_02214790 kind:function(arm,size=0x28) addr:0x02214790
 func_ov004_022147b8 kind:function(arm,size=0x28) addr:0x022147b8
-func_ov004_022147e0 kind:function(arm,size=0x34) addr:0x022147e0
+IsNoLineAttackOrderActive kind:function(arm,size=0x34) addr:0x022147e0
 DrawGxRectFrame kind:function(arm,size=0x90) addr:0x02214814
 InitMapView3DRendering kind:function(arm,size=0x60) addr:0x022148a4
 func_ov004_02214904 kind:function(arm,size=0x14) addr:0x02214904
@@ -119,7 +119,7 @@ func_ov004_02218b94 kind:function(arm,size=0x18) addr:0x02218b94
 data_ov004_02218bac kind:data(any) addr:0x02218bac
 data_ov004_02218bb8 kind:data(any) addr:0x02218bb8
 data_ov004_02218bc4 kind:data(any) addr:0x02218bc4
-data_ov004_02218be0 kind:data(any) addr:0x02218be0
+gOv004EndingSpriteClass kind:data(any) addr:0x02218be0
 data_ov004_02218c00 kind:data(any) addr:0x02218c00
 gUraPlaneEffectClass kind:data(any) addr:0x02218c20
 data_ov004_02218c50 kind:data(any) addr:0x02218c50

@@ -1,6 +1,7 @@
 /* 28 functions from 0x0217AE38 to 0x0217BD88 (ov001), found by ds-decomp. */
 #include "common.h"
 #include "gx.h"
+#include "ov001_wh.h"
 void Ov001_LoadNameEntryGraphics(void);
 void UpdateNameEntryCursor(void);
 void RedrawNameEntryText(void);
@@ -197,14 +198,16 @@ void MapSelectList_PageDown(void) {
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_SCROLL_ANIM) = Ov001_AddTask(0, MapSelectList_ScrollDown, 0, 0x78);
 }
 
-void func_ov001_0217b3c0(void) {
+/* Copy the map-select list's OBJ tile from the step-31 background set: the tile
+ * number in sMapSelectObjTiles is both the source tile and the OBJ VRAM slot. */
+void MapSelectList_LoadObjTile(void) {
     M2C_UNK Ov001_LoadObjTile(s32, u8, u8);
     struct Table { u8 values[1]; };
-    extern struct Table data_ov001_0218f794;
+    extern struct Table sMapSelectObjTiles;
     extern M2C_UNK gMapSelectState;
-    struct Table table = data_ov001_0218f794;
+    struct Table table = sMapSelectObjTiles;
     u8 value = table.values[0];
-    Ov001_LoadObjTile(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 8), value, value);
+    Ov001_LoadObjTile(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_OBJ_STEP31_BG), value, value);
 }
 
 void func_ov001_0217b3f0(void) {
@@ -381,12 +384,15 @@ void func_ov001_0217b8f4(void) {
 void func_ov001_0217b8f8(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
-    extern M2C_UNK func_ov001_0217b914;
+    extern M2C_UNK Ov001_FinishNameEntryKeyboard;
     Ov001_StartDelay(8);
-    Ov001_SetStepCallback(&func_ov001_0217b914);
+    Ov001_SetStepCallback(&Ov001_FinishNameEntryKeyboard);
 }
 
-void func_ov001_0217b914(void) {
+/* Name-entry teardown step: once the screen's fade has finished, close the
+ * on-screen keyboard, play its close sound and hand the entry's result on to
+ * Ov001_HandleNameEntryResult. */
+void Ov001_FinishNameEntryKeyboard(void) {
     M2C_UNK Ov001_StartKeyboardClose();
     s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK Ov001_HandleNameEntryResult;
@@ -394,7 +400,7 @@ void func_ov001_0217b914(void) {
         return;
     }
     Ov001_StartKeyboardClose();
-    Ov001_PlaySound(0x15);
+    Ov001_PlaySound(OV001_SOUND_KEYBOARD_CLOSE);
     Ov001_SetStepCallback(&Ov001_HandleNameEntryResult);
 }
 
@@ -440,7 +446,7 @@ void Ov001_HandleNameEntryResult(void) {
  * result - the map list for the no-argument mode, the map-select list after a
  * cancelled entry, or the save-slot menu after an accepted name. */
 void Ov001_CloseNameEntryScreen(void) {
-    M2C_UNK Ov001_FreeOptionBackground(void);
+    M2C_UNK Ov001_FreeMessagePanel(void);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     M2C_UNK Ov001_ReleaseSprite(M2C_UNK);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
@@ -459,7 +465,7 @@ void Ov001_CloseNameEntryScreen(void) {
     extern void Ov001_PrepareSaveSlotMenu(void);
     s32 entryMode, entryArg;
 
-    Ov001_FreeOptionBackground();
+    Ov001_FreeMessagePanel();
     Ov001_ReleaseSprite(M2C_FIELD(gNameEntryState, void **, NAME_ENTRY_CURSOR));
     Ov001_FreePageBackground(0);
     Ov001_LoadAsset((M2C_UNK *)&gOv001ObjMainPalettePath, (M2C_UNK *)&GX_LoadOBJPltt);

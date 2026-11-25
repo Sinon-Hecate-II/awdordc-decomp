@@ -320,8 +320,8 @@ s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
     M2C_UNK DC_Sync(void);
     M2C_UNK StartDownloadPlayLinkConnection(void);
-    void func_ov009_0222496c(void *);
-    void *func_ov009_0222497c(void *);
+    void InitLinkReceiveSlot(void *);
+    void *FreeLinkReceiveSlot(void *);
     s32 GetGameGroupId(void);
     s32 StartLinkDownloadPlay(void);
     extern M2C_UNK gLinkDownloadHeader;
@@ -435,7 +435,7 @@ test:
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_02226714;
         ptr = (u8 *)ptr + 0x34;
-        ConstructArray((s32)ptr, 4, 8, (M2C_UNK (*)(s32))func_ov009_0222497c, (s32)func_ov009_0222496c);
+        ConstructArray((s32)ptr, 4, 8, (M2C_UNK (*)(s32))FreeLinkReceiveSlot, (s32)InitLinkReceiveSlot);
     }
 
     result = 0;
@@ -443,12 +443,12 @@ test:
     return result;
 }
 #pragma pop
-void func_ov009_0222496c(void *arg0) {
+void InitLinkReceiveSlot(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = 0;
     M2C_FIELD(arg0, s32 *, 4) = 0;
 }
 
-void *func_ov009_0222497c(void *arg0) {
+void *FreeLinkReceiveSlot(void *arg0) {
     void FreeLinkPacket(void *);
     if (M2C_FIELD(arg0,void **,4) != NULL) {
         FreeLinkPacket(M2C_FIELD(arg0,void **,4));
@@ -469,8 +469,8 @@ s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
     M2C_UNK DC_Sync(void);
     M2C_UNK StartDownloadPlayLinkConnection(void);
-    void func_ov009_0222496c(void *);
-    void *func_ov009_0222497c(void *);
+    void InitLinkReceiveSlot(void *);
+    void *FreeLinkReceiveSlot(void *);
     extern M2C_UNK gLinkState;
     extern M2C_UNK gLinkSession;
     extern M2C_UNK gLinkPlayers;
@@ -564,7 +564,7 @@ test:
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_02226714;
         ptr = (u8 *)ptr + 0x34;
-        ConstructArray((s32)ptr, 4, 8, (M2C_UNK (*)(s32))func_ov009_0222497c, (s32)func_ov009_0222496c);
+        ConstructArray((s32)ptr, 4, 8, (M2C_UNK (*)(s32))FreeLinkReceiveSlot, (s32)InitLinkReceiveSlot);
     }
 
     if (arg0 == 1) {
@@ -645,6 +645,9 @@ s32 RequestLinkDownloadMode(s32 download) {
     return 0;
 }
 
+/* Publish this console's player record as the link's download-play data: give
+ * up (0) when a link request has already arrived; otherwise submit the data and
+ * report 1 once WFC queues it, or put the link in LINK_PHASE_ERROR and 0. */
 s32 PublishLinkPlayerRecord(void) {
     s32 SubmitLinkDownloadData();
     s32 GetLinkRequestKind();
@@ -654,23 +657,31 @@ s32 PublishLinkPlayerRecord(void) {
     if (SubmitLinkDownloadData() != 0) {
         return 1;
     }
-    SetLinkPhase(8);
+    SetLinkPhase(LINK_PHASE_ERROR);
     return 0;
 }
 
-s32 func_ov009_02224ca4(void) {
-    s32 AddLinkEventListener();
+/* Ask the link layer to install its event notifications (the worker in
+ * ov009_02223290 does the work, this checks the request gate first): 0 when a
+ * link request has already arrived or the install failed (which raises
+ * LINK_PHASE_ERROR), 1 once the listener is installed. */
+s32 RequestAddLinkEventListener(void) {
+    s32 AddLinkEventListener(void);
     if (GetLinkRequestKind() != 0) {
         return 0;
     }
     if (AddLinkEventListener() != 0) {
         return 1;
     }
-    SetLinkPhase(8);
+    SetLinkPhase(LINK_PHASE_ERROR);
     return 0;
 }
 
-s32 func_ov009_02224cd8(void) {
+/* Ask the link layer to uninstall its event notifications (the worker in
+ * ov009_02223290 does the work, this checks the request gate first): 0 when a
+ * link request has already arrived or the uninstall failed (which raises
+ * LINK_PHASE_ERROR), 1 once the listener is removed. */
+s32 RequestRemoveLinkEventListener(void) {
     s32 RemoveLinkEventListener();
     if (GetLinkRequestKind() != 0) {
         return 0;
@@ -678,7 +689,7 @@ s32 func_ov009_02224cd8(void) {
     if (RemoveLinkEventListener() != 0) {
         return 1;
     }
-    SetLinkPhase(8);
+    SetLinkPhase(LINK_PHASE_ERROR);
     return 0;
 }
 

@@ -28,6 +28,14 @@
 #define SCENE_ENTRY_RIGHT 1    /* the scene slides in from +0x100 */
 #define SCENE_ENTRY_LEFT  2    /* the scene slides in from -0x100 */
 
+/* gOv003SceneState+2/+3: the slide direction the map-select screen leaves with
+ * towards the next map of its list (1) or back to the previous one (2), 0 when
+ * there is no map that way (GetNextMapSlideDirection /
+ * GetPreviousMapSlideDirection turn them into offsets with
+ * GetSlideDirectionOffset). */
+#define SCENE_SLIDE_FORWARD 0x02 /* u8 slide direction towards the next map */
+#define SCENE_SLIDE_BACK    0x03 /* u8 slide direction back to the previous map */
+
 /* A scene sprite definition (one screen object keeps it at +0x3C): the engine
  * it is drawn on and the sprite sheet tiles and palette its 3D sprite loads.
  * The scene's 3D sprite is built from it. */

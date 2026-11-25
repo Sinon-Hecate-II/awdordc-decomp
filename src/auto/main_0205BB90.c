@@ -182,18 +182,18 @@ s32 gti2HandleLargeMessage(void *session, s32 messageType, void *message, s32 si
    connections, close dead ones, and route the payload to the data handler or to
    the control-message handlers (small type < 8, large type >= 8). */
 s32 gti2HandleMessage(void *socket,void *message,s32 len,M2C_UNK address,M2C_UNK port) {
-void *func_0205cca0(void *,M2C_UNK,M2C_UNK);
+void *gti2FindConnection(void *,M2C_UNK,M2C_UNK);
 s32 gti2DumpCallback(void *,void *,M2C_UNK,M2C_UNK,s32,s32,s32,s32);
 s32 ByteCompareN(void *,M2C_UNK *,s32);
 s32 gti2UnrecognizedMessageCallback(void *,M2C_UNK,M2C_UNK,void *,s32,s32 *);
 s32 gti2SendClosedOnSocket(s32,s32,u16);
-s32 func_0205a860(void *,void **,M2C_UNK,M2C_UNK);
+s32 gti2CreateServerConnection(void *,void **,M2C_UNK,M2C_UNK);
 void gti2SendClosed(void *);s32 gti2HandleData(void *,void *,s32);
 s32 Gt2CloseConnection(); s32 gti2HandleSmallMessage(void *,s32,s32,s32);s32 gti2HandleLargeMessage(void *,s32,void *,s32);
 extern M2C_UNK gGt2Magic;
 void *connection,*connection2; s32 handled,isControl,acceptResult,msgType;
 u8 *buf=message;
-connection=func_0205cca0(socket,address,port);
+connection=gti2FindConnection(socket,address,port);
 if(M2C_FIELD(socket,s32*,0x2c)!=0){
 if(!gti2DumpCallback(socket,connection,address,port,0,(s32)buf,len,0))return 0;
 }
@@ -207,7 +207,7 @@ if(!((s32 (*)(void *,s32,s32))gti2SendClosedOnSocket)(socket,address,port))retur
 accepted1:return 1;
 incoming:
 if(M2C_FIELD(socket,s32*,0x20)==0)return 1;
-acceptResult=func_0205a860(socket,&connection,address,port);
+acceptResult=gti2CreateServerConnection(socket,&connection,address,port);
 if(acceptResult==0)goto connected;
 if(acceptResult==5)goto accepted2;
 if(!((s32 (*)(void *,s32,s32))gti2SendClosedOnSocket)(socket,address,port))return 0;
@@ -233,10 +233,10 @@ s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
     s32 GetSystemTickMilliseconds();
     s32 gti2DumpCallback(void *, void *, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     s32 gti2CloseConnection(void *, M2C_UNK, M2C_UNK);
-    void *func_0205cca0();
+    void *gti2FindConnection();
     void *entry;
 
-    entry = func_0205cca0();
+    entry = gti2FindConnection();
     if ((M2C_FIELD(conn, s32 *, 0x2C) != 0) &&
         (gti2DumpCallback(conn, entry, arg1, arg2, 1, 0, 0, 0) == 0)) {
         return 0;
@@ -261,7 +261,7 @@ s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 #pragma optimization_level 3
-s32 func_0205c344(void *conn) {
+s32 gti2SocketReceiveData(void *conn) {
     s32 ghiSocketCanRecv(s32);
     s32 ghiRecvFrom(s32, void *, s32, s32, void *, s32 *);
     s32 ghiGetLastSocketError(s32);

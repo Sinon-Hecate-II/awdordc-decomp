@@ -116,7 +116,7 @@ void ghiSendRequest(void *request) {
   s32 ghiAppendDataToBuffer(void *, void *, s32);
   s32 AppendHttpHeader(M2C_UNK, M2C_UNK *, M2C_UNK *);
   M2C_UNK ghiAppendCharToBuffer(s32, s32);
-  void AppendInt(s32, s32);
+  void ghiAppendInt(s32, s32);
   s32 SendBufferedData(void *);
   void ghiResetBuffer(void *);
   M2C_UNK *GetContentType(void *);
@@ -146,7 +146,7 @@ void ghiSendRequest(void *request) {
       ghiAppendDataToBuffer(sendBuf, &sHeaderHostColon, 0);
       ghiAppendDataToBuffer(sendBuf, (void *)M2C_FIELD(request, s32 *, 0x18), 0);
     ghiAppendCharToBuffer((s32)sendBuf, 0x3a);
-    AppendInt((s32)sendBuf, M2C_FIELD(request, u16 *, 0x20));
+    ghiAppendInt((s32)sendBuf, M2C_FIELD(request, u16 *, 0x20));
     ghiAppendDataToBuffer(sendBuf, &sHttpCrlf, 2);
     }
     if (!M2C_FIELD(request, s32 *, 0x28) ||

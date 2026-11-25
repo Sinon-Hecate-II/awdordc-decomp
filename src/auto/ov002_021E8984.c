@@ -310,15 +310,18 @@ func_ov002_021e9008(unit, 0x200, 0x100); M2C_FIELD(unit, s32 *, 0x80) = -1; retu
 }
 }
 
-void func_ov002_021e994c(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s8 arg4) {
-    M2C_UNK SpawnEffectNode(M2C_UNK, M2C_UNK, M2C_UNK);
-    if (arg2 != 1) {
+/* Spawn the effect node for a scripted event of a unit model one frame before
+ * the event's frame: only the start list (mode 1) spawns a node, at the event's
+ * variant position, or at the effect's default position when its flag is set. */
+void SpawnEffectNodeForEvent(void *unit, s32 frames, s32 mode, s32 variant, s8 useDefaultVariant) {
+    void SpawnEffectNode(void *, s32, s32);
+    if (mode != 1) {
         return;
     }
-    if (arg4 == 0) {
-        SpawnEffectNode(arg0, arg1, arg3);
+    if (useDefaultVariant == 0) {
+        SpawnEffectNode(unit, frames, variant);
         return;
     }
-    SpawnEffectNode(arg0, arg1, -1);
+    SpawnEffectNode(unit, frames, -1);
 }
 

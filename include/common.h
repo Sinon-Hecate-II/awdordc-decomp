@@ -37,6 +37,14 @@ enum {
 #define COMP_BLOCK_HEADER_BYTES 4   /* bytes of the header before the payload */
 #define COMP_BLOCK_RAM_END     0x04000000 /* destinations below this address are main RAM, not VRAM/IO */
 
+/* The game's global pseudo-random generator (Rand / SetRandSeed in main_02066BA8)
+ * is the classic 32-bit linear-congruential generator: the state advances to
+ * state * RAND_MULTIPLIER + RAND_INCREMENT and Rand returns the top 15 bits. */
+#define RAND_MULTIPLIER 0x41C64E6D
+#define RAND_INCREMENT  0x3039
+#define RAND_SHIFT      16
+#define RAND_MASK       0x7FFF
+
 /* State of the chunked decompressor: InitDecompress (main_0207C2F0) sets the
  * two bytes below, then the compression type's Init*Decompress (main_02007EF4)
  * fills in the decoder state at +0x04 that DecompressChunk runs. */
@@ -59,6 +67,19 @@ typedef struct DecompressState {
 #define HUFFMAN_WORD_BITS  0x17 /* u8: bits assembled into the output word */
 #define HUFFMAN_WORD_SHIFT 0x18 /* u8: header low nibble, bits per output pixel */
 #define HUFFMAN_BUFFER     0x1C /* u8[]: symbol/tree buffer the node pointer walks */
+
+/* The shared state of the RLE and LZ77 decoders (DecompressState +0x04): the
+ * output pointer and remaining count, the 16-bit output accumulator and the bit
+ * position it has reached, and the flag byte with the number of its bits still
+ * to use.  LZ77 adds the pending back-reference byte. */
+#define DECOMP_OUT       0x00 /* u8 * / u16 *: next output byte or word */
+#define DECOMP_REMAINING 0x04 /* s32: output bytes still to produce */
+#define DECOMP_ACC       0x08 /* u16: output word being assembled (16-bit output) */
+#define DECOMP_POS       0x0a /* u8: bits held in DECOMP_ACC (0, 8 or 16) */
+#define DECOMP_HDR       0x0b /* u8: current flag byte */
+#define DECOMP_CNT       0x0c /* u8 (LZ77) / u16 (RLE): flag bits left in DECOMP_HDR */
+#define DECOMP_PREV      0x0d /* u8: LZ77 back-reference length/high-distance byte */
+#define DECOMP_HAVE      0x0e /* u8: LZ77 DECOMP_PREV holds an unused byte */
 
 /* Word-at-a-time C string helpers (StringCompare, StringCopy): a little-endian word
  * holds a NUL byte when (word + STRING_ZERO_BIAS) & ~word & STRING_ZERO_MASK is set. */
@@ -337,6 +358,10 @@ typedef struct DecimalNumber {
  * (half of 0xFFFF0000).  A bigger product is added twice instead. */
 #define BIGNUM_DOUBLE_PRODUCT_MAX 0x7fff8000U
 
+/* The high bit of a big number's most significant limb: a big number is negative
+ * (two's complement) when that bit is set. */
+#define BIGNUM_SIGN_BIT 0x8000
+
 /* Values ClassifyDouble returns for the class of a double. */
 enum {
     DOUBLE_CLASS_NAN       = 1,
@@ -405,6 +430,7 @@ typedef struct RC4State {
 #define TLS_STATE_CLIENT_KEY_EXCHANGE 5 /* TLS_STATE value: the peer's ClientKeyExchange was accepted */
 #define TLS_STATE_SERVER_HELLO_DONE 4 /* TLS_STATE value: the peer sent ServerHelloDone */
 #define TLS_STATE_FINISHED  6     /* TLS_STATE value: the peer's Finished digest verified */
+#define TLS_STATE_CHANGE_CIPHER_SPEC 7 /* TLS_STATE value: the peer's ChangeCipherSpec was received */
 #define TLS_MD5_CTX_SIZE    0x58  /* bytes of a saved MD5 transcript context */
 #define TLS_SHA1_CTX_SIZE   0x5C  /* bytes of a saved SHA1 transcript context */
 #define TLS_MD5_FINISHED_SIZE  16 /* bytes of a Finished MD5 digest */
@@ -529,6 +555,12 @@ typedef struct MapSelectScreen {
     void *obj64;           /* +0x64: polymorphic, vtable[1] is its destructor */
     void **buffers68;      /* +0x68: 6 buffers */
 } MapSelectScreen;
+
+/* A battle-scene player label: a row of unit sprites with the player's username
+ * and a class vtable (destroy, then destroy-and-free) in its first word.  A small
+ * heap block of extra state sits at +0x68 and is freed with the label. */
+#define PLAYER_LABEL_VTABLE 0x00 /* void * the label's vtable: destroy, then destroy-and-free */
+#define PLAYER_LABEL_BUFFER 0x68 /* void * heap block freed by the deleting destructor */
 
 /* Label state of the ov003 map-select screen (DrawMapSelectLabel). */
 #define MAP_SELECT_KIND         0x0F /* byte in the descriptor at +0x3C that picks the label kind */
@@ -674,6 +706,8 @@ typedef struct WaypointSlotGroup {
 /* ov001 map-select list screen: the object pointed at by gMapSelectState+4.
  * It holds two rows of label sprites and a table of 42-byte map entries. */
 #define MAPSELECT_ENTRIES       0x00 /* void *: map entry table */
+#define MAPSELECT_OBJ_LIST_BG   0x04 /* void *: loaded map-list background tile set (the map preview draws over it) */
+#define MAPSELECT_OBJ_STEP31_BG 0x08 /* void *: loaded step-31 background tile set the OBJ tiles are cut from */
 #define MAPSELECT_ENTRY_SIZE    42   /* bytes per map entry */
 #define MAPSELECT_ENTRY_NAME_ID 0x26 /* u16 per entry: index of the map's name tile */
 #define MAPSELECT_ENTRY_FLAG    0x28 /* u8 per entry: selects the preview path */
@@ -913,6 +947,9 @@ typedef struct RecordTrack {
 } RecordTrack;
 
 #define RECORD_TRACK_SIZE 0x0C /* bytes per RecordTrack */
+/* Frames a selected record's pending action waits on top of the record's own
+ * length (RecordsScreen::actionTimer). */
+#define RECORDS_ACTION_DELAY 0x258
 
 /* Special values RecordsMenu_PlayTrack accepts besides a gRecordTracks index. */
 #define RECORD_TRACK_STOP 100 /* stop the music: fade it out over the default 30 frames */
@@ -939,6 +976,15 @@ typedef struct RecordDefinition {
 #define RECORD_GROUP_STRIDE    0x750 /* bytes per group of the table (39 entries) */
 #define RECORD_GROUP_COUNT     3    /* groups in gRecordTable */
 
+/* One entry of the record-rank table (gRecordRankTable): the text id naming the
+ * rank and the earned record tiers (GetEarnedRecordTierTotal) needed to reach it.
+ * The entries run from the best rank down to the worst. */
+typedef struct RecordRankEntry {
+    u32 textId;    /* +0x00 text id naming the rank */
+    u32 threshold; /* +0x04 earned record tiers needed for the rank */
+} RecordRankEntry;
+#define RECORD_RANK_COUNT 20 /* entries in gRecordRanks: ranks 0 (best) to 19 */
+
 /* Counter blocks of gRecordValues, one per record group: a record of group N
  * counts at gRecordValues[record->id + RECORD_VALUE_GROUP_N_BASE]. */
 #define RECORD_VALUE_GROUP0_BASE 0x00
@@ -948,6 +994,11 @@ typedef struct RecordDefinition {
 /* Base of the per-unit-kind counters in gRecordValues: the count for a unit kind
  * is at gRecordValues[RECORD_UNIT_KIND_BASE + kind]. */
 #define RECORD_UNIT_KIND_BASE 0x43
+
+/* Saturation caps of the gRecordValues counters: ordinary record values are
+ * shown with six digits, the (larger) record-funds pool with eight. */
+#define RECORD_VALUE_MAX 999999u   /* AddRecordValue's cap, the six-digit display maximum */
+#define RECORD_FUNDS_MAX 99999999u /* AddRecordFunds' cap, the eight-digit maximum */
 
 /* 3D sprite layer the ov000 map info window's own sprite is created in. */
 #define OV000_INFO_SPRITE_LAYER 8
@@ -1163,6 +1214,7 @@ typedef struct BreakCutIn {
 #define LINK_COMMAND_QUEUE_COUNT  4
 #define LINK_COMMAND_QUEUE_STRIDE 12
 #define LINK_MSG_COMMAND_BASE     0x81
+#define LINK_COMMAND_HEADER_SIZE  2 /* type byte and a fixed flag byte before a queued command's payload */
 
 typedef struct LinkReceivedMessage {
     u8 unk_00[4];
@@ -1452,6 +1504,10 @@ typedef struct GpiStringListData {
 #define GPI_STATE_LOGGED_IN    3 /* the login reply was handled; commands may flow */
 #define GPI_STATE_DISCONNECTED 4
 
+/* A gpi call returns 0 on success and this code when it refused to act: a bad
+ * argument, an invalid index/status, or an unusable connection. */
+#define GPI_ERROR_REFUSED 2
+
 /* A gpi connection's sockets.  The server socket carries the GameSpy
  * connection to the connection manager; the local socket is bound to an
  * ephemeral port for NAT negotiation and only exists when the connection runs
@@ -1516,6 +1572,7 @@ typedef struct GpiStringListData {
 #define GPI_CONN_CALLBACK_TAIL  0x43C /* GPICallbackData *last queued callback */
 #define GPI_CONN_OPERATIONS     0x424 /* GPIOperation *first pending operation */
 #define GPI_CONN_PEER_HEAD      0x434 /* void *first peer of the connection's peer list (linked through GPI_PEER_NEXT) */
+#define GPI_CONN_BUDDY_COUNT    0x430 /* s32 buddies in the connection's list, the index bound of gpGetBuddyStatus */
 #define GPI_CONN_NEXT_OPERATION_ID 0x20C /* s32 next operation id handed out (starts at 2) */
 #define GPI_CONN_SEARCH_COUNT      0x210 /* s32 search operations still pending on the connection */
 
@@ -1618,6 +1675,7 @@ enum {
 #define CONN_SESSION_SCORE_CALLBACK_DATA 0x478 /* s32 data passed to SCORE_CALLBACK */
 #define CONN_SESSION_CONNECT_ATTEMPTS 0x17D /* u8 failed peer-connect attempts */
 #define CONN_PEER_CONNECT_LIMIT 5U
+#define CONN_MODE_SERVE          2 /* serving a match */
 #define CONN_MODE_SERVE_NO_RETRY 3 /* serving mode that reports the failure immediately */
 #define CONN_ERROR_MATCH_FAILED 6
 #define CONN_DETAIL_PEER_CONNECT_FAILED ((s32)0xFFFEAE6C)
@@ -1717,6 +1775,7 @@ typedef struct PeerAddress {
  * gMatchSessionMgr + 8). */
 #define MATCH_SESSION_STATUS       0x00 /* s32 0 idle, 1 running, 2 finished */
 #define MATCH_SESSION_STATUS_RUNNING 1  /* MATCH_SESSION_STATUS: the match is running */
+#define MATCH_SESSION_STATUS_FINISHED 2 /* MATCH_SESSION_STATUS: setup complete, the app has been notified */
 #define MATCH_SESSION_CONNECTION   0x04 /* void *GameSpy gpi connection handle of the match session */
 #define MATCH_SESSION_THINK_COUNT  0x08 /* s32 paced think passes run on the session's connection */
 #define MATCH_SESSION_THINK_TICK   0x0C /* u64 system tick of the last paced think pass */
@@ -1901,6 +1960,7 @@ typedef struct MbLockState {
 #define DL_FILE_PLAYER_INFO  0x35E /* 15 player info blocks, MB_PLAYER_INFO_SIZE bytes each */
 #define DL_FILE_PLAYER_SLOTS 15    /* player info blocks a file record holds */
 #define DL_FILE_STEP  0x4B4 /* u8 per-file counter copied into DL_FILE_INDEX */
+#define DL_FILE_ROSTER_SENT 0x4B0 /* u16 bit per player whose roster packets this file has sent (bit 0 = the sender), compared against DL_FILE_PLAYER_MASK */
 #define DL_FILE_NEXT  0x4BC /* DownloadFile *next queued file */
 #define DL_FILE_HAS_RESOURCES 0x4B2 /* u8 nonzero once the file's resource region was loaded */
 #define DL_FILE_RESOURCES     0x220 /* start of the loaded resource region inside a file record */
@@ -2330,6 +2390,7 @@ typedef struct Ov001IconMenuState {
   * copy, the card slot stores a bit count of the code there instead. */
  #define SAVE_WORK_SLOT      0x400 /* the 0x100-byte working copy of the current slot */
  #define SAVE_MAP_NAME       0x440 /* u8[32]: the saved match's map name text */
+#define SAVE_MAP_NAME_SIZE  0x20  /* bytes of map-name text stored */
  #define SAVE_PLAYER_CODES   0x4c0 /* four 4-byte dotted values, one per player */
  #define SAVE_CODE_BITS      0x4d0 /* u8: set-bit count of the slot's code */
  #define SAVE_CO_NAMES       0x4d1 /* four 5-byte CO-name fields */
@@ -2380,6 +2441,8 @@ typedef struct Ov001IconMenuState {
  * version, then the links to the previous and next block of the chain.  Type 1
  * is the save-list head, whose two link words hold its timestamp instead. */
 #define SAVE_ARCHIVE_MAGIC      0x32777364 /* "dws2" first word of an archive block */
+#define SAVE_ARCHIVE_CHECKSUM   0x04 /* u32 sum of the block's bytes from SAVE_ARCHIVE_SUMMARY */
+#define SAVE_ARCHIVE_SUMMARY    0x08 /* the block's 12-byte directory record, where its checksum starts */
 #define SAVE_ARCHIVE_LENGTH     0x0C /* u16 bytes the block occupies, at most SAVE_ARCHIVE_MAX_SIZE */
 #define SAVE_ARCHIVE_TYPE       0x0E /* u8 SAVE_ARCHIVE_TYPE_* or 9 + campaign map index */
 #define SAVE_ARCHIVE_VERSION    0x0F /* u8 block format version, 1 */
@@ -2421,6 +2484,7 @@ typedef struct Ov001IconMenuState {
 #define SAVE_RECORD_TIME        4          /* u32 timestamp inside a directory record */
 #define SAVE_TYPE_PLAYER        2          /* player/profile save */
 #define SAVE_TYPE_BATTLE        3          /* battle save */
+#define SAVE_TYPE_SETTINGS      4          /* the shared game-settings snapshot (gGameSettingsSaveBuffer) */
 #define SAVE_TYPE_CAMPAIGN_MAP  9          /* campaign map index 0; record type = 9 + map index */
 /* The save block a save/load screen sprite reads or writes, at its +0x34.  The
  * main save/load screen holds both: the profile block at +0x34 and the battle
@@ -2466,6 +2530,7 @@ typedef struct Ov001IconMenuState {
 #define SAVE_DEVICE_CALLBACK_ARG  0x3C /* s32: argument of that callback */
 #define SAVE_DEVICE_TASK          0x44 /* task the transfer runs in when it is asynchronous */
 #define SAVE_DEVICE_TASK_ROUTINE  0x40 /* void (*)(void *): routine the worker thread runs when a transfer wakes it */
+#define SAVE_DEVICE_REQUEST_TASK  0x104 /* void *: task the pending transfer/command request runs in, woken once the ARM7 replies */
 #define SAVE_DEVICE_THREAD_QUEUE  0x10C /* OSThreadQueue: threads asleep on the running transfer */
 #define SAVE_DEVICE_FLAGS         0x114 /* u32: SAVE_DEVICE_FLAG_* of the transfer */
 #define SAVE_DEVICE_PRIORITY      0x108 /* s32: run priority of the transfer task */
@@ -2959,7 +3024,8 @@ enum {
  * byte that also holds the visible bit and the fade mode. */
 #define SPRITE_ACTOR_X           0x34 /* s16 current x */
 #define SPRITE_ACTOR_Y           0x36 /* s16 current y */
-#define SPRITE_ACTOR_STATE       0x48 /* u8: bit 0 visible, bits 4-5 fade mode, bits 6-7 slide mode */
+#define SPRITE_ACTOR_STATE       0x48 /* u8: bit 0 visible, bits 1-3 screen, bits 4-5 fade mode, bits 6-7 slide mode */
+#define SPRITE_ACTOR_SCREEN_MASK 0x0e /* bits 1-3 of SPRITE_ACTOR_STATE: DS3D_TARGET_* engine(s) to draw on */
 #define SPRITE_ACTOR_SLIDE_MODE_MASK 0xc0 /* bits 6-7 of SPRITE_ACTOR_STATE */
 #define SPRITE_ACTOR_SLIDE_TIMER 0x4c /* u8 frames since the slide started */
 #define SPRITE_ACTOR_SLIDE_DELAY 0x4d /* u8 delay before the slide starts */
@@ -3047,6 +3113,13 @@ enum {
 #define SCENE_PANEL_HALF1      0x64 /* void *sprite source of the second half */
 #define SCENE_PANEL_FACE0      0x68 /* void *first face child sprite */
 #define SCENE_PANEL_FACE1      0x6C /* void *second face child sprite */
+
+/* The scene panel's shared graphics: gScenePanelGraphics, a compressed block that
+ * LoadScenePanelGraphics decompresses into the current engine's texture VRAM, and
+ * gScenePanelPalette, the panel's 16-colour palette uploaded to OBJ palette slot
+ * DS3D_OBJ_PALETTE_BASE (byte offset in the engine's OBJ palette shadow). */
+#define SCENE_PANEL_PALETTE_SLOT   (DS3D_OBJ_PALETTE_BASE << DS3D_PALETTE_SHIFT) /* 0x200 */
+#define SCENE_PANEL_PALETTE_COLORS DS3D_PALETTE_BYTES /* 0x20 bytes of panel palette */
 
 /* Slide mode (SPRITE_ACTOR_STATE bits 6-7). */
 enum {
@@ -3234,6 +3307,18 @@ enum {
  * engine's texture area, with its end colours written to this OBJ palette slot. */
 #define UI_GRADIENT_TILE    0x1400
 #define UI_GRADIENT_PALETTE 1
+
+/* UI colour ids (GetUiColor) of the two ends of that gradient: the resting bar
+ * runs from the start colour to the end colour. */
+#define UI_GRADIENT_COLOR_START 0xD
+#define UI_GRADIENT_COLOR_END   0xE
+
+/* UI colour id (GetUiColor) of the frame-border sprite's tint. */
+#define UI_COLOR_FRAME_BORDER 9
+
+/* UI colour id (GetUiColor) of the tint of a frame-rectangle sprite's border
+ * pattern (SetFrameRectPattern). */
+#define UI_COLOR_FRAME_RECT 11
 
 /* The four grey shades DrawUiGradient writes after the two caller colours into the
  * gradient's OBJ palette (RGB555). */
@@ -3837,6 +3922,11 @@ typedef struct Ov001TilePool {
 #define WEB_REQ_PAYLOAD      0x60 /* void * payload of the last request */
 #define WEB_REQ_PAYLOAD_SIZE 0x64 /* s32 its size in bytes */
 
+/* Base64: every BASE64_GROUP_BYTES input bytes become BASE64_GROUP_CHARS
+ * characters, and a final partial group is padded to a whole one. */
+#define BASE64_GROUP_BYTES 3
+#define BASE64_GROUP_CHARS 4
+
 /* Phases of the WFC web request state machine (gWebRequestState's WEB_REQ_PHASE,
  * stepped by AdvanceWebRequest): build the put.asp request, send it and wait for
  * its reply, send the follow-up get.asp request carrying that reply's hash, wait
@@ -3976,6 +4066,14 @@ enum {
 #define IRQ_TIMER1   0x0010     /* REG_IF bit set when TIMER1 overflows (the OS timer) */
 #define IRQ_VCOUNT   0x0004     /* REG_IE/REG_IF bit 2: VCount (scanline) match */
 #define TIMER0_HALF  0x8000     /* top bit of the 16-bit counter */
+
+/* The ARM9 square-root hardware (ARM946E-S coprocessor): writing the operand
+ * starts the operation and the result is ready once the control register's busy
+ * bit clears.  The game uses it for the map-view distance scaling. */
+#define REG_SQRTCNT      0x040002B0 /* u16 control; bit 15 is set while a root is computed */
+#define REG_SQRT_RESULT  0x040002B4 /* s32 result, valid once the busy bit is clear */
+#define REG_SQRT_PARAM   0x040002B8 /* s32 operand the root is taken of */
+#define SQRTCNT_BUSY     0x8000     /* REG_SQRTCNT bit 15: the square root is still running */
 
 /* The ARM9 IRQ handler table: one handler per IRQ bit (the timers are IRQ 3-6,
  * the DMA channels 8-11, IPC receive 18).  The table is the first words of the
@@ -4149,6 +4247,7 @@ typedef struct FifoMessage {
  * the ready flag before it loads. */
 #define ARM7_BOOT_SYNC_READY       0x00 /* s16 set to 1 by the ARM7's channel-12 boot-ready message */
 #define ARM7_BOOT_SYNC_INITIALISED 0x02 /* u16 nonzero once the channel-12 handler was installed */
+#define ARM7_BOOT_SYNC_REPLY       0x10 /* command of the ARM7's channel-12 boot-ready message (bits 8..14 of its word) */
 
 /* The ARM7 command service's state object (gArm7CommandState, at 0x0212FCCC).
  * The service talks to the ARM7 power/sound driver through the FIFO and
@@ -4184,6 +4283,7 @@ typedef struct FifoMessage {
 #define FIFO_XFER_ADDRESS 0x08 /* s32 ARM7 destination address of the first block */
 #define FIFO_BLOCK_SIZE   0x100 /* bytes in one transferred block */
 #define FIFO_BLOCK_COUNT  4     /* blocks one transfer holds */
+#define FIFO_XFER_FAILED  0xFF  /* reply stored when the ARM7 bounced the command back unhandled */
 
 /* One of the command service's five reply slots (gArm7CommandReplies, 8 bytes
  * each): when reply command 0x70..0x74 arrives its value is stored through
@@ -4289,6 +4389,7 @@ typedef struct Ov001MapPreview {
 #define OV001_MAP_LIST_BG_TILEMAP 0x08 /* object: s32 loaded list-background tilemap */
 #define OV001_MAP_LIST_PALETTE    0x0C /* object: s32 loaded map-list background palette (the step-2 palette file) */
 #define OV001_MAP_LIST_TEXT_PANEL 0x14 /* object: s32 text panel for the info rows */
+#define OV001_MAP_LIST_OBJ_TILEMAP 0x10 /* object: s32 OBJ tilemap of the row/selection icon tiles */
 #define OV001_MAP_LIST_TASK       0x38 /* object: s32 id of the running scroll task, 0 while idle */
 #define OV001_MAP_LIST_BG_DIRTY   0x44 /* object: u8 set when the background scroll needs refreshing */
 #define OV001_MAP_LIST_BG_DIRTY   0x44 /* object: u8 set when the list background must be scrolled */
@@ -4298,6 +4399,8 @@ typedef struct Ov001MapPreview {
 #define OV001_MAP_LIST_SCROLL_MAX  145 /* scroll range in pixels */
 #define OV001_MAP_LIST_HANDLE_TRAVEL 55 /* pixels the scroll-bar handle travels over the range */
 #define OV001_MAP_LIST_NO_TOUCH 14 /* GetMapListTouchedEntry result when no row entry was touched */
+#define OV001_MAP_LIST_SAVE_SCREEN_FIRST 11 /* first OV001_MAP_LIST_STATE of the save-slot sub-screens */
+#define OV001_MAP_LIST_SAVE_SCREEN_LAST  13 /* last one; their icon tile is gMapListSaveScreenIconTile[state - 11] */
 
 /* The ov001 friend-roster screen's vertical scroll bar (gOv001Scrollbar, a
  * 0x20-byte object built by Ov001_CreateScrollBar): a sprite whose touch
@@ -4361,6 +4464,19 @@ enum {
 #define FILE_STREAM_KIND(mode)  ((u32)((mode) << 22) >> 29)
 #define FILE_STREAM_CLOSE_ERROR(state) ((u32)((state) << 28) >> 31) /* bit 3 forces a close error */
 
+/* The buffered part of a stream object, shared by the read and write paths
+ * (StreamResetBuffer, StreamFillBuffer, StreamFlush).  position is the file
+ * offset just past the bytes read from the file, mask keeps the buffer start on
+ * its block boundary, and the stream's current file offset is
+ * STREAM_BUFFER_POS + (STREAM_CURSOR - STREAM_BUFFER). */
+#define STREAM_POSITION     0x18 /* s32 file offset just past the bytes read */
+#define STREAM_BUFFER       0x1C /* u8 *start of the stream's buffer */
+#define STREAM_BUFFER_SIZE  0x20 /* s32 capacity of the buffer in bytes */
+#define STREAM_CURSOR       0x24 /* u8 *current read/write cursor in the buffer */
+#define STREAM_PENDING      0x28 /* s32 bytes in the buffer not consumed yet */
+#define STREAM_BUFFER_MASK  0x2C /* s32 keeps the buffer start on its block boundary */
+#define STREAM_BUFFER_POS   0x34 /* s32 file offset the buffer starts at */
+
 /* Stream locking shared by the stdio file helpers and the stdout printf.
  * gStreamMutexes holds one GsiMutex per stream class (its symbol
  * covers the first three; gStreamMutexStdout holds the stdout one); the running
@@ -4411,6 +4527,8 @@ typedef struct UsernameFontCache {
 /* UI message text ids passed to SetUiMessageText. */
 #define TEXT_ID_NO_SAVE_DATA 0xC000034C /* the save data the current menu needs is missing */
 #define TEXT_ID_SAVE_LOAD_FAILED 0xC000034D /* the save data could not be loaded */
+#define TEXT_ID_BATTLE_RULES 0xC0000328 /* the battle map's rules message, free battle */
+#define TEXT_ID_BATTLE_RULES_CAMPAIGN 0xC000032F /* the battle map's rules message, campaign battle */
 
 /* The generated text-label slot table (gTextLabelSlotState): 13 slots, each a
  * used flag (one byte at the table base) plus two 12-byte rows, one row per slot
@@ -4424,7 +4542,8 @@ typedef struct UsernameFontCache {
  * gSocketManager straight after it) holds the running thread at
  * THREAD_MANAGER_CURRENT and the ready list, kept in priority order and chained
  * through Thread::next, at THREAD_MANAGER_READY. */
- #define THREAD_MANAGER_CURRENT 0x28 /* Thread *: the thread that is running */
+ #define THREAD_MANAGER_LOCK    0x04 /* s32 scheduler disable count: OS_DisableScheduler/OS_EnableScheduler step it and the scheduler runs only while it is 0 */
+#define THREAD_MANAGER_CURRENT 0x28 /* Thread *: the thread that is running */
  #define THREAD_MANAGER_READY   0x2c /* Thread *: first thread of the ready list */
  /* Thread **: points at the slot holding the running thread (the same Thread * as
   * THREAD_MANAGER_CURRENT); the scheduler reads the current thread through it. */
@@ -4448,6 +4567,10 @@ typedef struct Thread {
     struct Thread *queuePrev; /* +0x7c previous thread in that queue */
     struct Thread *queueNext; /* +0x80 next thread in that queue */
 } Thread;
+
+/* The callback TaskExitThread runs once with the thread's exit status when the
+ * thread ends; cleared before it runs.  0 when none is registered. */
+#define THREAD_EXIT_CALLBACK 0xB4
 
 /* The timer object scheduled to wake a thread that is sleeping in
  * SleepMilliseconds; 0 when the thread is not sleeping on a timer. */
@@ -4539,6 +4662,22 @@ typedef struct RtcTime {
     s32 minute;
     s32 second;
 } RtcTime;
+
+/* The DS real-time clock's date record, as filled by GetRtcDate and read by
+ * RtcDateToDays. */
+typedef struct RtcDate {
+    u32 year;    /* +0x00 year since 2000, 0..99 */
+    u32 month;   /* +0x04 month, 1..12 */
+    u32 day;     /* +0x08 day of the month, 1..31 */
+    s32 weekday; /* +0x0C day of the week, 0 = Sunday */
+} RtcDate;
+
+/* A saved date/time stamp (the profile's sync time and the Get request's server
+ * time) is an RtcDate record followed by an RtcTime record; the time starts
+ * this far into it. */
+#define DATE_TIME_TIME 0x10
+
+#define RTC_EPOCH_OFFSET 946684800 /* seconds from 1970/01/01 to the RTC's 2000/01/01 */
 
 #define WM_TGID_UNINITIALIZED 0x10000u
 #define RTC_SECONDS_SPAN       3155760000LL /* one RTC century, 100 * 365.25 days */
@@ -4632,6 +4771,15 @@ typedef struct DialogSequence {
 #define DLIST_NODE_OFFSET 0x0A /* u16 offset of a node's link pair from the node's start */
 #define DLIST_LINK_PREV   0x00 /* void *previous node in a node's link pair */
 #define DLIST_LINK_NEXT   0x04 /* void *next node in a node's link pair */
+
+/* One record of gShogunNameFiles, the CO face id -> name-graphic file table read
+ * by GetNameFileForFace: the face id at +0x00 and, at +0x04, the .cg file name
+ * of that CO's name graphic (0 when the face has no name graphic). */
+typedef struct FaceNameFile {
+    s16  faceId;    /* +0x00: CO face id */
+    char *nameFile; /* +0x04: name graphic file name, 0 when none */
+} FaceNameFile;
+#define FACE_NAME_FILE_COUNT 15 /* records in gShogunNameFiles */
 
 #endif
 

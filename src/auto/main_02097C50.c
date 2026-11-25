@@ -2,17 +2,28 @@
 #include "common.h"
 #include "ds3dsprite.h"
 
-void SetScenePanelCursorVertical(u32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
- s32 FindScenePanel(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK);
- s32 t=FindScenePanel((u16)arg0); if(!t)return; func_0209e25c(t,2,arg1,arg2);
+/* Offset scene panel `panelIndex` by a vertical cursor motion: motion variant 2
+ * moves the panel's y offset to (offsetX, offsetY). */
+void SetScenePanelCursorVertical(u32 panelIndex, M2C_UNK offsetX, M2C_UNK offsetY) {
+    s32 FindScenePanel(u16);
+    M2C_UNK SetScenePanelMotion(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 panel;
+
+    panel = FindScenePanel((u16) panelIndex);
+    if (panel == 0) {
+        return;
+    }
+    SetScenePanelMotion(panel, 2, offsetX, offsetY);
 }
 
-void func_02097c84(u32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
- s32 FindScenePanel(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK);
- s32 t=FindScenePanel((u16)arg0); if(!t)return; func_0209e25c(t,1,arg1,arg2);
+/* Move the scene panel's cursor horizontally: find the panel with the given id
+ * and, when it exists, give it the horizontal motion variant and the x/y offset. */
+void SetScenePanelCursorHorizontal(u32 panelId, M2C_UNK x, M2C_UNK y) {
+ s32 FindScenePanel(u16); M2C_UNK SetScenePanelMotion(s32,M2C_UNK,M2C_UNK,M2C_UNK);
+ s32 t=FindScenePanel((u16)panelId); if(!t)return; SetScenePanelMotion(t,1,x,y);
 }
 
-void HideMenuCursor(u32 arg0) { s32 FindScenePanel(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK); s32 t=FindScenePanel((u16)arg0); if(!t)return; func_0209e25c(t,0,0,0); }
+void HideMenuCursor(u32 arg0) { s32 FindScenePanel(u16); M2C_UNK SetScenePanelMotion(s32,M2C_UNK,M2C_UNK,M2C_UNK); s32 t=FindScenePanel((u16)arg0); if(!t)return; SetScenePanelMotion(t,0,0,0); }
 
 /* Returns the tile row (5 or 6) at which the given character's face graphics
  * start in the 32-tile-wide face tile buffer. */
@@ -190,12 +201,12 @@ s32 GetFaceLayoutFile(s32 layout) {
 
 /* Returns a filename string from one of the face/skin filename tables based on a transformed index and type. */
 s32 GetFacePaletteFile(s32 index, s32 type) {
-    s32 func_020bf8cc(s32);
+    s32 GetCoSavedMode(s32);
     extern s32 data_02102ffc[], data_0210300c[], data_0210301c[];
     if (index == 15) {
         index = 4;
     }
-    index = func_020bf8cc(index);
+    index = GetCoSavedMode(index);
     switch (type) {
     case 0: return data_02102ffc[index];
     case 1: return data_02102ffc[index];

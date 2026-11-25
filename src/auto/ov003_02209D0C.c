@@ -61,7 +61,7 @@ s16 func_020bfa20(void);s16 func_020bf9e0(void);
 void func_ov003_0220accc(void *,u8);void Clear3DSpriteLayer(s32);
 s32 GetLanguage(void);s32 GetLocalizedText(void *);s32 func_0209c2a8(s32);
 void DrawLocalizedText(u8,s32,s32,void *,s32,u16);
-void func_ov003_0220a864(M2C_UNK);void Show3DSpriteSlide(void *);void Hide3DSpriteSlide(void *);s32 func_02089080(void *);
+void func_ov003_0220a864(M2C_UNK);void Show3DSpriteSlide(void *);void Hide3DSpriteSlide(void *);s32 Is3DSpriteHidden(void *);
 void SpriteCellListSelectTile(void *,s16);void func_ov003_02207a8c(void *);M2C_UNK Ov003_RefreshListRowAnimations(void *,s32,s32);
 extern M2C_UNK gOptionBits;extern u8 data_ov003_02210c80[];extern void *gCur3DSpriteEngine;
 void *p;u8 i,total,j,x;s32 tile,k,mode;
@@ -155,7 +155,7 @@ Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));
 else Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));
 if((u8)(M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15)==0))
 Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));
-else if(func_02089080(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0)))
+else if(Is3DSpriteHidden(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0)))
 Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));
 p=M2C_FIELD(a,void **,0x3c);
 SpriteCellListSelectTile(M2C_FIELD(a,void **,0x5c),(s16)((u8)(M2C_FIELD(p,u8 *,M2C_FIELD(p,u8 *,15))+1)+10));
@@ -240,7 +240,7 @@ DrawMapSelectLabel(screen);return UpdateMapSelectLabelTransform(screen);
 #pragma opt_strength_reduction off
 void func_ov003_0220a864(M2C_UNK arg0) {
   void AddSpriteCell(void *,s32,s32,s32,u16,u16,u16);
-  void func_02087e34(void *);
+  void SpriteCellListClear(void *);
   void SpriteCellListSelectTile(void *,s16);
   s32 ScaleFixed8(s32,s32);
   s32 func_020a8e28(s32,s32);
@@ -261,7 +261,7 @@ void func_ov003_0220a864(M2C_UNK arg0) {
   inner=M2C_FIELD(arg0,void **,0x5c);
   cur=M2C_FIELD(inner,void **,0);
   selected=cur?M2C_FIELD(cur,u16 *,8):minus;
-  func_02087e34(inner);
+  SpriteCellListClear(inner);
   xpre=func_020a8e28(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,1),constant)+16;
   i=11;
 if(i<M2C_FIELD(M2C_FIELD(arg0,void**,0x44),u8*,0)+11){s16 selectionX=(s16)xpre;

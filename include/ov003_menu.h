@@ -88,6 +88,11 @@ typedef struct Ov003ModeTexture {
 #define MENU_SPLIT_ROW_FIRST 2
 #define MENU_SPLIT_ROW_LAST  4
 
+/* The pair rows (0 and 1) that sit above the three split option rows; pressing
+ * left/right on them scrolls the list's first (row 0) or second (row 1) scroll bar. */
+#define MENU_SPLIT_PAIR_ROW_FIRST 0
+#define MENU_SPLIT_PAIR_ROW_LAST  1
+
 /* Row descriptor header (the rest points at the row's text/unit data). */
 #define MENU_DESC_TYPE   0x01 /* u8 MENU_ENTRY_* */
 #define MENU_DESC_VALUE  0x02 /* u8 unit id / submenu value */

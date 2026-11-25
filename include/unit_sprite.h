@@ -33,4 +33,10 @@ typedef struct SpriteBaseBits {
 #define UNIT_SPRITE_TASK_SPRITE 0x34 /* void *unit sprite the task drives */
 #define UNIT_SPRITE_TASK_BUTTONS 0x38 /* u16 key mask that presses the sprite */
 
+/* The unit sprites' shared input flags at gUnitSpriteInput: the hold counter at
+ * +0 pauses their per-frame animation updates while nonzero, and the pressed
+ * flag at +1 is set by MarkUnitSpritePressed while any unit sprite is pressed. */
+#define UNIT_SPRITE_HOLD_COUNT 0
+#define UNIT_SPRITE_PRESSED    1
+
 #endif

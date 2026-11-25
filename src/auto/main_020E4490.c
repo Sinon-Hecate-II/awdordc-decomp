@@ -27,13 +27,13 @@ void func_020e4490(void) {
     M2C_UNK func_02082b78();
     M2C_UNK func_02082cb4();
     M2C_UNK func_02082078();
-    M2C_UNK func_020e31f0();
+    M2C_UNK SetLanguage();
     M2C_UNK Reset3DSpriteOam();
     M2C_UNK func_0208232c();
     M2C_UNK Reset3DSpriteListsOnBothEngines();
     M2C_UNK InitGameHeap();
-    M2C_UNK func_02080bd4();
-    M2C_UNK func_020883bc();
+    M2C_UNK LoadCardArchiveIndexToHeap();
+    M2C_UNK InitResourceSystem();
     M2C_UNK func_02086574();
     M2C_UNK InitSound();
     M2C_UNK Init3DSpritePool();
@@ -65,7 +65,7 @@ void func_020e4490(void) {
     func_02082b78();
     func_02082cb4();
     func_02082078();
-    func_020e31f0();
+    SetLanguage();
     temp_r7 = gCur3DSpriteEngine;
     var_r8 = 0;
     do {
@@ -81,8 +81,8 @@ void func_020e4490(void) {
     gCur3DSpriteEngine = temp_r7;
     Reset3DSpriteListsOnBothEngines();
     InitGameHeap();
-    func_02080bd4();
-    func_020883bc();
+    LoadCardArchiveIndexToHeap();
+    InitResourceSystem();
     func_02086574();
     InitSound();
     Init3DSpritePool();
@@ -121,7 +121,7 @@ void func_0209db48(void);
 void SoundEngineUpdateTimers(void);
 void GetSpriteLayerHead(int);
 void Update3DSpriteObject(void);
-void func_02004e60(int,int);
+void OS_WaitIrq(int,int);
 if (!gFramePending) return;
 data_02168fe8=0;
 func_0208f4d8();
@@ -140,7 +140,7 @@ func_0209db48();
 if(data_02168fe8) data_02168fe8();
 gFramePending=0;
 SoundEngineUpdateTimers();
-func_02004e60(1,1);
+OS_WaitIrq(1,1);
 }
 
 /* VBlank interrupt handler.  It saves the hardware divide/square-root registers
@@ -205,7 +205,7 @@ void ResetGameState(void) {
     M2C_UNK ResetDialogUI();
     M2C_UNK func_020960b4();
     M2C_UNK ResetMapConfig();
-    M2C_UNK func_020abf94();
+    M2C_UNK ResetScreenStates();
     M2C_UNK ApplyScreenMode(M2C_UNK);
     M2C_UNK ResetSpriteSlots();
     M2C_UNK InitDefaultGameSettings();
@@ -225,7 +225,7 @@ void ResetGameState(void) {
     ResetTextState();
     ResetTextLabelSlots();
     ClearCampaignMapHeaders();
-    func_020abf94();
+    ResetScreenStates();
     savedEngine = gCur3DSpriteEngine;
     screen = 0;
     do {
@@ -437,7 +437,21 @@ void AcquireUsernameFont(void) {
     ((UsernameFontCache *) &gUsernameFontCache)->glyphs = (void *) LoadDecompressedFile(&sUsernameFontPath, 1);
 }
 
-void ReleaseUsernameFont(void) {M2C_UNK HeapFreeBlock(s32);extern M2C_UNK gUsernameFontCache;u32 n=M2C_FIELD(&gUsernameFontCache,u8 *,0)-1;M2C_FIELD(&gUsernameFontCache,u8 *,0)=n;if(n&255)return;HeapFreeBlock(M2C_FIELD(&gUsernameFontCache,s32 *,4));M2C_FIELD(&gUsernameFontCache,s32 *,4)=0;}
+/* Release one acquire of the shared username font; the last release frees the
+ * decompressed glyphs and leaves the cache empty. */
+void ReleaseUsernameFont(void) {
+    M2C_UNK HeapFreeBlock(s32);
+    extern M2C_UNK gUsernameFontCache;
+    u32 refCount;
+
+    refCount = ((UsernameFontCache *) &gUsernameFontCache)->refCount - 1;
+    ((UsernameFontCache *) &gUsernameFontCache)->refCount = (u8) refCount;
+    if (refCount & 0xFF) {
+        return;
+    }
+    HeapFreeBlock((s32) ((UsernameFontCache *) &gUsernameFontCache)->glyphs);
+    ((UsernameFontCache *) &gUsernameFontCache)->glyphs = 0;
+}
 
 void DrawGlyphString(u16 *keys,u32 dst,u32 map,u32 pal,u16 x,u16 y,u32 tileArg) {M2C_UNK MI_CpuCopy32();extern M2C_UNK gUsernameFontCache;u16 *p;u32 bits;u32 i;u32 next,next2,cur;u32 source;if(!*keys)return;bits=pal<<28;{u32 offset=y<<5;p=(u16 *)(map+((x+offset)*2));}i=0;do {s32 index=func_020e4b9c(*keys);source=M2C_FIELD(&gUsernameFontCache,u32 *,4)+index*128;MI_CpuCopy32(source,dst+((tileArg&0x7ffffffU)<<5),128);next=(tileArg+1)|(bits>>16);next2=(tileArg+2)|(bits>>16);cur=tileArg|(bits>>16);p[i]=cur;p[i+1]=next;p[i+32]=next2;p[i+33]=(tileArg+3)|(bits>>16);keys++;tileArg+=4;i+=2;}while(*keys);}
 

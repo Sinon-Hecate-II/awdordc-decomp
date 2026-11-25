@@ -61,8 +61,10 @@ s32 FindFreePlayerSlot(void) {
     return -1;
 }
 
+/* Clears the session's player table: the 32 player connection slots and the 32
+ * per-slot peer records. */
 void ResetPlayerSlots(void) {
-    M2C_UNK CpuFill(M2C_UNK, M2C_UNK *, M2C_UNK);
+    void CpuFill(s32, void *, s32);
     extern M2C_UNK gPlayerConnections;
     extern M2C_UNK gPlayerPeers;
     CpuFill(0, &gPlayerConnections, 0x80);
@@ -148,10 +150,20 @@ s32 RemovePeerBySlot(s32 slotId) {
     return RemoveConnectionPeer(i,count);
 }
 
-u32 MaskPlayerIds(u8 *src, s32 n) {
-u32 acc=0; u32 i=0;
-if(n>0) { u32 bit=1; do {acc |= bit << (u32)src[i]; i++;}while((s32)i<n);}
-return acc;
+/* Fold the `count` player ids in `playerIds` (each 0..31) into one mask with the
+ * bit of every listed id set. */
+u32 MaskPlayerIds(u8 *playerIds, s32 count) {
+    u32 mask = 0;
+    u32 i = 0;
+
+    if (count > 0) {
+        u32 bit = 1;
+        do {
+            mask |= bit << (u32)playerIds[i];
+            i++;
+        } while ((s32)i < count);
+    }
+    return mask;
 }
 
 /* Reports a failed network operation: translates the operation result `error`
@@ -290,12 +302,16 @@ refreshPlayers:
     }
 }
 
-void func_02039698(s32 unused, void *arg1) {
-    M2C_UNK ReportNetErrorForState(M2C_UNK);
-    s32 temp_r1;
+/* GameSpy gpi error callback (callback entry 0): the block at `error` holds the
+ * result at +0, the connection's error code at +4, the connection at +8 and the
+ * fatal flag at +0xC.  Report a generic network error (result 3) unless the code
+ * is one of the three a routine peer/session disconnect reports. */
+void HandleConnectionErrorCallback(s32 unused, void *error) {
+    s32 ReportNetErrorForState(s32);
+    s32 errorCode;
 
-    temp_r1 = M2C_FIELD(arg1, s32 *, 4);
-    if ((temp_r1 != 0x603) && (temp_r1 != 0x901) && (temp_r1 != 0xB01)) {
+    errorCode = M2C_FIELD(error, s32 *, 4);
+    if ((errorCode != 0x603) && (errorCode != 0x901) && (errorCode != 0xB01)) {
         ReportNetErrorForState(3);
     }
 }
@@ -546,23 +562,27 @@ void InitNasLoginContext(s32 context, s32 session, s32 gpiConnection, s32 gameId
     M2C_FIELD(&gNasLogin, NasLoginParameters **, NAS_LOGIN_CONTEXT)->session = session;
 }
 
-void func_02039c68(void) {
+/* Kick off the NAS login: send the request with its completion callback and
+ * request kind 0, then mark the login context as awaiting the reply and clear the
+ * pending gpi-connection flag. */
+void StartNasLoginRequest(void) {
     void NasLoginRequestCallback(void);
     void StartNasRequest(void *, s32);
     extern M2C_UNK gNasLogin;
+
     StartNasRequest(NasLoginRequestCallback, 0);
-    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 4) = 1;
-    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x30) = 0;
+    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, NAS_LOGIN_CONTEXT), s32 *, NAS_LOGIN_STATE) = NAS_STATE_REQUESTING;
+    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, NAS_LOGIN_CONTEXT), s32 *, NAS_LOGIN_GPI_PENDING) = 0;
 }
 
 /* Tick the active online session: dispatch by its state (0 idle, 1 ?, 2-4 update
-   peer, 5 idle). In 2-4, notify completion via func_0204db50 and, when a timeout
+   peer, 5 idle). In 2-4, notify completion via gpiThinkConnection and, when a timeout
    (60000 units) elapses, report error 6 / -61070. */
 void func_02039ca0(void) {
     extern M2C_UNK gNasLogin;
     s32 HasNetError(void);
     void func_0203a2b4(void);
-    void func_0204db50(void *);
+    void gpiThinkConnection(void *);
     u64 GetSystemTick(void);
     u64 U64Divide(u64, u64);
     void *p;
@@ -577,7 +597,7 @@ void func_02039ca0(void) {
     case 3:
     case 4:
         p = M2C_FIELD(p, void **, 0);
-        if (p && M2C_FIELD(p, s32 *, 0)) func_0204db50(p);
+        if (p && M2C_FIELD(p, s32 *, 0)) gpiThinkConnection(p);
         p = M2C_FIELD(&gNasLogin, void **, 4);
         if (!M2C_FIELD(p, s32 *, 0x30)) return;
         if (U64Divide((GetSystemTick() - M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), u64 *, 0x34)) << 6, 0x82eaULL) > 60000ULL) {

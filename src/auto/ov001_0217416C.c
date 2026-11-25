@@ -91,11 +91,13 @@ void Ov001_OpenKeypad(void) {
     Ov001_PositionKeypadStep(0, 192);
 }
 #pragma scheduling reset
+/* Start closing the keypad: remove the sprite that marks the selected key and
+ * retarget the highlight's slide task to the close animation's next step. */
 void Ov001_StartKeypadClose(void) {
     extern void *gOv001Keypad;
     void Ov001_KeypadCloseStep5(void);
-    Ov001_DestroySprite(M2C_FIELD(gOv001Keypad, s32 *, 0x58));
-    Ov001_SetSlideStep(M2C_FIELD(gOv001Keypad, s32 *, 0x5c), Ov001_KeypadCloseStep5);
+    Ov001_DestroySprite(M2C_FIELD(gOv001Keypad, s32 *, KEYPAD_CURSOR_SPRITE));
+    Ov001_SetSlideStep(M2C_FIELD(gOv001Keypad, s32 *, KEYPAD_SLIDE_TASK), Ov001_KeypadCloseStep5);
 }
 
 u8 func_ov001_021744dc(void) {

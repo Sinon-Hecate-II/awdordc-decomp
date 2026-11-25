@@ -167,10 +167,10 @@ void HandleLinkTransferTaskEvent(void *event) {
 s32 SendLinkChannelData(s32 channel, s32 playerMask, void *packet, s32 length, M2C_UNK completion) {
     M2C_UNK DC_FlushRange(M2C_UNK *, s32);
     s32 WFC_SendChannelData(M2C_UNK *,s32,s32,s32,s32,s32,s32);
-    extern M2C_UNK gLinkState, gLinkTransferExtra, func_ov009_022236c0;
+    extern M2C_UNK gLinkState, gLinkTransferExtra, HandleLinkChannelSendResult;
     s32 result;
     DC_FlushRange(&gLinkTransferExtra, M2C_FIELD(&gLinkState,s32 *,LINK_STATE_EXTRA_LEN));
-    result = WFC_SendChannelData(&func_ov009_022236c0,completion,packet,length,playerMask,channel,2);
+    result = WFC_SendChannelData(&HandleLinkChannelSendResult,completion,packet,length,playerMask,channel,2);
     if (result != 2) {
         if (result != 7) SignalLinkError();
         return 0;
@@ -178,16 +178,19 @@ s32 SendLinkChannelData(s32 channel, s32 playerMask, void *packet, s32 length, M
     return 1;
 }
 
-void func_ov009_022236c0(void *arg0) {
+/* WFC completion of a link channel send: a transfer that ended or was dropped
+ * by the library (result 0 or 15) goes on to the completion registered with the
+ * send, any other result signals the link event. */
+void HandleLinkChannelSendResult(void *completion) {
     M2C_UNK (*callback)(void *);
-    u16 state = M2C_FIELD(arg0, u16 *, 2);
-    if (state != 0 && state != 15) {
+    u16 state = M2C_FIELD(completion, u16 *, LINK_SEND_EVENT_RESULT);
+    if (state != 0 && state != LINK_SEND_RESULT_DONE) {
         SignalLinkEvent(state);
         return;
     }
-    callback = M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x20);
+    callback = M2C_FIELD(completion, M2C_UNK (**)(void *), LINK_SEND_EVENT_COMPLETION);
     if (callback == NULL) return;
-    callback(arg0);
+    callback(completion);
 }
 
 /* Hand link packet `packet` to the overlay's registered packet handler, after
@@ -321,40 +324,48 @@ void HandleLinkChannelEvent(void *event) {
  }
 }
 
-s32 func_ov009_02223b5c(void) {
+/* Restart the link session this console hosts: tear the Download Play link down
+ * and reset its channel, so the session can start over.  The teardown's
+ * completion (HandleLinkHostTeardown) closes the channel when a step fails;
+ * returns 0 when the teardown itself cannot be queued. */
+s32 RestartLinkHostSession(void) {
     s32 WFC_SendTeardownCommand(M2C_UNK *);
-    extern M2C_UNK func_ov009_02223b8c;
-    SetLinkPhase(3);
-    if (WFC_SendTeardownCommand(&func_ov009_02223b8c) == 2) {
+    extern M2C_UNK HandleLinkHostTeardown;
+    SetLinkPhase(LINK_PHASE_PENDING);
+    if (WFC_SendTeardownCommand(&HandleLinkHostTeardown) == LINK_TASK_QUEUED) {
         return 1;
     }
     SignalLinkError();
     return 0;
 }
 
-void func_ov009_02223b8c(void *arg0) {
-    s32 func_ov009_02223bbc();
+/* Completion of the host session's teardown command: a reported failure signals
+ * the link event and closes the channel; otherwise the link's channel is reset
+ * (returning it to the ready phase), and closing it is the fallback when that
+ * reset cannot be queued. */
+void HandleLinkHostTeardown(void *event) {
+    s32 SendLinkResetCommand();
     M2C_UNK CloseLinkChannel();
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
+    if (M2C_FIELD(event, u16 *, LINK_EVENT_STATE) != 0) {
         SignalLinkEvent();
         CloseLinkChannel();
         return;
     }
-    if (func_ov009_02223bbc() != 0) {
+    if (SendLinkResetCommand() != 0) {
         return;
     }
     CloseLinkChannel();
 }
 
-s32 func_ov009_02223bbc(void) {
+s32 SendLinkResetCommand(void) {
     s32 WFC_SendCommand9(void (*)(void *));
-    void func_ov009_02223be4(void *);
-    if (WFC_SendCommand9(func_ov009_02223be4) == 2) return 1;
+    void HandleLinkResetResult(void *);
+    if (WFC_SendCommand9(HandleLinkResetResult) == 2) return 1;
     SignalLinkError();
     return 0;
 }
 
-void func_ov009_02223be4(void *arg0) {
+void HandleLinkResetResult(void *arg0) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     M2C_UNK SignalLinkEvent();
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
@@ -364,18 +375,23 @@ void func_ov009_02223be4(void *arg0) {
     SetLinkPhase(1);
 }
 
-s32 func_ov009_02223c08(void) {
+/* Tear the link's session down before it is set up again: put the link in
+ * LINK_PHASE_PENDING and post the WFC teardown command, whose completion
+ * HandleTeardownSetupResult picks up.  Returns 1 once the command is queued
+ * (WFC_CMD_OK, 2); a failure signals the link error and returns 0. */
+s32 TeardownLinkAndQueueSetup(void) {
     s32 WFC_SendTeardownCommand(M2C_UNK *);
-    extern M2C_UNK func_ov009_02223c38;
-    SetLinkPhase(3);
-    if (WFC_SendTeardownCommand(&func_ov009_02223c38) == 2) {
+    extern M2C_UNK HandleTeardownSetupResult;
+
+    SetLinkPhase(LINK_PHASE_PENDING);
+    if (WFC_SendTeardownCommand(&HandleTeardownSetupResult) == 2) {
         return 1;
     }
     SignalLinkError();
     return 0;
 }
 
-void func_ov009_02223c38(void *arg0) {
+void HandleTeardownSetupResult(void *arg0) {
  s32 QueueLinkSetupCommand(void); M2C_UNK RestartLinkSession();
  if(M2C_FIELD(arg0,u16 *,2)!=0) {SignalLinkEvent();RestartLinkSession();return;}
  if(QueueLinkSetupCommand()!=0) return;
@@ -414,18 +430,21 @@ void HandleLinkEndTaskEvent(void *arg0) {
     SetLinkPhase(0);
 }
 
+/* Queue the WFC stop command that ends the link session: mark the link pending
+ * first, and signal the link error when the command cannot be queued.  Returns 1
+ * once the command is queued, 0 on failure. */
 s32 SendLinkStopCommand(void) {
     s32 WFC_SendCommand1(M2C_UNK *);
-    extern M2C_UNK func_ov009_02223d14;
-    SetLinkPhase(3);
-    if (WFC_SendCommand1(&func_ov009_02223d14) == 2) {
+    extern M2C_UNK FinishLinkStopCommand;
+    SetLinkPhase(LINK_PHASE_PENDING);
+    if (WFC_SendCommand1(&FinishLinkStopCommand) == LINK_TASK_QUEUED) {
         return 1;
     }
     SignalLinkError();
     return 0;
 }
 
-void func_ov009_02223d14(void *arg0) {
+void FinishLinkStopCommand(void *arg0) {
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
         SignalLinkEvent();
         SetLinkPhase(8);
@@ -543,13 +562,16 @@ void HandleLinkEventsRemoved(void *arg0) {
 
 void SetLinkDownloadCode(s32 a) { extern M2C_UNK gLinkState; M2C_FIELD(&gLinkState,s32 *,0x108)=a; }
 
-void SetLinkPlayerName(s32 src,u32 size){
+/* Store the local player's name in the Download Play connection request's
+ * extra-data block: copy at most LINK_CONNECTION_NAME_SIZE bytes and zero the
+ * remainder of the name area. */
+void SetLinkPlayerName(s32 name,u32 length){
  M2C_UNK MI_CpuCopy8(s32,s32,M2C_UNK);
  M2C_UNK MI_CpuFill8(void*,M2C_UNK,s32);
  extern M2C_UNK gLinkConnectionExtraData;
- if(size>24)size=24;
- MI_CpuCopy8(src,(s32)&gLinkConnectionExtraData,size);
- MI_CpuFill8((u8*)&gLinkConnectionExtraData+size,0,24-size);
+ if(length>LINK_CONNECTION_NAME_SIZE)length=LINK_CONNECTION_NAME_SIZE;
+ MI_CpuCopy8(name,(s32)&gLinkConnectionExtraData,length);
+ MI_CpuFill8((u8*)&gLinkConnectionExtraData+length,0,LINK_CONNECTION_NAME_SIZE-length);
 }
 
 /* Stage a buffer as this console's local-player record: copy it into the payload
@@ -620,16 +642,19 @@ s32 GetLinkPlayerSlot(s32 arg0) {
     return (0x60 * arg0) + (s32) &gLinkPlayers;
 }
 
-s32 CopyLinkLocalPlayerRecord(s32 arg0, M2C_UNK arg1) {
+/* Copy the local link player's record (the LINK_PLAYER_SLOT_RECORD bytes of the
+ * local announce block) into `dest` for `length` bytes.  Returns `dest`, or 0 when
+ * there is no local player info. */
+s32 CopyLinkLocalPlayerRecord(s32 dest, M2C_UNK length) {
     M2C_UNK MI_CpuCopy8(s32, s32, M2C_UNK);
-    s32 temp_r0;
+    s32 localInfo;
 
-    temp_r0 = GetLinkLocalPlayerInfo();
-    if (temp_r0 == 0) {
+    localInfo = GetLinkLocalPlayerInfo();
+    if (localInfo == 0) {
         return 0;
     }
-    MI_CpuCopy8(temp_r0 + 0x20, arg0, arg1);
-    return arg0;
+    MI_CpuCopy8(localInfo + LINK_PLAYER_SLOT_RECORD, dest, length);
+    return dest;
 }
 
 s32 GetActiveLinkPlayerRecord(void) {
@@ -643,11 +668,16 @@ s32 GetActiveLinkPlayerRecord(void) {
     return 0;
 }
 
-s32 CopyActiveLinkPlayerRecord(s32 a,s32 b,s32 c){
- s32 p=GetActiveLinkPlayerSlot(a);
- if(!p)return 0;
- MI_CpuCopy8(p+0x20,b,c);
- return b;
+/* Copy the LINK_PLAYER_SLOT_RECORD bytes of an active player's link record into
+ * `dest` for `length` bytes; `dest` is returned, or 0 when the player slot is not
+ * active. */
+s32 CopyActiveLinkPlayerRecord(s32 player, s32 dest, s32 length) {
+    M2C_UNK MI_CpuCopy8(s32, s32, M2C_UNK);
+    s32 slot = GetActiveLinkPlayerSlot(player);
+
+    if (!slot) return 0;
+    MI_CpuCopy8(slot + LINK_PLAYER_SLOT_RECORD, dest, length);
+    return dest;
 }
 
 s32 func_ov009_02224140(s32 a){

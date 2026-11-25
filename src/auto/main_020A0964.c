@@ -454,14 +454,17 @@ void DrawDirectionMarker(DirectionMarker *marker) {
     DrawSpriteFrameQuads(&gSpriteDesc16x16, pos, 0x22F20, 0x1480, 0x30000, 0, 0, 0x80, 0x80, 0x1800, arrowIndex + 0x100);
 }
 
-void func_020a15b4(s32 arg0, s32 arg1, s16 arg2) {
+/* Create the direction marker sprite on map tile (x, y) showing the given
+ * `direction`; returns the new marker. */
+DirectionMarker *CreateDirectionMarker(s32 x, s32 y, s16 direction) {
     void *CreateSpriteFromClass(M2C_UNK *, s32);
     extern M2C_UNK gDirectionMarkerSpriteClass;
-    void *temp_r0;
-    temp_r0 = CreateSpriteFromClass(&gDirectionMarkerSpriteClass, 7);
-    M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
-    M2C_FIELD(temp_r0, s16 *, 0x6C) = arg2;
+    DirectionMarker *marker;
+
+    marker = CreateSpriteFromClass(&gDirectionMarkerSpriteClass, 7);
+    marker->x = x;
+    marker->y = y;
+    marker->direction = direction;
 }
 
 void DeleteDirectionMarkerSprites(void) {

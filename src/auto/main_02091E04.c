@@ -127,12 +127,15 @@ void (*Get3DSpriteLayerDirtyMarker(u32 layer))(void) {
     }
 }
 
-s32 func_02092018(void *arg0) {
+/* Map-script opcode (6): while no message box is up, set the sequence's delay
+ * (MAP_SCRIPT_STATE_DELAY) from the command's wide operand, then advance to the
+ * next command. */
+s32 MapScriptSetDelay(void *state) {
     s32 IsMessageBoxActive();
     if (IsMessageBoxActive() == 0) {
-        M2C_FIELD(arg0, s16 *, 0xC) = (s16) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC);
+        M2C_FIELD(state, s16 *, MAP_SCRIPT_STATE_DELAY) = (s16) M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_OPERAND2);
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 0;
 }
 
@@ -192,11 +195,14 @@ s32 DialogOpcodeCreateSprite(void *sequence) {
     return 0;
 }
 
-s32 func_0209212c(void *arg0) {
-    if (M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 (**)(), 4)() != 0) {
+/* Map-script command: call the callback in the command's MAP_SCRIPT_PARAM word
+ * each frame; stay on the command while it reports it is not done (nonzero),
+ * then advance to the next command once it returns 0. */
+s32 MapScriptWaitForCallback(void *script) {
+    if (M2C_FIELD(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP), s32 (**)(), MAP_SCRIPT_PARAM)() != 0) {
         return 0;
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *)(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -206,12 +212,15 @@ s32 func_02092160(void *arg0) {
     return 0;
 }
 
-s32 func_02092180(void *arg0) {
+/* Map-script command: while no message box is up, call the command's callback
+ * with the script state (MapScriptCallFunctionWithState runs the callback and
+ * moves on); with a message box up, skip the command and keep running. */
+s32 MapScriptCallFunctionUnlessMessageBox(void *script) {
     s32 MapScriptCallFunctionWithState(void *);
     if (IsMessageBoxActive() == 0) {
-        return MapScriptCallFunctionWithState(arg0);
+        return MapScriptCallFunctionWithState(script);
     }
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+    M2C_FIELD(script, s32 *, MAP_SCRIPT_STATE_IP) = (s32)(M2C_FIELD(script, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -357,21 +366,26 @@ s32 MoveMapViewToPlayerUnit(void *ctx) {
     return 0;
 }
 
-s32 func_02092434(void *arg0) {
+/* Map-script command: create a 3D sprite of the class the command names at
+ * MAP_SCRIPT_PARAM, in the mode at MAP_SCRIPT_OPERAND2, then advance to the next
+ * command. */
+s32 MapScriptCreateSprite(void *script) {
     M2C_UNK CreateSpriteFromClass(s32, s32);
-    void *temp_r1;
+    void *command;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 4);
-    CreateSpriteFromClass(M2C_FIELD(temp_r1, s32 *, 4), M2C_FIELD(temp_r1, s32 *, 0xC));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    CreateSpriteFromClass(M2C_FIELD(command, s32 *, MAP_SCRIPT_PARAM), M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2));
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_02092460(void *arg0) {
-    if (FindObjectByClass(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 4)) != 0) {
+/* Map-script command: stay on the command while a live 3D sprite of the class
+ * the command names at MAP_SCRIPT_PARAM exists, then advance to the next one. */
+s32 WaitForObjectClassRemoved(void *script) {
+    if (FindObjectByClass(M2C_FIELD(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_PARAM)) != 0) {
         return 0;
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *)(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -423,19 +437,24 @@ s32 Wait3DSpriteSubGone(void *ctx) {
     return 1;
 }
 
-s32 func_0209255c(void *arg0) {
+/* Map-script command: stay on the command while a 3D sprite of the class the
+ * command names at MAP_SCRIPT_PARAM exists on the current engine, then advance
+ * to the next command. */
+s32 WaitFor3DSpriteClassRemoved(void *script) {
     s32 Find3DSpriteByClassOnCurrentEngine(s32);
-    if (Find3DSpriteByClassOnCurrentEngine(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 4)) != 0) {
+    if (Find3DSpriteByClassOnCurrentEngine(M2C_FIELD(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_PARAM)) != 0) {
         return 0;
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *)(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_02092590(void *arg0) {
+/* Map-script opcode: switch the UI to the mode the command names in
+ * MAP_SCRIPT_OPERAND0, then advance to the next command. */
+s32 MapScriptSetUiMode(void *state) {
     M2C_UNK SetUiMode(s16, M2C_UNK);
-    SetUiMode(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8), 0);
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    SetUiMode(M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s16 *, MAP_SCRIPT_OPERAND0), 0);
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *)(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -532,27 +551,35 @@ void SpawnMessageTextSprite(M2C_UNK arg0) {
     CreateSpriteObject(&gMessageTextSpriteClass, arg0);
 }
 
-void func_020928a0(void *arg0) {
+void WaitForMessageTextGone(void *arg0) {
     s32 IsTextSpriteActive();
     if (IsTextSpriteActive() == 0) {
         M2C_FIELD(arg0, s32 *, 8) = 0;
     }
 }
 
-s32 func_020928bc(M2C_UNK arg0,s32 arg1) {
-s32 ShowMessageText(s32);void func_020928a0(void *);
-s32 v=ShowMessageText(arg1);
-if(v==0)M2C_FIELD(arg0,void (**)(void *),8)=func_020928a0;
-M2C_FIELD(arg0,s32 *,4)+=16;return (s16)v;
+/* Map-script command: open a message box showing the localized text `textId` (the
+ * command's wide operand, -1 meaning the current UI message) and, when it opened,
+ * keep the script on this command until its message text sprite is gone.  Returns
+ * the setup result sign-extended to 16 bits: 1 when no message could be shown. */
+s32 MapScriptShowMessageText(M2C_UNK state, s32 textId) {
+    s32 ShowMessageText(s32);
+    void WaitForMessageTextGone(void *);
+    s32 result = ShowMessageText(textId);
+    if (result == 0) {
+        M2C_FIELD(state, void (**)(void *), MAP_SCRIPT_STATE_WAIT) = WaitForMessageTextGone;
+    }
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return (s16) result;
 }
 
 void func_020928f4(void *arg0) {
-    func_020928bc(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
+    MapScriptShowMessageText(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
 }
 
 void func_02092908(M2C_UNK arg0) {
-    M2C_UNK func_020928bc(M2C_UNK, M2C_UNK);
-    func_020928bc(arg0, -1);
+    M2C_UNK MapScriptShowMessageText(M2C_UNK, M2C_UNK);
+    MapScriptShowMessageText(arg0, -1);
 }
 
 /* Map-script command: once no message box is up, clear the message panel's
@@ -574,17 +601,21 @@ s32 MapScriptClearMessagePanel(void *state) {
     return (s16)result;
 }
 
-s32 func_02092958(void *arg0) {
+/* Map-script command: load the UI graphics bank the command names at
+ * MAP_SCRIPT_OPERAND2, then advance to the next command. */
+s32 MapScriptLoadUiGraphicsBank(void *script) {
     M2C_UNK LoadUiGraphicsBank(u8);
-    LoadUiGraphicsBank((u8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    LoadUiGraphicsBank((u8) M2C_FIELD(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_OPERAND2));
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 0;
 }
 
-s32 func_02092984(void *arg0) {
+/* Map-script command: free the UI graphics bank the command names at
+ * MAP_SCRIPT_OPERAND2, then advance to the next command. */
+s32 MapScriptFreeUiGraphicsBank(void *script) {
     M2C_UNK FreeUiGraphicsBank(u8);
-    FreeUiGraphicsBank((u8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    FreeUiGraphicsBank((u8) M2C_FIELD(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_OPERAND2));
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 0;
 }
 
@@ -618,16 +649,29 @@ M2C_FIELD(&gMapConfig,s16 *,0)=(s16)(M2C_FIELD(&gMapConfig,u16 *,0)&~0x400);
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
-s32 func_02092aa4(void *arg0) {
-extern void **gCurrentMap;
-if(M2C_FIELD(*gCurrentMap,u16 *,0x52b0)!=12)return 0;
-M2C_FIELD(arg0,s32 *,4)+=16;return 1;
+/* Map-script opcode: hold the script until the map reaches the player's turn
+ * (MAP_STATE_PLAYER_TURN), then run the next command. */
+s32 MapScriptWaitForPlayerTurnStart(void *state) {
+    extern void **gCurrentMap;
+
+    if (M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) != MAP_STATE_PLAYER_TURN) {
+        return 0;
+    }
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 1;
 }
 
-s32 func_02092adc(void *arg0) {
-extern void **gCurrentMap;
-if(M2C_FIELD(*gCurrentMap,u16 *,0x52b0)==12)return 0;
-M2C_FIELD(arg0,s32 *,4)+=16;return 1;
+/* Map-script opcode: hold the script while the map is beginning the current
+ * player's turn (MAP_STATE_PLAYER_TURN); once that step has passed, run the next
+ * command. */
+s32 MapScriptWaitWhilePlayerTurnBegins(void *state) {
+    extern void **gCurrentMap;
+
+    if (M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) == MAP_STATE_PLAYER_TURN) {
+        return 0;
+    }
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 1;
 }
 
 /* Map-script wait callback: hold the script until the map reaches the player
@@ -669,11 +713,17 @@ void WaitForPlayerArmyVariant(void *state) {
     if (M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) == 1) M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_WAIT) = 0;
 }
 
-s32 func_02092c08(void *arg0) {
-void WaitForPlayerArmyVariant(void *);
-M2C_FIELD(arg0,s8 *,0x11)=M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8);
-M2C_FIELD(arg0,void (**)(void *),8)=WaitForPlayerArmyVariant;
-WaitForPlayerArmyVariant(arg0);M2C_FIELD(arg0,s32 *,4)+=16;return 0;
+/* Map-script command: wait until the map reaches state 12 and the player named by
+ * the command's first operand has its army variant set.  Saves the player id in
+ * the sequence state, then starts waiting at once. */
+s32 MapScriptWaitForArmyVariant(void *state) {
+    void WaitForPlayerArmyVariant(void *);
+
+    M2C_FIELD(state, u8 *, MAP_SCRIPT_STATE_PLAYER) = M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s16 *, MAP_SCRIPT_OPERAND0);
+    M2C_FIELD(state, void (**)(void *), MAP_SCRIPT_STATE_WAIT) = WaitForPlayerArmyVariant;
+    WaitForPlayerArmyVariant(state);
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 0;
 }
 
 /* Map-script opcode: wait until any of the keys in the command's mask
@@ -698,10 +748,17 @@ s32 func_02092c94(void *arg0) {
     return 1;
 }
 
-s32 *MapScriptFindLabel(s32 **arg0,s32 arg1) {
-s32 *p=*arg0;
-while(*p!=MAP_SCRIPT_OP_END){if(*p==MAP_SCRIPT_OP_LABEL && p[3]==arg1)return p;p+=4;}
-return NULL;
+/* Find the label command naming `label` in the map script block that the
+ * interpreter state `state` is running: returns the command, or NULL when the
+ * block has no such label. */
+s32 *MapScriptFindLabel(s32 **state, s32 label) {
+    s32 *command = M2C_FIELD(state, s32 **, MAP_SCRIPT_STATE_BLOCK);
+
+    while (*command != MAP_SCRIPT_OP_END) {
+        if (*command == MAP_SCRIPT_OP_LABEL && M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2) == label) return command;
+        command += 4;
+    }
+    return NULL;
 }
 
 /* Map-script opcode: conditional jump. The command may carry a condition

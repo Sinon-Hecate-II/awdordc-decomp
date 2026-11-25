@@ -301,7 +301,7 @@ void *func_ov003_021ffbec(void *obj) {
     void RemoveMapViewSprites(void);
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
-    void func_020af1e4(void);
+    void DeleteWallpaperSpritesOnAllEngines(void);
     void DeleteOv003SceneSprite(void);
     extern M2C_UNK data_ov003_02210104, data_ov003_02210130;
     extern M2C_UNK data_ov003_022101ac, data_ov003_022101d8;
@@ -309,7 +309,7 @@ void *func_ov003_021ffbec(void *obj) {
     void *child;
     M2C_FIELD(obj, void **, 0) = &data_ov003_022101ac;
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_022101d8;
-    func_020af1e4();
+    DeleteWallpaperSpritesOnAllEngines();
     DeleteOv003SceneSprite();
     M2C_FIELD(obj, void **, 0) = &data_ov003_02210104;
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210130;
@@ -366,7 +366,7 @@ void *func_ov003_021ffdf4(void *obj) {
     void RemoveMapViewSprites(void);
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
-    void func_020af1e4(void);
+    void DeleteWallpaperSpritesOnAllEngines(void);
     void DeleteOv003SceneSprite(void);
     extern M2C_UNK data_ov003_02210104, data_ov003_02210130;
     extern M2C_UNK data_ov003_022101ac, data_ov003_022101d8;
@@ -374,7 +374,7 @@ void *func_ov003_021ffdf4(void *obj) {
     void *child;
     M2C_FIELD(obj, void **, 0) = &data_ov003_022101ac;
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_022101d8;
-    func_020af1e4();
+    DeleteWallpaperSpritesOnAllEngines();
     DeleteOv003SceneSprite();
     M2C_FIELD(obj, void **, 0) = &data_ov003_02210104;
     M2C_FIELD(obj, void **, 0x34) = &data_ov003_02210130;
@@ -434,7 +434,7 @@ void *Ov003Object_Destructor(Ov003Object *obj) {
     void RemoveMapViewSprites(void);
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
-    void func_020af1e4(void);
+    void DeleteWallpaperSpritesOnAllEngines(void);
     void DeleteOv003SceneSprite(void);
     extern M2C_UNK data_ov003_02210104, data_ov003_02210130;
     extern M2C_UNK data_ov003_022101ac, data_ov003_022101d8;

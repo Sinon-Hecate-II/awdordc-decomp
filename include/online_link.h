@@ -10,6 +10,7 @@
 #define ONLINE_PACKET_START_REQUEST 2 /* the host asks the peers to start the match, payload is the start record */
 #define ONLINE_PACKET_START_ACK     3 /* a peer acknowledges a start request */
 #define ONLINE_PACKET_PLAYER_STATUS 7 /* broadcast the sender's online player record to the peers */
+#define ONLINE_PACKET_DEPARTURE     9 /* broadcast that the sender is leaving the match */
 #define ONLINE_HEARTBEAT_INTERVAL_MS 4000
 #define ONLINE_PEER_TIMEOUT_NUMERATOR 1800000
 #define ONLINE_MILLISECONDS_PER_SECOND 1000
@@ -22,6 +23,12 @@
 #define OV010_SESSION_FLAGS        0xFA /* u8: OV010_SESSION_FLAG_* bits */
 #define OV010_SESSION_FLAG_STARTED 0x01 /* the session start was requested */
 #define OV010_SESSION_FLAG_MATCH   0x02 /* a match is running */
+
+/* The work block an ov010 online session allocates for itself (OV010_FLAG_STARTED)
+ * and frees when it is torn down. */
+#define OV010_SESSION_WORK_BLOCK 0x3C   /* void *: the session's work block */
+#define OV010_SESSION_WORK_SIZE  0x10E0 /* bytes of that block */
+#define OV010_SESSION_STEP_FLAGS 0x54   /* s32: OV010_FLAG_* bits (see common.h) */
 
 /* The online session's outbound packet queue (gOv010OnlineSession): a singly
  * linked list of nodes {void *next; Ov010Packet packet;}, the packet's kind

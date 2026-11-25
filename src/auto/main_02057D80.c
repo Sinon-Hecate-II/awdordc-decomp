@@ -419,10 +419,18 @@ M2C_UNK *BucketDoubleValue(s32 arg0, s32 arg1) {
     return &data_0213dcd8;
 }
 
+/* Replace every backslash in the string at `p` with a forward slash, in place;
+ * returns the string. */
 s8 *ConvertBackslashesToSlashes(s8 *p) {
-s8 *q=p;s32 c=*p;
-if(c){do{if(c==92)*p=47;c=*++p;}while(c);}
-return q;
+    s8 *start = p;
+    s32 c = *p;
+    if (c) {
+        do {
+            if (c == '\\') *p = '/';
+            c = *++p;
+        } while (c);
+    }
+    return start;
 }
 
 /* gbucket.c BucketSetValue: store `value` in bucket entry `entry`, by the

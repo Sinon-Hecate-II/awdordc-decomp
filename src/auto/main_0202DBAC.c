@@ -165,10 +165,18 @@ if(M2C_FIELD(&gSoundWorkerState,void **,SOUND_TASK_STATE_TASK)) Sound_RemoveRequ
 Sound_ReleasePlayer(player);
 }
 
-s32 Sound_AcquireChannel(void *arg0,s32 arg1,s32 arg2) {
-s32 Sound_AssignPlayerChannels(void *,s32,s32);
-if(M2C_FIELD(arg0,s32 *,0x120)==0 && Sound_AssignPlayerChannels(arg0,arg1,arg2)==0) return 0;
-M2C_FIELD(arg0,s32 *,0x120)++; return 1;
+/* Acquire a sound player's hardware channels: reserve the requested channel list
+ * the first time and reference-count the acquisition.  Returns 1 when the player
+ * now holds the channels, 0 when they could not be reserved. */
+s32 Sound_AcquireChannel(void *player, s32 channelCount, s32 channelList) {
+    s32 Sound_AssignPlayerChannels(void *, s32, s32);
+
+    if (M2C_FIELD(player, s32 *, SOUND_HANDLE_CHANNEL_REFS) == 0 &&
+        Sound_AssignPlayerChannels(player, channelCount, channelList) == 0) {
+        return 0;
+    }
+    M2C_FIELD(player, s32 *, SOUND_HANDLE_CHANNEL_REFS)++;
+    return 1;
 }
 
 void Sound_ReleaseChannel(void *arg0) {
@@ -265,16 +273,18 @@ M2C_UNK Sound_AllocRequest(void) {
     return request;
 }
 #pragma opt_common_subs reset
-void Sound_FreeRequest(M2C_UNK arg0) {
+/* Return a segment request node to the free-request pool, with interrupts held
+ * off so the sound worker cannot take it at the same time. */
+void Sound_FreeRequest(M2C_UNK request) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK ListAppend(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gSoundFreeRequests[];
-    s32 temp_r4;
+    s32 savedInterrupts;
 
-    temp_r4 = OS_DisableInterrupts();
-    ListAppend(gSoundFreeRequests, arg0);
-    OS_RestoreInterrupts(temp_r4);
+    savedInterrupts = OS_DisableInterrupts();
+    ListAppend(gSoundFreeRequests, request);
+    OS_RestoreInterrupts(savedInterrupts);
 }
 
 /* A sound data block was freed: if it held this player's sample data, stop the

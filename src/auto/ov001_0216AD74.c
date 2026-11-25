@@ -111,16 +111,19 @@ if(keyLength>WIFI_AP_KEY_MAX)return -1;
 Ov001MemCopy((u8 *)ap+WIFI_AP_KEY,&gBuiltinWifiKey,keyLength);
 return 0;
 }
-void func_ov001_0216bc0c(s32 n,void *p,M2C_UNK *src) {
-M2C_UNK Ov001MemCopy(void *,M2C_UNK *,s32);
-u16 Ov001SwapEndian16Alt(u16);
-u16 Ov001GetRandomSeed(void);
-s32 i;
-for(i=0;i<n;i++,p=(u8 *)p+8) {
-Ov001MemCopy(p,src,6);
-M2C_FIELD(p,u16 *,6)=Ov001GetRandomSeed();
-M2C_FIELD(p,u16 *,6)=Ov001SwapEndian16Alt(M2C_FIELD(p,u16 *,6));
-}
+/* Write `count` consecutive 8-byte records: the same 6-byte prefix followed by
+ * a fresh random 16-bit tag, stored big-endian. */
+void Ov001_CopyTaggedRecords(s32 count, void *records, M2C_UNK *prefix) {
+    M2C_UNK Ov001MemCopy(void *, M2C_UNK *, s32);
+    u16 Ov001SwapEndian16Alt(u16);
+    u16 Ov001GetRandomSeed(void);
+    s32 i;
+
+    for (i = 0; i < count; i++, records = (u8 *)records + 8) {
+        Ov001MemCopy(records, prefix, 6);
+        M2C_FIELD(records, u16 *, 6) = Ov001GetRandomSeed();
+        M2C_FIELD(records, u16 *, 6) = Ov001SwapEndian16Alt(M2C_FIELD(records, u16 *, 6));
+    }
 }
 
 /* Top-level dispatcher of the ov001 room protocol's packets: a packet must carry a

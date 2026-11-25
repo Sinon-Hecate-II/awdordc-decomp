@@ -37,7 +37,7 @@ Sprite_ResumeAnimation(fade);
 next: i++;
 }while(i<2);
 gCur3DSpriteEngine=savedEngine;
-if(M2C_FIELD(fade,s32 *,0x18)==1)func_020ac598(M2C_FIELD(fade,u8 *,TRANSITION_SPRITE_SCREEN));
+if(M2C_FIELD(fade,s32 *,0x18)==1)Apply3DSpriteBanksForScreen(M2C_FIELD(fade,u8 *,TRANSITION_SPRITE_SCREEN));
 }
 
 s32 func_020ac924(M2C_UNK parent, s32 type) {
@@ -490,19 +490,23 @@ u8 IsScreenFadeActive(void) {
     return active;
 }
 
-M2C_UNK LocalizeMapBackgroundFileName(s32 arg0, M2C_UNK *arg1) {
+/* Localize a map background's file name: for the two backgrounds (0x2E/0x2F) that
+ * have a language-specific variant, replace the name in `nameBuffer` with the
+ * localized one when the console is set to French; the buffer is returned either
+ * way. */
+M2C_UNK LocalizeMapBackgroundFileName(s32 background, M2C_UNK *nameBuffer) {
     u8 GetLanguage(void);
     M2C_UNK *GetLocalizedFileName(s32);
 
-    if ((arg0 != 0x2E) && (arg0 != 0x2F)) {
+    if ((background != 0x2E) && (background != 0x2F)) {
         goto done;
     }
-    if (GetLanguage() != 2) {
+    if (GetLanguage() != LANGUAGE_FRENCH) {
         goto done;
     }
-    return (M2C_UNK) GetLocalizedFileName((s32) arg1);
+    return (M2C_UNK) GetLocalizedFileName((s32) nameBuffer);
 done:
-    return (M2C_UNK) arg1;
+    return (M2C_UNK) nameBuffer;
 }
 
 /* Build a map background's ".narc" archive name: copy the background's base name,

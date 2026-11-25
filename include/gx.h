@@ -42,6 +42,13 @@
 /* Display control of the main engine and its copy for the sub engine. */
 #define REG_DISPCNT (*(volatile u32 *)0x04000000)
 #define REG_DISPCNT_SUB (*(volatile u32 *)0x04001000)
+
+/* Display status (DISPSTAT): the live V-blank/H-blank/V-counter flags in bits 0..2
+ * and the enable bits of their interrupts in bits 3..5. */
+#define REG_DISPSTAT (*(volatile u16 *)0x04000004)
+#define DISPSTAT_VBLANK_IRQ  0x0008 /* bit 3: V-blank interrupt enabled */
+#define DISPSTAT_HBLANK_IRQ  0x0010 /* bit 4: H-blank interrupt enabled */
+#define DISPSTAT_VCOUNT_IRQ  0x0020 /* bit 5: V-counter interrupt enabled */
 /* DISPCNT bits 0..2 hold the display mode: modes 0..2 draw text backgrounds,
  * 3..5 bitmap ones (BG3 is the bitmap in mode 3, BG2 in modes 4 and 5).
  * Bits 27..29 select the VRAM bank the main engine's backgrounds map from. */
@@ -102,9 +109,26 @@ typedef struct GxDisplayStatus {
     u16 lockId; /* +0x02 OS lock id taken by GX_InitDisplay */
 } GxDisplayStatus;
 
+/* A 3D viewport rectangle in screen pixels; REG_GX_VIEWPORT packs the four
+ * 8-bit values low to high.  The full-screen default is {0, 0, 255, 191}. */
+typedef struct GxViewport {
+    s32 x1; /* +0x00 left edge */
+    s32 y1; /* +0x04 top edge */
+    s32 x2; /* +0x08 right edge */
+    s32 y2; /* +0x0C bottom edge */
+} GxViewport;
+
 /* Interrupt master enable: code saves it, writes 0 to keep interrupts off while
  * it reads shared WFC / queue state, then restores the saved value. */
 #define REG_IME (*(volatile u16 *)0x04000208)
+
+/* Display status of the main engine: the current scanline in bits 0..7, the
+ * VBlank/HBlank/VCount-match status flags, the three interrupt enables at bits
+ * 3..5 and the VCount comparison value in bits 8..15. */
+#define REG_DISPSTAT (*(volatile u16 *)0x04000004)
+#define DISPSTAT_VBLANK_IRQ 0x0008 /* enable the VBlank interrupt */
+#define DISPSTAT_HBLANK_IRQ 0x0010 /* enable the HBlank interrupt */
+#define DISPSTAT_VCOUNT_IRQ 0x0020 /* enable the VCount-match interrupt */
 
 /* 3D display control. */
 #define REG_DISP3DCNT (*(volatile u16 *)0x04000060)
@@ -130,6 +154,7 @@ typedef struct GxDisplayStatus {
 #define REG_GX_MTX_SCALE  (*(volatile u32 *)0x0400046C) /* 3 writes: sx, sy, sz in 20.12 */
 #define REG_GX_MTX_TRANS  (*(volatile u32 *)0x04000470) /* 3 writes: tx, ty, tz in 20.12 */
 #define REG_GX_SWAP_BUFFERS (*(volatile u32 *)0x04000540)
+#define REG_GX_VIEWPORT   (*(volatile u32 *)0x04000580) /* packed 8-bit x1, y1, x2, y2 */
 #define REG_GX_COLOR      (*(volatile u32 *)0x04000480)
 #define REG_GX_NORMAL     (*(volatile u32 *)0x04000484) /* one packed 10-bit-per-axis normal vector */
 #define REG_GX_TEX_COORD  (*(volatile u32 *)0x04000488)
@@ -292,7 +317,20 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define REG_GX_POLYGON_ATTR  (*(volatile u32 *)0x040004A4)
 #define REG_GX_TEXIMAGE_PARAM (*(volatile u32 *)0x040004A8)
 #define REG_GX_TEXPLTT_BASE  (*(volatile u32 *)0x040004AC)
+#define REG_GX_DIF_AMB       (*(volatile u32 *)0x040004C0) /* diffuse colour (bits 0..14, bit 15 = take it from the vertex) and ambient colour (bits 16..30) */
+#define REG_GX_SPE_EMI       (*(volatile u32 *)0x040004C4) /* specular colour (bits 0..14) and emission colour (bits 16..30) */
+#define REG_GX_LIGHT_VECTOR  (*(volatile u32 *)0x040004C8) /* direction towards the light: x, y, z 10-bit fixed point, low to high */
+#define REG_GX_LIGHT_COLOR   (*(volatile u32 *)0x040004CC) /* light colour, RGB555 */
 #define REG_GX_SHININESS     (*(volatile u32 *)0x040004D0) /* 32 writes: the shininess table */
+
+/* Default material and light of the game's 3D scenes: white diffuse taken from
+ * the vertex colour, white ambient, specular and emission, a white light shining
+ * straight along the Z axis. */
+#define GX_DEFAULT_MATERIAL_DIF_AMB 0x7FFFFFFF
+#define GX_DEFAULT_MATERIAL_SPE_EMI 0x7FFF7FFF
+#define GX_DEFAULT_LIGHT_VECTOR     0x1FF00000 /* (0, 0, 511) */
+#define GX_DEFAULT_LIGHT_COLOR      0x7FFF     /* white */
+#define GX_MAP_VIEW_LIGHT_VECTOR    0x20000000 /* the battle map's own light, along +Z */
 
 /* Table blocks of the geometry engine; G3X_InitTable clears them at start-up. */
 #define G3X_EDGE_TABLE_ADDR     0x04000330 /* 8 edge colours of 16 bits */
@@ -302,6 +340,11 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 
 #define GXSTAT_GEOMETRY_BUSY 0x08000000
 #define GXSTAT_STACK_ERROR   0x00008000
+#define GXSTAT_STACK_LEVEL_MASK 0x00001F00 /* bits 8-12: current matrix stack level */
+#define GXSTAT_STACK_LEVEL_SHIFT 8
+#define GXSTAT_STACK_OVERFLOW 0x00002000 /* bit 13: the matrix stack overflowed */
+#define GXSTAT_STACK_OVERFLOW_SHIFT 13
+#define GXSTAT_STACK_UNDERFLOW 0x00004000 /* bit 14: the matrix stack underflowed */
 #define GXSTAT_FIFO_IRQ_MASK 0xC0000000
 #define GXSTAT_FIFO_IRQ_EMPTY 0x80000000
 #define DISP3DCNT_UNDERFLOW  0x1000

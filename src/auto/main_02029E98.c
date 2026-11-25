@@ -59,24 +59,27 @@ void *UnlinkBlock(void *arg0, void *arg1) {
     return temp_r2;
 }
 
-void *InsertBlock(void *arg0, void *arg1, void *arg2) {
-    void *var_r3;
+/* Insert `block` into the free/used block list anchored at `list` (head at
+ * HEAP_LIST_HEAD, tail at HEAP_LIST_TAIL), directly after `after`; a NULL
+ * `after` inserts at the head. Returns the block. */
+void *InsertBlock(void *list, void *block, void *after) {
+    void *next;
 
-    M2C_FIELD(arg1, void **, 8) = arg2;
-    if (arg2 != NULL) {
-        var_r3 = M2C_FIELD(arg2, void **, 0xC);
-        M2C_FIELD(arg2, void **, 0xC) = arg1;
+    M2C_FIELD(block, void **, HEAP_BLOCK_LINK_PREV) = after;
+    if (after != NULL) {
+        next = M2C_FIELD(after, void **, HEAP_BLOCK_LINK_NEXT);
+        M2C_FIELD(after, void **, HEAP_BLOCK_LINK_NEXT) = block;
     } else {
-        var_r3 = M2C_FIELD(arg0, void **, 0);
-        M2C_FIELD(arg0, void **, 0) = arg1;
+        next = M2C_FIELD(list, void **, HEAP_LIST_HEAD);
+        M2C_FIELD(list, void **, HEAP_LIST_HEAD) = block;
     }
-    M2C_FIELD(arg1, void **, 0xC) = var_r3;
-    if (var_r3 != NULL) {
-        M2C_FIELD(var_r3, void **, 8) = arg1;
+    M2C_FIELD(block, void **, HEAP_BLOCK_LINK_NEXT) = next;
+    if (next != NULL) {
+        M2C_FIELD(next, void **, HEAP_BLOCK_LINK_PREV) = block;
     } else {
-        M2C_FIELD(arg0, void **, 4) = arg1;
+        M2C_FIELD(list, void **, HEAP_LIST_TAIL) = block;
     }
-    return arg1;
+    return block;
 }
 
 void *InitBlock(void *arg0, s16 arg1) {
@@ -170,7 +173,7 @@ s32 AllocFromBlock(void *freeList, void *block, s32 address, s32 size, u16 fromT
     return address;
 }
 
-s32 func_0202a1d0(void *arg0, s32 arg1, s32 arg2) {
+s32 AllocFromExpHeapHead(void *arg0, s32 arg1, s32 arg2) {
     s32 AllocFromBlock(void *, void *, s32, s32, u16);
     s32 base, aligned;
     s32 first;
@@ -200,7 +203,7 @@ s32 func_0202a1d0(void *arg0, s32 arg1, s32 arg2) {
     return AllocFromBlock(arg0 + 0x24, chosen, address, arg1, 0);
 }
 
-s32 func_0202a284(void *arg0, s32 arg1, s32 arg2) {
+s32 AllocFromExpHeapTail(void *arg0, s32 arg1, s32 arg2) {
 s32 AllocFromBlock(void *, void *, s32, s32, u16);
 s32 base,aligned,first; void *node; u32 size,best; void *chosen; s32 address;
 node=M2C_FIELD(arg0,void **,0x28);
@@ -270,11 +273,17 @@ void func_0202a45c(void) {
     func_02029f14();
 }
 
-s32 AllocFromExpHeap(void *arg0, s32 arg1, s32 arg2) {
-    if (arg1 == 0) arg1 = 1;
-    arg1 = (arg1 + 3) & ~3;
-    if (arg2 >= 0) return func_0202a1d0(arg0, arg1, arg2);
-    return func_0202a284(arg0, arg1, -arg2);
+/* Allocate `size` bytes with `alignment` from an expanded heap: round the size up
+ * to a 4-byte multiple, then take the block from the front of the heap for a
+ * non-negative alignment or from the rear for a negative one. */
+s32 AllocFromExpHeap(void *heap, s32 size, s32 alignment) {
+    s32 AllocFromExpHeapHead(void *, s32, s32);
+    s32 AllocFromExpHeapTail(void *, s32, s32);
+
+    if (size == 0) size = 1;
+    size = (size + 3) & ~3;
+    if (alignment >= 0) return AllocFromExpHeapHead(heap, size, alignment);
+    return AllocFromExpHeapTail(heap, size, -alignment);
 }
 
 /* Free the used block `block` of expanded heap `heap`: derive its range, unlink
@@ -363,30 +372,38 @@ u32 AllocFromFrameHeapTail(void *heapPtr, s32 size, s32 alignment) {
     return aligned;
 }
 
-void func_0202a5f8(void *arg0) {
+void FreeFrameHeapToHead(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x24) = (s32) M2C_FIELD(arg0, s32 *, 0x18);
     M2C_FIELD(arg0, s32 *, 0x2C) = 0;
 }
 
-void func_0202a60c(void *arg0) {
-    void *var_r2;
+/* Free everything the frame heap allocated from its tail: point the heap's tail
+ * at the end of its area and move the saved tail of every recorded state there
+ * too. */
+void FreeFrameHeapToTail(void *heap) {
+    void *state;
 
-    var_r2 = M2C_FIELD(arg0, void **, 0x2C);
-    if (var_r2 != NULL) {
+    state = M2C_FIELD(heap, void **, FRAME_HEAP_STATE_LIST);
+    if (state != NULL) {
         do {
-            M2C_FIELD(var_r2, s32 *, 8) = (s32) M2C_FIELD(arg0, s32 *, 0x1C);
-            var_r2 = M2C_FIELD(var_r2, void **, 0xC);
-        } while (var_r2 != NULL);
+            M2C_FIELD(state, s32 *, FRAME_HEAP_STATE_TAIL) = (s32) M2C_FIELD(heap, s32 *, HEAP_AREA_END);
+            state = M2C_FIELD(state, void **, FRAME_HEAP_STATE_NEXT);
+        } while (state != NULL);
     }
-    M2C_FIELD(arg0, s32 *, 0x28) = (s32) M2C_FIELD(arg0, s32 *, 0x1C);
+    M2C_FIELD(heap, s32 *, FRAME_HEAP_TAIL) = (s32) M2C_FIELD(heap, s32 *, HEAP_AREA_END);
 }
 
-void *CreateFrameHeap(u32 arg0, u32 arg1, s32 arg2) {
+/* Create a frame heap ('FRMH') in the caller's buffer of `size` bytes that starts
+ * at `startAddress`: both ends are aligned to 4 bytes and the buffer must hold the
+ * heap header (FRAME_HEAP_DATA bytes).  Returns the heap, or NULL when the buffer
+ * is too small. */
+void *CreateFrameHeap(u32 startAddress, u32 size, s32 attribute) {
     void *InitFrameHeapArea(void *, M2C_UNK, s32);
-    u32 end = (arg1 + arg0) & ~3;
-    u32 start = (arg0 + 3) & ~3;
-    if (start > end || end - start < 0x30) return NULL;
-    return InitFrameHeapArea((void *)start, (M2C_UNK)end, arg2);
+    u32 end = (size + startAddress) & ~3;
+    u32 start = (startAddress + 3) & ~3;
+
+    if (start > end || end - start < FRAME_HEAP_DATA) return NULL;
+    return InitFrameHeapArea((void *)start, (M2C_UNK)end, attribute);
 }
 
 void DestroyFrameHeap(void) {
@@ -394,44 +411,52 @@ void DestroyFrameHeap(void) {
     func_02029f14();
 }
 
-void Sound_HeapAlloc(void *arg0, s32 arg1, s32 arg2) {
+/* Allocate `size` bytes from the frame heap of the sound heap `heap`: round the
+ * size up to 4 bytes (a zero size still claims one byte) and allocate with
+ * `alignment` from the front, or from the tail when the alignment is negative
+ * (the tail allocation takes its absolute value). */
+void Sound_HeapAlloc(void *heap, s32 size, s32 alignment) {
     void *AllocFromFrameHeapHead(void *, M2C_UNK, M2C_UNK);
     u32 AllocFromFrameHeapTail(void *, s32, s32);
-    if (arg1 == 0) {
-        arg1 = 1;
+    if (size == 0) {
+        size = 1;
     }
-    arg1 = (arg1 + 3) & ~3;
-    arg0 = (s8 *)arg0 + 0x24;
-    if (arg2 >= 0) {
-        AllocFromFrameHeapHead(arg0, (M2C_UNK)arg1, (M2C_UNK)arg2);
+    size = (size + 3) & ~3;
+    heap = (s8 *)heap + FRAME_HEAP_HEAD;
+    if (alignment >= 0) {
+        AllocFromFrameHeapHead(heap, (M2C_UNK)size, (M2C_UNK)alignment);
     } else {
-        AllocFromFrameHeapTail(arg0, arg1, -arg2);
+        AllocFromFrameHeapTail(heap, size, -alignment);
     }
 }
 
-void func_0202a6b0(void *arg0, s32 arg1) {
-    void func_0202a5f8(void *);
-    void func_0202a60c(void *);
+void FreeToFrameHeap(void *arg0, s32 arg1) {
+    void FreeFrameHeapToHead(void *);
+    void FreeFrameHeapToTail(void *);
     if (arg1 & 1) {
-        func_0202a5f8(arg0);
+        FreeFrameHeapToHead(arg0);
     }
     if (arg1 & 2) {
-        func_0202a60c(arg0);
+        FreeFrameHeapToTail(arg0);
     }
 }
 
 #pragma opt_propagation off
-s32 func_0202a6dc(void *arg0, M2C_UNK arg1) {
- s32 Abs(M2C_UNK);
- s32 t; u32 value,end,mask;
- t=Abs(arg1)-1;
- value=M2C_FIELD(arg0,u32 *,0x24);
- mask=~t;
- t+=value;
- end=M2C_FIELD(arg0,u32 *,0x28);
- mask &=t;
- if(mask>end)return 0;
- return end-mask;
+/* Largest block a frame heap can still allocate with the given alignment: round
+ * the frame head up to the alignment and return the bytes left before the tail,
+ * or 0 when the tail is already below it. */
+s32 GetAllocatableSizeForFrameHeap(void *heap, M2C_UNK alignment) {
+    s32 Abs(M2C_UNK);
+    s32 t;
+    u32 head, tail, start;
+    t = Abs(alignment) - 1;
+    head = M2C_FIELD(heap, u32 *, FRAME_HEAP_HEAD);
+    start = ~t;
+    t += head;
+    tail = M2C_FIELD(heap, u32 *, FRAME_HEAP_TAIL);
+    start &= t;
+    if (start > tail) return 0;
+    return tail - start;
 }
 #pragma opt_propagation reset
 /* Records a frame-heap state tagged `tag`: allocates a state node from the heap,
@@ -571,7 +596,7 @@ s32 CloseArchive(M2C_UNK arg0) {
  * then starts the voice allocator and the streamed sound state.  The driver's id
  * (-1 = none) and state are left at their start values. */
 void InitSoundDriver(void) {
-    M2C_UNK func_02008fcc(M2C_UNK);
+    M2C_UNK InitSoundCommandSystem(M2C_UNK);
     M2C_UNK PM_AddPreSleepCallback(M2C_UNK);
     M2C_UNK PM_AddPostSleepCallback(M2C_UNK);
     void func_0202ab60(void);
@@ -586,7 +611,7 @@ void InitSoundDriver(void) {
         return;
     }
     M2C_FIELD(&gSoundInitState, s32 *, SOUND_INIT_DONE) = 1;
-    func_02008fcc((M2C_UNK)&gSoundInitState);
+    InitSoundCommandSystem((M2C_UNK)&gSoundInitState);
     M2C_FIELD(&gSoundInitState, void **, SOUND_INIT_STOP) = (void *)Sound_StopAllChannels;
     M2C_FIELD(&gSoundInitState, s32 *, 0x14) = 0;
     M2C_FIELD(&gSoundInitState, void **, SOUND_INIT_SILENCE) = (void *)func_0202aa58;
@@ -600,18 +625,21 @@ void InitSoundDriver(void) {
     M2C_FIELD(&gSoundInitState, s32 *, 4) = 1;
 }
 
-void func_0202a9f0(void) {
+/* One frame of the sound driver, run by the main loop: apply every command the
+ * ARM7 has finished, start and update the voices, streamed voice volumes and
+ * player channels, then flush the commands queued here to the ARM7. */
+void Sound_UpdateDriver(void) {
     s32 Sound_DequeueCommand(M2C_UNK);
     M2C_UNK Sound_FlushCommands(M2C_UNK);
     M2C_UNK Sound_UpdateVoices();
     M2C_UNK UpdateStreamVoiceVolume();
-    M2C_UNK func_0202d9e4();
+    M2C_UNK Sound_UpdatePlayerChannels();
     do {
-
+        /* Drop the commands the ARM7 already applied. */
     } while (Sound_DequeueCommand(0) != 0);
     Sound_UpdateVoices();
     UpdateStreamVoiceVolume();
-    func_0202d9e4();
+    Sound_UpdatePlayerChannels();
     Sound_FlushCommands(0);
 }
 
@@ -639,26 +667,28 @@ void func_0202aa58(void) {
  * when none are asked for, fail when any is already reserved, otherwise tell the
  * sound driver (its ARM7 side) to reserve them and record the mask as reserved. */
 s32 Sound_ReserveChannels(s32 channelMask) {
- M2C_UNK func_02008dbc(M2C_UNK, M2C_UNK);
+ M2C_UNK Sound_Arm7ReserveChannels(M2C_UNK, M2C_UNK);
  extern M2C_UNK gSoundChannelMasks;
  if (!channelMask) return 1;
  if (channelMask & M2C_FIELD(&gSoundChannelMasks, s32 *, SOUND_CHANNEL_MASK_RESERVED)) return 0;
- func_02008dbc(channelMask, 0);
+ Sound_Arm7ReserveChannels(channelMask, 0);
  { s32 v = M2C_FIELD(&gSoundChannelMasks, s32 *, SOUND_CHANNEL_MASK_RESERVED); channelMask = v | (u32)channelMask;
  M2C_FIELD(&gSoundChannelMasks, s32 *, SOUND_CHANNEL_MASK_RESERVED) = channelMask; }
  return 1;
 }
 
-void func_0202aaac(s32 arg0) {
-    M2C_UNK func_02008ddc(M2C_UNK, M2C_UNK);
+/* Release the hardware channels in `channelMask` (and, on ARM7, tell the sound
+ * driver to stop holding them), then clear them from the reserved mask. */
+void Sound_ReleaseChannels(s32 channelMask) {
+    M2C_UNK Sound_Arm7ReleaseChannels(M2C_UNK, M2C_UNK);
     extern M2C_UNK gSoundChannelMasks;
-    M2C_UNK *g;
-    if (arg0 == 0) {
+    M2C_UNK *masks;
+    if (channelMask == 0) {
         return;
     }
-    func_02008ddc(arg0, 0);
-    g = &gSoundChannelMasks;
-    g[2] = g[2] & ~arg0;
+    Sound_Arm7ReleaseChannels(channelMask, 0);
+    masks = &gSoundChannelMasks;
+    masks[SOUND_CHANNEL_MASK_RESERVED / 4] = masks[SOUND_CHANNEL_MASK_RESERVED / 4] & ~channelMask;
 }
 
 void func_0202aadc(s32 arg0) {
@@ -686,7 +716,7 @@ s32 Sound_AllocChannel(void) {
     return -1;
 }
 #pragma pop
-void func_0202ab40(s32 arg0) {
+void Sound_FreeChannel(s32 arg0) {
     extern M2C_UNK gSoundChannelMasks;
     M2C_UNK *g = &gSoundChannelMasks;
     M2C_UNK m = 1;
@@ -700,7 +730,7 @@ void func_0202ab60(void) {
     M2C_FIELD(&gSoundChannelMasks, u32 *, 4) = 0;
 }
 
-void func_0202ab7c(s32 arg0, s8 arg1) {
+void Sound_SetChannelMixVolume(s32 arg0, s8 arg1) {
     extern u8 data_0213b724[];
     data_0213b724[arg0 * 0x24] = (u8)arg1;
 }

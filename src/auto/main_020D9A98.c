@@ -6,7 +6,7 @@
    reset the sprite bank of both 3D engines, release the entity's five sprite
    objects, and reset the engine scroll offsets. */
 void TeardownEntity(void *a) {
-void Link_SetMessageHandler(s32);s32 IsLinkResultFlagSet(s32);s32 GetLinkPhase(void);void Link_InstallCommandHandler(void);void func_ov009_02225b54(s32);void SpawnPlayerAnnounce(s32);void EnableMapConfirm(void);M2C_UNK ResetPlayerMask(void);M2C_UNK DisableMapConfirm(void);s32 IsOnlineSessionFlagSet(s32);void CreateVoiceChatWidget(s32);void HideAllSpriteSlots(void);void DeleteSpriteObject(s32);M2C_UNK SetSpriteSlotScroll(s32,s32);
+void Link_SetMessageHandler(s32);s32 IsLinkResultFlagSet(s32);s32 GetLinkPhase(void);void Link_InstallCommandHandler(void);void func_ov009_02225b54(s32);void SpawnPlayerAnnounce(s32);void EnableMapConfirm(void);M2C_UNK ClearOverlayEventFlags(void);M2C_UNK DisableMapConfirm(void);s32 IsOnlineSessionFlagSet(s32);void CreateVoiceChatWidget(s32);void HideAllSpriteSlots(void);void DeleteSpriteObject(s32);M2C_UNK SetSpriteSlotScroll(s32,s32);
 extern void **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
 s32 i;void **savedEngine;u16 *volatile bank10;u16 *volatile bank20;u16 *volatile bank40;u16 *volatile bank80;u16 *volatile bank100;u16 *volatile oamAttr;
 Link_SetMessageHandler(0);
@@ -14,12 +14,12 @@ switch(M2C_FIELD(a,s32 *,0x34)){
 case 0:
 if(!IsLinkResultFlagSet(1)&&(GetLinkPhase()==4||GetLinkPhase()==5)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
 Link_InstallCommandHandler();func_ov009_02225b54(M2C_FIELD(a,s32 *,0x18));SpawnPlayerAnnounce(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
-}else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();DisableMapConfirm();}break;
+}else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ClearOverlayEventFlags();DisableMapConfirm();}break;
 case 1:case 2:
 if(!IsOnlineSessionFlagSet(6)&&IsOnlineSessionFlagSet(3)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
 if(M2C_FIELD(a,s32 *,0x34)==2&&M2C_FIELD(a,s32 *,0x38)==0)CreateVoiceChatWidget(7);
 Link_InstallCommandHandler();SpawnPlayerAnnounce(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
-}else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();DisableMapConfirm();}break;
+}else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ClearOverlayEventFlags();DisableMapConfirm();}break;
 }
 savedEngine=gCur3DSpriteEngine;
 for(i=0;i<2;i++){
@@ -381,7 +381,7 @@ void HandleTwoOptionListInput(u8 *option) {
 #pragma push
 #pragma opt_schedule off
 void func_020da480(void *arg0) {
-    M2C_UNK ResetPlayerMask(void);
+    M2C_UNK ClearOverlayEventFlags(void);
     M2C_UNK DeleteVoiceChatWidgets(void);
     M2C_UNK Configure3DSpriteLayer(M2C_UNK, void *);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
@@ -415,7 +415,7 @@ void func_020da480(void *arg0) {
     M2C_UNK r0v;
     u8 displayMode;
 
-    ResetPlayerMask();
+    ClearOverlayEventFlags();
     DeleteVoiceChatWidgets();
 
     unitStruct = *(void **)((u8 *)arg0 + 0x68);

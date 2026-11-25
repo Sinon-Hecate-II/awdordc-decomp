@@ -200,9 +200,12 @@ M2C_FIELD(M2C_FIELD(&gNasLogin,void **,NAS_LOGIN_CONTEXT),s32 *,NAS_LOGIN_STATE)
 }
 }
 
+/* Whether the NAS login has finished: a login context exists and its state has
+ * reached NAS_STATE_DONE. */
 s32 IsNasLoginDone(void) {
     extern M2C_UNK gNasLogin;
-    if ((M2C_FIELD(&gNasLogin, void **, 4) != NULL) && (M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 4) == 5)) {
+    if ((M2C_FIELD(&gNasLogin, void **, NAS_LOGIN_CONTEXT) != NULL) &&
+        (M2C_FIELD(M2C_FIELD(&gNasLogin, void **, NAS_LOGIN_CONTEXT), s32 *, NAS_LOGIN_STATE) == NAS_STATE_DONE)) {
         return 1;
     }
     return 0;
@@ -275,11 +278,14 @@ buf[n]=0;
 return SetGpiStatus(-1,0,buf)==0;
 }
 
-s32 func_0203a8dc(void) {
-extern M2C_UNK gMatchSessionMgr;
-void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);
-if(p && (u8)(M2C_FIELD(p,u8 *,0x1e)+255)<=1)return 0;
-return 1;
+/* Whether the match session has nothing outstanding: true when there is no
+ * session, or when its setup step is neither 1 nor 2 (a peer's connect or
+ * profile-search reply is awaited in those two steps). */
+s32 MatchSession_IsSettled(void) {
+    extern M2C_UNK gMatchSessionMgr;
+    void *session = M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION);
+    if (session && (u8)(M2C_FIELD(session, u8 *, MATCH_SESSION_STATE) + 255) <= 1) return 0;
+    return 1;
 }
 
 /* Empties the 12-byte player record `record` of the online match: while the match
@@ -356,7 +362,7 @@ M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void**,8),s32*,88)=0;
 void func_0203aabc(void) {
 extern M2C_UNK gMatchSessionMgr;
 s32 HasNetError(void *); s32 MatchSession_Think(void); s32 func_0203bcf8(s32); s32 func_02058c84(void);
-void gpiInfoReadSocket(void); void gpiInfoCloseSocket(void); void SyncSessionPlayerConnections(s32,s32); void func_0203b3c4(void);
+void gpiInfoReadSocket(void); void gpiInfoCloseSocket(void); void SyncSessionPlayerConnections(s32,s32); void MatchSession_Finish(void);
 void *ctx,*child; u32 status;
 ctx=M2C_FIELD(&gMatchSessionMgr,void **,8);
 if(!ctx)return;
@@ -394,7 +400,7 @@ M2C_FIELD(ctx,u8 *,0x1f)++;
 ctx=M2C_FIELD(&gMatchSessionMgr,void **,8);
 if(M2C_FIELD(ctx,u8 *,0x1f)<2)return;
 M2C_FIELD(ctx,u8 *,0x1f)=0;
-func_0203b3c4();
+MatchSession_Finish();
 }
 
 /* Start the match session's play phase: store its four callbacks and their data
@@ -424,13 +430,13 @@ M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,MATCH_SESSION_STATUS)=1;
  * callback along with the session's player-list-changed flag and data, then runs
  * the session's teardown step.  Nothing happens without a session or an error. */
 void ReportMatchSessionError(s32 error,s32 detail) {
-extern M2C_UNK gMatchSessionMgr;void SetNetError(s32,s32);void func_0203b128(void);
+extern M2C_UNK gMatchSessionMgr;void SetNetError(s32,s32);void MatchSession_Teardown(void);
 void *session;
 if(!M2C_FIELD(&gMatchSessionMgr,void **,MATCH_SESSION_MGR_SESSION)||!error)return;
 SetNetError(error,detail);
 session=M2C_FIELD(&gMatchSessionMgr,void **,MATCH_SESSION_MGR_SESSION);
 if(M2C_FIELD(session,s32 *,MATCH_SESSION_STATUS)!=0 && M2C_FIELD(session,s32 *,MATCH_SESSION_STATUS)!=2) M2C_FIELD(session,void (**)(s32,u8,s32),MATCH_SESSION_EVENT_CB)(error,M2C_FIELD(session,u8 *,MATCH_SESSION_DIRTY),M2C_FIELD(session,s32 *,MATCH_SESSION_EVENT_DATA));
-func_0203b128();
+MatchSession_Teardown();
 }
 
 /* Incoming signed buddy request: when a match session is running and has player

@@ -158,20 +158,28 @@ void UpdateSlotEffectSound(s32 effect, s32 frame) {
     PlaySlotScriptedSound(effect, gSoundLevelVolumes[variant], 0);
 }
 
-void StopEffectSlotSound(s32 arg0,s32 arg1,s32 arg2) {
-M2C_UNK StopSlotSound(s32,s32); extern M2C_UNK gEffectTable;
-if(arg2==0 && M2C_FIELD(*(void **)((u8*)&gEffectTable+arg0*0x18),u8 *,0x3d)==3)return;
-StopSlotSound(arg0,arg1);
+/* Stop effect slot `slot`'s sound, fading it out over `fadeFrames` frames.  Unless
+ * the stop is forced, the sound is left alone when the slot's effect is in its
+ * last phase (3): the effect is already going away and stops its sound itself. */
+void StopEffectSlotSound(s32 slot, s32 fadeFrames, s32 force) {
+    M2C_UNK StopSlotSound(s32, s32);
+    extern M2C_UNK gEffectTable;
+    if (force == 0 && M2C_FIELD(&gEffectTable, EffectSet **, slot * 24)->phase == 3) return;
+    StopSlotSound(slot, fadeFrames);
 }
 
 /* Plays effect `slot`'s volume sound for the effect's default variant, throttled
  * to at most once every four frames while that variant is showing. */
 void PlaySlotVolumeSound(s32 slot){extern M2C_UNK gEffectTable;extern u8 gEffectDefaultVariant;extern u8 gSlotVolumeSoundDelay[];u32 variant=*((u8 *)&gEffectDefaultVariant+slot*24);void *effect=*(void **)((u8 *)&gEffectTable+slot*24);if(M2C_FIELD((u8 *)effect+variant,u8 *,0x3e)==1){if((gSlotVolumeSoundDelay)[slot])return;(gSlotVolumeSoundDelay)[slot]=4;}PlaySlotSound(slot,M2C_FIELD((u8 *)M2C_FIELD(effect,void **,0x34)+variant*4,s32 *,8));}
 
-void func_020afa64(s32 a) {
+/* Play effect slot `slot`'s sound with the start sound of the opposite slot's
+ * effect set (the sound is panned to `slot`'s side by PlaySlotSound). */
+void PlayOtherSlotStartSound(s32 slot) {
     extern M2C_UNK gEffectTable;
-    s32 b = (a == 0) ? 1 : 0;
-    PlaySlotSound(a, M2C_FIELD(M2C_FIELD(*(void **)((u8 *)&gEffectTable + b * 24), void **, 0x34), s32 *, 0x10));
+    s32 other = (slot == 0) ? 1 : 0;
+    EffectSet *effect = M2C_FIELD(&gEffectTable, EffectSet **, other * 24);
+
+    PlaySlotSound(slot, effect->sounds->startSound);
 }
 
 /* Play effect slot `slot`'s alternate variant sound while the effect in the other
@@ -187,11 +195,19 @@ PlaySlotSound(slot,M2C_FIELD((u8 *)M2C_FIELD(*(void **)((u8 *)&gEffectTable+slot
  * have their own effect sound, every other phase gets the default one. */
 void PlaySlotPhaseSound(s32 slot){extern M2C_UNK gEffectTable;EffectSet *effect=M2C_FIELD(&gEffectTable,EffectSet **,slot*24);switch(effect->phase){case 2:PlaySlotSound(slot,0x2000b);return;case 3:PlaySlotSound(slot,0x2000c);return;default:PlaySlotSound(slot,0x2000a);return;}}
 
-void func_020afb94(s32 arg0) {
-extern M2C_UNK gEffectTable;
-void PlaySlotPhaseSound(s32);
-s32 v=M2C_FIELD(M2C_FIELD(*(void **)((u8*)&gEffectTable+arg0*24),void **,0x34),s32 *,0x1c);
-if(v){PlaySlotSound(arg0,v);return;}PlaySlotPhaseSound(arg0);
+/* Play effect slot `slot`'s stop sound (the one the effect plays when it goes
+ * away); when its effect set has none, fall back to the slot's phase sound. */
+void PlaySlotStopSound(s32 slot) {
+    extern M2C_UNK gEffectTable;
+    void PlaySlotPhaseSound(s32);
+    EffectSet *effect = M2C_FIELD(&gEffectTable, EffectSet **, slot * 24);
+    s32 stopSound = effect->sounds->stopSound;
+
+    if (stopSound) {
+        PlaySlotSound(slot, stopSound);
+        return;
+    }
+    PlaySlotPhaseSound(slot);
 }
 
 void func_020afbcc(void) {

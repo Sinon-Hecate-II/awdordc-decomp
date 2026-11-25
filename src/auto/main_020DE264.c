@@ -332,7 +332,16 @@ void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
     }
 }
 #pragma opt_strength_reduction off
-void MatchingUnitSceneCallback(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,void *arg5) { register u16 *p=(u16 *)((u8 *)arg5+0x48); if(arg0!=0)return; if(arg1==0)return; if(arg2!=0)return; if(arg3!=0)*p|=0x100; }
+/* Match event callback of the matching/unit scene: when a peer has closed the
+ * connection and the match target was not cleared, flag the scene (+0x48 bit 8)
+ * so its update closes the window and shows the failure message. */
+void MatchingUnitSceneCallback(s32 status, s32 closed, s32 targetCleared, s32 serving, s32 slot, void *scene) {
+    register u16 *flags = (u16 *)((u8 *)scene + 0x48);
+    if (status != 0) return;
+    if (closed == 0) return;
+    if (targetCleared != 0) return;
+    if (serving != 0) *flags |= 0x100;
+}
 
 void func_020deb74(M2C_UNK arg0) {
     M2C_UNK SetupUnitPreviewScene(M2C_UNK, M2C_UNK);
@@ -385,17 +394,17 @@ void Sprite_ResumeAnimation(void*);
 void PlaySoundEffect(u32);
 u32 GetActivePlayerMask(void);
 u32 CountBits(void);
-u32 func_ov009_02225470(void);
+u32 GetLinkConnectedPlayerCount(void);
 void Show3DSpriteSlide(void*);
 void Hide3DSpriteSlide(void*);
 void SetTextById(void*,u32);
-u32 GetReadyPlayerMask(void);
+u32 GetSessionPlayerMask(void);
 void GetLinkLocalPlayerInfo(void);
 void RequestLinkDownloadMode(int);
 void AnnounceLinkPlayer(void);
 void EnableMapConfirm(void);
-void ResetPlayerMask(void);
-int func_020890b8(void*);
+void ClearOverlayEventFlags(void);
+int Is3DSpriteSliding(void*);
 int Is3DSpriteVisible(void*);
 void *GetActiveLinkPlayerSlot(int);
 void func_ov009_022258a8(void*);
@@ -482,7 +491,7 @@ if((M2C_FIELD(self,s8 *,0x41)>1||v>1)&&M2C_FIELD(self,s8 *,0x41)!=v)PlaySoundEff
 M2C_FIELD(self,u8 *,0x41)=v;
 
 if(M2C_FIELD(self,u16 *,0x48)&1){
-v=func_ov009_02225470();
+v=GetLinkConnectedPlayerCount();
 p=M2C_FIELD(self,void * *,0x54);
 
 if(v>=2){if(!SetupIsActive(p)){SetupSetFrame(p,((SetupSprite*)p)->baseFrame,0);
@@ -499,7 +508,7 @@ if(!SetupIsActive(p))return;
 can=(u8)(M2C_FIELD(M2C_FIELD(p,void * *,0x64),s8 *,0xb)==1 || ((((SetupSprite*)p)->alternate) && M2C_FIELD(M2C_FIELD(p,void * *,0x64),s8 *,0xc)==1));
 if(!can && !(keys&1))return;
 
-v=GetReadyPlayerMask();
+v=GetSessionPlayerMask();
 if(v!=GetActivePlayerMask())return;
 
 GetLinkLocalPlayerInfo();
@@ -510,24 +519,24 @@ if(M2C_FIELD(p,s8 *,0x5a)>=0){SetupSetFrame(p,(((SetupSprite*)p)->baseFrame)+1,1
 RequestLinkDownloadMode(0);
 AnnounceLinkPlayer();
 EnableMapConfirm();
-ResetPlayerMask();
+ClearOverlayEventFlags();
 Sprite_ResumeAnimation(self);
 PlaySoundEffect(0x1000e);return;
 
 }else{
-v=func_ov009_02225470();
+v=GetLinkConnectedPlayerCount();
 p=M2C_FIELD(self,void * *,0x60);
 
-if(v>=2){if(!func_020890b8(p)&&!Is3DSpriteVisible(M2C_FIELD(self,void * *,0x60))){Show3DSpriteSlide(M2C_FIELD(self,void * *,0x60));
+if(v>=2){if(!Is3DSpriteSliding(p)&&!Is3DSpriteVisible(M2C_FIELD(self,void * *,0x60))){Show3DSpriteSlide(M2C_FIELD(self,void * *,0x60));
 SetTextById(M2C_FIELD(self,void * *,0x64),0x44000012);
 }}
-else if(!func_020890b8(p)&&Is3DSpriteVisible(M2C_FIELD(self,void * *,0x60))){Hide3DSpriteSlide(M2C_FIELD(self,void * *,0x60));
+else if(!Is3DSpriteSliding(p)&&Is3DSpriteVisible(M2C_FIELD(self,void * *,0x60))){Hide3DSpriteSlide(M2C_FIELD(self,void * *,0x60));
 SetTextById(M2C_FIELD(self,void * *,0x64),0x44000011);
 }
 p=GetActiveLinkPlayerSlot(0);
 if(!p||(M2C_FIELD(p,u8 *,0x16)&2))return;
 
-v=GetReadyPlayerMask();
+v=GetSessionPlayerMask();
 if(v!=GetActivePlayerMask())return;
 
 func_ov009_022258a8(self);
@@ -535,7 +544,7 @@ func_ov009_022258a8(self);
 }
 AnnounceLinkPlayer();
 EnableMapConfirm();
-ResetPlayerMask();
+ClearOverlayEventFlags();
 Sprite_ResumeAnimation(self);
 PlaySoundEffect(0x1000e);
 

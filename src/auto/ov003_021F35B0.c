@@ -328,7 +328,7 @@ void *DestroyOv003BattleSetup(Ov003BattleSetup *setup) {
     s32 GetSceneSlideOffset(void);
     void func_ov003_021f1858(void);
     void func_ov003_021f18a4(void);
-    void func_020af1e4(void);
+    void DeleteWallpaperSpritesOnAllEngines(void);
     void DeleteOv003SceneSprite(void);
     M2C_UNK MemFree();
     void *mapName;
@@ -366,7 +366,7 @@ void *DestroyOv003BattleSetup(Ov003BattleSetup *setup) {
         }
         func_ov003_021f18a4();
     }
-    func_020af1e4();
+    DeleteWallpaperSpritesOnAllEngines();
     DeleteOv003SceneSprite();
     MemFree(setup->buffer38);
     MemFree(setup->buffer3C);
@@ -394,7 +394,7 @@ void *func_ov003_021f3e08(void *obj) {
     s32 GetSceneSlideOffset(void);
     void func_ov003_021f1858(void);
     void func_ov003_021f18a4(void);
-    void func_020af1e4(void);
+    void DeleteWallpaperSpritesOnAllEngines(void);
     void DeleteOv003SceneSprite(void);
     M2C_UNK MemFree();
     void *base;
@@ -432,7 +432,7 @@ void *func_ov003_021f3e08(void *obj) {
         }
         func_ov003_021f18a4();
     }
-    func_020af1e4();
+    DeleteWallpaperSpritesOnAllEngines();
     DeleteOv003SceneSprite();
     MemFree(M2C_FIELD(obj, void **, 0x38));
     MemFree(M2C_FIELD(obj, void **, 0x3C));
@@ -534,9 +534,9 @@ u8 func_ov003_021f4038(void) {
 
 u8 func_ov003_021f4064(void) {
     s32 IsLinkSessionActive();
-    s32 func_02084890();
+    s32 IsLocalSessionGuest();
     s32 result;
-    if (IsLinkSessionActive() && func_02084890()) result = 1;
+    if (IsLinkSessionActive() && IsLocalSessionGuest()) result = 1;
     else result = 0;
     return result;
 }

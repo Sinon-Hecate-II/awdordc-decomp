@@ -331,17 +331,23 @@ s32 NextRandomValue(void);
 return ((s32 *)(gArmyQuoteTextIds+armyId*ARMY_DATA_SIZE))[NextRandomValue()%ARMY_DATA_QUOTE_COUNT];
 }
 
-void func_020a3100(s32 arg0) {
+void EnablePlayerSelection(s32 arg0) {
     extern s32 *gCurrentMap;
     M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), s8 *, 0x6815) = 1;
 }
 
-void func_020a3128(s32 arg0){
+void DisablePlayerSelection(s32 arg0){
 extern s32 *gCurrentMap;
 M2C_FIELD(arg0*0x8c+*gCurrentMap,s8 *,0x6815)=0;
 }
 
-u8 func_020a3150(s32 a){extern s32 *gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x6815]!=0;}
+/* Whether player `player` may still pick a unit: the start of its turn enables
+ * the flag while nothing is selected, and clearing its selection state disables it. */
+u8 IsPlayerSelectionEnabled(s32 player) {
+    extern s32 *gCurrentMap;
+    return M2C_FIELD(*gCurrentMap + player * MAP_PLAYER_STRIDE, u8 *,
+                     MAP_PLAYER_STATES + PLAYER_REC_SELECTION_ENABLED) != 0;
+}
 
 /* Set the player's selected unit (0 clears it): drop the selection marker from the
  * player's previous unit and set it on `unit`, and store the unit's record id in
@@ -412,16 +418,39 @@ s32 GetPlayerArmyVariantIfSet(s32 player) {
     return (u8)sprite->armyVariant;
 }
 
-void func_020a338c(s32 a,s32 b){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&~0xc00)|((u32)(b<<30)>>20);}
+/* Store player `player`'s army variant (bits 10..11 of its sprite state); the
+ * variant doubles as the level of CO power the player's army is showing. */
+void SetPlayerArmyVariant(s32 player,s32 variant){
+extern s32 *gCurrentMap;
+s32 record=*gCurrentMap+MAP_PLAYER_STATES+MAP_PLAYER_STRIDE*player;
+M2C_FIELD(record,u32 *,PLAYER_REC_SPRITE)=(M2C_FIELD(record,u32 *,PLAYER_REC_SPRITE)&~PLAYER_ARMY_VARIANT_MASK)|((u32)(variant<<30)>>20);
+}
 
 s32 GetPlayerArmyVariant(s32 a){
 extern s32 *gCurrentMap;
 return (u32)(M2C_FIELD(*gCurrentMap+a*0x8c,s32 *,0x6810)<<20)>>30;
 }
 
-void func_020a33f0(s32 a,u32 b){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&~0x300)|((b<<30)>>22);}
+/* Write the two auxiliary bits (8..9) of player `player`'s PLAYER_REC_SPRITE
+ * word, keeping the army id, the army variant, the sprite set and the CO power
+ * meter around them.  No reader names these bits; every caller clears them. */
+void SetPlayerSpriteAuxBits(s32 player, u32 bits) {
+    extern s32 *gCurrentMap;
+    s32 record = *gCurrentMap + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
 
-void func_020a3428(s32 a,u32 b){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&~0x3000)|((b<<30)>>18);}
+    M2C_FIELD(record, u32 *, PLAYER_REC_SPRITE) =
+        (M2C_FIELD(record, u32 *, PLAYER_REC_SPRITE) & ~0x300) | ((bits << 30) >> 22);
+}
+
+/* Store player `player`'s sprite set/variant (bits 12..13 of its sprite state),
+ * which picks the variant its on-map unit views draw. */
+void SetPlayerSpriteSet(s32 player, u32 spriteSet) {
+    extern s32 *gCurrentMap;
+    s32 record = *gCurrentMap + MAP_PLAYER_STATES + MAP_PLAYER_STRIDE * player;
+
+    M2C_FIELD(record, u32 *, PLAYER_REC_SPRITE) =
+        (M2C_FIELD(record, u32 *, PLAYER_REC_SPRITE) & ~PLAYER_SPRITE_SET_MASK) | ((spriteSet << 30) >> 18);
+}
 
 s32 GetPlayerSpriteSet(s32 a){extern s32 *gCurrentMap;return (u32)(M2C_FIELD(*gCurrentMap+140*a,u32 *,0x6810)<<18)>>30;}
 
@@ -431,26 +460,28 @@ void func_020a348c(void) {
 }
 
 void SetPlayerCoAnimationToIdle(M2C_UNK arg0) {
-    void func_020a338c(s32, s32);
-    func_020a338c(arg0, 0);
+    void SetPlayerArmyVariant(s32, s32);
+    SetPlayerArmyVariant(arg0, 0);
 }
 
 #pragma opt_common_subs off
-void func_020a34a8(s32 a){u32 v;u32 n;extern s32 *gCurrentMap;s32 p;p=*gCurrentMap;p+=0x3a4;p+=0x6400;p+=a*0x8c;v=*(u32*)(p+0x6c);n=(v<<14)>>28;if(n>=10)return;*(u32*)(p+0x6c)=(v&~0x3c000)|(((n+1)<<28)>>14);}
+void AdvancePlayerSpriteState(s32 a){u32 v;u32 n;extern s32 *gCurrentMap;s32 p;p=*gCurrentMap;p+=0x3a4;p+=0x6400;p+=a*0x8c;v=*(u32*)(p+0x6c);n=(v<<14)>>28;if(n>=10)return;*(u32*)(p+0x6c)=(v&~0x3c000)|(((n+1)<<28)>>14);}
 #pragma opt_common_subs reset
-void func_020a34f4(M2C_UNK arg0) {
+void ConsumeDualCoPowerCost(M2C_UNK arg0) {
     s32 GetCoPowerMeterCost(M2C_UNK, M2C_UNK);
     M2C_UNK AddCoPowerMeterPoints(M2C_UNK, s32);
     AddCoPowerMeterPoints(arg0, 0 - GetCoPowerMeterCost(arg0, 2));
 }
 
 #pragma opt_common_subs off
-s32 GetCoPowerMeterPoints(s32 a) {
+/* A player's CO power meter points (bits 21..31 of PLAYER_REC_SPRITE), or 0 when
+ * the player has no army: its army id, the sprite word's low byte, is 0. */
+s32 GetCoPowerMeterPoints(s32 player) {
     extern s32 *gCurrentMap;
-    s32 p = *gCurrentMap + 0x67a4 + 140 * a;
-    s32 *w = (s32 *)(p + 108);
-    if (((u32)(*w << 24) >> 24) == 0) return 0;
-    return (u32)*w >> 21;
+    s32 record = *gCurrentMap + MAP_PLAYER_STATES + MAP_PLAYER_STRIDE * player;
+    s32 *spriteWord = (s32 *)(record + PLAYER_REC_SPRITE);
+    if (((u32)(*spriteWord << 24) >> 24) == 0) return 0;
+    return (u32)*spriteWord >> PLAYER_CO_METER_SHIFT;
 }
 #pragma opt_common_subs reset
 /* Store a player's CO power meter points (bits 21..31 of its sprite state), clamped at zero. */
@@ -497,12 +528,12 @@ s32 GetCoPowerMeterCost(s32 player, s32 level) {
 s32 RefreshPlayerArmyDisplay(s32 player) {
     extern s32 *gCur3DSpriteEngine;
     s32 GetPlayerSpriteSet(s32);
-    void func_020a338c(s32, s32);
+    void SetPlayerArmyVariant(s32, s32);
     void ResetPlayerTurnBonuses(void);
     void RefreshMapView(void);
     M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_QUAD_X) = 0;
     M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_QUAD_Y) = 0;
-    func_020a338c(player, GetPlayerSpriteSet(player));
+    SetPlayerArmyVariant(player, GetPlayerSpriteSet(player));
     ResetPlayerTurnBonuses();
     RefreshMapView();
 }

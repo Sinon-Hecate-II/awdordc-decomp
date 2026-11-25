@@ -31,7 +31,7 @@ void HttpClientTask(Unk02034164 *client) {
     void ResetCurrentConnection(void);
     M2C_UNK MI_CpuFill8(void *, s32, s32);
     void func_02022128(void *, s32);
-    void func_02025188(s32);
+    void SetSocketTlsActive(s32);
     void SetConnectionEndpoint(s32, s32, s32);
     s32 ConnectTransport(void);
     void CloseRawConnection(void);
@@ -91,7 +91,7 @@ void HttpClientTask(Unk02034164 *client) {
         M2C_FIELD(tls, s32 *, 0x800) = M2C_FIELD(client, s32 *, 0x1124);
         M2C_FIELD(tlsConfig, void **, 0xc) = tls;
         func_02022128(data_020fb528, 0xc);
-        func_02025188(1);
+        SetSocketTlsActive(1);
     }
     SetConnectionEndpoint(0, client->port, host);
     if (ConnectTransport() != 0) {

@@ -25,7 +25,7 @@ void func_ov003_021eccd4(void *arg0) {
     s32 GetUnitSpriteHeight(void *);
     s32 InRange(u8, M2C_UNK, M2C_UNK);
     s32 IsSessionHost();
-    s32 func_ov003_021e6d28();
+    s32 IsSessionGuest();
     M2C_UNK SetWaypointListLayout(void *, M2C_UNK);
     s16 GetWaypointSlotX(u8);
     s32 sp0[9];
@@ -124,7 +124,7 @@ void func_ov003_021eccd4(void *arg0) {
                 var_r0_4 = 0;
             }
             M2C_FIELD(arg0, u8 *, 0x39) = temp_r1;
-            if ((var_r0_4 & 0xFF) && (func_ov003_021e6d28() != 0)) {
+            if ((var_r0_4 & 0xFF) && (IsSessionGuest() != 0)) {
                 Show3DSprite(M2C_FIELD(arg0, void **, 0x58));
                 Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s32 *, 0));
             }
@@ -161,7 +161,7 @@ void func_ov003_021eccd4(void *arg0) {
                 var_r0_5 = 0;
             }
             if (var_r0_5 & 0xFF) {
-                if (func_ov003_021e6d28() != 0) {
+                if (IsSessionGuest() != 0) {
                     Hide3DSprite(M2C_FIELD(arg0, void **, 0x58));
                     Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s32 *, 0));
                 }

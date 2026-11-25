@@ -100,12 +100,15 @@ M2C_FIELD(gAiState,u8 *,AI_STATE_RESERVE_RETRY)=2;
 M2C_FIELD(gAiState,u8 *,AI_STATE_ACTION)=0;
 }
 
-s32 GetAiUnitKindValue(s32 a,s32 unused,s32 c) {
-s32 GetUnitKindBuildCost(s32);
-s32 func_020a886c(s32,s32);
-s32 Divide(s32,s32);
-s32 n=GetUnitKindBuildCost(c);
-return Divide(n*(func_020a886c(a,0)+100),100);
+/* The value the AI assigns to a unit of kind `kind` for `player`: its build cost
+ * scaled by the player's cost rate (func_020a886c, in percent) plus the 100%
+ * base. */
+s32 GetAiUnitKindValue(s32 player, s32 unused, s32 kind) {
+    s32 GetUnitKindBuildCost(s32);
+    s32 func_020a886c(s32, s32);
+    s32 Divide(s32, s32);
+    s32 cost = GetUnitKindBuildCost(kind);
+    return Divide(cost * (func_020a886c(player, 0) + 100), 100);
 }
 
 /* Value the AI assigns to a map unit: the unit's stat-block value plus the
@@ -114,14 +117,14 @@ return Divide(n*(func_020a886c(a,0)+100),100);
  * player-adjusted value.  Units at 91 health or more are worth nothing. */
 s32 GetAiUnitValue(M2C_UNK player, M2C_UNK unused, void *unit) {
 s32 Divide(s32,M2C_UNK);
-s32 func_020a2668(void *,u8,u8);
+s32 GetUnitVeteranLevelBonus(void *,u8,u8);
 s32 func_020a7558(void *);
 s32 GetAiUnitKindValue(M2C_UNK,M2C_UNK,s32);
 s32 IsCaptureTargetAt(void *,u8,u8);
 s32 valueCap,hpPenalty,value;u32 health;
 if(((u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_HEALTH)<<25)>>25)>=91)return 0;
 value=0;
-if(!(M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&8))value+=func_020a2668(unit,M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y));
+if(!(M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&8))value+=GetUnitVeteranLevelBonus(unit,M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y));
 if(IsCaptureTargetAt(unit,M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y)))value+=func_020a7558(unit);
 if(value==0)return 0;
 health=(u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_HEALTH)<<25)>>25;

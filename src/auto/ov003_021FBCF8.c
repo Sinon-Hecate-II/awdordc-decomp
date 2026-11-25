@@ -416,14 +416,17 @@ void Ov003_LeaveMapPanel(void *panelObj) {
     DisableMapConfirm();
 }
 
-void Ov003_CloseMapPanel(void *arg0) {
+/* Close the ov003 map-select panel: hide its sliding panel body, put the scene
+ * back into state 2, clear the panel's mode and resume its sprite animation. */
+void Ov003_CloseMapPanel(void *panelObj) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK Hide3DSprite(s32);
     M2C_UNK SetOv003SceneState(M2C_UNK);
-    Hide3DSprite(*M2C_FIELD(arg0, s32 **, 0x6C));
+    Panel *panel = panelObj;
+    Hide3DSprite((s32) panel->sprites[0]);
     SetOv003SceneState(2);
-    M2C_FIELD(arg0, s8 *, 0x38) = 0;
-    Sprite_ResumeAnimation(arg0);
+    panel->mode = 0;
+    Sprite_ResumeAnimation(panelObj);
 }
 
 #pragma scheduling off

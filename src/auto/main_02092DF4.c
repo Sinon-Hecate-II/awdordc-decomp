@@ -42,10 +42,12 @@ s32 MapScriptSetPlayerTeam(void *state) {
  return 1;
 }
 
-s32 MapScriptSetBattleRules(void *arg0) {
+/* Map-script opcode: copy the command's first operand into the map's battle-rule
+ * flags, advance the script one command and keep running. */
+s32 MapScriptSetBattleRules(void *state) {
     extern void **gCurrentMap;
-    M2C_FIELD(*gCurrentMap, s8 *, 0x5155) = (s8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8);
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(*gCurrentMap, s8 *, MAP_BATTLE_RULES) = (s8) M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s16 *, MAP_SCRIPT_OPERAND0);
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -277,13 +279,16 @@ s32 func_0209338c(void *arg0) {
  return 0;
 }
 
-s32 func_020933ac(void *arg0) {
-    M2C_UNK func_0208f8ec(s16, s32);
-    void *temp_r1;
+/* Map-script command: fade the music to the volume the command's first operand
+ * names, over the number of frames in its wide operand, then advance to the next
+ * command. */
+s32 MapScriptFadeMusicToVolume(void *script) {
+    M2C_UNK FadeMusicToVolume(s16, s32);
+    void *command;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 4);
-    func_0208f8ec(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s32 *, 0xC));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    FadeMusicToVolume(M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0), M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2));
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 0;
 }
 
@@ -360,26 +365,33 @@ s32 MapScriptSkipIfArmyDiffers(void *script) {
     return 1;
 }
 
-s32 func_02093564(void *arg0) {
+/* Map-script opcode: set the event flag the command names in MAP_SCRIPT_OPERAND0,
+ * then advance to the next command. */
+s32 MapScriptSetEventFlag(void *script) {
     M2C_UNK SetEventFlag(s16, M2C_UNK);
-    SetEventFlag(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8), 1);
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    SetEventFlag(M2C_FIELD(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP), s16 *, MAP_SCRIPT_OPERAND0), 1);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *)(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_02093590(void *arg0) {
-    SetEventFlag(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8), 0);
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+/* Map-script opcode: clear the event flag the command names in
+ * MAP_SCRIPT_OPERAND0, then advance to the next command. */
+s32 MapScriptClearEventFlag(void *script) {
+    SetEventFlag(M2C_FIELD(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP), s16 *, MAP_SCRIPT_OPERAND0), 0);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *)(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_020935bc(void *arg0) {
-    M2C_UNK LoadDeploymentFile(s32, u8);
-    void *temp_r0;
+/* Map-script command: load the deployment (CO) file named by the command's +4
+ * word, letting its units displace the ones already placed when the low byte at
+ * +0xC is set, then advance the script and keep running. */
+s32 MapScriptLoadDeployment(void *script) {
+    void LoadDeploymentFile(s32, u8);
+    void *command;
 
-    temp_r0 = M2C_FIELD(arg0, void **, 4);
-    LoadDeploymentFile(M2C_FIELD(temp_r0, s32 *, 4), (u8) M2C_FIELD(temp_r0, s32 *, 0xC));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    LoadDeploymentFile(M2C_FIELD(command, s32 *, 4), (u8) M2C_FIELD(command, s32 *, 0xC));
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -608,13 +620,16 @@ s32 MapScriptSetPlayerSkipTurn(void *state) {
     return 1;
 }
 
-s32 func_02093c6c(void *arg0) {
-    M2C_UNK StartScriptedScreenTransition(s16, s16, s32);
-    void *temp_r2;
+/* Map-script command: start a screen transition (operand 0 = 0) or a fade
+ * (operand 0 = 1) in the mode of operand 1, lasting the command's wide operand
+ * at +0xC frames, then advance the script and keep running. */
+s32 MapScriptStartScreenTransition(void *script) {
+    void StartScriptedScreenTransition(s16, s16, s32);
+    void *command;
 
-    temp_r2 = M2C_FIELD(arg0, void **, 4);
-    StartScriptedScreenTransition(M2C_FIELD(temp_r2, s16 *, 8), M2C_FIELD(temp_r2, s16 *, 0xA), M2C_FIELD(temp_r2, s32 *, 0xC));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    StartScriptedScreenTransition(M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0), M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1), M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2));
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -639,7 +654,7 @@ s32 func_02093ce4(void *arg0) {
  * whichever engine gCur3DSpriteEngine already holds.  Advances the script. */
 s32 ScriptCmd_RebuildScene(void *script) {
     M2C_UNK Get3DSpriteTargetMode();
-    M2C_UNK func_020d4ba4();
+    M2C_UNK ShutdownBattleMapPresentation();
     M2C_UNK RebuildSubScreenUi();
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
@@ -661,14 +676,14 @@ s32 ScriptCmd_RebuildScene(void *script) {
     }
     switch (target) {                               /* irregular */
     case DS3D_TARGET_MAIN:
-        func_020d4ba4();
+        ShutdownBattleMapPresentation();
         break;
     case DS3D_TARGET_SUB:
         RebuildSubScreenUi();
         break;
     case DS3D_TARGET_BOTH:
         RebuildSubScreenUi();
-        func_020d4ba4();
+        ShutdownBattleMapPresentation();
         break;
     }
     M2C_FIELD(script, s32 *, 4) = (s32) (M2C_FIELD(script, s32 *, 4) + 0x10);

@@ -9,7 +9,7 @@ typedef struct UnitBac24 { u8 kind,x,y,unk3; u16 flags; u16 health:7;u16 rest:9;
    is refreshed and a unit that died is taken off the map. */
 void BattleUpdateUnitCursor(void){
 extern void **gCurrentMap;
-M2C_UNK ClearCursorUnitCapture();M2C_UNK func_020bf858();s32 IsPlayerLocallyControlled(s32);void func_020a64bc(void *,s32);M2C_UNK func_ov000_021696d4();void UpdateCursorUnitAiKnown(void);M2C_UNK RevealUnitsAroundCursor(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void MarkUnitMovePath(void *,void *,void *,void *);void RemoveUnit(s32);M2C_UNK RefreshMapView();s32 func_020d66fc(void *);void RunCursorUnitEventWithValue(void *,s32);void RunCursorUnitEvent(void *);void RefreshMapCursorCellCache(void);
+M2C_UNK ClearCursorUnitCapture();M2C_UNK func_020bf858();s32 IsPlayerLocallyControlled(s32);void ChargeUnitMoveFuel(void *,s32);M2C_UNK DeleteAllUnitMoveObjects();void UpdateCursorUnitAiKnown(void);M2C_UNK RevealUnitsAroundCursor(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void MarkUnitMovePath(void *,void *,void *,void *);void RemoveUnit(s32);M2C_UNK RefreshMapView();s32 MovePathIsAttack(void *);void RunCursorUnitEventWithValue(void *,s32);void RunCursorUnitEvent(void *);void RefreshMapCursorCellCache(void);
 BattleMapUnit *unit;u8 *map;s32 carrierId;u32 tileIndex;
 ClearCursorUnitCapture();func_020bf858();
 /* the unit under the cursor and the units it carries stand on the cursor's tile */
@@ -24,8 +24,8 @@ M2C_FIELD((u8*)*gCurrentMap+M2C_FIELD(M2C_FIELD(*gCurrentMap,u8**,MAP_CURSOR_UNI
 M2C_FIELD((u8*)*gCurrentMap+M2C_FIELD(M2C_FIELD(*gCurrentMap,u8**,MAP_CURSOR_UNIT),u8*,13)*14,u8*,MAP_UNIT_RECORDS+2)=M2C_FIELD(*gCurrentMap,s16*,MAP_CURSOR_Y);
 }
 /* the cursor keeps its direction only while the player may still choose one */
-if(IsPlayerLocallyControlled(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER))){func_020a64bc(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT),M2C_FIELD(*gCurrentMap,u8*,MAP_CURSOR_DIR));
-M2C_FIELD(*gCurrentMap,u8*,MAP_CURSOR_DIR)=0;}func_ov000_021696d4();
+if(IsPlayerLocallyControlled(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER))){ChargeUnitMoveFuel(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT),M2C_FIELD(*gCurrentMap,u8*,MAP_CURSOR_DIR));
+M2C_FIELD(*gCurrentMap,u8*,MAP_CURSOR_DIR)=0;}DeleteAllUnitMoveObjects();
 unit=M2C_FIELD(*gCurrentMap,BattleMapUnit**,MAP_CURSOR_UNIT);unit->flags|=1;
 unit=M2C_FIELD(*gCurrentMap,BattleMapUnit**,MAP_CURSOR_UNIT);if(unit->flags&8)unit->flags|=2;
 map=*gCurrentMap;carrierId=M2C_FIELD(map,u8*,MAP_CURSOR_CARRIER);
@@ -49,7 +49,7 @@ unit=M2C_FIELD(*gCurrentMap,BattleMapUnit**,MAP_CURSOR_UNIT);
 /* a unit without health is taken off the map */
 if(!unit->health){if(unit)carrierId=unit-(BattleMapUnit*)((u8*)*gCurrentMap+MAP_UNIT_RECORDS);else carrierId=0;RemoveUnit(carrierId);}
 RefreshMapView();
-if(func_020d66fc((u8*)*gCurrentMap+MAP_CURSOR_PATH))RunCursorUnitEventWithValue(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT),11);
+if(MovePathIsAttack((u8*)*gCurrentMap+MAP_CURSOR_PATH))RunCursorUnitEventWithValue(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT),11);
 else RunCursorUnitEvent(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT));
 RefreshMapCursorCellCache();
 }
@@ -57,9 +57,9 @@ RefreshMapCursorCellCache();
 void func_020bb028(void) {
     M2C_UNK func_020bf858();
     M2C_UNK RefreshMapView();
-    M2C_UNK func_ov000_021696d4();
+    M2C_UNK DeleteAllUnitMoveObjects();
     func_020bf858();
-    func_ov000_021696d4();
+    DeleteAllUnitMoveObjects();
     RefreshMapView();
 }
 
@@ -106,7 +106,7 @@ void func_020bb110(void) {
     extern void **gCurrentMap;
     s32 GetUnitCaptureRate(void *, s16, s16);
     M2C_UNK ClearCursorUnitCapture();
-    void func_020baaac(void);
+    void SyncCursorOldPosition(void);
     s32 IsPlayerHuman(u16);
     M2C_UNK AddRecordValue(s32, s32);
     s32 func_020cd5d8(void);
@@ -134,7 +134,7 @@ void func_020bb110(void) {
     else
         unitId = 0;
     ClearCursorUnitCapture();
-    func_020baaac();
+    SyncCursorOldPosition();
 
     map = *gCurrentMap;
     previous = M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT)->facing;
@@ -340,7 +340,7 @@ M2C_UNK AddRecordValue(s32, s32);
 s32 GetUnitBuildCost(s32, s32);
 void AddPlayerFunds(s32, s32);
 s32 IsPlayerLocallyControlled(s32);
-void func_020a64bc(void *, s32);
+void ChargeUnitMoveFuel(void *, s32);
 s32 IsUnitSelected(BattleMapUnitHead *);
 void ReplacePlayerSelectedUnit(BattleMapUnitHead *, BattleMapUnitHead *);
 void func_020d31e4(s32, s32);
@@ -387,7 +387,7 @@ void func_020bb768(void) {
     if (amount > limit) unit->ammo = limit;
     else unit->ammo = amount;
     if (IsPlayerLocallyControlled(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
-        func_020a64bc(M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT), M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_DIR));
+        ChargeUnitMoveFuel(M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT), M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_DIR));
         M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_DIR) = 0;
     }
     unit = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT);
@@ -399,7 +399,7 @@ void func_020bb768(void) {
         ReplacePlayerSelectedUnit(other, M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT));
     }
     other->kind = 0;
-    func_020baaac();
+    SyncCursorOldPosition();
     func_020d31e4(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER),
         M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->kind);
 }

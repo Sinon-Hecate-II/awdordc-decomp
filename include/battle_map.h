@@ -82,6 +82,12 @@ typedef struct UnitStatBlock {
     s16 valueA;  /* +0x0A */
 } UnitStatBlock;
 
+/* The stat block's two word stats: +0x08 is the damage-percentage bonus (zero for
+ * a unit kind that cannot attack), +0x0A the attack-power percentage bonus (the
+ * part unit attack power adds its 100 base to). */
+#define UNIT_STAT_DAMAGE_BONUS       0x08
+#define UNIT_STAT_ATTACK_POWER_BONUS 0x0A
+
 /* One commander's bonus record in the commander bonus table, 0x48 bytes: the
  * stat bonuses every unit of the commander gets, then per-unit-kind
  * availability flags.  The table is indexed by commander id. */
@@ -131,7 +137,7 @@ enum {
 #define MAP_ACTIVE_PLAYER   0x52b6 /* u16 player whose units are being processed, saved and restored around influence builds */
 #define MAP_CURSOR_UNIT     0x52d0 /* BattleMapUnit * of the unit under the cursor */
 #define MAP_CURSOR_UNIT_ID  0x52d4 /* u8 id of the unit under the cursor */
-#define MAP_CURSOR_DIR      0x52d5 /* u8 direction the cursor points at */
+#define MAP_CURSOR_DIR      0x52d5 /* u8 direction the cursor points at; ResolvePathAttack also stores the move cost of the path here, which ChargeUnitMoveFuel then charges to the unit's fuel */
 #define MAP_CURSOR_CARRIER  0x52d6 /* u8 id of the transport carrying that unit, 0 if none */
 #define MAP_CURSOR_OLD_X    0x52d8 /* s16 the cursor position before the last move */
 #define MAP_CURSOR_OLD_Y    0x52da
@@ -362,6 +368,7 @@ enum {
 #define MAP_UNIT_COUNT      256    /* unit records in MAP_UNIT_RECORDS */
 #define MAP_UNIT_GROUP_SIZE 64     /* records per player slot; a record's owner (player << 6) picks its group */
 #define MAP_UNIT_GROUP_BASE 0x52a8 /* u16 base id of the current player's unit group (gPlayerUnitIdBase[MAP_CURRENT_PLAYER], the owner bits of a group) */
+#define MAP_UNIT_ID_OWNER_MASK 0xC0 /* top two bits of a unit id: the owner group, compared with MAP_UNIT_GROUP_BASE */
 #define MAP_UNIT_GROUP_SCAN 0x33   /* exclusive end of the unit ids scanned within a group: base+1 .. base+0x33 */
 
 /* The map's order queue: 8-byte MapOrder records at MAP_ORDERS, ended by one
@@ -492,6 +499,10 @@ typedef struct MapSettingsPlayer {
 #define CO_PORTRAIT_TILE_STRIDE 4
 #define CO_PORTRAIT_TILE_NONE   0xFFFF
 
+/* Backgrounds of the occupation screen (GetOccupationBackgroundIndex): one name
+ * (gOccupationBackgroundNames) per property terrain kind in the table. */
+#define OCCUPATION_BACKGROUND_COUNT 9
+
 /* gMapConfig, the decoded per-battle configuration (a 16-byte record): a u16
  * flags word followed by the battle setting, value limits and per-player mask. */
 #define MAPCONFIG_FLAGS     0x00 /* u16 packed rule flags */
@@ -501,6 +512,7 @@ typedef struct MapSettingsPlayer {
 #define MAPCONFIG_PROPERTY_LIMIT 0x02 /* u8 properties a player must own to win; 0 disables the rule */
 #define MAPCONFIG_CO_POWER  0x1000 /* bit 12 of MAPCONFIG_FLAGS: CO powers are enabled */
 #define MAPCONFIG_ARMY_MODE 0x2000 /* bit 13 of MAPCONFIG_FLAGS: army mode — the map uses per-army movement costs and the CO-zone bonus tables */
+#define MAPCONFIG_LIMIT_FLAG 0x0040 /* bit 6 of MAPCONFIG_FLAGS: the second value limit applies (MAP_SETTINGS_VALUE_FLAG) */
 #define MAPCONFIG_UNBUILDABLE_KINDS 0x0C /* u32 per unit kind: a set bit means the map forbids building that kind (a map script sets and clears the bits) */
 
 /* Packed per-map settings, saved with a slot and copied into the battle map and
@@ -537,6 +549,7 @@ typedef struct MapSettings {
  #define MAP_UNIT_CAPTURE_SHIFT 11   /* first bit of the capture-points field in MAP_UNIT_CAPTURE */
  #define MAP_UNIT_CAPTURE_MASK  0xf800 /* the five capture-point bits in MAP_UNIT_CAPTURE */
 #define MAP_UNIT_FUEL       0x0A /* u8 fuel in the low seven bits */
+#define MAP_UNIT_FUEL_MASK  0x7F /* the seven fuel bits of MAP_UNIT_FUEL */
 #define MAP_UNIT_MOVE_PLANNED 0x80 /* bit 7 of the fuel byte: the AI has planned a move for the unit (SetMapCursor sets it) */
 #define MAP_UNIT_CAPTURE_COMPLETE 20 /* capture points at which a property is captured */
 #define MAP_UNIT_HEALTH_HEALTHY 61 /* lowest HP (0..100) the AI counts as healthy */
@@ -676,6 +689,7 @@ typedef struct MapTargetList {
 /* Steps of the battle-map state machine (MAP_STATE), one run per frame by the
  * battle-map state dispatcher in main_020D3464.  15 and 17 are unused. */
 enum {
+    MAP_STATE_NONE             = 0,  /* no step running: the state dispatcher does nothing */
     MAP_STATE_TURN_LIMIT       = 1,  /* check the day limit, then schedule the next turn */
     MAP_STATE_ADVANCE_TURN     = 2,  /* advance the turn to the next active player */
     MAP_STATE_BEGIN_PHASE      = 3,  /* start the player's phase (BeginPlayerPhase) */
@@ -800,6 +814,7 @@ enum {
 #define MAP_SCRIPT_STATE_WAIT   0x08 /* wait callback run each frame while the command runs; 0 finishes it */
 #define MAP_SCRIPT_STATE_PLAYER 0x11 /* u8 player id the wait command targets */
 #define MAP_SCRIPT_STATE_TURN   0x12 /* s16 map turn the wait command waits for, -1 for any */
+#define MAP_SCRIPT_STATE_DELAY  0x0C /* u16 frames left to wait before the next command runs (same slot as DialogSequence.delay) */
 #define MAP_SCRIPT_OPERAND0     0x08 /* s16 first operand of the current command */
 #define MAP_SCRIPT_OPERAND1     0x0A /* s16 second operand */
 #define MAP_SCRIPT_OPERAND2     0x0C /* s32 wide operand */
@@ -811,20 +826,23 @@ enum {
 #define PLAYER_FUNDS_OFF (MAP_PLAYER_STATES + PLAYER_REC_FUNDS) /* s32 funds of a player record */
 #define PLAYER_INCOME_OFF (MAP_PLAYER_STATES + PLAYER_REC_INCOME) /* s32 per-turn income of a player record */
 #define PLAYER_REC_SPRITE  0x6C /* u32 unit-sprite state: low byte army id, small bitfields select the sprite tables */
+#define PLAYER_ARMY_VARIANT_MASK 0x0C00 /* bits 10..11 of PLAYER_REC_SPRITE: the army's sprite variant, also its active CO power level (GetPlayerArmyVariant) */
 /* The player's CO power meter is packed into bits 21..31 of PLAYER_REC_SPRITE:
  * GetCoPowerMeterPoints reads it and SetCoPowerMeterPoints writes it; charging it adds
  * points clamped to the player's dual-power cost. */
 #define PLAYER_CO_METER_SHIFT 21 /* bits 21..31 of PLAYER_REC_SPRITE: CO power meter points */
 #define PLAYER_CO_METER_MASK  0x1FFFFF /* the low 21 bits of PLAYER_REC_SPRITE, kept when the meter is rewritten */
+#define PLAYER_SPRITE_SET_MASK 0x3000 /* bits 12..13 of PLAYER_REC_SPRITE: the sprite set/variant its unit views use */
 
 /* The PLAYER_REC_SPRITE word read as its bitfields: the player's army id (the row
- * of the army data table the CO-zone code looks up) and whether the player's CO
- * power is running.  Only the low twelve bits are described: the CO power meter
- * sits above them (PLAYER_CO_METER_SHIFT). */
+ * of the army data table the CO-zone code looks up), whether the player's CO
+ * power is running and the sprite set.  Only the low fourteen bits are described:
+ * the CO power meter sits above them (PLAYER_CO_METER_SHIFT). */
 typedef struct PlayerSpriteBits {
     u32 armyId : 8;      /* bits 0..7: the player's army (CO) id */
     u32 unk8 : 2;        /* bits 8..9 */
     u32 powerActive : 2; /* bits 10..11: nonzero while the player's CO power is active */
+    u32 spriteSet : 2;   /* bits 12..13: sprite set/variant the player's unit views use (GetPlayerSpriteSet) */
 } PlayerSpriteBits;
 
 /* A player record's head up to its PLAYER_REC_SPRITE word, so code that reads
@@ -838,6 +856,7 @@ typedef struct PlayerRecordSprite {
 #define CO_POWER_LEVEL_CO   1
 #define CO_POWER_LEVEL_DUAL 2
 #define PLAYER_REC_SELECTED_UNIT 0x70 /* u8 id of the player's selected unit, 0 = none */
+#define PLAYER_REC_SELECTION_ENABLED 0x71 /* u8 nonzero while the player may pick a unit; set at the start of its turn while it has none selected, cleared with its selection state */
 #define PLAYER_REC_PROPERTIES 0x18 /* u8 properties (cities/bases/HQ) the player owns, recounted when the map loads */
 #define PLAYER_REC_SKIP_TURN 0x19 /* u8 nonzero: the turn-start step skips this player's turn */
 /* Per-kind property counters of a player record, recounted with
@@ -903,6 +922,7 @@ typedef struct PlayerRecordSprite {
 #define PLAYER_REC_SPRITE_STATE 0x29 /* u8 cached 0/1 state that picks the unit sprite variant (GetUnitVariantIndex) */
 #define PLAYER_FLIP_OFF (MAP_PLAYER_STATES + PLAYER_REC_FLIP) /* u8 */
 #define PLAYER_SPRITE_STATE_OFF (MAP_PLAYER_STATES + PLAYER_REC_SPRITE_STATE) /* u8 */
+#define PLAYER_HQ_X_OFF (MAP_PLAYER_STATES + PLAYER_REC_HQ_X) /* u8 HQ tile x; bit 7 set when the player has no HQ */
 #define MAP_TEAM_A_PLAYER  0x52b8 /* s16 id of the player team A's army belongs to */
 #define MAP_TEAM_B_PLAYER  0x52ba /* s16 id of the player team B's army belongs to */
 
@@ -1021,7 +1041,9 @@ enum {
 #define BATTLE_RESULTS_TECHNIQUE  0x12 /* u8 technique rating of the winning player, 0..150 */
 #define BATTLE_RESULTS_RANK       0x13 /* u8 grade of the total rating (GetRatingRank, 1..4) */
 #define BATTLE_RESULTS_WINNER     0x14 /* u8 player the ratings were computed for */
-#define BATTLE_RESULTS_TOTAL      0x16 /* u16 total of the three ratings, capped at 0x3e7 */
+#define BATTLE_RESULTS_TOTAL      0x16 /* u16 total of the three ratings, capped at BATTLE_RESULTS_TOTAL_MAX */
+#define BATTLE_RESULTS_TOTAL_MAX   0x3E7 /* the sum of the three ratings saturates here */
+#define BATTLE_RESULTS_TOTAL_LIMIT 0x3E8 /* the sum reaches this value: it is stored as BATTLE_RESULTS_TOTAL_MAX */
 #define BATTLE_RESULTS_FLAGS      0x18 /* s32 flag word; its low 15 bits are cleared when the ratings are recomputed */
 
 /* Battle-end state (gBattleEndState): byte 0 is non-zero once the battle has
@@ -1139,6 +1161,7 @@ typedef struct MapRecordStamp {
 
 /* Fields of a per-map data record (0x50 bytes, MapData_GetRecord), the table the
  * map-selection code reads a map's settings from. */
+#define MAP_DATA_TILESET       0x06 /* u8 the map's tileset index (MapData_GetTileset) */
 #define MAP_DATA_FOLLOWUP_MAPS 0x14 /* u16[4] map ids a cleared battle on this map unlocks, per player count slot */
 #define MAP_DATA_EVENT_SCRIPT  0x44 /* void *the map's event-script block (GetMapEventScript) */
 

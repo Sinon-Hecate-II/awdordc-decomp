@@ -2,6 +2,7 @@
 #include "common.h"
 #include "gx.h"
 #include "ov001_wh.h"
+#include "wfc.h"
 typedef struct { u8 bytes[22]; } MenuBuf22;
 typedef struct { u8 bytes[23]; } MenuBuf23;
 
@@ -133,7 +134,7 @@ void Ov001_CloseWfcSettingsScreen(void) {
     if (Ov001_IsIconRowIdle() == 0) return;
     Ov001_FreePageBackground(0);
     if (gOv001WfcSettingsReset == 0) {
-        Ov001_FreeOptionBackground();
+        Ov001_FreeMessagePanel();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
@@ -180,11 +181,11 @@ void func_ov001_02177214(void) {
     M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
     void Ov001_LoadResetProfileBg(void);
     M2C_UNK ResetSaveSlotsWithWfcProfile();
-    extern M2C_UNK func_ov001_021772b8;
+    extern M2C_UNK Ov001_FadeInResetProfileScreen;
     Ov001_LoadResetProfileBg();
     Ov001_ShowMessageBox(0x19);
     ResetSaveSlotsWithWfcProfile();
-    Ov001_SetStepCallback(&func_ov001_021772b8);
+    Ov001_SetStepCallback(&Ov001_FadeInResetProfileScreen);
 }
 
 /* Load the shared Multi map background ("char/yb5Multi.nsc.l") for the option
@@ -202,16 +203,19 @@ void Ov001_LoadResetProfileBg(void) {
     REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_021772b8(void) {
+/* Fade the WFC-profile reset screen in from white on the main engine and show
+ * its background and object planes, then hand over to the step that opens its
+ * icon row. */
+void Ov001_FadeInResetProfileScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_021772ec;
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_021772ec);
+    extern M2C_UNK Ov001_ResetProfileFadeDone;
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
+    Ov001_SetStepCallback(&Ov001_ResetProfileFadeDone);
 }
 
-void func_ov001_021772ec(void) {
+void Ov001_ResetProfileFadeDone(void) {
     void func_ov001_02177318(void);
     if (Ov001_IsFadeActive(0) != 0) return;
     Ov001_CreateMenuIconRow(5);
@@ -280,20 +284,25 @@ void Ov001_ResetProfileFadeToWhite(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitResetFadeAndSleep);
 }
 
+/* Final step of the Wi-Fi profile reset flow: wait for the sub screen's then the
+ * main screen's fade to finish, then hold the display for a while and let it rest. */
 void Ov001_WaitResetFadeAndSleep(void) {
     M2C_UNK WaitCycles(M2C_UNK);
     M2C_UNK WakeDisplayWait();
     s32 Ov001_IsFadeActive(M2C_UNK);
-    if (Ov001_IsFadeActive(1) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
     WaitCycles(0x01000000);
     WakeDisplayWait();
 }
 
+/* Step callback that opens the ov001 console-info (MAC address) screen: load its
+ * background and object layout, show its message panel, draw the two-line
+ * MAC-address panel, then start the screen's fade-in. */
 void Ov001_OpenMacAddressScreen(void) {
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
@@ -301,8 +310,8 @@ void Ov001_OpenMacAddressScreen(void) {
     M2C_UNK DrawMacAddressPanel();
     extern M2C_UNK Ov001_FadeInMacAddressScreen;
     Ov001_LoadMacAddressBackground();
-    Ov001_LoadObjLayoutBlock(0x11);
-    Ov001_ShowMessagePanel(0x3A, -1, 0);
+    Ov001_LoadObjLayoutBlock(OV001_MAC_ADDRESS_LAYOUT);
+    Ov001_ShowMessagePanel(OV001_MSG_MAC_ADDRESS, -1, 0);
     DrawMacAddressPanel();
     Ov001_SetStepCallback(&Ov001_FadeInMacAddressScreen);
 }
@@ -431,7 +440,7 @@ void Ov001_FadeOutMacAddress(void) {
  * visible planes and returns to the Wi-Fi option menu. */
 void Ov001_CloseMacAddressScreen(void) {
     s32 Ov001_IsIconRowIdle();
-    M2C_UNK Ov001_FreeOptionBackground();
+    M2C_UNK Ov001_FreeMessagePanel();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
@@ -446,7 +455,7 @@ void Ov001_CloseMacAddressScreen(void) {
         return;
     }
     Ov001_FreePageBackground(0);
-    Ov001_FreeOptionBackground();
+    Ov001_FreeMessagePanel();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
     Ov001_SetNextScreenMode(0, 1);
@@ -666,13 +675,13 @@ void Ov001_FadeOutOptionMenu(void) {
 void Ov001_OptionMenuClose(void) {
 extern M2C_UNK gOv001OptionMenuState;
 void Ov001_OpenWifiMenu(void);void Ov001_OpenMacAddressScreen(void);void Ov001_OpenWfcSettingsScreen(void);void Ov001_OpenWfcEraseScreen(void);
-void Ov001_FreeSpriteObjects(void);M2C_UNK Ov001_FreeOptionBackground();M2C_UNK Ov001_SetNextScreenMode(M2C_UNK,M2C_UNK);
+void Ov001_FreeSpriteObjects(void);M2C_UNK Ov001_FreeMessagePanel();M2C_UNK Ov001_SetNextScreenMode(M2C_UNK,M2C_UNK);
 s32 Ov001_IsFadeActive(M2C_UNK);
 if(Ov001_IsFadeActive(1))return;
 if(Ov001_IsFadeActive(0))return;
 if(!Ov001_IsIconRowIdle())return;
 Ov001_ReleaseSprite(((Ov001OptionMenuState *)&gOv001OptionMenuState)->sprite);
-Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();
+Ov001_FreeSpriteObjects();Ov001_FreeMessagePanel();
 Ov001_FreeFile(((Ov001OptionMenuState *)&gOv001OptionMenuState)->palette);
 Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,20);
 if(!((Ov001OptionMenuState *)&gOv001OptionMenuState)->paletteLoaded){Ov001_SetNextScreenMode(0,0);Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenWifiMenu);return;}

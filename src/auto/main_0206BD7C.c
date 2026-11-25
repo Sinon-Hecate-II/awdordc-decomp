@@ -11,7 +11,7 @@ u16 *func_0206bd7c(double arg0, u16 *end, FormatBD fmt) {
 void FormatDoubleAsDecimal(void *, double, void *);
 int func_02071284(s32,s32,s32,s32);
 void func_0206bc58(void *, int);
-u16 *func_0206cdac(u16 *, u16 *);
+u16 *StringCopyWide(u16 *, u16 *);
 int StringLength(char *);
 s32 StringToWideString(void *, void *, int);
 double value=arg0;
@@ -34,12 +34,12 @@ while(dec.len>1 && *--q=='0'){dec.len--;dec.exp++;}
 switch((u8)dec.digits[0]){
 case '0': dec.exp=0; break;
 case 'I':
-if(value<0.0){result=end-5;if(((u32)conv>=128?0:gWideCharClassTable[conv]&512))func_0206cdac(result,data_02100564);else func_0206cdac(result,data_02100570);}
-else{result=end-4;if(((u32)conv>=128?0:gWideCharClassTable[conv]&512))func_0206cdac(result,data_0210057c);else func_0206cdac(result,data_02100584);}
+if(value<0.0){result=end-5;if(((u32)conv>=128?0:gWideCharClassTable[conv]&512))StringCopyWide(result,data_02100564);else StringCopyWide(result,data_02100570);}
+else{result=end-4;if(((u32)conv>=128?0:gWideCharClassTable[conv]&512))StringCopyWide(result,data_0210057c);else StringCopyWide(result,data_02100584);}
 return result;
 case 'N':
-if(dec.sign){result=end-5;if(((u32)conv>=128?0:gWideCharClassTable[conv]&512))func_0206cdac(result,data_0210058c);else func_0206cdac(result,data_02100598);}
-else{result=end-4;if(((u32)conv>=128?0:gWideCharClassTable[conv]&512))func_0206cdac(result,data_021005a4);else func_0206cdac(result,data_021005ac);}
+if(dec.sign){result=end-5;if(((u32)conv>=128?0:gWideCharClassTable[conv]&512))StringCopyWide(result,data_0210058c);else StringCopyWide(result,data_02100598);}
+else{result=end-4;if(((u32)conv>=128?0:gWideCharClassTable[conv]&512))StringCopyWide(result,data_021005a4);else StringCopyWide(result,data_021005ac);}
 return result;
 }
 dec.exp+=dec.len-1;
@@ -95,8 +95,8 @@ StringToWideString(result,p,StringLength(p));
 return result;
 }
 #pragma scheduling off
-u16 *func_0206cdcc(u16 *,s32);
-s32 func_0206cd90(u16 *);
+u16 *StringFindCharWide(u16 *,s32);
+s32 StringLengthWide(u16 *);
 u16 *ParseFormatSpec(u16 *,char **,FormatBD *);
 u16 *FormatInteger(s32,u16 *,FormatBD);
 u16 *func_0206b5c0(u64,u16 *,FormatBD);
@@ -122,10 +122,10 @@ s32 func_0206c3c8(s32 (*writer)(void *,const u16 *,s32), void *state, u16 *p, ch
     u64 wide;
     double real;
     while (*p) {
-        u16 *mark=func_0206cdcc(p,37);
+        u16 *mark=StringFindCharWide(p,37);
         q=mark;
         if (!mark) {
-            len=func_0206cd90(p);
+            len=StringLengthWide(p);
  total+=len;
             if(len && !writer(state,p,len)) return -1;
             break;
@@ -226,7 +226,7 @@ len=f.precision;
 e=func_0206add0(text,0,len);
 if(e)len=e-text;
 }
-else len=func_0206cd90(text);
+else len=StringLengthWide(text);
 }else{
 char *str;
  s32 n;
@@ -284,7 +284,7 @@ break;
         case 65535:
         default:
         invalid:
-            len=func_0206cd90(q);
+            len=StringLengthWide(q);
             if(len && !writer(state,q,len))return -1;
             return total+len;
         }

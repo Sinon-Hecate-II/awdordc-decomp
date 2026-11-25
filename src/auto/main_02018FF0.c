@@ -174,11 +174,13 @@ OS_RestoreInterrupts(saved);
 func_02005bbc();
 }
 
-s8 *func_02019424(s8 *dst,volatile s8 *src) {
-s8 *saved=dst;
-if(*src) do { *dst++=*src; } while(*++src);
-*dst=0;
-return saved;
+/* Copy the NUL-terminated string `src` to `dst`, terminator included, and return
+ * `dst`. */
+s8 *Mb_StringCopy(s8 *dst, volatile s8 *src) {
+    s8 *start = dst;
+    if (*src) do { *dst++ = *src; } while (*++src);
+    *dst = 0;
+    return start;
 }
 
 /* Copy the NUL-terminated string `src` into `dst`, at most `size - 1` bytes,
@@ -214,12 +216,15 @@ s32 func_020194e0(s8 *a, s8 *b) {
  return *a - *b;
 }
 #pragma opt_propagation reset
-void func_0201950c(void *arg0, s8 arg1) {
-    if (M2C_FIELD(arg0, s32 *, 0) != 0) {
-        *M2C_FIELD(arg0, s8 **, 4) = arg1;
-        M2C_FIELD(arg0, s32 *, 0) = (s32) (M2C_FIELD(arg0, s32 *, 0) - 1);
+/* Write one character into a formatter output buffer: store it and shrink the
+ * remaining capacity only while there is room, but always advance the write
+ * cursor so the final length counts every character the format asked for. */
+void FormatPutChar(Print195 *out, s8 c) {
+    if (M2C_FIELD(out, s32 *, 0) != 0) {
+        *M2C_FIELD(out, s8 **, 4) = c;
+        M2C_FIELD(out, s32 *, 0) = (s32) (M2C_FIELD(out, s32 *, 0) - 1);
     }
-    M2C_FIELD(arg0, s8 **, 4) = (s8 *) (M2C_FIELD(arg0, s8 **, 4) + 1);
+    M2C_FIELD(out, s8 **, 4) = (s8 *) (M2C_FIELD(out, s8 **, 4) + 1);
 }
 
 /* Formatter helper: write `count` copies of fill byte `c` into the output buffer,
@@ -268,11 +273,11 @@ out.left=capacity;out.start=dst;out.current=dst;
 while(*format){
 c=*format;
 if((((u8)c^0x20)-0xa1U)<0x3c){
-func_0201950c(&out,*format);
-if(*++format){func_0201950c(&out,*format++);}
+FormatPutChar(&out,*format);
+if(*++format){FormatPutChar(&out,*format++);}
 continue;
 }
-if(c!='%'){func_0201950c(&out,*format);format++;continue;}
+if(c!='%'){FormatPutChar(&out,*format);format++;continue;}
 flags=0;width=0;precision=-1;mark=format;base=10;alpha=87;
 for(;;){
 c=*++format;
@@ -305,8 +310,8 @@ case 'd':case 'i':goto number;
 case 'c':
 if(precision>=0)goto invalid;
 ap+=4;c=*(s32 *)(ap-4);
-if(flags&8){func_0201950c(&out,(s8)c);FormatWriteFill(&out,' ',width-1);}
-else {FormatWriteFill(&out,(s8)(flags&16?'0':' '),width-1);func_0201950c(&out,(s8)c);}
+if(flags&8){FormatPutChar(&out,(s8)c);FormatWriteFill(&out,' ',width-1);}
+else {FormatWriteFill(&out,(s8)(flags&16?'0':' '),width-1);FormatPutChar(&out,(s8)c);}
 format++;continue;
 case 's':
 ap+=4;str=*(char **)(ap-4);len=0;
@@ -324,7 +329,7 @@ else {ap+=4;if(!(flags&128))**(s32 **)(ap-4)=n;else **(s64 **)(ap-4)=n;}
 }
 format++;continue;
 case '%':
-if(mark+1==format){func_0201950c(&out,*format++);continue;}
+if(mark+1==format){FormatPutChar(&out,*format++);continue;}
 default:
 invalid:FormatWriteBytes(&out,(s8 *)mark,format-mark);continue;
 }
@@ -371,9 +376,9 @@ if(precision>0)width-=precision;
 width-=prefixLen+n;
 left=flags&8;
 if(!left)FormatWriteFill(&out,' ',width);
-while(prefixLen>0)func_0201950c(&out,prefix[--prefixLen]);
+while(prefixLen>0)FormatPutChar(&out,prefix[--prefixLen]);
 FormatWriteFill(&out,'0',precision);
-while(n>0)func_0201950c(&out,digits[--n]);
+while(n>0)FormatPutChar(&out,digits[--n]);
 if(left)FormatWriteFill(&out,' ',width);
 format++;
 }

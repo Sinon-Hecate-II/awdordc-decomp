@@ -46,29 +46,35 @@ void func_ov002_021e1598(void) {
     M2C_FIELD(&gBattleSceneState, s8 *, 9) = 1;
 }
 
-void func_ov002_021e15ac(void) {
-    void func_ov002_021e3dd4(void *);
+/* Tear down the battle screen: remove the sprite overlay's per-frame callbacks,
+ * destroy the battle's unit views and effect resources, stop its sound and restore
+ * the normal screen layout. */
+void TeardownBattleScreen(void) {
+    void TeardownBattleSpriteScene(void *);
     void TeardownBattleScene(void *);
-    extern M2C_UNK gBattleSpriteState,gBattleSceneState;
-    func_ov002_021e3dd4(&gBattleSpriteState);
+    extern M2C_UNK gBattleSpriteState, gBattleSceneState;
+
+    TeardownBattleSpriteScene(&gBattleSpriteState);
     TeardownBattleScene(&gBattleSceneState);
-    *(volatile u16 *)0x4000304 &= ~0x8000;
+    REG_POWCNT1 &= ~POWCNT1_LCD_SWAP;
 }
 
 void func_ov002_021e15e0(void) {
     M2C_UNK ResumeAnimationOfSpriteClass(M2C_UNK *);
-    extern M2C_UNK data_ov002_021ea68c;
-    ResumeAnimationOfSpriteClass(&data_ov002_021ea68c);
+    extern M2C_UNK gBattleScreenSpriteClass;
+    ResumeAnimationOfSpriteClass(&gBattleScreenSpriteClass);
 }
 
-void CreateBattleSceneSprite(s32 a) {
+/* Open the battle screen for a real battle: turn the demo battle off, set the
+ * battle scene up and create its sprite with `owner` as the parent sprite. */
+void CreateBattleSceneSprite(void *owner) {
     void SetupBattleScene(void);
-    void CreateSpriteObject(void *,s32);
+    void CreateSpriteObject(void *, void *);
     extern u8 gDemoBattle;
-    extern M2C_UNK data_ov002_021ea68c;
+    extern M2C_UNK gBattleScreenSpriteClass;
     gDemoBattle=0;
     SetupBattleScene();
-    CreateSpriteObject(&data_ov002_021ea68c,a);
+    CreateSpriteObject(&gBattleScreenSpriteClass,owner);
 }
 
 void func_ov002_021e1624(void) {
@@ -219,7 +225,7 @@ void func_ov002_021e1844(void *arg0) {
     M2C_UNK PlaySlotVolumeSound(M2C_UNK);
     M2C_UNK PlaySlotVariantSound(M2C_UNK);
     M2C_UNK PlaySlotPhaseSound(M2C_UNK);
-    M2C_UNK func_020afb94(M2C_UNK);
+    M2C_UNK PlaySlotStopSound(M2C_UNK);
     if (M2C_FIELD(arg0, void **, 4) == NULL) goto recurse;
     M2C_FIELD(arg0, s16 *, 0x3c) = (s16)(M2C_FIELD(arg0, s16 *, 0x3c) + M2C_FIELD(arg0, s8 *, 0x44));
     M2C_FIELD(arg0, s16 *, 0x3e) = (s16)(M2C_FIELD(arg0, s16 *, 0x3e) + M2C_FIELD(arg0, s8 *, 0x45));
@@ -333,7 +339,7 @@ void func_ov002_021e1844(void *arg0) {
             PlaySlotPhaseSound(M2C_FIELD(arg0, u8 *, 0x53));
             break;
         case 36:
-            func_020afb94(M2C_FIELD(arg0, u8 *, 0x53));
+            PlaySlotStopSound(M2C_FIELD(arg0, u8 *, 0x53));
             break;
         }
         {

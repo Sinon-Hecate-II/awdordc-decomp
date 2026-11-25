@@ -76,7 +76,7 @@ M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x11b3)=0;if(status!=40)M2C_F
 s32 func_020334d8(void *p,void *a,void *b){
 extern M2C_UNK gNasConnection,data_0213d120;extern s32 data_0213d13c;
 extern u8 data_020fb3ec[],data_020fb3f8[],data_020fb400[],data_020fb408[],data_020fb410[],data_020fb414[],data_020fb41c[];
-s32 StringLength(s32);s32 func_020346d0(void *,void *,void *,s32);s32 BuildFriendProfile(s32,void *);s32 func_02033988(void *,void *,s32);s32 func_0206cd90(void *);
+s32 StringLength(s32);s32 func_020346d0(void *,void *,void *,s32);s32 BuildFriendProfile(s32,void *);s32 func_02033988(void *,void *,s32);s32 StringLengthWide(void *);
 u8 buffer[0x94];
 s32 v0=M2C_FIELD(&gNasConnection,s32 *,0x10),v1=M2C_FIELD(&gNasConnection,s32 *,0xc);
 if(v0==0 && v1==0){
@@ -92,8 +92,8 @@ if(func_020346d0(p,data_020fb414,data_020fb410,StringLength((s32)data_020fb410))
 }
 {
 void *bb=b;
-if(func_0206cd90(bb)){
-if(func_020346d0(p,data_020fb41c,bb,func_0206cd90(bb)*2))return 8;
+if(StringLengthWide(bb)){
+if(func_020346d0(p,data_020fb41c,bb,StringLengthWide(bb)*2))return 8;
 }
 }
 return 0;
@@ -129,7 +129,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     void GetMacAddress(void *);
     void GetSystemUserProfile(void *);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 GetLocalTime(s32, s32);
+    s32 GetRtcDateTime(s32, s32);
     void SystemHalt(void);
     void *WFC_GetConnectionAltCode(void);
     void *Wfc_GetConnectionCode(void *);
@@ -182,7 +182,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     StringFormatN((void *)((u8 *)arg0 + 0x2c), 3, gFmtHex02, userSettings[0]);
     MI_CpuCopy8(userSettings + 4, (void *)((u8 *)arg0 + 0x7e), 0x14);
     StringFormatN((void *)((u8 *)arg0 + 0x2f), 5, gFmtHex02Pair, userSettings[2], userSettings[3]);
-    if (GetLocalTime((s32)(dateVals + 3), (s32)(dateVals + 0)) != 0) {
+    if (GetRtcDateTime((s32)(dateVals + 3), (s32)(dateVals + 0)) != 0) {
         return 0;
     }
     StringFormatN((void *)((u8 *)arg0 + 0x34), 0xd, gFmtDate6,
@@ -217,7 +217,7 @@ s32 func_02033988(void *arg0, void *arg1, s32 arg2) {
     s32 HttpAppendHeader(void *, void *, void *);
     s32 func_020346d0(void *, void *, void *, s32);
     s32 StringLength(s32);
-    s32 func_0206cd90(void *);
+    s32 StringLengthWide(void *);
     extern u8 data_020fb478[], data_020fb484[], data_020fb48c[], data_020fb494[], data_020fb49c[];
     extern u8 data_020fb4a4[], data_020fb4ac[], data_020fb4b4[], data_020fb4bc[], data_020fb4c4[];
     extern u8 data_020fb4cc[], data_020fb4d4[], data_020fb4dc[], data_020fb4e4[], data_020fb4ec[];
@@ -237,7 +237,7 @@ s32 func_02033988(void *arg0, void *arg1, s32 arg2) {
     if (func_020346d0(arg0, data_020fb4cc, (u8 *)arg1 + 0x2c, StringLength((s32)arg1 + 0x2c)) != 0) return 0;
     if (func_020346d0(arg0, data_020fb4d4, (u8 *)arg1 + 0x2f, StringLength((s32)arg1 + 0x2f)) != 0) return 0;
     if (func_020346d0(arg0, data_020fb4dc, (u8 *)arg1 + 0x34, StringLength((s32)arg1 + 0x34)) != 0) return 0;
-    if (func_020346d0(arg0, data_020fb4e4, (u8 *)arg1 + 0x7e, func_0206cd90((u8 *)arg1 + 0x7e) * 2) != 0) return 0;
+    if (func_020346d0(arg0, data_020fb4e4, (u8 *)arg1 + 0x7e, StringLengthWide((u8 *)arg1 + 0x7e) * 2) != 0) return 0;
     if (arg2 == 1) {
         if (func_020346d0(arg0, data_020fb4ec, (u8 *)arg1 + 0x4e, StringLength((s32)arg1 + 0x4e)) != 0) return 0;
     }

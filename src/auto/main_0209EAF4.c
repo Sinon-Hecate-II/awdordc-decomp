@@ -83,7 +83,7 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
     s16 GetCoPowerMeterPoints(s32);
     s32 func_020cd614(void);
     void *CreateSpriteFromClass(void *, s32);
-    s32 func_020d468c(void);
+    s32 SetMapCommandPending(void);
     void BattleUpdateUnitCursor(void);
     extern void **gCurrentMap;
     extern M2C_UNK gBattleCommand;
@@ -119,7 +119,7 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
     if (arg0 == 0) {
         BattleMapUnitHead *sel = M2C_FIELD(map + 0x5000, BattleMapUnitHead * volatile *, 0x2d0);
         sel->ammo = (u16)(sel->ammo + 0xffff);
-        (void)func_020d468c();
+        (void)SetMapCommandPending();
         BattleUpdateUnitCursor();
         return;
     }
@@ -237,13 +237,22 @@ void func_0209f26c(void) {
     FadeMusicToFullVolume();
 }
 
-void func_0209f278(void){extern void **gCurrentMap;void (*cb)(void)=M2C_FIELD(gCurrentMap[1],void (**)(void),0x50);if(cb)cb();InitBattleMapPresentation();Reset3DSpriteEngineState();}
+/* Rebuild the battle map's presentation after its data changed: run the
+ * map-view controller's restore callback, then reset the 3D sprite engine's
+ * queues and status flags. */
+void RestoreBattleMapPresentation(void) {
+    extern void **gCurrentMap;
+    void (*restoreView)(void) = M2C_FIELD(gCurrentMap[MAPVIEW_CONTROLLER_INDEX], void (**)(void), MAPVIEW_RESTORE_CB);
+    if (restoreView) restoreView();
+    InitBattleMapPresentation();
+    Reset3DSpriteEngineState();
+}
 
 void func_0209f2a8(void) {
-    M2C_UNK func_020d468c();
+    M2C_UNK SetMapCommandPending();
     M2C_UNK RefreshMapView();
     RefreshMapView();
-    func_020d468c();
+    SetMapCommandPending();
 }
 
 /* Order the battle command for the target the cursor has selected: the battle

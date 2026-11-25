@@ -398,12 +398,15 @@ void Mb_QueueTaskExit(void (*finish)(void)) {
     OS_RestoreInterrupts(saved);
 }
 
-void func_02018910(s32 arg0) {
+/* Size the multiboot info-record reassembly from the parent's `packetSize`: a
+ * command-7 packet carries a 2-byte header, so each fragment holds packetSize - 2
+ * payload bytes and a full MB_RECORD_SIZE record needs that many fragments. */
+void Mb_InitRecordReassembly(s32 packetSize) {
     extern M2C_UNK gMbRecordRx;
     s32 RuntimeIntDivMod(s32, s32);
-    M2C_FIELD(&gMbRecordRx, s32 *, 8) = arg0 - 2;
-    M2C_FIELD(&gMbRecordRx, s32 *, 12) = RuntimeIntDivMod(0x1E, arg0 - 2);
-    M2C_FIELD(&gMbRecordRx, s32 *, 16) = 0x1E;
+    MB_RECORD_RX->fragmentSize = packetSize - 2;
+    MB_RECORD_RX->fragmentCount = RuntimeIntDivMod(MB_RECORD_SIZE, packetSize - 2);
+    MB_RECORD_RX->recordSize = MB_RECORD_SIZE;
 }
 
 void func_02018940(s32 arg0) {
@@ -638,18 +641,20 @@ void Mb_SaveCartridgeBusConfig(void *saved) {
 }
 
 #pragma opt_propagation off
-void Mb_RestoreCartridgeBusConfig(void *arg0) {
- u32 a,b;
- a=M2C_FIELD(arg0,u32 *,0);
- b=*(volatile u16 *)0x04000204;
- b &=~0xC;
- b |=a<<2;
- *(volatile u16 *)0x04000204=b;
- a=M2C_FIELD(arg0,u32 *,4);
- b=*(volatile u16 *)0x04000204;
- b &=~0x10;
- b |=a<<4;
- *(volatile u16 *)0x04000204=b;
+/* Put back the EXMEMCNT main-RAM arbitration bits and VRAM priority that
+   Mb_SaveCartridgeBusConfig saved in `saved`. */
+void Mb_RestoreCartridgeBusConfig(void *saved) {
+ u32 value,reg;
+ value=M2C_FIELD(saved,u32 *,0);
+ reg=*(volatile u16 *)REG_EXMEMCNT;
+ reg &=~EXMEMCNT_RAM_MASK;
+ reg |=value<<2;
+ *(volatile u16 *)REG_EXMEMCNT=reg;
+ value=M2C_FIELD(saved,u32 *,4);
+ reg=*(volatile u16 *)REG_EXMEMCNT;
+ reg &=~EXMEMCNT_VRAM_PRIORITY;
+ reg |=value<<4;
+ *(volatile u16 *)REG_EXMEMCNT=reg;
 }
 #pragma opt_propagation reset
 /* Take the cartridge-access lock `lockId` if it is free: if the shared OS lock

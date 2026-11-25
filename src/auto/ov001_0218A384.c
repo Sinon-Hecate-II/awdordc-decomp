@@ -55,17 +55,19 @@ M2C_FIELD(entries+i*8,u16 *,4)=(M2C_FIELD(entries+i*8,u16 *,4)&~SPRITE_ENTRY_PAL
 }
 }
 #pragma opt_strength_reduction on
-void Ov001_GetSpritePosition(void *arg0, s32 arg1, u32 *arg2, s32 *arg3) {
- void *base=M2C_FIELD(arg0,void **,8);
- *arg2=(M2C_FIELD(base,u32 *,arg1*8)&0x01FF0000)>>16;
- *arg3=M2C_FIELD(base,u32 *,arg1*8)&0xFF;
+/* Read sprite entry `index` of a sprite object (its OAM entry array at +0x08):
+ * writes the entry's packed x (bits 16..24) and y (low byte). */
+void Ov001_GetSpritePosition(void *spriteObj, s32 index, u32 *x, s32 *y) {
+    get_obj_xy(M2C_FIELD(spriteObj, void **, 8), index, (s32 *)x, y);
 }
 
-void Ov001_LoadCharBank(s32 arg0, M2C_UNK arg1) {
+/* Load the character bank file at `path` and remember its pointer in
+ * gOv001CharBanks[bank] (1 = top screen, 0 = bottom screen). */
+void Ov001_LoadCharBank(s32 bank, M2C_UNK path) {
  s32 Ov001_LoadFile(M2C_UNK,M2C_UNK *,M2C_UNK);
  extern M2C_UNK gOv001CharBanks;
- M2C_UNK sp0;
- (&gOv001CharBanks)[arg0]=Ov001_LoadFile(arg1,&sp0,4);
+ M2C_UNK fileSize;
+ (&gOv001CharBanks)[bank]=Ov001_LoadFile(path,&fileSize,4);
 }
 
 void Ov001_FreeCharBank(u8 arg0) {
@@ -119,15 +121,18 @@ Ov001_LoadSpriteObjLayout(bank,layoutIndex,Ov001_GetSpriteObjEntry(block,0));
 return block;
 }
 
-void *Ov001_QueueCreate(s32 arg0) {
+/* Allocate an ov001 ring queue able to hold `count` values (its capacity is one
+ * bigger, so a full queue is distinguishable from an empty one) and clear its read
+ * and write indices. */
+void *Ov001_QueueCreate(s32 count) {
     void *Ov001_Alloc(s32, M2C_UNK);
-    void *temp_r0;
+    void *queue;
 
-    temp_r0 = Ov001_Alloc(((arg0 + 1) * 4) + 8, 4);
-    M2C_FIELD(temp_r0, s16 *, 0) = (s16) (arg0 + 1);
-    M2C_FIELD(temp_r0, s8 *, 2) = 0;
-    M2C_FIELD(temp_r0, s8 *, 3) = 0;
-    return temp_r0;
+    queue = Ov001_Alloc(((count + 1) * 4) + 8, 4);
+    M2C_FIELD(queue, s16 *, OV001_QUEUE_CAPACITY) = (s16) (count + 1);
+    M2C_FIELD(queue, s8 *, OV001_QUEUE_READ) = 0;
+    M2C_FIELD(queue, s8 *, OV001_QUEUE_WRITE) = 0;
+    return queue;
 }
 
 /* Create an ov001 ring queue already holding `count` values: `first`, then
@@ -454,7 +459,7 @@ void func_ov001_0218ace0(M2C_UNK arg0) {
 #pragma optimization_level 3
 void *CreateTextPanel(s32 arg0,s32 arg1) {
 void *Ov001_Alloc(s32,s32); void func_ov001_0216a17c(void*,void*,s32,s32,s32);
-s32 func_020036b8(void); s32 func_02003684(void);
+s32 func_020036b8(void); s32 GX_GetBG0ScrPtr(void);
 void func_ov001_0216a230(s32,s32,s32,s32,s32,s32,s32,u32);
 void TextPanel_ClearText(void*,s32); void *Ov001_AddTask(s32,M2C_UNK,void*,s32); void Ov001_UploadTextPanelTiles(M2C_UNK,void*);
 extern M2C_UNK gOv001TextContext; extern u8 data_ov001_0218fd18[],data_ov001_0218fd1a[],data_ov001_0218fd14[];
@@ -470,7 +475,7 @@ base=(void*)gOv001TextContext;
 *(void**)((u8*)p+0x18)=p;
 *(void**)((u8*)p+0x1c)=(u8*)base+arg1*8;
 *(s32*)((u8*)p+0x20)=1; *(s32*)((u8*)p+0x24)=1;
-if(arg0==1) v=func_020036b8(); else v=func_02003684();
+if(arg0==1) v=func_020036b8(); else v=GX_GetBG0ScrPtr();
 zero=0;
 c=*(volatile u16*)(data_ov001_0218fd14+arg0*2);
 stride=32;
@@ -645,11 +650,13 @@ void SetRect16(s16 arg0, s16 arg1, s16 arg2, s16 arg3, void *arg4) {
     M2C_FIELD(arg4, s16 *, 6) = arg3;
 }
 
-void BuildTouchRect(void *arg0, void *arg1, void *arg2) {
-    M2C_FIELD(arg2, u16 *, 0) = (u16) M2C_FIELD(arg0, u16 *, 0);
-    M2C_FIELD(arg2, u16 *, 2) = (u16) M2C_FIELD(arg0, u16 *, 2);
-    M2C_FIELD(arg2, s16 *, 4) = (s16) (M2C_FIELD(arg0, u16 *, 0) + M2C_FIELD(arg1, u16 *, 0));
-    M2C_FIELD(arg2, s16 *, 6) = (s16) (M2C_FIELD(arg0, u16 *, 2) + M2C_FIELD(arg1, u16 *, 2));
+/* Build the touch rectangle `rect` (left, top, right, bottom) of a key whose
+ * top-left corner is `pos` (x, y) and whose size is `size` (width, height). */
+void BuildTouchRect(void *pos, void *size, void *rect) {
+    M2C_FIELD(rect, u16 *, 0) = (u16) M2C_FIELD(pos, u16 *, 0);
+    M2C_FIELD(rect, u16 *, 2) = (u16) M2C_FIELD(pos, u16 *, 2);
+    M2C_FIELD(rect, s16 *, 4) = (s16) (M2C_FIELD(pos, u16 *, 0) + M2C_FIELD(size, u16 *, 0));
+    M2C_FIELD(rect, s16 *, 6) = (s16) (M2C_FIELD(pos, u16 *, 2) + M2C_FIELD(size, u16 *, 2));
 }
 
 /* Turn on the display planes named by `planes` (GX_PLANEMASK_* bits) in the main

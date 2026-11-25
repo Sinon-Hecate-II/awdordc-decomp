@@ -2,7 +2,7 @@
 #include "common.h"
 s32 SetSceneLayerOverrideMain();
 s32 SetSceneLayerOverrideSub();
-void *func_0208bc24();
+void *CreateScrollingTextSprite();
 s32 func_ov003_021e9810();
 s32 func_ov003_021e9818();
 s32 CreateMainWallpaperSprite();
@@ -44,7 +44,7 @@ s32 func_ov003_022023fc();
 s32 Clear3DSpriteLayerVram();
 s32 Modulo();
 s32 func_ov003_02202408();
-s32 func_ov003_022004f0();
+s32 GetWaypointSlotOffsetX();
 s32 GetPlayerCoId();
 s32 ClearTileRect();
 s32 LoadFaceTexture();
@@ -93,7 +93,7 @@ SetSceneLayerOverrideSub(0,data_ov003_02210454);
 SetSceneLayerOverrideSub(1,data_ov003_02210458);
 SetSceneLayerOverrideSub(3,data_ov003_0221045a);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(u16 **)g3DSpriteEngineSub;
-M2C_FIELD(p,void**,0x58)=func_0208bc24(p);
+M2C_FIELD(p,void**,0x58)=CreateScrollingTextSprite(p);
 func_ov003_021e9810(M2C_FIELD(p,void**,0x58),0x210);
 func_ov003_021e9818(M2C_FIELD(p,void**,0x58),8);
 gCur3DSpriteEngine=saved;
@@ -155,7 +155,7 @@ Clear3DSpriteLayerVram(0);Clear3DSpriteLayerVram(1);Clear3DSpriteLayer(0);Clear3
 for(i=0;i<(u32)func_ov003_022023fc(p);i++){
 if(Modulo(i,2)==0)side=0;else side=1;
 side2=(u8)side;
-if(i<2)offset=0;else offset=func_ov003_02202408((u16)func_ov003_022004f0(2));
+if(i<2)offset=0;else offset=func_ov003_02202408((u16)GetWaypointSlotOffsetX(2));
 character=GetPlayerCoId(i+1);
 if(character==0){
 ClearTileRect((u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine+side*4,void**,0x20)+(offset+1)*2,7,7);
@@ -220,7 +220,7 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
     void Set3DSpriteSlideTargetAndStart(void *, s32, s32, s32, s32);
     u16 GetUnitSpriteWidth(void *);
     u16 GetUnitSpriteHeight(void *);
-    void *func_02087d84(void *, s32, s16, s16, s32, s32);
+    void *SpriteCellListSetCellRect(void *, s32, s16, s16, s32, s32);
     void func_ov003_02200dc8(void *, s32);
     extern u32 data_ov003_022107c4[];
     extern u32 data_ov003_02210774[];
@@ -376,7 +376,7 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
                 c1 = M2C_FIELD(sprite, s16 *, 0x50);
                 e1 = GetUnitSpriteWidth(sprite);
                 d1 = GetUnitSpriteHeight(sprite);
-                func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, c1, a1, (u16)e1, (u16)d1);
+                SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, c1, a1, (u16)e1, (u16)d1);
             }
         }
         M2C_FIELD(sprite, s16 *, 0x34) = (s16)r6;
@@ -392,7 +392,7 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
                 c2 = M2C_FIELD(sprite, s16 *, 0x50);
                 e2 = GetUnitSpriteWidth(sprite);
                 d2 = GetUnitSpriteHeight(sprite);
-                func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, c2, a2, (u16)e2, (u16)d2);
+                SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, c2, a2, (u16)e2, (u16)d2);
             }
         }
         M2C_FIELD(sprite, u32 *, 0x40) = (M2C_FIELD(sprite, u32 *, 0x40) & 0xFFFFFE00) | (r11 & 0x1FF);
@@ -408,7 +408,7 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
                 c3 = M2C_FIELD(sprite, s16 *, 0x50);
                 e3 = GetUnitSpriteWidth(sprite);
                 d3 = GetUnitSpriteHeight(sprite);
-                func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, c3, a3, (u16)e3, (u16)d3);
+                SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, c3, a3, (u16)e3, (u16)d3);
             }
         }
         bounds[3] = rects[i][3];
@@ -431,7 +431,7 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
 /* Creates the versus-setup panel's two backdrop sprites and the eight pairs of
  * slot sprites (selection frame and icon) on the screen's sprite list. */
 void CreatePanelSprites(void *panel, s32 screen) {
-    void *func_02087d84(void *, s32, s16, s16, s32, s32);
+    void *SpriteCellListSetCellRect(void *, s32, s16, s16, s32, s32);
     void Hide3DSprite(void *);
     void Set3DSpriteSlideTargetAndStart(void *, s32, s32, s32, s32);
     void InitUnitSprite(void *, s32, s32, s32, s32);
@@ -473,7 +473,7 @@ void CreatePanelSprites(void *panel, s32 screen) {
         spriteX = M2C_FIELD(sprite, s16 *, 0x50);
         width = GetUnitSpriteWidth(sprite);
         height = GetUnitSpriteHeight(sprite);
-        func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, spriteX, spriteY,
+        SpriteCellListSetCellRect(M2C_FIELD(sprite, void **, 0x64), 1, spriteX, spriteY,
                       (s32)((u32)width << 16 >> 16), (s32)((u32)height << 16 >> 16));
     }
     Hide3DSprite(M2C_FIELD(panel, void **, 0));
@@ -491,7 +491,7 @@ void CreatePanelSprites(void *panel, s32 screen) {
         spriteX2 = M2C_FIELD(sprite2, s16 *, 0x50);
         width2 = GetUnitSpriteWidth(sprite2);
         height2 = GetUnitSpriteHeight(sprite2);
-        func_02087d84(M2C_FIELD(sprite2, void **, 0x64), 1, spriteX2, spriteY2,
+        SpriteCellListSetCellRect(M2C_FIELD(sprite2, void **, 0x64), 1, spriteX2, spriteY2,
                       (s32)((u32)width2 << 16 >> 16), (s32)((u32)height2 << 16 >> 16));
     }
     Hide3DSprite(M2C_FIELD(panel, void **, 4));

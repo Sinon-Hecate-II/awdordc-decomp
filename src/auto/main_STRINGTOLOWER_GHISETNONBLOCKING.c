@@ -170,12 +170,12 @@ void func_020496cc(void) {
  * caller's `length`; a zero port binds nothing and returns 0.  A failed bind
  * returns -1 after recording the socket error. */
 s32 ghiBind(int socket,UnkSocketAddress *address,u8 length){
-s32 func_0202152c(int,UnkSocketAddress *);
+s32 SocketBindAddress(int,UnkSocketAddress *);
 UnkSocketAddress addr;
 if(*(u16 *)(address->bytes+2)==0)return 0;
 addr=*address;
 addr.bytes[0]=length;
-return ghiRecordSocketError(func_0202152c(socket,&addr),-1);
+return ghiRecordSocketError(SocketBindAddress(socket,&addr),-1);
 }
 
 /* ghiConnect: connects `socket` to `address`, whose length byte is replaced with
@@ -209,7 +209,19 @@ void ghiRecv(void) {
     ghiRecordSocketError(func_020215d4(), -1);
 }
 
-void ghiRecvFrom(int a,int b,int c,int d,u8 *e,s32 *f){s32 SocketRecvFromAddress(int,int,int,int,u8 *);s32 r;*e=*f;r=SocketRecvFromAddress(a,b,c,d,e);*f=*e;ghiRecordSocketError(r,-1);}
+/* ghi recvfrom: receive up to `len` bytes from `socket` into `buf` with `flags`
+ * and report the sender in `address`.  As the SDK does, the caller's address
+ * length (in `*addressLength`) is copied into the address's length byte before
+ * the call and read back into it afterwards. */
+void ghiRecvFrom(s32 socket, void *buf, s32 len, s32 flags, UnkSocketAddress *address, s32 *addressLength) {
+    s32 SocketRecvFromAddress(s32, void *, s32, s32, UnkSocketAddress *);
+    s32 result;
+
+    address->bytes[0] = (u8) *addressLength;
+    result = SocketRecvFromAddress(socket, buf, len, flags, address);
+    *addressLength = (s32) address->bytes[0];
+    ghiRecordSocketError(result, -1);
+}
 
 void ghiSend(void) {
     s32 func_020216a8();

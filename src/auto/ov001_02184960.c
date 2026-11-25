@@ -241,8 +241,8 @@ void Ov001_SetScrollDragSoundPitch(s32 a,s32 b){extern s32 gOv001SoundState;M2C_
 void Ov001_StopSound(void) {M2C_UNK func_0202ac60(s32,s32);extern s32 gOv001SoundState;func_0202ac60(gOv001SoundState+0x90,0);}
 
 void func_ov001_021850ac(void) {
-    M2C_UNK func_0202a9f0();
-    func_0202a9f0();
+    M2C_UNK Sound_UpdateDriver();
+    Sound_UpdateDriver();
 }
 
 /* Builds the five-row ov001 option menu: allocates its handles, creates one
@@ -397,7 +397,7 @@ Ov001_SetSpriteAttrs(((s32*)M2C_FIELD(&gOv001MenuLayout,void**,4))[i],-1,0,*attr
 i+=2;}while(i<5);Ov001_LoadMenuResource(variant);
 }
 
-s32 func_ov001_02185714(void) {
+s32 Ov001_IsMenuAnimating(void) {
     extern M2C_UNK gOv001MenuLayout;
     if (M2C_FIELD(M2C_FIELD(&gOv001MenuLayout, void **, 4), s32 *, 0x14) != 0) {
         return 1;

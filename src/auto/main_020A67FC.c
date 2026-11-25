@@ -164,17 +164,17 @@ void func_020a6cbc(void *arg0) {
 }
 
 void ApplyAreaDamageEffect(void *effect){
-void DamageUnitAtTile(s32,s32,s32);s32 IsBattleEffectActive(void);s32 func_020a81d0(void *);void InitAreaScan(void *,s32,s32,s32,s32,s32);s32 NextAreaTile(void *);void Sprite_ResumeAnimation(void *);
+void DamageUnitAtTile(s32,s32,s32);s32 IsBattleEffectActive(void);s32 IsUnitCapturing(void *);void InitAreaScan(void *,s32,s32,s32,s32,s32);s32 NextAreaTile(void *);void Sprite_ResumeAnimation(void *);
 extern u16 gPlayerUnitIdBase[];
 u8 *covered=M2C_FIELD(effect,u8 **,0x54);s32 found=0,player,unitId;u32 index;s32 scan[8];UnkStruct_ov000_021A860C *unit;
 /* Area-damage effect: for the first eligible unit, apply 40 damage to every
    unit within two tiles of it and spawn its sprite.  The eligibility test
-   func_020a81d0 is always false in this build, so the effect only finishes. */
+   IsUnitCapturing is always false in this build, so the effect only finishes. */
 if(IsBattleEffectActive())return;
 for(player=1;player<5;player++){
 for(unitId=gPlayerUnitIdBase[player]+1;unitId<gPlayerUnitIdBase[player]+51;unitId++){
 unit=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))[unitId];
-if(unit->unk0 && func_020a81d0(unit)){
+if(unit->unk0 && IsUnitCapturing(unit)){
 InitAreaScan(scan,2,M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH),M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT));
 for(;;){if(!NextAreaTile(scan))break;
 index=scan[4]+M2C_FIELD((u8 *)*gCurrentMap+scan[5]*2,u16 *,MAP_ROW_OFFSETS);
@@ -327,7 +327,7 @@ void *p;
     return (slot >> MAP_UNIT_OWNER_SHIFT) + 1;
 }
 
-u32 func_020a735c(u8 *arg0) {
+u32 GetMapUnitKind(u8 *arg0) {
     return (u32) (*arg0 << 0x1A) >> 0x1A;
 }
 
@@ -335,7 +335,7 @@ u32 func_020a735c(u8 *arg0) {
    power bonus, -30 in a sandstorm unless that player's sprite state is 10, then
    the unit's weapon bonus and its stat-block bonus.  0 for excluded kinds. */
 s32 GetUnitDamageBonus(u8 *unit,s32 x,s32 y){
-s32 IsUnitKindClass6(u32);s32 GetPlayerAttackPropertyBonus(s32);s32 func_020a87ec(void *);s32 func_020a25d8(void *,s32,s32);
+s32 IsUnitKindClass6(u32);s32 GetPlayerAttackPropertyBonus(s32);s32 func_020a87ec(void *);s32 GetUnitStatDamageBonus(void *,s32,s32);
 s32 bonus=0,owner;
 if(IsUnitKindClass6((u32)(unit[0]<<26)>>26))return bonus;
 if(unit){if(!unit)owner=0;else owner=((s32)unit-(s32)((u8 *)*gCurrentMap+0x59a4))/14;owner=(owner>>6)+1;}else owner=0;
@@ -345,7 +345,7 @@ if(((Bits020a8c10 *)((u8 *)*gCurrentMap+owner*140+0x6810))->value!=10){
 if(M2C_FIELD(*gCurrentMap,u8 *,0x5158)==3)bonus-=30;
 }
 bonus+=func_020a87ec(unit);
-return bonus+func_020a25d8(unit,x,y);
+return bonus+GetUnitStatDamageBonus(unit,x,y);
 }
 
 /* Attack-power bonus (the part GetUnitAttackPower adds its 100 base to) of
@@ -355,7 +355,7 @@ s32 GetUnitAttackPowerBonus(u8 *unit, s32 x, s32 y) {
     s32 IsUnitKindClass6(u32);
     s32 func_020a8844(s32);
     s32 func_020a8804(void *);
-    s32 func_020a2608(void *, s32, s32);
+    s32 GetUnitAttackPowerStatBonus(void *, s32, s32);
     s32 bonus = 0, owner;
     if (IsUnitKindClass6((u32)(unit[0] << 26) >> 26)) return bonus;
     if (unit) {
@@ -365,7 +365,7 @@ s32 GetUnitAttackPowerBonus(u8 *unit, s32 x, s32 y) {
     } else owner = 0;
     bonus += func_020a8844(owner);
     bonus += func_020a8804(unit);
-    return bonus + func_020a2608(unit, x, y);
+    return bonus + GetUnitAttackPowerStatBonus(unit, x, y);
 }
 
 s32 func_020a7558(void) {

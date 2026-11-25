@@ -167,7 +167,12 @@ typedef struct FSArchive {
     s32 id;            /* +0x00 id the archive is registered under (its packed name) */
     struct FSArchive *next; /* +0x04 next open archive, NULL at the end */
     struct FSArchive *prev; /* +0x08 previous open archive, NULL at the start */
-    u8 pad0C[0x10];    /* +0x0C */
+    /* Four words at +0x0C..+0x18 that InitArchive clears by hand after it has
+     * already zeroed the whole handle; their purpose is not identified yet. */
+    s32 unk0C;
+    s32 unk10;
+    s32 unk14;
+    s32 unk18;
     u32 state;         /* +0x1C FS_ARCHIVE_* bits */
     u8 pad20[0x08];    /* +0x20 */
     void *image;       /* +0x28 archive image base in memory */

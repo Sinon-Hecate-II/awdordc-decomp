@@ -44,8 +44,10 @@ void Map_UpdateOwnerColorBands(void) {
     }
 }
 
-void func_0207863c(void) {
-    gMapHighlightState[2] = (gFrameCounter / 12) & 3;
+/* Advance the highlighted unit's flash colour index: the unit cycles through its
+ * four flash colours (MAP_VIEW_FLASH_COLORS), one step every 12 frames. */
+void Map_UpdateUnitFlashFrame(void) {
+    gMapHighlightState[MAP_VIEW_FLASH_FRAME] = (gFrameCounter / 12) & 3;
 }
 
 #pragma scheduling on
@@ -149,7 +151,7 @@ y0=ClampRenderCoord(rawy,(u16*)(*gCurrentMap+0x5120),19);
 x1=ClampRenderCoord(rawx1,(u16*)(*gCurrentMap+0x5120),18);
 y1=ClampRenderCoord(rawy1,(u16*)(*gCurrentMap+0x5120),19);
 func_0207750c();BuildMapCellCodes(x0,y0,x1,y1);BuildMapCellShades(x0,y0,x1,y1);
-UpdateMapWaveHeight();Map_UpdateOwnerColorBands();func_0207863c();UpdateTerrainAnimOffsets();
+UpdateMapWaveHeight();Map_UpdateOwnerColorBands();Map_UpdateUnitFlashFrame();UpdateTerrainAnimOffsets();
 for(i=0;i<32;i++)counts[i]=0;
 *(volatile u32*)0x40004a8=0x6f600000;
 for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++){

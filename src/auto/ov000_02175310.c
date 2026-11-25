@@ -19,7 +19,7 @@ void FillUnitInfo(void *arg0, void *arg1) {
     s32 owner, tmp2, value;
     void *unusedState;
 
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x8) = func_020a735c(unit);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x8) = GetMapUnitKind(unit);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x50) = GetUnitOwner(unit);
     owner = GetUnitOwner(unit);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x0) = (s32)M2C_FIELD((owner * 0x8C) + *gCurrentMap, u8 *, 0x67CD);
@@ -37,8 +37,8 @@ void FillUnitInfo(void *arg0, void *arg1) {
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x14) = func_020a78ac(unit);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x18) = func_020a78c4(unit);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x1C) = func_020a78d4(unit);
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x20) = func_020a25d8(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x24) = func_020a2608(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x20) = GetUnitStatDamageBonus(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x24) = GetUnitAttackPowerStatBonus(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
     kind = ((UnitKind75310 *)unit)->value;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x28) = GetUnitKindMoveRange((s32)kind);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x2C) = GetUnitMoveBonus(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
@@ -50,7 +50,7 @@ void FillUnitInfo(void *arg0, void *arg1) {
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x3C) = func_020a78ec(unit);
     kind = ((UnitKind75310 *)unit)->value;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x40) = GetUnitKindByte0((s32)kind);
-    value = func_020a26f8(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    value = GetUnitTerrainBonus(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
     tmp2 = GetUnitTerrainPenalty(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x44) = value + tmp2;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x4C) = func_020a788c(unit);
@@ -114,7 +114,7 @@ void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
    window's current mode into the sub engine's tile buffer, recolours it, and adds
    the two extra unit-type icons when the entry's stat index asks for them. */
 void DrawInfoPanelBackdrop(void *entry) {
-    M2C_UNK AddToU16Array(s32, s32, s32);
+    M2C_UNK OffsetTileIndices(s32, s32, s32);
     M2C_UNK LoadGraphicsBlock(M2C_UNK *, s32);
     M2C_UNK FillTileRect(s32, s32, s32, u16, s32);
     M2C_UNK SetTileRectPalette(s32, s32, s32, s32);
@@ -159,7 +159,7 @@ void DrawInfoPanelBackdrop(void *entry) {
         break;
     }
     LoadGraphicsBlock(gfxRes, panelTiles);
-    AddToU16Array(panelTiles, 0x800, 0x180);
+    OffsetTileIndices(panelTiles, 0x800, 0x180);
     SetTileRectPalette(panelTiles, 0x20, 0x18, 0xB);
     if (M2C_FIELD(&data_ov000_021ae2d0, u32 *, M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 8) * 0xC) == 1) {
         FillTileRect(panelTiles + 0x220, 4, 1, 0x304, 0xB);
@@ -269,7 +269,7 @@ temp=HeapAllocBlock(0x800);index=(s16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32
 Clear3DSpriteLayer(0);
 switch(GetInfoWindowLanguage()){case 0:table=&gInfoPanelGfx0;break;case 1:table=&gInfoPanelGfx1;break;case 2:table=&gInfoPanelGfx2;break;case 3:table=&gInfoPanelGfx3;break;case 4:table=&gInfoPanelGfx4;break;case 5:table=&gInfoPanelGfx5;break;default:table=&gInfoPanelGfx0;break;}
 LoadGraphicsBlock(table,temp);CopyTileRect(base,16,2,temp+0x520);
-for(i=0,step=0;i<2;i++,step+=32)AddToU16Array(base+step*2,32,384);
+for(i=0,step=0;i<2;i++,step+=32)OffsetTileIndices(base+step*2,32,384);
 SetTileRectPalette(base,16,2,11);HeapFreeBlock(temp);
 if(M2C_FIELD(M2C_FIELD(entry,void **,16),u8 *,0x48)){
 if(M2C_FIELD(entry,s32 *,8)<40)FillTileRect(base,10,2,0x2e0,11);

@@ -59,11 +59,11 @@ s32 IsMapBackgroundSeen(s32 mapId) {
 }
 
 void MarkRecordsMusicEntryHeard(s32 arg0) {
-    M2C_UNK func_020867a8(s32, M2C_UNK);
+    M2C_UNK SetRecordsMusicHeard(s32, M2C_UNK);
     if (arg0 < 0) {
         return;
     }
-    func_020867a8(arg0, 1);
+    SetRecordsMusicHeard(arg0, 1);
 }
 
 s32 func_020ad658(s32 arg0) {

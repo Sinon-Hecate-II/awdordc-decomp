@@ -52,7 +52,7 @@ void func_ov005_022176a0(void){
 s32 IsCoUnlocked(s32);void AddSprite(u16,u16,u16,void*,s32);
 void AddFaceSpriteTile(s32,s16,s16,u16,s32,s32);void AddFaceSprite(s16,s16,u16,s32);
 void Set3DSpriteSlideTargetAndStart(void*,s32,s32,s32,s32);u32 GetUnitSpriteWidth(void*);u32 GetUnitSpriteHeight(void*);
-void func_02087d84(void*,s32,s16,s16,u16,u16);void Ov005RefreshNameGraphic(void);
+void SpriteCellListSetCellRect(void*,s32,s16,s16,u16,u16);void Ov005RefreshNameGraphic(void);
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 s32 i; s16 x,y;void *saved;
 M2C_FIELD(STATE,s16*,0x16)+=M2C_FIELD(STATE,s16*,0x18);
@@ -73,9 +73,9 @@ for(;i<4;i++,delta+=60){
 px=M2C_FIELD(STATE,s16*,10)+delta;
 p=M2C_FIELD(STATE+i*4,void**,0x2c);
 Set3DSpriteSlideTargetAndStart(p,px,90,px,90);
-if((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)){s16 y=M2C_FIELD(p,s16*,0x52);s16 x=M2C_FIELD(p,s16*,0x50);u32 w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)){s16 y=M2C_FIELD(p,s16*,0x52);s16 x=M2C_FIELD(p,s16*,0x50);u32 w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 M2C_FIELD(p,s16*,0x34)=px;M2C_FIELD(p,s16*,0x36)=90;
-if((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)){s16 y=M2C_FIELD(p,s16*,0x52);s16 x=M2C_FIELD(p,s16*,0x50);u32 w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)){s16 y=M2C_FIELD(p,s16*,0x52);s16 x=M2C_FIELD(p,s16*,0x50);u32 w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 }
 }
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;

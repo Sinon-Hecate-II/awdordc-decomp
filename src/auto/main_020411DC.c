@@ -158,7 +158,7 @@ return result;
 }
 
 /* Handle a connection state refresh: if the active mode is 2/3, invoke the mode callback; if mode 0, run the next connection step; if mode 1 with refresh requested, start a contextual action. */
-void func_02041be0(s32 refresh) {
+void RefreshConnection(s32 refresh) {
     s32 GetSessionPlayerSlot(); s32 ReportMatchmakingResult();
     s32 b,c; void *p;
     if(refresh==0){CloseConnection();return;}
@@ -173,10 +173,13 @@ void func_02041be0(s32 refresh) {
     } else if(M2C_FIELD(GetConnection(),u8*,0x15)==1 && refresh==1)TryConnectToPeer(0,0,0);
 }
 
+/* Unless the session is serving a match (mode 2/3), drop the GT2 connection and
+ * refresh the connection with a new connect attempt. */
 void ReconnectUnlessServing(void) {
- if(M2C_FIELD(GetConnection(),u8*,0x15)==2)return;
- if(M2C_FIELD(GetConnection(),u8*,0x15)==3)return;
- CloseGt2Connection();func_02041be0(1);
+    if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == CONN_MODE_SERVE) return;
+    if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == CONN_MODE_SERVE_NO_RETRY) return;
+    CloseGt2Connection();
+    RefreshConnection(1);
 }
 
 /* Starts the matchmaking step after a finished connection attempt: clears the
@@ -206,7 +209,7 @@ s32 StartMatchmaking(void) {
             if (ReportConnectionCommandResult()) return result;
         }
     } else {
-        func_02041be0(1);
+        RefreshConnection(1);
     }
     return 0;
 }
@@ -229,12 +232,15 @@ s32 ClosePeerConnection(s32 playerId) {
     return 0;
 }
 
+/* Close the connection's GT2 transport: flag the session teardown, fail the
+ * connections held in the GT2 socket's connection table and clear the flag. */
 void CloseGt2Connection(void) {
     void *GetConnection();
     M2C_UNK GT2NotifyConnectionClosed(s32);
-    M2C_FIELD(GetConnection(), s8 *, 0x1A8) = 2;
-    GT2NotifyConnectionClosed(*M2C_FIELD(GetConnection(), s32 **, 4));
-    M2C_FIELD(GetConnection(), s8 *, 0x1A8) = 0;
+
+    M2C_FIELD(GetConnection(), s8 *, CONN_SESSION_TEARDOWN) = 2;
+    GT2NotifyConnectionClosed(*M2C_FIELD(GetConnection(), s32 **, CONN_SESSION_GT2_SOCKET));
+    M2C_FIELD(GetConnection(), s8 *, CONN_SESSION_TEARDOWN) = 0;
 }
 
 /* Keep only the connected peers whose slot is in `mask`: send the updated peer

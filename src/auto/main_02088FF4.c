@@ -44,45 +44,54 @@ u8 Is3DSpriteVisible(void *arg0) {
     return var_r0;
 }
 
-u8 func_02089080(void *arg0) {
-    u8 var_r0;
+/* Nonzero while the sprite actor's visible bit (SPRITE_ACTOR_STATE bit 0) is
+ * clear. */
+u8 Is3DSpriteHidden(void *sprite) {
+    u8 result;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x48) << 0x1F) >> 0x1F) == 0) {
-        var_r0 = 1;
+    if (((u32)(M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) << 0x1F) >> 0x1F) == 0) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
-u8 func_0208909c(void *arg0) {
-    u8 var_r0;
+/* Nonzero while the sprite actor's fade mode (SPRITE_ACTOR_STATE bits 4-5) is
+ * set, that is while UpdateSpriteFade is fading it. */
+u8 Is3DSpriteFading(void *sprite) {
+    u8 result;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x48) << 0x1A) >> 0x1E) != 0) {
-        var_r0 = 1;
+    if (((u32)(M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) << 0x1A) >> 0x1E) != 0) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
-u8 func_020890b8(void *arg0) {
-    u8 var_r0;
+/* Nonzero while the sprite actor's slide mode (SPRITE_ACTOR_STATE bits 6-7) is
+ * set, that is while UpdateSpriteSlide is moving it. */
+u8 Is3DSpriteSliding(void *sprite) {
+    u8 result;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x48) << 0x18) >> 0x1E) != 0) {
-        var_r0 = 1;
+    if (((u32)(M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) << 0x18) >> 0x1E) != 0) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
-u8 Is3DSpriteAnimating(void *arg0) {
- u8 result;
- if (func_0208909c(arg0) != 0) return 1;
- if (func_020890b8(arg0) != 0) result = 1;
- else result = 0;
- return result;
+/* Nonzero while the sprite actor is still animating: it is fading
+ * (SPRITE_ACTOR_FADE_MASK) or sliding (SPRITE_ACTOR_SLIDE_MODE_MASK). */
+u8 Is3DSpriteAnimating(void *sprite) {
+    u8 result;
+
+    if (Is3DSpriteFading(sprite)) return 1;
+    if (Is3DSpriteSliding(sprite)) result = 1;
+    else result = 0;
+    return result;
 }
 
 #pragma scheduling on
@@ -240,9 +249,11 @@ void SetFrameBorderSpritePattern(void *sprite, u32 vramOffset, s32 palette, s32 
     *(volatile s8 *)((s8 *)sprite + SPRITE_ACTOR_PRIORITY) = 0;
 }
 
-M2C_UNK LoadFrameBorderSpritePattern(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Load a frame-border sprite's pattern, tinted with the UI's frame-border
+ * colour (the sprite's VRAM offset and palette are given by the caller). */
+M2C_UNK LoadFrameBorderSpritePattern(M2C_UNK sprite, M2C_UNK vramOffset, M2C_UNK palette) {
     s32 GetUiColor(M2C_UNK);
-    SetFrameBorderSpritePattern((void *)arg0, arg1, arg2, GetUiColor(9));
+    SetFrameBorderSpritePattern((void *)sprite, vramOffset, palette, GetUiColor(UI_COLOR_FRAME_BORDER));
 }
 
 void func_02089424(M2C_UNK arg0) {
@@ -250,11 +261,15 @@ void func_02089424(M2C_UNK arg0) {
     LoadFrameBorderSpritePattern(arg0, 0x1000, 1);
 }
 
-void Sync3DSpriteToTarget(void *arg0) {
-    *(volatile s16 *)((volatile s8 *)arg0 + 0x5E) = *(volatile s16 *)((volatile s8 *)arg0 + 0x34);
-    *(volatile s16 *)((volatile s8 *)arg0 + 0x60) = *(volatile s16 *)((volatile s8 *)arg0 + 0x36);
-    *(volatile s16 *)((volatile s8 *)arg0 + 0x62) = (s16) ((u32)(((volatile s32 *)((volatile s8 *)arg0 + 0x40))[0] << 0x17) >> 0x17);
-    *(volatile s16 *)((volatile s8 *)arg0 + 0x64) = (s16) ((u32)(((volatile s32 *)((volatile s8 *)arg0 + 0x40))[0] << 0xE) >> 0x17);
+/* Snap a frame-border sprite actor's drawn rectangle to its target: copy the
+ * actor's target position (SPRITE_ACTOR_X/Y) and the width and height packed into
+ * SPRITE_ACTOR_SPLIT (bits 0..8 and 9..17) into the frame rectangle fields
+ * (FRAME_ACTOR_X/Y/WIDTH/HEIGHT). */
+void Sync3DSpriteToTarget(void *sprite) {
+    *(volatile s16 *)((volatile s8 *)sprite + FRAME_ACTOR_X) = *(volatile s16 *)((volatile s8 *)sprite + SPRITE_ACTOR_X);
+    *(volatile s16 *)((volatile s8 *)sprite + FRAME_ACTOR_Y) = *(volatile s16 *)((volatile s8 *)sprite + SPRITE_ACTOR_Y);
+    *(volatile s16 *)((volatile s8 *)sprite + FRAME_ACTOR_WIDTH) = (s16) ((u32)(((volatile s32 *)((volatile s8 *)sprite + SPRITE_ACTOR_SPLIT))[0] << 0x17) >> 0x17);
+    *(volatile s16 *)((volatile s8 *)sprite + FRAME_ACTOR_HEIGHT) = (s16) ((u32)(((volatile s32 *)((volatile s8 *)sprite + SPRITE_ACTOR_SPLIT))[0] << 0xE) >> 0x17);
 }
 
 #pragma push
@@ -265,7 +280,7 @@ s32 IsTextLayerActive(void);
 void DrawFrameBorderPulse(s16,s16,s16,s16,u16,s32);
 void DrawFrameBorder(s16,s16,s16,s16,u16,s32,s32);
 s32 d,a,b,screen;s32 attr;s32 *engineA,*engineB;u16 tile;void *old;s32 i,priority,drawMode;u32 target,delta;void *cur;
-if(func_02089080(p))return;
+if(Is3DSpriteHidden(p))return;
 if(M2C_FIELD(p,u8 *,0x5a)){Sync3DSpriteToTarget(p);M2C_FIELD(p,u8 *,0x5a)=0;}
 attr=(u16)((u32)(M2C_FIELD(p,s32 *,0x40)<<6)>>24);
 a=0x3ff&((u32)M2C_FIELD(p,u16 *,0x3e)>>((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30));
@@ -343,13 +358,15 @@ void DeleteTextLayerIconObjects(void) {
     DeleteSpriteObjectsOfClass(&data_02102698);
 }
 
-void func_020897b8(void) {
+/* Draws the resting UI bar gradient: the gradient strip runs from UI colour 0xD
+ * to UI colour 0xE (DrawUiGradientPulse is the highlighted variant). */
+void DrawUiGradientStatic(void) {
     M2C_UNK DrawUiGradient(M2C_UNK, M2C_UNK, s32, s32);
     s32 GetUiColor(M2C_UNK);
-    s32 temp_r4;
+    s32 startColor;
 
-    temp_r4 = GetUiColor(0xD);
-    DrawUiGradient(0x1400, 1, temp_r4, GetUiColor(0xE));
+    startColor = GetUiColor(UI_GRADIENT_COLOR_START);
+    DrawUiGradient(UI_GRADIENT_TILE, UI_GRADIENT_PALETTE, startColor, GetUiColor(UI_GRADIENT_COLOR_END));
 }
 
 /* Fills the UI gradient palette with a gradient from UI colour 0xD to a colour
@@ -421,22 +438,28 @@ M2C_UNK **func_02089944(M2C_UNK **arg0) {
     return arg0;
 }
 
-M2C_UNK **func_0208996c(M2C_UNK **arg0) {
+/* Destroy a text layer: switch it to the class vtable, release its text and its
+ * icon child sprites, then free the layer itself. */
+M2C_UNK **TextLayer_Free(M2C_UNK **layer) {
  M2C_UNK TextLayer_FreeChildSprites(M2C_UNK **);
  M2C_UNK MemFree(M2C_UNK **);
- *arg0=&gTextLayerVtable;
- TextLayer_FreeText();TextLayer_FreeChildSprites(arg0);MemFree(arg0);return arg0;
+ *layer=&gTextLayerVtable;
+ TextLayer_FreeText();TextLayer_FreeChildSprites(layer);MemFree(layer);return layer;
 }
 
 void RenderTextLayer(M2C_UNK, M2C_UNK, u32, s32);
 
-void RenderTextLayerMessageDefault(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Renders a localized message into a text layer using the default message panel
+ * tileset (tile 0x4B80 of the panel texture). */
+void RenderTextLayerMessageDefault(M2C_UNK layer, M2C_UNK style, M2C_UNK textId) {
     s32 GetLocalizedText(M2C_UNK);
-    RenderTextLayer(arg0, arg1, 0x4B80, GetLocalizedText(arg2));
+    RenderTextLayer(layer, style, 0x4B80, GetLocalizedText(textId));
 }
 
-void RenderTextLayerMessage(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    RenderTextLayer(arg0, arg1, arg2, GetLocalizedText(arg3));
+/* Show a message on a text layer: draw the localized string for message id
+ * `textId`, passing the layer's draw mode and base tile straight through. */
+void RenderTextLayerMessage(void *layer, s32 mode, s32 tile, u32 textId) {
+    RenderTextLayer(layer, mode, tile, GetLocalizedText(textId));
 }
 
 void RenderTextLayer(M2C_UNK entity, M2C_UNK arg1, u32 arg2, s32 arg3) {
@@ -582,16 +605,18 @@ void TextLayer_AdvancePageOrClose(void *layer) {
  DeleteSpriteObject(layer);
 }
 
-s32 func_02089cb8(void *arg0) {
-    s32 temp_r2;
-    u32 temp_r1;
+/* Count a text panel's refresh timer (TEXT_LAYER_PANEL_REFRESH_TIMER) down one
+ * frame; return 1 while the panel still has frames left, 0 once it has run out. */
+s32 UpdateTextLayerRefreshTimer(void *layer) {
+    s32 state;
+    u32 refreshTimer;
 
-    temp_r2 = M2C_FIELD(arg0, s32 *, 0x58);
-    temp_r1 = (u32) (temp_r2 * 8) >> 0x19;
-    if (temp_r1 <= 1U) {
+    state = M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE);
+    refreshTimer = (u32)(state * 8) >> 0x19;
+    if (refreshTimer <= 1U) {
         return 0;
     }
-    M2C_FIELD(arg0, s32 *, 0x58) = (s32) ((temp_r2 & ~0x1FC00000) | ((u32) ((temp_r1 - 1) << 0x19) >> 3));
+    M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) = (s32)((state & ~TEXT_LAYER_PANEL_REFRESH_TIMER) | ((u32)((refreshTimer - 1) << 0x19) >> 3));
     return 1;
 }
 

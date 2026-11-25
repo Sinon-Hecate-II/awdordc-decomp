@@ -298,7 +298,7 @@ void ReceiveConnectionPacket(u8 fromPlayer, s32 packetType, void *payload) {
 /* Handles deferred battle/action state transitions after the active phase check. */
 s32 func_0203dee8(s32 command, s32 parameter) {
 u64 GetSystemTick(void); s32 GetNetSessionState(void);
-M2C_UNK SetConnectionState(s32); void func_02041be0(s32); void StartMatchmaking(void); void GT2NotifyConnectionClosed(s32); void NatNeg_ReleasePeer(s32);
+M2C_UNK SetConnectionState(s32); void RefreshConnection(s32); void StartMatchmaking(void); void GT2NotifyConnectionClosed(s32); void NatNeg_ReleasePeer(s32);
 void *state;
 if(GetNetSessionState()!=5)return 0;
 if(M2C_FIELD(GetConnection(),u8 *,21)==2)return 1;
@@ -312,7 +312,7 @@ if(!M2C_FIELD(GetConnection(),u8 *,0x1a8)){M2C_FIELD(GetConnection(),u8 *,0x1a8)
 }else if(M2C_FIELD(GetConnection(),u8 *,21)==3)ReportConnectionError(6,0xfffec5d2);
 else if(M2C_FIELD(GetConnection(),s32 *,0x208))StartMatchmaking();
 else if(M2C_FIELD(GetConnection(),s32 *,0x1a0)==1){SetConnectionState(18);state=(void *)GetConnection();M2C_FIELD(state,u64 *,0x1f0)=GetSystemTick();}
-else func_02041be0(1);
+else RefreshConnection(1);
 return 1;
 }
 
@@ -414,7 +414,16 @@ void UpdateConnectedPlayerCount(void) {
  M2C_FIELD(GetConnection(),u8 *,CONN_SESSION_ACTIVE_MAX)=playerCount;
 }
 
-s32 GetPeerSlotList(s32 *arg0) { if(GetConnection()==0)return 0; *arg0=GetConnection()+0x2d0; return M2C_FIELD(GetConnection(),u8 *,0xd)+1; }
+/* Fill `slotList` with the connection's per-peer slot ids and return how many
+ * entries the list has (the connected peer count plus the slot-0 entry); 0 when
+ * there is no connection. */
+s32 GetPeerSlotList(u8 **slotList) {
+    s32 GetConnection(void);
+
+    if (GetConnection() == 0) return 0;
+    *slotList = (u8 *)GetConnection() + CONN_SESSION_PEER_SLOTS;
+    return M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) + 1;
+}
 
 /* Copies the slot ids of the session's present players (those whose bit is set in
  * CONN_SESSION_PLAYER_MASK) into gActivePlayerSlots, up to the first absent one,

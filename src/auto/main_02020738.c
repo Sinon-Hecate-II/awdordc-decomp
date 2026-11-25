@@ -238,26 +238,32 @@ s32 SocketShutdown(void *socket) {
     return 0;
 }
 #pragma opt_common_subs reset
-s32 SocketShutdownTask(void *arg0) {
+/* Shutdown task SocketShutdown posts on the socket's send connection: while the
+ * socket is still duplex (state 0 or 4), close its transport so both directions
+ * are torn down. */
+s32 SocketShutdownTask(void *request) {
     M2C_UNK CloseTransport();
-    s32 var_r1;
-    s8 temp_r0;
+    s32 duplex;
+    s8 state;
 
-    var_r1 = 1;
-    temp_r0 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s8 *, 0x73);
-    if ((temp_r0 != 0) && (temp_r0 != 4)) {
-        var_r1 = 0;
+    duplex = 1;
+    state = M2C_FIELD(M2C_FIELD(request, void **, TASK_SOCKET), s8 *, SOCK_STATE);
+    if ((state != SOCK_STATE_IDLE) && (state != SOCK_STATE_CONNECTED)) {
+        duplex = 0;
     }
-    if (var_r1 != 0) {
+    if (duplex != 0) {
         CloseTransport();
     }
     return 0;
 }
 
-s32 SocketIsDestroyed(s32 arg0) {
+/* True when the socket has left the active list but has not reached the closed
+ * list yet: its shutdown is done and it is waiting to be reaped. */
+s32 SocketIsDestroyed(s32 socket) {
     s32 SocketIsUnregistered();
     s32 SocketIsClosed(s32);
-    if ((arg0 >= 0) && (SocketIsUnregistered() != 0) && (SocketIsClosed(arg0) == 0)) {
+
+    if ((socket >= 0) && (SocketIsUnregistered(socket) != 0) && (SocketIsClosed(socket) == 0)) {
         return 1;
     }
     return 0;
@@ -559,14 +565,17 @@ s32 DnsLookupAddressWithoutServers(s32 hostname) {
     return address;
 }
 
-s32 SetDnsServerAddresses(s32 arg0, s32 arg1) {
+/* Store the two IPv4 DNS servers, in lookup order.  They can only be set once the
+ * stack has a local address (the DNS query needs one to originate from); before
+ * that the call fails with -39. */
+s32 SetDnsServerAddresses(s32 primary, s32 secondary) {
     s32 GetLocalIpAddress();
     extern M2C_UNK gDnsServerAddresses;
     if (GetLocalIpAddress() == 0) {
         return -0x27;
     }
-    M2C_FIELD(&gDnsServerAddresses, s32 *, 0) = arg0;
-    M2C_FIELD(&gDnsServerAddresses, s32 *, 4) = arg1;
+    M2C_FIELD(&gDnsServerAddresses, s32 *, DNS_SERVER_PRIMARY) = primary;
+    M2C_FIELD(&gDnsServerAddresses, s32 *, DNS_SERVER_SECONDARY) = secondary;
     return 0;
 }
 
@@ -672,13 +681,13 @@ void SocketRemoveFromActiveList(M2C_UNK arg0) {
 }
 
 s32 func_02021448(s32 *arg0, s32 arg1) {
- void *func_02021464(void *, s32);
- void *p = func_02021464(arg0, arg1);
+ void *SocketFindLink(void *, s32);
+ void *p = SocketFindLink(arg0, arg1);
  if(p) M2C_FIELD(p,s32 *,0)=M2C_FIELD(arg1,s32 *,0x7c);
 }
 
-void *func_02021464(void *arg0, s32 arg1);
-void *func_02021464(void *arg0, s32 arg1) {
+void *SocketFindLink(void *arg0, s32 arg1);
+void *SocketFindLink(void *arg0, s32 arg1) {
  void *p = M2C_FIELD(arg0, void **, 0);
  while (p) {
   if ((s32)p == arg1) return arg0;
@@ -693,15 +702,17 @@ void func_02021490(M2C_UNK arg0) {
     func_02021448(&gClosedSocketList, arg0);
 }
 
-s32 SocketIsUnregistered(s32 arg0) {
- extern M2C_UNK gActiveSocketList;
- if (arg0 <= 0 || func_02021464(&gActiveSocketList, arg0) == NULL) return 1;
- return 0;
+/* Whether a socket handle is not registered: 1 for a non-positive handle or one
+ * absent from the list of active sockets, 0 when it is registered. */
+s32 SocketIsUnregistered(s32 socket) {
+    extern M2C_UNK gActiveSocketList;
+    if (socket <= 0 || SocketFindLink(&gActiveSocketList, socket) == NULL) return 1;
+    return 0;
 }
 
 s32 SocketIsClosed(s32 arg0) {
  extern M2C_UNK gClosedSocketList;
- return func_02021464(&gClosedSocketList, arg0) != NULL;
+ return SocketFindLink(&gClosedSocketList, arg0) != NULL;
 }
 
 void func_02021500(s32 unused, s32 arg1) {
@@ -712,12 +723,14 @@ void func_02021500(s32 unused, s32 arg1) {
  SocketCreateFromConfig(&gUdpSocketConfig);
 }
 
-void func_0202152c(M2C_UNK arg0, void *arg1) {
+/* Bind a socket to the port of a GhiSocketAddress, converting it from network
+ * byte order to host order. */
+void SocketBindAddress(s32 socket, GhiSocketAddress *address) {
     M2C_UNK SocketBind(M2C_UNK, u16);
-    u16 temp_r1;
+    u16 netPort;
 
-    temp_r1 = M2C_FIELD(arg1, u16 *, 2);
-    SocketBind(arg0, (u16) ((u8) ((s32) temp_r1 >> 8) | ((temp_r1 << 8) & 0xFF00)));
+    netPort = address->port;
+    SocketBind(socket, (u16) ((u8) ((s32) netPort >> 8) | ((netPort << 8) & 0xFF00)));
 }
 
 /* Convert the socket address's network-order port and IPv4 address to host

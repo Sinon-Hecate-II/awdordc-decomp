@@ -2,7 +2,7 @@ func_ov002_021e1500 kind:function(arm,size=0x2c) addr:0x021e1500
 SetupBattleScene kind:function(arm,size=0x50) addr:0x021e152c
 func_ov002_021e157c kind:function(arm,size=0x1c) addr:0x021e157c
 func_ov002_021e1598 kind:function(arm,size=0x14) addr:0x021e1598
-func_ov002_021e15ac kind:function(arm,size=0x34) addr:0x021e15ac
+TeardownBattleScreen kind:function(arm,size=0x34) addr:0x021e15ac
 func_ov002_021e15e0 kind:function(arm,size=0x14) addr:0x021e15e0
 CreateBattleSceneSprite kind:function(arm,size=0x30) addr:0x021e15f4
 func_ov002_021e1624 kind:function(arm,size=0x14) addr:0x021e1624
@@ -63,7 +63,7 @@ SwapBattleScreen kind:function(arm,size=0x14) addr:0x021e3c5c
 UpdateBattleSpriteLayers kind:function(arm,size=0x14) addr:0x021e3c70
 DrawBattleSpriteGrid kind:function(arm,size=0x14) addr:0x021e3c84
 InitBattleSpriteScene kind:function(arm,size=0x13c) addr:0x021e3c98
-func_ov002_021e3dd4 kind:function(arm,size=0x2c) addr:0x021e3dd4
+TeardownBattleSpriteScene kind:function(arm,size=0x2c) addr:0x021e3dd4
 IsBattleScreenSwapped kind:function(arm,size=0xc) addr:0x021e3e00
 InitEffectDisc kind:function(arm,size=0x58) addr:0x021e3e0c
 func_ov002_021e3e64 kind:function(arm,size=0x18) addr:0x021e3e64
@@ -141,7 +141,7 @@ DestroyUnitModel kind:function(arm,size=0x2d8) addr:0x021e9318
 FreeModelList2 kind:function(arm,size=0xf4) addr:0x021e95f0
 FreeModelList3 kind:function(arm,size=0xf4) addr:0x021e96e4
 func_ov002_021e97d8 kind:function(arm,size=0x174) addr:0x021e97d8
-func_ov002_021e994c kind:function(arm,size=0x30) addr:0x021e994c
+SpawnEffectNodeForEvent kind:function(arm,size=0x30) addr:0x021e994c
 InitUnitEffectNode kind:function(arm,size=0x74) addr:0x021e997c
 SetupUnitPoseNode kind:function(arm,size=0x1d0) addr:0x021e99f0
 SetupUnitEffectNode kind:function(arm,size=0x24c) addr:0x021e9bc0
@@ -154,7 +154,7 @@ func_ov002_021ea5b8 kind:function(arm,size=0xc) addr:0x021ea5b8
 AdvanceUnitEffectVariant kind:function(arm,size=0x64) addr:0x021ea5c4
 UnitEffectVariantAtLimit kind:function(arm,size=0x4c) addr:0x021ea628
 gBattleSceneLayout kind:data(any) addr:0x021ea680
-data_ov002_021ea68c kind:data(any) addr:0x021ea68c
+gBattleScreenSpriteClass kind:data(any) addr:0x021ea68c
 data_ov002_021ea704 kind:data(any) addr:0x021ea704
 data_ov002_021ea71c kind:data(any) addr:0x021ea71c
 data_ov002_021ea72c kind:data(any) addr:0x021ea72c

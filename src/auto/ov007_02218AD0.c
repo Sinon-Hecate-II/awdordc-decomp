@@ -164,7 +164,7 @@ void func_ov007_02218ad0(void *arg0) {
 #pragma pop
 void func_ov007_02218d8c(void *arg0) {
     M2C_UNK func_01ffaacc(u16, s32, u16, M2C_UNK *, s32);
-    s32 func_ov007_02217c50();
+    s32 MapEditor_GetPageOwnerColorCount();
     extern M2C_UNK data_02101f5c;
     extern u16 **data_027e01d8;
     extern M2C_UNK data_027e0064;
@@ -175,7 +175,7 @@ void func_ov007_02218d8c(void *arg0) {
     s32 var_r9;
 
     sp4 = arg0;
-    temp_r7 = func_ov007_02217c50();
+    temp_r7 = MapEditor_GetPageOwnerColorCount();
     if (M2C_FIELD(sp4, u16 *, 0x3C) > 0x10U) {
         var_r8 = 0;
         if (temp_r7 > 0) {
@@ -384,7 +384,7 @@ M2C_UNK GetPanelObject(void) {
  * start the three row sprites' slide-in over the eight open frames; then hide the
  * panel's two spare sprites and reset the driver's frame counter. */
 void BeginPanelOpen(void *driver) {
-M2C_UNK GetPanelObject(void); void func_02088eec(void *,s32); void Hide3DSprite(void *);
+M2C_UNK GetPanelObject(void); void Start3DSpriteSlideIn(void *,s32); void Hide3DSprite(void *);
 extern u16 **gCur3DSpriteEngine; extern u16 **g3DSpriteEngineMain;
 u16 * volatile attrReg; u16 **savedEngine; void *panel;
 panel=(void *)GetPanelObject();
@@ -396,9 +396,9 @@ attrReg=(u16 *)((u8 *)*g3DSpriteEngineMain+DS3D_BANK_OAMATTR);
 M2C_FIELD(*gCur3DSpriteEngine,u8 *,DS3D_BANK_ROWS_ABOVE)=0;
 M2C_FIELD(*gCur3DSpriteEngine,u8 *,DS3D_BANK_ROWS_BELOW)=0x10;
 gCur3DSpriteEngine=savedEngine;
-func_02088eec(M2C_FIELD(panel,void **,OV007_PANEL_ROW0),8);
-func_02088eec(M2C_FIELD(panel,void **,OV007_PANEL_ROW1),8);
-func_02088eec(M2C_FIELD(panel,void **,OV007_PANEL_ROW2),8);
+Start3DSpriteSlideIn(M2C_FIELD(panel,void **,OV007_PANEL_ROW0),8);
+Start3DSpriteSlideIn(M2C_FIELD(panel,void **,OV007_PANEL_ROW1),8);
+Start3DSpriteSlideIn(M2C_FIELD(panel,void **,OV007_PANEL_ROW2),8);
 }
 Hide3DSprite(M2C_FIELD(panel,void **,OV007_PANEL_SPRITE_A));
 Hide3DSprite(M2C_FIELD(panel,void **,OV007_PANEL_SPRITE_B));

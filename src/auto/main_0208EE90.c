@@ -2,6 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "sound.h"
+#include "ds3dsprite.h"
 extern M2C_UNK gSoundTimerState;
 extern u32 gSoundTimerTicks[9], gSoundTimerElapsed[9];
 
@@ -87,17 +88,20 @@ void CreateNumberDisplay(M2C_UNK arg0) {
     InitNumberDisplay();
 }
 
-void func_0208f3d4(void *arg0) {
+/* Delayed-call task step: count the delay (DS3D_CALL_DELAY) down; once it is
+ * over, run the function the task stored (DS3D_CALL_FUNCTION, no argument) and
+ * carry on with the task sprite's animation. */
+void UpdateDelayedCallTask(void *task) {
     M2C_UNK Sprite_ResumeAnimation(void *);
-    s32 temp_r0;
+    s32 delay;
 
-    temp_r0 = M2C_FIELD(arg0, s32 *, 0x38);
-    if (temp_r0 > 0) {
-        M2C_FIELD(arg0, s32 *, 0x38) = (s32) (temp_r0 - 1);
+    delay = M2C_FIELD(task, s32 *, DS3D_CALL_DELAY);
+    if (delay > 0) {
+        M2C_FIELD(task, s32 *, DS3D_CALL_DELAY) = (s32) (delay - 1);
         return;
     }
-    M2C_FIELD(arg0, M2C_UNK (**)(), 0x34)();
-    Sprite_ResumeAnimation(arg0);
+    M2C_FIELD(task, M2C_UNK (**)(), DS3D_CALL_FUNCTION)();
+    Sprite_ResumeAnimation(task);
 }
 
 #pragma opt_common_subs off
@@ -329,16 +333,20 @@ void func_0208f7c0(void *arg0) {
     PlayMusicTrack(M2C_FIELD(arg0, s32 *, 0x5C));
 }
 
-void ChangeMusicTrackWithFade(s32 arg0) {
+/* Switch the music to `track` across a fade: unless it is already playing, fade
+ * the current track out and spawn the object that starts `track` when the fade
+ * has finished. */
+void ChangeMusicTrackWithFade(s32 track) {
     M2C_UNK FadeOutMusicDefault();
     void *CreateSpriteFromClass(M2C_UNK *, s32);
     extern s32 gCurrentMusicTrack;
     extern M2C_UNK gMusicPlayAfterFadeClass;
-    if (gCurrentMusicTrack == arg0) {
+
+    if (gCurrentMusicTrack == track) {
         return;
     }
     FadeOutMusicDefault();
-    M2C_FIELD(CreateSpriteFromClass(&gMusicPlayAfterFadeClass, 7), s32 *, 0x5C) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&gMusicPlayAfterFadeClass, 7), s32 *, MUSIC_PLAY_AFTER_FADE_TRACK) = track;
 }
 
 void func_0208f808(void) {
@@ -392,15 +400,15 @@ u8 IsMusicFadingOut(void) {
 }
 
 void FadeMusicToHalfVolume(void) {
-    M2C_UNK func_0208f8ec(M2C_UNK, M2C_UNK);
-    func_0208f8ec(0x40, 0x1E);
+    M2C_UNK FadeMusicToVolume(M2C_UNK, M2C_UNK);
+    FadeMusicToVolume(0x40, 0x1E);
 }
 
 void FadeMusicToFullVolume(void) {
-    func_0208f8ec(0x7F, 0x1E);
+    FadeMusicToVolume(0x7F, 0x1E);
 }
 
-s32 func_0208f8ec(s32 a,s32 b){s32 Sound_FadeVolume(s32,s32,s32);return Sound_FadeVolume(-1,a,b);}
+s32 FadeMusicToVolume(s32 a,s32 b){s32 Sound_FadeVolume(s32,s32,s32);return Sound_FadeVolume(-1,a,b);}
 
 /* Stop all music: delete the pending fade-out and play-after-fade sprite objects,
  * cut the current track and mark that no track is playing. */
@@ -451,12 +459,16 @@ void SpawnSoundEffectFullVolume(s32 soundId, s16 delay) {
     M2C_FIELD(sprite, s16 *, SOUND_EFFECT_DELAY) = delay;
 }
 
-void func_0208f9d0(void *a){
- u64 U32DivideRem(s32,s16);
- s32 PlaySoundEffect(s32);
- extern s32 gFrameCounter;
- if((u32)(U32DivideRem(gFrameCounter,M2C_FIELD(a,s16*,0x52))>>32)!=0)return;
- PlaySoundEffect(M2C_FIELD(a,s32*,0x5c));
+/* Play the looping sound effect's sound once every SOUND_LOOP_INTERVAL frames. */
+void UpdateLoopingSoundEffect(void *sprite) {
+    u64 U32DivideRem(s32, s16);
+    s32 PlaySoundEffect(s32);
+    extern s32 gFrameCounter;
+
+    if ((u32) (U32DivideRem(gFrameCounter, M2C_FIELD(sprite, s16 *, SOUND_LOOP_INTERVAL)) >> 32) != 0) {
+        return;
+    }
+    PlaySoundEffect(M2C_FIELD(sprite, s32 *, SOUND_LOOP_ID));
 }
 
 void StartLoopingSoundEffect(s32 a,s32 b){

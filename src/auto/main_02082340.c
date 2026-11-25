@@ -35,7 +35,7 @@ void Configure3DSpriteLayer(s32 layer, SpriteAttr *attr) {
     if (onMain == 1) vramBase = 0x06000000; else vramBase = 0x06200000;
     Set3DSpriteLayerBank(layer, (u8)attr->f0);
     Set3DSpriteLayerPalette(layer, (u8)attr->f4);
-    SetLayerSize(layer, (u8)attr->f9);
+    Set3DSpriteLayerSize(layer, (u8)attr->f9);
     ((SpriteTile *)((u8 *)*gCur3DSpriteEngine + 6))[layer].f0 = attr->f11;
     ((SpriteTile *)((u8 *)*gCur3DSpriteEngine + 6))[layer].f7 = attr->f13;
     ((SpriteTile *)((u8 *)*gCur3DSpriteEngine + 6))[layer].f13 = attr->f14;
@@ -234,27 +234,30 @@ void Reset3DSpriteDisplayState(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
+/* Release every VRAM bank grant the display purposes hold - main and sub
+ * background, OBJ and their extended palettes, and the 3D texture areas - so the
+ * banks go back to the allocator for the next display setup. */
 void GX_ReleaseBankGrants(void) {
-    M2C_UNK func_02003538();
-    M2C_UNK func_0200354c();
-    M2C_UNK func_02003560();
-    M2C_UNK func_02003584();
-    M2C_UNK func_020035a8();
-    M2C_UNK func_020035bc();
-    M2C_UNK func_0200360c();
-    M2C_UNK func_02003620();
-    M2C_UNK func_02003634();
-    M2C_UNK func_0200365c();
-    func_02003538();
-    func_0200354c();
-    func_02003560();
-    func_02003584();
-    func_020035a8();
-    func_020035bc();
-    func_0200360c();
-    func_02003620();
-    func_02003634();
-    func_0200365c();
+    M2C_UNK GX_ReleaseBankGrantForBG();
+    M2C_UNK GX_ReleaseBankGrantForOBJ();
+    M2C_UNK GX_ReleaseBankGrantForBGExtPalette();
+    M2C_UNK GX_ReleaseBankGrantForObjExtPalette();
+    M2C_UNK GX_ReleaseBankGrantForTex();
+    M2C_UNK GX_ReleaseBankGrantForOBJExtPltt();
+    M2C_UNK GX_ReleaseBankGrantForSubBG();
+    M2C_UNK GX_ReleaseBankGrantForSubOBJ();
+    M2C_UNK GX_ReleaseBankGrantForBGExtPlttSub();
+    M2C_UNK GX_ReleaseBankGrantForOBJExtPlttSub();
+    GX_ReleaseBankGrantForBG();
+    GX_ReleaseBankGrantForOBJ();
+    GX_ReleaseBankGrantForBGExtPalette();
+    GX_ReleaseBankGrantForObjExtPalette();
+    GX_ReleaseBankGrantForTex();
+    GX_ReleaseBankGrantForOBJExtPltt();
+    GX_ReleaseBankGrantForSubBG();
+    GX_ReleaseBankGrantForSubOBJ();
+    GX_ReleaseBankGrantForBGExtPlttSub();
+    GX_ReleaseBankGrantForOBJExtPlttSub();
 }
 
 /* Give every VRAM bank back to the allocator, then assign the banks the 3D

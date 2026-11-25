@@ -237,14 +237,18 @@ void CreateSpriteFromClass(M2C_UNK arg0, M2C_UNK arg1) {
     CreateSpriteObjectInLayer(arg0, arg1, gCur3DSpriteEngine);
 }
 
-s32 CreateChildSpriteObject(s32 a,s32 b,s32 c) {
- void *p=(void *)CreateSpriteObjectInLayer(a,b,c);
- void *parent;
- if(M2C_FIELD(p,s32 *,4)==0)return 0;
- M2C_FIELD(p,u8 *,0x30)|=4;
- parent=M2C_FIELD(p,void **,0x18);
- M2C_FIELD(parent,u8 *,0x31)++;
- return (s32)p;
+/* Create a 3D sprite object owned by `owner`: build the sprite in the given engine,
+ * flag it as a child object and bump its parent's child count.  Returns 0 when the
+ * object has no class. */
+s32 CreateChildSpriteObject(s32 spriteClass, s32 owner, s32 engine) {
+    void *sprite = (void *)CreateSpriteObjectInLayer(spriteClass, owner, engine);
+    void *parent;
+
+    if (M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ALIVE) == 0) return 0;
+    M2C_FIELD(sprite, u8 *, DS3D_SPRITE_FLAGS) |= DS3D_SPRITE_FLAG_HAS_PARENT;
+    parent = M2C_FIELD(sprite, void **, DS3D_SPRITE_PARENT);
+    M2C_FIELD(parent, u8 *, DS3D_SPRITE_CHILD_COUNT)++;
+    return (s32)sprite;
 }
 
 void CreateSpriteObject(M2C_UNK arg0, M2C_UNK arg1) {
@@ -258,12 +262,15 @@ void CreateSpriteForOwner(s32 a,s32 b) {
  if(b<12)CreateSpriteFromClass(a,b);else CreateSpriteObject(a,b);
 }
 
-void Mark3DSpriteTreeOwned(void *p) {
- void *q=M2C_FIELD(p,void **,0x24);
- if(q)Mark3DSpriteTreeOwned(q);
- q=M2C_FIELD(p,void **,0x1C);
- if(q)Mark3DSpriteTreeOwned(q);
- M2C_FIELD(p,u8 *,0x30)|=2;
+/* Mark a 3D sprite object and, recursively, its later siblings and its children
+ * as owned by a tree (DS3D_SPRITE_FLAG_TREE_OWNED), so that DeleteSpriteObject
+ * does not unlink each of them from its owner on its own. */
+void Mark3DSpriteTreeOwned(void *sprite) {
+    void *node = M2C_FIELD(sprite, void **, DS3D_SPRITE_NEXT);
+    if (node) Mark3DSpriteTreeOwned(node);
+    node = M2C_FIELD(sprite, void **, DS3D_SPRITE_CHILD);
+    if (node) Mark3DSpriteTreeOwned(node);
+    M2C_FIELD(sprite, u8 *, DS3D_SPRITE_FLAGS) |= DS3D_SPRITE_FLAG_TREE_OWNED;
 }
 
 /* Marks a 3D sprite object and everything below it (later siblings and children)
@@ -368,19 +375,23 @@ skip:
     if (node) Update3DSpriteObject(node);
 }
 #pragma scheduling reset
-void Sprite_ResumeAnimation(void *arg0) {
-    s16 *temp_r2;
+/* Resume a paused 3D sprite's animation: clear the update-callback override that
+ * paused it, or step past the animation's wait state (state 2) when that is where
+ * it stopped.  Unlike Sprite_ResumeAnimationRepeat it does not ask the update to run
+ * again this frame. */
+void Sprite_ResumeAnimation(void *sprite) {
+    s16 *animState;
 
-    if (M2C_FIELD(arg0, s32 *, 0x10) != 0) {
-        M2C_FIELD(arg0, s32 *, 0x10) = 0;
+    if (M2C_FIELD(sprite, s32 *, DS3D_SPRITE_UPDATE_CB) != 0) {
+        M2C_FIELD(sprite, s32 *, DS3D_SPRITE_UPDATE_CB) = 0;
         return;
     }
-    temp_r2 = M2C_FIELD(arg0, s16 **, 8);
-    if (temp_r2 == NULL) {
+    animState = M2C_FIELD(sprite, s16 **, DS3D_SPRITE_ANIM);
+    if (animState == NULL) {
         return;
     }
-    if (*temp_r2 == 2) {
-        M2C_FIELD(arg0, s16 **, 8) = (s16 *) ((s32) temp_r2 + 8);
+    if (*animState == 2) {
+        M2C_FIELD(sprite, s16 **, DS3D_SPRITE_ANIM) = (s16 *) ((s32) animState + DS3D_STATE_SIZE);
     }
 }
 

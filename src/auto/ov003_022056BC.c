@@ -898,12 +898,15 @@ void ApplyWeatherOption(s32 arg0_unused, s32 weatherOption) {
     M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER_RESET) = (u8) weather;
 }
 
-u8 func_ov003_02206544(void **arg0) {
-    void *temp_r1 = *gCurrentMap;
-    if (M2C_FIELD(temp_r1, u8 *, 0x5159) != 1) {
-        return M2C_FIELD(temp_r1, u8 *, 0x515B);
+/* The battle-settings weather option: when the map's weather is fixed, the reset
+ * weather it keeps going back to; when the weather changes at random, whatever the
+ * menu object's own getter (its vtable slot 3) reports. */
+u8 GetWeatherOption(void **self) {
+    void *map = *gCurrentMap;
+    if (M2C_FIELD(map, u8 *, MAP_WEATHER_MODE) != 1) {
+        return M2C_FIELD(map, u8 *, MAP_WEATHER_RESET);
     }
-    return M2C_FIELD(arg0[0], u8 (**)(void **), 0xC)(arg0);
+    return M2C_FIELD(self[0], u8 (**)(void **), 0xC)(self);
 }
 
 s32 func_ov003_0220657c(void) {

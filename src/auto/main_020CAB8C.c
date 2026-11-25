@@ -130,7 +130,7 @@ s32 UpdateMapCursorOption(s32 *option, s32 optionMask) {
 
 void func_020cae2c(void *p){
 extern void **gCurrentMap; extern s32 gMapCursorOptionValue;
-M2C_UNK ReleaseMapViewHold();M2C_UNK OpenMapActionMenu();void DeleteSpriteObject(void *);void Sprite_ResumeAnimation(void *);void func_020c93fc(u8,u8);
+M2C_UNK ReleaseMapViewHold();M2C_UNK OpenMapActionMenu();void DeleteSpriteObject(void *);void Sprite_ResumeAnimation(void *);void SetHeldDirection(u8,u8);
 s32 mask=M2C_FIELD(p,s16 *,0x6c); s32 a=M2C_FIELD(p,s16 *,0x6e),flags; s16 selector; s32 index;u8 *units;void *map;u8 *unit;
 flags=UpdateMapCursorOption(&a,mask);
 M2C_FIELD(p,s16 *,0x6e)=a;
@@ -146,7 +146,7 @@ map=*gCurrentMap;selector=M2C_FIELD(p,s16 *,0x70);
 unit=(u8*)M2C_FIELD(map,void **,0x52d0)+selector;
 units=(u8*)map+0x59a4;
 index=(s32)unit[12]*14;
-func_020c93fc((u8)selector,(u8)(M2C_FIELD(p,s16 *,0x6e)+1));
+SetHeldDirection((u8)selector,(u8)(M2C_FIELD(p,s16 *,0x6e)+1));
 map=*gCurrentMap;
 ((void(*)(s32,s32,s32))func_020cad00)(((u32)(units[index]<<26)>>26),M2C_FIELD(map,s16 *,0x52dc),M2C_FIELD(map,s16 *,0x52de));
 Sprite_ResumeAnimation(p);
@@ -161,7 +161,7 @@ void ConfirmAttackCommand(void *option) {
     s32 CanConfirmSecondCargoDrop();
     M2C_UNK OpenMapActionMenu();
     M2C_UNK func_020c9580(u8);
-    M2C_UNK func_020d468c();
+    M2C_UNK SetMapCommandPending();
     M2C_UNK DeleteDirectionMarkerSprites();
     u8 ResolveHeldDirection(s16, s16, s32);
     M2C_UNK SetBattleCommand(s32, u8, u8, u8);
@@ -177,7 +177,7 @@ void ConfirmAttackCommand(void *option) {
         OpenMapActionMenu();
         return;
     }
-    func_020d468c();
+    SetMapCommandPending();
     DeleteDirectionMarkerSprites();
     map = *gCurrentMap;
     dir0 = ResolveHeldDirection(M2C_FIELD(map, s16 *, MAP_CURSOR_X), M2C_FIELD(map, s16 *, MAP_CURSOR_Y), 0);
@@ -364,7 +364,7 @@ void FindSupplyTargetDirections(void *option) {
 }
 #pragma opt_instruction_scheduling reset
 void func_020cb78c(void *arg0){
-void DeleteSpriteObject(void *);void BattleUpdateUnitCursor(void);s32 func_020c98b4(void);M2C_UNK func_020d468c();M2C_UNK SetBattleCommand(s32,u8,u8,u8);
+void DeleteSpriteObject(void *);void BattleUpdateUnitCursor(void);s32 func_020c98b4(void);M2C_UNK SetMapCommandPending();M2C_UNK SetBattleCommand(s32,u8,u8,u8);
 extern s32 gMapCursorOptionValue;extern void **gCurrentMap;
 s32 offset; s16 i;u8 *m;u8 *q;void *p;
 if(func_020c98b4())return;
@@ -376,7 +376,7 @@ p=*gCurrentMap;M2C_FIELD(p,s16 *,0x52c2)=M2C_FIELD(p,s16 *,0x52dc);
 p=*gCurrentMap;M2C_FIELD(p,s16 *,0x52c4)=M2C_FIELD(p,s16 *,0x52de);}
 DeleteSpriteObject(arg0);BattleUpdateUnitCursor();
 if(!M2C_FIELD(arg0,s16 *,0x36))SetBattleCommand(6,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),0,0);
-func_020d468c();
+SetMapCommandPending();
 return;
 }
 offset = i * 4;
@@ -434,7 +434,7 @@ a+=RefillUnitFuel(unit,0);
 b+=LevelUpUnit(unit,func_020a7558(unit),1);
 }
 }
-n=func_020a2668(unit,unit->x,unit->y);
+n=GetUnitVeteranLevelBonus(unit,unit->x,unit->y);
 if(n)b+=LevelUpUnit(unit,n,1);
 if(a||b){
 if(b)func_020c98d8(unit->x,unit->y,1);

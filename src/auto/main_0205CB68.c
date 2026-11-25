@@ -2,6 +2,7 @@
 #include "common.h"
 #include "gt2.h"
 #include "natneg.h"
+#include "ghttp.h"
 struct BytePair_0205 { u8 v[2]; };
 struct Packet_0205 { u8 a,b; u16 c; s32 d; };
 struct SocketInit_0205 { u16 port; s32 len; s32 addr; struct Packet_0205 pkt; };
@@ -54,10 +55,13 @@ s32 func_0205cc3c(void **a, s32 b) {
     return (s32)(U32DivideRem(M2C_FIELD(p, s32 *, 0) * (s32)M2C_FIELD(p, u16 *, 4), b) >> 32);
 }
 
-s32 func_0205cc5c(void **a,void **b) {
-void *p=*a,*q=*b; s32 y=M2C_FIELD(q,s32 *,0),x=M2C_FIELD(p,s32 *,0);
-if(x!=y)return x-y;
-return (s16)(M2C_FIELD(p,u16 *,4)-M2C_FIELD(q,u16 *,4));
+/* Compare two connection-table keys (GT2ConnectionLookup) for the socket's
+ * connection hash: by remote address, then by remote port.  Returns 0 when they
+ * name the same peer, like a strcmp difference otherwise. */
+s32 CompareConnectionLookups(void **a, void **b) {
+GT2ConnectionLookup *key=*a,*other=*b; s32 otherAddress=M2C_FIELD(other,s32 *,0),address=M2C_FIELD(key,s32 *,0);
+if(address!=otherAddress)return address-otherAddress;
+return (s16)(M2C_FIELD(key,u16 *,GT2_CONNECTION_PORT)-M2C_FIELD(other,u16 *,GT2_CONNECTION_PORT));
 }
 
 void func_0205cc90(s32 *arg0) {
@@ -65,12 +69,20 @@ void func_0205cc90(s32 *arg0) {
     gti2FreeConnection(*arg0);
 }
 
-s32 func_0205cca0(void *p,s32 a,s32 b) {
-s32 *TableLookup(s32,void *);
-s32 data[40];void *ptr;s32 *res;
-data[0]=a;M2C_FIELD(data,s16 *,4)=b;ptr=data;
-res=TableLookup(M2C_FIELD(p,s32 *,12),&ptr);
-if(res)return *res;return 0;
+/* Find this socket's connection to a remote address and port, or 0 when it has
+ * none.  The socket's table is keyed by a pointer to the address/port pair. */
+s32 gti2FindConnection(void *socket, s32 address, s32 port) {
+    s32 *TableLookup(s32, void *);
+    s32 keyStorage[40]; /* the key, plus the spare stack the original build keeps */
+    void *keyPtr;
+    s32 *connection;
+
+    keyStorage[0] = address;
+    M2C_FIELD(keyStorage, s16 *, 4) = port;
+    keyPtr = keyStorage;
+    connection = TableLookup(M2C_FIELD(socket, s32 *, GT2_SOCKET_CONNECTION_TABLE), &keyPtr);
+    if (connection) return *connection;
+    return 0;
 }
 
 #pragma push
@@ -105,7 +117,7 @@ M2C_FIELD(p,s32 *,0)=-1;
 M2C_FIELD(p,s32 *,0x3c)=d;
 M2C_FIELD(p,s32 *,0x38)=c;
 M2C_FIELD(p,s32 *,0x24)=e;
-M2C_FIELD(p,s32 *,0xc)=TableNew2(4,0x20,2,func_0205cc3c,func_0205cc5c,0);
+M2C_FIELD(p,s32 *,0xc)=TableNew2(4,0x20,2,func_0205cc3c,CompareConnectionLookups,0);
 if(!M2C_FIELD(p,s32 *,0xc)){gpiFree(p);return 1;}
 M2C_FIELD(p,s32 *,0x10)=Vector_New(4,4,(void (*)(void *))func_0205cc90);
 if(!M2C_FIELD(p,s32 *,0x10)){TableFree(M2C_FIELD(p,s32 *,0xc));gpiFree(p);return 1;}
@@ -150,11 +162,11 @@ void *func_0205cf44(void) {
  * it to the owner's table and hand it back through connOut. Returns 0 on
  * success, 5 if the connection already exists and 1 on allocation failure. */
 s32 gti2CreateConnection(void *owner, s32 connOut, s32 address, s16 port) {
-    s32 func_0205cca0(void *, s32, s32);
+    s32 gti2FindConnection(void *, s32, s32);
     void *func_0205cf44(void);
     void MemSet(void *, s32, s32);
     s32 GetSystemTickMilliseconds(void);
-    s32 func_02059cf8(void *, s32);
+    s32 gti2AllocateBuffer(void *, s32);
     s32 Vector_New(s32, s32, void (*)(void *));
     void TableEnter(void *, void **);
     s32 gpiFree(void *);
@@ -164,7 +176,7 @@ s32 gti2CreateConnection(void *owner, s32 connOut, s32 address, s16 port) {
     s32 timestamp;
     s32 result;
 
-    if (((s32 (*)(void *, s32, s16, s32))func_0205cca0)(owner, address, (s16)port, 0) != 0) {
+    if (((s32 (*)(void *, s32, s16, s32))gti2FindConnection)(owner, address, (s16)port, 0) != 0) {
         return 5;
     }
 
@@ -184,10 +196,10 @@ s32 gti2CreateConnection(void *owner, s32 connOut, s32 address, s16 port) {
     *(u16 *)((u8 *)conn + 0x66) = 0;
 
     /* receive and send buffers sized from the owner's limits */
-    if (func_02059cf8((u8 *)conn + 0x44, *(s32 *)((u8 *)owner + 0x3C)) == 0) {
+    if (gti2AllocateBuffer((u8 *)conn + 0x44, *(s32 *)((u8 *)owner + 0x3C)) == 0) {
         goto fail;
     }
-    if (func_02059cf8((u8 *)conn + 0x50, *(s32 *)((u8 *)owner + 0x38)) == 0) {
+    if (gti2AllocateBuffer((u8 *)conn + 0x50, *(s32 *)((u8 *)owner + 0x38)) == 0) {
         goto fail;
     }
 
@@ -216,7 +228,7 @@ s32 gti2CreateConnection(void *owner, s32 connOut, s32 address, s16 port) {
     }
 
     TableEnter(*(void **)((u8 *)owner + 0xC), &conn);
-    result = func_0205cca0(owner, address, (s16)port);
+    result = gti2FindConnection(owner, address, (s16)port);
     *(s32 *)connOut = result;
     if (result != 0) {
         return 0;
@@ -293,7 +305,7 @@ s32 gti2SocketSend(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
     s32 ghiGetLastSocketError(s32);
     s32 func_0205c244(void *, s32, s32);
     void gti2SocketError(void *);
-    s32 func_0205cca0(void *, s32, s32);
+    s32 gti2FindConnection(void *, s32, s32);
     s32 gti2DumpCallback(void *, void *, s32, s32, s32, s32, s32, s32);
 
 
@@ -336,7 +348,7 @@ s32 gti2SocketSend(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
     }
 
     {
-        void *cca = (void *)func_0205cca0(p, arg1, arg2);
+        void *cca = (void *)gti2FindConnection(p, arg1, arg2);
         s32 t = gti2DumpCallback(p, cca, arg1, arg2, 0, (s32)arg3, arg4, 1);
         if (t == 0) {
             return 0;
@@ -554,10 +566,13 @@ void *FindNatNegPeer(s32 address) {
     return 0;
 }
 
-void func_0205d7c4(void *p) {
-s32 ghiCloseSocket(s32);
-if(M2C_FIELD(p,s32 *,0)!=-1)ghiCloseSocket(M2C_FIELD(p,s32 *,0));
-M2C_FIELD(p,s32 *,0)=-1; M2C_FIELD(p,s32 *,16)=4;
+/* The peer vector's element destructor: close the peer's socket, mark the handle
+ * invalid and put the record's state at DONE so it cannot be reused. */
+void NatNeg_DestroyPeer(void *peer) {
+    s32 ghiCloseSocket(s32);
+    if (M2C_FIELD(peer, s32 *, NATNEG_PEER_SOCKET) != -1) ghiCloseSocket(M2C_FIELD(peer, s32 *, NATNEG_PEER_SOCKET));
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_SOCKET) = -1;
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_STATE) = NATNEG_STATE_DONE;
 }
 
 s32 *NatNeg_NewPeer(void) {
@@ -565,7 +580,7 @@ extern M2C_UNK data_0213e144;
 s32 Vector_New(s32,s32,void (*)(void *));
 s32 func_02048688(s32); s32 *func_02048690(s32,s32);
 s32 handle=M2C_FIELD(&data_0213e144,s32 *,16); s32 data[16]={0};
-if(!handle)M2C_FIELD(&data_0213e144,s32 *,16)=Vector_New(64,4,func_0205d7c4);
+if(!handle)M2C_FIELD(&data_0213e144,s32 *,16)=Vector_New(64,4,NatNeg_DestroyPeer);
 Vector_Append(M2C_FIELD(&data_0213e144,s32 *,16),data);
 return func_02048690(M2C_FIELD(&data_0213e144,s32 *,16),func_02048688(M2C_FIELD(&data_0213e144,s32 *,16))-1);
 }
@@ -634,10 +649,13 @@ s32 GetPreferredLocalIp(void) {
     return result;
 }
 
-s32 func_0205d9fc(s32 a) {
-s32 ghiGetSockName(s32,void *,s32 *);
-u16 v[4]; s32 size=8;
-if (ghiGetSockName(a,v,&size)==-1) return 0;
-return v[1];
+/* The local port the socket is bound to, in network byte order: read from the
+ * socket's name record, or 0 when that fails. */
+u16 GetSocketLocalPort(s32 socket) {
+    s32 ghiGetSockName(s32, void *, s32 *);
+    GhiSocketAddress address;
+    s32 size = 8;
+    if (ghiGetSockName(socket, &address, &size) == -1) return 0;
+    return address.port;
 }
 

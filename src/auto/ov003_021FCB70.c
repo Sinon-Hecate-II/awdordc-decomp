@@ -41,7 +41,7 @@ void func_ov003_021fcd30(void **arg0) {
  * switches the screen phase to 1, then re-applies the BG layers for the modes
  * that stay active. */
 void SetupEntityDisplay(void *entity) {
-    M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
+    M2C_UNK SpriteCellListSetCellRect(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Show3DSprite(void *);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -146,7 +146,7 @@ void SetupEntityDisplay(void *entity) {
             posY = M2C_FIELD(part0, s16 *, 0x52);
             posX = M2C_FIELD(part0, s16 *, 0x50);
             tileId = GetUnitSpriteWidth(part0);
-            func_02087d84(M2C_FIELD(part0, void **, 0x64), 1, posX, posY, (u16) tileId, (u16)GetUnitSpriteHeight(part0));
+            SpriteCellListSetCellRect(M2C_FIELD(part0, void **, 0x64), 1, posX, posY, (u16) tileId, (u16)GetUnitSpriteHeight(part0));
         }
     }
     partsC = M2C_FIELD(entity, void **, 0x6C);

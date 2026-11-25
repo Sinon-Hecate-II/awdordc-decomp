@@ -126,13 +126,16 @@ s32 func_02093f98(void *arg0) {
     return 1;
 }
 
-s32 func_02093fb8(void *arg0) {
+/* Map-script command: queue a 3x3 area attack centred on the tile given by the
+ * command's two s16 operands (x, y) for the player in its s32 operand, then
+ * advance the script. */
+s32 ScriptCmd_AddAreaAttack(void *script) {
     M2C_UNK AddAreaAttackOrder(s16, s16, s32);
-    void *temp_r2;
+    void *command;
 
-    temp_r2 = M2C_FIELD(arg0, void **, 4);
-    AddAreaAttackOrder(M2C_FIELD(temp_r2, s16 *, 8), M2C_FIELD(temp_r2, s16 *, 0xA), M2C_FIELD(temp_r2, s32 *, 0xC));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    AddAreaAttackOrder(M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0), M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1), M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2));
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -186,28 +189,32 @@ s32 ScriptCmd_AddLineAttackArea(void *script) {
  return 1;
 }
 
-s32 func_020940b8(void *arg0) {
+/* Map-script command: add the amount at MAP_SCRIPT_OPERAND2 to the funds of the
+ * player named by MAP_SCRIPT_OPERAND0, then advance to the next command. */
+s32 MapScriptAddFunds(void *state) {
     M2C_UNK AddPlayerFunds(s16, s32);
-    void *temp_r1;
+    void *command;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 4);
-    AddPlayerFunds(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s32 *, 0xC));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP);
+    AddPlayerFunds(M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0), M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2));
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *)(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_020940e4(void *arg0) {
+/* Map-script command: show the localized text the command names at
+ * MAP_SCRIPT_OPERAND2 in the telop (caption) window, then advance the script. */
+s32 ScriptCmd_ShowTelopText(void *script) {
     M2C_UNK GetLocalizedText(s32);
-    M2C_UNK func_02095f94();
-    GetLocalizedText(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
-    func_02095f94();
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_UNK ShowTelopText();
+    GetLocalizedText(M2C_FIELD(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_OPERAND2));
+    ShowTelopText();
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
 s32 func_02094110(void *arg0) {
-    M2C_UNK func_02095fc0();
-    func_02095fc0();
+    M2C_UNK DeleteTelopWindow();
+    DeleteTelopWindow();
     M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
     return 1;
 }
@@ -313,19 +320,24 @@ s32 func_02094310(void *arg0) {
     return 1;
 }
 
-s32 func_02094324(void *arg0) {
+/* Map-script command: close the message box when one is up, then advance the
+ * script and keep running. */
+s32 ScriptCmd_CloseMessageBox(void *script) {
     if (IsMessageBoxActive() != 0) {
         SetMessageBoxState(0);
     }
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+    M2C_FIELD(script, s32 *, MAP_SCRIPT_STATE_IP) = (s32) (M2C_FIELD(script, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_02094354(void *arg0) {
+/* Map-script command: while no message box is showing, clear the box's state
+ * (which also cancels its idle/closing animation), then advance the script and
+ * keep running. */
+s32 ScriptCmd_CancelMessageBoxClose(void *script) {
     if (IsMessageBoxActive() == 0) {
         SetMessageBoxState(0);
     }
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+    M2C_FIELD(script, s32 *, MAP_SCRIPT_STATE_IP) = (s32) (M2C_FIELD(script, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -450,16 +462,20 @@ void ResetDialogUI(void) {
  SetMenuCursor(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);Reset3DSpriteEngines();
 }
 
+/* Whether one of the game's dialog sequences (gDialogSequences) is running. */
 s32 IsDialogActive(void) {
- extern M2C_UNK gDialogSequences;
- s32 i;
- u8 *p;
- p=(u8 *)&gDialogSequences;i=0;
- do {
- if(M2C_FIELD(p,s32 *,0)) return 1;
- i++;p+=24;
- }while(i<8);
- return 0;
+    extern M2C_UNK gDialogSequences;
+    s32 i;
+    u8 *slot;
+
+    slot = (u8 *)&gDialogSequences;
+    i = 0;
+    do {
+        if (M2C_FIELD(slot, s32 *, 0)) return 1;
+        i++;
+        slot += DIALOG_SEQUENCE_STRIDE;
+    } while (i < DIALOG_SEQUENCE_COUNT);
+    return 0;
 }
 
 u8 func_02094704(void) {
@@ -474,25 +490,29 @@ u8 func_02094704(void) {
     return var_r0;
 }
 
-s32 FindDialogSequence(s32 value) {
- extern M2C_UNK gDialogSequences;
- s32 i;
- u8 *p;
- p=(u8 *)&gDialogSequences;i=0;
- do {
- if(M2C_FIELD(p,s32 *,0)==value) return i;
- i++;p+=24;
- }while(i<8);
- return -1;
+/* Find the gDialogSequences slot whose script is `script` (0 finds a free slot),
+ * or -1 when no slot matches. */
+s32 FindDialogSequence(s32 script) {
+    extern M2C_UNK gDialogSequences;
+    s32 slot;
+    u8 *base;
+    base = (u8 *)&gDialogSequences;
+    slot = 0;
+    do {
+        if (M2C_FIELD(base, s32 *, 0) == script) return slot;
+        slot++;
+        base += DIALOG_SEQUENCE_STRIDE;
+    } while (slot < DIALOG_SEQUENCE_COUNT);
+    return -1;
 }
 
-void func_02094758(void) {
+void SuspendDialogs(void) {
  void *Get3DSpriteManager(void);
  void *p=Get3DSpriteManager();
  M2C_FIELD(p,s8 *,0x4B)++;
 }
 
-void func_02094770(void) {
+void ResumeDialogs(void) {
  void *Get3DSpriteManager(void);
  void *p=Get3DSpriteManager();
  M2C_FIELD(p,s8 *,0x4B)--;
@@ -686,12 +706,14 @@ void CloseScenePanel(s32 panelIndex) {
     HideScenePanel(panelIndex);
 }
 
-void func_02094af8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Set the face (identity and expression) shown by scene panel `panelIndex`,
+ * unless a message box is up: while one is shown the panels belong to it. */
+void SetScenePanelFaceUnlessMessageBox(s32 panelIndex, s32 faceId, s32 expression) {
     M2C_UNK SetScenePanelFace(M2C_UNK, M2C_UNK, M2C_UNK);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    SetScenePanelFace(arg0, arg1, arg2);
+    SetScenePanelFace(panelIndex, faceId, expression);
 }
 
 void func_02094b28(M2C_UNK arg0, M2C_UNK arg1) {
@@ -753,12 +775,15 @@ void CallScenePanelFaceOp(M2C_UNK faceIndex, M2C_UNK value1, M2C_UNK value2, M2C
     func_02097410(faceIndex, value1, value2, value3);
 }
 
-void func_02094c38(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Update one scene-panel face slot (portrait slot, face id, expression) through
+ * SetScenePanelFaceSlot, unless a message box is up: a running dialog owns the
+ * panels, so the face update is dropped. */
+void SetScenePanelFaceSlotUnlessMessageBox(M2C_UNK faceSlot, M2C_UNK faceId, M2C_UNK expression) {
     M2C_UNK SetScenePanelFaceSlot(M2C_UNK, M2C_UNK, M2C_UNK);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    SetScenePanelFaceSlot(arg0, arg1, arg2);
+    SetScenePanelFaceSlot(faceSlot, faceId, expression);
 }
 
 void func_02094c68(M2C_UNK arg0, M2C_UNK arg1) {

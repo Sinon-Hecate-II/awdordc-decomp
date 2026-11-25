@@ -64,12 +64,16 @@ void UnitRemovalEffect_Start(void *effect) {
  RefreshMapView();
 }
 #pragma opt_common_subs reset
-void CreateUnitRemovalEffect(void *arg0) {
- void *CreateSpriteObject(M2C_UNK *);
- extern M2C_UNK data_0212b22c;
- if (((Unk020cbc88 *)arg0)->unk_0==0) return;
- if (M2C_FIELD(arg0,u16 *,4)&8) return;
- M2C_FIELD(CreateSpriteObject(&data_0212b22c),void **,0x34)=arg0;
+/* Play a unit's removal explosion: skip empty unit slots (kind 0) and units
+ * loaded in a transport, otherwise create the unit-removal sprite object and
+ * attach the unit to it. */
+void CreateUnitRemovalEffect(void *unit) {
+    void *CreateSpriteObject(M2C_UNK *);
+    extern M2C_UNK gUnitRemovalSpriteClass;
+
+    if (((UnkCBUnit *) unit)->kind == 0) return;
+    if (M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) & UNIT_FLAG_LOADED) return;
+    M2C_FIELD(CreateSpriteObject(&gUnitRemovalSpriteClass), void **, 0x34) = unit;
 }
 
 void func_020cbcc0(void *arg0) {
@@ -170,14 +174,17 @@ void SpawnRippleOut(M2C_UNK arg0) {
     SpawnRippleEffect(arg0, 1);
 }
 
-void func_020cbfb4(void) {
-    M2C_UNK SetUiMessageText(s32);
-    s32 IsCampaignBattleRules();
+/* Set the rules message the battle map screen shows: campaign battles show
+ * their own message, every other battle the standard one. */
+void SetBattleRulesMessage(void) {
+    void SetUiMessageText(s32);
+    s32 IsCampaignBattleRules(void);
+
     if (IsCampaignBattleRules() != 0) {
-        SetUiMessageText(0xC000032F);
+        SetUiMessageText(TEXT_ID_BATTLE_RULES_CAMPAIGN);
         return;
     }
-    SetUiMessageText(0xC0000328);
+    SetUiMessageText(TEXT_ID_BATTLE_RULES);
 }
 
 void func_020cbfe4(void) {
@@ -390,17 +397,24 @@ void func_020cc644(void *arg0) {
     MapView_SetCursorPosition((s16) (M2C_FIELD(arg0, s32 *, 0x38) * 0x10), (s16) (M2C_FIELD(arg0, s32 *, 0x3C) * 0x10), 2);
 }
 
-void CreateTargetCursor(s32 a,s32 b) {
-extern M2C_UNK data_0212b1dc;s32 FindObjectByClass(M2C_UNK *);M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);void *p;
-if(FindObjectByClass(&data_0212b1dc))return;
-p=(void *)CreateSpriteFromClass(&data_0212b1dc,7);
-M2C_FIELD(p,s32 *,0x38)=a;M2C_FIELD(p,s32 *,0x3c)=b;
+/* Create the target cursor sprite on the target tile (x, y), unless one is
+ * already on screen; the sprite keeps the tile it was opened on at +0x38/+0x3C. */
+void CreateTargetCursor(s32 x, s32 y) {
+    extern M2C_UNK gTargetCursorClass;
+    s32 FindObjectByClass(M2C_UNK *);
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    void *cursor;
+
+    if (FindObjectByClass(&gTargetCursorClass)) return;
+    cursor = (void *)CreateSpriteFromClass(&gTargetCursorClass, 7);
+    M2C_FIELD(cursor, s32 *, 0x38) = x;
+    M2C_FIELD(cursor, s32 *, 0x3c) = y;
 }
 
 void CancelMapCursorAnimation(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_0212b1dc;
-    DeleteSpriteObjectsOfClass(&data_0212b1dc);
+    extern M2C_UNK gTargetCursorClass;
+    DeleteSpriteObjectsOfClass(&gTargetCursorClass);
 }
 
 /* Confirms the action on the battle map's current target: an empty cell queues a
@@ -409,16 +423,16 @@ void CancelMapCursorAnimation(void) {
  * then records one or two cursor-movement stats. */
 void SubmitCursorTarget(void){
 extern s32 gMapCursorOptionValue;extern void **gCurrentMap;
-s32 func_020d46cc(void);void func_020d46ac(void);void OpenMapActionMenu(void);void func_020d468c(void);
+s32 IsMapCommandPending(void);void ClearMapCommandPending(void);void OpenMapActionMenu(void);void SetMapCommandPending(void);
 void *GetTargetPosition(void);s32 IsPlayerHuman(u16);void AddRecordValue(s32,s32);
 MapTargetEntry *target; s32 distance;
-if(gMapCursorOptionValue<0){if(func_020d46cc())func_020d46ac();else OpenMapActionMenu();return;}
+if(gMapCursorOptionValue<0){if(IsMapCommandPending())ClearMapCommandPending();else OpenMapActionMenu();return;}
 target=(MapTargetEntry *)GetTargetPosition();
 if(target->value==0){
-func_020d468c();
+SetMapCommandPending();
 SetBattleCommand(4,M2C_FIELD(*gCurrentMap,u8 *,MAP_CURSOR_UNIT_ID),target->id&255,0);
 }else{
-func_020d468c();
+SetMapCommandPending();
 SetBattleCommand(5,M2C_FIELD(*gCurrentMap,u8 *,MAP_CURSOR_UNIT_ID),target->x&255,target->y&255);
 }
 if(!IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))return;
@@ -501,9 +515,19 @@ void UpdateAdjacentAllySelection(void *option) {
     }
 }
 
-void func_020cc974(void) {
-void func_020d468c(void);void ReleaseMapViewHold(void);void BattleUpdateUnitCursor(void);extern void **gCurrentMap;
-func_020d468c();ReleaseMapViewHold();M2C_FIELD(*gCurrentMap,u16 *,0x52b4)=0;BattleUpdateUnitCursor();
+/* Return the map to its normal cursor after a map-menu action: mark the command
+ * pending, release the map-view hold, reset the input mode to the cursor and
+ * refresh the unit under the cursor. */
+void ResumeMapCursorAfterCommand(void) {
+    void SetMapCommandPending(void);
+    void ReleaseMapViewHold(void);
+    void BattleUpdateUnitCursor(void);
+    extern void **gCurrentMap;
+
+    SetMapCommandPending();
+    ReleaseMapViewHold();
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_MODE) = MAP_MODE_CURSOR;
+    BattleUpdateUnitCursor();
 }
 
 s32 func_020cc9a4(void) {

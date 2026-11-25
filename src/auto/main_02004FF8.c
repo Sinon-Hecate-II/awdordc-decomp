@@ -1,5 +1,6 @@
 /* 56 functions from 0x02004FF8 to 0x02005F80 (main), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 static inline u8 *stack_end_02005968(void) {
 extern M2C_UNK gOsArea;
 extern char data_00000800[];
@@ -111,27 +112,31 @@ s32 OS_SetIrqEnableMask(s32 arg0) {
     return old;
 }
 
-s32 OS_EnableIrqMask(s32 arg0) {
+/* Set the IRQ bits in `mask` in REG_IE with the master enable (REG_IME) saved and
+ * cleared for the update, then restored; returns the previous REG_IE value. */
+s32 OS_EnableIrqMask(s32 mask) {
     s32 old;
     u16 ime;
-    ime = *(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = 0;
-    old = *(volatile s32 *)0x04000210;
-    *(volatile s32 *)0x04000210 = old | arg0;
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = ime;
+    ime = REG_IME;
+    REG_IME = 0;
+    old = *(volatile s32 *)REG_IE;
+    *(volatile s32 *)REG_IE = old | mask;
+    (void)REG_IME;
+    REG_IME = ime;
     return old;
 }
 
-s32 OS_DisableIrqMask(s32 arg0) {
+/* Clear the IRQ bits in `mask` in REG_IE with the master enable (REG_IME) saved
+ * and cleared for the update, then restored; returns the previous REG_IE value. */
+s32 OS_DisableIrqMask(s32 mask) {
     s32 old;
     u16 ime;
-    ime = *(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = 0;
-    old = *(volatile s32 *)0x04000210;
-    *(volatile s32 *)0x04000210 = old & ~arg0;
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = ime;
+    ime = REG_IME;
+    REG_IME = 0;
+    old = *(volatile s32 *)REG_IE;
+    *(volatile s32 *)REG_IE = old & ~mask;
+    (void)REG_IME;
+    REG_IME = ime;
     return old;
 }
 
@@ -364,22 +369,25 @@ void OS_EnqueueThread(OSThreadQueue *queue,Thread *thread) {
     }
 }
 
-void *DequeueThread(void *arg0) {
-    void *temp_r1;
-    void *temp_r2;
+/* Remove and return the first thread waiting on a queue, fixing the queue's head
+ * and, when it empties, the dequeued thread's wait queue. */
+void *DequeueThread(void *queueArg) {
+    OSThreadQueue *queue = (OSThreadQueue *)queueArg;
+    Thread *thread;
+    Thread *next;
 
-    temp_r2 = M2C_FIELD(arg0, void **, 0);
-    if (temp_r2 != NULL) {
-        temp_r1 = M2C_FIELD(temp_r2, void **, 0x80);
-        M2C_FIELD(arg0, void **, 0) = temp_r1;
-        if (temp_r1 != NULL) {
-            M2C_FIELD(temp_r1, s32 *, 0x7C) = 0;
+    thread = (Thread *)queue->head;
+    if (thread != NULL) {
+        next = thread->queueNext;
+        queue->head = next;
+        if (next != NULL) {
+            next->queuePrev = NULL;
         } else {
-            M2C_FIELD(arg0, s32 *, 4) = 0;
-            M2C_FIELD(temp_r2, s32 *, 0x78) = 0;
+            queue->tail = NULL;
+            thread->waitQueue = NULL;
         }
     }
-    return temp_r2;
+    return thread;
 }
 
 /* Remove `thread` from the wait queue `queue`, fixing the queue's head and tail
@@ -402,21 +410,24 @@ void *UnlinkThreadFromQueue(OSThreadQueue *queue, Thread *thread) {
     return p;
 }
 
-void *PopThreadMutex(void *arg0) {
-    void *temp_r1;
-    void *temp_r2;
+/* Remove the first mutex from a thread's list of locked mutexes (the head/tail
+ * pair at THREAD_MUTEX_LIST_HEAD) and return it; 0 when the list is empty. */
+void *PopThreadMutex(void *listArg) {
+    OSThreadQueue *list = (OSThreadQueue *)listArg;
+    void *mutex;
+    void *next;
 
-    temp_r2 = M2C_FIELD(arg0, void **, 0);
-    if (temp_r2 != NULL) {
-        temp_r1 = M2C_FIELD(temp_r2, void **, 0x10);
-        M2C_FIELD(arg0, void **, 0) = temp_r1;
-        if (temp_r1 != NULL) {
-            M2C_FIELD(temp_r1, s32 *, 0x14) = 0;
+    mutex = list->head;
+    if (mutex != NULL) {
+        next = M2C_FIELD(mutex, void **, OSMUTEX_LINK_NEXT);
+        list->head = next;
+        if (next != NULL) {
+            M2C_FIELD(next, void **, OSMUTEX_LINK_PREV) = NULL;
         } else {
-            M2C_FIELD(arg0, s32 *, 4) = 0;
+            list->tail = NULL;
         }
     }
-    return temp_r2;
+    return mutex;
 }
 
 /* Insert `thread` into the ready list (THREAD_MANAGER_READY), keeping it ordered by
@@ -570,13 +581,19 @@ SwitchThreadContext(thread);
 }else TaskExitThread(status);
 }
 
-void TaskExitThread(s32 a){
-extern s32 gThreadManager;
-void TerminateCurrentThread(void);
-void *p=*M2C_FIELD(&gThreadManager,void ***,8);
-void (*cb)(s32)=M2C_FIELD(p,void (**)(s32),0xB4);
-if(cb){M2C_FIELD(p,void (**)(s32),0xB4)=NULL;cb(a);
-OS_DisableInterrupts();}TerminateCurrentThread();
+/* End the running thread with exit `status`: run and clear its exit callback, then
+ * terminate the thread, keeping interrupts off from the callback until the halt. */
+void TaskExitThread(s32 status) {
+    extern s32 gThreadManager;
+    void TerminateCurrentThread(void);
+    void *thread = *M2C_FIELD(&gThreadManager, void ***, 8);
+    void (*exitCallback)(s32) = M2C_FIELD(thread, void (**)(s32), THREAD_EXIT_CALLBACK);
+    if (exitCallback) {
+        M2C_FIELD(thread, void (**)(s32), THREAD_EXIT_CALLBACK) = NULL;
+        exitCallback(status);
+        OS_DisableInterrupts();
+    }
+    TerminateCurrentThread();
 }
 
 /* Terminate the running thread: stop the scheduler, release the mutexes it still
@@ -623,15 +640,18 @@ void CancelThreadWakeTimer(void *arg0) {
     CancelTimer();
 }
 
-void OS_JoinThread(void *arg0) {
+/* Wait until `thread` has finished: while it is still running, sleep this
+ * thread on the finishing thread's join queue (Thread::THREAD_JOIN_QUEUE, woken
+ * by TerminateCurrentThread). */
+void OS_JoinThread(Thread *thread) {
     M2C_UNK OS_SleepThread(void *);
-    s32 temp_r4;
+    s32 irqState;
 
-    temp_r4 = OS_DisableInterrupts();
-    if (M2C_FIELD(arg0, s32 *, 0x64) != 2) {
-        OS_SleepThread(arg0 + 0x9C);
+    irqState = OS_DisableInterrupts();
+    if (thread->state != THREAD_STATE_FINISHED) {
+        OS_SleepThread((u8 *)thread + THREAD_JOIN_QUEUE);
     }
-    OS_RestoreInterrupts(temp_r4);
+    OS_RestoreInterrupts(irqState);
 }
 
 s32 TaskIsFinished(void *arg0) {

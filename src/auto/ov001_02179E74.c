@@ -2,7 +2,9 @@
 #include "common.h"
 void func_ov001_0217a880(void);
 
-void func_ov001_02179e74(void) {
+/* Hold the save screen for 120 frames: advance its timer once per frame, then
+ * hand over to the step that fades the screen out. */
+void Ov001_TickSaveDelay(void) {
     extern s8 gOv001SaveScreenTimer;
     void Ov001_FadeOutSaveScreen(void);
     M2C_FIELD(&gOv001SaveScreenTimer,u8 *,0) = M2C_FIELD(&gOv001SaveScreenTimer,u8 *,0) + 1;
@@ -309,7 +311,7 @@ void func_ov001_0217a880(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    void func_ov001_0217b3c0(void);
+    void MapSelectList_LoadObjTile(void);
     s32 HardwareDivide(s32, u16);
     void Ov001_BlockScrollBar(void);
     M2C_UNK Ov001_ShowMessage(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -332,7 +334,7 @@ void func_ov001_0217a880(void) {
             map = M2C_FIELD(&gMapSelectState, void **, 4);
             M2C_FIELD(map, u8 *, 0x54) = 1;
             Ov001_PlaySound(6);
-            func_ov001_0217b3c0();
+            MapSelectList_LoadObjTile();
             goto done;
         } else {
             u8 field28;
@@ -412,7 +414,7 @@ obj=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4)+i*4,void **,MAPSELECT_ROW_OB
 obj=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4)+i*4,void **,MAPSELECT_ROW_OBJS_B);if(obj)Ov001_ReleaseSprite(obj);
 }
 Ov001_FreePanelBackground(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,12));
-Ov001_DestroyScrollBar();Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();FreeMapPreview();
+Ov001_DestroyScrollBar();Ov001_FreeSpriteObjects();Ov001_FreeMessagePanel();FreeMapPreview();
 Ov001_FreeFile(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,4));
 Ov001_FreeFile(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,8));
 Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,29);
@@ -423,7 +425,7 @@ Ov001_FreeFriendRoster();LoadSaveSlot(M2C_FIELD(GetCurrentMapRecord(),u8 *,0xf4)
 Ov001_FreeFriendRoster();Ov001_SetNextScreenMode(0,1);Ov001_SetStepCallback(&Ov001_OpenFriendListScreen);
 }else{
 obj=M2C_FIELD(&gMapSelectState,void **,4);
-func_ov001_02184498(M2C_FIELD(obj,void **,MAPSELECT_ENTRIES)+M2C_FIELD(obj,u8 *,MAPSELECT_INDEX)*MAPSELECT_ENTRY_SIZE);
+Ov001_SetSaveMapName(M2C_FIELD(obj,void **,MAPSELECT_ENTRIES)+M2C_FIELD(obj,u8 *,MAPSELECT_INDEX)*MAPSELECT_ENTRY_SIZE);
 Ov001_SetNextScreenMode(0,0);
 obj=M2C_FIELD(&gMapSelectState,void **,4);
 if(M2C_FIELD(M2C_FIELD(obj,void **,MAPSELECT_ENTRIES)+M2C_FIELD(obj,u8 *,MAPSELECT_INDEX)*MAPSELECT_ENTRY_SIZE,u8 *,MAPSELECT_ENTRY_FLAG)){

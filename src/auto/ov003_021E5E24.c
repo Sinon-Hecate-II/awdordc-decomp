@@ -619,11 +619,11 @@ u8 IsSessionHost(void) {
     return result;
 }
 
-u8 func_ov003_021e6d28(void) {
+u8 IsSessionGuest(void) {
     s32 IsLinkSessionActive();
-    s32 func_02084890();
+    s32 IsLocalSessionGuest();
     s32 result;
-    if (IsLinkSessionActive() && func_02084890()) result = 1;
+    if (IsLinkSessionActive() && IsLocalSessionGuest()) result = 1;
     else result = 0;
     return result;
 }

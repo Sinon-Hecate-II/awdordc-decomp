@@ -101,9 +101,11 @@
  * above this are not (IsAiCommandKindValid). */
 #define AI_COMMAND_KIND_LIMIT 0x19
 #define AI_COMMAND_ATTACK_TARGET 4 /* attack the unit AI_COMMAND_UNIT names on the command tile */
+#define AI_COMMAND_WAIT         6 /* end the cursor unit's action: it has acted this turn (its handler only runs BattleUpdateUnitCursor, which sets UNIT_FLAG_ACTED) */
 #define AI_COMMAND_ATTACK_TILE   5 /* attack the tile AI_COMMAND_CURSOR_X/Y names */
 #define AI_COMMAND_PRODUCE_UNIT 3 /* build the unit kind in AI_COMMAND_ACTOR at the command tile */
 #define AI_COMMAND_PRODUCE_CARGO 22 /* make the cursor unit produce its kind-17 cargo unit (AiProduceCargoUnit) */
+#define AI_COMMAND_CAPTURE      7 /* capture the property on the cursor unit's tile (func_020bb110) */
 #define AI_COMMAND_SET_AI_MODE  24 /* set player AI_COMMAND_UNIT's AI behaviour mode to AI_COMMAND_ARG_Y */
 #define AI_COMMAND_DESTROY_UNIT 17 /* destroy the unit under the map cursor */
 
@@ -188,6 +190,7 @@ enum AiCargoDropDirection {
 #define AI_COUNTER_UNIT_MIN_HEALTH 50
 #define UNIT_KIND_TRANSPORT 19
 #define UNIT_KIND_SUBMARINE 22 /* created submerged and charged 5 fuel a turn while submerged */
+#define UNIT_KIND_UNARMED   25 /* the code treats this kind as unarmed whatever its attack range (GetKindAttackClass, IsUnitUnarmedAndEmpty) */
 #define UNIT_KIND_SUBMARINE_FUEL 5 /* fuel a submerged submarine spends per turn */
 
 /* GetUnitThreatClass returns this for a kind the AI's threat table does not model. */

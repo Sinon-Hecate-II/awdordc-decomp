@@ -20,7 +20,7 @@ void Sprite_ResumeAnimation(void *);
 void GotoSpriteAnimationLabel(void *,int);
 int ScrollSpriteGridUp(void *);
 int func_020b3290(void *);
-int func_020b325c(void *);
+int CanScrollSpriteGridUp(void *);
 int CanScrollSpriteGridDown(void *);
 void func_ov006_02212dfc(void *arg0) {
 u8 *p=arg0,*w;void **list;u16 keys;
@@ -61,7 +61,7 @@ if(!(u8)(M2C_FIELD(M2C_FIELD(p,u8 **,0x4c),s16 *,18)!=0) && ButtonEnabled12DFC(M
 if(!(u8)(M2C_FIELD(M2C_FIELD(p,u8 **,0x4c),s16 *,18)!=0) && ButtonEnabled12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,16)) && (ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,16)) || (keys&1))){PlaySoundEffect(0x1000d);ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,16));GotoSpriteAnimationLabel(p,9);return;}
 if(!(u8)(M2C_FIELD(M2C_FIELD(p,u8 **,0x4c),s16 *,18)!=0) && ButtonEnabled12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,20)) && (ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,20)) || (keys&1024))){PlaySoundEffect(0x1000d);ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,20));GotoSpriteAnimationLabel(p,8);return;}
 if(ButtonEnabled12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4)) && ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4))){if(ScrollSpriteGridUp(M2C_FIELD(p,void **,0x4c)))ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4));}else if(ButtonEnabled12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,8)) && ButtonPressed12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,8))){if(func_020b3290(M2C_FIELD(p,void **,0x4c)))ButtonFlash12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,8));}
-if(func_020b325c(M2C_FIELD(p,void **,0x4c)))ButtonEnable12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4));else ButtonSet12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4),ButtonBase12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4))+2,0);
+if(CanScrollSpriteGridUp(M2C_FIELD(p,void **,0x4c)))ButtonEnable12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4));else ButtonSet12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4),ButtonBase12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4))+2,0);
 if(CanScrollSpriteGridDown(M2C_FIELD(p,void **,0x4c)))ButtonEnable12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,8));else ButtonSet12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,8),ButtonBase12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,8))+2,0);
 switch(func_020c5464(M2C_FIELD(M2C_FIELD(p,void **,0x4c),s16 *,8))) {
 case 0:

@@ -10,6 +10,14 @@ typedef struct { u16 unused:13; u16 mode:2; u16 last:1; } DrawControl;
 typedef struct { u8 pad[15]; u8 low:4; u8 high:4; } Unk0208349c;
 typedef struct { u8 pad[0x44]; s8 values[16]; } Unk0208352c;
 
+/* The soft-keyboard text-entry line gTextInput points at: the typed characters,
+ * then a mode byte and a line-state byte set while the line holds text. */
+typedef struct TextInputLine {
+    u8 chars[14];  /* +0x00 typed characters */
+    u8 pad0E[3];   /* +0x0E */
+    u8 flags;      /* +0x11 bit 0: the line holds pending text */
+} TextInputLine;
+
 /* A sprite-text label: up to 16 font glyphs drawn as 3D sprites, optionally
  * revealed by per-glyph offsets, framed by a left and a right end-cap sprite. */
 typedef struct SpriteText {
@@ -79,31 +87,34 @@ void ResetTextLabelSlotsPartial(void) {
  }while(slot<13);
 }
 
+/* Blank the soft-keyboard text-entry line: clear its 14 characters and drop
+ * the line-state bit that marks it as holding text. */
 void ClearTextChars(void) {
- extern void *data_02101fd4;
- s32 i;
- M2C_FIELD(data_02101fd4,u8 *,17)&=~1;
- for(i=0;i<14;i++) M2C_FIELD(data_02101fd4,u8 *,i)=0;
+    extern void *gTextInput;
+    s32 i;
+
+    ((TextInputLine *)gTextInput)->flags &= ~1;
+    for (i = 0; i < 14; i++) ((TextInputLine *)gTextInput)->chars[i] = 0;
 }
 
 void SetTextMode(s32 arg0) {
- extern void *data_02101fd4;
- ((Unk0208349c *)data_02101fd4)->high=(u8)arg0;
+ extern void *gTextInput;
+ ((Unk0208349c *)gTextInput)->high=(u8)arg0;
 }
 
 /* Reset the two text states: the first loses its text, its mode and its flag
  * bits; the second loses its text and gets its cursor fields (16, 16) and its
  * last byte cleared. */
 void ResetTextState(void) {
- extern void *data_02101fd4;
+ extern void *gTextInput;
  s32 charIndex;
- M2C_FIELD(data_02101fd4,u8 *,17)=0;
+ M2C_FIELD(gTextInput,u8 *,17)=0;
  SetTextMode(0); ClearTextChars();
- M2C_FIELD(M2C_FIELD(&data_02101fd4,void **,4),u8 *,15)=0;
- M2C_FIELD(M2C_FIELD(&data_02101fd4,void **,4),u8 *,16)=16;
- M2C_FIELD(M2C_FIELD(&data_02101fd4,void **,4),u8 *,17)=16;
- M2C_FIELD(M2C_FIELD(&data_02101fd4,void **,4),u8 *,18)=0;
- for(charIndex=0;charIndex<15;charIndex++) M2C_FIELD(M2C_FIELD(&data_02101fd4,void **,4),u8 *,charIndex)=0;
+ M2C_FIELD(M2C_FIELD(&gTextInput,void **,4),u8 *,15)=0;
+ M2C_FIELD(M2C_FIELD(&gTextInput,void **,4),u8 *,16)=16;
+ M2C_FIELD(M2C_FIELD(&gTextInput,void **,4),u8 *,17)=16;
+ M2C_FIELD(M2C_FIELD(&gTextInput,void **,4),u8 *,18)=0;
+ for(charIndex=0;charIndex<15;charIndex++) M2C_FIELD(M2C_FIELD(&gTextInput,void **,4),u8 *,charIndex)=0;
 }
 
 #pragma push
@@ -278,22 +289,24 @@ if(M2C_FIELD(p,s8 *,0x34)==255)x+=14;
 else x+=gGlyphAdvance[M2C_FIELD(p,s8 *,0x34)]-2;
 }}
 
-void func_020842b4(void) {
+void DeleteSpriteTextClasses(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02101ff8;
-    extern M2C_UNK data_02102040;
-    DeleteSpriteObjectsOfClass(&data_02101ff8);
-    DeleteSpriteObjectsOfClass(&data_02102040);
+    extern M2C_UNK gSpriteTextClass;
+    extern M2C_UNK gSpriteTextGlyphsClass;
+    DeleteSpriteObjectsOfClass(&gSpriteTextClass);
+    DeleteSpriteObjectsOfClass(&gSpriteTextGlyphsClass);
 }
 
-void func_020842d4(void) {
+/* Delete the sprite-text label classes from the sub (top) screen: make the sub
+ * 3D sprite engine current, delete them, and restore the engine that was current. */
+void DeleteSubScreenSpriteTextClasses(void) {
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
-    s32 temp_r4;
+    s32 savedEngine;
 
-    temp_r4 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_020842b4();
-    gCur3DSpriteEngine = temp_r4;
+    DeleteSpriteTextClasses();
+    gCur3DSpriteEngine = savedEngine;
 }
 

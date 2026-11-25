@@ -217,10 +217,13 @@ void GetServerDateTime(s32 *dateTime) {
  dateTime[4] = time[0]; dateTime[5] = time[1]; dateTime[6] = time[2];
 }
 
-long long GetElapsedSeconds(s32 arg0,s32 arg1,s32 arg2) {
- long long MakeTime(s32,s32);
- long long t=MakeTime(arg0,arg0+16);
- return MakeTime(arg1,arg2)-t;
+/* Seconds from a saved sync stamp (an RtcDate followed by an RtcTime) to the
+ * given date and time records; -1 when the stamp is out of range. */
+s64 GetElapsedSeconds(s32 syncStamp, s32 *date, s32 *time) {
+    s64 MakeTime(void *, void *);
+    s64 sinceSync = MakeTime((void *)syncStamp, (void *)(syncStamp + DATE_TIME_TIME));
+
+    return MakeTime(date, time) - sinceSync;
 }
 
 void func_020c488c(void *arg0) {
@@ -316,7 +319,7 @@ s32 ResetProfileIdBlock(void *profileBlock) {
     M2C_UNK *GetProfileSaveBlock(void);
     void func_020323a4(void *, u32);
     s32 GetBattleSlotSummary(s32);
-    void func_02031ee4(void);
+    void ClearPlayerRecordJoined(void);
     void func_0203287c(void *);
     s32 i;
 
@@ -324,7 +327,7 @@ s32 ResetProfileIdBlock(void *profileBlock) {
     func_020323a4((u8 *)profileBlock + PROFILE_ID_BLOCK, PROFILE_GAME_ID_CODE);
     i = 0;
     do {
-        if (GetBattleSlotSummary(i) != 0) func_02031ee4();
+        if (GetBattleSlotSummary(i) != 0) ClearPlayerRecordJoined();
         i++;
     } while (i < SAVE_SLOT_COUNT);
     func_0203287c((u8 *)profileBlock + PROFILE_ID_BLOCK);
@@ -392,14 +395,14 @@ void func_020c4b88(s32 arg0) {
 }
 
 void func_020c4ba4(s32 arg0) {
-    M2C_UNK func_020323f4(s32);
+    M2C_UNK HasResolvedNasProfileKey(s32);
     s32 var_r0;
 
     var_r0 = arg0;
     if (var_r0 == 0) {
         var_r0 = GetProfileSaveBlock();
     }
-    func_020323f4(var_r0 + 4);
+    HasResolvedNasProfileKey(var_r0 + 4);
 }
 
 void IsProfileKeySet(s32 arg0) {

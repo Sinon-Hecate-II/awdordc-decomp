@@ -461,7 +461,16 @@ else *(u8*)(arg0+i*2+9)=0;
 }
 }
 #pragma opt_strength_reduction on
-s32 CountPanelEntries(s16 *p) {s32 n=0;while(*p!=-1 && n<5){n++;p+=2;}return n;}
+/* Count the stat entries filled in a panel's PanelStat array, stopping at the
+ * first unused (-1) entry: at most PANEL_ENTRY_MAX of them. */
+s32 CountPanelEntries(s16 *value) {
+    s32 count = 0;
+    while (*value != -1 && count < PANEL_ENTRY_MAX) {
+        count++;
+        value += 2; /* the next PanelStat: its s16 value, then its flags word */
+    }
+    return count;
+}
 
 /* Build a versus screen player's status panel: clear its five stat entries, and
  * while the player is in the match copy each selected stat's value from the CO's

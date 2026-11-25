@@ -214,13 +214,16 @@ s32 IsUnitInSightAt(s32 unitPtr, u8 tileX, u8 tileY) {
 }
 
 #pragma opt_propagation off
-void IsMapUnitRevealed(s32 arg0) {
-    M2C_UNK IsUnitInSightAt(s32, u8, u8);
+/* Whether the unit record with index `unitIndex` is revealed in the current view:
+ * a thin tail call to IsUnitInSightAt.  The records start at MAP_UNIT_RECORDS
+ * (0x59a4), which the code reaches as *gCurrentMap + 0x1a4 + 0x5800. */
+s32 IsMapUnitRevealed(s32 unitIndex) {
+    s32 IsUnitInSightAt(s32, u8, u8);
     extern s32 *gCurrentMap;
-    s32 mul = 14;
+    s32 stride = MAP_UNIT_STRIDE;
     u8 *base = (u8 *)(*gCurrentMap + 0x1a4);
-    u8 *entry = base + 0x5800 + mul * arg0;
-    IsUnitInSightAt((s32)entry, entry[1], entry[2]);
+    u8 *unit = base + 0x5800 + stride * unitIndex;
+    return IsUnitInSightAt((s32)unit, unit[MAP_UNIT_X], unit[MAP_UNIT_Y]);
 }
 #pragma opt_propagation reset
 /* Whether map cell (x, y) holds a unit of the current team that the player can
@@ -396,13 +399,16 @@ s32 GetUnitMoveFuelCost(u8 *unit, s32 cost) {
     return fuel;
 }
 
-void func_020a64bc(void *p){
-s32 n=((s32 (*)(void *))GetUnitMoveFuelCost)(p);
-u8 b=M2C_FIELD(p,u8 *,10);
-s32 low=(u32)(b<<25)>>25;
-n=(u8)(low-n);
-n=n&127;
-M2C_FIELD(p,u8 *,10)=(u8)((b&~127)|n);
+/* Charge a unit the fuel for a move of `moveCost` steps: subtract the unit's move
+ * fuel cost from the seven fuel bits of MAP_UNIT_FUEL, leaving bit 7 (the AI's
+ * MAP_UNIT_MOVE_PLANNED flag) alone. */
+void ChargeUnitMoveFuel(u8 *unit, s32 moveCost) {
+ s32 cost=GetUnitMoveFuelCost(unit,moveCost);
+ u8 fuel=M2C_FIELD(unit,u8 *,MAP_UNIT_FUEL);
+ s32 left=(u32)(fuel<<25)>>25;
+ cost=(u8)(left-cost);
+ cost=cost&MAP_UNIT_FUEL_MASK;
+ M2C_FIELD(unit,u8 *,MAP_UNIT_FUEL)=(u8)((fuel&~MAP_UNIT_FUEL_MASK)|cost);
 }
 
 void func_020a64ec(void) {
@@ -459,7 +465,16 @@ void *CreateOwnedMapUnit(s32 x, s32 y, s32 kind, s32 player) {
     return unit;
 }
 
-void *CreateMapUnitAndRefreshView(s32 a,s32 b,s32 c,s32 d){void *CreateMapUnit(s32,s32,s32,s32);void RefreshMapView(void *);void *p=CreateMapUnit((s16)a,(s16)b,(s16)c,d);if(!p)return 0;RefreshMapView(p);return p;}
+/* Create a map unit of `kind` for `player` on tile (x, y) and refresh the map
+ * view so it is drawn; returns the new unit, or NULL when no unit record is free. */
+void *CreateMapUnitAndRefreshView(s32 x, s32 y, s32 kind, s32 player) {
+    void *CreateMapUnit(s32, s32, s32, s32);
+    void RefreshMapView(void *);
+    void *unit = CreateMapUnit((s16) x, (s16) y, (s16) kind, player);
+    if (!unit) return 0;
+    RefreshMapView(unit);
+    return unit;
+}
 
 void RemoveUnit(M2C_UNK arg0) {
     void RemoveMapUnit(M2C_UNK, M2C_UNK);

@@ -2,6 +2,7 @@
 #include "common.h"
 #include "ds3dsprite.h"
 #include "dma.h"
+#include "gx.h"
 
 void func_01ff8000(void) {
  extern void (*gOsArea[])(void);
@@ -14,14 +15,17 @@ void func_01ff8000(void) {
  gOsArea[n]();
 }
 
-void func_01ff81e4(void) {
+/* Finish a console reboot: wait for the ARM7's boot-ready reply
+ * (gArm7BootSync's ARM7_BOOT_SYNC_READY flag), turn interrupts off, reload the
+ * card image and hand the console over to the loaded image via func_01ff8218. */
+void RebootFromCardImage(void) {
     M2C_UNK LoadCardImage();
     extern volatile u16 gArm7BootSync;
     M2C_UNK func_01ff8218();
     do {
 
     } while (gArm7BootSync == 0);
-    *(s16 *)0x04000208 = 0;
+    REG_IME = 0;
     LoadCardImage();
     func_01ff8218();
 }
@@ -208,7 +212,21 @@ void DmaStartTransferFlushed(s32 channel, s32 src, s32 dst, s32 control) {
     (void)*(volatile u32 *)DMA_CHANNEL_BASE(0);
     (void)*(volatile u32 *)DMA_CHANNEL_BASE(0);
 }
-void AddToU16Array(u16 *p,s32 size,s32 add){u16 n=size>>1;u16 *q;u16 v;if(!n)return;do{q=p;v=*p++;*q=v+add;n--;}while(n);}
+/* Adds `offset` (a VRAM tile/palette offset) to every 16-bit tile index of a
+ * tilemap holding `size` bytes. */
+void OffsetTileIndices(u16 *tiles, s32 size, s32 offset) {
+    u16 count = size >> 1;
+    u16 *dst;
+    u16 value;
+
+    if (!count) return;
+    do {
+        dst = tiles;
+        value = *tiles++;
+        *dst = value + offset;
+        count--;
+    } while (count);
+}
 
 /* Reset the current 3D sprite engine's OAM shadow: no entries are in use and no
  * quads are queued, and the whole OAM is filled with disabled entries. */

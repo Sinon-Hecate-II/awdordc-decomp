@@ -81,8 +81,10 @@ s32 VerifyProfileIdBlockCrc(void *block) {
     return 0;
 }
 
-s32 func_020323f4(void *arg0) {
-    if ((IsNasKeyRecord(arg0 + 0x10) != 0) && ((s32) M2C_FIELD(arg0, s32 *, 0x1C) > 0)) {
+/* True when a profile-id block holds a kind-1 NAS key record whose profile id has
+ * been resolved to a positive GameSpy profile id. */
+s32 HasResolvedNasProfileKey(void *block) {
+    if ((IsNasKeyRecord(block + PROFILE_ID_BLOCK_KEY) != 0) && ((s32) M2C_FIELD(block, s32 *, PROFILE_ID_BLOCK_ID) > 0)) {
         return 1;
     }
     return 0;
@@ -168,11 +170,14 @@ default:return 0;
 }
 }
 
-u64 func_02032604(void *a) {
+/* Build the player code of a profile-id block: zero while the block holds no
+ * resolved GameSpy profile id, otherwise the code the block's profile id and game
+ * id make up. */
+u64 BuildProfilePlayerCode(void *block) {
 u64 BuildPlayerCode(s32,s32);
-s32 x=M2C_FIELD(a,s32 *,0x1c); u64 r=0;
-if(x)r=BuildPlayerCode(x,M2C_FIELD(a,s32 *,0x24));
-return r;
+s32 profileId=M2C_FIELD(block,s32 *,PROFILE_ID_BLOCK_ID); u64 code=0;
+if(profileId)code=BuildPlayerCode(profileId,M2C_FIELD(block,s32 *,PROFILE_ID_BLOCK_GAME_ID));
+return code;
 }
 
 /* Initialise a player record that holds the given 64-bit player code (its low
@@ -198,13 +203,16 @@ SetPlayerRecordKind(out,PLAYER_RECORD_KIND_PROFILE);
 } else *out=*(Unk032Record *)((u8 *)block+PROFILE_ID_BLOCK_LOGIN_KEY);
 }
 
-void AssignPlayerRecordId(M2C_UNK arg0, M2C_UNK arg1) {
+/* Fill a 12-byte player record with the given GameSpy profile id, marked as a
+ * profile record (PLAYER_RECORD_KIND_PROFILE). */
+void AssignPlayerRecordId(void *record, s32 profileId) {
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK SetProfileRecordId(M2C_UNK, M2C_UNK);
     M2C_UNK SetPlayerRecordKind(M2C_UNK, M2C_UNK);
-    MI_CpuFill8(arg0, 0, 0xC);
-    SetProfileRecordId(arg0, arg1);
-    SetPlayerRecordKind(arg0, 3);
+
+    MI_CpuFill8(record, 0, 0xC);
+    SetProfileRecordId(record, profileId);
+    SetPlayerRecordKind(record, PLAYER_RECORD_KIND_PROFILE);
 }
 
 void FormatPlayerNasId(void *a,s32 b,s32 c) {
@@ -341,13 +349,15 @@ void FreeNasConnection(void) {
     M2C_FIELD(&gNasConnection, void **, 8) = 0;
 }
 
-void func_02032b68(void) {
+/* Wait for the running NAS connection's task to finish: do nothing when no task
+ * has been created, otherwise join its thread. */
+void Nas_JoinTask(void) {
     M2C_UNK OS_JoinThread(void *);
     extern M2C_UNK gNasConnection;
-    if (M2C_FIELD(M2C_FIELD(&gNasConnection, void **, 8), s32 *, 0x1384) == 0) {
+    if (M2C_FIELD(M2C_FIELD(&gNasConnection, void **, GNAS_CONNECTION_BLOCK), s32 *, NAS_CONN_TASK_ID) == 0) {
         return;
     }
-    OS_JoinThread(M2C_FIELD(&gNasConnection, void **, 8) + 0x1318);
+    OS_JoinThread(M2C_FIELD(&gNasConnection, void **, GNAS_CONNECTION_BLOCK) + NAS_CONN_TASK);
 }
 
 /* NAS connection outcome: NAS_CONN_RESULT_NO_CONNECTION while no connection

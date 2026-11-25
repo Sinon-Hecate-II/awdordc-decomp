@@ -85,6 +85,16 @@
  * four texture layers this display layer samples). */
 #define DS3D_LAYER_MODE_MASK 0x0003
 
+/* Bits 8..12 of a layer tile word: the index of the 16-colour palette the layer's
+ * tiles are drawn with (the packed SpriteTile f8 field). */
+#define DS3D_TILE_PALETTE_MASK  0x1F00
+#define DS3D_TILE_PALETTE_SHIFT 8
+
+/* Bits 14..15 of a layer tile word: the layer's tile size class (the packed
+ * SpriteTile f14 field). */
+#define DS3D_TILE_SIZE_MASK  0xC000
+#define DS3D_TILE_SIZE_SHIFT 14
+
 /* Each engine uploads layer textures into its own VRAM: the main engine's banks
  * start at 0x06000000, the sub engine's at 0x06200000, one 0x4000-byte bank
  * after another. */
@@ -294,7 +304,7 @@ extern u8  gGlyphWidthTable[GLYPH_TABLE_COUNT];
 /* One entry of gWallpaperFileSets: the files of a wallpaper in one language. */
 typedef struct WallpaperFileSet {
     const char *name;  /* +0x00 base name of the set's files, e.g. "wallp_bmap_s" */
-    u8   sizeCode;     /* +0x04 tile size class, see SetLayerSize */
+    u8   sizeCode;     /* +0x04 tile size class, see Set3DSpriteLayerSize */
     u8   filler_05;
     u16  scrollWidth;  /* +0x06 horizontal wrap threshold */
     u16  scrollHeight; /* +0x08 vertical wrap threshold */
@@ -339,7 +349,7 @@ typedef struct WallpaperFileSet {
 typedef struct SpriteFlags {
     u32 attr:16;          /* 16-bit attribute handed to the sprite draw call */
     u32 screen:3;         /* engine to draw on: 0 main, 1 sub, 3 the active one */
-    u32 a:1;
+    u32 a:1;              /* holds the map view: acquired when the object is created, released as it is removed */
     u32 closeOnInput:1;   /* destroy the object once an input arrives */
     u32 yAttr:1;          /* extra bit OR-ed into the 2D sprite's y */
     u32 drawMode:2;       /* 0 none, 1 3D transform, 2 screen-space sprite */
@@ -451,6 +461,12 @@ enum {
 #define DS3D_TASK_FREE_SOURCE 0x50 /* s32: free SOURCE when the task has run */
 #define DS3D_COPY_TASK_Z      0xFF02 /* sprite depth used by queued copies and uploads */
 
+/* A delayed-call sprite: a 3D sprite object that waits DS3D_CALL_DELAY frames,
+ * then runs the function in DS3D_CALL_FUNCTION with no argument and carries on
+ * with its animation (the per-frame step is UpdateDelayedTask, main_0208EE90.c). */
+#define DS3D_CALL_FUNCTION 0x34 /* void (*)(void): function run when the delay is over */
+#define DS3D_CALL_DELAY    0x38 /* s32 frames left before it runs */
+
 /* A task sprite: a 3D sprite object that owns an OS thread, so that the thread
  * lives in a heap block freed with the object.  Creation allocates the thread
  * (TASK_SPRITE_THREAD_SIZE bytes) and its stack, starts the entry function on
@@ -480,6 +496,19 @@ typedef struct UiModeState {
     s32 param;     /* +0x08 parameter of the requested mode */
 } UiModeState;
 
+/* UiModeState.current value while the sub screen's own UI is up (StartSubScreenUi /
+ * EnterSubScreenUi).  The mode-change helpers skip their screen fade/transition on
+ * the sub screen while this mode is current. */
+#define UI_MODE_SUB_SCREEN 3
+
+/* The screen classes of the UI modes: one 12-byte record per mode, indexed by
+ * UiModeState.current, in the table at gUiModeSpriteClasses (whose +0x04 pointers the
+ * code reads through the overlapping data_0212c4fc label).  A mode's screen
+ * object is created from its object class, its sprite from its sprite class. */
+#define UI_MODE_ENTRY_SIZE   0x0C
+#define UI_MODE_OBJECT_CLASS 0x00 /* void *class the mode's screen object is created from */
+#define UI_MODE_SPRITE_CLASS 0x04 /* void *class the mode's sprite is created from */
+
 /* Fields of a 3D sprite object, the nodes of the twelve per-layer sprite lists
  * (g3DSpriteLists) that Update3DSpriteObject walks.  An object has a sibling
  * chain through NEXT and a child tree through CHILD. */
@@ -495,6 +524,7 @@ typedef struct UiModeState {
 #define DS3D_SPRITE_NEXT         0x24 /* void *next sibling */
 #define DS3D_SPRITE_ENGINE       0x28 /* s32 engine to point gCur3DSpriteEngine at while the callbacks run */
 #define DS3D_SPRITE_LAYER        0x2C /* u16 */
+#define DS3D_SPRITE_WAIT_TIMER   0x2C /* s16 frames left in a wait state (reuses the layer slot while it runs) */
 #define DS3D_SPRITE_Z            0x2E /* u16 */
 #define DS3D_SPRITE_FLAGS        0x30 /* u8 DS3D_SPRITE_FLAG_* */
 #define DS3D_SPRITE_CHILD_COUNT  0x31 /* u8 number of children */
@@ -628,6 +658,18 @@ typedef struct ScenePanelState {
 #define DS3D_MANAGER_PANEL_COUNT 3
 #define DS3D_MANAGER_DIALOG_QUEUE 0x24 /* s32[DS3D_DIALOG_QUEUE_COUNT] */
 #define DS3D_DIALOG_QUEUE_COUNT 8
+#define DS3D_MANAGER_PANEL_ROW_PAIRS 0x4A /* u8: text row pairs of the message panels */
+
+/* The full-screen message box's state, at g3DSpriteManager+0x46.  Clear/Get/Set
+ * and the two predicates (IsMessageBoxIdle, IsMessageBoxActive) all read or write
+ * this one byte; callers keep their own updates off while the box is up. */
+#define DS3D_MANAGER_MESSAGE_BOX_STATE 0x46 /* u8 MESSAGE_BOX_STATE_* */
+enum {
+    MESSAGE_BOX_STATE_OFF        = 0, /* no box: IsMessageBoxIdle is true */
+    MESSAGE_BOX_STATE_STARTED    = 1, /* the box was triggered, opening */
+    MESSAGE_BOX_STATE_SHOWING    = 2, /* the box is fully open */
+    MESSAGE_BOX_STATE_SUPPRESSED = 3  /* the text could not be shown; box suppressed */
+};
 
 /* Input action flags of the scene-panel widgets, returned for the buttons and
  * for the stylus. */
@@ -661,6 +703,14 @@ enum {
 #define TEXT_BITMAP_BLOCK_ROWS  8
 #define TEXT_BITMAP_BLOCK_BYTES 256
 
+/* The text bitmap splitter sprite (class gTextBitmapSplitterClass, created by
+ * CreateTextBitmapSplitter, stepped by UpdateTextBitmapSplitter): the source bitmap it
+ * divides into 8-row blocks, the destination it writes them to, and the text
+ * width in pixels that says how much of the bitmap to copy. */
+#define TEXT_SPLIT_SOURCE      0x34 /* s32 source bitmap (freed once it is split) */
+#define TEXT_SPLIT_DESTINATION 0x38 /* s32 destination buffer */
+#define TEXT_SPLIT_WIDTH       0x3C /* s32 text width in pixels */
+
 /* A widget of a scene panel: its cells are drawn into one layer's tilemap and
  * its input runs `callback` once the user has chosen.  The layout helpers place
  * it and move the menu cursor onto it; the update helpers handle its input. */
@@ -679,7 +729,7 @@ typedef struct ScenePanelWidget {
 /* A two-state widget: two 32x16 halves side by side, one of them selected. */
 typedef ScenePanelWidget ToggleWidget;
 
-/* A CO face sprite (the portrait nodes built by func_02099338): a 3D sprite
+/* A CO face sprite (the portrait nodes built by InitFaceSprite): a 3D sprite
  * object extended with the face texture shown, its expression and palette
  * style, and a linked face object that is refreshed with it. */
 #define FACE_SPRITE_TILE        0x40 /* u32: bits 18..25 are the face tile row */

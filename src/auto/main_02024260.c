@@ -1,5 +1,7 @@
 /* 18 functions from 0x02024260 to 0x020251B8 (main), found by ds-decomp. */
 #include "common.h"
+#include "tcp_socket.h"
+#include "net_socket.h"
 
 extern void *(*gAlloc)(s32);
 extern void (*gFree[])(void *);
@@ -163,7 +165,14 @@ void TlsSendFinished(void *transport) {
     gFree[0](record);
 }
 
-s32 TlsReadPeerFinished(void *p){s32 TlsReadRecord(void *);if(TlsReadRecord(p)!=7)return 1;return TlsReadRecord(p)!=6;}
+/* Read the peer's handshake tail - its ChangeCipherSpec record, then its
+ * Finished record - and return 0 when both were accepted, 1 otherwise. */
+s32 TlsReadPeerFinished(void *transport) {
+    s32 TlsReadRecord(void *);
+
+    if (TlsReadRecord(transport) != TLS_STATE_CHANGE_CIPHER_SPEC) return 1;
+    return TlsReadRecord(transport) != TLS_STATE_FINISHED;
+}
 
 /* Drive the server side of a TLS handshake: accept the ClientHello, send the
  * server's hello flight (either resuming the cached session, or reading the
@@ -478,17 +487,31 @@ void TlsSendCloseNotify(void *transport) {
     M2C_FIELD(channel, u8 *, TLS_STATE) = 0;
 }
 
-void func_02025150(void *arg0) { extern void (*gFree[])(void *); void *p=M2C_FIELD(arg0,void **,12); void *q; M2C_FIELD(p,u8 *,0x455)=0; q=M2C_FIELD(p,void **,0x824); if(q)gFree[0](q); M2C_FIELD(p,void **,0x824)=0; }
+/* Reset a TLS channel (the object at transport+0xC) before its TCP transport is
+ * closed: clear its record/handshake state and free the record buffer it was
+ * still reassembling. */
+void TlsResetChannel(void *transport) {
+    extern void (*gFree[])(void *);
+    void *channel = M2C_FIELD(transport, void **, 0xC);
+    void *pending;
+    M2C_FIELD(channel, u8 *, TLS_STATE) = 0;
+    pending = M2C_FIELD(channel, void **, TLS_PENDING_RECORD);
+    if (pending) gFree[0](pending);
+    M2C_FIELD(channel, void **, TLS_PENDING_RECORD) = 0;
+}
 
-void func_02025188(s8 arg0) {
+/* Mark the socket the scheduler is running as TLS-wrapped (or plain) by storing
+ * `active` in its transport object's SOCK_TLS_ACTIVE byte; nothing happens while
+ * no socket is running.  The marker call before it is a release-build no-op. */
+void SetSocketTlsActive(s8 active) {
     M2C_UNK func_02000b9c(s32);
     extern M2C_UNK gSocketManager;
-    void *temp_r0;
+    void *transport;
 
     func_02000b9c(0x02000C1C);
-    temp_r0 = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(temp_r0, s8 *, 9) = arg0;
+    transport = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, SOCKMGR_RUNNING_THREAD), void **, SOCK_OBJECT_RAW);
+    if (transport != NULL) {
+        M2C_FIELD(transport, s8 *, SOCK_TLS_ACTIVE) = active;
     }
 }
 #include "common.h"

@@ -1,6 +1,7 @@
 /* 54 functions from 0x020C5D0C to 0x020C6CF8 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 
 typedef struct {
     u8 unk0 : 6;
@@ -15,19 +16,26 @@ typedef struct {
     u8 unkC[2];
 } UnkStruct_020C5D0C;
 
-s32 func_020c5d0c(void) {
-    s32 IsCampaignBattleRules();
+/* Availability of a campaign-only battle command (one the other battle modes do
+ * not offer): 0 while the battle is still running and the map's rules select the
+ * campaign mode (mode 0), 2 once it has ended or in any other mode. */
+s32 CanUseCampaignOnlyCommand(void) {
+    s32 IsCampaignBattleRules(void);
     extern u8 gBattleEndState;
-    if ((gBattleEndState == 0) && (IsCampaignBattleRules() != 0)) {
+
+    if (gBattleEndState == 0 && IsCampaignBattleRules() != 0) {
         return 0;
     }
     return 2;
 }
 
-s32 func_020c5d3c(void) {
-    s32 func_020cd6fc();
+/* Availability of a battle-menu entry that only free-play battles offer: 0
+ * (available) while a free-play battle is still running, 2 (hidden) once it has
+ * ended or in any other battle mode. */
+s32 CanUseFreePlayBattleCommand(void) {
+    s32 IsFreePlayBattleMode();
     extern u8 gBattleEndState;
-    if ((gBattleEndState == 0) && (func_020cd6fc() != 0)) {
+    if ((gBattleEndState == 0) && (IsFreePlayBattleMode() != 0)) {
         return 0;
     }
     return 2;
@@ -90,11 +98,13 @@ s32 func_020c5e08(void) {
     return 2;
 }
 
-s32 func_020c5e30(void) {
-    s32 func_020a8afc(u16);
+/* Map-menu availability of the map's win-rule entry: available (0) when the
+ * current map defines a win-rule text, hidden (2) when it does not. */
+s32 CanShowMapWinRule(void) {
+    s32 MapData_GetWinRuleTextId(u16);
     extern void **gCurrentMap;
 
-    if (func_020a8afc(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)) != 0) {
+    if (MapData_GetWinRuleTextId(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) {
         return 0;
     }
     return 2;
@@ -230,14 +240,17 @@ s32 CanJoinUnitAtCursor(void) {
     return 0;
 }
 
+/* Whether a unit load is being aimed at the cursor, in the 0 = yes, 2 = no
+ * convention the command checks use: the cursor's unit can be loaded into the
+ * transport on the tile the cursor points at. */
 s32 CanLoadUnitAtCursor(void) {
-    s32 func_020ba790(s16, s16);
+    s32 CanLoadUnitAt(s16, s16);
     extern void **gCurrentMap;
-    void *base = *gCurrentMap;
-    s16 a = M2C_FIELD(base, s16 *, 0x52DC);
-    s16 b = M2C_FIELD(base, s16 *, 0x52DE);
+    void *map = *gCurrentMap;
+    s16 x = M2C_FIELD(map, s16 *, MAP_CURSOR_X);
+    s16 y = M2C_FIELD(map, s16 *, MAP_CURSOR_Y);
 
-    if (func_020ba790(a, b) == 1) {
+    if (CanLoadUnitAt(x, y) == 1) {
         return 0;
     }
     return 2;
@@ -620,7 +633,7 @@ void func_020c6a64(void) {
  * direction is held send battle command 2; otherwise send command 8 with each
  * held direction resolved against the cursor tile. */
 void ConfirmHeldDirectionCommand(void) {
-    M2C_UNK func_020d468c();
+    M2C_UNK SetMapCommandPending();
     M2C_UNK DeleteMapMenuSprites();
     M2C_UNK DeleteDirectionMarkerSprites();
     s32 GetHeldDirection(s32);
@@ -630,7 +643,7 @@ void ConfirmHeldDirectionCommand(void) {
     void *base;
     s32 dir0, dir1;
 
-    func_020d468c();
+    SetMapCommandPending();
     DeleteMapMenuSprites();
     if (!GetHeldDirection(0) && !GetHeldDirection(1)) {
         SetBattleCommand(2, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
@@ -643,11 +656,17 @@ void ConfirmHeldDirectionCommand(void) {
     SetBattleCommand(8, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), (u8)dir0, (u8)dir1);
 }
 
-void func_020c6b30(void) {
- M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
- extern void **gCurrentMap;
- func_020d468c(); DeleteMapMenuSprites();
- SetBattleCommand(3,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
+/* Start building the unit the cursor's factory produces: close the map menu and
+ * send battle command AI_COMMAND_PRODUCE_UNIT for the unit under the cursor. */
+void ConfirmProduceUnitCommand(void) {
+    M2C_UNK SetMapCommandPending();
+    M2C_UNK DeleteMapMenuSprites();
+    M2C_UNK SetBattleCommand(s32, u8, s32, s32);
+    extern void **gCurrentMap;
+
+    SetMapCommandPending();
+    DeleteMapMenuSprites();
+    SetBattleCommand(AI_COMMAND_PRODUCE_UNIT, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
 }
 
 void func_020c6b68(void) {
@@ -657,25 +676,46 @@ void func_020c6b68(void) {
     func_020bbba4();
 }
 
-void func_020c6b78(void) {
- M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
- extern void **gCurrentMap;
- func_020d468c(); DeleteMapMenuSprites();
- SetBattleCommand(7,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
+/* Capture the property the unit under the cursor stands on: refresh the battle
+ * menu state, drop the menu sprites and post battle command AI_COMMAND_CAPTURE
+ * for that unit, with no extra arguments. */
+void ConfirmCaptureCommand(void) {
+    M2C_UNK SetMapCommandPending();
+    M2C_UNK DeleteMapMenuSprites();
+    M2C_UNK SetBattleCommand(s32, u8, s32, s32);
+    extern void **gCurrentMap;
+
+    SetMapCommandPending();
+    DeleteMapMenuSprites();
+    SetBattleCommand(AI_COMMAND_CAPTURE, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
 }
 
+/* Map action menu, command 9: refresh the battle menu state, close the menu and
+ * post battle command 9 for the unit under the cursor; the command carries no
+ * extra arguments (its handler is AiMoveCursorToCommandPoint). */
 void func_020c6bb0(void) {
- M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
- extern void **gCurrentMap;
- func_020d468c(); DeleteMapMenuSprites();
- SetBattleCommand(9,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
+    M2C_UNK SetMapCommandPending();
+    M2C_UNK DeleteMapMenuSprites();
+    M2C_UNK SetBattleCommand(s32, u8, s32, s32);
+    extern void **gCurrentMap;
+
+    SetMapCommandPending();
+    DeleteMapMenuSprites();
+    SetBattleCommand(9, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
 }
 
-void func_020c6be8(void) {
- M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
- extern void **gCurrentMap;
- func_020d468c(); DeleteMapMenuSprites();
- SetBattleCommand(6,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
+/* Wait: end the action of the unit under the cursor without doing anything.
+ * Refresh the battle menu state, drop the menu sprites and post battle command
+ * AI_COMMAND_WAIT for that unit, which marks it as having acted this turn. */
+void ConfirmWaitCommand(void) {
+    M2C_UNK SetMapCommandPending();
+    M2C_UNK DeleteMapMenuSprites();
+    M2C_UNK SetBattleCommand(s32, u8, s32, s32);
+    extern void **gCurrentMap;
+
+    SetMapCommandPending();
+    DeleteMapMenuSprites();
+    SetBattleCommand(AI_COMMAND_WAIT, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
 }
 
 void func_020c6c20(void) {
@@ -692,24 +732,49 @@ void func_020c6c38(void) {
     AcquireMapViewHold();
 }
 
-void func_020c6c50(void) {
- M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK func_ov000_021696d4(); M2C_UNK SelectCarriedUnit(void *,s32,s32);
- extern void **gCurrentMap;
- func_020d468c(); DeleteMapMenuSprites(); func_ov000_021696d4();
- SelectCarriedUnit(M2C_FIELD(*gCurrentMap,void **,0x52D0),0,0);
+/* Carried-unit menu action for the first cargo slot: leave the target/command
+ * state, close the map menu, cancel any unit-move preview and begin moving the
+ * unit the cursor's carrier holds in its first slot. */
+void SelectFirstCarriedUnit(void) {
+    M2C_UNK SetMapCommandPending();
+    M2C_UNK DeleteMapMenuSprites();
+    M2C_UNK DeleteAllUnitMoveObjects();
+    M2C_UNK SelectCarriedUnit(void *, s32, s32);
+    extern void **gCurrentMap;
+
+    SetMapCommandPending();
+    DeleteMapMenuSprites();
+    DeleteAllUnitMoveObjects();
+    SelectCarriedUnit(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), 0, 0);
 }
 
-void func_020c6c88(void) {
- M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK func_ov000_021696d4(); M2C_UNK SelectCarriedUnit(void *,s32,s32);
- extern void **gCurrentMap;
- func_020d468c(); DeleteMapMenuSprites(); func_ov000_021696d4();
- SelectCarriedUnit(M2C_FIELD(*gCurrentMap,void **,0x52D0),1,0);
+/* Carried-unit menu action for the second cargo slot: leave the target/command
+ * state, close the map menu, cancel any unit-move preview and begin moving the
+ * unit the cursor's carrier holds in its second slot. */
+void SelectSecondCarriedUnit(void) {
+    M2C_UNK SetMapCommandPending();
+    M2C_UNK DeleteMapMenuSprites();
+    M2C_UNK DeleteAllUnitMoveObjects();
+    M2C_UNK SelectCarriedUnit(void *, s32, s32);
+    extern void **gCurrentMap;
+
+    SetMapCommandPending();
+    DeleteMapMenuSprites();
+    DeleteAllUnitMoveObjects();
+    SelectCarriedUnit(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), 1, 0);
 }
 
-void func_020c6cc0(void) {
- M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
- extern void **gCurrentMap;
- func_020d468c(); DeleteMapMenuSprites();
- SetBattleCommand(0x17,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
+/* Map action menu: refresh the battle menu state, close the menu and post battle
+ * command 0x17 for the unit under the cursor, which runs the property capture
+ * update (func_020bc0e0) on the tile it stands on. */
+void ConfirmCapturePropertyCommand(void) {
+    M2C_UNK SetMapCommandPending();
+    M2C_UNK DeleteMapMenuSprites();
+    M2C_UNK SetBattleCommand(s32, u8, s32, s32);
+    extern void **gCurrentMap;
+
+    SetMapCommandPending();
+    DeleteMapMenuSprites();
+    SetBattleCommand(0x17, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
 }
 

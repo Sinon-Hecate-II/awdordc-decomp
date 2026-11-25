@@ -42,19 +42,24 @@ void RC4_Crypt(u8 *state, u8 *data, s32 len) {
     state[RC4_INDEX_J] = j;
 }
 
-s32 BigNumLen(u16 *arr, s32 n) {
-    s32 var_r1 = n;
-    while (var_r1 != 0 && arr[var_r1 - 1] == 0) {
-        var_r1 -= 1;
+/* Return how many of the `len` limbs of big number `limbs` are significant: the
+ * top zero limbs are not counted, so a zero big number has length 0. */
+s32 BigNumLen(u16 *limbs, s32 len) {
+    s32 significant = len;
+    while (significant != 0 && limbs[significant - 1] == 0) {
+        significant -= 1;
     }
-    return var_r1;
+    return significant;
 }
 
-s32 BigNumSign(u16 *arr, s32 n) {
-    if ((arr[n - 1] & 0x8000) != 0) {
+/* Return the sign of big number `limbs` of `len` limbs: -1 when the most
+ * significant limb's BIGNUM_SIGN_BIT is set (negative, two's complement),
+ * otherwise 1 when the number has any nonzero limb and 0 when it is zero. */
+s32 BigNumSign(u16 *limbs, s32 len) {
+    if ((limbs[len - 1] & BIGNUM_SIGN_BIT) != 0) {
         return -1;
     }
-    return BigNumLen(arr, n) != 0;
+    return BigNumLen(limbs, len) != 0;
 }
 
 /* dst = src1 + src2 over `len` 16-bit limbs: add the significant limbs of both
@@ -172,22 +177,26 @@ void BigNumSubBorrow(u16 *dst, u16 *src, u32 borrow, s32 len) {
     }
 }
 
-s32 BigNumCmp(u16 *a, u16 *b, s32 n) {
-    s32 i = n - 1;
+/* Compare two big numbers of `len` 16-bit limbs from the most significant limb
+ * down: 1 when `left` is greater, -1 when it is smaller, 0 when they are equal. */
+s32 BigNumCmp(u16 *left, u16 *right, s32 len) {
+    s32 i = len - 1;
     for (; i >= 0; i--) {
-        if (a[i] > b[i]) return 1;
-        if (a[i] < b[i]) return -1;
+        if (left[i] > right[i]) return 1;
+        if (left[i] < right[i]) return -1;
     }
     return 0;
 }
 
-void BigNumAddCarryAt(u16 *arr, u32 carry, s32 i, s32 len) {
-    u32 s;
-    while (carry != 0 && i < len) {
-        s = carry + arr[i];
-        arr[i] = (u16)s;
-        i++;
-        carry = s >> 16;
+/* Add a 32-bit carry into the big number `limbs`, starting at limb `index` and
+ * propagating it upwards; stop at `len` limbs or as soon as the carry is absorbed. */
+void BigNumAddCarryAt(u16 *limbs, u32 carry, s32 index, s32 len) {
+    u32 sum;
+    while (carry != 0 && index < len) {
+        sum = carry + limbs[index];
+        limbs[index] = (u16)sum;
+        index++;
+        carry = sum >> 16;
     }
 }
 

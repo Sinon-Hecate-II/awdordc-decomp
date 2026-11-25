@@ -673,7 +673,7 @@ void func_02004e44(void *arg0, void *arg1) {
 }
 
 #pragma scheduling off
-void func_02004e60(s32 arg0,u32 mask) {
+void OS_WaitIrq(s32 arg0,u32 mask) {
 s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void OS_SleepThread(s32);
 extern M2C_UNK gOsArea,data_027e00e0;
 s32 ret=OS_DisableInterrupts();

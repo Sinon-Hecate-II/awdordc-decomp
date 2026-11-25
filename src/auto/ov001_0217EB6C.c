@@ -215,7 +215,16 @@ M2C_UNK MapList_UpdateStateFromRow(void) {
     MapList_ApplyRowLayout();
 }
 
-void SelectMapListChoice(u32 a){void MapList_ApplyRowLayout(void);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f9bc[];M2C_FIELD(&gMapListState,u8 *,0)=a;M2C_FIELD(&gMapListState,u8 *,2)=GetMapListScreenRow(data_ov001_0218f9bc[a]);MapList_ApplyRowLayout();}
+/* Select map-list choice `choice`: make it the screen's state, move the row
+ * highlight to the list row the choice stands for and lay that row out. */
+void SelectMapListChoice(u32 choice) {
+    void MapList_ApplyRowLayout(void);
+    extern M2C_UNK gMapListState;
+    extern u8 gMapListChoiceRow[];
+    M2C_FIELD(&gMapListState, u8 *, OV001_MAP_LIST_STATE) = choice;
+    M2C_FIELD(&gMapListState, u8 *, OV001_MAP_LIST_ROW) = GetMapListScreenRow(gMapListChoiceRow[choice]);
+    MapList_ApplyRowLayout();
+}
 
 void func_ov001_0217f1f0(s32 event) {
     void *GetCurrentMapRecord(void);
@@ -329,7 +338,17 @@ void func_ov001_0217f1f0(s32 event) {
     if (result == 0) MapList_UpdateStateFromRow();
 }
 
-void func_ov001_0217f4e0(void){void Ov001_LoadObjTile(s32,u8,u8);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f8c0[];u8 v=data_ov001_0218f8c0[M2C_FIELD(&gMapListState,u8 *,0)-11];Ov001_LoadObjTile(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,16),v,v);}
+/* Upload the icon tile of the current save-slot sub-screen (states 11..13) from
+ * the list's OBJ tilemap to the same OBJ VRAM tile slot, so the entry the player
+ * just picked shows its icon. */
+void MapList_UploadSubScreenIcon(void) {
+    void Ov001_LoadObjTile(s32, u8, u8);
+    extern M2C_UNK gMapListState;
+    extern u8 gMapListSaveIconTile[];
+    u8 tile = gMapListSaveIconTile[M2C_FIELD(&gMapListState, u8 *, OV001_MAP_LIST_STATE) - OV001_MAP_LIST_SAVE_SCREEN_FIRST];
+
+    Ov001_LoadObjTile(M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), s32 *, OV001_MAP_LIST_OBJ_TILEMAP), tile, tile);
+}
 
 /* Per-frame map-list task: tick down each of the four rows' custom-map highlight
  * timers and redraw the info panel when one expires. */
@@ -396,11 +415,11 @@ void MapList_DismissMessage(void) {
 
 void MapList_WaitMessageClosed(void) {
     s32 Ov001_IsRegionMenuActive();
-    extern M2C_UNK func_ov001_0217d744;
+    extern M2C_UNK Ov001_UpdateMapListInput;
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_0217d744);
+    Ov001_SetStepCallback(&Ov001_UpdateMapListInput);
 }
 
 void SetMapListMode(s8 arg0) {
@@ -488,7 +507,7 @@ void Ov001_FadeOutMapListForAccessPoint(void) {
  * access-point screen mode and install Ov001_OpenAccessPointMenu as the next
  * step. */
 void Ov001_CloseMapListForAccessPoint(void) {
-    M2C_UNK Ov001_FreeOptionBackground();
+    M2C_UNK Ov001_FreeMessagePanel();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK Ov001_OpenAccessPointMenu;
@@ -498,7 +517,7 @@ void Ov001_CloseMapListForAccessPoint(void) {
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    Ov001_FreeOptionBackground();
+    Ov001_FreeMessagePanel();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x14);
     Ov001_SetNextScreenMode(2, 1);
@@ -545,16 +564,17 @@ void Ov001_LoadConnectionBackground(void) {
     REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
+/* Step that fades the connection screen in from white on the main engine, reveals
+ * its background and sprite planes, then hands over to the step that runs once the
+ * fade has finished. */
 void Ov001_FadeInConnectionScreen(void) {
-    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_0217fa6c;
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_0217fa6c);
+    extern M2C_UNK Ov001_ConnectionScreenFadeDone;
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
+    Ov001_SetStepCallback(&Ov001_ConnectionScreenFadeDone);
 }
 
-void func_ov001_0217fa6c(void) {
+void Ov001_ConnectionScreenFadeDone(void) {
     void func_ov001_0217fa98(void);
     if (Ov001_IsFadeActive(0) != 0) return;
     Ov001_CreateMenuIconRow(1);

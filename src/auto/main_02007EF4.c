@@ -288,15 +288,18 @@ void InitRleDecompress(void *arg0, s32 arg1, u32 *arg2) {
     M2C_FIELD(arg0, s8 *, 0xA) = 0;
 }
 
-void InitLz77Decompress(void *arg0, s32 arg1, u32 *arg2) {
-    M2C_FIELD(arg0, s32 *, 0) = arg1;
-    M2C_FIELD(arg0, u32 *, 4) = (u32) ((u32) *arg2 >> 8);
-    M2C_FIELD(arg0, s8 *, 0xB) = 0;
-    M2C_FIELD(arg0, s8 *, 0xC) = 0;
-    M2C_FIELD(arg0, s8 *, 0xD) = 0;
-    M2C_FIELD(arg0, s8 *, 0xE) = 0;
-    M2C_FIELD(arg0, s16 *, 8) = 0;
-    M2C_FIELD(arg0, s8 *, 0xA) = 0;
+/* Initialise an LZ77 decoder state (DecompressState +0x04): record the output
+ * address and the decompressed size from the block header, then clear the flag,
+ * back-reference and output-accumulator fields. */
+void InitLz77Decompress(void *decoder, s32 dest, u32 *header) {
+    M2C_FIELD(decoder, s32 *, DECOMP_OUT) = dest;
+    M2C_FIELD(decoder, u32 *, DECOMP_REMAINING) = (u32) ((u32) *header >> 8);
+    M2C_FIELD(decoder, s8 *, DECOMP_HDR) = 0;
+    M2C_FIELD(decoder, s8 *, DECOMP_CNT) = 0;
+    M2C_FIELD(decoder, s8 *, DECOMP_PREV) = 0;
+    M2C_FIELD(decoder, s8 *, DECOMP_HAVE) = 0;
+    M2C_FIELD(decoder, s16 *, DECOMP_ACC) = 0;
+    M2C_FIELD(decoder, s8 *, DECOMP_POS) = 0;
 }
 
 #pragma push
@@ -733,11 +736,11 @@ void func_02008d94(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     SendArm7Message(8, arg0, arg1, arg2, 0);
 }
 
-void func_02008dbc(M2C_UNK arg0, M2C_UNK arg1) {
+void Sound_Arm7ReserveChannels(M2C_UNK arg0, M2C_UNK arg1) {
     SendArm7Message(0x1A, arg0, arg1, 0, 0);
 }
 
-void func_02008ddc(M2C_UNK arg0, M2C_UNK arg1) {
+void Sound_Arm7ReleaseChannels(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     SendArm7Message(0x1B, arg0, arg1, 0, 0);
 }
@@ -746,7 +749,7 @@ void func_02008dfc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     SendArm7Message(0x14, arg0, arg1, arg2, 0);
 }
 
-void func_02008e24(M2C_UNK arg0, M2C_UNK arg1) {
+void Sound_SetHwChannelVolume(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     SendArm7Message(0x15, arg0, arg1, 0, 0);
 }
@@ -766,7 +769,7 @@ void func_02008e90(M2C_UNK arg0, M2C_UNK arg1) {
     SendArm7Message(0x1E, arg0, arg1, 0, 0);
 }
 
-void func_02008eb0(M2C_UNK arg0, M2C_UNK arg1) {
+void Sound_FreeBankArchiveMemory(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     SendArm7Message(0x1F, arg0, arg1, 0, 0);
 }

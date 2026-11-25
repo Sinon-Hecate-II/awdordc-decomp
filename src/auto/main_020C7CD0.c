@@ -162,14 +162,16 @@ u8 IsCampaignMapAvailable(s32 mapId) {
     return record->unitCount <= 50;
 }
 
-s32 func_020c7fe4(M2C_UNK arg0) {
+/* Return the name of the campaign map record for `mapId` (its name field), or the
+ * localized empty-name text when the record holds no player count (an empty slot). */
+s32 GetCampaignMapName(s32 mapId) {
     s32 GetLocalizedText(s32);
     s32 GetCampaignMapPlayerCount(M2C_UNK);
-    s32 temp_r4;
+    s32 record;
 
-    temp_r4 = GetMapRecord();
-    if (GetCampaignMapPlayerCount(arg0) != 0) {
-        return temp_r4 + 6;
+    record = GetMapRecord(mapId);
+    if (GetCampaignMapPlayerCount(mapId) != 0) {
+        return record + MAP_RECORD_NAME;
     }
     return GetLocalizedText(0xC00002EC);
 }
@@ -178,12 +180,15 @@ s32 GetCampaignMapIndex(s32 arg0) {
     return arg0 - 0xE1;
 }
 
-s32 GetCampaignMapPlayerCount(s32 a) {
- s32 p=GetMapRecord(a); s32 r;
- if(M2C_FIELD(p,u32 *,0)!=0x20070731)return 0;
- if(M2C_FIELD(p,u8 *,6)==0)r=0;
- else r=M2C_FIELD(p,u8 *,0x27);
- return r;
+/* How many players the campaign map `mapId` is saved for, or 0 when its slot
+ * holds no record (no magic, or an empty name). */
+s32 GetCampaignMapPlayerCount(s32 mapId) {
+    MapRecordHeader *record = (MapRecordHeader *)GetMapRecord(mapId);
+    s32 playerCount;
+    if (record->magic != MAP_RECORD_MAGIC) return 0;
+    if (M2C_FIELD(record, u8 *, MAP_RECORD_NAME) == 0) playerCount = 0;
+    else playerCount = record->playerCount;
+    return playerCount;
 }
 
 /* Whether `mapId` is the last campaign map the player cleared, as recorded in the
@@ -446,11 +451,11 @@ u8 DoesMapRecordMatchBuffer(s32 mapId, s32 buffer) {
 
 /* Pack the current system date/time and a CRC of the record data into its header. */
 void func_020c86a8(void *p) {
-    s32 ComputeMapRecordChecksum(); s32 GetLocalTime(); void GetMacAddress(void *);
+    s32 ComputeMapRecordChecksum(); s32 GetRtcDateTime(); void GetMacAddress(void *);
     extern u32 gFrameCounter;
     s32 date[4], time[3];
     s32 v = ComputeMapRecordChecksum(p);
-    GetLocalTime(date, time);
+    GetRtcDateTime(date, time);
     GetMacAddress((u8 *)p + 64);
     M2C_FIELD(p, u32 *, 76) = (M2C_FIELD(p, u32 *, 76) & 0xfffc003f) | ((gFrameCounter << 20) >> 14);
     M2C_FIELD(p, u16 *, 70) = v;

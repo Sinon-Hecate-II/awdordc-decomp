@@ -340,7 +340,7 @@ void Sound_DestroyHeap(s32 *arg0) {
  * release callback, unlinks the group from the player's list, resets the
  * player's heap and flushes the sound commands, then adds a fresh block. */
 s32 Sound_FreeAllBlocks(void *player){
-s32 ListPrev(void *,M2C_UNK);void ListRemove(void *,void *);void func_0202a6b0(s32,s32);void Sound_FlushAndWait(void);s32 Sound_CreateHeapSection(void *);
+s32 ListPrev(void *,M2C_UNK);void ListRemove(void *,void *);void FreeToFrameHeap(s32,s32);void Sound_FlushAndWait(void);s32 Sound_CreateHeapSection(void *);
 void *group;s32 changed=0;void *block;
 group=(void *)ListPrev(player+4,0);
 while(group){
@@ -353,7 +353,7 @@ block=(void *)ListPrev(group,(s32)block);
 }
 ListRemove(player+4,group);group=(void *)ListPrev(player+4,0);
 }
-func_0202a6b0(M2C_FIELD(player,s32 *,0),3);if(changed)Sound_FlushAndWait();return Sound_CreateHeapSection(player);
+FreeToFrameHeap(M2C_FIELD(player,s32 *,0),3);if(changed)Sound_FlushAndWait();return Sound_CreateHeapSection(player);
 }
 
 /* Take a `size`-byte data block from the sound heap in `pool` (32-byte aligned,
@@ -425,11 +425,11 @@ s32 func_0202c778(void *arg0) {
     return M2C_FIELD(arg0, u16 *, 0xC) - 1;
 }
 
-s32 func_0202c784(s32 *arg0) {
-    u32 func_0202a6dc(s32, M2C_UNK);
+s32 Sound_GetPlayerFreeHeap(s32 *arg0) {
+    u32 GetAllocatableSizeForFrameHeap(s32, M2C_UNK);
     u32 temp_r0;
 
-    temp_r0 = func_0202a6dc(*arg0, 0x20);
+    temp_r0 = GetAllocatableSizeForFrameHeap(*arg0, 0x20);
     if (temp_r0 < 0x20U) {
         return 0;
     }
@@ -441,7 +441,15 @@ void Sound_InitHeapSectionList(M2C_UNK arg0) {
     ListInit(arg0, 0);
 }
 
-s32 Sound_InitHeap(u32 p,s32 a){s32 Sound_CreateHeapSection(void *);ListInit(p+4,12);M2C_FIELD(p,s32 *,0)=a;return Sound_CreateHeapSection(p)!=0;}
+/* Initialise a sound heap header at `heap`: store its frame-heap handle, set
+ * up its section list (each section links at +0xC) and create the heap's first
+ * empty section.  Returns nonzero when that section could be created. */
+s32 Sound_InitHeap(u32 heap, s32 frameHeap) {
+    s32 Sound_CreateHeapSection(void *);
+    ListInit(heap + SOUND_HEAP_SECTIONS, 12);
+    M2C_FIELD(heap, s32 *, SOUND_HEAP_FRAME) = frameHeap;
+    return Sound_CreateHeapSection((void *)heap) != 0;
+}
 
 /* Allocate an empty heap section, initialize its list header, and append it to the heap's section list. */
 s32 Sound_CreateHeapSection(void *heap) {
@@ -466,9 +474,9 @@ void Sound_FlushAndWait(void) {
     Sound_WaitForCommand(temp_r4);
 }
 
-s32 func_0202c848(void) {
-    s32 func_0202c8b8();
-    if (func_0202c8b8() == 0) {
+s32 Sound_LoadArchiveGroup(void) {
+    s32 Sound_LoadArchiveGroupItems();
+    if (Sound_LoadArchiveGroupItems() == 0) {
         return 1;
     }
     return 0;
@@ -487,7 +495,7 @@ s32 func_0202c88c(M2C_UNK arg0, M2C_UNK arg1) {
 /* Loads every sound resource of a sound group (the group record for id groupId)
    into memory pool `pool`: sequence, bank, wave archive and sequence archive
    items, in the group's order.  Returns 0, or the first loader's error code. */
-s32 func_0202c8b8(s32 groupId,s32 pool) {
+s32 Sound_LoadArchiveGroupItems(s32 groupId,s32 pool) {
 void *group=GetSoundGroupRecord(groupId);u32 i;SoundGroupItem *item;s32 error;
 if(!group)return 1;
 i=0;

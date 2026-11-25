@@ -4,7 +4,7 @@
 
 u32 func_ov003_021ef758(void *arg0, u32 arg1) {
     M2C_UNK AddSprite(u16, M2C_UNK, u16, M2C_UNK *, s32);
-    M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
+    M2C_UNK SpriteCellListSetCellRect(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, s16, M2C_UNK, s16, s32);
     s16 GetSpriteAnimValue(void *);
     M2C_UNK GetUnitSpriteWidth(void *);
@@ -55,7 +55,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
             spriteY = M2C_FIELD(temp_r5, s16 *, 0x52);
             spriteX = M2C_FIELD(temp_r5, s16 *, 0x50);
             temp_r4 = GetUnitSpriteWidth(temp_r5);
-            func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
+            SpriteCellListSetCellRect(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
         }
         M2C_FIELD(temp_r5, s16 *, 0x34) = temp_r7;
         M2C_FIELD(temp_r5, s16 *, 0x36) = 0x70;
@@ -68,7 +68,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
             spriteY = M2C_FIELD(temp_r5, s16 *, 0x52);
             spriteX = M2C_FIELD(temp_r5, s16 *, 0x50);
             temp_r4 = GetUnitSpriteWidth(temp_r5);
-            func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
+            SpriteCellListSetCellRect(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
         }
         temp_r5 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x64) + (var_r8 * 4)), void **, 0x38);
         Set3DSpriteSlideTargetAndStart(temp_r5, temp_r9 + 0xD, 0x90, temp_r9 + 0xD, 0x90);
@@ -81,7 +81,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
             spriteY = M2C_FIELD(temp_r5, s16 *, 0x52);
             spriteX = M2C_FIELD(temp_r5, s16 *, 0x50);
             temp_r4 = GetUnitSpriteWidth(temp_r5);
-            func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
+            SpriteCellListSetCellRect(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
         }
         M2C_FIELD(temp_r5, s16 *, 0x34) = temp_r7;
         M2C_FIELD(temp_r5, s16 *, 0x36) = 0x90;
@@ -94,7 +94,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
             spriteY = M2C_FIELD(temp_r5, s16 *, 0x52);
             spriteX = M2C_FIELD(temp_r5, s16 *, 0x50);
             temp_r4 = GetUnitSpriteWidth(temp_r5);
-            func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
+            SpriteCellListSetCellRect(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
         }
         temp_r4_6 = temp_r9 - 1;
         if (IsRectOnScreen(temp_r4_6, 0x78, 0x40, 0x20) != 0) {
@@ -151,7 +151,7 @@ void func_ov003_021efb74(void *arg0) {
     M2C_UNK IsWaypointOptionValid(u8);
     M2C_UNK IsRectOnScreen(s16, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK IsSessionHost(void);
-    M2C_UNK func_ov003_021e6d28(void);
+    M2C_UNK IsSessionGuest(void);
     M2C_UNK InRange(s32, s32, s32);
     M2C_UNK GetSceneEntryOffset(void);
     void SetOv003SceneState(s32);
@@ -247,7 +247,7 @@ void func_ov003_021efb74(void *arg0) {
             Hide3DSprite(M2C_FIELD((char *)r4b + r5b * 4, s32 *, 0x18));
             ++r5b;
         } while (r5b < 4);
-        if (func_ov003_021e6d28() != 0) {
+        if (IsSessionGuest() != 0) {
             Hide3DSprite(M2C_FIELD(r7, s32 *, 0x58));
             r4c = M2C_FIELD(r7, void **, 0x64);
             Hide3DSpriteSlide(M2C_FIELD(r4c, s32 *, 0x0));
@@ -368,7 +368,7 @@ void Ov003_StartLinkMapTransfer(void *scene) {
     void Link_SendPacket(void *, s32);
     void Link_FlushSend();
     s32 GetPlayerCoId(s32);
-    s32 func_ov003_021e6d28();
+    s32 IsSessionGuest();
     void SetOv003SceneState(s32);
     void func_ov003_021f152c(s32);
     void Ov003_BroadcastPlayerSetup(s32);
@@ -380,7 +380,7 @@ void Ov003_StartLinkMapTransfer(void *scene) {
     if (((u32)(M2C_FIELD(scene, u8 *, 0x39) << 31) >> 31) == 1) mapConfirmed = 1; else mapConfirmed = 0;
     if (!(mapConfirmed & 255)) return;
     Ov003_BroadcastPlayerSetup(0); func_ov003_021f152c(1); SetOv003SceneState(1); CreateMapTransferPanelStep3(scene);
-    if (!func_ov003_021e6d28()) return;
+    if (!IsSessionGuest()) return;
     if (!Link_ReceivePacket(packet, 0x24)) return;
     packet[13] = GetPlayerCoIconIndex((u8)GetPlayerCoId(GetLocalPlayerIdForOverlay() + 1));
     Link_SendPacket(packet, 0x24); Link_FlushSend();

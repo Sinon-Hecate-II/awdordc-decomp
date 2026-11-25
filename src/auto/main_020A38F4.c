@@ -50,11 +50,13 @@ void SetWeatherChangeDelayForAllPlayers(s32 weather, s32 turns) {
     }
 }
 #pragma opt_instruction_scheduling reset
-void SetWeatherChangeDelayIfChanged(s32 a) {
- extern s32 *gCurrentMap;
- if(a==0)return;
- if(a==M2C_FIELD(*gCurrentMap,u8 *,0x5158))return;
- SetWeatherChangeDelay(a);
+/* Give the acting player a weather-change delay for `weather`, unless it is clear
+ * weather or the map's weather is already `weather` (so nothing changed). */
+void SetWeatherChangeDelayIfChanged(s32 weather) {
+    extern s32 *gCurrentMap;
+    if (weather == WEATHER_CLEAR) return;
+    if (weather == M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER)) return;
+    SetWeatherChangeDelay(weather);
 }
 
 /* Starts the map's weather transition to `weather`: every active player gets
@@ -392,16 +394,18 @@ void CreateWeatherEffectSprite(void) {
     CreateSpriteFromClass(&gWeatherEffectSpriteClass, 1);
 }
 
-void func_020a44e8(void) {
+void DeleteWeatherEffectSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gWeatherEffectSpriteClass;
     DeleteSpriteObjectsOfClass(&gWeatherEffectSpriteClass);
 }
 
-void func_020a44fc(M2C_UNK arg0, s32 arg1) {
+/* Store the 8-byte map order `record` into the map's order queue at `index`
+ * (used when a saved battle restores the queue). */
+void SetMapOrderRecord(void *record, s32 index) {
     M2C_UNK MI_CpuCopy8(M2C_UNK, s32, M2C_UNK);
     extern s32 *gCurrentMap;
-    MI_CpuCopy8(arg0, *gCurrentMap + 0x58A4 + (arg1 * 8), 8);
+    MI_CpuCopy8(record, *gCurrentMap + MAP_ORDERS + (index * MAP_ORDER_STRIDE), MAP_ORDER_STRIDE);
 }
 
 /* Empties the map's order queue: every one of its 32 records is cleared, with the

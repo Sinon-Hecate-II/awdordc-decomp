@@ -41,4 +41,13 @@ typedef struct CppExceptionState {
 #define CPP_EXCEPTION_TYPE_COUNT 0x00 /* u32: number of thrown type names */
 #define CPP_EXCEPTION_TYPE_NAMES 0x0C /* u8 *: packed addresses of the type-name strings */
 
+/* A CodeWarrior C++ type_info object (e.g. data_02100708, the one for
+ * `std::detail::default_delete<char []>`): its virtual table pointer at +0x00
+ * (destructor / deleting destructor) and the mangled type name at +0x04.
+ * type_info equality compares the names. */
+typedef struct TypeInfo {
+    void **vtable; /* +0x00 virtual table */
+    char *name;    /* +0x04 mangled type name string */
+} TypeInfo;
+
 #endif

@@ -169,12 +169,15 @@ unsigned int Ov001Rc4NextByte(CipherState *st) {
 #pragma thumb off
 
 #pragma thumb on
-unsigned int func_ov001_0216cb9c(unsigned int crc,unsigned char *p,int n,int ready,unsigned int *table) {
- void func_ov001_0216cbd4(int,unsigned int *);
- int i;
- if(!ready) func_ov001_0216cbd4(ready,table);
- for(i=0;i<n;i++) crc=(crc>>8)^table[(unsigned char)(p[i]^crc)];
- return crc;
+/* CRC-32 update with the reflected polynomial 0xEDB88320: fold `length` bytes of
+ * `data` into the running `crc` one byte at a time, building the 256-entry lookup
+ * table on first use (when `tableReady` is zero). */
+unsigned int Ov001_Crc32Update(unsigned int crc, unsigned char *data, int length, int tableReady, unsigned int *table) {
+    void Ov001_BuildCrc32Table(int, unsigned int *);
+    int i;
+    if (!tableReady) Ov001_BuildCrc32Table(tableReady, table);
+    for (i = 0; i < length; i++) crc = (crc >> 8) ^ table[(unsigned char)(data[i] ^ crc)];
+    return crc;
 }
 
 /* Obfuscate the `size`-byte buffer `data` in place with a simple keyed two-round
@@ -201,12 +204,20 @@ int Ov001_ScrambleToken(void *data,int size,void *key,int keyLength) {
 }
 
 #pragma thumb on
-void Ov001_BuildKeyMask(int a,signed char *out,int n,signed char *key,int len) {
- int half=n/2; int j=a%len; int i;
- for(i=0;i<half;i++) {
- out[i]=i; out[i]^=key[j]; j++;
- if(j>=len) j=0;
- }
+/* Lay cipher `round`'s key mask into the first half of `mask` (a size/2-byte
+ * buffer): byte i is i XORed with the round's key byte, the key repeating from
+ * its start and shifted along by the round number. */
+void Ov001_BuildKeyMask(int round, signed char *mask, int size, signed char *key, int keyLength) {
+    unsigned long long RuntimeIntDivMod(s32, s32);
+    int half = size / 2;
+    int keyIndex = (s32)(RuntimeIntDivMod(round, keyLength) >> 32);
+    int i;
+    for (i = 0; i < half; i++) {
+        mask[i] = i;
+        mask[i] ^= key[keyIndex];
+        keyIndex++;
+        if (keyIndex >= keyLength) keyIndex = 0;
+    }
 }
 #pragma thumb on
 void Ov001_XorSecondHalf(signed char *a,unsigned char *b,int n) {

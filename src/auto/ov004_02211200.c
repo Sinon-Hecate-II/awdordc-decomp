@@ -25,12 +25,15 @@ void func_ov004_0221120c(M2C_UNK arg0) {
     Sprite_ResumeAnimation(arg0);
 }
 
-void func_ov004_0221122c(M2C_UNK arg0) {
+/* Create the ov004 map-event sprite under `owner`: it only exists in a team
+ * (story) battle, so a map whose battle mode (the low three bits of
+ * gMapConfig) is not team gets no event sprite. */
+void CreateMapEventSprite(M2C_UNK owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern u16 gMapConfig;
     extern M2C_UNK data_ov004_02218c00;
     if ((u8)((u32)(gMapConfig << 29) >> 29)) return;
-    CreateSpriteObject(&data_ov004_02218c00, arg0);
+    CreateSpriteObject(&data_ov004_02218c00, owner);
 }
 
 void func_ov004_02211260(void) {
@@ -58,12 +61,14 @@ void Ov004_StartFinalMapEnding(M2C_UNK eventSprite) {
     Sprite_ResumeAnimation(eventSprite);
 }
 
-void func_ov004_022112b4(M2C_UNK arg0) {
+/* Create the battle-end ending sprite for `owner`, but only in the team game
+ * mode (map mode 0): the other map modes have no ending to show. */
+void Ov004_CreateEndingSprite(M2C_UNK owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern u16 gMapConfig;
-    extern M2C_UNK data_ov004_02218be0;
+    extern M2C_UNK gOv004EndingSpriteClass;
     if ((u8)((u32)(gMapConfig << 29) >> 29)) return;
-    CreateSpriteObject(&data_ov004_02218be0, arg0);
+    CreateSpriteObject(&gOv004EndingSpriteClass, owner);
 }
 
 /* Resets the aircraft effect's scale, bob and event timers, then starts its sound. */
@@ -110,7 +115,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
     void *Build3DSpriteTransform(void *, void *);
     void func_0209dabc(s32, void *);
     void *Create3DSprite(void);
-    M2C_UNK func_02088f8c(void *, s32, s32, s32, s32, s32);
+    M2C_UNK Slide3DSpriteOut(void *, s32, s32, s32, s32, s32);
     void SpawnSoundEffectFullVolume(s32, s32);
     s32 NextRandomValue(void);
     void *CreateAnimatedSpriteObject(void *);
@@ -186,7 +191,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
                 }
                 M2C_FIELD(spr, u8 **, 0x44) = (u8 *)data_ov004_02218cb0;
                 M2C_FIELD(spr, u16 *, 0x3C) = 0x800;
-                func_02088f8c(spr, 0x78, 0x60, 0x78, 0xC0, 0x1E);
+                Slide3DSpriteOut(spr, 0x78, 0x60, 0x78, 0xC0, 0x1E);
                 SpawnSoundEffectFullVolume(0xF8, 0x14);
             }
         }
@@ -297,7 +302,7 @@ void Ov004_SetUraPlaneZoom(void *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s
 }
 
 void func_ov004_0221194c(M2C_UNK arg0, M2C_UNK *arg1) {
-    M2C_UNK AddToU16Array(s32, u16, M2C_UNK);
+    M2C_UNK OffsetTileIndices(s32, u16, M2C_UNK);
     u32 Get3DSpriteLayerSize(u8, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK StringFormat(void *, void *, void *);
@@ -396,13 +401,13 @@ config[4]=e;config[5]=f;
             LoadNarcFileDecompressed(buffer, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
             StringFormat(buffer, &data_ov004_02218d58, arg1);
             func_0208161c(buffer, 2, 0, 0x200);
-            AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), (u16)Get3DSpriteLayerSize((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 2), 0);
+            OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), (u16)Get3DSpriteLayerSize((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 2), 0);
             CloseNarcArchive();
             OpenNarcArchive(&data_ov004_02218d60);
             LoadNarcFileDecompressed(&data_ov004_02218d6c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
             LoadNarcFileDecompressed(&data_ov004_02218d78, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
             func_0208161c(&data_ov004_02218d84, 3, 0x200, 0x200);
-            AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), (u16)Get3DSpriteLayerSize((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 3), 0x1000);
+            OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), (u16)Get3DSpriteLayerSize((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 3), 0x1000);
             CloseNarcArchive();
             M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x38) = 0;
             M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x40) = 0;

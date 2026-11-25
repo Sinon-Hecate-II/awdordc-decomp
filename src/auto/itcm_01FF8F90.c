@@ -140,7 +140,7 @@ void DS3D_AddSpriteQuad(s32 x, s32 y, u32 tile, u16 *template_)
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_01ff91d8(void) {
+void Apply3DSpriteBankMain(void) {
  void GX_ConfigureDisplay(s32,s32,s32); void GX_SetMasterBrightness(void *,s32); void func_02003f24(s32);
  extern u16 *g3DSpriteBankMain;
  extern s32 g3DSpriteEngineMain;
@@ -205,7 +205,7 @@ M2C_FIELD(regs,volatile u16 *,0x40)=M2C_FIELD(g3DSpriteBankMain,u16 *,0x12);
  {s32 brightness=M2C_FIELD(g3DSpriteBankMain,s8 *,0x50);GX_SetMasterBrightness((void *)((u8 *)regs+0x5c),brightness);}
 }
 #pragma pop
-M2C_UNK func_01ff9690(void) {
+M2C_UNK Apply3DSpriteBankSub(void) {
  void GX_SetSubBgMode(s32); void GX_SetMasterBrightness(void *,s32);
  extern u16 *g3DSpriteBankSub;
  extern s32 g3DSpriteEngineSub;
@@ -265,7 +265,7 @@ M2C_FIELD(regs,volatile u16 *,0x40)=M2C_FIELD(g3DSpriteBankSub,u16 *,0x12);
 void func_01ff9ab4(void) {
     extern u16 *g3DSpriteBankMain;
     GX_SetVBlankIrq(((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 31) >> 31) != 0);
-    func_02002428(((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 30) >> 31) != 0);
+    GX_SetHBlankIrq(((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 30) >> 31) != 0);
     if (((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 29) >> 31) != 0) {
         *(volatile u16 *)0x04000004 |= 0x20;
     } else {
@@ -274,11 +274,11 @@ void func_01ff9ab4(void) {
 }
 
 void Apply3DSpriteBanks(void) {
-    M2C_UNK func_01ff9690();
+    M2C_UNK Apply3DSpriteBankSub();
     void func_0207fafc(void);
     func_01ff9ab4();
-    func_01ff91d8();
-    func_01ff9690();
+    Apply3DSpriteBankMain();
+    Apply3DSpriteBankSub();
     func_0207fafc();
 }
 

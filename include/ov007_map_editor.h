@@ -45,6 +45,7 @@ enum {
 #define MAP_EDITOR_PANEL_PAGE    0x37 /* u8 palette page the panel shows (MAP_EDITOR_MODE) */
 #define MAP_EDITOR_PANEL_OWNER   0x38 /* s8[2] owner/colour index per page */
 #define MAP_EDITOR_OWNER_NEUTRAL 4    /* terrain-page owner index that paints neutral ground: an HQ entry (MAP_TERRAIN_HQ) cannot be picked for it */
+#define MAP_EDITOR_OWNER_COLOR_COUNT 5 /* owner/colour slots: the four army colours plus neutral */
 #define MAP_EDITOR_PANEL_ENTRY   0x3A /* s8[2] selected palette entry index per page */
 #define MAP_EDITOR_PALETTE_ENTRY_SIZE 5 /* bytes per palette entry record (kind, x, y, and two sprite fields) */
 

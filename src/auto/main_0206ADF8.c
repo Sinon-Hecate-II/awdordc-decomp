@@ -366,7 +366,7 @@ u16 *func_0206b5c0(s64 value, u16 *end, FormatFlags flags) {
 }
 
 u16 *func_0206b8c0(double value, u16 *end, FormatFlags fmt) {
-    u16 *func_0206cdac(u16 *, u16 *);
+    u16 *StringCopyWide(u16 *, u16 *);
     void FormatDoubleAsDecimal(void *, double, void *);
     u16 *FormatInteger(s32, u16 *, FormatFlags);
     double fabs(double);
@@ -395,30 +395,30 @@ u16 *func_0206b8c0(double value, u16 *end, FormatFlags fmt) {
     FormatDoubleAsDecimal(conv, magnitude, decimal);
     if (fabs(value) == 0.0) {
         p = end - 6;
-        func_0206cdac(p, data_02100558);
+        StringCopyWide(p, data_02100558);
         return p;
     }
     if (decimal[5] == 'I') {
         if (*(s8 *)decimal != 0) {
             p = end - 5;
-            if (spec == 'A') func_0206cdac(p, data_02100564);
-            else func_0206cdac(p, data_02100570);
+            if (spec == 'A') StringCopyWide(p, data_02100564);
+            else StringCopyWide(p, data_02100570);
         } else {
         p = end - 4;
-        if (spec == 'A') func_0206cdac(p, data_0210057c);
-        else func_0206cdac(p, data_02100584);
+        if (spec == 'A') StringCopyWide(p, data_0210057c);
+        else StringCopyWide(p, data_02100584);
         }
         return p;
     }
     if (decimal[5] == 'N') {
         if (*(s8 *)decimal != 0) {
             p = end - 5;
-            if (spec == 'A') func_0206cdac(p, data_0210058c);
-            else func_0206cdac(p, data_02100598);
+            if (spec == 'A') StringCopyWide(p, data_0210058c);
+            else StringCopyWide(p, data_02100598);
         } else {
         p = end - 4;
-        if (spec == 'A') func_0206cdac(p, data_021005a4);
-        else func_0206cdac(p, data_021005ac);
+        if (spec == 'A') StringCopyWide(p, data_021005a4);
+        else StringCopyWide(p, data_021005ac);
         }
         return p;
     }

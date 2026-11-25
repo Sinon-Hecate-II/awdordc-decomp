@@ -165,11 +165,11 @@ void func_ov006_0221661c(void *spriteList) {
 }
 
 void func_ov006_0221679c(void *arg0) {
- M2C_UNK func_02087e34(s32);
+ M2C_UNK SpriteCellListClear(s32);
  M2C_UNK func_020b2140();
  M2C_UNK HideAllSpriteSlots();
  HideAllSpriteSlots();
- func_02087e34(M2C_FIELD(arg0, s32 *, 0x40));
+ SpriteCellListClear(M2C_FIELD(arg0, s32 *, 0x40));
  func_020b2140();
 }
 
@@ -183,7 +183,7 @@ void func_ov006_022167b8(void) {
 void func_ov006_022167c4(void *arg0) {
 extern s8 gFriendCodeInput[];extern u8 data_ov006_022188a8[],data_ov006_02218776[],data_ov006_02218774[],data_ov006_022188a0[],data_ov006_022188cc[],data_ov006_022188dc[],data_ov006_022188b0[],data_ov006_022188bc[];
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
-void *func_0208bc24(void*);s32 GetSpriteAnimValue(void*);s32 GetLocalizedFileName(void*);s32 GetUiColor(s32);
+void *CreateScrollingTextSprite(void*);s32 GetSpriteAnimValue(void*);s32 GetLocalizedFileName(void*);s32 GetUiColor(s32);
 void *w,*saved;s32 scroll;
 MI_CpuCopy8(M2C_FIELD(arg0,void**,0x34),gFriendCodeInput,13);
 M2C_FIELD(M2C_FIELD(arg0,void**,0x44),u8*,0x16)=4;M2C_FIELD(M2C_FIELD(arg0,void**,0x44),u8*,0x14)=16;M2C_FIELD(M2C_FIELD(arg0,void**,0x44),u8*,0x17)=16;
@@ -218,7 +218,7 @@ LoadSpriteResource(1,0,5,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x3a00);
 LoadSpriteResource(1,2,0,M2C_FIELD(gCur3DSpriteEngine,s32*,0x30)+0x2c0);
 Load3DSpritePattern(0x1000,1,GetUiColor(9),2);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-M2C_FIELD(arg0,void**,0x4c)=func_0208bc24(arg0);
+M2C_FIELD(arg0,void**,0x4c)=CreateScrollingTextSprite(arg0);
 M2C_FIELD(M2C_FIELD(arg0,void**,0x4c),u16*,0x3e)=320;
 w=M2C_FIELD(arg0,void**,0x4c);M2C_FIELD(w,u32*,0x40)=(M2C_FIELD(w,u32*,0x40)&~0x3fc0000)|0x180000;
 SetTextById(M2C_FIELD(arg0,void**,0x4c),0x4400000f);Show3DSpriteSlide(M2C_FIELD(arg0,void**,0x4c));gCur3DSpriteEngine=saved;HideAllSpriteSlots();
@@ -485,12 +485,13 @@ void SyncLinkMapSettings(void *setup) {
     CreateLinkBlockReceiver((s32)GetMapSettings(), 0x10, setup);
 }
 
-void func_ov006_022170b4(void *arg0) {
-    void *GetMapSettings();
+/* Start a linked battle: load the battle map its map settings select and, when the
+ * local player is not slot 0 (a guest), apply the received map settings. */
+void LoadLinkBattleMap(void *setup) {
     M2C_UNK MapSettings_Apply(M2C_UNK);
     M2C_UNK LoadBattleMap(u32);
-    LoadBattleMap((u32) (M2C_FIELD(GetMapSettings(), s32 *, 8) << 0x14) >> 0x15);
-    if (M2C_FIELD(arg0, u8 *, 0x4C) == 0) {
+    LoadBattleMap((u32) (((MapSettings *) GetMapSettings())->rules << 0x14) >> 0x15);
+    if (M2C_FIELD(setup, u8 *, 0x4C) == 0) {
         return;
     }
     MapSettings_Apply(0);
@@ -535,7 +536,7 @@ void *func_ov006_02217164(void) {
  * and the ready-player mask, and links each ready player's page of campaign map
  * headers. */
 void CreateMapTransferPanelStep1(M2C_UNK owner) {
-s8 GetLocalPlayerIdForOverlay(); u8 GetReadyPlayerMask(); s32 GetCampaignMapHeader(M2C_UNK);
+s8 GetLocalPlayerIdForOverlay(); u8 GetSessionPlayerMask(); s32 GetCampaignMapHeader(M2C_UNK);
 void *CreateSpriteObject(void *,M2C_UNK);
 extern M2C_UNK gMapTransferPanelVtable,gMapTransferPanelStateClass;
 u8 i; void *panel=CreateSpriteObject(&gMapTransferPanelStateClass,owner);
@@ -544,7 +545,7 @@ M2C_FIELD(panel,void **,0)=&gMapTransferPanelVtable;
 M2C_FIELD(panel,u8 *,MAP_TRANSFER_PANEL_STEP)=1;
 M2C_FIELD(panel,s32 *,MAP_TRANSFER_PANEL_RECORDS)=0;M2C_FIELD(panel,s32 *,MAP_TRANSFER_PANEL_CHOSEN)=0;
 M2C_FIELD(panel,s8 *,MAP_TRANSFER_PANEL_LOCAL)=GetLocalPlayerIdForOverlay();
-M2C_FIELD(panel,u8 *,MAP_TRANSFER_PANEL_READY)=GetReadyPlayerMask();
+M2C_FIELD(panel,u8 *,MAP_TRANSFER_PANEL_READY)=GetSessionPlayerMask();
 M2C_FIELD(panel,s32 *,MAP_TRANSFER_PANEL_PAGE0)=GetCampaignMapHeader(0);
 i=0;
 do {
@@ -560,7 +561,7 @@ i++;
  * that are ready, and starts without any received-record buffer chosen yet. */
 void CreateMapTransferPanelStep2(M2C_UNK owner) {
     s8 GetLocalPlayerIdForOverlay();
-    u8 GetReadyPlayerMask();
+    u8 GetSessionPlayerMask();
     s32 GetCampaignMapHeader(M2C_UNK);
     void *CreateSpriteObject(void *, M2C_UNK);
     extern M2C_UNK data_ov006_0221890c, data_ov006_02218918;
@@ -573,7 +574,7 @@ void CreateMapTransferPanelStep2(M2C_UNK owner) {
         M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_RECORDS) = 0;
         M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_CHOSEN) = 0;
         M2C_FIELD(panel, s8 *, MAP_TRANSFER_PANEL_LOCAL) = GetLocalPlayerIdForOverlay();
-        M2C_FIELD(panel, u8 *, MAP_TRANSFER_PANEL_READY) = GetReadyPlayerMask();
+        M2C_FIELD(panel, u8 *, MAP_TRANSFER_PANEL_READY) = GetSessionPlayerMask();
         M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_PAGE0) = GetCampaignMapHeader(0);
         i = 0;
         do {

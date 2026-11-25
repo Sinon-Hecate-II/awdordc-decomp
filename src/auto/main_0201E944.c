@@ -65,25 +65,27 @@ ConsumeConnectionReceivedData(size);
 return result;
 }
 #pragma pop
-s32 ParseDecimal(u8 *arg0, u8 **arg1) {
+/* Parse a run of decimal digits at `text` and return its value; *end gets the
+ * character after the run (text itself when there are no digits). */
+s32 ParseDecimal(u8 *text, u8 **end) {
 #pragma opt_propagation on
 #pragma opt_common_subs on
-    s32 var_ip;
-    u8 *var_r0;
-    u8 temp_r3;
+    s32 value;
+    u8 *cursor;
+    u8 digit;
 
-    var_r0 = arg0;
-    *arg1 = var_r0;
-    var_ip = 0;
+    cursor = text;
+    *end = cursor;
+    value = 0;
 loop_1:
-    temp_r3 = *var_r0 - 0x30;
-    if ((u32) temp_r3 <= 9U) {
-        var_ip = (0xA * var_ip) + temp_r3;
-        var_r0 += 1;
-        *arg1 = var_r0;
+    digit = *cursor - '0';
+    if ((u32) digit <= 9U) {
+        value = (10 * value) + digit;
+        cursor += 1;
+        *end = cursor;
         goto loop_1;
     }
-    return var_ip;
+    return value;
 }
 
 /* Parses a dotted-decimal IPv4 address ("a.b.c.d", each part 0..255) and stores

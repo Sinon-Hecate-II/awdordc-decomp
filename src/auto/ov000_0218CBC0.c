@@ -151,7 +151,7 @@ void ChooseAiUnitMoveDestination(void *allowCurrentCell) {
     s32 func_ov000_02178778(s16, s16);
     s32 func_ov000_02178e84(s16, s16);
     s32 CellMoveScore(s32, s32, s32, s32);
-    s32 GetTerrainMoveCost(s32, s32, s32);
+    s32 GetTerrainDefenseFromStars(s32, s32, s32);
     s32 GetUnitAttackClass(u32);
     void ClearUnitMoveTarget(void);
     void SetMapCursor(s32, s32, s32, s32, s32);
@@ -205,7 +205,7 @@ void ChooseAiUnitMoveDestination(void *allowCurrentCell) {
                 score = CellMoveScore(x, y, 1, 2);
                 map = *gCurrentMap;
                 cell = ROW_OFFSET(map, y) + (map + x);
-                terrainCost = GetTerrainMoveCost(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER), UNIT_KIND(CURSOR_UNIT(map)), M2C_FIELD(cell, u8 *, MAP_CELL_TERRAIN) & 31);
+                terrainCost = GetTerrainDefenseFromStars(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER), UNIT_KIND(CURSOR_UNIT(map)), M2C_FIELD(cell, u8 *, MAP_CELL_TERRAIN) & 31);
                 map = *gCurrentMap;
                 rangeCost = MOVE_ROW(map, y)[x];
                 if (score > bestScore)

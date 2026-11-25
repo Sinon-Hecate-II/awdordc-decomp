@@ -331,10 +331,13 @@ void SHA1_Final(void *ctx, M2C_UNK *digest) {
     StoreWordsBigEndian(digest, ctx, 0x14);
 }
 
-void func_02026134(M2C_UNK arg0, M2C_UNK arg1) {
+/* Finalise a SHA-1 digest of the fixed 20-byte message the caller fed in: append
+ * 44 zero bytes to fill the rest of the 64-byte block, compress it, and store the
+ * 20-byte digest big-endian into `digest`. */
+void SHA1_FinalZeroPadded(TlsSha1Context *ctx, u8 *digest) {
     void StoreWordsBigEndian(void *, u32 *, u32);
-    extern M2C_UNK data_020fb1e5;
-    SHA1_Update(arg0, &data_020fb1e5, 0x2C);
-    StoreWordsBigEndian(arg1, arg0, 0x14);
+    extern u8 gSha1ZeroPadding;
+    SHA1_Update(ctx, &gSha1ZeroPadding, 0x2C);
+    StoreWordsBigEndian(digest, (u32 *)ctx, SHA1_DIGEST_SIZE);
 }
 

@@ -5,7 +5,7 @@
 void func_020e5080(void *arg0) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub,gMicTestIpc;
 extern u8 data_0212da70[],data_0212da40[],data_0212db88[],data_0212db38[],data_0212db78[],data_0212da4c[],data_0212da7c[],data_0212da34[],data_0212db28[],data_0212db68[],data_0212db58[],data_0212da58[],data_0212db48[],data_0212da64[];
-void Set3DSpriteVramBanks(void);void func_02003560(void);void GX_SetBankForObjExtPalette(s32);
+void Set3DSpriteVramBanks(void);void GX_ReleaseBankGrantForBGExtPalette(void);void GX_SetBankForObjExtPalette(s32);
 void Apply3DSpriteLayout(void*);void CreateMainWallpaperSprite(s32,s32,s32);void CreateSubWallpaperSprite(s32,s32,s32);
 void SetFileDirectory(void*);void *GetLocalizedFileName(void*);
 void OpenNarcArchive(void);void Clear3DSpriteLayer(s32);
@@ -13,12 +13,12 @@ void LoadNarcFileDecompressed(void*,void*);void LoadFileToSpriteBuffer(void*,s32
 void SetTileRectPalette(void*,s32,s32,s32);void CloseNarcArchive(void);
 void *CreateUnitSprite(void*);void InitUnitSprite(void*,s32,s32,s32,s32);
 void Set3DSpriteSlideTargetAndStart(void*,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void*);s32 GetUnitSpriteHeight(void*);
-void func_02087d84(void*,s32,s32,s32,u16,u16);void func_020aad18(void*);
+void SpriteCellListSetCellRect(void*,s32,s32,s32,u16,u16);void func_020aad18(void*);
 void *Create3DSprite(void*);void LoadSpriteResource(s32,s32,s32,void*);s32 func_020aaf74(void*);
 void Apply3DSpriteBanks(void);M2C_UNK SetMusicVolumeLevel(M2C_UNK,M2C_UNK);
 void Arm7TransferInit(void);void Arm7CommandInit(void);M2C_UNK Arm7SetAmpParam2(M2C_UNK);void func_0200e880(s32);
 s32 saved;void *obj;s32 y,x,w,h;u16 *volatile p0, *volatile p1, *volatile p2, *volatile p3, *volatile p4, *volatile p5, *volatile p6, *volatile p7, *volatile p8, *volatile p9, *volatile p10, *volatile p11;
-Set3DSpriteVramBanks();func_02003560();GX_SetBankForObjExtPalette(0x40);
+Set3DSpriteVramBanks();GX_ReleaseBankGrantForBGExtPalette();GX_SetBankForObjExtPalette(0x40);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 Apply3DSpriteLayout(data_0212da70);
 p0=(M2C_FIELD((void*)gCur3DSpriteEngine,u16 **,0)); *p0=*p0 | 16;
@@ -43,13 +43,13 @@ obj=M2C_FIELD(arg0,void **,0x38);Set3DSpriteSlideTargetAndStart(obj,0xe0,0xa0,0x
 if((u8)(M2C_FIELD(M2C_FIELD(obj,void **,0x64),u8 *,0x12)!=0)){
 y=M2C_FIELD(obj,s16 *,0x52);x=M2C_FIELD(obj,s16 *,0x50);
 w=GetUnitSpriteWidth(obj);h=GetUnitSpriteHeight(obj);
-func_02087d84(M2C_FIELD(obj,void **,0x64),1,x,y,(u16)w,(u16)h);
+SpriteCellListSetCellRect(M2C_FIELD(obj,void **,0x64),1,x,y,(u16)w,(u16)h);
 }
 M2C_FIELD(obj,s16 *,0x34)=0xe0;M2C_FIELD(obj,s16 *,0x36)=0xa0;
 if((u8)(M2C_FIELD(M2C_FIELD(obj,void **,0x64),u8 *,0x12)!=0)){
 y=M2C_FIELD(obj,s16 *,0x52);x=M2C_FIELD(obj,s16 *,0x50);
 w=GetUnitSpriteWidth(obj);h=GetUnitSpriteHeight(obj);
-func_02087d84(M2C_FIELD(obj,void **,0x64),1,x,y,(u16)w,(u16)h);
+SpriteCellListSetCellRect(M2C_FIELD(obj,void **,0x64),1,x,y,(u16)w,(u16)h);
 }
 func_020aad18(M2C_FIELD(arg0,void **,0x38));
 gCur3DSpriteEngine=g3DSpriteEngineSub;Apply3DSpriteLayout(data_0212da7c);
@@ -93,8 +93,8 @@ void func_020e5678(void) {
     M2C_UNK Arm7TransferEndWait();
     M2C_UNK Arm7SetAmpParam2(M2C_UNK);
     M2C_UNK SetMusicVolumeLevel(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020af1e4();
-    func_020af1e4();
+    M2C_UNK DeleteWallpaperSpritesOnAllEngines();
+    DeleteWallpaperSpritesOnAllEngines();
     SetMusicVolumeLevel(2, 0x7F);
     Arm7TransferEndWait();
     Arm7SetAmpParam2(0);
@@ -167,14 +167,18 @@ MicTestScreen *DestroyMicTestObject(MicTestScreen *screen) {
     return (MicTestScreen *)screen;
 }
 
-M2C_UNK **func_020e57f0(M2C_UNK **arg0) {
-    M2C_UNK HeapFreeBlock();
+/* Non-freeing destructor of the mic test screen (vtable slot 0): restore the
+ * class's vtable and free the microphone sample buffer, leaving the object for
+ * the caller to release. */
+MicTestScreen *MicTestScreen_Destructor(MicTestScreen *screen) {
     extern M2C_UNK gMicTestVtbl;
     extern s32 gMicTestIpc;
-    *arg0 = &gMicTestVtbl;
+    M2C_UNK HeapFreeBlock(s32);
+
+    screen->vtable = &gMicTestVtbl;
     if (gMicTestIpc != 0) {
-        HeapFreeBlock();
+        HeapFreeBlock(gMicTestIpc);
     }
-    return arg0;
+    return screen;
 }
 

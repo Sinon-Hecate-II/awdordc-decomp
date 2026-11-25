@@ -30,8 +30,8 @@ void RestartLinkSession(void) {
     s32 GetLinkPhase();
     s32 GetLinkRequestKind();
     s32 AdvanceLinkRequestToPending();
-    s32 func_ov009_02223b5c();
-    s32 func_ov009_02223c08();
+    s32 RestartLinkHostSession();
+    s32 TeardownLinkAndQueueSetup();
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     M2C_UNK SetLinkPhase(M2C_UNK);
     extern M2C_UNK gLinkActorClass, gLinkSenderClass, gLinkReceiverClass;
@@ -52,11 +52,11 @@ void RestartLinkSession(void) {
     DeleteSpriteObjectsOfClass(&gLinkReceiverClass);
     switch (GetLinkRequestKind()) {
     case 0:
-        if (func_ov009_02223b5c() != 0) return;
+        if (RestartLinkHostSession() != 0) return;
         CloseLinkChannel();
         return;
     case 1:
-        if (func_ov009_02223c08() != 0) return;
+        if (TeardownLinkAndQueueSetup() != 0) return;
         CloseLinkChannel();
         return;
     }
@@ -128,7 +128,7 @@ u8 GetLinkLocalPlayerSlot(void) {
     return M2C_FIELD(&gLinkState, u8 *, 0x157);
 }
 
-void func_ov009_02225470(void) {
+void GetLinkConnectedPlayerCount(void) {
     M2C_UNK CountBits();
     M2C_UNK GetConnectedPlayers();
     GetConnectedPlayers();
@@ -145,9 +145,11 @@ u16 GetLinkEventFlags(void) {
     return M2C_FIELD(&gLinkState, u16 *, 8);
 }
 
+/* Whether this console is the link's host: outside an established game every
+ * console counts as host; in an in-game link only player 0 does. */
 s32 IsLinkHost(void) {
     s32 GetLinkLocalPlayerId();
-    if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
+    if ((GetLinkPhase() != LINK_PHASE_ACTIVE) && (GetLinkPhase() != LINK_PHASE_INGAME)) {
         return 1;
     }
     if (GetLinkLocalPlayerId() == 0) {
@@ -156,8 +158,10 @@ s32 IsLinkHost(void) {
     return 0;
 }
 
+/* Whether this console is a guest of the link: only during an established game,
+ * and only when it is not player 0 (the host). */
 s32 IsLinkGuest(void) {
-    if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
+    if ((GetLinkPhase() != LINK_PHASE_ACTIVE) && (GetLinkPhase() != LINK_PHASE_INGAME)) {
         return 0;
     }
     if (GetLinkLocalPlayerId() != 0) {
@@ -212,12 +216,16 @@ void func_ov009_02225600(void *arg0) {
     SubmitLinkStartRecord(arg0 + 0x38, M2C_FIELD(arg0, s32 *, 0x34));
 }
 
-s32 func_ov009_02225614(s32 arg0) {
+/* Whether the link's start record was acknowledged while the link is in game
+ * (LINK_PHASE_ACTIVE or LINK_PHASE_INGAME): `state` + 0x38 is the start record
+ * the acknowledgement check looks at. */
+s32 IsLinkStartAcknowledgedInGame(s32 state) {
     s32 IsLinkStartAcknowledged(s32);
-    if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
+
+    if ((GetLinkPhase() != LINK_PHASE_ACTIVE) && (GetLinkPhase() != LINK_PHASE_INGAME)) {
         return 0;
     }
-    return IsLinkStartAcknowledged(arg0 + 0x38);
+    return IsLinkStartAcknowledged(state + 0x38);
 }
 
 void func_ov009_02225644(s32 arg0) {
@@ -246,12 +254,15 @@ void *CreateLinkStartRequest(s32 matchId, M2C_UNK owner) {
     return node;
 }
 
-M2C_UNK func_ov009_022256a4(s32 arg0) {
+/* Fill the player-announcement request record: set this console's player-slot bit,
+ * record whether the announcement went out, and install the record as the link
+ * state's in-flight announcement (LINK_STATE_ANNOUNCE_REQUEST). */
+M2C_UNK SubmitPlayerAnnounceRequest(s32 record) {
     s32 AnnounceLinkPlayer();
     extern M2C_UNK gLinkState;
-    M2C_FIELD(arg0, u16 *, 2) = 1 << GetLinkLocalPlayerId();
-    M2C_FIELD(arg0, u8 *, 0) = AnnounceLinkPlayer();
-    M2C_FIELD(&gLinkState, s32 *, 0x20) = arg0;
+    M2C_FIELD(record, u16 *, LINK_REQUEST_PLAYERS) = 1 << GetLinkLocalPlayerId();
+    M2C_FIELD(record, u8 *, LINK_REQUEST_SENT) = AnnounceLinkPlayer();
+    M2C_FIELD(&gLinkState, void **, LINK_STATE_ANNOUNCE_REQUEST) = (void *)record;
 }
 
 /* Whether the player announcement this console started is still waiting for
@@ -278,8 +289,8 @@ void func_ov009_02225768(s32 arg0) {
 }
 
 void func_ov009_0222577c(s32 arg0) {
-    M2C_UNK func_ov009_022256a4(s32);
-    func_ov009_022256a4(arg0 + 0x34);
+    M2C_UNK SubmitPlayerAnnounceRequest(s32);
+    SubmitPlayerAnnounceRequest(arg0 + 0x34);
 }
 
 void func_ov009_0222578c(s32 arg0) {
@@ -467,12 +478,15 @@ void func_ov009_02225af4(s32 arg0) {
     BroadcastLinkPlayerInfo(arg0 + 0x34);
 }
 
-s32 func_ov009_02225b04(s32 arg0) {
+/* Step of the player-announce sprite during an active game: it keeps running
+ * while this console's player announcement (its mask at object +0x34) has not
+ * been answered by every connected player.  Outside phases 4 and 5 it is done. */
+s32 IsLinkAnnounceIncompleteInGame(s32 sprite) {
     s32 IsLinkAnnounceIncomplete(s32);
-    if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
+    if ((GetLinkPhase() != LINK_PHASE_ACTIVE) && (GetLinkPhase() != LINK_PHASE_INGAME)) {
         return 0;
     }
-    return IsLinkAnnounceIncomplete(arg0 + 0x34);
+    return IsLinkAnnounceIncomplete(sprite + 0x34);
 }
 
 void func_ov009_02225b34(s32 arg0) {
@@ -515,28 +529,33 @@ void *func_ov009_02225b94(void *arg0) {
     return arg0;
 }
 
-void *func_ov009_02225bbc(void *arg0) {
-    if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
+/* Destructor of the link's packet sender: free the packet still queued for the
+ * transfer being split (LINK_SENDER_PACKET) and release the object itself. */
+void *DestroyLinkSender(void *sender) {
+    if (M2C_FIELD(sender, s32 *, LINK_SENDER_PACKET) != 0) {
         FreeLinkPacket();
-        M2C_FIELD(arg0, s32 *, 0x38) = 0;
+        M2C_FIELD(sender, s32 *, LINK_SENDER_PACKET) = 0;
     }
-    MemFree(arg0);
+    MemFree(sender);
+    return sender;
+}
+
+s32 ResetLinkReceiver(s32 arg0) {
+    M2C_UNK DestroyArray(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
+    extern M2C_UNK FreeLinkReceiveSlot;
+    DestroyArray(arg0 + 0x34, 4, 8, &FreeLinkReceiveSlot);
     return arg0;
 }
 
-s32 func_ov009_02225bec(s32 arg0) {
+/* Destructor of the link's packet receiver: destroy its four per-channel
+ * receive-assembly slots (each frees the packet it was piecing together) and
+ * release the object itself. */
+s32 DestroyLinkReceiver(s32 receiver) {
     M2C_UNK DestroyArray(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
-    extern M2C_UNK func_ov009_0222497c;
-    DestroyArray(arg0 + 0x34, 4, 8, &func_ov009_0222497c);
-    return arg0;
-}
-
-s32 func_ov009_02225c14(s32 arg0) {
-    M2C_UNK DestroyArray(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
-    extern M2C_UNK func_ov009_0222497c;
-    DestroyArray(arg0 + 0x34, 4, 8, &func_ov009_0222497c);
-    MemFree(arg0);
-    return arg0;
+    extern M2C_UNK FreeLinkReceiveSlot;
+    DestroyArray(receiver + LINK_RECEIVER_CHANNELS, LINK_RECEIVER_COUNT, LINK_RECEIVER_STRIDE, &FreeLinkReceiveSlot);
+    MemFree(receiver);
+    return receiver;
 }
 
 void func_ov009_02225c44(void) {
@@ -600,14 +619,18 @@ void func_ov009_02225ccc(void *arg0) {
     M2C_FIELD(arg0, s32 *, 8) = 0;
 }
 
-s32 func_ov009_02225ce0(s32 arg0, s32 arg1) {
+/* Link-phase predicate for waiting on a target phase: the first argument is unused
+ * (a callback self pointer).  Returns nonzero while the link's current phase
+ * differs from `expectedPhase`, but 0 for the terminal ERROR and ABORTED phases so
+ * a failed link is never read as the phase having changed. */
+s32 func_ov009_02225ce0(s32 arg0, s32 expectedPhase) {
     s32 GetLinkPhase();
     switch (GetLinkPhase()) {
-    case 8:
-    case 9:
+    case LINK_PHASE_ERROR:
+    case LINK_PHASE_ABORTED:
         return 0;
     default:
-        return arg1 != GetLinkPhase();
+        return expectedPhase != GetLinkPhase();
     }
 }
 
@@ -864,15 +887,19 @@ void CreateLinkNameLabel(s32 unusedX, s32 unusedY, void *owner) {
     CreateSpriteForOwner(&gLinkNameLabelClass, owner);
 }
 
-void CreateLinkMatchNameLabel(M2C_UNK arg0, u16 arg1, void *arg2) {
+/* Link-mode match-name label: once the link has left the idle phase, create the
+ * label sprite that shows the opponent's match name; while it is still idle,
+ * only enable the map-confirm prompt.  The online variant's x/y are unused here. */
+void CreateLinkMatchNameLabel(s32 unusedX, u16 unusedY, void *owner) {
+    void *CreateSpriteForOwner(void *, void *);
     s32 GetLinkPhase(void);
     M2C_UNK EnableMapConfirm(void);
-    void *CreateSpriteForOwner(void *, void *);
     extern M2C_UNK gLinkMatchNameLabelClass;
-    if (GetLinkPhase() == 0) {
+
+    if (GetLinkPhase() == LINK_PHASE_IDLE) {
         EnableMapConfirm();
         return;
     }
-    CreateSpriteForOwner(&gLinkMatchNameLabelClass, arg2);
+    CreateSpriteForOwner(&gLinkMatchNameLabelClass, owner);
 }
 

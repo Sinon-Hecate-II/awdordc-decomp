@@ -212,7 +212,18 @@ void AddSpriteCell(void *list, s32 x, s32 y, s32 width, u16 height, u16 tile, u1
     }
 }
 #pragma opt_strength_reduction reset
-void func_02087d84(void *a,s32 b,s32 c,s32 d,u16 e,u16 f) {void *SpriteCellListFindCell(void *,s32);u16 *p=SpriteCellListFindCell(a,(s16)b);p[0]=c;p[1]=d;p[2]=e;p[3]=f;}
+/* Move the cell of a sprite-cell list whose graphic is `tile` onto the screen
+ * rectangle (`x`, `y`) of size `width` x `height`. */
+void SpriteCellListSetCellRect(void *list, s32 tile, s32 x, s32 y, u16 width, u16 height) {
+    void *SpriteCellListFindCell(void *, s32);
+    SpriteCell *cell;
+
+    cell = SpriteCellListFindCell(list, (s16) tile);
+    cell->x = x;
+    cell->y = y;
+    cell->width = width;
+    cell->height = height;
+}
 
 /* Take the cell showing tile `tile` out of a cell list: clear it, decrement the
  * list's used-cell count and, when the list was on that cell, forget it. */
@@ -249,9 +260,32 @@ loop_1:
 }
 
 #pragma optimization_level 2
-void func_02087e34(void *arg0) { M2C_UNK MI_CpuFill8(s32,M2C_UNK,s32); M2C_FIELD(arg0,s32 *,0)=0; M2C_FIELD(arg0,s32 *,4)=0; MI_CpuFill8(M2C_FIELD(arg0,s32 *,0x14),0,M2C_FIELD(arg0,u16 *,0x10)*12); M2C_FIELD(arg0,u8 *,0x12)=0; }
+/* Empty a sprite-cell list: forget its current and previous cells, wipe every
+ * cell of the block and reset the used-cell count, ready for the cells to be
+ * filled in again. */
+void SpriteCellListClear(void *list) {
+    M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
+    M2C_FIELD(list, s32 *, SPRITE_CELL_LIST_CURRENT) = 0;
+    M2C_FIELD(list, s32 *, SPRITE_CELL_LIST_PREVIOUS) = 0;
+    MI_CpuFill8(M2C_FIELD(list, s32 *, SPRITE_CELL_LIST_CELLS), 0,
+                M2C_FIELD(list, u16 *, SPRITE_CELL_LIST_CAPACITY) * sizeof(SpriteCell));
+    M2C_FIELD(list, u8 *, SPRITE_CELL_LIST_USED) = 0;
+}
 #pragma optimization_level reset
-void *SpriteCellListFindCell(void *a,s32 b) {s32 i;u16 n;u8 *p;n=M2C_FIELD(a,u16 *,16);p=M2C_FIELD(a,u8 **,20);for(i=0;i<(s32)n;i++,p+=12)if(M2C_FIELD(p,u16 *,8)==b)return p;return 0;}
+/* Find the cell of a sprite-cell list whose graphic is `tile`; NULL when the
+ * list holds no such cell. */
+void *SpriteCellListFindCell(void *list, s32 tile) {
+    s32 i;
+    u16 capacity;
+    SpriteCell *cell;
+
+    capacity = M2C_FIELD(list, u16 *, SPRITE_CELL_LIST_CAPACITY);
+    cell = M2C_FIELD(list, SpriteCell **, SPRITE_CELL_LIST_CELLS);
+    for (i = 0; i < (s32) capacity; i++, cell++) {
+        if (cell->tile == tile) return cell;
+    }
+    return NULL;
+}
 
 #pragma optimize_for_size off
 void SpriteCellListSelectCell(void *arg0,void *arg1){

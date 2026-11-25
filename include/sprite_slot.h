@@ -16,6 +16,7 @@
 #define SPRITE_SLOT_TILE     0x20 /* u16 OBJ tile index (low 10 bits pick the tile in the screen's bank) */
 #define SPRITE_SLOT_PRIORITY 0x22 /* u16 OBJ priority bits 0..1 */
 #define SPRITE_SLOT_CLICK_CB 0x2c /* void (*)(void *) */
+#define SPRITE_SLOT_CANCEL_CB 0x30 /* void (*)(void *): run on cancel (B) while the slot is focused */
 #define SPRITE_SLOT_UPDATE_CB 0x24 /* void (*)(void *): run for the slot every frame */
 #define SPRITE_SLOT_KEY_CB   0x28 /* void (*)(void *): run on key input while the slot is focused and ready */
 #define SPRITE_SLOT_STRIDE   0x3c

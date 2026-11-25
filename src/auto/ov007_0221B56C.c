@@ -381,17 +381,19 @@ void ResetPlayerOrder(void) {
     func_020d1f2c();
 }
 
-s32 GetSlotForPlayerId(s32 arg0) {
+/* Return the player slot whose player id is `playerId`, or slot 0 when no slot
+ * holds that id. */
+s32 GetSlotForPlayerId(s32 playerId) {
     s32 GetPlayerIdForSlot(s32);
-    s32 var_r4;
+    s32 slot;
 
-    var_r4 = 0;
+    slot = 0;
 loop_1:
-    if (arg0 == GetPlayerIdForSlot(var_r4)) {
-        return var_r4;
+    if (playerId == GetPlayerIdForSlot(slot)) {
+        return slot;
     }
-    var_r4 += 1;
-    if (var_r4 >= 5) {
+    slot += 1;
+    if (slot >= 5) {
         return 0;
     }
     goto loop_1;
@@ -418,7 +420,7 @@ void MapStart_InitState(void *state) {
  * campaign map list is exhausted. */
 void StartNextMap(void *p) {
     extern s32 *gCurrentMap;
-    s32 func_020be1a8(void);
+    s32 IsSaveInProgress(void);
     s32 GetPlayerIdForSlot(s32);
     s32 GetSlotForPlayerId(s32);
     void Map_ReassignPropertyOwners(s32,s32,s32,s32);
@@ -428,7 +430,7 @@ void StartNextMap(void *p) {
     void MapEditor_SetMapModified(s32);
     void Sprite_ResumeAnimation(void *);
     s32 id1,id2,id3,id4;
-    if(func_020be1a8())return;
+    if(IsSaveInProgress())return;
     CompactPlayerSlots();
     id1=GetPlayerIdForSlot(1);id2=GetPlayerIdForSlot(2);id3=GetPlayerIdForSlot(3);id4=GetPlayerIdForSlot(4);
     RemapUnitGroups(id1,id2,id3,id4);
@@ -447,8 +449,8 @@ void StartNextMap(void *p) {
  * its save type, otherwise clear the message. */
 void UpdateCampaignSaveMessage(void) {
     extern s32 *gCurrentMap;
-    s32 GetCampaignMapSaveType(s32); s32 func_020be4c0(s32); void SetUiMessageText(u32);
-    if (func_020be4c0(GetCampaignMapSaveType(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID))) == 0) {
+    s32 GetCampaignMapSaveType(s32); s32 SaveRecordExistsForType(s32); void SetUiMessageText(u32);
+    if (SaveRecordExistsForType(GetCampaignMapSaveType(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID))) == 0) {
         SetUiMessageText(TEXT_ID_NO_SAVE_DATA);
         return;
     }

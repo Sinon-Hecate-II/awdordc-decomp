@@ -150,7 +150,16 @@ s32 SBServerListFindByServer(void *list, s32 server) {
  * or -1 when no server does. */
 s32 SBServerListFindByAddress(void *list,s32 ip,s32 port){s32 Vector_GetCount(s32);s32 *Vector_GetItem();s32 SBServerGetIp(s32);s32 SBServerGetPortNBO(s32);s32 count,server,i;count=Vector_GetCount(M2C_FIELD(list,s32 *,SB_SLIST_SERVERS));for(i=0;i<count;i++){server=*Vector_GetItem(M2C_FIELD(list,s32 *,SB_SLIST_SERVERS),i);if(ip==SBServerGetIp(server)&&port==SBServerGetPortNBO(server))return i;}return -1;}
 
-void SBServerListRetireServer(void *a,s32 b){void func_02060cbc(s32,s32);s32 p=M2C_FIELD(a,s32 *,0x5d0);if(!p)func_02060cbc(b,0);else func_02060cbc(b,p);M2C_FIELD(a,s32 *,0x5d0)=b;}
+/* Retire `server` from the list: push it onto the list's chain of removed
+ * servers (SB_SLIST_FREE_SERVERS, linked through GpiPlayer.next, terminated when
+ * the chain was empty) so SBServerListFreeRemovedServers can free it. */
+void SBServerListRetireServer(void *list, s32 server) {
+    void SBServerSetNext(s32, s32);
+    s32 retired = M2C_FIELD(list, s32 *, SB_SLIST_FREE_SERVERS);
+    if (!retired) SBServerSetNext(server, 0);
+    else SBServerSetNext(server, retired);
+    M2C_FIELD(list, s32 *, SB_SLIST_FREE_SERVERS) = server;
+}
 
 /* Remove the server at `index` from the list's server vector: report the removal
  * through the list's callback, drop the entry from the vector, then chain the
@@ -203,7 +212,7 @@ void SBServerListFreeRemovedServers(void *list) {
 s32 SBServerListClearRemovedServers(void *serverList) {
     s32 Vector_GetCount(s32);
     s32 *Vector_GetItem();
-    void func_02048b74(s32);
+    void Vector_Clear(s32);
     s32 i;
     s32 serverCount;
 
@@ -211,7 +220,7 @@ s32 SBServerListClearRemovedServers(void *serverList) {
     for (i = 0; i < serverCount; i++) {
         SBServerListRetireServer(serverList, *Vector_GetItem(M2C_FIELD(serverList, s32 *, SB_SLIST_SERVERS), i));
     }
-    func_02048b74(M2C_FIELD(serverList, s32 *, SB_SLIST_SERVERS));
+    Vector_Clear(M2C_FIELD(serverList, s32 *, SB_SLIST_SERVERS));
     SBServerListFreeRemovedServers(serverList);
 }
 
@@ -257,7 +266,16 @@ void StringInternRelease(void *a, s32 string) {
     TableRemove(GetStringInternTable((s32)a), key);
 }
 
-s32 BoundedStringLength(s8 *a,s32 b){s32 i;for(i=0;i<b;i++){if(!a[i])return i+1;}return -1;}
+/* Bytes of a NUL-terminated string including the terminator, or -1 when no
+ * terminator occurs within the first maxLength bytes. */
+s32 BoundedStringLength(s8 *string, s32 maxLength) {
+    s32 i;
+
+    for (i = 0; i < maxLength; i++) {
+        if (!string[i]) return i + 1;
+    }
+    return -1;
+}
 
 /* GameSpy SBServerListInit: initialise a server-list object with its game name,
    secret key and version strings plus the callback and instance, and clear the
@@ -415,9 +433,13 @@ void AppendInt32BE(u8 **cursor, s32 value, s32 *length, ...) {
     *cursor += 4;
 }
 
-void AppendBytes(s32 *a,M2C_UNK *b,s32 c,s32 *d) {
-M2C_UNK MemCopy(s32,M2C_UNK *,s32);
-MemCopy(*a,b,c);*d+=c;*a+=c;
+/* Append `count` raw bytes from `bytes` to the packet buffer at `*cursor`, then
+ * advance the cursor and the packet length in `*length` by that many bytes. */
+void AppendBytes(s32 *cursor, M2C_UNK *bytes, s32 count, s32 *length) {
+    M2C_UNK MemCopy(s32, M2C_UNK *, s32);
+    MemCopy(*cursor, bytes, count);
+    *length += count;
+    *cursor += count;
 }
 
 /* Fill the 8-byte QR2 session key at +0x74 of the server list with printable

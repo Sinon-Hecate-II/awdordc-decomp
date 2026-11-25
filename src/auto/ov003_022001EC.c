@@ -33,8 +33,8 @@ typedef struct Ov003Object {
 } Ov003Object;
 
 extern s32 sShogunBgFileNames[4];
-extern s16 data_ov003_022103d4[4];
-extern s16 data_ov003_022103cc[4];
+extern s16 sWaypointSlotBaseX[4];
+extern s16 sWaypointSlotStrideX[4];
 
 /* Destructor: resets the object's vtables to the base ones, releases every owned
  * child object, buffer and sprite array, then frees the object itself. */
@@ -111,23 +111,25 @@ void func_ov003_022003e4(void) {
 
 s16 GetWaypointSlotX(M2C_UNK arg0) {
     s16 func_ov003_022004d0();
-    s16 func_ov003_022004f0(M2C_UNK);
+    s16 GetWaypointSlotOffsetX(M2C_UNK);
     s32 temp_r4;
 
     temp_r4 = func_ov003_022004d0();
-    return (s16) (temp_r4 + func_ov003_022004f0(arg0));
+    return (s16) (temp_r4 + GetWaypointSlotOffsetX(arg0));
 }
 
 s16 func_ov003_022004d0(void) {
     s32 func_020cfb94(void);
-    return data_ov003_022103d4[func_020cfb94() - 1];
+    return sWaypointSlotBaseX[func_020cfb94() - 1];
 }
 
-s16 func_ov003_022004f0(s32 arg0) {
+/* X offset of waypoint slot `index`: the slot's stride for the current map's
+ * player count, times the index. */
+s16 GetWaypointSlotOffsetX(s32 index) {
     s32 func_020cfb94(void);
-    s32 val = data_ov003_022103cc[func_020cfb94() - 1];
-    s32 r = arg0 * val;
-    return (s16)r;
+    s32 stride = sWaypointSlotStrideX[func_020cfb94() - 1];
+    s32 offset = index * stride;
+    return (s16)offset;
 }
 
 s32 GetShogunBgFileName(s32 arg0) {
@@ -418,9 +420,9 @@ u8 func_ov003_02200c7c(void) {
 
 u8 func_ov003_02200ca8(void) {
     s32 IsLinkSessionActive();
-    s32 func_02084890();
+    s32 IsLocalSessionGuest();
     s32 result;
-    if (IsLinkSessionActive() && func_02084890()) result = 1;
+    if (IsLinkSessionActive() && IsLocalSessionGuest()) result = 1;
     else result = 0;
     return result;
 }

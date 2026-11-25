@@ -16,7 +16,7 @@ s32 MoveDestinationScore(s32 x, s32 y, u8 *unit) {
     extern M2C_UNK gMovementCostTable;
     s32 IsAllyUnitAtCell(s16, s16);
     s32 IsTerrainOnUnitTeam(s32, s32);
-    s32 GetTerrainMoveCost(s32, s32, s32);
+    s32 GetTerrainDefenseFromStars(s32, s32, s32);
     s32 Divide(s32, s32);
     s32 IsCaptureTargetAt(void *, s32, s32);
     s32 func_ov000_021a93a8(void *, s32, s32);
@@ -40,7 +40,7 @@ s32 MoveDestinationScore(s32 x, s32 y, u8 *unit) {
     indirectThreat = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_THREAT_INDIRECT);
     if (gTerrainPropertyType[terrain] == 0 || IsTerrainOnUnitTeam(M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID), M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN)) == 0) {
         map = *gCurrentMap;
-        score += (Divide(GetTerrainMoveCost(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER), 1, terrain), 10) + 1) << 4;
+        score += (Divide(GetTerrainDefenseFromStars(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER), 1, terrain), 10) + 1) << 4;
     }
     score += (0x100 - indirectThreat) << 8;
     if (gTerrainPropertyType[terrain] == 0) {
@@ -449,6 +449,9 @@ void func_ov000_02187c3c(void) {
     PlanMoveDestination(bestX, bestY);
 }
 #pragma opt_strength_reduction reset
+/* Finish planning the AI's next move: pick the best cell for the unit under the
+ * cursor, choose its destination for the foot-unit priority, then run the
+ * production move chooser. */
 void FinalizeAiProductionMove(void) {
 SelectBestMoveCell();
 if(gAiPriorityScore==AiFootUnitBalanceScore) ChooseMoveDestination();

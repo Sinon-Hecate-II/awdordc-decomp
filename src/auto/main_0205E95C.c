@@ -10,7 +10,7 @@ extern u8 gLocalIps[5][4];
 extern u8 gBroadcastAddressText[16];
 extern u8 sQr2ConnectTargetMagic[8];
 
-void func_0205e95c(void *arg0) {
+void Qr2_CheckTimeouts(void *arg0) {
     /* Check connection timeouts and retry/reset state as needed. */
     M2C_UNK Qr2_SendKeepAlive(void *);
     extern M2C_UNK data_020ffa08;
@@ -104,7 +104,16 @@ void Qr2AppendKeyId(u8 *p, s32 a) {
 }
 #pragma opt_cond_exec reset
 #pragma optimization_level reset
-void Qr2AppendInt(void *a,M2C_UNK b){void Qr2AppendString(void *,M2C_UNK *);void StringFormat(void *,void *,M2C_UNK,...);extern M2C_UNK data_020ffa40;u8 buf[20];StringFormat(buf,&data_020ffa40,b);Qr2AppendString(a,(M2C_UNK *)buf);}
+/* Format `value` as decimal text and append it to the QR2 query string `query`. */
+void Qr2AppendInt(void *query, M2C_UNK value) {
+    void Qr2AppendString(void *, M2C_UNK *);
+    void StringFormat(void *, void *, M2C_UNK, ...);
+    extern M2C_UNK gQr2IntFormat;
+    u8 buf[20];
+
+    StringFormat(buf, &gQr2IntFormat, value);
+    Qr2AppendString(query, (M2C_UNK *)buf);
+}
 
 /* Appends the NUL-terminated `text` to a QR2 query string (its used length kept
    at QR2_QUERY_COUNT): the string is truncated so the query never exceeds
@@ -255,7 +264,13 @@ void Qr2CryptStateString(void *keySeed, s32 keyLength, void *dataBuffer, s32 dat
     } while (dataIndex < dataLen);
 }
 
-void Qr2InitQuery(u8 *a,s8 b,ByteQuad *c){a[0]=b;*(ByteQuad *)(a+1)=*c;M2C_FIELD(a,s32 *,0x800)=5;}
+/* Start a QR2 query in `query`: its packet type, then the 4-byte request id it
+ * answers, with the query length left at those five bytes. */
+void Qr2InitQuery(u8 *query, s8 type, ByteQuad *requestId) {
+    query[0] = type;
+    *(ByteQuad *)(query + 1) = *requestId;
+    M2C_FIELD(query, s32 *, QR2_QUERY_COUNT) = QR2_QUERY_INIT_SIZE;
+}
 
 /* Appends another player's state string to a state reply: the string must be 1 to
    65 bytes with a terminating NUL, so it is copied out and ciphered with the QR2

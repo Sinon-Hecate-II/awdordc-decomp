@@ -6,10 +6,6 @@
 typedef struct { u32 unused0; u32 flagsLow:2, mode:3, flagsMid:2, access:3, flagsHigh:22; u32 state:3, stateRest:29; } StreamFlags649;
 /* Other fields of a stream object, used to locate its current position. */
 #define STREAM_ERROR      0x0D /* u8 nonzero once a stream error was set */
-#define STREAM_POSITION   0x18 /* s32 position of a stream that does not buffer */
-#define STREAM_BUFFER     0x1C /* u8 *start of the stream's buffer */
-#define STREAM_CURSOR     0x24 /* u8 *current read/write cursor in it */
-#define STREAM_BUFFER_POS 0x34 /* s32 file offset the buffer starts at */
 extern u8 gStdinStream[], gStdoutStream[], gStderrStream[], gStreamMutexes[];
 extern s32 gStreamLockOwner[], gStreamLockDepth[];
 extern M2C_UNK gSocketManager;

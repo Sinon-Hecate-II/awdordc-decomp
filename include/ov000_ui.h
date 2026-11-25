@@ -39,6 +39,7 @@ enum {
     ARMY_INFO_STATE_LABEL_WIDTH = 128
 };
 
+#define ARMY_INFO_FACE_TABLE 0x04 /* u8 per listed player: the player's CO face id */
 #define ARMY_INFO_COUNT     0x0C /* u8 players listed in the window */
 #define ARMY_INFO_SELECTED  0x0D /* u8 index of the selected player */
 #define ARMY_INFO_FACE_SUB  0x0E /* u8 selected player's CO face id on the sub screen, 0 = none */

@@ -121,12 +121,12 @@ void LoadWallpaperGraphics(void *wallpaperSprite, s32 layerIndex, s32 paletteInd
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
     void StringFormat(void *, void *, ...);
     void SetFileDirectory(void *);
-    void SetLayerSize(s32, s32);
+    void Set3DSpriteLayerSize(s32, s32);
     void OpenNarcArchive(void *);
     void LoadNarcFileDecompressed(void *, s32);
     void LoadNarcFileRaw(void *, void *);
     s32 Get3DSpriteLayerSize(u8, s32);
-    void AddToU16Array(void *, u16, u16);
+    void OffsetTileIndices(void *, u16, u16);
     void CloseNarcArchive(void);
     extern void *gCur3DSpriteEngine;
     extern char sWallpaperDirectory[], sWallpaperNarcFormat[], sWallpaperCgFormat[], sWallpaperScFormat[], sWallpaperClFormat[];
@@ -140,7 +140,7 @@ void LoadWallpaperGraphics(void *wallpaperSprite, s32 layerIndex, s32 paletteInd
     } else {
         StringFormat(fileNameBuffer, *(void **)(*(void **)((char *)wallpaperSprite + 0x38)));
     }
-    SetLayerSize(layerIndex, *(u8 *)((char *)*(void **)((char *)wallpaperSprite + 0x38) + 4));
+    Set3DSpriteLayerSize(layerIndex, *(u8 *)((char *)*(void **)((char *)wallpaperSprite + 0x38) + 4));
     SetFileDirectory(sWallpaperDirectory);
     StringFormat(filePathBuffer, sWallpaperNarcFormat, fileNameBuffer);
     OpenNarcArchive(filePathBuffer);
@@ -158,14 +158,14 @@ void LoadWallpaperGraphics(void *wallpaperSprite, s32 layerIndex, s32 paletteInd
         u16 layerTileCount16 = layerTileCount;
         u16 paletteOffset16 = (u16)(paletteOffset & 0xffff);
         void *layerTileBuffer = *(void **)((char *)gCur3DSpriteEngine + layerIndex * 4 + 0x20);
-        AddToU16Array(layerTileBuffer, layerTileCount16, paletteOffset16);
+        OffsetTileIndices(layerTileBuffer, layerTileCount16, paletteOffset16);
     }
     CloseNarcArchive();
     *(u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x10;
     *(u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 1 << layerIndex;
 }
 #pragma optimization_level 3
-void func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
+void CreateWallpaperSprites(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
     extern M2C_UNK gWallpaperSpriteClass, gWallpaperSpriteVtbl;
     void *CreateSpriteFromClass(M2C_UNK *, s32);
@@ -307,9 +307,11 @@ s32 GetMapModeWallpaperSet(void) {
     }
 }
 
-void func_020af144(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+/* Create the main- and sub-screen wallpaper sprites for the current map mode:
+ * both use the wallpaper set the map mode selector picks. */
+void CreateMapModeWallpaperSprites(M2C_UNK mainLayer, M2C_UNK mainPalette, M2C_UNK subLayer, M2C_UNK subPalette) {
     s32 wallpaperSet = GetMapModeWallpaperSet();
-    func_020aed50(arg0, arg1, arg2, arg3, wallpaperSet);
+    CreateWallpaperSprites(mainLayer, mainPalette, subLayer, subPalette, wallpaperSet);
 }
 
 void func_020af178(M2C_UNK arg0, M2C_UNK arg1) {
@@ -328,7 +330,7 @@ void func_020af1c0(M2C_UNK arg0, M2C_UNK arg1) {
     CreateWallpaperSprite(arg0, arg1, GetMapModeWallpaperSet());
 }
 
-void func_020af1e4(void) {
+void DeleteWallpaperSpritesOnAllEngines(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gWallpaperSpriteClass;
     DeleteSpriteObjectsOfClass(&gWallpaperSpriteClass);

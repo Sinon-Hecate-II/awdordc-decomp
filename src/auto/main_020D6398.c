@@ -11,7 +11,7 @@ extern u8 gMapConfig[16];
  * attack and join rules against the unit under the cursor. */
 s32 CanMoveCursorTo(s32 x,s32 y){
 extern void **gCurrentMap;
-s32 func_020a85b8(s32); u8 func_020ba790(s32,s32); s32 CanUnitsJoin(void*,void*); u8 IsSameTeam(s32,s32);
+s32 func_020a85b8(s32); u8 CanLoadUnitAt(s32,s32); s32 CanUnitsJoin(void*,void*); u8 IsSameTeam(s32,s32);
 u8 *map=*gCurrentMap;
 s32 id=map[x+*(u16*)(map+y*2+MAP_ROW_OFFSETS)];
 s32 grid,off,cursorTeam,tileTeam,n;
@@ -21,7 +21,7 @@ grid=(*(s8**)(map+y*4+MAP_GRID))[x];
 if(grid<0 || grid>110)return 0;
 if(id==0)return 1;
 if(id==map[MAP_CURSOR_CARRIER])return 0;
-if(func_020ba790(x,y)==1)return 1;
+if(CanLoadUnitAt(x,y)==1)return 1;
 map=*gCurrentMap; off=id*MAP_UNIT_STRIDE;
 if(CanUnitsJoin(*(u8**)(map+MAP_CURSOR_UNIT),map+MAP_UNIT_RECORDS+off)==1)return 1;
 map=*gCurrentMap;
@@ -68,11 +68,13 @@ prevX=x;prevY=y;path++;
 return 0;
 }
 
-s32 func_020d66fc(s8 *arg0) {
-    s32 value;
-    while ((value = *arg0) != 4 && value != -1) {
-        if (value == 10) return 1;
-        arg0++;
+/* Whether a movement path turns into an attack: 1 when a MOVE_DIR_ATTACK step
+ * appears before the path's end (MOVE_DIR_STOP or MOVE_DIR_NONE). */
+s32 MovePathIsAttack(s8 *path) {
+    s32 dir;
+    while ((dir = *path) != MOVE_DIR_STOP && dir != MOVE_DIR_NONE) {
+        if (dir == MOVE_DIR_ATTACK) return 1;
+        path++;
     }
     return 0;
 }

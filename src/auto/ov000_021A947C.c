@@ -173,20 +173,23 @@ s32 GetUnitAttackClass(s32 arg0) {
     return 2;
 }
 
-s32 GetKindAttackClass(s32 arg0) {
-    s32 temp_r0;
+/* Attack class (UNIT_ATTACK_*) of a unit kind: UNIT_KIND_UNARMED always counts as
+ * unarmed; otherwise the kind's maximum attack range decides - 1 is direct, more
+ * is indirect and 0 cannot attack. */
+s32 GetKindAttackClass(s32 unitKind) {
+    s32 maxRange;
 
-    temp_r0 = GetUnitKindMaxAttackRange();
-    if (arg0 == 0x19) {
-        return 2;
+    maxRange = GetUnitKindMaxAttackRange(unitKind);
+    if (unitKind == UNIT_KIND_UNARMED) {
+        return UNIT_ATTACK_NONE;
     }
-    if (temp_r0 > 1) {
-        return 1;
+    if (maxRange > 1) {
+        return UNIT_ATTACK_INDIRECT;
     }
-    if (temp_r0 == 1) {
-        return 0;
+    if (maxRange == 1) {
+        return UNIT_ATTACK_DIRECT;
     }
-    return 2;
+    return UNIT_ATTACK_NONE;
 }
 
 s32 CanKindLoad(s32 a,s32 b) {
@@ -365,13 +368,13 @@ u32 CellMoveScore(s32 x, s32 y, s32 directWeight, s32 indirectWeight) {
  * Returns 0 when there is none. */
 s32 FindBestSelectableUnit(void) {
  extern void **gCurrentMap; extern u16 gMapConfig; extern u16 gPlayerUnitIdBase[]; extern s32 (**gAiSettings)(s32,s32);
- s32 GetPlayerCoZoneBonusIndex(u16); s32 func_020a3150(u16); void *GetPlayerSelectedUnit(u16); s32 IsUnitSelected(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 GetUnitActionCost(s32,s32); s32 GetUnitKindBuildCost(s32); s32 AiSettings_DefaultUnitFilter(s32,s32);
+ s32 GetPlayerCoZoneBonusIndex(u16); s32 IsPlayerSelectionEnabled(u16); void *GetPlayerSelectedUnit(u16); s32 IsUnitSelected(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 GetUnitActionCost(s32,s32); s32 GetUnitKindBuildCost(s32); s32 AiSettings_DefaultUnitFilter(s32,s32);
  s32 commander; u8 *best; s32 id; u8 *unit; s32 offset;
  GetPlayerCoZoneBonusIndex(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
  best=0;
  if(((u32)(gMapConfig<<18)>>31)==0)return 0;
  if(((u32)(M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)*140,s32 *,0x6810)<<24)>>24)==0)return 0;
- if(!func_020a3150(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))return 0;
+ if(!IsPlayerSelectionEnabled(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))return 0;
  if(GetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))return 0;
  commander=GetPlayerCoZoneBonusIndex(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
  id=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+1;

@@ -174,14 +174,14 @@ void func_ov000_02171028(void) {
 void func_ov000_02171040(void *p){
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;
 extern M2C_UNK data_ov000_021b8c58,data_ov000_021b8c60,data_ov000_021b8c70,data_ov000_021b8c7c,data_ov000_021b8c88;
-s32 func_020a8afc(s32);void DrawLocalizedText(s32,s32,s32,s32,u16,u16);
+s32 MapData_GetWinRuleTextId(s32);void DrawLocalizedText(s32,s32,s32,s32,u16,u16);
 void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void LoadNarcFileToSpriteBuffer(void *,s32,s32);
 void CloseNarcArchive(void);void LoadScenePanelPalette(s32);
-s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void *,u16,s32);void CreateMenuUnitSprite(void *);
+s32 Get3DSpriteLayerSize(u8,s32);void OffsetTileIndices(void *,u16,s32);void CreateMenuUnitSprite(void *);
 void *old=gCur3DSpriteEngine;s32 n;u16 v;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-n=func_020a8afc(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
+n=MapData_GetWinRuleTextId(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
 LoadScenePanelPalette(0);DrawLocalizedText(5,8,1,n,0,64);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 SetFileDirectory(&data_ov000_021b8c58);
@@ -191,7 +191,7 @@ LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8c7c),M2C_FIELD(gC
 LoadNarcFileToSpriteBuffer(GetLocalizedFileName(&data_ov000_021b8c88),0x60,0x20);
 CloseNarcArchive();
 v=Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),2);
-AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),v,0x3000);
+OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),v,0x3000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 CreateMenuUnitSprite(p);gCur3DSpriteEngine=old;
 }
@@ -265,7 +265,7 @@ extern M2C_UNK sUsernameDir,sUsernameNarcName,sUsernameCgName,sUsernameClName;
 void AcquireUsernameFont(void);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void LoadNarcFileToSpriteBuffer(void *,s32,s32);
 s32 func_ov000_0217122c(s32);void CloseNarcArchive(void);void LoadScenePanelPalette(s32);
-s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void *,u16,s32);void CreateMenuUnitSprite(void *);
+s32 Get3DSpriteLayerSize(u8,s32);void OffsetTileIndices(void *,u16,s32);void CreateMenuUnitSprite(void *);
 void *oldEngine=gCur3DSpriteEngine;s32 i;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 AcquireUsernameFont();SetFileDirectory(&sUsernameDir);
@@ -274,7 +274,7 @@ LoadNarcFileDecompressed(GetLocalizedFileName(&sUsernameCgName),M2C_FIELD(gCur3D
 LoadNarcFileToSpriteBuffer(GetLocalizedFileName(&sUsernameClName),0x60,0x20);
 for(i=1;i<5;i++){if(func_ov000_0217122c(i))screen[0x34+i]=1;else screen[0x34+i]=0;}
 CloseNarcArchive();LoadScenePanelPalette(0);
-AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),(u16)Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),2),0x3000);
+OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),(u16)Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),2),0x3000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3a)=0;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x42)=3;

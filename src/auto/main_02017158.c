@@ -330,7 +330,7 @@ s32 MultiBoot_Init(s32 reason) {
     s32 OS_RestoreInterrupts(s32);
     void FillU16(s32, void *, s32);
     void func_02013e70(s32);
-    void func_02018910(s32);
+    void Mb_InitRecordReassembly(s32);
     void func_02018940(void *);
     void func_02016200(void);
     s32 func_02017cd8(void);
@@ -360,7 +360,7 @@ s32 MultiBoot_Init(s32 reason) {
     M2C_FIELD(gMbState.work + 0x1000, s32 *, 0x318) =
         ((MbContext *)gMbState.ctx)->bufSize - 6;
 
-    func_02018910(((MbContext *)gMbState.ctx)->field502);
+    Mb_InitRecordReassembly(((MbContext *)gMbState.ctx)->field502);
 
     func_02018940(gMbState.work + 0x1538);
 

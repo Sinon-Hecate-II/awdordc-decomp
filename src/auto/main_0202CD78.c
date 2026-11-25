@@ -166,20 +166,28 @@ void func_0202d01c(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
     func_02008e90(arg0, arg0 + arg1);
 }
 
-void FreeBankArchiveFile(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    M2C_UNK func_02008eb0(s32, s32);
+/* Free a loaded bank archive block: untrack it from `owner`'s loaded-file table
+ * (file `fileId`), tell the ARM7 to release its `size` bytes and drop the sound
+ * slots that still point into the block. */
+void FreeBankArchiveFile(s32 block, s32 size, s32 owner, s32 fileId) {
+    M2C_UNK Sound_FreeBankArchiveMemory(s32, s32);
     M2C_UNK Link_ClearSlotOwners(s32);
-    Sound_UntrackArchiveFile(arg0, arg2, arg3);
-    func_02008eb0(arg0, arg0 + arg1);
-    Link_ClearSlotOwners(arg0);
+
+    Sound_UntrackArchiveFile(block, owner, fileId);
+    Sound_FreeBankArchiveMemory(block, block + size);
+    Link_ClearSlotOwners(block);
 }
 
-void FreeWaveArchiveFile(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
+/* Release the loaded wave archive block at `block` (`size` bytes, `fileId` in
+ * `owner` archive): clear the block's cache slot in the owner's loaded-file
+ * table, tell the ARM7 the wave-archive data is freed and clear the block's
+ * link-slot chain. */
+void FreeWaveArchiveFile(s32 block, s32 size, M2C_UNK owner, M2C_UNK fileId) {
     M2C_UNK Sound_FreeWaveArchiveMemory(s32, s32);
     M2C_UNK Link_ClearSlotChain(s32);
-    Sound_UntrackArchiveFile(arg0, arg2, arg3);
-    Sound_FreeWaveArchiveMemory(arg0, arg0 + arg1);
-    Link_ClearSlotChain(arg0);
+    Sound_UntrackArchiveFile(block, owner, fileId);
+    Sound_FreeWaveArchiveMemory(block, block + size);
+    Link_ClearSlotChain(block);
 }
 
 void func_0202d0a4(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
@@ -608,7 +616,7 @@ void Sound_ClearPlayerHandle(void **arg0) {
 }
 
 #pragma opt_instruction_scheduling off
-void func_0202d9e4(void) {
+void Sound_UpdatePlayerChannels(void) {
 void Sound_StartPlayerChannels(void *); void func_0202b77c(void *,s32); void func_0202de74(void *);
 s32 func_0202ef00(void *); void func_0202ef34(void *); s32 func_0202ef4c(void *);
 extern u8 data_0213c92c[]; extern s16 data_020e9ca0[];

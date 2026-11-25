@@ -172,11 +172,14 @@ void ArmyInfo_ApplySelection(void) {
     ArmyInfo_RedrawContents();
 }
 
-void ArmyInfo_SelectPlayer(u8 arg0) {
+/* Select player `playerIndex` in the army-info window: store the selection and
+ * copy that player's CO face id into the sub-screen face field and the main-screen
+ * face field. */
+void ArmyInfo_SelectPlayer(u8 playerIndex) {
     extern void *gArmyInfoState;
-    M2C_FIELD(gArmyInfoState, u8 *, 0xD) = arg0;
-    M2C_FIELD(gArmyInfoState, u8 *, 0xE) = (u8) M2C_FIELD((gArmyInfoState + M2C_FIELD(gArmyInfoState, u8 *, 0xD)), u8 *, 4);
-    M2C_FIELD(gArmyInfoState, u8 *, 0xF) = (u8) M2C_FIELD(gArmyInfoState, u8 *, 0xE);
+    M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_SELECTED) = playerIndex;
+    M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_FACE_SUB) = (u8) M2C_FIELD((gArmyInfoState + M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_SELECTED)), u8 *, ARMY_INFO_FACE_TABLE);
+    M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_FACE_MAIN) = (u8) M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_FACE_SUB);
 }
 
 /* Switch the army-info window to the player index pointed at (a menu callback

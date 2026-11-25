@@ -51,9 +51,9 @@ void LinkMenuUpdate(void *menu) {
  void DisableMapConfirm(void);void Sprite_ResumeAnimation(void *);void Ov010Online_LeaveMatch(void);void PlaySoundEffect(s32);
  u32 GetActivePlayerMask(void);u32 CountBits(void);u32 GetConnectedPlayerCount(void);
  s32 IsOnlineSessionFlagSet(s32);s32 IsOnlineSessionHost(void);
- void SetTextById(void *,s32);u32 GetReadyPlayerMask(void);
- void Ov010Online_RequestMatchStart(void);void PublishLocalPlayerStatus(void);void EnableMapConfirm(void);void ResetPlayerMask(void);
- s32 func_020890b8(void *);s32 Is3DSpriteVisible(void *);void *GetOnlinePlayerRecord(s32);
+ void SetTextById(void *,s32);u32 GetSessionPlayerMask(void);
+ void Ov010Online_RequestMatchStart(void);void PublishLocalPlayerStatus(void);void EnableMapConfirm(void);void ClearOverlayEventFlags(void);
+ s32 Is3DSpriteSliding(void *);s32 Is3DSpriteVisible(void *);void *GetOnlinePlayerRecord(s32);
  extern u16 *gKeyState;
  extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
  s32 FindTextLayer(void);void StartWindowClose(void);void *CreateTextLayer(void *);void RenderTextLayerMessage(void *,s32,s32,u32);
@@ -108,17 +108,17 @@ void LinkMenuUpdate(void *menu) {
  if(!SpriteChangedDF(sprite))return;
  if(!SpritePressedDF(sprite)&&!(keys&1)&&M2C_FIELD(menu,s16 *,0x4c)!=0)return;
  }
- readyMask=GetReadyPlayerMask();if(readyMask!=GetActivePlayerMask())return;
+ readyMask=GetSessionPlayerMask();if(readyMask!=GetActivePlayerMask())return;
  sprite=M2C_FIELD(menu,void **,0x54);
  if(M2C_FIELD(sprite,s8 *,0x5a)>=0)SpriteStateDF(sprite,((u32)(M2C_FIELD(sprite,u8 *,0x59)<<28)>>28)+1,12);
- Ov010Online_RequestMatchStart();PublishLocalPlayerStatus();EnableMapConfirm();ResetPlayerMask();Sprite_ResumeAnimation(menu);PlaySoundEffect(0x1000e);return;
+ Ov010Online_RequestMatchStart();PublishLocalPlayerStatus();EnableMapConfirm();ClearOverlayEventFlags();Sprite_ResumeAnimation(menu);PlaySoundEffect(0x1000e);return;
  } else {
  sprite=M2C_FIELD(menu,void **,0x60);
- if(!func_020890b8(sprite)&&!Is3DSpriteVisible(M2C_FIELD(menu,void **,0x60))) {Show3DSpriteSlide(M2C_FIELD(menu,void **,0x60));
+ if(!Is3DSpriteSliding(sprite)&&!Is3DSpriteVisible(M2C_FIELD(menu,void **,0x60))) {Show3DSpriteSlide(M2C_FIELD(menu,void **,0x60));
  SetTextById(M2C_FIELD(menu,void **,0x64),0x44000012);}
  {void *entry=GetOnlinePlayerRecord(0);if(!entry)return;if(M2C_FIELD(entry,u8 *,0x1a)&2)return;}
- readyMask=GetReadyPlayerMask();if(readyMask!=GetActivePlayerMask())return;
- Ov010Online_RequestMatchStart();PublishLocalPlayerStatus();EnableMapConfirm();ResetPlayerMask();Sprite_ResumeAnimation(menu);PlaySoundEffect(0x1000e);return;
+ readyMask=GetSessionPlayerMask();if(readyMask!=GetActivePlayerMask())return;
+ Ov010Online_RequestMatchStart();PublishLocalPlayerStatus();EnableMapConfirm();ClearOverlayEventFlags();Sprite_ResumeAnimation(menu);PlaySoundEffect(0x1000e);return;
  }
  } else {
  M2C_FIELD(menu,s16 *,0x4c)=0x708;
@@ -132,7 +132,7 @@ void LinkMenuUpdate(void *menu) {
  }
  Hide3DSpriteSlide(M2C_FIELD(menu,void **,0x54));SetTextById(M2C_FIELD(menu,void **,0x64),0x44000011);
  } else {
- if(func_020890b8(M2C_FIELD(menu,void **,0x60)))return;
+ if(Is3DSpriteSliding(M2C_FIELD(menu,void **,0x60)))return;
  if(!Is3DSpriteVisible(M2C_FIELD(menu,void **,0x60)))return;
  Hide3DSpriteSlide(M2C_FIELD(menu,void **,0x60));SetTextById(M2C_FIELD(menu,void **,0x64),0x44000011);
  }
@@ -145,9 +145,9 @@ void func_020df718(void *arg0) {
  void DisableMapConfirm(void);void Sprite_ResumeAnimation(void *);void Ov010Online_LeaveMatch(void);void PlaySoundEffect(s32);
  u32 GetActivePlayerMask(void);u32 CountBits(void);u32 GetConnectedPlayerCount(void);
  s32 IsOnlineSessionFlagSet(s32);s32 IsOnlineSessionHost(void);
- void SetTextById(void *,s32);u32 GetReadyPlayerMask(void);
- void Ov010Online_RequestMatchStart(void);void PublishLocalPlayerStatus(void);void EnableMapConfirm(void);void ResetPlayerMask(void);
- s32 func_020890b8(void *);s32 Is3DSpriteVisible(void *);void *GetOnlinePlayerRecord(s32);
+ void SetTextById(void *,s32);u32 GetSessionPlayerMask(void);
+ void Ov010Online_RequestMatchStart(void);void PublishLocalPlayerStatus(void);void EnableMapConfirm(void);void ClearOverlayEventFlags(void);
+ s32 Is3DSpriteSliding(void *);s32 Is3DSpriteVisible(void *);void *GetOnlinePlayerRecord(s32);
  extern u16 *gKeyState;
  void *q,*p;u16 keys;u32 state,now;s32 old;
  q=M2C_FIELD(arg0,void **,0x50);if(q)MenuSpriteUpdate(q);
@@ -185,17 +185,17 @@ void func_020df718(void *arg0) {
  if(!(test&255))return;}
  if(!SpritePressedDF(button)&&!(keys&1))return;
  }
- state=GetReadyPlayerMask();if(state!=GetActivePlayerMask())return;
+ state=GetSessionPlayerMask();if(state!=GetActivePlayerMask())return;
  q=M2C_FIELD(arg0,void **,0x54);
  if(M2C_FIELD(q,s8 *,0x5a)>=0)SpriteStateDF(q,((u32)(M2C_FIELD(q,u8 *,0x59)<<28)>>28)+1,12);
- Ov010Online_RequestMatchStart();PublishLocalPlayerStatus();EnableMapConfirm();ResetPlayerMask();Sprite_ResumeAnimation(arg0);PlaySoundEffect(0x1000e);return;
+ Ov010Online_RequestMatchStart();PublishLocalPlayerStatus();EnableMapConfirm();ClearOverlayEventFlags();Sprite_ResumeAnimation(arg0);PlaySoundEffect(0x1000e);return;
  } else {
  q=M2C_FIELD(arg0,void **,0x60);
- if(!func_020890b8(q)&&!Is3DSpriteVisible(M2C_FIELD(arg0,void **,0x60)))Show3DSpriteSlide(M2C_FIELD(arg0,void **,0x60));
+ if(!Is3DSpriteSliding(q)&&!Is3DSpriteVisible(M2C_FIELD(arg0,void **,0x60)))Show3DSpriteSlide(M2C_FIELD(arg0,void **,0x60));
  SetTextById(M2C_FIELD(arg0,void **,0x64),0x44000012);
  {void *entry=GetOnlinePlayerRecord(0);if(!entry)return;if(M2C_FIELD(entry,u8 *,0x1a)&2)return;}
- state=GetReadyPlayerMask();if(state!=GetActivePlayerMask())return;
- Ov010Online_RequestMatchStart();PublishLocalPlayerStatus();EnableMapConfirm();ResetPlayerMask();Sprite_ResumeAnimation(arg0);PlaySoundEffect(0x1000e);return;
+ state=GetSessionPlayerMask();if(state!=GetActivePlayerMask())return;
+ Ov010Online_RequestMatchStart();PublishLocalPlayerStatus();EnableMapConfirm();ClearOverlayEventFlags();Sprite_ResumeAnimation(arg0);PlaySoundEffect(0x1000e);return;
  }
  } else {
  if(IsOnlineSessionHost()) {
@@ -208,7 +208,7 @@ void func_020df718(void *arg0) {
  }
  Hide3DSpriteSlide(M2C_FIELD(arg0,void **,0x54));SetTextById(M2C_FIELD(arg0,void **,0x64),0x44000011);
  } else {
- if(func_020890b8(M2C_FIELD(arg0,void **,0x60)))return;
+ if(Is3DSpriteSliding(M2C_FIELD(arg0,void **,0x60)))return;
  if(!Is3DSpriteVisible(M2C_FIELD(arg0,void **,0x60)))return;
  Hide3DSpriteSlide(M2C_FIELD(arg0,void **,0x60));SetTextById(M2C_FIELD(arg0,void **,0x64),0x44000011);
  }
@@ -225,9 +225,9 @@ void LinkMenuPageFlipUpdate(void *menu) {
  void DisableMapConfirm(void);void Sprite_ResumeAnimation(void *);void Ov010Online_LeaveMatch(void);void PlaySoundEffect(s32);
  u32 GetActivePlayerMask(void);u32 CountBits(void);u32 GetConnectedPlayerCount(void);
  s32 IsOnlineSessionFlagSet(s32);s32 IsOnlineSessionHost(void);
- void SetTextById(void *,s32);u32 GetReadyPlayerMask(void);
- void Ov010Online_RequestMatchStart(void);void PublishLocalPlayerStatus(void);void EnableMapConfirm(void);void ResetPlayerMask(void);
- s32 func_020890b8(void *);s32 Is3DSpriteVisible(void *);void *GetOnlinePlayerRecord(s32);
+ void SetTextById(void *,s32);u32 GetSessionPlayerMask(void);
+ void Ov010Online_RequestMatchStart(void);void PublishLocalPlayerStatus(void);void EnableMapConfirm(void);void ClearOverlayEventFlags(void);
+ s32 Is3DSpriteSliding(void *);s32 Is3DSpriteVisible(void *);void *GetOnlinePlayerRecord(s32);
  extern u16 *gKeyState;
  extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
  s32 FindTextLayer(void);void StartWindowClose(void);void *CreateTextLayer(void *);void RenderTextLayerMessage(void *,s32,s32,u32);
@@ -315,23 +315,23 @@ void LinkMenuPageFlipUpdate(void *menu) {
  sprite=M2C_FIELD(menu,void **,0x54);
  if(!SpriteChangedDF(sprite))return;
  if(!SpritePressedDF(sprite)&&!(keys&1))return;
- readyMask=GetReadyPlayerMask();if(readyMask!=GetActivePlayerMask())return;
+ readyMask=GetSessionPlayerMask();if(readyMask!=GetActivePlayerMask())return;
  sprite=M2C_FIELD(menu,void **,0x54);
  if(M2C_FIELD(sprite,s8 *,0x5a)>=0)SpriteStateDF(sprite,((u32)(M2C_FIELD(sprite,u8 *,0x59)<<28)>>28)+1,12);
- Ov010Online_RequestMatchStart();PublishLocalPlayerStatus();EnableMapConfirm();ResetPlayerMask();Sprite_ResumeAnimation(menu);PlaySoundEffect(0x1000e);return;
+ Ov010Online_RequestMatchStart();PublishLocalPlayerStatus();EnableMapConfirm();ClearOverlayEventFlags();Sprite_ResumeAnimation(menu);PlaySoundEffect(0x1000e);return;
  } else {
  if(GetConnectedPlayerCount()>=2) {
- if(!func_020890b8(M2C_FIELD(menu,void **,0x60))&&!Is3DSpriteVisible(M2C_FIELD(menu,void **,0x60))) {
+ if(!Is3DSpriteSliding(M2C_FIELD(menu,void **,0x60))&&!Is3DSpriteVisible(M2C_FIELD(menu,void **,0x60))) {
  Show3DSpriteSlide(M2C_FIELD(menu,void **,0x60));SetTextById(M2C_FIELD(menu,void **,0x64),0x44000012);
  }
  } else {
- if(!func_020890b8(M2C_FIELD(menu,void **,0x60))&&Is3DSpriteVisible(M2C_FIELD(menu,void **,0x60))) {
+ if(!Is3DSpriteSliding(M2C_FIELD(menu,void **,0x60))&&Is3DSpriteVisible(M2C_FIELD(menu,void **,0x60))) {
  Hide3DSpriteSlide(M2C_FIELD(menu,void **,0x60));SetTextById(M2C_FIELD(menu,void **,0x64),0x44000011);
  }
  }
  {void *entry=GetOnlinePlayerRecord(0);if(!entry)return;if(M2C_FIELD(entry,u8 *,0x1a)&2)return;}
- readyMask=GetReadyPlayerMask();if(readyMask!=GetActivePlayerMask())return;
- Ov010Online_RequestMatchStart();PublishLocalPlayerStatus();EnableMapConfirm();ResetPlayerMask();Sprite_ResumeAnimation(menu);PlaySoundEffect(0x1000e);return;
+ readyMask=GetSessionPlayerMask();if(readyMask!=GetActivePlayerMask())return;
+ Ov010Online_RequestMatchStart();PublishLocalPlayerStatus();EnableMapConfirm();ClearOverlayEventFlags();Sprite_ResumeAnimation(menu);PlaySoundEffect(0x1000e);return;
  }
 }
 #pragma opt_common_subs reset

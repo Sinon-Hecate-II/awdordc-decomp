@@ -15,7 +15,7 @@ s32 Sound_FlushCommands(s32);
 void Sound_InitCommandBuffer(void *);
 typedef struct Link09a0c { void *owner; struct Link09a0c *next; } Link09a0c;
 
-void func_0200973c(void);
+void ClearSoundChannelCallbacks(void);
 typedef struct QueueNode09298 { struct QueueNode09298 *next; } QueueNode09298;
 typedef struct { QueueNode09298 *head; s32 count, unk8, unkc; QueueNode09298 *tail; s32 index, unk18, pending, unk20; } State09100;
 typedef struct Queue09298 { s32 unk0, unk4; QueueNode09298 *head, *tail; } Queue09298;
@@ -52,15 +52,25 @@ s32 SendArm7Message(int commandId, int arg0, int arg1, int arg2, int arg3) {
     return EnqueueSoundCommand(command);
 }
 
-void func_02008fcc(void){extern s32 data_0212e000;extern M2C_UNK data_0212e004;if(data_0212e000)return;data_0212e000=1;InitMutex(&data_0212e004);InitSoundCommandQueue();func_0200973c();}
+/* Bring up the sound command layer once: initialise its mutex, build the ARM7
+ * command queue and clear the per-channel callback table. */
+void InitSoundCommandSystem(void) {
+    extern s32 gSoundCommandSystemReady;
+    extern M2C_UNK gSoundMutex;
+    if (gSoundCommandSystemReady) return;
+    gSoundCommandSystemReady = 1;
+    InitMutex(&gSoundMutex);
+    InitSoundCommandQueue();
+    ClearSoundChannelCallbacks();
+}
 
 void Sound_LockMutex(void) {
     M2C_UNK LockMutex(M2C_UNK *);
-    extern M2C_UNK data_0212e004;
-    LockMutex(&data_0212e004);
+    extern M2C_UNK gSoundMutex;
+    LockMutex(&gSoundMutex);
 }
 
-void Sound_UnlockMutex(void){M2C_UNK UnlockMutex(M2C_UNK *);extern M2C_UNK data_0212e004;UnlockMutex(&data_0212e004);}
+void Sound_UnlockMutex(void){M2C_UNK UnlockMutex(M2C_UNK *);extern M2C_UNK gSoundMutex;UnlockMutex(&gSoundMutex);}
 
 #pragma opt_strength_reduction off
 #pragma peephole off
@@ -376,7 +386,21 @@ s32 Sound_IsCommandChannelReady(void) {
     return result;
 }
 
-void func_0200973c(void){extern M2C_UNK gSoundChannelCallbacks;int i=0;u8 *p=(u8 *)&gSoundChannelCallbacks;int zero=i;do{*(s32 *)p=zero;*(s32 *)(p+4)=zero;i++;p[8]=zero;p+=12;}while(i<8);}
+/* Clear all eight per-channel sound timer callbacks: zero every entry's callback,
+ * its argument and its generation counter. */
+void ClearSoundChannelCallbacks(void){
+    extern M2C_UNK gSoundChannelCallbacks;
+    int channel = 0;
+    u8 *entry = (u8 *)&gSoundChannelCallbacks;
+    int zero = channel;
+    do {
+        *(s32 *)(entry + SOUND_CHANNEL_CALLBACK_CALLBACK) = zero;
+        *(s32 *)(entry + SOUND_CHANNEL_CALLBACK_ARG) = zero;
+        channel++;
+        entry[SOUND_CHANNEL_CALLBACK_GEN] = zero;
+        entry += SOUND_CHANNEL_CALLBACK_SIZE;
+    } while (channel < SOUND_CHANNEL_CALLBACK_COUNT);
+}
 
 void func_0200976c(s32 arg0) {
     extern M2C_UNK gSoundChannelCallbacks;
@@ -386,7 +410,16 @@ void func_0200976c(s32 arg0) {
     M2C_FIELD(temp_r1, u8 *, 8) = (u8) (M2C_FIELD(temp_r1, u8 *, 8) + 1);
 }
 
-u8 Sound_RegisterChannelCallback(int a,int b,int c){extern M2C_UNK gSoundChannelCallbacks;void *p=(char *)&gSoundChannelCallbacks+a*12;M2C_FIELD(p,int *,0)=b;M2C_FIELD(p,int *,4)=c;return ++M2C_FIELD(p,u8 *,8);}
+/* Register hardware channel `channel`'s timer callback and its argument in the
+ * per-channel table, and return the entry's bumped generation counter, which the
+ * ARM7's reply to sound command 0x12 must echo before the callback may run. */
+u8 Sound_RegisterChannelCallback(int channel, int callback, int callbackArg) {
+    extern M2C_UNK gSoundChannelCallbacks;
+    void *entry = (char *)&gSoundChannelCallbacks + channel * SOUND_CHANNEL_CALLBACK_SIZE;
+    M2C_FIELD(entry, int *, SOUND_CHANNEL_CALLBACK_CALLBACK) = callback;
+    M2C_FIELD(entry, int *, SOUND_CHANNEL_CALLBACK_ARG) = callbackArg;
+    return ++M2C_FIELD(entry, u8 *, SOUND_CHANNEL_CALLBACK_GEN);
+}
 
 s32 func_020097bc(s32 a){
 extern M2C_UNK gSoundChannelCallbacks;void *p=(char *)&gSoundChannelCallbacks+(a&255)*12;
@@ -561,11 +594,13 @@ s32 GetPackedTableCount(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x38);
 }
 
-void SetPackedTableEntry(s32 arg0, s32 arg1, s32 arg2) {
+/* Store `value` in entry `index` of a wave archive's packed pointer table and clean
+ * the cache line the slot was written to; the table is updated under the sound mutex. */
+void SetPackedTableEntry(s32 archive, s32 index, s32 value) {
     M2C_UNK DC_CleanRange(s32, M2C_UNK);
     Sound_LockMutex();
-    M2C_FIELD((arg0 + (arg1 * 4)), s32 *, 0x3C) = arg2;
-    DC_CleanRange(arg0 + 0x3C + (arg1 * 4), 4);
+    M2C_FIELD(archive + index * 4, s32 *, WAVE_ARCHIVE_ENTRIES) = value;
+    DC_CleanRange(archive + WAVE_ARCHIVE_ENTRIES + index * 4, 4);
     Sound_UnlockMutex();
 }
 

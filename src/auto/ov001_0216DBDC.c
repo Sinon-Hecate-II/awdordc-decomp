@@ -206,24 +206,31 @@ UnlockMutex(&data_ov001_02192824);
 }
 
 void func_ov001_0216e2b0(void) {
-extern M2C_UNK gWhState; extern s32 data_ov001_02192814;
+extern M2C_UNK gWhState; extern s32 gWhEventRing;
 s32 t; s32 *p; s32 i;
 t=OS_DisableInterrupts();i=0;
 M2C_FIELD(&gWhState,s32 *,0x68)=0;
 M2C_FIELD(&gWhState,s32 *,0x6c)=0;
-p=&data_ov001_02192814;
+p=&gWhEventRing;
 do {i++;*p++=0;}while(i<4);OS_RestoreInterrupts(t);
 }
 
-void WhPushEvent(s32 a,s32 unused) {
-extern M2C_UNK gWhState; extern s32 data_ov001_02192814;
-s32 old,next,tail;
-old=M2C_FIELD(&gWhState,s32 *,0x68); tail=M2C_FIELD(&gWhState,s32 *,0x6c); next=old+1;
-if(next!=tail && old!=tail+3) {
-(&data_ov001_02192814)[old]=a;
-M2C_FIELD(&gWhState,s32 *,0x68)=next;
-if(next>=4) M2C_FIELD(&gWhState,s32 *,0x68)=(a=0);
-}
+/* Push one WH event onto the shared event ring: drop it when the next write slot
+ * would reach the read index (the ring is full), otherwise store it and advance
+ * the write index, wrapping back to 0 after the last slot. */
+void WhPushEvent(s32 event, s32 unused) {
+    extern M2C_UNK gWhState;
+    extern s32 gWhEventRing;
+    s32 writeIndex, next, readIndex;
+
+    writeIndex = M2C_FIELD(&gWhState, s32 *, WH_STATE_EVENT_WRITE);
+    readIndex = M2C_FIELD(&gWhState, s32 *, WH_STATE_EVENT_READ);
+    next = writeIndex + 1;
+    if (next != readIndex && writeIndex != readIndex + WH_EVENT_QUEUE_LEN - 1) {
+        (&gWhEventRing)[writeIndex] = event;
+        M2C_FIELD(&gWhState, s32 *, WH_STATE_EVENT_WRITE) = next;
+        if (next >= WH_EVENT_QUEUE_LEN) M2C_FIELD(&gWhState, s32 *, WH_STATE_EVENT_WRITE) = (event = 0);
+    }
 }
 
 void WhEventTimerCallback(M2C_UNK arg0) {
@@ -370,7 +377,7 @@ s32 func_ov001_0216e79c(void) {
     u32 WhGetTime();
     void *func_ov001_02171144(s32, s32);
     M2C_UNK func_ov001_02171168(void *);
-    M2C_UNK func_ov001_021711ac(u8 *, u8 *);
+    M2C_UNK Ov001_FormatMacAddress(u8 *, u8 *);
     M2C_UNK func_ov001_021713a8(void);
     extern M2C_UNK gWhState, gWhPacketInfo, data_ov001_02192ca0, data_ov001_02192c40;
     u32 str[8];
@@ -485,7 +492,7 @@ process:
             M2C_FIELD(&data_ov001_02192c40, u8 *, 3) = q[3];
             M2C_FIELD(&data_ov001_02192c40, u8 *, 4) = q[4];
             M2C_FIELD(&data_ov001_02192c40, u8 *, 5) = q[5];
-            func_ov001_021711ac((u8 *)str, &data_ov001_02192c40);
+            Ov001_FormatMacAddress((u8 *)str, &data_ov001_02192c40);
             break;
         }
         MemCopy(buf2, buf1, size);
@@ -577,9 +584,17 @@ s32 WhPacket_ReadEntry(s32 *cursor, s32 end, s32 typeOut, s32 lengthOut) {
 }
 
 #pragma thumb on
-void func_ov001_0216eb50(u16 *arg0,s32 arg1,s32 arg2) {
-s32 WhPacket_ReadEntry(s32 *,s32,s32,s32);
-s32 temp_r5; s32 sp0;u16 temp_r2;
-temp_r5=(s32)arg0+8;sp0=temp_r5;temp_r2=*arg0;
-WhPacket_ReadEntry(&sp0,temp_r5+(u16)((u8)((s32)temp_r2>>8)|(0xff00&(temp_r2<<8))),arg1,arg2);
+/* Read the first tagged field of the WH user-data packet at `packet`: the packet's
+ * 8-byte prefix starts with the big-endian u16 byte count of its fields, which ends
+ * the field block; WhPacket_ReadEntry reports the field's type and length. */
+void WhPacket_ReadFirstField(u16 *packet, s32 typeOut, s32 lengthOut) {
+    s32 WhPacket_ReadEntry(s32 *, s32, s32, s32);
+    s32 fields;
+    s32 cursor;
+    u16 fieldBytes;
+
+    fields = (s32)packet + WH_PACKET_FIELDS;
+    cursor = fields;
+    fieldBytes = *packet;
+    WhPacket_ReadEntry(&cursor, fields + (u16)WH_READ_BE16(fieldBytes), typeOut, lengthOut);
 }

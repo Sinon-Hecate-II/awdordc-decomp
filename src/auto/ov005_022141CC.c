@@ -252,15 +252,17 @@ if(firstRecord==v){void *p=M2C_FIELD(&gRecordsMenuState,void *volatile *,8);tmp=
 RECORDS_SCREEN->listCursor=0;
 }
 
-void func_ov005_02214f80(s32 a) {
+/* Select records-list entry `record`: play its track, mark it highlighted and arm
+ * the pending action's delay (tab 0 has none), then redraw the list. */
+void RecordsMenu_SelectRecord(s32 record) {
 void *RecordsMenu_GetRecord(s32);
 extern M2C_UNK gRecordsMenuState;
-StartMusicTrack(M2C_FIELD(RecordsMenu_GetRecord(a),s32 *,0));
-M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)=a;
-if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x92)==0)
-M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)=-1;
-else M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)=M2C_FIELD(RecordsMenu_GetRecord(a),s32 *,8)+0x258;
-RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x96));
+StartMusicTrack(((RecordTrack *)RecordsMenu_GetRecord(record))->trackId);
+RECORDS_SCREEN->highlighted=record;
+if(RECORDS_SCREEN->tab==0)
+RECORDS_SCREEN->actionTimer=-1;
+else RECORDS_SCREEN->actionTimer=((RecordTrack *)RecordsMenu_GetRecord(record))->length+RECORDS_ACTION_DELAY;
+RecordsMenu_DrawList(RECORDS_SCREEN->scrollGoal);
 }
 
 /* Records tab 2 (the sorted list): picking a record selects it, or, when it is the

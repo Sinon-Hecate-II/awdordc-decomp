@@ -201,12 +201,15 @@ s32 PlaySlotScriptedSound(s32 slot, s32 volume, s32 frames) {
     return 1;
 }
 
-s32 PlaySlotScriptedSoundAtVolume(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+/* Play packed sound `packedSoundId` on effect slot `slot` (`channel` -1 keeps
+ * the slot's default channel) and set the played sound's volume to `volume`;
+ * always returns 1. */
+s32 PlaySlotScriptedSoundAtVolume(s32 slot, s32 channel, s32 packedSoundId, s32 volume) {
     s32 PlaySlotPendingSound(s32, M2C_UNK, M2C_UNK);
     s32 PlaySlotScriptedSound(s32, s32, s32);
 
-    if (PlaySlotPendingSound(arg0, arg1, arg2) != 0) {
-        PlaySlotScriptedSound(arg0, arg3, 0);
+    if (PlaySlotPendingSound(slot, channel, packedSoundId) != 0) {
+        PlaySlotScriptedSound(slot, volume, 0);
     }
     return 1;
 }
@@ -312,12 +315,12 @@ u8 IsMusicSoundPlayerActive(void) {
 
 void func_02090390(void) {
     extern M2C_UNK gSoundDriverState;
-    void func_0202a9f0(void);
+    void Sound_UpdateDriver(void);
 
     if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return;
     }
-    func_0202a9f0();
+    Sound_UpdateDriver();
 }
 
 void func_020903b0(void) {
@@ -338,31 +341,33 @@ void func_020903d4(void) {
 }
 
 /* Load a sequence archive and a sound bank into the sound player's heap: the two
- * loads run between the heap-access calls of func_0202c784.  Does nothing while
+ * loads run between the heap-access calls of Sound_GetPlayerFreeHeap.  Does nothing while
  * the sound system is off. */
 void LoadSoundSequenceArchiveAndBank(s32 archiveId, s32 bankId) {
     extern M2C_UNK gSoundDriverState;
-    s32 func_0202c784(M2C_UNK *);
+    s32 Sound_GetPlayerFreeHeap(M2C_UNK *);
     s32 func_0202c860(M2C_UNK, M2C_UNK);
     s32 func_0202c88c(M2C_UNK, M2C_UNK);
 
     if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return;
     }
-    func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
+    Sound_GetPlayerFreeHeap(M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
     func_0202c860(archiveId, M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
     func_0202c88c(bankId, M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
-    func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
+    Sound_GetPlayerFreeHeap(M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
 }
 
-M2C_UNK Sound_LoadGroup(M2C_UNK arg0) {
+/* Load sound group `groupId` into the sound player's heap; the player's free heap
+ * is sampled before and after the group's items are loaded. */
+s32 Sound_LoadGroup(s32 groupId) {
     extern M2C_UNK gSoundDriverState;
-    s32 func_0202c784(M2C_UNK *);
-    M2C_UNK func_0202c848(M2C_UNK, M2C_UNK);
+    s32 Sound_GetPlayerFreeHeap(M2C_UNK *);
+    s32 Sound_LoadArchiveGroup(s32, M2C_UNK);
 
-    func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
-    func_0202c848(arg0, M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
-    func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
+    Sound_GetPlayerFreeHeap(M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
+    Sound_LoadArchiveGroup(groupId, M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
+    Sound_GetPlayerFreeHeap(M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
 }
 
 /* Rewind the music player's recorded heap state by the requested frame count, clamping the new position to zero. */
@@ -450,24 +455,26 @@ void UpdateStreamedMusicVolume(void) {
 }
 
 void Sound_ApplyMusicVolume(void) {
-    M2C_UNK func_0202ab7c(M2C_UNK, s32);
+    M2C_UNK Sound_SetChannelMixVolume(M2C_UNK, s32);
     s32 GetMusicVolume();
 
-    func_0202ab7c(0, GetMusicVolume());
+    Sound_SetChannelMixVolume(0, GetMusicVolume());
     UpdateStreamedMusicVolume();
 }
 
+/* Re-apply the current effective sound-effect volume to the mix volume of every
+ * effect channel; channel 0 carries the music, so only channels 1..11 are set. */
 void Sound_ApplyEffectVolume(void) {
     s32 Sound_GetEffectVolume();
-    s32 temp_r4;
-    s32 var_r5;
+    s32 volume;
+    s32 channel;
 
-    temp_r4 = Sound_GetEffectVolume();
-    var_r5 = 1;
+    volume = Sound_GetEffectVolume();
+    channel = SOUND_CHANNEL_EFFECT_FIRST;
     do {
-        func_0202ab7c(var_r5, temp_r4);
-        var_r5 += 1;
-    } while (var_r5 <= 0xB);
+        Sound_SetChannelMixVolume(channel, volume);
+        channel += 1;
+    } while (channel <= SOUND_CHANNEL_EFFECT_LAST);
 }
 
 /* Reset every music and sound-effect volume level to full, then apply the new

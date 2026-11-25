@@ -91,7 +91,7 @@ marks[index]=!marks[index];RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMen
 void RecordsMenu_Close(void) {
     s32 IsSpriteDrawPaused(void);
     void ResumeSpriteDraw(void);
-    void func_020842d4(void);
+    void DeleteSubScreenSpriteTextClasses(void);
     void HideAllSpriteSlots(void);
     void HeapFreeBlock(void *);
     void FreeUiGraphicsBank(s32);
@@ -100,7 +100,7 @@ void RecordsMenu_Close(void) {
     extern M2C_UNK gRecordsMenuState;
 
     if (IsSpriteDrawPaused()) ResumeSpriteDraw();
-    func_020842d4();
+    DeleteSubScreenSpriteTextClasses();
     HideAllSpriteSlots();
     if (M2C_FIELD(&gRecordsMenuState, void **, RECORDS_MENU_SCREEN)) {
         HeapFreeBlock(M2C_FIELD(&gRecordsMenuState, void **, RECORDS_MENU_SCREEN));
@@ -124,24 +124,31 @@ void func_ov005_0221727c(void) {
     M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x8E) = -1;
 }
 
-void func_ov005_022172a0(void) {
-    void func_ov005_02214f80(s16);
+/* Records screen: finish the action RecordsMenu_BeginAction started: select the
+ * record the action was begun on, clear the pending record and advance the
+ * background fade the action's mode asks for. */
+void RecordsMenu_FinishAction(void) {
+    void RecordsMenu_SelectRecord(s16);
     void RecordsMenu_AdvanceFadeRecord(u8);
     extern M2C_UNK gRecordsMenuState;
-    s16 val = M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x90);
-    func_ov005_02214f80(val);
-    M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x90) = -1;
-    RecordsMenu_AdvanceFadeRecord((u8) M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), u8 *, 0x8A));
+    s16 record = M2C_FIELD(&gRecordsMenuState, RecordsScreen **, RECORDS_MENU_SCREEN)->pending;
+
+    RecordsMenu_SelectRecord(record);
+    M2C_FIELD(&gRecordsMenuState, RecordsScreen **, RECORDS_MENU_SCREEN)->pending = -1;
+    RecordsMenu_AdvanceFadeRecord((u8) M2C_FIELD(&gRecordsMenuState, RecordsScreen **, RECORDS_MENU_SCREEN)->actionMode);
 }
 
-void RecordsMenu_BeginAction(s16 arg0, s8 arg1) {
-void CreateSpriteFromClass(void *, s32);
-s32 func_ov005_02215650(void);
-extern M2C_UNK gRecordsMenuState;
-extern M2C_UNK data_ov005_022204e0;
-M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x90) = arg0;
-M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s8 *, 0x8a) = arg1;
-CreateSpriteFromClass(&data_ov005_022204e0, func_ov005_02215650());
+/* Begin the pending records-screen action: remember the record it applies to and
+ * its mode, then create the action menu's sprite under the list's action row (if
+ * that row exists). */
+void RecordsMenu_BeginAction(s16 record, s8 mode) {
+    void CreateSpriteFromClass(void *, s32);
+    s32 func_ov005_02215650(void);
+    extern M2C_UNK gRecordsMenuState;
+    extern M2C_UNK data_ov005_022204e0;
+    M2C_FIELD(&gRecordsMenuState, RecordsScreen **, RECORDS_MENU_SCREEN)->pending = record;
+    M2C_FIELD(&gRecordsMenuState, RecordsScreen **, RECORDS_MENU_SCREEN)->actionMode = mode;
+    CreateSpriteFromClass(&data_ov005_022204e0, func_ov005_02215650());
 }
 
 void SetOv005FileDirectory(void) {

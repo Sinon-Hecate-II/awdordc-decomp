@@ -60,6 +60,11 @@ typedef struct LinkCompletionEvent {
 #define LINK_DOWNLOAD_LENGTH   0x04 /* u16: bytes of the payload block */
 #define LINK_DOWNLOAD_SEQUENCE 0x0C /* u16: sequence word sent with the block */
 
+/* The Download Play connection request's extra-data block, gLinkConnectionExtraData
+ * (32 bytes of .bss): its first LINK_CONNECTION_NAME_SIZE bytes hold the local
+ * player's name, NUL-padded. */
+#define LINK_CONNECTION_NAME_SIZE 0x18 /* bytes of name in the extra-data block */
+
 /* General WFC event packet fields the link overlay's callback reads (the
  * WFC_CMD_GENERAL_EVENT packet, also handed to the per-channel callbacks). */
 #define LINK_WFC_EVENT_RESULT 0x02 /* u16 result; LINK_WFC_RESULT_FATAL halts the game */
@@ -111,6 +116,7 @@ enum {
  * (LINK_RECEIVER_*), filled from the incoming packet fragments and drained by the
  * object's class update (func_ov009_02221ae8). */
 #define LINK_RECEIVER_CHANNELS 0x34 /* first of 4 per-channel slots */
+#define LINK_RECEIVER_COUNT    4    /* receive-assembly slots (one per link channel) */
 #define LINK_RECEIVER_STRIDE   0x08 /* bytes per channel slot */
 #define LINK_RECEIVER_OFFSET   0x00 /* s32 bytes of the packet assembled so far */
 #define LINK_RECEIVER_PACKET   0x04 /* void *packet being assembled, NULL when idle */
@@ -123,6 +129,7 @@ enum {
 #define LINK_SEND_EVENT_INDEX   0x10 /* u16 word handed to the packet handler with the packet */
 #define LINK_SEND_EVENT_DATA    0x14 /* void *packet the completed transfer carried, 0 when none */
 #define LINK_SEND_EVENT_LENGTH  0x18 /* u16 bytes of that packet */
+#define LINK_SEND_EVENT_COMPLETION 0x20 /* void (*)(void *): the completion registered with the send (HandleLinkSendComplete) */
 #define LINK_SEND_RESULT_DONE   0xF  /* done result that clears the outstanding mask on the end channel */
 #define LINK_SEND_END_CHANNEL   4    /* the channel whose done result clears the outstanding mask */
 
@@ -149,6 +156,7 @@ enum {
 #define LINK_PLAYER_RANK       0x18 /* s8: rank index used to load the player's rank icon, -1 when unset */
 #define LINK_PLAYER_FAV_GROUP  0x19 /* s8: favourite CO/group index, -2 when unset */
 #define LINK_PLAYER_FAV_RECORD 0x1A /* s8: favourite CO record index, -2 when unset */
+#define LINK_PLAYER_SLOT_RECORD 0x20 /* start of a slot's trailing 0x40-byte player record */
 
 /* The link's per-peer connection-data slots (gLinkPeerSlots): four 0xC8-byte slots,
  * each holding the 0xC0-byte block a peer sent, a validity timer and an in-use

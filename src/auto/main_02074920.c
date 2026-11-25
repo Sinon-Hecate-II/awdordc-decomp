@@ -60,9 +60,10 @@ bestKind=M2C_FIELD(node,u8 *,6);
 return bestIndex;
 }
 
-void SaveList_ClearUsed(List_02074920 *arg0) {
+/* Mark every record of the save list unused by clearing its active flag. */
+void SaveList_ClearUsed(List_02074920 *list) {
 u32 i=0;
-for(;i<arg0->count;i++) arg0->entries[i].active=0;
+for(;i<list->count;i++) list->entries[i].active=0;
 }
 
 /* Append a record (slot id, kind, value and an optional 32-byte payload) to the
@@ -272,7 +273,7 @@ if(ok == 0){a[0x2052]=1;MI_CpuFill32(0,((u8 *)((List_02074920 *)(a+0xc4c))->entr
 void func_020753f8(void *a, void *b, void *c, s32 d, u8 e, u32 f) {
 void *HeapAllocBlock(u32); void HeapFreeBlock(void *); s32 OS_GetLockID(void); void OS_ReleaseLockID(u8); void CARD_LockBackup(u16); void CARD_UnlockBackup(u8);
 void MI_CpuCopy32(void *,void *,u32); void MI_CpuFill32(s32,void *,u32); void MI_CpuCopy8(void *,void *,u32);
-u32 func_020746fc(void *,void *); s32 SaveDevice_Transfer(s32,s32 *,s32,s32,s32,s32,s32,s32,s32); s32 func_02010584(void);
+u32 SaveArchive_ComputeChecksum(void *,void *); s32 SaveDevice_Transfer(s32,s32 *,s32,s32,s32,s32,s32,s32,s32); s32 func_02010584(void);
 u8 *p; s32 idx; u16 prev; s32 mask; u16 id; u8 ok; u32 n;
 if(!M2C_FIELD(a,u8 *,0x2050)||M2C_FIELD(a,u8 *,0x2052)==1||!e)return;
 p=HeapAllocBlock(0x400); prev=0xffff; idx=FindFreeNode(a);
@@ -299,7 +300,7 @@ b=(u8 *)b+(M2C_FIELD(p,u16 *,12)-0x14);
 }
 M2C_FIELD(p,u8 *,14)=e;M2C_FIELD(p,u8 *,15)=1;M2C_FIELD(p,u16 *,16)=prev;
 M2C_FIELD(p,u16 *,18)=d?FindFreeNode(a):0xffff;
-M2C_FIELD(p,u32 *,4)=func_020746fc(a,p);
+M2C_FIELD(p,u32 *,4)=SaveArchive_ComputeChecksum(a,p);
 CARD_LockBackup(id);
 SaveDevice_Transfer((s32)p,(s32 *)(idx<<10),M2C_FIELD(p,u16 *,12),0,0,1,7,10,2);
 ok=func_02010584()!=0;((void(*)(u32))CARD_UnlockBackup)(id);

@@ -25,16 +25,16 @@ s32 IsAiBuildingOnPlayerOneCityOrBase(void) {
     return 0;
 }
 
-u8 func_ov004_0221392c(void) {
+/* Battle-script condition: true when the unit under the cursor carries another
+ * unit (its carry chain is nonempty). */
+u8 IsCursorUnitCarryingUnit(void) {
     extern void **gCurrentMap;
-    u8 var_r0;
 
-    if (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xC) != 0) {
-        var_r0 = 1;
+    if (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_CARRIED) != 0) {
+        return 1;
     } else {
-        var_r0 = 0;
+        return 0;
     }
-    return var_r0;
 }
 
 /* Battle-script condition: true when the standing command sets a player's AI mode
@@ -203,11 +203,16 @@ u8 IsTurnThirdOfFour(void) {
     return r;
 }
 
-u8 func_ov004_02213ed0(void) {
- extern void **gCurrentMap;
- s32 n=M2C_FIELD(*gCurrentMap,u16 *,0x52A2); u8 r;
- if(n<=0)return 0;
- if((n&3)==0)r=1;else r=0; return r;
+/* Battle-script condition: true on the fourth (and last) turn of every four-turn
+ * cycle, i.e. when the turn number is a positive multiple of four. */
+u8 IsTurnFourthOfFour(void) {
+    extern void **gCurrentMap;
+    s32 turn = M2C_FIELD(*gCurrentMap, u16 *, MAP_TURN);
+    u8 result;
+
+    if (turn <= 0) return 0;
+    if ((turn & 3) == 0) result = 1; else result = 0;
+    return result;
 }
 
 /* Battle-script condition: true when player 2 has no units left on the map, i.e.
@@ -237,22 +242,33 @@ s32 IsPlayerTwoUnitGroupEmpty(void) {
     return 1;
 }
 
-u8 func_ov004_02213f78(void) {
- void *GetPlayerSelectedUnit(u16); extern void **gCurrentMap;
- u8 r; if(GetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)))r=1;else r=0;return r;
+/* Battle-script condition: true when the current player has a unit selected. */
+u8 IsCurrentPlayerUnitSelected(void) {
+    void *GetPlayerSelectedUnit(u16);
+    extern void **gCurrentMap;
+    u8 selected;
+
+    if (GetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) selected = 1;
+    else selected = 0;
+    return selected;
 }
 
-void func_ov004_02213fac(void) {
- void *GetPlayerSelectedUnit(u16); extern void **gCurrentMap;
- void *p=GetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap,u16 *,0x52A4));
- if(p)M2C_FIELD(p,u16 *,4)|=1;
+/* Battle-script action: mark the current player's selected unit as having acted
+ * this turn. */
+void Ov004_MarkSelectedUnitActed(void) {
+    void *GetPlayerSelectedUnit(u16);
+    extern void **gCurrentMap;
+    void *unit = GetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
+    if (unit) M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) |= UNIT_FLAG_ACTED;
 }
 
-s32 func_ov004_02213fe0(void) {
+/* Battle-script condition: true when the map cursor sits on the scripted
+ * tutorial tile (0, 4). */
+s32 IsCursorAtScriptedTile(void) {
  extern void **gCurrentMap;
- void *p=*gCurrentMap;
- s16 a=M2C_FIELD(p,s16 *,0x52DC), b=M2C_FIELD(p,s16 *,0x52DE);
- return a==0 && b==4;
+ void *map=*gCurrentMap;
+ s16 cursorX=M2C_FIELD(map,s16 *,MAP_CURSOR_X), cursorY=M2C_FIELD(map,s16 *,MAP_CURSOR_Y);
+ return cursorX==0 && cursorY==4;
 }
 
 u8 func_ov004_02214010(void) {
@@ -279,18 +295,20 @@ u8 func_ov004_02214030(void) {
     return var_r0;
 }
 
-u8 func_ov004_02214050(void) {
+/* Battle-script condition: true when player 1's CO power meter holds exactly
+ * the cost of the dual CO power (the meter's points equal that cost). */
+u8 IsPlayerOneCoMeterAtDualCost(void) {
     s32 GetCoPowerMeterCost(M2C_UNK, M2C_UNK);
-    s32 temp_r4;
-    u8 var_r0;
+    s32 dualCost;
+    u8 result;
 
-    temp_r4 = GetCoPowerMeterCost(1, 2);
-    if ((temp_r4 - GetCoPowerMeterPoints(1)) == 0) {
-        var_r0 = 1;
+    dualCost = GetCoPowerMeterCost(1, CO_POWER_LEVEL_DUAL);
+    if ((dualCost - GetCoPowerMeterPoints(1)) == 0) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 /* ov004 battle-script condition: true (1) when player 2's unit group holds no
@@ -464,11 +482,14 @@ void func_ov004_0221445c(s32 arg0) {
     CreateScriptMarkerSprite(9, 6, 3, 0x32, arg0);
 }
 
-u8 func_ov004_0221447c(void) {
- extern void **gCurrentMap;
- s32 n=M2C_FIELD(*gCurrentMap,u16 *,0x52A2);u8 r;
- if(n<3)return 0;
- if(n<=5)r=1;else r=0;return r;
+/* Battle-script condition: true on battle turns 3 to 5 inclusive. */
+u8 IsTurnThreeToFive(void) {
+    extern void **gCurrentMap;
+    s32 turn = M2C_FIELD(*gCurrentMap, u16 *, MAP_TURN);
+    u8 inRange;
+    if (turn < 3) return 0;
+    if (turn <= 5) inRange = 1; else inRange = 0;
+    return inRange;
 }
 
 /* Battle-event script command: pick the best area-effect target for player 2
@@ -637,18 +658,20 @@ u8 func_ov004_022147b8(void) {
     return var_r0;
 }
 
-u8 func_ov004_022147e0(void) {
-    u8 var_r0;
+/* ov004 battle-script condition: true when no line attack is queued or active,
+ * neither the plain nor the player-facing variant. */
+u8 IsNoLineAttackOrderActive(void) {
+    u8 result;
 
-    if (HasActiveMapOrderOfType(6) != 0) {
+    if (HasActiveMapOrderOfType(MAPORDER_ATTACK_LINE) != 0) {
         return 0U;
     }
-    if (HasActiveMapOrderOfType(7) == 0) {
-        var_r0 = 1;
+    if (HasActiveMapOrderOfType(MAPORDER_ATTACK_LINE_FACING) == 0) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 /* Draw the outline of the rectangle (x0,y0)-(x1,y1) as four GX lines at depth

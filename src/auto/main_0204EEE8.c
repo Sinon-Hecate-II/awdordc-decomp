@@ -295,8 +295,11 @@ s32 gpiAppendStringToBufferLen(void **connection, void *outputBuffer, void *stri
     return 0;
 }
 
-void gpiAppendStringField(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Append the NUL-terminated `string` as a field to a gpi connection's output
+ * buffer; its length is taken from the string itself.  The gpi layer declares
+ * these as raw words (M2C_UNK), so the parameters stay untyped here. */
+void gpiAppendStringField(M2C_UNK connection, M2C_UNK outputBuffer, M2C_UNK string) {
     s32 gpiAppendStringToBufferLen(void **, void *, void *, s32);
     s32 StringLength(M2C_UNK);
-    gpiAppendStringToBufferLen(arg0, arg1, arg2, StringLength(arg2));
+    gpiAppendStringToBufferLen(connection, outputBuffer, string, StringLength(string));
 }

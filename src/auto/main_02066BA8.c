@@ -137,15 +137,17 @@ u32 FormatString(s32 (*writer)(void *,const char *,s32), void *state, char *p, c
     return total;
 }
 #pragma opt_strength_reduction reset
-s32 func_020673cc(s32 arg0, M2C_UNK arg1, s32 arg2) {
-    s32 StreamWrite(M2C_UNK, M2C_UNK, s32, s32);
-    s32 var_r5;
+/* FormatString writer for StdoutPrintf: write `count` bytes of `data` to the
+ * stdout stream and return the stream, or 0 when the stream took fewer bytes. */
+s32 StdoutWrite(void *stream, char *data, s32 count) {
+    s32 StreamWrite(s32, s32, s32, void *);
+    s32 result;
 
-    var_r5 = arg0;
-    if (arg2 != StreamWrite(arg1, 1, arg2, var_r5)) {
-        var_r5 = 0;
+    result = (s32)stream;
+    if (count != StreamWrite((s32)data, 1, count, (void *)result)) {
+        result = 0;
     }
-    return var_r5;
+    return result;
 }
 
 /* Writer callback for the bounded string formatter: appends `count` bytes from
@@ -192,7 +194,7 @@ s32 StdoutPrintf(char *format, ...) {
         gStreamLockDepth[STREAM_LOCK_STDOUT] = 1;
     }
     args = (char *)(((u32)&format & ~3U) + 4);
-    result = FormatString(func_020673cc, gStdoutStream, format, args);
+    result = FormatString(StdoutWrite, gStdoutStream, format, args);
     if (--gStreamLockDepth[STREAM_LOCK_STDOUT] == 0) UnlockMutex(gStreamMutexStdout);
     return result;
 }
@@ -253,12 +255,14 @@ heapSwap(parent,p,size);
 }
 }
 
+/* Advance the game's global 32-bit LCG and return the top 15 bits of the new state. */
 s32 Rand(void) {
     extern s32 gRandSeed;
     u32 value;
-    value = (gRandSeed * 0x41C64E6D) + 0x3039;
+
+    value = (gRandSeed * RAND_MULTIPLIER) + RAND_INCREMENT;
     gRandSeed = value;
-    return 0x7FFF & (value >> 16);
+    return RAND_MASK & (value >> RAND_SHIFT);
 }
 
 void SetRandSeed(s32 arg0) {

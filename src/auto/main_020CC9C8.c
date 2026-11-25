@@ -388,7 +388,7 @@ u8 IsCampaignBattleRules(void) {
     return var_r0;
 }
 
-u8 func_020cd6fc(void) {
+u8 IsFreePlayBattleMode(void) {
     extern M2C_UNK gMapData;
     u8 value;
     if ((u8)((u32)(M2C_FIELD(&gMapData, u16 *, 0xC) << 29) >> 29) == 1) value = 1;
@@ -421,13 +421,16 @@ void FillTeamSightBitmap(s32 team) {
     }
 }
 #pragma pop
-void CopyTeamSightBitmap(s32 arg0, s32 arg1) {
+/* Copy one team's cell-sight bitmap over the other team's: the bitmap of team slot
+ * `fromTeam` into the one of slot `toTeam` (the two bitmaps sit back to back at
+ * MAP_CELL_BITMAP_TEAM_A = 0x5160), so both teams share the same view. */
+void CopyTeamSightBitmap(s32 fromTeam, s32 toTeam) {
  extern s32 *gCurrentMap;
  void MI_CpuCopy8(s32,s32);
  s32 base=*gCurrentMap+0x160;
- s32 size=0xa1;
+ s32 size=MAP_CELL_BITMAP_SIZE;
  base=base+0x5000;
- MI_CpuCopy8(size*arg0+base,size*arg1+base);
+ MI_CpuCopy8(size*fromTeam+base,size*toTeam+base);
 }
 
 /* How `player` relates to `other`: PLAYER_RELATION_NONE if `other` is not in the

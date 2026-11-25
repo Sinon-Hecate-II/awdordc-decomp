@@ -26,6 +26,7 @@
 /* The ov001 DWC utility state: the archive of
  * "rom:/dwc/utility.bin" and the lock id it takes the card ROM lock with. */
 #define UTILITY_LOCK_ID    0xE4   /* u16 OS lock id CARD_LockRom/CARD_UnlockRom take */
+#define UTILITY_FILE_QUEUE 0x84   /* s32 ring queue (OV001_QUEUE_*, 0x20 entries) of the file-buffer slots Ov001_LoadFile takes and Ov001_FreeFile returns */
 /* One allocated run of 8-byte sprite object entries in a pool: the run's list
  * links, the address of its first entry (+0x08) and its entry count (+0x0C). */
 typedef struct Ov001SpriteBlock { struct Ov001SpriteBlock *prev; struct Ov001SpriteBlock *next; s32 start; u8 size; u8 pad[3]; } Ov001SpriteBlock;
@@ -195,15 +196,19 @@ void func_ov001_021897a4(void) {
     M2C_FIELD(gOv001ProfileState, s8 *, 0xA90) = 0xC;
 }
 
-s32 func_ov001_021897bc(void) {
-    M2C_UNK Ov001_GetTaskStep(void);
-    M2C_UNK Ov001_EndLink(void);
+/* Finish the download-play link teardown: when the multiboot task is running
+ * (step 1), end the link and return to the initial setup state so the exit
+ * result is processed; otherwise do nothing and report 0. */
+s32 Ov001_FinishLinkTeardown(void) {
+    s32 Ov001_GetTaskStep(void);
+    s32 Ov001_EndLink(void);
     extern void *gOv001ProfileState;
+
     if (Ov001_GetTaskStep() != 1) {
         return 0;
     }
     Ov001_EndLink();
-    M2C_FIELD(gOv001ProfileState, u8 *, 0xA90) = 1;
+    M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) = 1;
     return 1;
 }
 
@@ -484,10 +489,16 @@ size = *(u32 *)raw >> 8; if (outSize) *outSize = size;
 out = (void *)Ov001_Alloc(size, alignment); Ov001_DecompressBuffer(raw, out); Ov001_FreeAlloc(&raw); return out;
 }
 
-void Ov001_FreeFile(s32 arg0, ...) {
- M2C_UNK Ov001_QueuePush(s32,void*); void Ov001_FreeAlloc(void*); extern void *gOv001UtilityState;
- Ov001_FreeAlloc(&arg0);
- Ov001_QueuePush(M2C_FIELD(gOv001UtilityState,s32*,0x84),(void*)arg0);
+/* Release a file buffer handed out by Ov001_LoadFile: free the block on the ov001
+ * heap (which clears the pointer) and return its slot to the utility state's file
+ * ring queue.  Declared variadic, as the original is, to keep its stack frame. */
+void Ov001_FreeFile(s32 block, ...) {
+    M2C_UNK Ov001_QueuePush(s32, void *);
+    void Ov001_FreeAlloc(void *);
+    extern void *gOv001UtilityState;
+
+    Ov001_FreeAlloc(&block);
+    Ov001_QueuePush(M2C_FIELD(gOv001UtilityState, s32 *, UTILITY_FILE_QUEUE), (void *)block);
 }
 
 /* Returns nonzero when the string `name` ends in the last `suffixLen` bytes of

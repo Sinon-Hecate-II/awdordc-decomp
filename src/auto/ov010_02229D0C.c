@@ -131,25 +131,28 @@ M2C_UNK **SpawnOnlinePlayerAnnounce(M2C_UNK owner) {
  * or the query cannot be started. */
 s32 Ov010_RequestWfcMatch(s32 names,s32 count,s32 timeout,s32 flagsOut,s32 countOut){s32 CreateWfcMatchForRegion(s32,s32,s32,s32,s32,s32,s32);if(!IsOnlineSessionFlagSet(OV010_FLAG_CONNECTED))return 0;MI_CpuFill8(flagsOut,0,count);M2C_FIELD(countOut,s32 *,0)=0;return CreateWfcMatchForRegion(names,count,0,timeout,flagsOut,countOut,255);}
 
+/* Report whether the ov010 WFC match query is still running: 1 while
+ * PollWfcMatchRequest reports WFC_HTTP_STEP_RUNNING, 0 once the query has
+ * finished (done or failed) or was never started. */
 s32 Ov010_IsWfcMatchRunning(void) {
     u32 PollWfcMatchRequest();
-    s32 var_r4;
-    u32 temp_r0;
+    s32 running;
+    u32 step;
 
-    var_r4 = 0;
-    temp_r0 = PollWfcMatchRequest();
-    switch (temp_r0) {
-    case 0:
-    case 2:
-    case 3:
+    running = 0;
+    step = PollWfcMatchRequest();
+    switch (step) {
+    case 0: /* WFC_HTTP_STEP_NONE */
+    case 2: /* WFC_HTTP_STEP_DONE */
+    case 3: /* WFC_HTTP_STEP_FAILED */
         break;
     default:
         break;
-    case 1:
-        var_r4 = 1;
+    case 1: /* WFC_HTTP_STEP_RUNNING */
+        running = 1;
         break;
     }
-    return var_r4;
+    return running;
 }
 
 void func_ov010_02229f98(void *arg0) {
@@ -209,28 +212,34 @@ void *func_ov010_0222a050(void *arg0) {
     return arg0;
 }
 
-void *func_ov010_0222a078(void *arg0) {
-    if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
+/* Destructor of an ov010 online connection object: release the stream packet it
+ * was chunking out to the peers (OV010_CONNECTION_STREAM), then free the object
+ * itself.  Returns the freed pointer, as the sprite class's destructors do. */
+void *Ov010Connection_Free(void *connection) {
+    if (M2C_FIELD(connection, void **, OV010_CONNECTION_STREAM) != NULL) {
         Ov010Online_FreePacket();
-        M2C_FIELD(arg0, s32 *, 0x38) = 0;
+        M2C_FIELD(connection, void **, OV010_CONNECTION_STREAM) = NULL;
     }
-    MemFree(arg0);
+    MemFree(connection);
+    return connection;
+}
+
+s32 ResetPacketAssembly(s32 arg0) {
+    M2C_UNK DestroyArray(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
+    extern M2C_UNK FreePacketAssemblySlot;
+    DestroyArray(arg0 + 0x34, 4, 8, &FreePacketAssemblySlot);
     return arg0;
 }
 
-s32 func_ov010_0222a0a8(s32 arg0) {
+/* Destructor of an ov010 packet-assembly object: destroy its four per-peer
+ * assembly slots (each frees the packet it was assembling, see
+ * FreePacketAssemblySlot), then free the object itself. */
+s32 DestroyPacketAssembly(s32 assembly) {
     M2C_UNK DestroyArray(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
-    extern M2C_UNK func_ov010_02228a48;
-    DestroyArray(arg0 + 0x34, 4, 8, &func_ov010_02228a48);
-    return arg0;
-}
-
-s32 func_ov010_0222a0d0(s32 arg0) {
-    M2C_UNK DestroyArray(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
-    extern M2C_UNK func_ov010_02228a48;
-    DestroyArray(arg0 + 0x34, 4, 8, &func_ov010_02228a48);
-    MemFree(arg0);
-    return arg0;
+    extern M2C_UNK FreePacketAssemblySlot;
+    DestroyArray(assembly + 0x34, 4, 8, &FreePacketAssemblySlot);
+    MemFree(assembly);
+    return assembly;
 }
 
 void func_ov010_0222a100(void) {
@@ -372,9 +381,9 @@ void StartOnlineMatchSplitFades(void *sprite) {
 #pragma scheduling on
 void func_ov010_0222a320(void *a){
 extern u8 data_ov010_0222c8f4[];extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
-void *func_ov010_0222832c(void *,void *);void *GetLocalizedText(void *);void func_ov010_0222bc54(void *,void *);void func_0206f8b8(s32,void *,s32);void StringStorageConcat(void *,void *,void *);void StringStorageAssign(void *,void *);void func_0206fa14(void *);s32 FindTextLayer(void);void StartWindowClose(void);void *CreateTextLayer(void *);void RenderTextLayer(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
+void *func_ov010_0222832c(void *,void *);void *GetLocalizedText(void *);void StringStorageAssignText(void *,void *);void func_0206f8b8(s32,void *,s32);void StringStorageConcat(void *,void *,void *);void StringStorageAssign(void *,void *);void func_0206fa14(void *);s32 FindTextLayer(void);void StartWindowClose(void);void *CreateTextLayer(void *);void RenderTextLayer(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
 u8 sp[0x44];s32 v;
-func_ov010_0222bc54((u8 *)a+0x44,GetLocalizedText(func_ov010_0222832c(M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,void **,0x40))));
+StringStorageAssignText((u8 *)a+0x44,GetLocalizedText(func_ov010_0222832c(M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,void **,0x40))));
 v=M2C_FIELD(a,s32 *,0x3c);if(v<0)v=-v;func_0206f8b8(v,sp+0x24,10);
 StringStorageConcat(sp+0x18,(u8 *)a+0x44,data_ov010_0222c8f4);
 StringStorageConcat(sp+0xc,sp+0x18,GetLocalizedText((void *)0x42000000));

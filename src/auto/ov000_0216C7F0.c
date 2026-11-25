@@ -45,12 +45,14 @@ icon=M2C_FIELD(window,void **,ARMY_INFO_ICONS+0x18);if(icon){if(M2C_FIELD(icon,v
 return window;
 }
 
-s32 GetCellTerrainKind(s32 arg0, s32 arg1) {
+/* Terrain kind (the low five bits of the cell's terrain byte) of the map cell at
+ * (x, y). */
+s32 GetCellTerrainKind(s32 x, s32 y) {
     extern s32 *gCurrentMap;
-    s32 temp_r2;
+    s32 map;
 
-    temp_r2 = *gCurrentMap;
-    return M2C_FIELD((temp_r2 + (arg0 + M2C_FIELD((temp_r2 + (arg1 * 2)), u16 *, 0x3758))), u8 *, 0x1420) & 0x1F;
+    map = *gCurrentMap;
+    return M2C_FIELD((map + (x + M2C_FIELD((map + (y * 2)), u16 *, MAP_ROW_OFFSETS))), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK;
 }
 
 /* Maps the cell at (x,y) to the detailed terrain id the info window shows: certain
@@ -92,11 +94,14 @@ s32 GetTerrainKindFromInfoId(s32 terrainId) {
     return terrainId;
 }
 
-s32 GetCellPropertyArmy(s32 arg0, s32 arg1) {
- s32 Map_GetPropertyOwnerArmy(s32);
- extern s32 *gCurrentMap;
- s32 temp_r2 = *gCurrentMap;
- return Map_GetPropertyOwnerArmy(M2C_FIELD(temp_r2 + (arg0 + M2C_FIELD(temp_r2 + arg1 * 2, u16 *, 0x3758)), u8 *, 0x1420));
+/* The army that owns the property standing on the cell at (x, y): look the cell's
+ * terrain byte up through the map's row offsets and ask which army owns it. */
+s32 GetCellPropertyArmy(s32 x, s32 y) {
+    s32 Map_GetPropertyOwnerArmy(s32);
+    extern s32 *gCurrentMap;
+    s32 map = *gCurrentMap;
+
+    return Map_GetPropertyOwnerArmy(M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN));
 }
 
 /* The terrain defense stars of the cell at (x, y): the terrain kind's star count plus

@@ -1,5 +1,6 @@
 /* 15 functions from 0x02001068 to 0x02002060 (main), found by ds-decomp. */
 #include "common.h"
+#include "hw_div.h"
 
 typedef struct UnkVec3 { s32 x,y,z; } UnkVec3;
 typedef struct Matrix01148 { s32 m[12]; } Matrix01148;
@@ -384,16 +385,16 @@ void GX_BuildOrthoMatrix(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 *p
 }
 #pragma pop
 void FX_Div(void) {
-    M2C_UNK func_02001ff8();
+    M2C_UNK Div_GetResultRounded();
     M2C_UNK func_02002060();
     func_02002060();
-    func_02001ff8();
+    Div_GetResultRounded();
 }
 
 void func_02001fc4(void) {
     M2C_UNK func_02002030();
     func_02002030();
-    func_02001ff8();
+    Div_GetResultRounded();
 }
 
 u64 func_02001fd4(void) {
@@ -401,9 +402,13 @@ while (*(volatile u16 *)0x04000280 & 0x8000) {}
 return *(u64 *)0x040002a0;
 }
 
-s32 func_02001ff8(void) {
-while (*(volatile u16 *)0x04000280 & 0x8000) {}
-return (*(volatile u64 *)0x040002a0 + 0x80000) >> 20;
+/* Wait for the hardware divider to finish and return its quotient rounded to a
+ * 20-fractional-bit fixed-point value: MTX_Inverse33 divides 0x1000 << 32 by the
+ * determinant, so the result is the Q12 reciprocal of that determinant. */
+s32 Div_GetResultRounded(void) {
+    while (REG_DIVCNT & DIVCNT_BUSY) {
+    }
+    return (REG_DIV_RESULT64 + 0x80000) >> 20;
 }
 
 #pragma opt_common_subs off

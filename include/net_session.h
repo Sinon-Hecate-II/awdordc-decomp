@@ -55,6 +55,10 @@ enum {
  * entries keyed by name; the gpiGetOrCreate* helpers look a key up there and
  * add it with the requested type when it is missing. */
 #define GPI_SESSION_STORE      0x0C /* void * the session's bucket store */
+/* The session's per-game-slot lookup tables, read by gpiGetPlayerId and
+ * gpiGetTeamId: one value per slot, stored behind a pointer. */
+#define GPI_SESSION_PLAYER_IDS 0x1C /* Vector * player id per game slot */
+#define GPI_SESSION_TEAM_IDS   0x20 /* Vector * team id per game slot */
 #define GPI_INFO_USED          0x00 /* s32 bytes used in the receive buffer */
 #define GPI_INFO_RECV_BUFFER   0x0C /* u8 * receive buffer, grown as data arrives */
 #define GPI_INFO_RECV_CAPACITY 0x2C /* s32 allocated size of the receive buffer */

@@ -206,14 +206,16 @@ void SetSpritePaletteBase(void) {
 
 void SetSpritePaletteIndex(s32 a) {s32 v=a==31?0:63;*(s32 *)0x040004a4=(v<<24)|0x80|(a<<16);}
 #pragma optimization_level reset
-s32 CreateSpriteAnim(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-            void Sprite_InitAnimation(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 FindSpriteScriptRecordById(M2C_UNK);
-    s32 temp_r0;
+/* Take a free sprite out of the sprite pool and start it on `script` as an
+ * animation player with the given OAM priority and animation flags. */
+s32 CreateSpriteAnim(M2C_UNK script, M2C_UNK priority, M2C_UNK flags) {
+    void Sprite_InitAnimation(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 FindSpriteByType(M2C_UNK);
+    s32 sprite;
 
-    temp_r0 = FindSpriteScriptRecordById(0);
-    Sprite_InitAnimation(temp_r0, arg0, arg1, arg2);
-    return temp_r0;
+    sprite = FindSpriteByType(0); /* type 0: a free pool slot */
+    Sprite_InitAnimation(sprite, script, priority, flags);
+    return sprite;
 }
 
 void Sprite_ClearHandle(s32 *arg0) {
@@ -222,15 +224,18 @@ void Sprite_ClearHandle(s32 *arg0) {
     }
 }
 
-s32 DrawSprite2D(s32 *arg0, s32 arg1, s32 arg2) {
+/* One frame of an animated 2D sprite: draw its quad at screen (x, y), tick its
+ * animation timer and advance its script.  A sprite with no type is dead and is
+ * skipped, reported as 0. */
+s32 DrawSprite2D(s32 *sprite, s32 x, s32 y) {
     void DrawSprite2DFrame(M2C_UNK, M2C_UNK, M2C_UNK);
     void Sprite_TickTimer(void *);
     M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
 
-    if (arg0 != (void *)0 && *arg0 != 0) {
-        DrawSprite2DFrame((M2C_UNK)arg0, (M2C_UNK)arg1, (M2C_UNK)arg2);
-        Sprite_TickTimer((void *)arg0);
-        return Sprite_UpdateAnimationScript((M2C_UNK)arg0);
+    if (sprite != (void *)0 && M2C_FIELD(sprite, s32 *, SPRITE_TYPE) != 0) {
+        DrawSprite2DFrame((M2C_UNK)sprite, (M2C_UNK)x, (M2C_UNK)y);
+        Sprite_TickTimer((void *)sprite);
+        return Sprite_UpdateAnimationScript((M2C_UNK)sprite);
     }
     return 0;
 }
@@ -615,12 +620,12 @@ Sprite_UpdateAnimationScript((M2C_UNK)sprite);
 /* Look up a sprite-script record by the id stored in its first word: the table
  * holds 32 records of 0x34 bytes; returns a record's address, or 0 if no record
  * has the id. */
-s32 FindSpriteScriptRecordById(s32 id) {
-    extern s32 gSpriteScriptRecords;
+s32 FindSpriteByType(s32 id) {
+    extern s32 gSpritePool;
     s32 i = 0;
-    s32 *record = &gSpriteScriptRecords;
+    s32 *record = &gSpritePool;
     do {
-        if (*record == id) return i * 52 + (s32)&gSpriteScriptRecords;
+        if (*record == id) return i * 52 + (s32)&gSpritePool;
         i++;
         record = (s32 *)((u8 *)record + 52);
     } while (i < 32);
@@ -761,16 +766,23 @@ void func_02091bf4(void) {
 }
 
 #pragma peephole off
-void AddRecordValue(s32 index,s32 value) {
-extern u32 gRecordValues[];
-if(value+gRecordValues[index]<0xf423fU) { gRecordValues[index]=gRecordValues[index]+value; return; }
-gRecordValues[index]=0xf423fU;
+/* Add `amount` to the player's accumulated record counter `index`, saturating at
+ * the six-digit display maximum (RECORD_VALUE_MAX) instead of overflowing. */
+void AddRecordValue(s32 index, s32 amount) {
+    extern u32 gRecordValues[];
+    if (amount + gRecordValues[index] < RECORD_VALUE_MAX) {
+        gRecordValues[index] = gRecordValues[index] + amount;
+        return;
+    }
+    gRecordValues[index] = RECORD_VALUE_MAX;
 }
 #pragma peephole off
+/* Add `value` to the record-funds counter at `index`, saturating at the
+ * eight-digit maximum (RECORD_FUNDS_MAX) instead of overflowing. */
 void AddRecordFunds(s32 index,s32 value) {
 extern u32 gRecordValues[];
-if(value+gRecordValues[index]<0x5f5e0ffU) { gRecordValues[index]=gRecordValues[index]+value; return; }
-gRecordValues[index]=0x5f5e0ffU;
+if(value+gRecordValues[index]<RECORD_FUNDS_MAX) { gRecordValues[index]=gRecordValues[index]+value; return; }
+gRecordValues[index]=RECORD_FUNDS_MAX;
 }
 #pragma peephole reset
 M2C_UNK func_02091c88(M2C_UNK arg0, M2C_UNK arg1) {
@@ -778,12 +790,15 @@ M2C_UNK func_02091c88(M2C_UNK arg0, M2C_UNK arg1) {
     gRecordValues[arg0] = (unsigned int)arg1;
 }
 
+/* Decompress the shared scene-panel graphics into the current 3D engine's texture
+ * VRAM and upload the panel's palette to its OBJ palette slot. */
 void LoadScenePanelGraphics(void) {
-extern void *gCur3DSpriteEngine;
-extern M2C_UNK gScenePanelGraphics;
-extern M2C_UNK gScenePanelPalette;
-LoadGraphicsBlock(&gScenePanelGraphics,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c));
-CopyToObjPaletteShadow(&gScenePanelPalette,0x200,0x20);
+    extern void *gCur3DSpriteEngine;
+    extern M2C_UNK gScenePanelGraphics;
+    extern M2C_UNK gScenePanelPalette;
+
+    LoadGraphicsBlock(&gScenePanelGraphics, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXTURE));
+    CopyToObjPaletteShadow(&gScenePanelPalette, SCENE_PANEL_PALETTE_SLOT, SCENE_PANEL_PALETTE_COLORS);
 }
 
 /* Load the shared scene-panel graphics and palette for both 3D sprite engines:

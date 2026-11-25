@@ -29,15 +29,18 @@ s32 GetCursorCycleKey(void) {
     return 0;
 }
 
+/* Cursor-settle key check, the key counterpart of GetMapSettleTouchAction:
+ * MAP_ACTION_CANCEL (nonzero) once the B key that picked the tile is released,
+ * 0 while it is still held down from a previous frame. */
 s32 GetMapSettleKeyAction(void) {
     extern void *gKeyState;
-    if (M2C_FIELD(gKeyState, u16 *, 0) & 2) {
-        return 0x20;
+    if (((KeyState *)gKeyState)->pressed & KEY_B) {
+        return MAP_ACTION_CANCEL;
     }
-    if (M2C_FIELD(gKeyState, u16 *, 6) & 2) {
+    if (((KeyState *)gKeyState)->held & KEY_B) {
         return 0;
     }
-    return 0x20;
+    return MAP_ACTION_CANCEL;
 }
 
 /* The map-cursor action the key pressed this frame asks for, in priority order:
@@ -136,28 +139,31 @@ void SpawnCursorUnitSpecialEffect(s32 parent) {
 void CreatePlayerUnitViewSprite(void *view) {
     extern void **gCurrentMap;
     extern u8 gArmyUnitViewCreate[];
-    void func_020a3428(s32, s32);
+    void SetPlayerSpriteSet(s32, s32);
     s32 player = M2C_FIELD(view, s32 *, 0x5c);
     s32 spriteSet = M2C_FIELD(view, s32 *, 0x64);
     u32 armyId;
 
-    func_020a3428(player, spriteSet);
+    SetPlayerSpriteSet(player, spriteSet);
     armyId = (u32)(M2C_FIELD((u8 *)*gCurrentMap + player * 0x8c, s32 *, 0x6810) << 24) >> 24;
     (*(void (**)(s32, void *))(gArmyUnitViewCreate + armyId * 0x9c + spriteSet * 0x28))(player, view);
 }
 
-void func_020bcee4(void *arg0) {
-    M2C_UNK func_020a33f0(s32, M2C_UNK);
-    M2C_UNK func_020a34a8(s32);
-    M2C_UNK func_020a34f4(s32);
+/* Final step of the on-map player unit view: advance the player's sprite state,
+ * consume the dual CO power cost from its meter, clear its sprite aux bits, then
+ * reload the UI graphics and refresh the map view. */
+void FinishPlayerUnitView(void *view) {
+    M2C_UNK AdvancePlayerSpriteState(s32);
+    M2C_UNK ConsumeDualCoPowerCost(s32);
+    M2C_UNK SetPlayerSpriteAuxBits(s32, M2C_UNK);
     M2C_UNK LoadUiGraphics();
     M2C_UNK RefreshMapView();
-    s32 temp_r4;
+    s32 player;
 
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0x5C);
-    func_020a34a8(temp_r4);
-    func_020a34f4(temp_r4);
-    func_020a33f0(temp_r4, 0);
+    player = M2C_FIELD(view, s32 *, PLAYER_UNIT_VIEW_PLAYER);
+    AdvancePlayerSpriteState(player);
+    ConsumeDualCoPowerCost(player);
+    SetPlayerSpriteAuxBits(player, 0);
     LoadUiGraphics();
     RefreshMapView();
 }
@@ -222,22 +228,34 @@ void func_020bd084(void *arg0) {
     }
 }
 
-void CreateTouchCursor(s16 a,s16 b){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);void *CreateSpriteFromClass(M2C_UNK *,s32);void *p;if(FindObjectByClass(&data_021293d4))return;p=CreateSpriteFromClass(&data_021293d4,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;}
+/* Create the touch cursor's sprite at screen position (x, y); an existing cursor
+ * is left alone, only one is allowed at a time. */
+void CreateTouchCursor(s16 x, s16 y) {
+    extern M2C_UNK gTouchCursorClass;
+    s32 FindObjectByClass(M2C_UNK *);
+    void *CreateSpriteFromClass(M2C_UNK *, s32);
+    void *cursor;
 
-void DeleteTouchCursor(void){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);if(!FindObjectByClass(&data_021293d4))return;DeleteSpriteObjectsOfClass(&data_021293d4);}
+    if (FindObjectByClass(&gTouchCursorClass)) return;
+    cursor = CreateSpriteFromClass(&gTouchCursorClass, 7);
+    M2C_FIELD(cursor, s32 *, 0x34) = x;
+    M2C_FIELD(cursor, s32 *, 0x38) = y;
+}
+
+void DeleteTouchCursor(void){extern M2C_UNK gTouchCursorClass;s32 FindObjectByClass(M2C_UNK *);M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);if(!FindObjectByClass(&gTouchCursorClass))return;DeleteSpriteObjectsOfClass(&gTouchCursorClass);}
 
 void HideTouchCursor(void) {
     M2C_UNK ResumeAnimationOfSpriteClass(M2C_UNK *);
-    extern M2C_UNK data_021293d4;
-    ResumeAnimationOfSpriteClass(&data_021293d4);
+    extern M2C_UNK gTouchCursorClass;
+    ResumeAnimationOfSpriteClass(&gTouchCursorClass);
 }
 
 u8 func_020bd118(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_021293d4;
+    extern M2C_UNK gTouchCursorClass;
     u8 var_r0;
 
-    if (FindObjectByClass(&data_021293d4) != 0) {
+    if (FindObjectByClass(&gTouchCursorClass) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -360,16 +378,18 @@ if(M2C_FIELD(gTouchState,u8 *,0x12)&&M2C_FIELD(gTouchState,u8 *,0x10)==20&&M2C_F
 if(M2C_FIELD(gTouchState,u8 *,0x16)&&M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)==M2C_FIELD(*gCurrentMap,s16 *,MAP_TOUCH_TILE_X)&&M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)==M2C_FIELD(*gCurrentMap,s16 *,MAP_TOUCH_TILE_Y)){HideTouchCursor();if(ConfirmCursorTile(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y),1,0,0))return 1;}return 0;
 }
 
-s32 func_020bd650(void) {
+/* Selection-settle touch check: MAP_ACTION_CANCEL (nonzero) once the stylus is up
+ * or touch input is off, and 0 while a touch is being held. */
+s32 GetMapSelectionTouchAction(void) {
     s32 IsTouchInputDisabled();
     extern void *gTouchState;
     if (IsTouchInputDisabled() != 0) {
-        return 0x20;
+        return MAP_ACTION_CANCEL;
     }
-    if (M2C_FIELD(gTouchState, u8 *, 0x12) != 0) {
+    if (M2C_FIELD(gTouchState, u8 *, TOUCH_ACTIVE) != 0) {
         return 0;
     }
-    return 0x20;
+    return MAP_ACTION_CANCEL;
 }
 
 /* Translate a stylus release on the tile the press started on into an action:

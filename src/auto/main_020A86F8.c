@@ -73,16 +73,18 @@ s32 func_020a886c(void) {
 
 s32 *MapData_GetRecord(a) s32 a; {extern u8 data_ov000_021afe90[];return (s32 *)(80*a+(s32)data_ov000_021afe90);}
 
-s32 func_020a8888(void) {
+s32 MapData_GetNameTextId(void) {
     s32 *MapData_GetRecord();
     return *MapData_GetRecord();
 }
 
-u8 MapData_GetTileset(s32 arg0) {
-    if ((arg0 >= 0xE1) && (arg0 < 0x1A9)) {
+/* The tileset index of map `mapId`: campaign maps have no entry in the per-map
+ * data table and use tileset 0. */
+u8 MapData_GetTileset(s32 mapId) {
+    if ((mapId >= MAP_ID_CAMPAIGN_FIRST) && (mapId < MAP_ID_CAMPAIGN_END)) {
         return 0U;
     }
-    return M2C_FIELD(MapData_GetRecord(), u8 *, 6);
+    return M2C_FIELD(MapData_GetRecord(), u8 *, MAP_DATA_TILESET);
 }
 
 u8 func_020a88c4(void) {
@@ -168,7 +170,7 @@ s32 func_020a8ac4(s32 a,s32 b){s32 *p=MapData_GetRecord(a);return M2C_FIELD(p+(b
 
 u8 func_020a8ae0(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,56);}
 
-s32 func_020a8afc(void) {
+s32 MapData_GetWinRuleTextId(void) {
     return M2C_FIELD(MapData_GetRecord(), s32 *, 0x40);
 }
 
@@ -232,7 +234,16 @@ M2C_UNK *func_020a8bcc(void) {
     return &data_0212614c;
 }
 
-void func_020a8bd8(s32 a,s32 b){extern s32 *gCurrentMap;s32 *p=(s32 *)(*gCurrentMap+0x67a4+140*a);M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&~255)|(b&255);}
+/* Give player `player` the army (CO) id `armyId` in the live map record: write
+ * the low byte of its PLAYER_REC_SPRITE word, keeping the rest of the word (the
+ * sprite table selectors and the CO power meter). */
+void SetPlayerRecordArmyId(s32 player, s32 armyId) {
+    extern s32 *gCurrentMap;
+    u8 *record = (u8 *)(*gCurrentMap + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE);
+
+    M2C_FIELD(record, u32 *, PLAYER_REC_SPRITE) =
+        (M2C_FIELD(record, u32 *, PLAYER_REC_SPRITE) & ~0xFF) | (armyId & 0xFF);
+}
 
 u32 func_020a8c10(s32 a){extern s32 *gCurrentMap;return M2C_FIELD(*gCurrentMap+140*a,Bits020a8c10 *,0x6810).value;}
 
@@ -255,7 +266,13 @@ s32 IsBoxOnScreen(s32 x, s32 y, s32 width, s32 height) {
     return 1;
 }
 
-s32 IsPointInRect(s32 a,s32 b,s32 c,s32 d,s16 e,s16 f){if(a<c || c+e<a)return 0;if(b<d || d+f<b)return 0;return 1;}
+/* Whether the point (x, y) lies inside the rectangle at (left, top) with the
+ * given width and height, its right and bottom edges included. */
+s32 IsPointInRect(s32 x, s32 y, s32 left, s32 top, s16 width, s16 height) {
+    if (x < left || left + width < x) return 0;
+    if (y < top || top + height < y) return 0;
+    return 1;
+}
 
 u32 func_020a8cc0(u32 arg0) {
     u32 var_r1;

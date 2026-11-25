@@ -128,15 +128,18 @@ case 23:{u8 *p=gCoState+(terrain>>5)*12;p[19]++;break;}}
 }}
 }
 #pragma pop
-s32 GetTotalRating(s32 arg0) {
+/* The winning player's total battle rating: speed, power and technique added
+ * together, saturating at BATTLE_RESULTS_TOTAL_MAX.  Only the winning player's
+ * ratings are stored, so the player argument is unused. */
+s32 GetTotalRating(s32 winner) {
     extern M2C_UNK gBattleResults;
-    s32 var_r0;
+    s32 total;
 
-    var_r0 = M2C_FIELD(&gBattleResults, u8 *, 0x12) + (M2C_FIELD(&gBattleResults, u8 *, 0x10) + M2C_FIELD(&gBattleResults, u8 *, 0x11));
-    if (var_r0 >= 0x3E8) {
-        var_r0 = 0x3E7;
+    total = M2C_FIELD(&gBattleResults, u8 *, BATTLE_RESULTS_TECHNIQUE) + (M2C_FIELD(&gBattleResults, u8 *, BATTLE_RESULTS_SPEED) + M2C_FIELD(&gBattleResults, u8 *, BATTLE_RESULTS_POWER));
+    if (total >= BATTLE_RESULTS_TOTAL_LIMIT) {
+        total = BATTLE_RESULTS_TOTAL_MAX;
     }
-    return var_r0;
+    return total;
 }
 
 /* The battle-results speed rating (0..150) for a player: 100 plus one point per
@@ -338,8 +341,8 @@ void SetPlayerCoId(s32 arg0, s32 arg1) {
 }
 
 void SetPlayerIdForSlot(s32 arg0, s8 arg1) {
-    extern M2C_UNK data_0215c381;
-    M2C_FIELD(&data_0215c381, s8 *, arg0) = arg1;
+    extern M2C_UNK gPlayerIdBySlot;
+    M2C_FIELD(&gPlayerIdBySlot, s8 *, arg0) = arg1;
 }
 
 void SetPlayerArmyId(s32 arg0, s32 arg1) {
@@ -358,8 +361,8 @@ void func_020a234c(s32 arg0, s16 arg1) {
 }
 
 u8 GetPlayerIdForSlot(s32 arg0) {
-    extern M2C_UNK data_0215c381;
-    return M2C_FIELD(&data_0215c381, u8 *, arg0);
+    extern M2C_UNK gPlayerIdBySlot;
+    return M2C_FIELD(&gPlayerIdBySlot, u8 *, arg0);
 }
 
 s32 GetPlayerArmyId(s32 arg0) {
@@ -484,67 +487,94 @@ s32 func_020a25bc(s32 arg0, s32 arg1) {
  return arg1 + M2C_FIELD(&data_0211fbf8, s8 *, arg0 * 0x48);
 }
 
-s32 func_020a25d8(s32 arg0, s32 arg1, s32 arg2) {
- s32 BuildUnitStatBlock(void *, void *, s32, s32);
- u32 data[3];
- BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
- return M2C_FIELD(data, s16 *, 8);
+/* The damage-percentage bonus the stat block of battle-map `unit` at tile (x, y)
+ * grants its owner: zero for an off-map tile or a unit with no commander bonus. */
+s32 GetUnitStatDamageBonus(void *unit, s32 x, s32 y) {
+    s32 BuildUnitStatBlock(void *, void *, s32, s32);
+    UnitStatBlock data;
+    BuildUnitStatBlock(&data, unit, x, y);
+    return data.value8;
 }
 
-s32 func_020a2608(s32 arg0, s32 arg1, s32 arg2) {
- s32 BuildUnitStatBlock(void *, void *, s32, s32);
- u32 data[3];
- BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
- return M2C_FIELD(data, s16 *, 10);
+/* The attack-power stat bonus (+0x0A) of `unit` at tile (x, y): the unit's
+ * stat block fills in the CO zone's +10 and the commander's attack-power
+ * bonus, which GetUnitAttackPower adds to its 100 base. */
+s32 GetUnitAttackPowerStatBonus(void *unit, s32 x, s32 y) {
+    s32 BuildUnitStatBlock(void *, void *, s32, s32);
+    UnitStatBlock stats;
+
+    BuildUnitStatBlock(&stats, unit, x, y);
+    return stats.valueA;
 }
 
-s32 GetUnitCaptureBonus(s32 arg0, s32 arg1, s32 arg2) {
- s32 BuildUnitStatBlock(void *, void *, s32, s32);
- u32 data[3];
- BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
- return M2C_FIELD(data, s8 *, 3);
+/* The capture-rate bonus the commander of battle-map `unit` at tile (x, y) grants
+ * it: the capture stat of the unit's stat block. */
+s32 GetUnitCaptureBonus(void *unit, s32 x, s32 y) {
+    s32 BuildUnitStatBlock(void *, void *, s32, s32);
+    UnitStatBlock data;
+    BuildUnitStatBlock(&data, unit, x, y);
+    return data.stat[3];
 }
 
-s32 func_020a2668(s32 arg0, s32 arg1, s32 arg2) {
- s32 BuildUnitStatBlock(void *, void *, s32, s32);
- u32 data[3];
- BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
- return M2C_FIELD(data, s8 *, 4);
+/* The extra veteran levels the stat block of battle-map `unit` at tile (x, y)
+ * grants it when it captures a property; zero for a unit without a commander. */
+s32 GetUnitVeteranLevelBonus(void *unit, s32 x, s32 y) {
+    s32 BuildUnitStatBlock(void *, void *, s32, s32);
+    UnitStatBlock data;
+    BuildUnitStatBlock(&data, unit, x, y);
+    return data.stat[4];
 }
 
-s32 GetUnitMoveBonus(s32 arg0, s32 arg1, s32 arg2) {
- s32 BuildUnitStatBlock(void *, void *, s32, s32);
- u32 data[3];
- BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
- return M2C_FIELD(data, s8 *, 2);
+/* The movement bonus the stat block of battle-map `unit` at tile (x, y) grants
+ * it: its commander's movement bonus, zero for an off-map tile or a unit with no
+ * commander bonus. */
+s32 GetUnitMoveBonus(void *unit, s32 x, s32 y) {
+    s32 BuildUnitStatBlock(void *, void *, s32, s32);
+    UnitStatBlock data;
+
+    BuildUnitStatBlock(&data, unit, x, y);
+    return data.stat[2];
 }
 
-s32 GetUnitAttackRangeBonus(s32 arg0, s32 arg1, s32 arg2) {
- s32 BuildUnitStatBlock(void *, void *, s32, s32);
- u32 data[3];
- BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
- return M2C_FIELD(data, s8 *, 6);
+/* The attack-range bonus the stat block of battle-map `unit` at tile (x, y)
+ * grants it: its commander's range bonus, zero for an off-map tile or a unit with
+ * no commander bonus. */
+s32 GetUnitAttackRangeBonus(void *unit, s32 x, s32 y) {
+    s32 BuildUnitStatBlock(void *, void *, s32, s32);
+    UnitStatBlock data;
+
+    BuildUnitStatBlock(&data, unit, x, y);
+    return data.stat[6];
 }
 
-s32 func_020a26f8(s32 arg0, s32 arg1, s32 arg2) {
- s32 BuildUnitStatBlock(void *, void *, s32, s32);
- u32 data[3];
- BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
- return M2C_FIELD(data, s8 *, 5);
+/* The terrain bonus the commander of battle-map `unit` at tile (x, y) grants it:
+ * the terrain stat of the unit's stat block, added to the unit's terrain
+ * penalty in the AI move score. */
+s32 GetUnitTerrainBonus(void *unit, s32 x, s32 y) {
+    s32 BuildUnitStatBlock(void *, void *, s32, s32);
+    UnitStatBlock data;
+    BuildUnitStatBlock(&data, unit, x, y);
+    return data.stat[5];
 }
 
-s32 func_020a2728(s32 arg0, s32 arg1, s32 arg2) {
- s32 BuildUnitStatBlock(void *, void *, s32, s32);
- u32 data[3];
- BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
- return M2C_FIELD(data, s8 *, 0);
+/* The bonus the stat block of battle-map `unit` at tile (x, y) adds to the top of
+ * its damage-variance (luck) range: RollDamageVariance passes the result plus 10
+ * as the range's upper bound. */
+s32 GetUnitMaxLuckBonus(void *unit, s32 x, s32 y) {
+    s32 BuildUnitStatBlock(void *, void *, s32, s32);
+    UnitStatBlock data;
+
+    BuildUnitStatBlock(&data, unit, x, y);
+    return data.stat[0];
 }
 
-s32 func_020a2758(s32 arg0, s32 arg1, s32 arg2) {
- s32 BuildUnitStatBlock(void *, void *, s32, s32);
- u32 data[3];
- BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);
- return M2C_FIELD(data, s8 *, 1);
+/* Lower bound of the random damage-variance roll the stat block of battle-map
+ * `unit` at tile (x, y) allows (RollDamageVariance rolls up to its luck bonus). */
+s32 GetUnitDamageVarianceMin(void *unit, s32 x, s32 y) {
+    s32 BuildUnitStatBlock(void *, void *, s32, s32);
+    UnitStatBlock data;
+    BuildUnitStatBlock(&data, unit, x, y);
+    return data.stat[1];
 }
 
 s8 func_020a2788(s32 arg0, s32 arg1) {

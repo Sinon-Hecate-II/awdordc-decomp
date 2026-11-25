@@ -5,7 +5,7 @@
 void MapEditTextDeleteAccentAction(u8 *arg0) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK MI_CpuCopy32(s32 *, s8 *, M2C_UNK);
-    M2C_UNK func_02019424(s32 *, M2C_UNK);
+    M2C_UNK Mb_StringCopy(s32 *, M2C_UNK);
     s32 func_020194e0(s32 *, M2C_UNK *);
     s32 IsLeadByte(s32 *);
     s32 MeasureStringWidth(s32 *);
@@ -79,7 +79,7 @@ value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258);
 if(*phase>=16){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=CreateTextLayer((s32)ctx); RenderTextLayerMessage(sprite,2,0x2800,0x46000012); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; GotoSpriteAnimationLabel((s32)ctx,5); } PlaySoundEffect(0x1001d); return;}
 MI_CpuCopy32(&gMapEditObjectList,(s8 *)scratch,0x44);
 scratch[*phase]=0;
-func_02019424(&scratch[*phase],(s32)value);
+Mb_StringCopy(&scratch[*phase],(s32)value);
 {s32 *node; u32 count=0; node=scratch; if(*node){do{if(IsLeadByte(node)==0){if(count)count++;} count+=MeasureStringWidth(node);}while(*++node);}
 if(count>64){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=CreateTextLayer((s32)ctx); RenderTextLayerMessage(sprite,2,0x2800,0x46000013); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; GotoSpriteAnimationLabel((s32)ctx,5); } PlaySoundEffect(0x1001d); return;}
 }
@@ -105,7 +105,7 @@ value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258);
 if(*phase>=16){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=CreateTextLayer((s32)ctx); RenderTextLayerMessage(sprite,2,0x2800,0x46000012); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; GotoSpriteAnimationLabel((s32)ctx,5); } PlaySoundEffect(0x1001d); return;}
 MI_CpuCopy32(&gMapEditObjectList,(s8 *)padding,0x44);
 padding[*phase]=0;
-func_02019424(&padding[*phase],(s32)value);
+Mb_StringCopy(&padding[*phase],(s32)value);
 {s32 *node; u32 count=0; node=padding; if(*node){do{if(IsLeadByte(node)==0){if(count)count++;} count+=MeasureStringWidth(node);}while(*++node);}
 if(count>64){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; func_020b269c(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=CreateTextLayer((s32)ctx); RenderTextLayerMessage(sprite,2,0x2800,0x46000013); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; GotoSpriteAnimationLabel((s32)ctx,5); } PlaySoundEffect(0x1001d); return;}
 }

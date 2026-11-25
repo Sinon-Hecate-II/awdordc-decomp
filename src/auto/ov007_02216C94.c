@@ -466,35 +466,48 @@ s32 MapEditor_GetPaletteKind(s32 a,s32 b){
  return MapEditor_GetPaletteEntries(a)[b*5];
 }
 
-u8 MapEditor_GetPaletteOwner(s32 a,s32 b,s32 c){extern u8 data_ov007_0221fdf0;u8 *p=(u8 *)MapEditor_GetPaletteEntries(a)+b*5;if(p[4]==1)return (&data_ov007_0221fdf0)[c];return 0;}
+/* The palette row the icon of palette entry `index` on `page` is drawn with:
+ * the entry is painted in the owner's army colour when its record says so (the
+ * terrain page's entries are), giving `owner`'s colour slot; otherwise row 0. */
+u8 MapEditor_GetPaletteOwner(s32 page, s32 index, s32 owner) {
+    extern u8 gMapEditorOwnerByColor;
+    u8 *entry = (u8 *)MapEditor_GetPaletteEntries(page) + index * MAP_EDITOR_PALETTE_ENTRY_SIZE;
+    if (entry[4] == 1) return (&gMapEditorOwnerByColor)[owner];
+    return 0;
+}
 
-s32 func_ov007_02217c1c(s32 arg0) {
-    extern u8 data_ov007_0221fdf0;
-    s32 var_r2;
-    u8 *var_r3;
+/* Map editor palette lookup: the owner/colour index the palette panel uses for
+ * owner byte `owner` (index into gMapEditorOwnerByColor), or -1 when it has no
+ * colour slot. */
+s32 MapEditor_GetOwnerColorIndex(s32 owner) {
+    extern u8 gMapEditorOwnerByColor;
+    s32 index;
+    u8 *entry;
 
-    var_r3 = &data_ov007_0221fdf0;
-    var_r2 = 0;
+    entry = &gMapEditorOwnerByColor;
+    index = 0;
 loop_1:
-    if (*var_r3 == arg0) {
-        return var_r2;
+    if (*entry == owner) {
+        return index;
     }
-    var_r2 += 1;
-    var_r3 += 1;
-    if (var_r2 >= 5) {
+    index += 1;
+    entry += 1;
+    if (index >= MAP_EDITOR_OWNER_COLOR_COUNT) {
         return -1;
     }
     goto loop_1;
 }
 
-s32 func_ov007_02217c50(void *arg0) {
-    u8 temp_r0;
+/* Number of owner/colour slots the palette panel's current page shows: five on
+ * the terrain page (four army colours plus neutral) and four on the unit page. */
+s32 MapEditor_GetPageOwnerColorCount(void *editor) {
+    u8 page;
 
-    temp_r0 = M2C_FIELD(arg0, u8 *, 0x37);
-    switch (temp_r0) {                              /* irregular */
-    case 0:
+    page = M2C_FIELD(editor, u8 *, MAP_EDITOR_PANEL_PAGE);
+    switch (page) {
+    case MAP_EDITOR_PAGE_TERRAIN:
         return 5;
-    case 1:
+    case MAP_EDITOR_PAGE_UNIT:
         return 4;
     default:
         return 0;

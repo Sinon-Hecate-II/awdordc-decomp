@@ -440,9 +440,13 @@ if(!(knownMask & playerBit)) return 0;
 return WFC_PlayerDataOffset(state,playerMask,(s32)players+WH_DS_DATA,playerIndex);
 }
 #pragma scheduling reset
-s32 WFC_PlayerDataOffset(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Return the address inside a channel state's player-data block at
+ * `playerDataBase` of the copy that belongs to player `playerIndex`: the block
+ * holds one WFC_CH_PAYLOAD_LEN-byte copy per connected player, in player order,
+ * so the index's copy follows one copy for each player of `playerMask` below it. */
+s32 WFC_PlayerDataOffset(void *state, s32 playerMask, s32 playerDataBase, s32 playerIndex) {
     s32 CountBits(s32);
-    return (M2C_FIELD(arg0, u16 *, 0x810) * CountBits(arg1 & ((1 << arg3) - 1))) + arg2;
+    return (M2C_FIELD(state, u16 *, WFC_CH_PAYLOAD_LEN) * CountBits(playerMask & ((1 << playerIndex) - 1))) + playerDataBase;
 }
 
 void WFC_StartChannel(M2C_UNK arg0, M2C_UNK arg1) {
@@ -450,7 +454,7 @@ void WFC_StartChannel(M2C_UNK arg0, M2C_UNK arg1) {
     func_02012fac(arg0, arg1, 0xFFFF, 2, 1);
 }
 
-void func_02013b48(void) {
+void WFC_CloseChannelThunk(void) {
     M2C_UNK WFC_CloseChannel();
     WFC_CloseChannel();
 }

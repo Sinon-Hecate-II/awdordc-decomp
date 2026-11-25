@@ -107,11 +107,21 @@ void AddPlayerUnitDestroyed(s32 player) {
  * (not PLAYER_CONTROL_NONE) and no defeat turn yet. */
 s32 IsPlayerActive(s32 player){extern void **gCurrentMap;u8 result;u8 *p=(u8 *)*gCurrentMap+MAP_PLAYER_STATES+player*MAP_PLAYER_STRIDE;if(!p[PLAYER_REC_CTRL])return 0;if(M2C_FIELD(p,u16 *,PLAYER_REC_DEFEAT_TURN)==0)result=1;else result=0;return result;}
 
-u8 IsPlayerPresent(s32 a){extern void **gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67c2]!=0;}
+/* Whether player `player` takes part in the battle: its record has a control
+ * kind other than PLAYER_CONTROL_NONE. */
+u8 IsPlayerPresent(s32 player) {
+    extern void **gCurrentMap;
+    return ((u8 *)*gCurrentMap + player * MAP_PLAYER_STRIDE)[PLAYER_CONTROL_OFF] != PLAYER_CONTROL_NONE;
+}
 
-s32 IsPlayerHuman(s32 a){extern void **gCurrentMap;return (u8)(((u8 *)*gCurrentMap+a*0x8c)[0x67c2]==1);}
+/* Whether player `player` is controlled by a human. */
+s32 IsPlayerHuman(s32 player) {
+    extern void **gCurrentMap;
+    return (u8)(((u8 *)*gCurrentMap + player * MAP_PLAYER_STRIDE)[PLAYER_CONTROL_OFF] == PLAYER_CONTROL_HUMAN);
+}
 
-u8 IsPlayerCpu(s32 a){extern void **gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67c2]==2;}
+/* Whether player `player` is a computer-controlled player. */
+u8 IsPlayerCpu(s32 player){extern void **gCurrentMap;return ((u8 *)*gCurrentMap+player*MAP_PLAYER_STRIDE)[PLAYER_CONTROL_OFF]==PLAYER_CONTROL_CPU;}
 
 /* Whether this console controls player `playerId`: every player in a
  * single-player battle (not a link battle), any human player in a link battle,
@@ -318,7 +328,7 @@ void func_020d1f2c(void) {
     s32 SetPlayerTeam(s32, s32);
     s32 GetPlayerTeam(s32, s32);
     s32 GetPlayerIdForSlot(s32);
-    s32 func_020a8bd8(s32, s32);
+    s32 SetPlayerRecordArmyId(s32, s32);
     s32 GetPlayerCoId(s32);
     s32 func_020a2390(s32);
     void SetCoPowerMeterPoints(s32, s32);
@@ -362,9 +372,9 @@ void func_020d1f2c(void) {
             r10[0x1d] = (u8)GetPlayerIdForSlot(r8);
 
             if (((u8 *)*gCurrentMap)[r9 + 0x67c2] == 0) {
-                func_020a8bd8(r8, 0);
+                SetPlayerRecordArmyId(r8, 0);
             } else {
-                func_020a8bd8(r8, GetPlayerCoId(r8));
+                SetPlayerRecordArmyId(r8, GetPlayerCoId(r8));
             }
 
             SetCoPowerMeterPoints(r8, func_020a2390(r8));
@@ -427,7 +437,7 @@ void func_020d2168(void) {
  * the per-unit-kind counters, then builds the derived per-player data. */
 void InitPlayerStates(void){
 extern void **gCurrentMap;extern M2C_UNK gMapData;
-void func_020a338c(s32,s32);void func_020a3428(s32,s32);void func_020a33f0(s32,s32);void SetCoPowerMeterPoints(s32,s32);void SetPlayerSelectedUnit(s32,s32);void SetPlayerGaveUp(s32,u8);void SetPlayerLost(s32,s32);void func_020d2d60(s32);void func_020d33c4(void);
+void SetPlayerArmyVariant(s32,s32);void SetPlayerSpriteSet(s32,s32);void SetPlayerSpriteAuxBits(s32,s32);void SetCoPowerMeterPoints(s32,s32);void SetPlayerSelectedUnit(s32,s32);void SetPlayerGaveUp(s32,u8);void SetPlayerLost(s32,s32);void func_020d2d60(s32);void func_020d33c4(void);
 s32 playerOffset; s32 player;
 s32 unitKind;player=1;playerOffset=140;
 do{
@@ -448,7 +458,7 @@ M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x681c)=0;
 M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x6820)=0;
 M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x6824)=0;
 M2C_FIELD((*gCurrentMap+0x67a4)+playerOffset,u32*,0x6c)&=~255;
-func_020a338c(player,0);func_020a3428(player,0);func_020a33f0(player,0);
+SetPlayerArmyVariant(player,0);SetPlayerSpriteSet(player,0);SetPlayerSpriteAuxBits(player,0);
 M2C_FIELD((*gCurrentMap+0x67a4)+playerOffset,u32*,0x6c)&=~0x3c000;
 SetCoPowerMeterPoints(player,0);SetPlayerSelectedUnit(player,0);
 M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67ca)=player;M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67cb)=0;
@@ -461,5 +471,10 @@ player++;playerOffset+=140;
 }while(player<5);func_020d33c4();
 }
 #pragma pop
-s32 PlayerHasHq(s32 a){extern void **gCurrentMap;return (u8)((((u8 *)*gCurrentMap+a*0x8c)[0x67cf]&0x80)==0);}
+/* Whether player `player` still has a headquarters: the record's HQ tile x byte
+ * marks "no HQ" with bit 7, so the player has one while that bit is clear. */
+s32 PlayerHasHq(s32 player) {
+    extern void **gCurrentMap;
+    return (u8)((((u8 *)*gCurrentMap + player * MAP_PLAYER_STRIDE)[PLAYER_HQ_X_OFF] & 0x80) == 0);
+}
 

@@ -111,14 +111,17 @@ M2C_UNK LoadFaceTextureGfx(M2C_UNK faceId, s32 dest) {
     CloseNarcArchive();
 }
 
-M2C_UNK LoadFacePaletteToSpriteBuffer(M2C_UNK arg0, u16 arg1) {
+/* Load CO face `faceId`'s 16-colour palette into the current 3D sprite engine's
+ * sprite palette slot `paletteSlot`: skip unknown face ids, then read
+ * sFacePaletteName's palette and copy it into the engine's palette buffer. */
+M2C_UNK LoadFacePaletteToSpriteBuffer(M2C_UNK faceId, u16 paletteSlot) {
     M2C_UNK SetFileDirectory();
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
     s32 GetFaceTexturePath(M2C_UNK);
     extern M2C_UNK sFacePaletteName;
-    if (GetFaceTexturePath(arg0) == 0) return;
+    if (GetFaceTexturePath(faceId) == 0) return;
     SetFileDirectory();
-    LoadFileToSpriteBuffer(&sFacePaletteName, arg1 << 5, 0x20);
+    LoadFileToSpriteBuffer(&sFacePaletteName, paletteSlot << DS3D_PALETTE_SHIFT, DS3D_PALETTE_BYTES);
 }
 
 /* Load CO face `faceId`'s texture graphics into the current 3D sprite engine's
@@ -237,14 +240,16 @@ M2C_UNK func_0209902c(void *arg0) {
  M2C_FIELD(arg0,s8 *,0x59)=1;
 }
 
-M2C_UNK func_02099040(void *arg0) {
+/* Per-frame update of a CO face sprite: once a face is loaded, advance its fade
+ * and slide animations and draw the actor. */
+M2C_UNK UpdateFaceSprite(void *face) {
  void UpdateSpriteFade(void *);
  void UpdateSpriteSlide(void *);
  void DrawSpriteActor(void *);
- if(IsFaceSpriteLoaded(arg0)==0) return;
- UpdateSpriteFade(arg0);
- UpdateSpriteSlide(arg0);
- DrawSpriteActor(arg0);
+ if(IsFaceSpriteLoaded(face)==0) return;
+ UpdateSpriteFade(face);
+ UpdateSpriteSlide(face);
+ DrawSpriteActor(face);
 }
 
 void func_02099070(void) {
@@ -253,8 +258,8 @@ void func_02099070(void) {
 }
 
 void func_0209907c(void) {
-    M2C_UNK func_02099040();
-    func_02099040();
+    M2C_UNK UpdateFaceSprite();
+    UpdateFaceSprite();
 }
 
 /* Create the linked face-child object (the sprite FACE_SPRITE_CHILD points at,
@@ -373,15 +378,17 @@ u8 FaceSpriteIsLoaded(void *arg0) {
     return var_r0;
 }
 
-M2C_UNK func_02099338(void *arg0) {
-    s8 *p = (s8 *)arg0;
-    p[0x58] = 0;
-    p[0x59] = 0;
-    p[0x5A] = 0;
-    p[0x5B] = 0;
-    p[0x5C] = 1;
-    p[0x5D] = 0;
-    M2C_FIELD(arg0, void ***, 0x60) = CreateFaceChildSprite((s32)arg0);
+/* Reset a CO face sprite to its blank state (no face, expression, layout or
+ * variant, default palette style), mark it active and create its linked face
+ * child object. */
+M2C_UNK InitFaceSprite(void *face) {
+    M2C_FIELD(face, s8 *, FACE_SPRITE_FACE) = 0;
+    M2C_FIELD(face, s8 *, FACE_SPRITE_EXPRESSION) = 0;
+    M2C_FIELD(face, s8 *, FACE_SPRITE_LAYOUT) = 0;
+    M2C_FIELD(face, s8 *, FACE_SPRITE_VARIANT) = 0;
+    M2C_FIELD(face, s8 *, FACE_SPRITE_ACTIVE) = 1;
+    M2C_FIELD(face, s8 *, FACE_SPRITE_PALETTE) = 0;
+    M2C_FIELD(face, void **, FACE_SPRITE_CHILD) = CreateFaceChildSprite((s32)face);
 }
 
 /* Draw a CO face sprite: pick its face tile row from its expression and variant,
@@ -397,8 +404,8 @@ M2C_UNK DrawFaceSprite(void *face){
 }
 
 void func_020993bc(void) {
-    M2C_UNK func_02099338();
-    func_02099338();
+    M2C_UNK InitFaceSprite();
+    InitFaceSprite();
 }
 
 void func_020993c8(void) {
@@ -639,19 +646,21 @@ if(y)y+=a;if(z)z+=b;if(w)w+=c;
  }
 }
 #pragma opt_common_subs reset
-u8 func_020999b8(void *arg0) {
+/* Nonzero while a message box is active and this text object has been flagged
+ * (flags bit 0) as waiting for it, so its text script must not advance. */
+u8 IsTextWaitingForMessageBox(void *text) {
     s32 IsMessageBoxActive();
-    u8 var_r0;
+    u8 waiting;
 
     if (IsMessageBoxActive() == 0) {
         return 0U;
     }
-    if (M2C_FIELD(arg0, u8 *, 0x5C) & 1) {
-        var_r0 = 1;
+    if (M2C_FIELD(text, u8 *, 0x5C) & 1) {
+        waiting = 1;
     } else {
-        var_r0 = 0;
+        waiting = 0;
     }
-    return var_r0;
+    return waiting;
 }
 
 s32 func_020999e8(void *a){
@@ -677,11 +686,13 @@ void RedrawTextObject(TextStateCells *text) {
  text->callback();
 }
 
-M2C_UNK func_02099a6c(void *arg0) {
- register s32 n=M2C_FIELD(arg0,u8 *,0x4A)-M2C_FIELD(arg0,u8 *,0x48)+2;
- if(M2C_FIELD(arg0,u8 *,0x58)<n) M2C_FIELD(arg0,u8 *,0x58)=n;
- M2C_FIELD(arg0,u8 *,0x4A)=M2C_FIELD(arg0,u8 *,0x48);
- M2C_FIELD(arg0,u8 *,0x56)=0;
+/* Close the text object's current line: record how many cells it spans in the
+ * object's width, then move the cursor back to the line's first column. */
+M2C_UNK EndTextLine(TextState0209 *text) {
+    register s32 cells = text->cellX - text->lineX + 2;
+    if (text->width < cells) text->width = cells;
+    text->cellX = text->lineX;
+    text->column = 0;
 }
 
 M2C_UNK func_02099a9c(void *a){
@@ -691,9 +702,9 @@ M2C_UNK func_02099a9c(void *a){
 }
 
 void func_02099ac4(void *arg0) {
-    M2C_UNK func_02099a6c();
+    M2C_UNK EndTextLine();
     M2C_UNK func_02099a9c(void *);
-    func_02099a6c();
+    EndTextLine();
     func_02099a9c(arg0);
     M2C_FIELD(arg0, u8 *, 0x5C) = (u8) (M2C_FIELD(arg0, u8 *, 0x5C) | 2);
 }

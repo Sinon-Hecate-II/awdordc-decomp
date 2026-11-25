@@ -169,7 +169,11 @@ s32 IsWfcProfileEmpty(void) {
     return 0;
 }
 
-u32 Base64EncodedLength(u32 n) { return ((n % 3 != 0) + n / 3) * 4; }
+/* Bytes of base64 text `byteCount` input bytes encode to: one 4-character group
+ * per 3 input bytes, a final partial group padded to a whole one. */
+u32 Base64EncodedLength(u32 byteCount) {
+    return ((byteCount % BASE64_GROUP_BYTES != 0) + byteCount / BASE64_GROUP_BYTES) * BASE64_GROUP_CHARS;
+}
 
 void WebRequestProgress(void) {
 

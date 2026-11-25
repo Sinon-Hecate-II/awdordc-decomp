@@ -6,17 +6,17 @@
 #include "sound.h"
 static inline void SyncSprite13554(s32 p) {
 s32 GetUnitSpriteWidth(s32);s32 GetUnitSpriteHeight(s32);
-void func_02087d84(s32,s32,s32,s32,s32,s32);
+void SpriteCellListSetCellRect(s32,s32,s32,s32,s32,s32);
 s16 y,x;s32 w;
 if((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)){
 y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);
-func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+SpriteCellListSetCellRect(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
 }
 }
 
 /* Refreshes 8 sprites for the current mode, then runs mode post-processing. */
 void func_ov007_02213150(void) {
-    M2C_UNK func_02088eec(s32, M2C_UNK);
+    M2C_UNK Start3DSpriteSlideIn(s32, M2C_UNK);
     M2C_UNK func_ov007_02212dcc();
     void MapEditor_SlideOutButtonSprites();
     extern M2C_UNK gMapEditorButtonSprites;
@@ -26,24 +26,24 @@ void func_ov007_02213150(void) {
     mode = GetMapEditorMode();
     if (mode != 0) {
         if (mode == 1) {
-            func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0), 6);
-            func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 8), 6);
-            func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 4), 6);
-            func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0xC), 6);
-            func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x10), 6);
-            func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x14), 6);
-            func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x18), 6);
-            func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x1C), 6);
+            Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0), 6);
+            Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 8), 6);
+            Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 4), 6);
+            Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0xC), 6);
+            Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x10), 6);
+            Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x14), 6);
+            Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x18), 6);
+            Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x1C), 6);
         }
     } else {
-        func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0), 6);
-        func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 8), 6);
-        func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 4), 6);
-        func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x20), 6);
-        func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x24), 6);
-        func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x28), 6);
-        func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x2C), 6);
-        func_02088eec(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x30), 6);
+        Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0), 6);
+        Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 8), 6);
+        Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 4), 6);
+        Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x20), 6);
+        Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x24), 6);
+        Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x28), 6);
+        Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x2C), 6);
+        Start3DSpriteSlideIn(M2C_FIELD(&gMapEditorButtonSprites, s32 *, 0x30), 6);
     }
     func_ov007_02212dcc();
 }
@@ -92,17 +92,19 @@ void func_ov007_0221330c(void) {
     CreateSpriteFromClass(&data_ov007_0221f6b0, 7);
 }
 
-u8 func_ov007_02213324(void) {
+/* Whether the map open in the editor is a custom map rather than a campaign
+ * map: its map id has no valid campaign map record. */
+u8 MapEditor_IsCustomMap(void) {
     s32 IsCampaignMapRecordValid(u16);
     extern void **gCurrentMap;
-    u8 var_r0;
+    u8 custom;
 
-    if (IsCampaignMapRecordValid(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)) == 0) {
-        var_r0 = 1;
+    if (IsCampaignMapRecordValid(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) == 0) {
+        custom = 1;
     } else {
-        var_r0 = 0;
+        custom = 0;
     }
-    return var_r0;
+    return custom;
 }
 
 s32 func_ov007_02213358(void) {
@@ -119,14 +121,19 @@ void func_ov007_0221336c(void) {
     func_ov007_0221c630();
 }
 
-void func_ov007_02213378(void *arg0) {
+/* Confirm the map editor's map-fill menu: paint every cell from the preset the
+ * fill dialog was opened with (stored at +0x5C by func_ov007_022133a8), refresh
+ * the map view and the editor, fit the preview to the new map, mark the map as
+ * edited and play the fill sound. */
+void MapEditor_ApplyFillPreset(void *dialog) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK RefreshMapView();
     M2C_UNK RefreshMapEditor();
     M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     M2C_UNK FillMapTerrain(s32);
     M2C_UNK MapEditor_FitPreviewToMap();
-    FillMapTerrain(M2C_FIELD(arg0, s32 *, 0x5C));
+
+    FillMapTerrain(M2C_FIELD(dialog, s32 *, 0x5C));
     RefreshMapView();
     RefreshMapEditor();
     MapEditor_FitPreviewToMap();
@@ -238,7 +245,7 @@ void func_ov007_02213554(void *arg0) {
     void Set3DSpriteSlideTargetAndStart(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK GetUnitSpriteWidth(M2C_UNK);
     M2C_UNK GetUnitSpriteHeight(M2C_UNK);
-    void func_02087d84(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    void SpriteCellListSetCellRect(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void CreateUnitSpriteButtonTask(M2C_UNK, M2C_UNK);
     void Show3DSpriteSlide(M2C_UNK);
     extern M2C_UNK data_ov007_0221fdb0, data_ov007_0221fdbc, data_ov007_0221fdcc, data_ov007_0221fdd8, data_ov007_0221fde4;
@@ -270,52 +277,52 @@ M2C_FIELD(r4,void**,64)=CreateUnitSprite(r4);InitUnitSprite(M2C_FIELD(r4,void**,
         y = M2C_FIELD(p,s16*,0x52);
         x = M2C_FIELD(p,s16*,0x50);
         w = GetUnitSpriteWidth(p);
-        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+        SpriteCellListSetCellRect(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
     }M2C_FIELD(p,s16*,0x34)=88;M2C_FIELD(p,s16*,0x36)=80;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
         y = M2C_FIELD(p,s16*,0x52);
         x = M2C_FIELD(p,s16*,0x50);
         w = GetUnitSpriteWidth(p);
-        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+        SpriteCellListSetCellRect(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
     }}CreateUnitSpriteButtonTask(M2C_FIELD(r4,s32*,64),0);tile=(u16)(tile+8);M2C_FIELD(r4,void**,68)=CreateUnitSprite(r4);InitUnitSprite(M2C_FIELD(r4,void**,68),9,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,68);Set3DSpriteSlideTargetAndStart(p,88,112,88,112);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
         y = M2C_FIELD(p,s16*,0x52);
         x = M2C_FIELD(p,s16*,0x50);
         w = GetUnitSpriteWidth(p);
-        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+        SpriteCellListSetCellRect(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
     }M2C_FIELD(p,s16*,0x34)=88;M2C_FIELD(p,s16*,0x36)=112;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
         y = M2C_FIELD(p,s16*,0x52);
         x = M2C_FIELD(p,s16*,0x50);
         w = GetUnitSpriteWidth(p);
-        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+        SpriteCellListSetCellRect(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
     }}CreateUnitSpriteButtonTask(M2C_FIELD(r4,s32*,68),0);tile=(u16)(tile+8);M2C_FIELD(r4,void**,72)=CreateUnitSprite(r4);InitUnitSprite(M2C_FIELD(r4,void**,72),8,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,72);Set3DSpriteSlideTargetAndStart(p,136,80,136,80);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
         y = M2C_FIELD(p,s16*,0x52);
         x = M2C_FIELD(p,s16*,0x50);
         w = GetUnitSpriteWidth(p);
-        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+        SpriteCellListSetCellRect(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
     }M2C_FIELD(p,s16*,0x34)=136;M2C_FIELD(p,s16*,0x36)=80;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
         y = M2C_FIELD(p,s16*,0x52);
         x = M2C_FIELD(p,s16*,0x50);
         w = GetUnitSpriteWidth(p);
-        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+        SpriteCellListSetCellRect(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
     }}CreateUnitSpriteButtonTask(M2C_FIELD(r4,s32*,72),0);tile=(u16)(tile+8);M2C_FIELD(r4,void**,76)=CreateUnitSprite(r4);InitUnitSprite(M2C_FIELD(r4,void**,76),9,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,76);Set3DSpriteSlideTargetAndStart(p,136,112,136,112);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
         y = M2C_FIELD(p,s16*,0x52);
         x = M2C_FIELD(p,s16*,0x50);
         w = GetUnitSpriteWidth(p);
-        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+        SpriteCellListSetCellRect(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
     }M2C_FIELD(p,s16*,0x34)=136;M2C_FIELD(p,s16*,0x36)=112;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
         y = M2C_FIELD(p,s16*,0x52);
         x = M2C_FIELD(p,s16*,0x50);
         w = GetUnitSpriteWidth(p);
-        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+        SpriteCellListSetCellRect(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
     }}CreateUnitSpriteButtonTask(M2C_FIELD(r4,s32*,76),0);tile=(u16)(tile+8);{p=(s32)CreateUnitSprite(r4);InitUnitSprite(p,0,tile,3,0);Set3DSpriteSlideTargetAndStart(p,192,160,256,160);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
         y = M2C_FIELD(p,s16*,0x52);
         x = M2C_FIELD(p,s16*,0x50);
         w = GetUnitSpriteWidth(p);
-        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+        SpriteCellListSetCellRect(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
     }CreateUnitSpriteButtonTask(p,1);Show3DSpriteSlide(p);}{p=(s32)CreateUnitSprite(r4);InitUnitSprite(p,2,(u16)(tile+16),3,0);Set3DSpriteSlideTargetAndStart(p,224,160,256,160);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
         y = M2C_FIELD(p,s16*,0x52);
         x = M2C_FIELD(p,s16*,0x50);
         w = GetUnitSpriteWidth(p);
-        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+        SpriteCellListSetCellRect(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
     }CreateUnitSpriteButtonTask(p,2);Show3DSpriteSlide(p);}}
 #pragma pop
 void func_ov007_02213cf4(void) {

@@ -537,14 +537,21 @@ s32 IsVoiceDataReady(void) {
     return gStreamVoiceState;
 }
 
-void func_ov010_02225d00(void) {
-extern s32 gStreamSoundPlayer;
-void Sound_StartPlayerChannels(void *);
-void func_0202a9f0(void);
-void func_02004e60(s32,s32);
-s32 i;
-Sound_StartPlayerChannels(&gStreamSoundPlayer);
-for(i=0;i<4;i++){func_0202a9f0();func_02004e60(1,1);}
+/* Start the streamed voice's sound player channels and let the sound driver run
+ * for four frames, each waiting for the VBlank event, so the ARM7 has applied
+ * the channel start before the voice is used. */
+void StartStreamSoundChannels(void) {
+    extern M2C_UNK gStreamSoundPlayer;
+    void Sound_StartPlayerChannels(void *);
+    void Sound_UpdateDriver(void);
+    void OS_WaitIrq(s32, s32);
+    s32 frame;
+
+    Sound_StartPlayerChannels(&gStreamSoundPlayer);
+    for (frame = 0; frame < 4; frame++) {
+        Sound_UpdateDriver();
+        OS_WaitIrq(1, OS_EVENT_VBLANK);
+    }
 }
 
 void VoiceChat_StopStreamSound(void) {

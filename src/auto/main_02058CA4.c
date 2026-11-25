@@ -358,29 +358,36 @@ void gpiInfoFreeProfiles(void) {
     M2C_FIELD(&gGpiInfoState,s32 *,4)=0;
 }
 #pragma opt_common_subs off
-s32 gpiGetTeamId(void *arg0, s32 arg1) {
+/* Return the team id stored for game `slot` in `session`, or in the logged-in
+ * session when `session` is NULL; with no session at all, `slot` itself is the
+ * fallback (a solo game's slot is its own team). */
+s32 gpiGetTeamId(void *session, s32 slot) {
     s32 *Vector_GetItem(s32, s32);
     extern M2C_UNK gGpiInfoState;
-    void *var_r0;
+    void *lookup;
 
-    var_r0 = arg0;
-    if (var_r0 == NULL) {
-        var_r0 = M2C_FIELD(&gGpiInfoState, void **, 0x28);
+    lookup = session;
+    if (lookup == NULL) {
+        lookup = M2C_FIELD(&gGpiInfoState, void **, GPI_INFO_SESSION);
     }
-    if (var_r0 == NULL) {
-        return arg1;
+    if (lookup == NULL) {
+        return slot;
     }
-    return *Vector_GetItem(M2C_FIELD(var_r0, s32 *, 0x20), arg1);
+    return *Vector_GetItem(M2C_FIELD(lookup, s32 *, GPI_SESSION_TEAM_IDS), slot);
 }
 
-s32 gpiGetPlayerId(void *arg0, s32 arg1) {
- s32 *Vector_GetItem(s32, s32);
- extern M2C_UNK gGpiInfoState;
- void *var_r0;
- var_r0 = arg0;
- if (var_r0 == NULL) var_r0 = M2C_FIELD(&gGpiInfoState, void **, 0x28);
- if (var_r0 == NULL) return arg1;
- return *Vector_GetItem(M2C_FIELD(var_r0, s32 *, 0x1c), arg1);
+/* Return the player id the session stores for game `slot`, or the one of the
+ * logged-in session when `session` is NULL; with no session at all, `slot` itself
+ * is the fallback. */
+s32 gpiGetPlayerId(void *session, s32 slot) {
+    s32 *Vector_GetItem(s32, s32);
+    extern M2C_UNK gGpiInfoState;
+    void *lookup;
+
+    lookup = session;
+    if (lookup == NULL) lookup = M2C_FIELD(&gGpiInfoState, void **, GPI_INFO_SESSION);
+    if (lookup == NULL) return slot;
+    return *Vector_GetItem(M2C_FIELD(lookup, s32 *, GPI_SESSION_PLAYER_IDS), slot);
 }
 
 /* Read the integer value the gpi key/value store holds under `key`, creating the

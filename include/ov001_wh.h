@@ -65,6 +65,17 @@ enum {
 #define WH_BSS_DESC_BYTES         0xC0
 #define WH_WFC_STEP_QUEUED        3
 
+/* The overlayed WH event ring: WH_EVENT_QUEUE_LEN s32 events between an
+ * incrementing write index and a read index kept in gWhState. */
+#define WH_STATE_EVENT_WRITE 0x68 /* s32: slot the ring writes the next event to */
+#define WH_STATE_EVENT_READ  0x6C /* s32: slot the event pump reads next */
+#define WH_EVENT_QUEUE_LEN   4
+
+/* Messages the WH connection task receives on its queue (gWhConnTaskQueue): a
+ * link-status notification from the WFC link step it queued (message 14), or a
+ * link timeout the task's timer posts (18, see WhConnTaskReceiveLinkStatus). */
+#define WH_MSG_LINK_STATUS 14
+
 /* The allocator/cleanup callbacks the overlay installs before a WH session runs
  * (see Ov001_OpenOptionPage and func_ov001_021711e0), and the connection
  * context they serve: the allocator builds it, the cleanup runs once the
@@ -156,6 +167,10 @@ enum {
 #define OV001_WIRELESS_TASK      0x04 /* s32: id of the connection task to cancel */
 #define OV001_WIRELESS_TIMEOUT   0x438 /* frames the setup screen waits for the connection (1080) */
 
+/* The ov001 Wi-Fi connection-complete screen's hold counter
+ * (gOv001WfcConnectDoneFrames). */
+#define OV001_WFC_CONNECT_DONE_FRAMES 120 /* ticks the screen stays up before it fades out */
+
 /* The ov001 Wi-Fi settings screen's two-choice message popup (gOv001MessageState). */
 #define OV001_MESSAGE_SHOWN  0x00 /* u8: nonzero while the popup is on screen */
 #define OV001_MESSAGE_OPTION 0x01 /* u8: the option the player picked (0 = the first one) */
@@ -190,15 +205,23 @@ enum {
 #define WH_PACKET_INFO_DEADLINE 0x0c
 #define WH_PACKET_INFO_SETTING  0x10
 
+/* Pages of the on-screen keyboard (Ov001KeyboardState.page). */
+#define KBD_PAGE_LOWER   0 /* lowercase letters */
+#define KBD_PAGE_SYMBOLS 1 /* digits and symbols */
+#define KBD_PAGE_UPPER   2 /* uppercase letters */
+
 /* Sound ids handed to Ov001_PlaySound. */
 enum {
+    OV001_SOUND_KEY     = 1, /* a character was typed (a key or a keyboard page toggle) */
     OV001_SOUND_CONFIRM = 6, /* an action was accepted */
     OV001_SOUND_CANCEL  = 7, /* the screen is being left without an action */
     OV001_SOUND_MOVE    = 8, /* the cursor moved to another row */
     OV001_SOUND_ERROR   = 9, /* the action is not possible */
     OV001_SOUND_OPEN    = 0xB, /* a screen was entered */
     OV001_SOUND_SAVED   = 0x10, /* an operation completed successfully (a profile, a save or the WFC connection) */
-    OV001_SOUND_FAILED  = 0x12  /* a profile action failed or was cancelled */
+    OV001_SOUND_FAILED  = 0x12, /* a profile action failed or was cancelled */
+    OV001_SOUND_KEYBOARD_OPEN  = 0x14, /* the on-screen keyboard opened */
+    OV001_SOUND_KEYBOARD_CLOSE = 0x15  /* the on-screen keyboard closed */
 };
 
 /* The ov001 WFC profile screen's heap work block (gOv001ProfileBlock), 0x1E2A4 bytes. */

@@ -5,13 +5,13 @@ static inline s8 Ov003PanelCount(void *p) { return M2C_FIELD(p,s8 *,4); }
 static inline void Ov003PanelUpdate(void *p) { M2C_FIELD(M2C_FIELD(p,void **,0),void (**)(void *),0x1c)(p); }
 static inline int Ov003PlayersReady(void) {
     int IsLinkSessionActive(void);
-    u32 GetReadyPlayerMask(void);
+    u32 GetSessionPlayerMask(void);
     void *GetNetworkPlayerRecord(int);
     u32 mask;
     s8 i;
     void *p;
     if (!IsLinkSessionActive()) return 0;
-    mask=GetReadyPlayerMask();
+    mask=GetSessionPlayerMask();
     for(i=0;i<4;i++) {
         if(mask & (1<<i)) {
             p=GetNetworkPlayerRecord(i);
@@ -26,7 +26,7 @@ extern u8 data_ov003_0220f89e[],gSpriteDesc64x32[];
 void AddSprite(u16,u16,u16,void *,int);
 void AddFaceSprite(s16,int,u16,int);
 void Set3DSpriteSlideTargetAndStart(void *,s16,s32,s16,s32);
-void func_02087d84(void *,int,s16,s16,u16,u16);
+void SpriteCellListSetCellRect(void *,int,s16,s16,u16,u16);
 u32 GetUnitSpriteWidth(void *);u32 GetUnitSpriteHeight(void *);
 int IsLinkSessionActive(void);
 s16 GetWaypointSlotX(u8);
@@ -52,7 +52,7 @@ void func_ov003_021ee8b8(void *arg0) {
     
     s32 InRange(u8, M2C_UNK, M2C_UNK);
     s32 IsSessionHost();
-    s32 func_ov003_021e6d28();
+    s32 IsSessionGuest();
     M2C_UNK SetWaypointListLayout(void *, M2C_UNK);
 
     s32 sp0[9];
@@ -94,7 +94,7 @@ void func_ov003_021ee8b8(void *arg0) {
     void *GetLocalNetworkPlayerRecord(void);
     void *GetNetworkPlayerRecord(int);
     int GetLocalPlayerIdForOverlay(void);
-    u32 GetReadyPlayerMask(void);
+    u32 GetSessionPlayerMask(void);
     void *packet;
     int local, enabled, ready, offset;
     void *range;
@@ -156,7 +156,7 @@ foundPlayer:
             rawFlags=M2C_FIELD(arg0,u8 *,0x39)&~12;
             if((((u32)(u8)rawFlags<<28)>>30)==0)var_r0_4=1;else var_r0_4=0;
             M2C_FIELD(arg0,u8 *,0x39)=rawFlags;
-            if((var_r0_4&255)&&func_ov003_021e6d28()){Show3DSprite(M2C_FIELD(arg0,void **,0x58));Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,0));}
+            if((var_r0_4&255)&&IsSessionGuest()){Show3DSprite(M2C_FIELD(arg0,void **,0x58));Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,0));}
             temp_r4 = M2C_FIELD(arg0, void **, 0x64);
             temp_r7 = (u8) Ov003PanelCount(M2C_FIELD(arg0,void **,0x6c));
             if (IsLinkSessionActive() == 0) {
@@ -190,7 +190,7 @@ foundPlayer:
                 var_r0_5 = 0;
             }
             if (var_r0_5 & 0xFF) {
-                if (func_ov003_021e6d28() != 0) {
+                if (IsSessionGuest() != 0) {
                     Hide3DSprite(M2C_FIELD(arg0, void **, 0x58));
                     Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s32 *, 0));
                 }
@@ -265,13 +265,13 @@ foundPlayer:
             }
             Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,4));
             M2C_FIELD(M2C_FIELD(arg0,void **,0x58),u8 *,0x59)=1;
-            if(func_ov003_021e6d28())Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
+            if(IsSessionGuest())Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
             Link_SendPacket(sp0,0x24);return;
         }
     }
     Link_SendPacket(sp0,0x24);
     for(i=0;i<count;i++){
-        if(func_ov003_021e6d28()){
+        if(IsSessionGuest()){
             offset=i*0x18;p=M2C_FIELD(arg0,void **,0x6c)+offset;n=M2C_FIELD((u8 *)packet+i,u8 *,0xe);
             if((u8)M2C_FIELD(p,s32 *,0x18)!=n){
                 PlaySoundEffect(0x10011);
@@ -407,7 +407,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
             temp_r11 = M2C_FIELD(temp_r5, s16 *, 0x52);
             temp_r6 = M2C_FIELD(temp_r5, s16 *, 0x50);
             temp_r4 = GetUnitSpriteWidth(temp_r5);
-            func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r6, temp_r11, (u16) temp_r4, (s32) GetUnitSpriteHeight(temp_r5));
+            SpriteCellListSetCellRect(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r6, temp_r11, (u16) temp_r4, (s32) GetUnitSpriteHeight(temp_r5));
         }
         M2C_FIELD(temp_r5, s16 *, 0x34) = temp_r7;
         M2C_FIELD(temp_r5, s16 *, 0x36) = (s16) sp18;
@@ -420,7 +420,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
             temp_r4_2 = M2C_FIELD(temp_r5, s16 *, 0x52);
             temp_r6_2 = M2C_FIELD(temp_r5, s16 *, 0x50);
             temp_r7_2 = GetUnitSpriteWidth(temp_r5);
-            func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r6_2, temp_r4_2, (u16) temp_r7_2, (s32) GetUnitSpriteHeight(temp_r5));
+            SpriteCellListSetCellRect(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r6_2, temp_r4_2, (u16) temp_r7_2, (s32) GetUnitSpriteHeight(temp_r5));
         }
         temp_r5_2 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x64) + (var_r8 * 4)), void **, 0x18);
         temp_r7_3 = temp_r9 + 0x28;
@@ -434,7 +434,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
             temp_r11_2 = M2C_FIELD(temp_r5_2, s16 *, 0x52);
             temp_r6_3 = M2C_FIELD(temp_r5_2, s16 *, 0x50);
             temp_r4_3 = GetUnitSpriteWidth(temp_r5_2);
-            func_02087d84(M2C_FIELD(temp_r5_2, void **, 0x64), 1, temp_r6_3, temp_r11_2, (u16) temp_r4_3, (s32) GetUnitSpriteHeight(temp_r5_2));
+            SpriteCellListSetCellRect(M2C_FIELD(temp_r5_2, void **, 0x64), 1, temp_r6_3, temp_r11_2, (u16) temp_r4_3, (s32) GetUnitSpriteHeight(temp_r5_2));
         }
         M2C_FIELD(temp_r5_2, s16 *, 0x34) = temp_r7_3;
         M2C_FIELD(temp_r5_2, s16 *, 0x36) = (s16) sp18;
@@ -447,7 +447,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
             temp_r4_4 = M2C_FIELD(temp_r5_2, s16 *, 0x52);
             temp_r6_4 = M2C_FIELD(temp_r5_2, s16 *, 0x50);
             temp_r7_4 = GetUnitSpriteWidth(temp_r5_2);
-            func_02087d84(M2C_FIELD(temp_r5_2, void **, 0x64), 1, temp_r6_4, temp_r4_4, (u16) temp_r7_4, (s32) GetUnitSpriteHeight(temp_r5_2));
+            SpriteCellListSetCellRect(M2C_FIELD(temp_r5_2, void **, 0x64), 1, temp_r6_4, temp_r4_4, (u16) temp_r7_4, (s32) GetUnitSpriteHeight(temp_r5_2));
         }
         if (M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0xE) == 2) {
             var_r2 = 0x1E0;

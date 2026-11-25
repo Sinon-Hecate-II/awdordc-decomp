@@ -20,7 +20,7 @@ void func_0200fc58(void) {
     void SetFifoMessageHandler(s32, void *);
     void func_0200fd90(s32);
     void SaveDevice_ThreadMain(void);
-    void func_02010c90(s32, s32, s32);
+    void SaveDevice_CommandReplyHandler(s32, s32, s32);
 
     volatile u8 *base = (volatile u8 *) &gSaveDeviceState;
     void *buffer = &data_0212fd80;
@@ -52,7 +52,7 @@ void func_0200fc58(void) {
         TaskWake(base + 0x44);
     }
 
-    SetFifoMessageHandler(0xB, (void *)func_02010c90);
+    SetFifoMessageHandler(0xB, (void *)SaveDevice_CommandReplyHandler);
 
     if (SaveDevice_IsMultiboot()) {
         return;

@@ -1,6 +1,18 @@
 /* 46 functions from 0x020852F4 to 0x02086208 (main), found by ds-decomp. */
 #include "common.h"
 
+/* The link-status indicator sprite CreateLinkStatusSprite makes: it is drawn
+ * either on the main 3D sprite engine or on whichever engine is current. */
+typedef struct {
+    u8  pad[0x34];
+    s32 x;          /* +0x34 screen x */
+    s32 y;          /* +0x38 screen y */
+    u16 tile;       /* +0x3C tile index in the link-status sheet */
+    u16 palette;    /* +0x3E palette row */
+    u8  mainEngine; /* +0x40 nonzero: draw on the main engine */
+    u8  unk41;      /* +0x41 cleared with mainEngine */
+} LinkStatusSprite;
+
 /* The link player-data listener objects of this file: each one is registered as
  * the link layer's message handler, remembers the handler that was installed
  * before it and forwards every message it does not handle on to it, and collects
@@ -64,14 +76,23 @@ typedef struct VoiceChatWidget {
     SpriteAnim *anim;    /* +0x50 volume fade */
 } VoiceChatWidget;
 
-void func_020852f4(void){
- void *FindObjectByClass(M2C_UNK *); M2C_UNK LoadScenePanelGraphicsOnBothEngines(void *); extern M2C_UNK gLinkStatusSpriteClass;
- void *p=FindObjectByClass(&gLinkStatusSpriteClass);
- if(!p)return;
- M2C_FIELD(p,u8 *,0x40)=1; M2C_FIELD(p,u8 *,0x41)=0;LoadScenePanelGraphicsOnBothEngines(p);
+/* Show the link-status indicator sprite on the main screen: switch it to the main
+ * engine, clear its sub-screen flag and load the scene-panel graphics it draws
+ * with. */
+void ShowLinkStatusSpriteOnMainScreen(void) {
+    void *FindObjectByClass(M2C_UNK *);
+    M2C_UNK LoadScenePanelGraphicsOnBothEngines(void *);
+    extern M2C_UNK gLinkStatusSpriteClass;
+    LinkStatusSprite *sprite;
+
+    sprite = FindObjectByClass(&gLinkStatusSpriteClass);
+    if (!sprite) return;
+    sprite->mainEngine = 1;
+    sprite->unk41 = 0;
+    LoadScenePanelGraphicsOnBothEngines(sprite);
 }
 
-void func_02085324(void){
+void HideLinkStatusSprite(void){
  void *FindObjectByClass(M2C_UNK *); extern M2C_UNK gLinkStatusSpriteClass;
  void *p=FindObjectByClass(&gLinkStatusSpriteClass);
  if(p){M2C_FIELD(p,s8 *,0x40)=0;M2C_FIELD(p,s8 *,0x41)=0;}
@@ -230,13 +251,13 @@ void func_020855f0(M2C_UNK arg0) {
 /* True while a connected player's data block has not arrived yet; false once every
  * ready player's block is in, or once the session reports an error. */
 u8 IsPlayerDataIncomplete(void *listener) {
-    s32 GetReadyPlayerMask(void);
+    s32 GetSessionPlayerMask(void);
     s32 IsSessionInError(void);
     s32 readyMask, receivedMask;
     s32 incomplete;
 
-    readyMask = GetReadyPlayerMask();
-    receivedMask = GetReadyPlayerMask();
+    readyMask = GetSessionPlayerMask();
+    receivedMask = GetSessionPlayerMask();
     incomplete = readyMask != (M2C_FIELD(listener, u16 *, LINK_PLAYER_DATA_RECEIVED) & receivedMask);
     if (IsSessionInError()) incomplete = 0;
     return (u8)incomplete;
@@ -575,10 +596,12 @@ void ClearLinkCommandQueues(void) {
     do { ClearLinkCommandQueue(p); ++i; p+=12; } while(i<4);
 }
 
-s32 QueueReceivedLinkCommand(u8 a,void *b,s32 c) {
-    s32 AppendLinkCommand(void *,s32,u16,s16);
+/* Queue a received command message on the queue of its source, skipping the
+ * message's type/flag header so only its payload is copied. */
+s32 QueueReceivedLinkCommand(u8 source, void *message, s32 messageSize) {
+    s32 AppendLinkCommand(void *, s32, u16, s16);
     extern M2C_UNK gLinkCommandQueues;
-    AppendLinkCommand((u8 *)&gLinkCommandQueues+12*a,(s32)((u8 *)b+2),(u16)(c-2),0);
+    AppendLinkCommand((u8 *)&gLinkCommandQueues + LINK_COMMAND_QUEUE_STRIDE * source, (s32)((u8 *)message + LINK_COMMAND_HEADER_SIZE), (u16)(messageSize - LINK_COMMAND_HEADER_SIZE), 0);
 }
 
 void func_02085ca8(void) {
@@ -720,10 +743,10 @@ void func_02085ea4(void *arg0) {
 
 #pragma optimization_level 3
 void func_02085ebc(void *arg0) {
- s32 func_020847b8(); s32 func_ov002_021e1624(); s32 func_ov010_02225d8c(); s32 func_ov010_02225d9c();
+ s32 IsWfcLinkActive(); s32 func_ov002_021e1624(); s32 func_ov010_02225d8c(); s32 func_ov010_02225d9c();
  extern M2C_UNK gSpriteDesc16x16; extern u16 **g3DSpriteEngineMain; extern u16 **gCur3DSpriteEngine;
  s32 flag; u16 **saved; u16 v; u16 state=3;
- if(func_020847b8() && M2C_FIELD(arg0,s32 *,0x38) && M2C_FIELD(arg0,s32 *,0x3c)){
+ if(IsWfcLinkActive() && M2C_FIELD(arg0,s32 *,0x38) && M2C_FIELD(arg0,s32 *,0x3c)){
  if(IsSpriteReady(arg0)){
  if(func_ov010_02225d8c()){
  v=func_ov010_02225d9c()?2:1; state=v;

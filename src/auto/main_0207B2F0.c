@@ -406,10 +406,12 @@ extern s32 gSpriteBatch;
 return M2C_FIELD(gSpriteBatch+arg0*4,s32 *,0x14);
 }
 
-void AdvanceBatchTileOffset(s32 arg0,s32 arg1) {
-extern s32 gSpriteBatch;
-if(arg0>=9)return;
-M2C_FIELD(gSpriteBatch+(arg0+1)*4,s32 *,0x14)=arg1+M2C_FIELD(gSpriteBatch+arg0*4,s32 *,0x14);
+/* Reserve `tileCount` tiles for placed sprite `index`: the sprite placed next
+ * starts that many tiles after it.  The batch's last slot has no successor. */
+void AdvanceBatchTileOffset(s32 index, s32 tileCount) {
+    extern s32 gSpriteBatch;
+    if (index >= 9) return;
+    SPRITE_BATCH->tileOffset[index + 1] = tileCount + SPRITE_BATCH->tileOffset[index];
 }
 
 s32 GetBatchSpriteTile(s32 arg0) {

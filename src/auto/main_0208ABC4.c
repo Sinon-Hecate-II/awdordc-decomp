@@ -4,12 +4,15 @@
 #include "sound.h"
 extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
 
+/* Text layer panel state word (+0x58, TEXT_LAYER_PANEL_STATE) as a bitfield: the
+ * low six bits hold the panel kind and animation mode, bits 6..7 the selected
+ * two-option choice (0 = left/accept, 1 = right/cancel). */
 typedef struct {
     u8 unk_0x00[0x58];
-    s32 unk_0x58_0 : 6;
-    s32 unk_0x58_6 : 2;
-    s32 unk_0x58_8 : 24;
-} Unk0208ABC4;
+    s32 kindAndAnim : 6;
+    s32 choice : 2;
+    s32 rest : 24;
+} TextLayerPanelState;
 
 typedef struct { u32 width:9; u32 height:9; u32 rest:14; } WindowSize0208;
 typedef struct { u16 low:6; u16 window:2; u16 high:8; } WindowControl0208;
@@ -23,7 +26,7 @@ u8 IsTextLayerActive(void);
 void UpdateTextLayerPanel(M2C_UNK arg0) {
     void UpdatePanelLinkedIcons(void *);
     void StartWindowClose(void *);
-    u8 SetPanelChoice(Unk0208ABC4 *, s32);
+    u8 SetPanelChoice(TextLayerPanelState *, s32);
     M2C_UNK PlaySoundEffect(s32);
     void EnableMapConfirm(void);
     void DisableMapConfirm(void);
@@ -49,10 +52,10 @@ void UpdateTextLayerPanel(M2C_UNK arg0) {
         }
         return;
     case 3:
-        if (((*(u16 *)gKeyState) & KEY_LEFT) && SetPanelChoice((Unk0208ABC4 *)arg0, 0)) {
+        if (((*(u16 *)gKeyState) & KEY_LEFT) && SetPanelChoice((TextLayerPanelState *)arg0, 0)) {
             PlaySoundEffect(SOUND_MENU_MOVE);
         }
-        if (((*(u16 *)gKeyState) & KEY_RIGHT) && SetPanelChoice((Unk0208ABC4 *)arg0, 1)) {
+        if (((*(u16 *)gKeyState) & KEY_RIGHT) && SetPanelChoice((TextLayerPanelState *)arg0, 1)) {
             PlaySoundEffect(SOUND_MENU_MOVE);
         }
         if ((*(u16 *)gKeyState) & KEY_A) {
@@ -115,11 +118,13 @@ void UpdatePanelLinkedIcons(void *entity) {
     M2C_FIELD(objRight, s32 *, 0x40) = (s32) ((M2C_FIELD(objRight, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(objRight, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
 }
 
-u8 SetPanelChoice(Unk0208ABC4 *arg0, s32 arg1) {
-    s32 var_r3;
-    var_r3 = arg0->unk_0x58_6 != arg1;
-    arg0->unk_0x58_6 = arg1;
-    return var_r3;
+/* Set the two-option panel's highlighted choice (bits 6..7 of the panel state
+ * word, TEXT_LAYER_PANEL_CHOICE_MASK) and return nonzero when it changed. */
+u8 SetPanelChoice(TextLayerPanelState *panel, s32 choice) {
+    s32 changed;
+    changed = panel->choice != choice;
+    panel->choice = choice;
+    return changed;
 }
 
 /* Start a window opening: enter the opening animation mode, hide its two child
@@ -244,8 +249,8 @@ void func_0208b4f0(void) {
 }
 
 void func_0208b4fc(void) {
-    M2C_UNK func_02089cb8();
-    func_02089cb8();
+    M2C_UNK UpdateTextLayerRefreshTimer();
+    UpdateTextLayerRefreshTimer();
 }
 
 void func_0208b508(void) {
@@ -325,9 +330,9 @@ void *func_0208b610(s32 arg0) {
 void *InitScrollingTextSprite(void *sprite) {
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK Init3DSpriteActor();
-    extern M2C_UNK gScrollingTextSpriteClass;
+    extern M2C_UNK gScrollingTextSpriteVtable;
     Init3DSpriteActor();
-    M2C_FIELD(sprite, M2C_UNK **, DS3D_SPRITE_CLASS) = &gScrollingTextSpriteClass;
+    M2C_FIELD(sprite, M2C_UNK **, DS3D_SPRITE_CLASS) = &gScrollingTextSpriteVtable;
     M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_TEXT_WIDTH) = 0;
     M2C_FIELD(sprite, s16 *, SPRITE_TEXT_SCROLL) = 0;
     M2C_FIELD(sprite, s8 *, SPRITE_TEXT_SCROLL_TIMER) = 0;

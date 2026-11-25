@@ -344,6 +344,9 @@ enum {
 #define SOUND_CHANNEL_UNK_1C      0x1C /* u32 cleared at start-up */
 #define SOUND_CHANNEL_VOLUME      0x20 /* u8 volume, 0..SOUND_VOLUME_MAX */
 #define SOUND_CHANNEL_COUNT       32
+#define SOUND_CHANNEL_MUSIC       0  /* channel the streamed/sequenced music is mixed through */
+#define SOUND_CHANNEL_EFFECT_FIRST 1 /* first channel the sound effects are mixed through */
+#define SOUND_CHANNEL_EFFECT_LAST  11 /* last channel the sound effects are mixed through */
 
 /* A preallocated per-channel sequence-player heap: one of the sound data blocks
  * a channel keeps on its SOUND_CHANNEL_SEQ_LIST until a sequence player takes it
@@ -475,6 +478,12 @@ typedef struct SoundChannelRecord {
 #define SOUND_EFFECT_VOLUME  0x60 /* s32 volume it is played at */
 #define SOUND_EFFECT_PAN     0x64 /* s32 stereo pan */
 
+/* The looping sound-effect sprite (class gLoopingSoundEffectClass, spawned by
+ * StartLoopingSoundEffect and ticked by UpdateLoopingSoundEffect): it plays
+ * SOUND_LOOP_ID once every SOUND_LOOP_INTERVAL frames while it exists. */
+#define SOUND_LOOP_INTERVAL 0x52 /* s16 frames between plays */
+#define SOUND_LOOP_ID       0x5C /* s32 sound effect it repeats */
+
 /* Hard stereo pan positions: the two battle effect slots are panned to opposite
  * sides so their sounds can be told apart. */
 #define SOUND_PAN_LEFT  (-0x80) /* leftmost pan */
@@ -484,5 +493,10 @@ typedef struct SoundChannelRecord {
  * (class gMusicFadeOutClass, spawned by FadeOutMusicOverFrames). */
 #define MUSIC_NONE        0xFFFF /* gCurrentMusicTrack value when no track plays */
 #define MUSIC_FADE_FRAMES 0x6C   /* s16 frames left before the fade-out object stops the track */
+
+/* The object ChangeMusicTrackWithFade spawns to start a track once the current
+ * one has faded out (class gMusicPlayAfterFadeClass); its step calls
+ * PlayMusicTrack on the track stored here. */
+#define MUSIC_PLAY_AFTER_FADE_TRACK 0x5C /* s32 track to start when the fade ends */
 
 #endif

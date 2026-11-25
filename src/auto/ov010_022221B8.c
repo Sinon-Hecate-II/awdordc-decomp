@@ -71,7 +71,7 @@ case VOICE_CODEC_ADPCM4: EncodeAdpcm4Bit((u8 *)packet+4,samples,sampleCount,code
 
 #pragma opt_strength_reduction off
 s32 func_ov010_022224b4(void){
-s32 func_020070a4(void); void func_ov010_02225174(void);void func_ov010_02223654(u32);void Link_InitChannelState(void *,u32,s32);void func_ov010_022232e0(void);void VoiceCodec_ResetState(void);
+s32 func_020070a4(void); void func_ov010_02225174(void);void func_ov010_02223654(u32);void Link_InitChannelState(void *,u32,s32);void Link_InitPendingPackets(void);void VoiceCodec_ResetState(void);
 extern M2C_UNK gVoiceChatState,data_ov010_0222c000,gLinkConfig;extern u8 gVoiceModePayloadUnits[];extern void *gVoiceChatContexts[];extern u8 gLinkChannelStates[];
 s32 i; s32 saved; s32 n, x, y; u8 *t;
 saved=func_020070a4();
@@ -94,7 +94,7 @@ M2C_FIELD(&gVoiceChatState,s32 *,3856)=0;
 M2C_FIELD(&gVoiceChatState,s32 *,3860)=0;
 func_ov010_02225174();
 i=0;goto test;loop:{gVoiceChatContexts[i]=0;func_ov010_02223654(i);Link_InitChannelState(gLinkChannelStates+i*0x94,i,-1);i++;}test:if((u32)i<3)goto loop;
-func_ov010_022232e0();VoiceCodec_ResetState();return 1;
+Link_InitPendingPackets();VoiceCodec_ResetState();return 1;
 }
 #pragma opt_strength_reduction reset
 void func_ov010_022225b0(s32 arg0) {

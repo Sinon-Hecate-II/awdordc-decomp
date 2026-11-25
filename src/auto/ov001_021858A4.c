@@ -166,11 +166,14 @@ return 1;
 Ov001_FreeAlloc((M2C_UNK)(&gOv001MenuLayout+2));return 0;
 }
 #pragma opt_common_subs reset
+/* Send the connection's profile record to the WFC server and register
+ * Ov001_HandleServerReply as its reply callback; 1 when the packet was queued,
+ * 0 otherwise. */
 s32 Ov001_SendServerRequest(void) {
     s32 WFC_SendRequestPacket(void (*)(void), void *);
     void Ov001_HandleServerReply();
     extern void *gOv001ConnectionState;
-    if (WFC_SendRequestPacket(Ov001_HandleServerReply, (s8 *)gOv001ConnectionState + 0x1374) == 2) {
+    if (WFC_SendRequestPacket(Ov001_HandleServerReply, (s8 *)gOv001ConnectionState + OV001_CONN_PROFILE) == 2) {
         return 1;
     }
     return 0;

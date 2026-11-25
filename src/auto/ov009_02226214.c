@@ -26,19 +26,19 @@ void RefreshLinkPlayerAnnounce(M2C_UNK owner) {
 
 void SpawnLinkPlayerAnnounceRefresher(M2C_UNK arg0) {
     extern M2C_UNK data_ov009_02226728;
-    extern M2C_UNK data_ov009_0222675c;
+    extern M2C_UNK gLinkAnnounceRefresherClass;
     M2C_UNK **temp_r0;
 
-    temp_r0 = CreateSpriteFromClass(&data_ov009_0222675c, arg0);
+    temp_r0 = CreateSpriteFromClass(&gLinkAnnounceRefresherClass, arg0);
     if (temp_r0 != NULL) {
         *temp_r0 = &data_ov009_02226728;
     }
 }
 
-void func_ov009_02226290(void) {
+void DeleteLinkAnnounceRefreshers(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_ov009_0222675c;
-    DeleteSpriteObjectsOfClass(&data_ov009_0222675c);
+    extern M2C_UNK gLinkAnnounceRefresherClass;
+    DeleteSpriteObjectsOfClass(&gLinkAnnounceRefresherClass);
 }
 
 s32 func_ov009_022262a4(s32 arg0) {

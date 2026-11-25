@@ -7,28 +7,38 @@ void LoadSpriteResource(s32,s32,s32,void *);
 LoadSpriteResource(2,2,k,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(m<<5));
 }
 
+/* Slide direction the ov003 scene leaves with after the map-select screen was
+ * used (see GetSlideDirectionOffset): towards the next map of the list when a map
+ * was confirmed (MAP_CONFIRM_ENABLED), back to the previous one when the player
+ * went back (MAP_CONFIRM_DISABLED), and 0 when the scene does not slide. */
 s32 GetSceneSlideDirection(void) {
-    s32 func_ov003_021f1584();
-    s32 func_ov003_021f15ac();
+    s32 GetNextMapSlideDirection();
+    s32 GetPreviousMapSlideDirection();
     u8 GetMapConfirmState(void);
-    s32 temp_r0;
-    temp_r0 = GetMapConfirmState();
-    switch (temp_r0) {
-    case 1: return func_ov003_021f1584();
-    case 2: return func_ov003_021f15ac();
+    s32 confirmState;
+
+    confirmState = GetMapConfirmState();
+    switch (confirmState) {
+    case MAP_CONFIRM_ENABLED: return GetNextMapSlideDirection();
+    case MAP_CONFIRM_DISABLED: return GetPreviousMapSlideDirection();
     default: return 0;
     }
 }
 
+/* Pixel offset the ov003 scene slides a page by once the map-select screen
+ * confirmed its choice: towards the next map of the list when a map was
+ * confirmed (MAP_CONFIRM_ENABLED), back to the previous one when the player
+ * went back (MAP_CONFIRM_DISABLED), and 0 when no slide is pending. */
 s32 GetSceneSlideOffset(void) {
-    s32 func_ov003_021f1594();
-    s32 func_ov003_021f15bc();
+    s32 GetNextMapSlideOffset();
+    s32 GetPreviousMapSlideOffset();
     u8 GetMapConfirmState(void);
-    s32 temp_r0;
-    temp_r0 = GetMapConfirmState();
-    switch (temp_r0) {
-    case 1: return func_ov003_021f1594();
-    case 2: return func_ov003_021f15bc();
+    s32 confirmState;
+
+    confirmState = GetMapConfirmState();
+    switch (confirmState) {
+    case MAP_CONFIRM_ENABLED: return GetNextMapSlideOffset();
+    case MAP_CONFIRM_DISABLED: return GetPreviousMapSlideOffset();
     default: return 0;
     }
 }
@@ -75,42 +85,44 @@ void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
 }
 
 void func_ov003_021f17e0(void) {
-    M2C_UNK func_ov003_021f13c8();
+    M2C_UNK GetOv003SceneObject();
     M2C_UNK IncrementSpriteChildCount();
-    s32 func_ov003_021f13c8();
-    if (func_ov003_021f13c8() == 0) {
+    s32 GetOv003SceneObject();
+    if (GetOv003SceneObject() == 0) {
         return;
     }
-    func_ov003_021f13c8();
+    GetOv003SceneObject();
     IncrementSpriteChildCount();
 }
 
-u8 func_ov003_021f17fc(void) {
-    s32 func_ov003_021f13c8();
-    u8 var_r0;
-    if (func_ov003_021f13c8() == 0) return 0U;
-    if (M2C_FIELD(func_ov003_021f13c8(), u8 *, 0x31) != 0) {
-        var_r0 = 1;
+/* True when the current ov003 scene object exists and still has child sprites
+ * attached; the battle setup waits for those children before it finishes. */
+u8 Ov003SceneObjectHasChildren(void) {
+    s32 GetOv003SceneObject();
+    u8 hasChildren;
+    if (GetOv003SceneObject() == 0) return 0U;
+    if (M2C_FIELD(GetOv003SceneObject(), u8 *, DS3D_SPRITE_CHILD_COUNT) != 0) {
+        hasChildren = 1;
     } else {
-        var_r0 = 0;
+        hasChildren = 0;
     }
-    return var_r0;
+    return hasChildren;
 }
 
 void Ov003_CreateScreenTransition(void) {
     M2C_UNK CreateScreenTransitionChildren(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    if (func_ov003_021f13c8() == 0) {
+    if (GetOv003SceneObject() == 0) {
         return;
     }
-    CreateScreenTransitionChildren(2, 8, 2, func_ov003_021f13c8());
+    CreateScreenTransitionChildren(2, 8, 2, GetOv003SceneObject());
 }
 
 void func_ov003_021f1858(void) {
     M2C_UNK StartScreenFadeChildren(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    if (func_ov003_021f13c8() == 0) {
+    if (GetOv003SceneObject() == 0) {
         return;
     }
-    StartScreenFadeChildren(2, 8, 2, func_ov003_021f13c8());
+    StartScreenFadeChildren(2, 8, 2, GetOv003SceneObject());
 }
 
 void func_ov003_021f1884(s16 arg0) {
@@ -131,7 +143,7 @@ void func_ov003_021f18a4(void) {
  * remember that descriptor in the shared scene config: create the main-screen
  * sprite when the descriptor enables it, the sub-screen one likewise, or both. */
 void ApplySceneLayers(u8 *layers) {
-    void func_020af144(u8, u8, u8, u8);
+    void CreateMapModeWallpaperSprites(u8, u8, u8, u8);
     void func_020af178(u8, u8);
     void func_020af19c(u8, u8);
     extern M2C_UNK gSceneConfig;
@@ -141,7 +153,7 @@ void ApplySceneLayers(u8 *layers) {
     subOn = layers[SCENE_LAYER_SUB_ON];
     mainOn = layers[SCENE_LAYER_MAIN_ON];
     if (mainOn & subOn) {
-        func_020af144(layers[SCENE_LAYER_MAIN_LAYER], layers[SCENE_LAYER_MAIN_PALETTE], layers[SCENE_LAYER_SUB_LAYER], layers[SCENE_LAYER_SUB_PALETTE]);
+        CreateMapModeWallpaperSprites(layers[SCENE_LAYER_MAIN_LAYER], layers[SCENE_LAYER_MAIN_PALETTE], layers[SCENE_LAYER_SUB_LAYER], layers[SCENE_LAYER_SUB_PALETTE]);
     } else if (mainOn != 0) {
         func_020af178(layers[SCENE_LAYER_MAIN_LAYER], layers[SCENE_LAYER_MAIN_PALETTE]);
     } else if (subOn != 0) {
@@ -151,8 +163,8 @@ void ApplySceneLayers(u8 *layers) {
 }
 
 void func_ov003_021f1920(void) {
-    M2C_UNK func_020af1e4();
-    func_020af1e4();
+    M2C_UNK DeleteWallpaperSpritesOnAllEngines();
+    DeleteWallpaperSpritesOnAllEngines();
 }
 
 /* Create the scene's 3D sprite on each engine its definition asks for
@@ -464,12 +476,15 @@ void CopyMapPickLists(u16 *firstPicks, u16 *secondPicks) {
     SortMapIdList((u16 *) &gDownloadedMapIds);
 }
 
-void func_ov003_021f24ec(void *arg0, void *arg1) {
+/* Copy the shared selected and downloaded map-id pick lists (MAP_PICK_SLOTS ids
+ * each) into the two lists a map-select screen object keeps. */
+void LoadMapPickLists(void *firstPicks, void *secondPicks) {
     void CopyU16(void *, void *, u32);
     extern M2C_UNK gSelectedMapIds;
     extern M2C_UNK gDownloadedMapIds;
-    CopyU16(&gSelectedMapIds, arg0, 10);
-    CopyU16(&gDownloadedMapIds, arg1, 10);
+
+    CopyU16(&gSelectedMapIds, firstPicks, MAP_PICK_SLOTS * 2);
+    CopyU16(&gDownloadedMapIds, secondPicks, MAP_PICK_SLOTS * 2);
 }
 
 /* Count the picked maps of a five-slot map-id list (MAP_PICK_EMPTY slots are

@@ -81,16 +81,19 @@ void func_0208bc18(void) {
     func_0208b868();
 }
 
-void func_0208bc24(M2C_UNK arg0) {
+/* Create a scrolling text sprite owned by `owner`, initialise it, and make it
+ * draw on both screens. */
+void *CreateScrollingTextSprite(M2C_UNK owner) {
     void *InitScrollingTextSprite();
-    extern M2C_UNK data_02102760;
-    void *var_r0;
+    extern M2C_UNK gScrollingTextSpriteClass;
+    void *sprite;
 
-    var_r0 = CreateSpriteFromClass(&data_02102760, arg0);
-    if (var_r0 != NULL) {
-        var_r0 = InitScrollingTextSprite();
+    sprite = CreateSpriteFromClass(&gScrollingTextSpriteClass, owner);
+    if (sprite != NULL) {
+        sprite = InitScrollingTextSprite();
     }
-    M2C_FIELD(var_r0, u8 *, 0x48) = (u8) ((M2C_FIELD(var_r0, u8 *, 0x48) & ~0xE) | 2);
+    M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) = (u8)((M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) & ~SPRITE_ACTOR_SCREEN_MASK) | DS3D_TARGET_BOTH);
+    return sprite;
 }
 
 /* Reset a newly allocated 3D sprite object: point it at the plain sprite class,
@@ -262,17 +265,21 @@ s32 GetObjectTileY(void *arg0) {
     return Divide(M2C_FIELD(arg0, s32 *, 0x38), 0x300);
 }
 
-s32 func_0208c214(void *arg0) {
-    s32 func_02094758();
+/* Create method of the animated sprite object: run the object's one-time init
+ * callback and, when its control word holds the map view, acquire that hold
+ * and suspend dialog sequences for as long as the object is around. */
+s32 InitAnimatedSpriteObject(void *obj) {
+    s32 SuspendDialogs();
     M2C_UNK AcquireMapViewHold();
-    M2C_UNK (*temp_r1)(void *);
-    u32 temp_r0;
-    temp_r1 = M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x68);
-    if (temp_r1 != NULL) temp_r1(arg0);
-    temp_r0 = (u32)(M2C_FIELD(arg0, u32 *, 0x44) << 12) >> 31;
-    if (temp_r0 == 0) return temp_r0;
+    M2C_UNK (*initCallback)(void *);
+    u32 holdMapView;
+
+    initCallback = M2C_FIELD(obj, M2C_UNK (**)(void *), SPRITE_OBJ_INIT_CB);
+    if (initCallback != NULL) initCallback(obj);
+    holdMapView = (u32)(M2C_FIELD(obj, u32 *, SPRITE_OBJ_FLAGS) << 12) >> 31;
+    if (holdMapView == 0) return holdMapView;
     AcquireMapViewHold();
-    return func_02094758();
+    return SuspendDialogs();
 }
 
 /* Updates one 3D sprite object: runs its fade and per-frame callback, then draws
@@ -314,7 +321,7 @@ gCur3DSpriteEngine=savedEngine; ++g->elapsed;
  * it is on screen and then run its release callback. */
 s32 ReleaseAnimatedSpriteObject(void *obj) {
     void Sprite_ClearHandle(s32 *);
-    s32 func_02094770();
+    s32 ResumeDialogs();
     M2C_UNK ReleaseMapViewHold();
     M2C_UNK HeapFreeBlock(s32);
     s32 (*releaseCb)(void *);
@@ -326,7 +333,7 @@ s32 ReleaseAnimatedSpriteObject(void *obj) {
     result = (u32)(M2C_FIELD(obj, u32 *, SPRITE_OBJ_FLAGS) << 12) >> 31;
     if (result != 0) {
         ReleaseMapViewHold();
-        result = func_02094770();
+        result = ResumeDialogs();
     }
     releaseCb = M2C_FIELD(obj, s32 (**)(void *), SPRITE_OBJ_RELEASE_CB);
     if (releaseCb == NULL) return result;
@@ -334,8 +341,8 @@ s32 ReleaseAnimatedSpriteObject(void *obj) {
 }
 
 void func_0208c504(void) {
-    M2C_UNK func_0208c214();
-    func_0208c214();
+    M2C_UNK InitAnimatedSpriteObject();
+    InitAnimatedSpriteObject();
 }
 
 void func_0208c510(void) {

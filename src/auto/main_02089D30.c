@@ -16,7 +16,7 @@ void func_02089d30(void *arg0) {
     void *CreateUnitSprite(s32);
     void InitUnitSprite(void *,s32,s32,s32,s32);
     void Set3DSpriteSlideTargetAndStart(void *,s16,s32,s16,s32);
-    void func_02087d84(void *,s32,s16,s16,u16,u16);
+    void SpriteCellListSetCellRect(void *,s32,s16,s16,u16,u16);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
     void CreateUnitSpriteButtonTask(void *,s32);
@@ -103,14 +103,14 @@ case 1:
             if(boolean1&255){
                 sy1=M2C_FIELD(sprite1,s16 *,0x52);sx1=M2C_FIELD(sprite1,s16 *,0x50);
                 w1=GetUnitSpriteWidth(sprite1);
-                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx1,sy1,(u16)w1,(u16)GetUnitSpriteHeight(sprite1));
+                SpriteCellListSetCellRect(M2C_FIELD(sprite1,void **,0x64),1,sx1,sy1,(u16)w1,(u16)GetUnitSpriteHeight(sprite1));
             }
             M2C_FIELD(sprite1,s16 *,0x34)=x1;M2C_FIELD(sprite1,s16 *,0x36)=y1;
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean2=1;else boolean2=0;
             if(boolean2&255){
                 sy2=M2C_FIELD(sprite1,s16 *,0x52);sx2=M2C_FIELD(sprite1,s16 *,0x50);
                 w2=GetUnitSpriteWidth(sprite1);
-                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx2,sy2,(u16)w2,(u16)GetUnitSpriteHeight(sprite1));
+                SpriteCellListSetCellRect(M2C_FIELD(sprite1,void **,0x64),1,sx2,sy2,(u16)w2,(u16)GetUnitSpriteHeight(sprite1));
             }
             CreateUnitSpriteButtonTask(sprite1,3);
             M2C_FIELD(sprite1,s8 *,0x49)=-100;
@@ -127,14 +127,14 @@ case 2:
             if(boolean3&255){
                 sy3=M2C_FIELD(sprite1,s16 *,0x52);sx3=M2C_FIELD(sprite1,s16 *,0x50);
                 w3=GetUnitSpriteWidth(sprite1);
-                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx3,sy3,(u16)w3,(u16)GetUnitSpriteHeight(sprite1));
+                SpriteCellListSetCellRect(M2C_FIELD(sprite1,void **,0x64),1,sx3,sy3,(u16)w3,(u16)GetUnitSpriteHeight(sprite1));
             }
             M2C_FIELD(sprite1,s16 *,0x34)=x1;M2C_FIELD(sprite1,s16 *,0x36)=y1;
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean4=1;else boolean4=0;
             if(boolean4&255){
                 sy4=M2C_FIELD(sprite1,s16 *,0x52);sx4=M2C_FIELD(sprite1,s16 *,0x50);
                 w4=GetUnitSpriteWidth(sprite1);
-                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx4,sy4,(u16)w4,(u16)GetUnitSpriteHeight(sprite1));
+                SpriteCellListSetCellRect(M2C_FIELD(sprite1,void **,0x64),1,sx4,sy4,(u16)w4,(u16)GetUnitSpriteHeight(sprite1));
             }
             CreateUnitSpriteButtonTask(sprite1,3);
             M2C_FIELD(sprite1,s8 *,0x49)=-100;
@@ -151,14 +151,14 @@ case 3:
             if(boolean5&255){
                 sy5=M2C_FIELD(sprite1,s16 *,0x52);sx5=M2C_FIELD(sprite1,s16 *,0x50);
                 w5=GetUnitSpriteWidth(sprite1);
-                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx5,sy5,(u16)w5,(u16)GetUnitSpriteHeight(sprite1));
+                SpriteCellListSetCellRect(M2C_FIELD(sprite1,void **,0x64),1,sx5,sy5,(u16)w5,(u16)GetUnitSpriteHeight(sprite1));
             }
             M2C_FIELD(sprite1,s16 *,0x34)=x1;M2C_FIELD(sprite1,s16 *,0x36)=y1;
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean6=1;else boolean6=0;
             if(boolean6&255){
                 sy6=M2C_FIELD(sprite1,s16 *,0x52);sx6=M2C_FIELD(sprite1,s16 *,0x50);
                 w6=GetUnitSpriteWidth(sprite1);
-                func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx6,sy6,(u16)w6,(u16)GetUnitSpriteHeight(sprite1));
+                SpriteCellListSetCellRect(M2C_FIELD(sprite1,void **,0x64),1,sx6,sy6,(u16)w6,(u16)GetUnitSpriteHeight(sprite1));
             }
             CreateUnitSpriteButtonTask(sprite1,1);
             M2C_FIELD(sprite1,s8 *,0x49)=-100;
@@ -174,14 +174,14 @@ case 3:
             if(boolean7&255){
                 sy7=M2C_FIELD(sprite4,s16 *,0x52);sx7=M2C_FIELD(sprite4,s16 *,0x50);
                 w7=GetUnitSpriteWidth(sprite4);
-                func_02087d84(M2C_FIELD(sprite4,void **,0x64),1,sx7,sy7,(u16)w7,(u16)GetUnitSpriteHeight(sprite4));
+                SpriteCellListSetCellRect(M2C_FIELD(sprite4,void **,0x64),1,sx7,sy7,(u16)w7,(u16)GetUnitSpriteHeight(sprite4));
             }
             M2C_FIELD(sprite4,s16 *,0x34)=x1;M2C_FIELD(sprite4,s16 *,0x36)=y1;
             if(M2C_FIELD(M2C_FIELD(sprite4,void **,0x64),u8 *,0x12))boolean8=1;else boolean8=0;
             if(boolean8&255){
                 sy8=M2C_FIELD(sprite4,s16 *,0x52);sx8=M2C_FIELD(sprite4,s16 *,0x50);
                 w8=GetUnitSpriteWidth(sprite4);
-                func_02087d84(M2C_FIELD(sprite4,void **,0x64),1,sx8,sy8,(u16)w8,(u16)GetUnitSpriteHeight(sprite4));
+                SpriteCellListSetCellRect(M2C_FIELD(sprite4,void **,0x64),1,sx8,sy8,(u16)w8,(u16)GetUnitSpriteHeight(sprite4));
             }
             M2C_FIELD(sprite4,s8 *,0x49)=-100;
             CreateUnitSpriteButtonTask(sprite4,2);

@@ -366,7 +366,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
     s32 func_020cccb8(void);
     s32 GetKeyActionFlags(void);
     s32 GetTouchActionFlags(s16);
-    s32 func_020d46cc(void);
+    s32 IsMapCommandPending(void);
     M2C_UNK DeleteSpriteObject(void *);
     M2C_UNK StepMapViewToTile(s16, s16);
     void *GetTargetPosition(s16);
@@ -401,7 +401,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
     merged = flags | GetTouchActionFlags(count);
 
     if (merged & 0x20) {
-        if (!func_020d46cc()) {
+        if (!IsMapCommandPending()) {
             M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = M2C_FIELD(*gCurrentMap, s16 *, 0x52DC);
             M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(*gCurrentMap, s16 *, 0x52DE);
         }
@@ -483,14 +483,14 @@ M2C_FIELD(*gCurrentMap,s16*,0x52c4)=M2C_FIELD(*gCurrentMap,s16*,0x52de);
 #pragma pop
 /* Handles a confirmation-style selection menu: moves the cursor, opens detail view on confirm, or signals cancel. */
 void func_020caa34(void *dialog) {
-    M2C_UNK func_020bdfdc(void);
+    M2C_UNK DrawNextButtonSprite(void);
     s32 IsMapCursorIdle(void);
     s32 GetMapCursorKeyAction(void);
     s32 GetMapCursorTouchAction(void);
     M2C_UNK StepMapViewToTile(s16, s16);
     M2C_UNK Sprite_ResumeAnimation(void *);
     s32 IsTargetCellListed(s16, s16);
-    M2C_UNK func_020d468c(void);
+    M2C_UNK SetMapCommandPending(void);
     M2C_UNK CreateTargetCursor(s16, s16);
     M2C_UNK SetBattleCommand(s32, u8, u8, u8);
     M2C_UNK DeleteSpriteObject(void *);
@@ -503,7 +503,7 @@ void func_020caa34(void *dialog) {
 
     s32 flags = 0;
 
-    func_020bdfdc();
+    DrawNextButtonSprite();
     if (IsMapCursorIdle() != 0) {
         flags |= GetMapCursorKeyAction();
         flags |= GetMapCursorTouchAction();
@@ -519,7 +519,7 @@ void func_020caa34(void *dialog) {
         if (flags & 0x10) {
             if (IsTargetCellListed(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                                M2C_FIELD(*gCurrentMap, s16 *, 0x52C4)) != 0) {
-                func_020d468c();
+                SetMapCommandPending();
                 CreateTargetCursor(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                               M2C_FIELD(*gCurrentMap, s16 *, 0x52C4));
                 SetBattleCommand(0x15,

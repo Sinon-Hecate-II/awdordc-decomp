@@ -4,6 +4,8 @@
 #include "ds3dsprite.h"
 #include "ov000_unit_move.h"
 
+extern s32 *gCurrentMap;
+
 static inline s8 ReadMovementCommand(void *p) {
     return ((s8 *)p + 0x58)[M2C_FIELD(p,u8*,0x40)++];
 }
@@ -125,27 +127,29 @@ void UnitMove_Update(void *move) {
     if(UnitMove_CanStepOntoCell(move))DrawUnitMoveSprite(move);
 }
 
-void func_ov000_02169334(void *p) {
- extern s32 *gCurrentMap;
- M2C_UNK PlayUnitMoveSound();
- void func_ov000_02169cd4(void *);
- PlayUnitMoveSound(p);
- func_ov000_02169cd4(p);
- M2C_FIELD(gCurrentMap,u8 **,8)[M2C_FIELD(p,s8 *,0x45)]=0;
+/* Destructor callback of the unit-move controller class: play the unit's move
+ * sound, release its sprites and graphics buffers, and clear its slot in the
+ * map's unit-move pool so the slot can be reused. */
+void UnitMove_Destroy(void *move) {
+    extern s32 *gCurrentMap;
+    void UnitMove_FreeGraphics(void *);
+
+    PlayUnitMoveSound(move);
+    UnitMove_FreeGraphics(move);
+    M2C_FIELD(gCurrentMap, u8 **, MAP_UNIT_MOVE_SLOTS)[M2C_FIELD(move, s8 *, UNIT_MOVE_SLOT)] = 0;
 }
 
-extern int *gCurrentMap;
-void ClearUnitMoveSlots(void)
-{
-    unsigned short i = 0;
+/* Clear the pool of active unit-move controllers (the map's third block pointer):
+ * mark every slot of it as free. */
+void ClearUnitMoveSlots(void) {
+    u16 i = 0;
+    u8 *slots;
 
     do {
-        unsigned char *ptr =
-            *(unsigned char **)((unsigned char *)gCurrentMap + 8);
-
-        ptr[i] = 0;
+        slots = M2C_FIELD(gCurrentMap, u8 **, MAP_UNIT_MOVE_SLOTS);
+        slots[i] = 0;
         i++;
-    } while (i < 3);
+    } while (i < UNIT_MOVE_SLOT_COUNT);
 }
 
 void *CreateUnitMoveAt(s32,s32,s32,s32);
@@ -204,9 +208,11 @@ void *CreateUnitMoveAt(s32 tileX, s32 tileY, s32 owner, s32 kind) {
     return CreateUnitMove(tileX, tileY, owner, kind, GetPlayerUnitFacing(owner));
 }
 
-s32 GetPlayerUnitFacing(s32 arg0) {
+/* Direction (1 or 0) the player's units start a move facing: 1 when the player's
+ * unit sprites are mirrored horizontally (PLAYER_REC_FLIP), 0 otherwise. */
+s32 GetPlayerUnitFacing(s32 player) {
     extern s32 *gCurrentMap;
-    if (M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), u8 *, 0x67CC) != 0) {
+    if (M2C_FIELD(((player * MAP_PLAYER_STRIDE) + *gCurrentMap), u8 *, MAP_PLAYER_STATES + PLAYER_REC_FLIP) != 0) {
         return 1;
     }
     return 0;
@@ -256,14 +262,14 @@ void *func_ov000_021696b0(s32 a,s32 b,s32 c,s32 d,s32 e) {
  return p;
 }
 
-void func_ov000_021696d4(void) {
+void DeleteAllUnitMoveObjects(void) {
  s32 FindObjectByClass(M2C_UNK *);
  void DeleteUnitMoveObject(void *);
  extern M2C_UNK gUnitMoveClass;
  void *p=(void *)FindObjectByClass(&gUnitMoveClass);
  if(!p)return;
  DeleteUnitMoveObject(p);
- func_ov000_021696d4();
+ DeleteAllUnitMoveObjects();
 }
 
 void DeleteUnitMoveObject(void *arg0) {
@@ -494,7 +500,7 @@ paletteOffset=UnitMovePaletteOffset(move);
 QueueMainOBJExtPaletteCopy(gArmyPalettes+(M2C_FIELD(player,u8 *,PLAYER_REC_ARMY_INDEX)-1)*32,paletteOffset,32,0);
 }
 
-void func_ov000_02169cd4(void *arg0) {
+void UnitMove_FreeGraphics(void *arg0) {
     void Sprite_ClearHandle(s32 *);
     M2C_UNK HeapFreeBlock(s32);
     Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x34));

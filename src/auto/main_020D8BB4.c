@@ -9,7 +9,7 @@ M2C_UNK SetTextMode(u32);
 s32 func_020bee64();
 s32 func_020bf054(s32,s32);
 M2C_UNK func_020ceec8();
-s32 func_020d8b84(s32);
+s32 CheckVersusSaveSlot(s32);
 s32 func_020e4b28(s32);
 extern M2C_UNK gOptionBits;
 extern u16 data_02168f14;
@@ -34,7 +34,7 @@ j++;}while(j<3);
 break;
 case 1:
 t=func_020bf054(k,0);
-if(func_020bee64()!=0 && func_020d8b84(k)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
+if(func_020bee64()!=0 && CheckVersusSaveSlot(k)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
 break;
 }
 k++;
@@ -107,7 +107,7 @@ void StartSubScreenUi(M2C_UNK mode, M2C_UNK param) {
 u8 IsUiModeSwitchBusy(void) {
     s32 FindObjectByClass(void *);
     extern void *gUiMode;
-    extern M2C_UNK data_0212c498;
+    extern M2C_UNK gUiModeSwitchClass;
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     void *savedEngine;
@@ -116,7 +116,7 @@ u8 IsUiModeSwitchBusy(void) {
     if (((UiModeState *)gUiMode)->requested != ((UiModeState *)gUiMode)->current) return 1;
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    if (FindObjectByClass(&data_0212c498) != 0) busy = 1;
+    if (FindObjectByClass(&gUiModeSwitchClass) != 0) busy = 1;
     else busy = 0;
     gCur3DSpriteEngine = savedEngine;
     return busy;
@@ -171,7 +171,15 @@ void LeaveSubScreenUi(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-s32 SetUiMode(s32 a,s32 b){extern void *gUiMode;if(a==M2C_FIELD(gUiMode,s16 *,2))return 0;M2C_FIELD(gUiMode,s16 *,4)=a;M2C_FIELD(gUiMode,s32 *,8)=b;return 1;}
+/* Ask for UI mode `mode` with `param` as the new mode's parameter: returns 0
+ * when that mode is already in effect, 1 once the switch is requested. */
+s32 SetUiMode(s32 mode, s32 param) {
+    extern void *gUiMode;
+    if (mode == ((UiModeState *)gUiMode)->current) return 0;
+    ((UiModeState *)gUiMode)->requested = mode;
+    ((UiModeState *)gUiMode)->param = param;
+    return 1;
+}
 
 s32 GetUiMode(void){extern void *gUiMode;return M2C_FIELD(gUiMode,s16 *,2);}
 
@@ -225,20 +233,30 @@ void func_020d903c(M2C_UNK arg0) {
     CreateSpriteObject(&data_0212c4c8, arg0);
 }
 
-void func_020d9054(s32 a){M2C_UNK CreateSpriteObject(M2C_UNK *,M2C_UNK);extern M2C_UNK data_0212c498;extern void *gUiMode;M2C_FIELD(gUiMode,s16 *,0)=M2C_FIELD(gUiMode,s16 *,2);M2C_FIELD(gUiMode,s16 *,2)=M2C_FIELD(gUiMode,s16 *,4);CreateSpriteObject(&data_0212c498,a);}
+/* Apply the UI mode SetUiMode asked for, once the screen change covering it has
+ * finished: move the current mode to the previous one, make the requested mode
+ * current, and create the mode-switch transition sprite owned by `owner`. */
+void ApplyUiModeSwitch(s32 owner) {
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
+    extern M2C_UNK gUiModeSwitchClass;
+    extern void *gUiMode;
+    ((UiModeState *)gUiMode)->previous = ((UiModeState *)gUiMode)->current;
+    ((UiModeState *)gUiMode)->current = ((UiModeState *)gUiMode)->requested;
+    CreateSpriteObject(&gUiModeSwitchClass, owner);
+}
 
 /* Initialises the 3D sprite engine of the current screen: loads the shared setup
    block, runs the sub engine's teardown, clears the sprite bank's low control
    bits, sets up the sprite source banks and texture, then enables the five
    sprite layers (bits 4..8 of the bank's flags word). */
 void func_020d908c(void) {
-    M2C_UNK func_020d4d78(void);
+    M2C_UNK ScheduleBattleEndSpriteRemoval(void);
     void Apply3DSpriteLayout(void *);
     void Reset3DSpriteBankState(void);
     void Reset3DSpriteCorners(void);
     void LoadUiGraphics(void);
     void LoadGraphicsBlock(M2C_UNK *, M2C_UNK);
-    void AddToU16Array(void *, s32, s32);
+    void OffsetTileIndices(void *, s32, s32);
     void CopyToObjPaletteShadow(M2C_UNK *, s32, s32);
     void LoadScenePanelGraphicsOnBothEngines(void);
     extern void *gCur3DSpriteEngine;
@@ -259,7 +277,7 @@ void func_020d908c(void) {
     setup = *(const SetupParams12 *)data_020f4ea8;
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_020d4d78();
+    ScheduleBattleEndSpriteRemoval();
     gCur3DSpriteEngine = savedEngine;
     bankFlags = (u16 *)*(void **)gCur3DSpriteEngine;
     *bankFlags = (u16)(*bankFlags & ~7);
@@ -269,7 +287,7 @@ void func_020d908c(void) {
     LoadUiGraphics();
     LoadGraphicsBlock(&data_020efad4, (M2C_UNK)M2C_FIELD(gCur3DSpriteEngine, void **, 0x18));
     LoadGraphicsBlock(&data_020f28f0, (M2C_UNK)M2C_FIELD(gCur3DSpriteEngine, void **, 0x2C));
-    AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, void **, 0x2C), 0x800, 0x1000);
+    OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine, void **, 0x2C), 0x800, 0x1000);
     CopyToObjPaletteShadow(&data_020f28d0, 0x20, 0x20);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x8);
     LoadScenePanelGraphicsOnBothEngines();
@@ -313,26 +331,45 @@ void func_020d92b8(void) {
     func_020ae20c();
 }
 
-void func_020d92c4(s32 arg0) {
+/* Start a dark fade-out (8 frames) on the sub screen, the fade sprite owned by
+ * `parent`, unless the sub-screen UI (UI mode 3) is currently up. */
+void FadeOutSubScreen(s32 parent) {
     M2C_UNK StartScreenFadeChildren(s32, s32, s32, s32);
     extern void *gUiMode;
-    if (M2C_FIELD(gUiMode, s16 *, 2) == 3) return;
-    StartScreenFadeChildren(0, 8, 1, arg0);
+    if (((UiModeState *)gUiMode)->current == UI_MODE_SUB_SCREEN) return;
+    StartScreenFadeChildren(TRANSITION_MODE_DARK, 8, DS3D_TARGET_SUB, parent);
 }
 
-void func_020d92f8(s32 arg0) {
+/* Create a dark screen transition (8 frames) on the sub screen, its transition
+ * sprite owned by `parent`, unless the sub-screen UI (UI mode 3) is currently up. */
+void CreateSubScreenTransition(s32 parent) {
     M2C_UNK CreateScreenTransitionChildren(s32, s32, s32, s32);
     extern void *gUiMode;
-    if (M2C_FIELD(gUiMode, s16 *, 2) == 3) return;
-    CreateScreenTransitionChildren(0, 8, 1, arg0);
+    if (((UiModeState *)gUiMode)->current == UI_MODE_SUB_SCREEN) return;
+    CreateScreenTransitionChildren(TRANSITION_MODE_DARK, 8, DS3D_TARGET_SUB, parent);
 }
 
-void CreateUiModeSprite(void){M2C_UNK CreateSpriteFromClass(void *,s32);extern void *gUiMode;extern M2C_UNK data_0212c4fc;CreateSpriteFromClass(*(void **)((u8 *)&data_0212c4fc+M2C_FIELD(gUiMode,s16 *,2)*12),8);}
+/* Create the sprite of the current UI mode from that mode's sprite class: the
+ * +0x04 pointer of its record in the per-mode screen class table (read through
+ * the data_0212c4fc label), owned by layer 8 of the sub screen's engine. */
+void CreateUiModeSprite(void) {
+    M2C_UNK CreateSpriteFromClass(void *, s32);
+    extern void *gUiMode;
+    extern M2C_UNK data_0212c4fc;
+    s16 mode;
 
-void func_020d9360(s32 arg0) {
-M2C_UNK CreateSpriteObject(M2C_UNK *,s32);
-extern void *gUiMode;extern M2C_UNK data_0212c4f8;
-CreateSpriteObject(*(M2C_UNK **)((u8*)&data_0212c4f8+M2C_FIELD(gUiMode,s16 *,2)*12),arg0);
+    mode = ((UiModeState *) gUiMode)->current;
+    CreateSpriteFromClass(*(void **) ((u8 *) &data_0212c4fc + mode * UI_MODE_ENTRY_SIZE), 8);
+}
+
+/* Create the current UI mode's sprite object owned by `owner` (the mode's class
+ * comes from gUiModeSpriteClasses). */
+void CreateUiModeChildSprite(s32 owner) {
+    M2C_UNK CreateSpriteObject(M2C_UNK *, s32);
+    extern void *gUiMode;
+    extern M2C_UNK gUiModeSpriteClasses;
+
+    CreateSpriteObject(*(M2C_UNK **)((u8 *)&gUiModeSpriteClasses + M2C_FIELD(gUiMode, s16 *, 2) * 12), owner);
 }
 
 void CreateSubScreenUi(void) {

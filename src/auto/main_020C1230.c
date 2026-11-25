@@ -275,7 +275,13 @@ u8 IsDestroyedPipeTile(void) {
     return var_r0;
 }
 
-void SetFrameRectPattern(s32 a,s32 b){s32 GetUiColor(s32); Load3DSpritePattern(a<<5,(u16)b,GetUiColor(11),1);}
+/* Give a frame-rectangle sprite its border pattern: load the frame pattern (block
+ * 1) into the current 3D sprite engine at tile `tile`, tinted with the frame-rect
+ * UI colour, in OBJ palette slot `palette`. */
+void SetFrameRectPattern(s32 tile, s32 palette) {
+    s32 GetUiColor(s32);
+    Load3DSpritePattern(tile << 5, (u16)palette, GetUiColor(UI_COLOR_FRAME_RECT), 1);
+}
 
 /* Draw the border of the frame rectangle whose top-left corner is (x, y): the
  * screen corners (0,0) and (256,192) are mapped to frame-tile coordinates, and
@@ -349,7 +355,7 @@ void func_020c1d98(void) {
     DeleteSpriteObjectsOfClass(&gFrameRectSpriteClass);
 }
 
-u8 func_020c1dac(s32 arg0, s32 arg1, s32 arg2) {
+u8 Main_IsValueInRange(s32 arg0, s32 arg1, s32 arg2) {
  s32 result;
  if ((arg1 <= arg0) && (arg0 <= arg2)) result = 1;
  else result = 0;
@@ -377,10 +383,12 @@ u16 GetOccupationPaletteOffset(void) {
     return (u16) ((GetOccupationBackgroundIndex() * 0x14) + 0x424);
 }
 
-s32 GetOccupationBackgroundName(s32 arg0) {
- s32 n=GetOccupationBackgroundIndex(arg0);
- func_020c1dac((s16)n,0,8);
- return gOccupationBackgroundNames[n];
+/* Name of the occupation screen's background graphic for property terrain
+ * `terrainKind`: look its background index up and return that background's name. */
+s32 GetOccupationBackgroundName(s32 terrainKind) {
+    s32 index = GetOccupationBackgroundIndex(terrainKind);
+    Main_IsValueInRange((s16) index, 0, OCCUPATION_BACKGROUND_COUNT - 1); /* the index names one of the backgrounds */
+    return gOccupationBackgroundNames[index];
 }
 
 /* First sprite tile of CO `coId`'s portrait strip, or CO_PORTRAIT_TILE_NONE when

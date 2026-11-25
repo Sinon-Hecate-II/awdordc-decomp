@@ -278,20 +278,24 @@ void SetConnectionEndpoint(s32 localPort, s32 peerPort, s32 peerAddr) {
     M2C_FIELD(socket, s16 *, SOCKET_LOCAL_PORT) = AllocateLocalPort();
 }
 
+/* Reset the current socket's connection so it can be reused: give it back its
+ * owning socket object and clear its state, receive length, pending send data and
+ * data callback. */
 void ResetCurrentConnection(void) {
     extern M2C_UNK gSocketManager;
-    M2C_UNK *inner;
-    M2C_UNK *q;
-    inner = (M2C_UNK *)M2C_FIELD(&gSocketManager, void **, 4);
-    q = (M2C_UNK *)M2C_FIELD(inner, void **, 0xA4);
-    if (q == 0) {
+    void *socketObject;
+    void *connection;
+
+    socketObject = M2C_FIELD(&gSocketManager, void **, SOCKMGR_RUNNING_THREAD);
+    connection = M2C_FIELD(socketObject, void **, SOCK_OBJECT_RAW);
+    if (connection == 0) {
         return;
     }
-    M2C_FIELD(q, void **, 0) = (void *)inner;
-    M2C_FIELD(q, u8 *, 8) = 0;
-    M2C_FIELD(q, s32 *, 0x44) = 0;
-    M2C_FIELD(q, s32 *, 0x60) = 0;
-    M2C_FIELD(q, s32 *, 0x38) = 0;
+    M2C_FIELD(connection, void **, SOCKET_OWNER) = socketObject;
+    M2C_FIELD(connection, u8 *, SOCKET_STATE) = TCP_STATE_CLOSED;
+    M2C_FIELD(connection, s32 *, SOCKET_RX_LENGTH) = 0;
+    M2C_FIELD(connection, s32 *, CONN_PENDING_TX_LEN) = 0;
+    M2C_FIELD(connection, s32 *, SOCKET_DATA_CB) = 0;
 }
 
 void CloseRawConnection(void) {
@@ -338,18 +342,20 @@ void SocketSetReceiveCallback(s32 arg0) {
     }
 }
 
-void func_0201d2b8(void) {
-    void func_02024b24(void);
+/* Start listening on the running socket object's connection: run the TLS server
+ * handshake when its payload is TLS-wrapped, a plain TCP listen otherwise. */
+void ListenTransport(void) {
+    void func_02024b24();
     void SocketStartListen(void *);
     extern M2C_UNK gSocketManager;
-    void *p = (void *) M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
-    if (p == 0) {
+    void *conn = (void *) M2C_FIELD(M2C_FIELD(&gSocketManager, void **, SOCKMGR_RUNNING_THREAD), void **, SOCK_OBJECT_RAW);
+    if (conn == 0) {
         return;
     }
-    if (*((u8 *) p + 9) != 0) {
-        func_02024b24();
+    if (M2C_FIELD(conn, u8 *, SOCK_TLS_ACTIVE) != 0) {
+        func_02024b24(conn);
     } else {
-        SocketStartListen(p);
+        SocketStartListen(conn);
     }
 }
 
@@ -458,7 +464,7 @@ void CloseTransport(void) {
 
 void WaitForTlsCloseNotify(void) {
     extern M2C_UNK gSocketManager, gNetStack;
-    void func_02025150(void *);
+    void TlsResetChannel(void *);
     M2C_UNK func_0201a238();
     u64 GetSystemTick(void);
     void *socketManagerEntry = M2C_FIELD(&gSocketManager, void **, 4);
@@ -468,7 +474,7 @@ void WaitForTlsCloseNotify(void) {
     /* Wait briefly for a TLS close alert to drain, then close the transport. */
     if (!rawConnection) return;
     if (M2C_FIELD(rawConnection, u8 *, SOCK_TLS_ACTIVE)) {
-        func_02025150(rawConnection);
+        TlsResetChannel(rawConnection);
     }
     startTick = (u32)(GetSystemTick() >> 16);
     goto check;
@@ -585,14 +591,19 @@ TcpSendAck(arg1,0x1b);
 }
 }
 
-void ConsumeConnectionReceivedData(u32 arg0) {
-void TlsConsumeReceivedData(u32,void *);
-void ConsumeReceivedData(u32,void *);
-extern M2C_UNK gSocketManager;
-void *p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);
-if(p==0)return;
-if(M2C_FIELD(p,u8*,9)!=0)TlsConsumeReceivedData(arg0,p);
-else ConsumeReceivedData(arg0,p);
+/* Consume `count` bytes of the current socket's received data: a TLS socket drops
+ * them from its pending record, any other socket from its receive buffer. */
+void ConsumeConnectionReceivedData(u32 count) {
+    void TlsConsumeReceivedData(u32, void *);
+    void ConsumeReceivedData(u32, void *);
+    extern M2C_UNK gSocketManager;
+    void *connection = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, SOCKMGR_RUNNING_THREAD), void **, SOCK_OBJECT_RAW);
+
+    if (connection == 0) return;
+    if (M2C_FIELD(connection, u8 *, SOCK_TLS_ACTIVE) != 0)
+        TlsConsumeReceivedData(count, connection);
+    else
+        ConsumeReceivedData(count, connection);
 }
 
 s32 TcpSendBuffer(M2C_UNK data, s32 length, M2C_UNK socket, s32 probe) {

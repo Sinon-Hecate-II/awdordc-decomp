@@ -82,10 +82,10 @@ void func_020b17ec(void) {
 }
 
 void func_020b1800(void) {
-    M2C_UNK func_02003584();
-    M2C_UNK func_02003560();
-    func_02003560();
-    func_02003584();
+    M2C_UNK GX_ReleaseBankGrantForObjExtPalette();
+    M2C_UNK GX_ReleaseBankGrantForBGExtPalette();
+    GX_ReleaseBankGrantForBGExtPalette();
+    GX_ReleaseBankGrantForObjExtPalette();
 }
 
 /* Assign the VRAM banks the battle map view lays out: texture in A/B, the main
@@ -193,10 +193,14 @@ void func_020b1a88(void) {
 
 }
 
-void func_020b1a8c(s32 arg0) {
+/* Upload one colour of the OBJ palette's 16-entry brightness ramp (white, down to
+ * grey and back - gObjPaletteFadeRamp) to the fixed extended-palette colour at
+ * 0x1448: bits 2..5 of `phase` pick the entry, so a caller stepping `phase` makes
+ * the colour pulse. */
+void UploadPaletteFadeColor(s32 phase) {
     M2C_UNK QueueMainOBJExtPaletteCopy(void *, s32, M2C_UNK, M2C_UNK);
-    extern u8 data_021206e0[];
-    QueueMainOBJExtPaletteCopy(data_021206e0 + ((u32)((arg0 >> 2) << 28) >> 27), 0x1448, 2, 0);
+    extern u8 gObjPaletteFadeRamp[];
+    QueueMainOBJExtPaletteCopy(gObjPaletteFadeRamp + ((u32)((phase >> 2) << 28) >> 27), 0x1448, 2, 0);
 }
 
 void func_020b1abc(void) {

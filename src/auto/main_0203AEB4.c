@@ -13,13 +13,18 @@ s32 GetSessionPlayerSlot(s32 profileId) {
  }return -1;
 }
 
+/* Restart the match session's paced think clock: clear the pass counter and
+ * record the current tick, so the next connection pump waits a full interval. */
 void MatchSession_ResetThinkTimer(void) {
- extern M2C_UNK gMatchSessionMgr; u64 GetSystemTick(void);
- u64 t; void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);
- if(!p)return;
- M2C_FIELD(p,s32 *,8)=0;
- t=GetSystemTick();
- M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u64 *,0xC)=t;
+    extern M2C_UNK gMatchSessionMgr;
+    u64 GetSystemTick(void);
+    u64 tick;
+    void *session = M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION);
+
+    if (!session) return;
+    M2C_FIELD(session, s32 *, MATCH_SESSION_THINK_COUNT) = 0;
+    tick = GetSystemTick();
+    M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION), u64 *, MATCH_SESSION_THINK_TICK) = tick;
 }
 
 /* Sends the match session's GameSpy status and location strings to the lobby;
@@ -63,24 +68,26 @@ s32 MatchSession_Think(void) {
     extern M2C_UNK gMatchSessionMgr;
     u64 GetSystemTick(void);
     u64 U64Divide(u64, u64);
-    s32 func_0204db50(void *);
+    s32 gpiThinkConnection(void *);
     s32 result = 0;
     void *session = M2C_FIELD(&gMatchSessionMgr, void **, 8);
 
     if (U64Divide((GetSystemTick() - M2C_FIELD(session, u64 *, MATCH_SESSION_THINK_TICK)) << 6, 0x82EA) >= 300) {
         M2C_FIELD(session, s32 *, MATCH_SESSION_THINK_COUNT)++;
-        result = func_0204db50(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), void **, MATCH_SESSION_CONNECTION));
+        result = gpiThinkConnection(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), void **, MATCH_SESSION_CONNECTION));
         M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), u64 *, MATCH_SESSION_THINK_TICK) = GetSystemTick();
     }
     return result;
 }
 
-void func_0203b128(void) {
- extern M2C_UNK gMatchSessionMgr;
- if(!M2C_FIELD(&gMatchSessionMgr,void **,8))return;
- M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,0)=0;
- M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1E)=0;
- M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1F)=0;
+/* Abandon the match session's setup: mark the session idle and rewind its
+ * match-setup step and pass counter. Does nothing when there is no session. */
+void MatchSession_Teardown(void) {
+    extern M2C_UNK gMatchSessionMgr;
+    if (!M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION)) return;
+    M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION), s32 *, MATCH_SESSION_STATUS) = 0;
+    M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION), u8 *, MATCH_SESSION_STATE) = 0;
+    M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION), u8 *, MATCH_SESSION_STEP) = 0;
 }
 
 #pragma opt_strength_reduction off
@@ -90,14 +97,14 @@ void func_0203b128(void) {
  * one step of the session update and stops early when a request is pending. */
 void SyncSessionPlayerConnections(M2C_UNK *arg0,s32 playerCount){
 extern M2C_UNK gMatchSessionMgr;
-s32 func_0204e184(void *,s32 *);s32 gpGetBuddyStatus(void *,s32,s32);s32 DeleteBuddyProfile(void *,s32);
+s32 gpiGetBuddyCount(void *,s32 *);s32 gpGetBuddyStatus(void *,s32,s32);s32 DeleteBuddyProfile(void *,s32);
 u32 ReportNetError();s32 GetSessionPlayerId(s32);s32 IsPlayerRecordJoined(void *);void AssignPlayerRecordId(void *,s32);void MarkPlayerRecordJoined(void *);
-s32 MatchSession_MergeDuplicatePlayer(u8 *,s32,s32);s32 gpiGetBuddyIndex(void *,s32,s32 *);s32 DropSessionPlayer(s32);
+s32 MatchSession_MergeDuplicatePlayer(u8 *,s32,s32);s32 gpiGetBuddyIndex(void *,s32,s32 *);s32 AddSessionPlayerBuddy(s32);
 s32 GetLocalPlayerInfo(void);s32 GetPlayerRecordId(s32,s32);void FormatPlayerNasId(s32,void *,void *);
 void HandlePeerConnectResult(s32,void *,s32);s32 gpiProfileSearch(void *,s32,s32,s32,s32,void *,s32,s32,void (*)(s32,void *,s32),s32);
 s32 i,remoteCount,remoteIndex;u32 buddyInfo[132];u32 peerAddress[6];s32 slot,profileId;u8 *a=(u8 *)arg0;
 if(!M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1e)){
-ReportNetError(func_0204e184(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),&remoteCount));
+ReportNetError(gpiGetBuddyCount(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),&remoteCount));
 #pragma opt_loop_invariants off
 for(remoteIndex=0;remoteIndex<remoteCount;remoteIndex++){
 ReportNetError(gpGetBuddyStatus(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),remoteIndex,(s32)buddyInfo));
@@ -119,7 +126,7 @@ profileId=GetSessionPlayerId(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8
 if(profileId){
 if(!MatchSession_MergeDuplicatePlayer(a,M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1c),profileId)){
 ReportNetError(gpiGetBuddyIndex(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),profileId,&remoteIndex));
-if(remoteIndex==-1)DropSessionPlayer(profileId);
+if(remoteIndex==-1)AddSessionPlayerBuddy(profileId);
 }
 }else{
 if(GetPlayerRecordId(GetLocalPlayerInfo(),(s32)(a+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1c)*12))==-1){
@@ -131,11 +138,15 @@ M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1c)++;
 }
 }
 #pragma opt_strength_reduction reset
-void func_0203b3c4(void) {
- extern M2C_UNK gMatchSessionMgr;
- void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);
- M2C_FIELD(p,void (**)(s32,u8,s32),0x2C)(0,M2C_FIELD(p,u8 *,0x1D),M2C_FIELD(p,s32 *,0x30));
- M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,0)=2;
+/* The match session's setup has completed: tell the app through its event
+ * callback (no error, with the player-list dirty flag) and mark the session
+ * finished. */
+void MatchSession_Finish(void) {
+    extern M2C_UNK gMatchSessionMgr;
+    void *session = M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION);
+
+    M2C_FIELD(session, void (**)(s32, u8, s32), MATCH_SESSION_EVENT_CB)(0, M2C_FIELD(session, u8 *, MATCH_SESSION_DIRTY), M2C_FIELD(session, s32 *, MATCH_SESSION_EVENT_DATA));
+    M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION), s32 *, MATCH_SESSION_STATUS) = MATCH_SESSION_STATUS_FINISHED;
 }
 
 #pragma opt_propagation off
@@ -223,11 +234,16 @@ s32 ResolvePlayerSlot(u8 *records, s32 count, s32 profileId) {
     return result;
 }
 
-s32 DropSessionPlayer(s32 a) {
- extern M2C_UNK gMatchSessionMgr; extern M2C_UNK data_020fc8ec;
- s32 func_0204df00(void *,s32,void *); u32 ReportNetError();
- s32 r=func_0204df00(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),a,&data_020fc8ec);
- ReportNetError(r); return r;
+/* Send the GameSpy addbuddy request that asks to add session player `profileId`
+ * as a buddy (no reason string), reporting any gpi error it returns. */
+s32 AddSessionPlayerBuddy(s32 profileId) {
+    extern M2C_UNK gMatchSessionMgr;
+    extern M2C_UNK sEmptyBuddyReason;
+    s32 gpiAddBuddy(void *, s32, void *);
+    u32 ReportNetError();
+    s32 result = gpiAddBuddy(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION), void **, MATCH_SESSION_CONNECTION), profileId, &sEmptyBuddyReason);
+    ReportNetError(result);
+    return result;
 }
 
 s32 FetchMatchPlayerInfo(s32 arg0,s32 arg1) {
@@ -280,7 +296,7 @@ u32 ReportNetError(u32 result, u32 unused, u32 detailOffset) {
 void HandlePeerConnectResult(s32 connection, void *result, s32 index) {
 extern M2C_UNK gMatchSessionMgr;
 s32 GetPlayerRecordType(void *); void MarkPlayerRecordJoined(void *); void AssignPlayerRecordId(void *,s32);
-s32 MatchSession_MergeDuplicatePlayer(u8 *,s32,s32);s32 gpiGetBuddyIndex(void *,s32,s32 *);s32 DropSessionPlayer(s32);void NotifyPlayerSlotChanged(s32);
+s32 MatchSession_MergeDuplicatePlayer(u8 *,s32,s32);s32 gpiGetBuddyIndex(void *,s32,s32 *);s32 AddSessionPlayerBuddy(s32);void NotifyPlayerSlotChanged(s32);
 s32 peerIndex,entryOffset,slotOffset,entryBase;
 if(M2C_FIELD(result,s32 *,0)==0 && M2C_FIELD(result,s32 *,4)!=0) {
 slotOffset=index*MATCH_SESSION_PLAYER_SIZE;
@@ -299,7 +315,7 @@ peerIndex++;entryOffset+=0xac;
 entryOffset=0;if(M2C_FIELD(result,s32 *,4)>0){entryBase=entryOffset;do {
 s32 profileId;
 ((u32 (*)(u32))ReportNetError)(gpiGetBuddyIndex((void *)connection,M2C_FIELD((u8 *)M2C_FIELD(result,void **,0xc)+entryBase,s32 *,0),&profileId));
-if(profileId==-1)DropSessionPlayer(M2C_FIELD((u8 *)M2C_FIELD(result,void **,0xc)+entryBase,s32 *,0));
+if(profileId==-1)AddSessionPlayerBuddy(M2C_FIELD((u8 *)M2C_FIELD(result,void **,0xc)+entryBase,s32 *,0));
 else {
 AssignPlayerRecordId(((u8 *)M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,MATCH_SESSION_PLAYERS)+slotOffset),M2C_FIELD(M2C_FIELD(result,void **,0xc),s32 *,0));
 MarkPlayerRecordJoined(((u8 *)M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,MATCH_SESSION_PLAYERS)+slotOffset));NotifyPlayerSlotChanged(index);
@@ -342,7 +358,7 @@ void AddBuddyProfileCallback(void **conn, void *buf, s32 unused) {
     s32 GetPlayerRecordId(s32, s32);
     s32 StringFormatN(void *, s32, void *, ...);
     s32 ByteCompareN(void *, void *, s32);
-    s32 DropSessionPlayer(s32);
+    s32 AddSessionPlayerBuddy(s32);
     s32 gpiReleaseProfile(void **, s32);
 
     u8 keyText[0x1c];
@@ -403,7 +419,7 @@ void AddBuddyProfileCallback(void **conn, void *buf, s32 unused) {
 
 after_loop:
     if (found) {
-        DropSessionPlayer(M2C_FIELD(buf, s32 *, 4));
+        AddSessionPlayerBuddy(M2C_FIELD(buf, s32 *, 4));
     } else {
         gpiReleaseProfile(conn, M2C_FIELD(buf, s32 *, 4));
     }

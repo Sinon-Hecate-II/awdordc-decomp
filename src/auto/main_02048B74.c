@@ -4,19 +4,20 @@
 
 typedef struct { u8 bytes[8]; } UnkSocketAddress;
 
-void func_02048b74(M2C_UNK arg0) {
-    s32 Vector_GetCount();
-    M2C_UNK Vector_RemoveItem(M2C_UNK, s32);
-    s32 var_r4;
+/* Empty a vector: release and remove every item, from the last one down. */
+void Vector_Clear(s32 vector) {
+    s32 Vector_GetCount(s32);
+    M2C_UNK Vector_RemoveItem(s32, s32);
+    s32 index;
 
-    var_r4 = Vector_GetCount() - 1;
-    if (var_r4 < 0) {
+    index = Vector_GetCount(vector) - 1;
+    if (index < 0) {
         return;
     }
     do {
-        Vector_RemoveItem(arg0, var_r4);
-        var_r4 -= 1;
-    } while (var_r4 >= 0);
+        Vector_RemoveItem(vector, index);
+        index -= 1;
+    } while (index >= 0);
 }
 
 /* GameSpy darray ArraySearchLinear: scan the `count` elemSize-byte elements at
@@ -275,20 +276,22 @@ void func_02049270(void) {
 
 }
 
-s32 gpiStringDup(s32 arg0) {
+/* GameSpy gpiStringDup: allocate a copy of `string` with its terminator and
+ * return it, or 0 when `string` is NULL or the allocation fails. */
+s32 gpiStringDup(char *string) {
     s32 gpiMalloc(s32);
-    s32 StringLength();
-    M2C_UNK StringCopy(s32, s32);
-    s32 temp_r0;
+    s32 StringLength(char *);
+    M2C_UNK StringCopy(char *, char *);
+    char *copy;
 
-    if (arg0 == 0) {
+    if (string == NULL) {
         return 0;
     }
-    temp_r0 = gpiMalloc(StringLength() + 1);
-    if (temp_r0 != 0) {
-        StringCopy(temp_r0, arg0);
+    copy = (char *)gpiMalloc(StringLength(string) + 1);
+    if (copy != NULL) {
+        StringCopy(copy, string);
     }
-    return temp_r0;
+    return (s32)copy;
 }
 
 #pragma push

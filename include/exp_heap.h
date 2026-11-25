@@ -16,6 +16,13 @@
 
 #define HEAP_BLOCK_HEADER_SIZE 0x10 /* bytes of header in front of a block's payload */
 
+/* The {prev, next} links of a block on a free or used list (BLOCK_LINK_*), and
+ * the head/tail words of the list anchor itself (LIST_HEAD/LIST_TAIL). */
+#define HEAP_BLOCK_LINK_PREV 0x08 /* void *previous block on the same list */
+#define HEAP_BLOCK_LINK_NEXT 0x0c /* void *next block on the same list */
+#define HEAP_LIST_HEAD       0x00 /* void *first block of a block list */
+#define HEAP_LIST_TAIL       0x04 /* void *last block of a block list */
+
 /* Heap signature (u32 at heap+0x00). */
 #define HEAP_SIGNATURE_EXP 0x45585048 /* 'EXPH' */
 #define HEAP_SIGNATURE_FRM 0x46524D48 /* 'FRMH': frame heap, see InitFrameHeapArea */
@@ -49,6 +56,11 @@ typedef struct FrameHeap {
 #define FRAME_HEAP_DATA 0x30 /* first byte of the frame heap's allocatable area (the header ends here) */
 #define FRAME_HEAP_ATTRIBUTE     (-4)  /* heap+0x20: the heap attribute byte (see InitHeapHead) */
 #define FRAME_HEAP_ATTR_ZERO_FILL 0x01 /* attribute bit 0: clear freshly allocated bytes */
+
+/* Modes of FreeToFrameHeap: free everything allocated from the frame's head,
+ * from its tail, or (both bits) the whole frame. */
+#define FRAME_HEAP_FREE_TO_HEAD 0x01
+#define FRAME_HEAP_FREE_TO_TAIL 0x02
 
 /* A recorded frame-heap state: RecordFrameHeapState allocates one of these from
  * the heap itself, tags it with the caller's tag and pushes it on the heap's

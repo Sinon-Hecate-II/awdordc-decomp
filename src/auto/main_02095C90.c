@@ -21,7 +21,7 @@ void InitTelopWindow(void *telop) {
     M2C_UNK LoadNarcFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     void CloseNarcArchive(void);
     M2C_UNK Get3DSpriteLayerSize(M2C_UNK, M2C_UNK);
-    M2C_UNK AddToU16Array(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK OffsetTileIndices(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020af1c0(M2C_UNK, M2C_UNK);
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
@@ -70,7 +70,7 @@ void InitTelopWindow(void *telop) {
     LoadNarcFileDecompressed(&sTelopScFile, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
     LoadNarcFileToSpriteBuffer(&sTelopClFile, 0x20, 0x20);
     CloseNarcArchive();
-    AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20),
+    OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20),
                   (u16)Get3DSpriteLayerSize((u8)((u32)(*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 0),
                   0x1000);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) =
@@ -116,21 +116,21 @@ void func_02095f90(void) {
 
 }
 
-void func_02095f94(s32 arg0) {
-void func_02095fc0(void);
+void ShowTelopText(s32 arg0) {
+void DeleteTelopWindow(void);
 M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
 void StringCopy(void *,s32);
-extern M2C_UNK data_02102b18;
+extern M2C_UNK gTelopWindowClass;
 s32 p;
-func_02095fc0();
-p=CreateSpriteFromClass(&data_02102b18,7);
+DeleteTelopWindow();
+p=CreateSpriteFromClass(&gTelopWindowClass,7);
 StringCopy((u8 *)p+0x36,arg0);
 }
 
-void func_02095fc0(void) {
+void DeleteTelopWindow(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02102b18;
-    DeleteSpriteObjectsOfClass(&data_02102b18);
+    extern M2C_UNK gTelopWindowClass;
+    DeleteSpriteObjectsOfClass(&gTelopWindowClass);
 }
 
 void ClearMessageBoxState(void) {
@@ -147,32 +147,37 @@ void SetMessageBoxState(s8 arg0) {
     M2C_FIELD(Get3DSpriteManager(), s8 *, 0x46) = arg0;
 }
 
+/* True while a full-screen message box is up: once the box has been triggered
+ * (STARTED) or is fully shown (SHOWING).  Callers use it to hold their own
+ * updates while a message is on screen. */
 u8 IsMessageBoxActive(void) {
-    u8 var_r0;
+    u8 active;
 
-    if (GetMessageBoxState() == 1) {
+    if (GetMessageBoxState() == MESSAGE_BOX_STATE_STARTED) {
         return 1U;
     }
-    if (GetMessageBoxState() == 2) {
-        var_r0 = 1;
+    if (GetMessageBoxState() == MESSAGE_BOX_STATE_SHOWING) {
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
+/* Whether the full-screen message box is off: true only while it is neither
+ * opening, showing, nor suppressed. */
 u8 IsMessageBoxIdle(void) {
-    u8 var_r0;
+    u8 idle;
 
-    if (GetMessageBoxState() == 3) {
+    if (GetMessageBoxState() == MESSAGE_BOX_STATE_SUPPRESSED) {
         return 0U;
     }
-    if (GetMessageBoxState() == 0) {
-        var_r0 = 1;
+    if (GetMessageBoxState() == MESSAGE_BOX_STATE_OFF) {
+        idle = 1;
     } else {
-        var_r0 = 0;
+        idle = 0;
     }
-    return var_r0;
+    return idle;
 }
 
 /* Consume a Start press that begins a message box: only while the box is off
@@ -199,13 +204,17 @@ void func_020960b4(void) {
     CreateFrameCallbackTask(&UpdateDialogSequences, 5);
 }
 
-void LayerOffsetToPixel(s32 arg0, s32 arg1, void *arg2) {
+/* Convert a tile's address in a layer's tilemap (tileAddress minus the layer's
+ * tilemap base, 0x40 bytes = 32 tiles per row) to the tile's screen pixel
+ * position in pos: 8 pixels per tile, x from the offset inside its row and y from
+ * its row. */
+void LayerOffsetToPixel(s32 tileAddress, s32 layerBase, s16 *pos) {
     s32 Divide(s32, M2C_UNK);
-    s32 temp_r0;
+    s32 offset;
 
-    temp_r0 = arg0 - arg1;
-    M2C_FIELD(arg2, s16 *, 0) = (s16) (((u32) (temp_r0 & 0x3F) >> 1) * 8);
-    M2C_FIELD(arg2, s16 *, 2) = (s16) (Divide(temp_r0, 0x40) * 8);
+    offset = tileAddress - layerBase;
+    pos[0] = (s16) (((u32) (offset & 0x3F) >> 1) * 8);
+    pos[1] = (s16) (Divide(offset, 0x40) * 8);
 }
 
 /* Lay out the message widget: turn the address of its cells in the layer's
@@ -258,7 +267,7 @@ void UpdateMessageWidget(void *widget) {
 M2C_UNK LayoutToggleWidget(void *p) {
 s32 GetMenuCursor(void);
 void SetWidgetRect(s32,WidgetRect);
-void func_02097c84(s32,s32,s32);
+void SetScenePanelCursorHorizontal(s32,s32,s32);
 extern void *gCur3DSpriteEngine;
 s32 cursor=GetMenuCursor();
 s32 selX=0,selY=0;
@@ -272,7 +281,7 @@ SetWidgetRect(1,leftHalf);
 rightHalf.x=pos[0]+32;rightHalf.y=pos[1];rightHalf.w=32;rightHalf.h=16;
 SetWidgetRect(2,rightHalf);
 switch(M2C_FIELD(p,s16 *,0x34)) {case 0:selX=pos[0];selY=pos[1];break;case 1:selX=pos[0]+32;selY=pos[1];break;}
-func_02097c84(cursor,selX,selY);
+SetScenePanelCursorHorizontal(cursor,selX,selY);
 }
 
 /* Initialise a two-state widget: draw its label into the widget's tilemap, lay

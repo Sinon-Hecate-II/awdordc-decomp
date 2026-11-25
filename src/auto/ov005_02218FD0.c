@@ -33,7 +33,7 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK func_020815fc(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK Apply3DSpriteLayout(M2C_UNK *);
     M2C_UNK GX_ReleaseBankGrants();
-    M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
+    M2C_UNK SpriteCellListSetCellRect(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK RemoveSpriteCell(void *, M2C_UNK);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_02091cd0();
@@ -202,7 +202,7 @@ void func_ov005_02218fd0(void *arg0) {
         temp_r6 = M2C_FIELD(temp_r5, s16 *, 0x52);
         temp_r7 = M2C_FIELD(temp_r5, s16 *, 0x50);
         temp_r8 = func_020aae10(temp_r5);
-        func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7, temp_r6, (u16) temp_r8, (u16) func_020aae44(temp_r5));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7, temp_r6, (u16) temp_r8, (u16) func_020aae44(temp_r5));
     }
     var_r1_2 = 0;
     M2C_FIELD(temp_r5, s16 *, 0x34) = 0;
@@ -214,7 +214,7 @@ void func_ov005_02218fd0(void *arg0) {
         temp_r6_2 = M2C_FIELD(temp_r5, s16 *, 0x52);
         temp_r7_2 = M2C_FIELD(temp_r5, s16 *, 0x50);
         temp_r8_2 = func_020aae10(temp_r5);
-        func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7_2, temp_r6_2, (u16) temp_r8_2, (u16) func_020aae44(temp_r5));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7_2, temp_r6_2, (u16) temp_r8_2, (u16) func_020aae44(temp_r5));
     }
     CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x38), 1);
     var_r2 = 0;
@@ -239,7 +239,7 @@ void func_ov005_02218fd0(void *arg0) {
         temp_r6_3 = M2C_FIELD(temp_r5_2, s16 *, 0x52);
         temp_r7_3 = M2C_FIELD(temp_r5_2, s16 *, 0x50);
         temp_r8_3 = func_020aae10(temp_r5_2);
-        func_02087d84(M2C_FIELD(temp_r5_2, void **, 0x64), 1, temp_r7_3, temp_r6_3, (u16) temp_r8_3, (u16) func_020aae44(temp_r5_2));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r5_2, void **, 0x64), 1, temp_r7_3, temp_r6_3, (u16) temp_r8_3, (u16) func_020aae44(temp_r5_2));
     }
     var_r1_3 = 0;
     M2C_FIELD(temp_r5_2, s16 *, 0x34) = 0;
@@ -251,7 +251,7 @@ void func_ov005_02218fd0(void *arg0) {
         temp_r6_4 = M2C_FIELD(temp_r5_2, s16 *, 0x52);
         temp_r7_4 = M2C_FIELD(temp_r5_2, s16 *, 0x50);
         temp_r8_4 = func_020aae10(temp_r5_2);
-        func_02087d84(M2C_FIELD(temp_r5_2, void **, 0x64), 1, temp_r7_4, temp_r6_4, (u16) temp_r8_4, (u16) func_020aae44(temp_r5_2));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r5_2, void **, 0x64), 1, temp_r7_4, temp_r6_4, (u16) temp_r8_4, (u16) func_020aae44(temp_r5_2));
     }
     CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x3C), 0x200);
     var_r2_2 = 0;
@@ -276,7 +276,7 @@ void func_ov005_02218fd0(void *arg0) {
         temp_r6_5 = M2C_FIELD(temp_r5_3, s16 *, 0x52);
         temp_r7_5 = M2C_FIELD(temp_r5_3, s16 *, 0x50);
         temp_r8_5 = func_020aae10(temp_r5_3);
-        func_02087d84(M2C_FIELD(temp_r5_3, void **, 0x64), 1, temp_r7_5, temp_r6_5, (u16) temp_r8_5, (u16) func_020aae44(temp_r5_3));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r5_3, void **, 0x64), 1, temp_r7_5, temp_r6_5, (u16) temp_r8_5, (u16) func_020aae44(temp_r5_3));
     }
     var_r1_4 = 0;
     M2C_FIELD(temp_r5_3, s16 *, 0x34) = 0;
@@ -288,7 +288,7 @@ void func_ov005_02218fd0(void *arg0) {
         temp_r6_6 = M2C_FIELD(temp_r5_3, s16 *, 0x52);
         temp_r7_6 = M2C_FIELD(temp_r5_3, s16 *, 0x50);
         temp_r8_6 = func_020aae10(temp_r5_3);
-        func_02087d84(M2C_FIELD(temp_r5_3, void **, 0x64), 1, temp_r7_6, temp_r6_6, (u16) temp_r8_6, (u16) func_020aae44(temp_r5_3));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r5_3, void **, 0x64), 1, temp_r7_6, temp_r6_6, (u16) temp_r8_6, (u16) func_020aae44(temp_r5_3));
     }
     CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x40), 0x100);
     var_r2_3 = 0;
@@ -452,15 +452,15 @@ y=(s16)(M2C_FIELD(p,s32 *,0x40)+160);
 q=M2C_FIELD(p,void **,0x34);
 Set3DSpriteSlideTargetAndStart(q,224,y,224,y);
 if(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0) t=1; else t=0;
-if(t&255){a=M2C_FIELD(q,s16 *,0x52);b=M2C_FIELD(q,s16 *,0x50);u=GetUnitSpriteWidth(q);func_02087d84(M2C_FIELD(q,void **,0x64),1,b,a,(u16)u,(u16)GetUnitSpriteHeight(q));}
+if(t&255){a=M2C_FIELD(q,s16 *,0x52);b=M2C_FIELD(q,s16 *,0x50);u=GetUnitSpriteWidth(q);SpriteCellListSetCellRect(M2C_FIELD(q,void **,0x64),1,b,a,(u16)u,(u16)GetUnitSpriteHeight(q));}
 M2C_FIELD(q,s16 *,0x34)=224;M2C_FIELD(q,s16 *,0x36)=y;
 if(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0) v=1; else v=0;
-if(v&255){c=M2C_FIELD(q,s16 *,0x52);d=M2C_FIELD(q,s16 *,0x50);w=GetUnitSpriteWidth(q);func_02087d84(M2C_FIELD(q,void **,0x64),1,d,c,(u16)w,(u16)GetUnitSpriteHeight(q));}
+if(v&255){c=M2C_FIELD(q,s16 *,0x52);d=M2C_FIELD(q,s16 *,0x50);w=GetUnitSpriteWidth(q);SpriteCellListSetCellRect(M2C_FIELD(q,void **,0x64),1,d,c,(u16)w,(u16)GetUnitSpriteHeight(q));}
 if(M2C_FIELD(p,s32 *,0x3c)==16){
 M2C_FIELD(p,s32 *,0x3c)=0;M2C_FIELD(p,u8 *,0x44)=0;
 SetFileDirectory(sResultDir);
 LoadDecompressedFileTo(sResultBackgroundFile,M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540);
-AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540,192,0x9000);
+OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540,192,0x9000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;
 DecrementSpriteChildCount(M2C_FIELD(p,void **,0x38));M2C_FIELD(p,s32 *,0x38)=0;Sprite_ResumeAnimation(p);
 }

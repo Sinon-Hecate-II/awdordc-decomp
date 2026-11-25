@@ -26,6 +26,17 @@
 /* Chunk kind reporting that the request failed; OV001_CHUNK_STATUS says why. */
 #define OV001_CHUNK_ERROR 7
 
+/* Chunk kind whose payload is one player's user data, carried as a wrapped
+ * packet of type OV001_USER_DATA_PACKET (see Ov001_UnpackUserDataPacket). */
+#define OV001_CHUNK_USER_DATA 0x0a
+#define OV001_USER_DATA_PACKET 0x70 /* low byte of the packet's big-endian type word */
+
+/* The wrapped packet a room chunk's payload can carry: the 6-byte header the
+ * WH packets use, a big-endian type word and payload length, then the bytes. */
+#define OV001_PACKET_TYPE   0x00 /* u16 big-endian packet type */
+#define OV001_PACKET_LENGTH 0x02 /* u16 big-endian bytes of payload */
+#define OV001_PACKET_DATA   0x06 /* packet payload */
+
 /* Bytes of the decoded record data of one room (four player entries). */
 #define OV001_ROOM_PLAYER_DATA_SIZE 0x6a0
 

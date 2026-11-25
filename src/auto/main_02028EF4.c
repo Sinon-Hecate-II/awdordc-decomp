@@ -225,7 +225,7 @@ void WFC_StorePlayerRecord(void *record, u16 slot) {
     void *GetSession(void);
     void *WFC_FindPlayerById(s32);
     void *WFC_AllocPlayerNode(void);
-    s32 func_020294f8(void);
+    s32 WFC_GetOldestPlayerNode(void);
     void WFC_TouchPlayerNode(void *);
     void MI_CpuCopy32(void *, void *, u32);
     void *session;
@@ -236,7 +236,7 @@ void WFC_StorePlayerRecord(void *record, u16 slot) {
     if (M2C_FIELD(session, u8 *, WFC_SESSION_DATA_LOCK) || M2C_FIELD(record, u16 *, 0x3c)) return;
     node = WFC_FindPlayerById((s32)record + WFC_PLAYER_RECORD_ID);
     if (!node) node = WFC_AllocPlayerNode();
-    if (!node && M2C_FIELD(session, u32 *, 0x2278) == 1) node = (void *)func_020294f8();
+    if (!node && M2C_FIELD(session, u32 *, 0x2278) == 1) node = (void *)WFC_GetOldestPlayerNode();
     if (!node) return;
     M2C_FIELD(node, u16 *, WFC_PLAYER_NODE_SLOT) = slot;
     MI_CpuCopy32(record, (u8 *)node + WFC_PLAYER_NODE_RECORD, 0xC0);
@@ -307,15 +307,18 @@ void *WFC_AllocPlayerNode(void) {
     return node;
 }
 #pragma opt_strength_reduction on
-s32 func_020294f8(void) {
+/* Return the session's least recently updated player-list node, the head of the
+ * list, which WFC_StorePlayerRecord reuses when the list is full; 0 when the
+ * list buffer is missing or too small to hold a node. */
+s32 WFC_GetOldestPlayerNode(void) {
     void *GetSession();
-    void *temp_r0;
-    void *temp_r1;
+    void *session;
+    void *list;
 
-    temp_r0 = GetSession();
-    temp_r1 = M2C_FIELD(temp_r0, void **, 0x2270);
-    if ((temp_r1 != NULL) && ((u32) M2C_FIELD(temp_r0, u32 *, 0x2274) > 0xCU)) {
-        return M2C_FIELD(temp_r1, s32 *, 4);
+    session = GetSession();
+    list = M2C_FIELD(session, void **, WFC_SESSION_PLAYER_LIST);
+    if ((list != NULL) && ((u32) M2C_FIELD(session, u32 *, WFC_SESSION_PLAYER_LIST_CAP) > WFC_PLAYER_LIST_HEADER_SIZE)) {
+        return M2C_FIELD(list, s32 *, WFC_PLAYER_LIST_HEAD);
     }
     return 0;
 }
@@ -454,12 +457,15 @@ void WFC_InitSendState(void) {
     InitMutex(&gWfcSendLock);
 }
 
-void func_020296e0(void *arg0) {
+/* Hand a received WFC link data block to the IP stack: if a send callback is
+ * installed, queue the block's frame (with its link addresses) for the network
+ * sender. */
+void WFC_QueueReceivedFrame(void *block) {
     extern M2C_UNK gWfcSendState;
-    if (M2C_FIELD(&gWfcSendState, M2C_UNK (**)(void *, void *, void *, u16), 0x28) == NULL) {
+    if (((WfcSendState *)&gWfcSendState)->callback == NULL) {
         return;
     }
-    M2C_FIELD(&gWfcSendState, M2C_UNK (**)(void *, void *, void *, u16), 0x28)(arg0 + 0x1E, arg0 + 0x18, arg0 + 0x2C, M2C_FIELD(arg0, u16 *, 6));
+    ((WfcSendState *)&gWfcSendState)->callback((u8 *)block + WFC_RECV_SRC_LINK, (u8 *)block + WFC_RECV_DST_LINK, (u8 *)block + WFC_RECV_FRAME, M2C_FIELD(block, u16 *, WFC_RECV_FRAME_LEN));
 }
 
 #pragma opt_common_subs off
@@ -670,19 +676,21 @@ s32 WFC_TryLockSend(void *lock) {
     return 1;
 }
 
-s32 WFC_UnlockSend(M2C_UNK *arg0) {
+/* Release the recursive WFC send lock: only its fixed holder may unlock it, and
+ * the last nested unlock clears the owner and wakes the threads queued on it. */
+s32 WFC_UnlockSend(M2C_UNK *lock) {
     void OS_WakeupThread(void *);
     extern M2C_UNK func_01ff8000;
 
-    if (M2C_FIELD(arg0, M2C_UNK **, 8) != &func_01ff8000) {
+    if (M2C_FIELD(lock, void **, OSMUTEX_OWNER) != (void *)&func_01ff8000) {
         return;
     }
-    M2C_FIELD(arg0, s32 *, 0xC) -= 1;
-    if (M2C_FIELD(arg0, s32 *, 0xC) != 0) {
+    M2C_FIELD(lock, s32 *, OSMUTEX_COUNT) -= 1;
+    if (M2C_FIELD(lock, s32 *, OSMUTEX_COUNT) != 0) {
         return;
     }
-    M2C_FIELD(arg0, M2C_UNK **, 8) = NULL;
-    OS_WakeupThread(arg0);
+    M2C_FIELD(lock, void **, OSMUTEX_OWNER) = NULL;
+    OS_WakeupThread(lock);
     return;
 }
 
@@ -754,21 +762,23 @@ u8 WFC_GetAverageSignal(void) {
     return (u8)average;
 }
 
+/* Bucket the averaged link signal into a 0..3 connection grade: 0 below
+ * WFC_SIGNAL_GRADE_1_MIN, one level per threshold passed. */
 s32 WFC_GetSignalGrade(void) {
     u8 WFC_GetAverageSignal();
-    s32 var_r1;
-    u32 temp_r0;
+    s32 grade;
+    u32 average;
 
-    temp_r0 = WFC_GetAverageSignal();
-    var_r1 = 0;
-    if (temp_r0 >= 0x1CU) {
-        var_r1 = 3;
-    } else if (temp_r0 >= 0x16U) {
-        var_r1 = 2;
-    } else if (temp_r0 >= 0x10U) {
-        var_r1 = 1;
+    average = WFC_GetAverageSignal();
+    grade = 0;
+    if (average >= WFC_SIGNAL_GRADE_3_MIN) {
+        grade = 3;
+    } else if (average >= WFC_SIGNAL_GRADE_2_MIN) {
+        grade = 2;
+    } else if (average >= WFC_SIGNAL_GRADE_1_MIN) {
+        grade = 1;
     }
-    return var_r1;
+    return grade;
 }
 
 #pragma opt_propagation off

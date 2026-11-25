@@ -154,15 +154,19 @@ SendLinkCommand(gBattleCommand,20);
 #pragma opt_common_subs reset
 void SendBattleCommandPacket(s32 a,s32 b,s32 c,s32 d){void SendLinkCommand(void *,s32);u8 *q=(u8 *)&gLinkAiCommandStage;void **p=gCurrentMap;u32 v; u32 x;q[4]=a;x=M2C_FIELD(*p,s16 *,0x52dc);v=M2C_FIELD(gAiCommand,s32 *,8);q[6]=x;q[7]=M2C_FIELD(*p,s16 *,0x52de);q[8]=M2C_FIELD(*p,s16 *,0x52d8);q[9]=M2C_FIELD(*p,s16 *,0x52da);q[5]=b;*(s32 *)(q+12)=v;q[10]=c;q[11]=d;q[22]=gAiCommand[18];PackCommandPath((u8 *)*p+0x5388,data_02156e5c);SendLinkCommand(gBattleCommand,20);}
 
+/* Which network overlay is loaded, as the link-mode value its callers switch on:
+ * NET_OVERLAY_LINK when the single-card link overlay's resource is loaded,
+ * NET_OVERLAY_ONLINE when the online one is, else NET_OVERLAY_NONE. */
 s32 GetLinkMode(void) {
     s32 IsResourceLoaded(M2C_UNK);
-    if (IsResourceLoaded(9) != 0) {
-        return 1;
+
+    if (IsResourceLoaded(NET_RESOURCE_LINK) != 0) {
+        return NET_OVERLAY_LINK;
     }
-    if (IsResourceLoaded(0xA) != 0) {
-        return 2;
+    if (IsResourceLoaded(NET_RESOURCE_ONLINE) != 0) {
+        return NET_OVERLAY_ONLINE;
     }
-    return 0;
+    return NET_OVERLAY_NONE;
 }
 
 /* Which network overlay is running, as the battle code asks for it: NET_OVERLAY_LINK
@@ -194,16 +198,19 @@ s32 IsLinkSessionActive(void) {
     }
 }
 
-s32 func_020846e8(void) {
+/* Return the active network session's link status level, used to pick the link
+ * signal sprite: the Download Play link's status value, or the online (WFC)
+ * session's signal grade; 0 when no session is running. */
+s32 GetLinkStatusLevel(void) {
     s32 func_ov009_02224158();
     s32 func_ov010_02228cc8();
-    s32 temp_r0;
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
+    overlay = GetActiveOverlay();
+    switch (overlay) {
+    case NET_OVERLAY_LINK:
         return func_ov009_02224158();
-    case 2:
+    case NET_OVERLAY_ONLINE:
         return func_ov010_02228cc8();
     default:
         return 0;
@@ -256,13 +263,13 @@ s32 IsSessionResultHandled(void) {
 }
 
 #pragma opt_common_subs off
-s32 func_020847b8(void) {
+s32 IsWfcLinkActive(void) {
     s32 WFC_GetConnectionData(u16 *);
-    extern u16 data_02156e64;
+    extern u16 gWfcConnectionData;
     s32 var_r0;
 
-    if (WFC_GetConnectionData(&data_02156e64) == 0) {
-        if (data_02156e64 != 0) {
+    if (WFC_GetConnectionData(&gWfcConnectionData) == 0) {
+        if (gWfcConnectionData != 0) {
             var_r0 = 1;
         } else {
             var_r0 = 0;
@@ -272,7 +279,18 @@ s32 func_020847b8(void) {
     return 0;
 }
 #pragma opt_common_subs reset
-s32 IsSoftResetAllowed(void){s32 a=GetActiveOverlay();switch(a){case 1:case 2:return func_020847b8()==0;default:return 1;}}
+/* True when the player may soft reset: always outside a network overlay, and
+ * inside one only while no WFC connection is up. */
+s32 IsSoftResetAllowed(void) {
+    s32 overlay = GetActiveOverlay();
+    switch (overlay) {
+    case NET_OVERLAY_LINK:
+    case NET_OVERLAY_ONLINE:
+        return IsWfcLinkActive() == 0;
+    default:
+        return 1;
+    }
+}
 
 void func_02084824(void) {
     M2C_UNK IsSoftResetAllowed();
@@ -281,64 +299,75 @@ void func_02084824(void) {
 
 s32 func_02084830(void){void *GetLocalPlayerStatus(void);if(GetActiveOverlay()==2 && M2C_FIELD(GetLocalPlayerStatus(),s8 *,0x27)==0)return 1;return 0;}
 
+/* True when the local console hosts the active network session: the Download Play
+ * link host, or player 0 of the online (WFC) session; 0 when there is no session. */
 s32 IsLocalSessionHost(void) {
     s32 IsLinkHost();
     s32 IsOnlineSessionHost();
-    s32 temp_r0;
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
+    overlay = GetActiveOverlay();
+    switch (overlay) {
+    case NET_OVERLAY_LINK:
         return IsLinkHost();
-    case 2:
+    case NET_OVERLAY_ONLINE:
         return IsOnlineSessionHost();
     default:
         return 0;
     }
 }
 
-s32 func_02084890(void) {
+/* True when the local console is a guest (not the host) of the active network
+ * session: the Download Play link guest, or a non-zero player of the online (WFC)
+ * session; 0 when there is no session. */
+s32 IsLocalSessionGuest(void) {
     s32 IsLinkGuest();
-    s32 func_ov010_02229bf4();
-    s32 temp_r0;
+    s32 IsOnlineGuest();
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
+    overlay = GetActiveOverlay();
+    switch (overlay) {
+    case NET_OVERLAY_LINK:
         return IsLinkGuest();
-    case 2:
-        return func_ov010_02229bf4();
+    case NET_OVERLAY_ONLINE:
+        return IsOnlineGuest();
     default:
         return 0;
     }
 }
 
+/* This console's player index in the active network session: the single-card
+ * link's local player index or the online (WFC) session's transport player id;
+ * 0 when offline. */
 s32 GetLocalPlayerIdForOverlay(void) {
     s32 GetLinkLocalPlayerId();
     s32 GetOnlineTransportPlayerId();
-    s32 temp_r0;
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
+    overlay = GetActiveOverlay();
+    switch (overlay) {
+    case NET_OVERLAY_LINK:
         return GetLinkLocalPlayerId();
-    case 2:
+    case NET_OVERLAY_ONLINE:
         return GetOnlineTransportPlayerId();
     default:
         return 0;
     }
 }
 
-s32 GetReadyPlayerMask(void) {
+/* Bit mask of the players connected to the active network session: the
+ * single-card link's connected-player bits, or the online (WFC) session's peer
+ * mask; 0 when there is no session. */
+s32 GetSessionPlayerMask(void) {
     s32 GetConnectedPlayers();
     s32 GetOnlinePeerMask();
-    s32 temp_r0;
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
+    overlay = GetActiveOverlay();
+    switch (overlay) {
+    case NET_OVERLAY_LINK:
         return GetConnectedPlayers();
-    case 2:
+    case NET_OVERLAY_ONLINE:
         return GetOnlinePeerMask();
     default:
         return 0;
@@ -400,49 +429,56 @@ u16 GetActivePlayerMask(void) {
     return mask;
 }
 
+/* Number of players in the active network session: the single-card link's
+ * connected-player bit count, or the online (WFC) session's player count; 0 when
+ * offline. */
 s32 GetSessionPlayerCount(void) {
-    s32 func_ov009_02225470();
+    s32 GetLinkConnectedPlayerCount();
     s32 GetConnectedPlayerCount();
-    s32 temp_r0;
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        return func_ov009_02225470();
-    case 2:
+    overlay = GetActiveOverlay();
+    switch (overlay) {
+    case NET_OVERLAY_LINK:
+        return GetLinkConnectedPlayerCount();
+    case NET_OVERLAY_ONLINE:
         return GetConnectedPlayerCount();
     default:
         return 0;
     }
 }
 
-void ResetPlayerMask(void) {
+/* Clear the per-player event bits the active network session has raised (a
+ * player joining or leaving, for example) so each is only handled once. */
+void ClearOverlayEventFlags(void) {
     M2C_UNK ClearLinkEventFlags();
-    M2C_UNK func_ov010_02229a50();
-    s32 temp_r0;
+    M2C_UNK ClearOnlineEventFlags();
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
+    overlay = GetActiveOverlay();
+    switch (overlay) {
+    case NET_OVERLAY_LINK:
         ClearLinkEventFlags();
         return;
-    case 2:
-        func_ov010_02229a50();
+    case NET_OVERLAY_ONLINE:
+        ClearOnlineEventFlags();
         return;
     }
 }
 
+/* Per-player event bits raised by the active network session (bit n = the event
+ * reported for player n+1, e.g. a player leaving); 0 when offline. */
 s32 GetOverlayEventFlags(void) {
     s32 GetLinkEventFlags();
-    s32 func_ov010_02229a64();
-    s32 temp_r0;
+    s32 GetOnlineEventFlags();
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
+    overlay = GetActiveOverlay();
+    switch (overlay) {
+    case NET_OVERLAY_LINK:
         return GetLinkEventFlags();
-    case 2:
-        return func_ov010_02229a64();
+    case NET_OVERLAY_ONLINE:
+        return GetOnlineEventFlags();
     default:
         return 0;
     }
@@ -700,17 +736,20 @@ void GetLocalNetworkPlayerRecord(void) {
     GetNetworkPlayerRecord(0);
 }
 
+/* Send what the active network session owes: in a single-card link announce
+ * this player, in an online match publish the local player's status.  With no
+ * session loaded there is nothing to send. */
 void Link_FlushSend(void) {
     M2C_UNK AnnounceLinkPlayer();
     M2C_UNK PublishLocalPlayerStatus();
-    s32 temp_r0;
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
         AnnounceLinkPlayer();
         return;
-    case 2:
+    case NET_OVERLAY_ONLINE:
         PublishLocalPlayerStatus();
         return;
     }
@@ -851,18 +890,20 @@ void SpawnPlayerAnnounceRefresher(M2C_UNK owner) {
     }
 }
 
-void func_020850dc(void) {
-    M2C_UNK func_ov009_02226290();
-    M2C_UNK func_ov010_0222bb8c();
-    s32 temp_r0;
+/* Delete the player-announce refresher sprites of whichever network overlay is
+ * running: the single-card link's or the online session's. */
+void Link_DeleteAnnounceRefreshers(void) {
+    M2C_UNK DeleteLinkAnnounceRefreshers();
+    M2C_UNK DeleteOnlineAnnounceRefreshers();
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        func_ov009_02226290();
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
+        DeleteLinkAnnounceRefreshers();
         return;
-    case 2:
-        func_ov010_0222bb8c();
+    case NET_OVERLAY_ONLINE:
+        DeleteOnlineAnnounceRefreshers();
         return;
     }
 }
@@ -882,8 +923,8 @@ extern u8 gSpriteDesc16x16[];
 typedef struct { u8 prefix[0x34]; s32 x, y; u16 tile, palette; u8 mainEngine; } SpriteState;
 SpriteState *sprite = p;
 s32 n; s32 saved;
-if(!func_020847b8())return;
-n=func_020846e8();
+if(!IsWfcLinkActive())return;
+n=GetLinkStatusLevel();
 if(sprite->mainEngine){
 if(!func_ov002_021e1624())return;
 saved=gCur3DSpriteEngine;

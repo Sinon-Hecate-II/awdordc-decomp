@@ -73,6 +73,7 @@ enum {
 #define OV001_MESSAGE_BOX_WIDTH  230 /* pixels */
 #define OV001_MESSAGE_BOX_HEIGHT 112 /* pixels */
 #define OV001_MESSAGE_BOX_COLOR  2   /* text palette row */
+#define OV001_MESSAGE_PANEL      1   /* text-panel index (CreateTextPanel) the message panel uses */
 
 /* gOv001RegionYs holds two u16 per region; the first is the y the region's open
  * column rests at, read at region * OV001_REGION_Y_STRIDE. */

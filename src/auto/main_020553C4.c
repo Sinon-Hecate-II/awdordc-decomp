@@ -247,16 +247,18 @@ if(buddyOut)*buddyOut=record;
 return record!=0;
 }
 
-void func_02055bc0(void **arg0, M2C_UNK arg1) {
-    s32 gpiFindBuddyStatus(void **, M2C_UNK, s32 *);
-    s32 sp0;
-    void *temp_r4;
+/* Remove the buddy-status record of player `profileId` from the connection's
+ * buddy table, freeing it; does nothing when the connection has no such record. */
+void gpiRemoveBuddyStatus(void **connection, s32 profileId) {
+    s32 gpiFindBuddyStatus(void **, s32, s32 *);
+    s32 record;
+    GpiConnectionHead *gpi;
 
-    temp_r4 = *arg0;
-    if (gpiFindBuddyStatus(arg0, arg1, &sp0) == 0) {
+    gpi = *connection;
+    if (gpiFindBuddyStatus(connection, profileId, &record) == 0) {
         return;
     }
-    TableRemove(M2C_FIELD(temp_r4, s32 *, 0x428), sp0);
+    TableRemove(gpi->buddyTable, record);
 }
 
 void gpiFreeBuddyList(void **arg0) {
@@ -312,15 +314,20 @@ data[1]=(s32)callback;data[2]=(s32)userData;data[0]=(s32)connection;
 return TableMapSafe2((s32)gpi->buddyTable,gpiWalkBuddyTableCallback,data)==0;
 }
 
-s32 func_02055d10(s32 arg0,void *arg1,void *arg2) {
+s32 gpiMatchBuddyIndex(s32 arg0,void *arg1,void *arg2) {
 s32 *p=M2C_FIELD(arg1,s32 **,8);
 if(p && M2C_FIELD(arg2,s32 *,0)==*p){M2C_FIELD(arg2,void **,4)=arg1;return 0;}
 return 1;
 }
 
-s32 gpiGetBuddyStatusByIndex(void **arg0, s32 arg1) {
-s32 data[2]; data[0]=arg1;data[1]=0;
-gpiWalkBuddyTable(arg0,func_02055d10,data);return data[1];
+/* Return the record of the connection's buddy whose list index is `index`,
+ * or NULL when the buddy table has no buddy with that index. */
+void *gpiGetBuddyStatusByIndex(void **connection, s32 index) {
+    s32 search[2];
+    search[0] = index;
+    search[1] = 0;
+    gpiWalkBuddyTable(connection, gpiMatchBuddyIndex, search);
+    return (void *)search[1];
 }
 
 /* Whether a gpi peer record holds no live connection state: its player id,

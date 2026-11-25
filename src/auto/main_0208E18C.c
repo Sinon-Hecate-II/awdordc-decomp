@@ -165,11 +165,13 @@ x-=8;
 }while(minutes!=0);
 }
 
-void func_0208eb30(void *arg0, u32 arg1, s32 arg2) {
-
-    M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg1 >> 5);
-    M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg2 << 0x18) >> 6));
-    LoadTimerSpriteGraphics(arg1, arg2);
+/* Point a countdown-timer display at the shared timer digit graphics: set its
+ * texture row from the graphics offset, store the OBJ palette row in the actor's
+ * palette field and load the digit tiles and palette. */
+void SetTimerDisplayGraphics(void *display, u32 textureOffset, s32 paletteSlot) {
+    M2C_FIELD(display, s16 *, SPRITE_ACTOR_TILE_ROW) = (s16) (textureOffset >> 5);
+    M2C_FIELD(display, s32 *, SPRITE_ACTOR_PALETTE) = (s32) ((M2C_FIELD(display, s32 *, SPRITE_ACTOR_PALETTE) & ~SPRITE_ACTOR_PALETTE_MASK) | ((u32) (paletteSlot << 0x18) >> 6));
+    LoadTimerSpriteGraphics(textureOffset, paletteSlot);
 }
 
 void func_0208eb60(void *arg0, s32 arg1) {
@@ -319,9 +321,12 @@ void *func_0208ee1c(void *arg0) {
 void *func_0208ee34(void *arg0) { void *p=M2C_FIELD(arg0,void **,0x68); if(p) *(u64 *)p=M2C_FIELD(arg0,u64 *,0x60); MemFree(arg0); return arg0; }
 
 #pragma opt_propagation reset
-void SetNumberDisplayGraphics(void *arg0, u32 arg1, s32 arg2) {
-    M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg1 >> 5);
-    M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg2 << 0x18) >> 6));
-    LoadTimerSpriteGraphics(arg1, arg2);
+/* Point a number display at another digit graphics set: make its texture row
+ * from the set's byte offset in the tiles area (32 bytes a tile) and its palette
+ * row from the palette slot, then load that set's tiles and palette. */
+void SetNumberDisplayGraphics(void *display, u32 tileOffset, s32 paletteSlot) {
+    M2C_FIELD(display, s16 *, SPRITE_ACTOR_TILE_ROW) = (s16) (tileOffset >> 5);
+    M2C_FIELD(display, s32 *, SPRITE_ACTOR_PALETTE) = (s32) ((M2C_FIELD(display, s32 *, SPRITE_ACTOR_PALETTE) & ~SPRITE_ACTOR_PALETTE_MASK) | ((u32) (paletteSlot << 0x18) >> 6));
+    LoadTimerSpriteGraphics(tileOffset, paletteSlot);
 }
 

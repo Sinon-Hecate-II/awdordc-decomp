@@ -6,6 +6,7 @@
 
 #define QR2_QUERY_SIZE   0x800 /* bytes of key/value text in the query buffer */
 #define QR2_QUERY_COUNT  0x800 /* s32 length written at the end of the buffer */
+#define QR2_QUERY_INIT_SIZE 5  /* bytes Qr2InitQuery starts a query with: the type byte and the 4-byte request id */
 
 /* The final query Qr2_AppendFinalQuery builds for the master starts at a bare '\',
  * lists the three key groups and ends with sQr2FinalQueryTrailer

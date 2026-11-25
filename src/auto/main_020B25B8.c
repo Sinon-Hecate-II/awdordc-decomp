@@ -269,14 +269,20 @@ void (*cb)(void *)=M2C_FIELD(p,void (**)(void *),0x2c);
 if(!cb)return;cb(p);
 }
 
+/* Run the focused sprite slot's cancel (B button) callback: the UI's generic
+ * "back" action.  Nothing happens while no interactive slot has focus or when
+ * the slot set no cancel callback. */
 void InvokeCancelCallback(void) {
-s32 IsFocusedSpriteSlotInteractive(void);
-extern void *gSpriteSlotManager;
-void *p; void (*cb)(void *);
-if(!IsFocusedSpriteSlotInteractive())return;
-p=M2C_FIELD(gSpriteSlotManager,void **,0xc);
-cb=M2C_FIELD(p,void (**)(void *),0x30);
-if(!cb)return; cb(p);
+    s32 IsFocusedSpriteSlotInteractive(void);
+    extern void *gSpriteSlotManager;
+    void *focusedSlot;
+    void (*callback)(void *);
+
+    if (!IsFocusedSpriteSlotInteractive()) return;
+    focusedSlot = M2C_FIELD(gSpriteSlotManager, void **, SPRITE_SLOT_MGR_FOCUS);
+    callback = M2C_FIELD(focusedSlot, void (**)(void *), SPRITE_SLOT_CANCEL_CB);
+    if (!callback) return;
+    callback(focusedSlot);
 }
 
 void InvokeSpriteSlotFocusCallback(void *p) {
@@ -446,12 +452,18 @@ u8 CanScrollSpriteGridDown(void *grid) {
     return M2C_FIELD(grid, s16 *, SPRITE_GRID_SCROLL) + (s16)visibleRows < pageCount;
 }
 
-u8 func_020b325c(void *arg0) {
-M2C_UNK Divide();
-u8 value; s32 step=M2C_FIELD(arg0,volatile u8 *,5);
-Divide(M2C_FIELD(arg0,s16 *,0xa)+step-1);
-if(M2C_FIELD(arg0,s16 *,0xc)>0)value=1;else value=0;
-return value;
+/* True when the grid can scroll one row back up: it works out the grid's page
+ * count (items over the column count, rounded up) and reports whether the grid
+ * is scrolled down at all. */
+u8 CanScrollSpriteGridUp(void *grid) {
+    s32 Divide(s32);
+    s32 columns = M2C_FIELD(grid, volatile u8 *, SPRITE_GRID_COLUMNS);
+    u8 result;
+
+    Divide(M2C_FIELD(grid, s16 *, SPRITE_GRID_ITEM_COUNT) + columns - 1);
+    if (M2C_FIELD(grid, s16 *, SPRITE_GRID_SCROLL) > 0) result = 1;
+    else result = 0;
+    return result;
 }
 
 u8 func_020b3290(void *arg0) {

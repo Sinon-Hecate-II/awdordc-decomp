@@ -26,7 +26,7 @@ static inline void E1E88Toggle(void *p, u8 v) { u8 a; if(v)a=0;else a=1; M2C_FIE
 
 void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     s32 IsLinkSessionActive();
-    s32 GetReadyPlayerMask();
+    s32 GetSessionPlayerMask();
     void Hide3DSprite(void *);
     void *Create3DSprite(void *);
     void func_02098e04(void *, s32, s32);
@@ -61,7 +61,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
         slotCount = slotCount + 1;
     } while ((u32) slotCount < 4);
     slotCount = 0;
-    participantMask = GetReadyPlayerMask();
+    participantMask = GetSessionPlayerMask();
     participant = 0;
     do {
         if (participantMask & (1 << participant)) {
@@ -282,7 +282,7 @@ void func_ov003_022024a8(void *arg0) {
     s16 GetSpriteAnimValue(void *);
     s32 GetWaypointSlotX(u8);
     s32 func_ov003_022004d0();
-    s32 func_ov003_022004f0(M2C_UNK);
+    s32 GetWaypointSlotOffsetX(M2C_UNK);
     s32 func_ov003_02200ca8();
     M2C_UNK func_ov003_0220501c(void *, s16, M2C_UNK);
     extern M2C_UNK gSpriteDesc64x32;
@@ -347,7 +347,7 @@ void func_ov003_022024a8(void *arg0) {
     M2C_FIELD(*(void **)gCur3DSpriteEngine, s16 *, 0x38) = (s16) (0 - (temp_r4_2 + func_ov003_022004d0()));
     M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x40) = 0xFFC0;
     temp_r5_2 = func_ov003_022004d0();
-    M2C_FIELD(*(void **)gCur3DSpriteEngine, s16 *, 0x3A) = (s16) (0 - (temp_r4_2 + temp_r5_2 + func_ov003_022004f0(1)));
+    M2C_FIELD(*(void **)gCur3DSpriteEngine, s16 *, 0x3A) = (s16) (0 - (temp_r4_2 + temp_r5_2 + GetWaypointSlotOffsetX(1)));
     M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x42) = 0xFFC0;
     temp_r10 = func_020cfb94();
     screenX = (s16)(temp_r6 - 4);

@@ -409,14 +409,17 @@ void func_020640e8(M2C_UNK, M2C_UNK *) {
 
 }
 
-void StreamResetBuffer(void *arg0) {
-    s32 temp_r3;
+/* Rewind the stream's buffer to its start: put the cursor back at the buffer
+ * start, drop the bytes of the buffer that lie before the current file position
+ * (the position modulo the buffer block) and make the buffer start there. */
+void StreamResetBuffer(void *stream) {
+    s32 pending;
 
-    M2C_FIELD(arg0, s32 *, 0x24) = (s32) M2C_FIELD(arg0, s32 *, 0x1C);
-    temp_r3 = M2C_FIELD(arg0, s32 *, 0x20);
-    M2C_FIELD(arg0, s32 *, 0x28) = temp_r3;
-    M2C_FIELD(arg0, s32 *, 0x28) = (s32) (temp_r3 - (M2C_FIELD(arg0, s32 *, 0x18) & M2C_FIELD(arg0, s32 *, 0x2C)));
-    M2C_FIELD(arg0, s32 *, 0x34) = (s32) M2C_FIELD(arg0, s32 *, 0x18);
+    M2C_FIELD(stream, s32 *, STREAM_CURSOR) = (s32) M2C_FIELD(stream, s32 *, STREAM_BUFFER);
+    pending = M2C_FIELD(stream, s32 *, STREAM_BUFFER_SIZE);
+    M2C_FIELD(stream, s32 *, STREAM_PENDING) = pending;
+    M2C_FIELD(stream, s32 *, STREAM_PENDING) = (s32) (pending - (M2C_FIELD(stream, s32 *, STREAM_POSITION) & M2C_FIELD(stream, s32 *, STREAM_BUFFER_MASK)));
+    M2C_FIELD(stream, s32 *, STREAM_BUFFER_POS) = (s32) M2C_FIELD(stream, s32 *, STREAM_POSITION);
 }
 
 /* Fills the stream's read buffer through its read callback (the function at

@@ -578,7 +578,17 @@ void *Link_AllocPacket(void) {
     return packet;
 }
 
-void Link_FreePacket(void *p){extern M2C_UNK gLinkPacketPool;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);M2C_FIELD(&gLinkPacketPool,s32 *,0)=OS_DisableInterrupts();M2C_FIELD(p,void **,0)=M2C_FIELD(&gLinkPacketPool,void **,4);M2C_FIELD(&gLinkPacketPool,void **,4)=p;OS_RestoreInterrupts(M2C_FIELD(&gLinkPacketPool,s32 *,0));}
+/* Give a packet buffer back to the link's packet pool: push it onto the free
+ * list with interrupts held off. */
+void Link_FreePacket(void *packet) {
+    extern M2C_UNK gLinkPacketPool;
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    ((LinkPacketPool *)&gLinkPacketPool)->intrState = OS_DisableInterrupts();
+    M2C_FIELD(packet, void **, 0) = ((LinkPacketPool *)&gLinkPacketPool)->freeList;
+    ((LinkPacketPool *)&gLinkPacketPool)->freeList = packet;
+    OS_RestoreInterrupts(((LinkPacketPool *)&gLinkPacketPool)->intrState);
+}
 
 #pragma optimization_level 3
 #pragma peephole off

@@ -24,7 +24,7 @@ extern const Ov006Date data_ov006_02218394;
  * are ready and starts without any received-record buffer chosen yet. */
 void CreateMapTransferPanelStep3(M2C_UNK owner) {
     s8 GetLocalPlayerIdForOverlay();
-    u8 GetReadyPlayerMask();
+    u8 GetSessionPlayerMask();
     s32 GetCampaignMapHeader(M2C_UNK);
     void *CreateSpriteObject(void *, M2C_UNK);
     extern M2C_UNK data_ov006_0221890c, data_ov006_02218918;
@@ -37,7 +37,7 @@ void CreateMapTransferPanelStep3(M2C_UNK owner) {
         M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_RECORDS) = 0;
         M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_CHOSEN) = 0;
         M2C_FIELD(panel, s8 *, MAP_TRANSFER_PANEL_LOCAL) = GetLocalPlayerIdForOverlay();
-        M2C_FIELD(panel, u8 *, MAP_TRANSFER_PANEL_READY) = GetReadyPlayerMask();
+        M2C_FIELD(panel, u8 *, MAP_TRANSFER_PANEL_READY) = GetSessionPlayerMask();
         M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_PAGE0) = GetCampaignMapHeader(0);
         i = 0;
         do {
@@ -53,7 +53,7 @@ void CreateMapTransferPanelStep3(M2C_UNK owner) {
    record. */
 void CreateMapTransferPanel(M2C_UNK owner, s32 records, s32 chosen) {
     s8 GetLocalPlayerIdForOverlay();
-    u8 GetReadyPlayerMask();
+    u8 GetSessionPlayerMask();
     s32 GetCampaignMapHeader(M2C_UNK);
     void *CreateSpriteObject(void *, M2C_UNK);
     extern M2C_UNK gMapTransferPanelVtable, gMapTransferPanelStateClass;
@@ -65,7 +65,7 @@ void CreateMapTransferPanel(M2C_UNK owner, s32 records, s32 chosen) {
         M2C_FIELD(p, s32 *, MAP_TRANSFER_PANEL_RECORDS) = 0;
         M2C_FIELD(p, s32 *, MAP_TRANSFER_PANEL_CHOSEN) = 0;
         M2C_FIELD(p, s8 *, MAP_TRANSFER_PANEL_LOCAL) = GetLocalPlayerIdForOverlay();
-        M2C_FIELD(p, u8 *, MAP_TRANSFER_PANEL_READY) = GetReadyPlayerMask();
+        M2C_FIELD(p, u8 *, MAP_TRANSFER_PANEL_READY) = GetSessionPlayerMask();
         M2C_FIELD(p, s32 *, MAP_TRANSFER_PANEL_PAGE0) = GetCampaignMapHeader(0);
         i = 0;
         do {
@@ -125,11 +125,14 @@ void InitMapOfferObject(void *offer) {
     DisableMapConfirm();
 }
 
-void func_ov006_022174d0(void *arg0) {
+/* Tear down the ov006 map-offer object: finish its web request, free the name,
+ * map-record and packed-record buffers InitMapOfferObject allocated, release UI
+ * graphics bank 4 and show the shared frame border again. */
+void FreeMapOfferObject(void *offer) {
     func_020e36f4();
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x3C));
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x48));
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x4C));
+    HeapFreeBlock(M2C_FIELD(offer, s32 *, MAP_OFFER_NAME));
+    HeapFreeBlock(M2C_FIELD(offer, s32 *, MAP_OFFER_RECORD));
+    HeapFreeBlock(M2C_FIELD(offer, s32 *, MAP_OFFER_PACKED));
     FreeUiGraphicsBank(4);
     ShowFrameBorderSprite();
 }
@@ -145,10 +148,20 @@ void StartMapOfferSearch(void *offer) {
     Link_CreateMatchRequest(offer + MAP_OFFER_NAME, 1, 0, offer + MAP_OFFER_TIMEOUT, offer + MAP_OFFER_FLAGS, offer);
 }
 
-void func_ov006_02217554(void *p) {
-extern M2C_UNK gMapOfferState;
-if(M2C_FIELD(&gMapOfferState,s32 *,8)) {M2C_FIELD(p,s32 *,0x38)=1;return;}
-CreateOnlinePlayerListNode(M2C_FIELD(&gMapOfferState,s32 *,4),p+0x38);
+/* Fill in the map-offer search's player list on `offer`: once the search is
+ * finished it found a single player, so the count is 1; otherwise build the
+ * online player list from the received player record, the list writing its count
+ * to MAP_OFFER_PLAYER_COUNT and being owned by the offer object. */
+void InitMapOfferPlayerList(void *offer) {
+    void *CreateOnlinePlayerListNode(void *, s32 *, s32);
+    extern M2C_UNK gMapOfferState;
+
+    if (M2C_FIELD(&gMapOfferState, s32 *, MAP_OFFER_STATE_DONE) != 0) {
+        M2C_FIELD(offer, s32 *, MAP_OFFER_PLAYER_COUNT) = 1;
+        return;
+    }
+    CreateOnlinePlayerListNode(M2C_FIELD(&gMapOfferState, s32 *, MAP_OFFER_STATE_RECORD),
+                               (s32 *) ((u8 *) offer + MAP_OFFER_PLAYER_COUNT), offer);
 }
 
 void func_ov006_02217588(void *arg0) {
@@ -239,12 +252,15 @@ void func_ov006_0221762c(void *arg0) {
     }
 }
 
-void func_ov006_02217794(void *arg0) {
-    if ((M2C_FIELD(arg0, s32 *, 0x38) != 0) && (IsSessionInError() == 0)) {
+/* Cancel the map-offer search when no other player has answered or the session
+ * is in error: drop the map-confirm prompt, then play the sprite's cancel
+ * animation (label 2). */
+void CancelMapOfferSearch(void *offer) {
+    if ((M2C_FIELD(offer, s32 *, MAP_OFFER_PLAYER_COUNT) != 0) && (IsSessionInError() == 0)) {
         return;
     }
     DisableMapConfirm();
-    GotoSpriteAnimationLabel(arg0, 2);
+    GotoSpriteAnimationLabel(offer, 2);
 }
 
 void func_ov006_022177c8(s32 arg0) {

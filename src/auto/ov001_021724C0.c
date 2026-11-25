@@ -1,5 +1,6 @@
 /* 18 functions from 0x021724C0 to 0x0217332C (ov001), found by ds-decomp. */
 #include "common.h"
+#include "ov001_wh.h"
 
 #pragma cplusplus on
 class KeyboardLabelRect {
@@ -108,11 +109,13 @@ extern "C" void Ov001_OpenKeyboard(void)
     Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page, 0, KBD_ROW_HIDDEN_X);
 }
 #pragma cplusplus off
+/* Begin closing the ov001 on-screen keyboard: destroy the cursor sprite that marks
+ * the selected key and hand the still-running slide-in task over to the closing step. */
 void Ov001_StartKeyboardClose(void) {
- extern void *gOv001MenuState;
- void Ov001_KeyboardCloseStep5(void);
- Ov001_DestroySprite(M2C_FIELD(gOv001MenuState, s32 *, 0x114));
- Ov001_SetSlideStep(M2C_FIELD(gOv001MenuState, s32 *, 0x118), Ov001_KeyboardCloseStep5);
+    extern void *gOv001MenuState;
+    void Ov001_KeyboardCloseStep5(void);
+    Ov001_DestroySprite(((Ov001KeyboardState *)gOv001MenuState)->cursor);
+    Ov001_SetSlideStep(((Ov001KeyboardState *)gOv001MenuState)->slideTask, Ov001_KeyboardCloseStep5);
 }
 
 u8 GetKeyboardKey(void) {
@@ -442,17 +445,22 @@ void func_ov001_02172d8c(void) {
     return;
 }
 #pragma opt_strength_reduction reset
+/* Switch the on-screen keyboard between its lowercase and uppercase pages:
+ * uppercase drops back to lowercase, and either other page becomes uppercase. */
 void Ov001_ToggleKeyboardCase(void) {
  extern void *gOv001MenuState;
- s32 n;
- n=M2C_FIELD(gOv001MenuState,u8 *,0x11d)==2?0:2;
- Ov001_SetKeyboardPage(n); Ov001_PlaySound(1);
+ Ov001KeyboardState *state = (Ov001KeyboardState *)gOv001MenuState;
+ s32 page;
+ page=state->page==KBD_PAGE_UPPER?KBD_PAGE_LOWER:KBD_PAGE_UPPER;
+ Ov001_SetKeyboardPage(page); Ov001_PlaySound(OV001_SOUND_KEY);
 }
 
+/* Switch the on-screen keyboard between its symbol page and its lowercase page,
+ * away from whichever of the two is showing, and play the key sound. */
 void Ov001_ToggleKeyboardSymbols(void) {
- extern void *gOv001MenuState;
- Ov001_SetKeyboardPage(M2C_FIELD(gOv001MenuState,u8 *,0x11d)!=1);
- Ov001_PlaySound(1);
+    extern void *gOv001MenuState;
+    Ov001_SetKeyboardPage(((Ov001KeyboardState *)gOv001MenuState)->page != KBD_PAGE_SYMBOLS);
+    Ov001_PlaySound(OV001_SOUND_KEY);
 }
 
 /* Handles the stylus being released over the on-screen keyboard: selects the key

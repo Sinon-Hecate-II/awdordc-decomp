@@ -1,6 +1,6 @@
 /* 3 functions from 0x02209310 to 0x02209D0C (ov003), found by ds-decomp. */
 #include "common.h"
-
+#include "ov003_menu.h"
 #pragma opt_common_subs off
 #pragma opt_peephole off
 void func_ov003_02209310(void *arg0) {
@@ -11,13 +11,13 @@ void func_ov003_0220856c(void *,s32,s32);
 void Set3DSpriteSlideTargetAndStart(void *,s16,s32,s16,s32);
 s32 GetUnitSpriteWidth(void *);
 s32 GetUnitSpriteHeight(void *);
-void func_02087d84(void *,s32,s16,s16,u16,u16);
+void SpriteCellListSetCellRect(void *,s32,s16,s16,u16,u16);
 s32 GetSpriteAnimValue(void *);
 s32 Divide(s32,s32);
 void SetSpriteQuad(s32,s16,s16,s16,s16);
 void AddSprite(u16,u16,u16,void *,s32);
 s32 Ov003_IsValueInRange(s32,s32,s32);
-s32 func_02089080(void *);
+s32 Is3DSpriteHidden(void *);
 void Show3DSprite(void *);
 s32 Is3DSpriteVisible(void *);
 void Hide3DSprite(void *);
@@ -54,11 +54,11 @@ sprite=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,0);
 Set3DSpriteSlideTargetAndStart(sprite,224,160,224,160);
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
 if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
-func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
+SpriteCellListSetCellRect(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
 M2C_FIELD(sprite,s16 *,0x34)=224;M2C_FIELD(sprite,s16 *,0x36)=160;
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
 if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
-func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
+SpriteCellListSetCellRect(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
 }}
 kind=M2C_FIELD(M2C_FIELD(arg0,void **,0x3c),u8 *,15);if(kind==8)boolean=1;else boolean=0;
 if(boolean&255){state=(u32)(M2C_FIELD(arg0,u8 *,0x36)<<24)>>28;
@@ -135,32 +135,32 @@ decide:
 
 if(show){
 sprite=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4);
-if(func_02089080(sprite)){Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4));
+if(Is3DSpriteHidden(sprite)){Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4));
 obj=M2C_FIELD(M2C_FIELD(arg0,void **,0x5c),void **,0);index=((obj?M2C_FIELD(obj,u16 *,8):-1)-11)&255;
 y=(index-2)*30+62;
 sprite=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4);
 Set3DSpriteSlideTargetAndStart(sprite,129,y,129,y);
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
 if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
-func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
+SpriteCellListSetCellRect(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
 M2C_FIELD(sprite,s16 *,0x34)=129;M2C_FIELD(sprite,s16 *,0x36)=y;
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
 if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
-func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
+SpriteCellListSetCellRect(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
 }
 sprite=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8);
-if(func_02089080(sprite)){Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8));
+if(Is3DSpriteHidden(sprite)){Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8));
 obj=M2C_FIELD(M2C_FIELD(arg0,void **,0x5c),void **,0);index=((obj?M2C_FIELD(obj,u16 *,8):-1)-11)&255;
 y=(index-2)*30+62;
 sprite=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8);
 Set3DSpriteSlideTargetAndStart(sprite,223,y,223,y);
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
 if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
-func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
+SpriteCellListSetCellRect(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
 M2C_FIELD(sprite,s16 *,0x34)=223;M2C_FIELD(sprite,s16 *,0x36)=y;
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
 if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
-func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
+SpriteCellListSetCellRect(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
 }
 }else{
 if(Is3DSpriteVisible(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4)))Hide3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4));
@@ -181,18 +181,21 @@ s32 func_ov003_02209cc8(void *arg0) {
     return M2C_FIELD(M2C_FIELD(arg0, void **, 0x1C), u8 *, 6) | M2C_FIELD(arg0, u8 *, 6);
 }
 
-u32 func_ov003_02209cdc(void *arg0) {
-    M2C_UNK func_ov003_0220adb4(void *);
+/* Per-frame update of the ov003 unit-list menu: run the action a mode change
+ * queued, and unless one is still pending handle the menu's input and its
+ * post-input check. */
+u32 Ov003_UpdateMenu(void *menu) {
+    M2C_UNK Ov003_HandleMenuInput(void *);
     u32 func_ov003_0220c10c(void *);
     M2C_UNK RunPendingMenuAction();
     u32 temp_r0;
 
     RunPendingMenuAction();
-    temp_r0 = (u32) (M2C_FIELD(arg0, u8 *, 0x38) << 0x1B) >> 0x1F;
+    temp_r0 = (u32) (M2C_FIELD(menu, u8 *, MENU_FLAGS) << 0x1B) >> 0x1F;
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    func_ov003_0220adb4(arg0);
-    return func_ov003_0220c10c(arg0);
+    Ov003_HandleMenuInput(menu);
+    return func_ov003_0220c10c(menu);
 }
 

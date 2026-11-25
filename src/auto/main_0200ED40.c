@@ -212,7 +212,7 @@ s32 GetRtcTime(s32 timeOut) {
  * timeOut and then calls callback(result, callbackArg).  Returns 1 when another
  * request is already in flight, 0 once the command is sent, 3 when sending the
  * command failed. */
-s32 GetRtcDateTime(s32 dateOut, s32 timeOut, s32 callback, s32 callbackArg) {
+s32 StartRtcDateTimeRead(s32 dateOut, s32 timeOut, s32 callback, s32 callbackArg) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern M2C_UNK gRtcState;
@@ -234,12 +234,20 @@ s32 GetRtcDateTime(s32 dateOut, s32 timeOut, s32 callback, s32 callbackArg) {
     return 3;
 }
 #pragma opt_common_subs reset
-s32 GetLocalTime(s32 arg0, s32 arg1) {
-void RtcResultCallback(s32); s32 RtcWaitCompletion(void); extern M2C_UNK gRtcState;
-s32 result = GetRtcDateTime(arg0,arg1,(s32)RtcResultCallback,0);
-M2C_FIELD(&gRtcState,s32 *,0x24)=result;
-if(result==0) RtcWaitCompletion();
-return M2C_FIELD(&gRtcState,s32 *,0x24);
+/* Read the current date and time from the RTC into `dateOut` and `timeOut`:
+ * start the read with the internal completion callback and, once it is queued,
+ * wait for the request to finish; returns the result of the request. */
+s32 GetRtcDateTime(s32 dateOut, s32 timeOut) {
+    s32 StartRtcDateTimeRead(s32, s32, s32, s32);
+    void RtcResultCallback(s32);
+    s32 RtcWaitCompletion(void);
+    extern M2C_UNK gRtcState;
+    s32 result;
+
+    result = StartRtcDateTimeRead(dateOut, timeOut, (s32)RtcResultCallback, 0);
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_RESULT) = result;
+    if (result == 0) RtcWaitCompletion();
+    return M2C_FIELD(&gRtcState, s32 *, RTC_STATE_RESULT);
 }
 
 /* Handles RTC command callbacks and state machine updates */

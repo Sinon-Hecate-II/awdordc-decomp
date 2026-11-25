@@ -369,7 +369,18 @@ s32 Wfc_StepSession(void) {
     return state;
 }
 
-void Wfc_MarkFriendId(u32 a){void *Wfc_GetWorkBlock(s32);u8 *p=Wfc_GetWorkBlock(16);u32 v;p+=0xd00;if(a>13)a=13;v=M2C_FIELD(p,u16 *,22);a--;M2C_FIELD(p,u16 *,22)=v|(1<<a);}
+/* Mark friend id `friendId` as taking part in the friend connection by setting
+ * its bit in WFC_STATE_FRIEND_MASK; an id past the last one
+ * (WFC_FRIEND_ID_COUNT) marks the last bit. */
+void Wfc_MarkFriendId(u32 friendId) {
+    void *Wfc_GetWorkBlock(s32);
+    u8 *state = Wfc_GetWorkBlock(WFC_WORK_FRIENDS);
+    u32 mask;
+    if (friendId > WFC_FRIEND_ID_COUNT) friendId = WFC_FRIEND_ID_COUNT;
+    mask = M2C_FIELD(state, u16 *, WFC_STATE_FRIEND_MASK);
+    friendId--;
+    M2C_FIELD(state, u16 *, WFC_STATE_FRIEND_MASK) = mask | (1 << friendId);
+}
 
 /* Friend id (bit 0..12 of WFC_STATE_FRIEND_MASK) of the `index`-th friend taking
  * part in the friend connection, or -1 when the mask has no such friend. */

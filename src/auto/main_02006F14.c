@@ -339,9 +339,9 @@ void WaitCycles(unsigned int value)
 
 void func_02007598(void) {
     M2C_UNK WaitByLoop(M2C_UNK);
-    M2C_UNK func_02004e60(M2C_UNK, M2C_UNK);
+    M2C_UNK OS_WaitIrq(M2C_UNK, M2C_UNK);
     WaitByLoop(1);
-    func_02004e60(1, 1);
+    OS_WaitIrq(1, 1);
 }
 
 /* Install the ARM7 boot handshake once: initialise PXI, wait for FIFO channel 12
@@ -365,10 +365,12 @@ void InitArm7BootSync(void) {
     SetFifoMessageHandler(0xC, &Arm7BootAckHandler);
 }
 
-void Arm7BootAckHandler(s32 arg0,s32 arg1) {
+/* FIFO channel-12 handler: the ARM7's boot-ready reply (command ARM7_BOOT_SYNC_REPLY)
+ * sets ARM7_BOOT_SYNC_READY; any other message halts the console. */
+void Arm7BootAckHandler(s32 tag,s32 message) {
 M2C_UNK SystemHalt();
 extern M2C_UNK gArm7BootSync;
-if(((u32)((arg1&0x7F00)<<8)>>16)==0x10) {M2C_FIELD(&gArm7BootSync,s16 *,0)=1;return;}
+if(((u32)((message&0x7F00)<<8)>>16)==ARM7_BOOT_SYNC_REPLY) {M2C_FIELD(&gArm7BootSync,s16 *,ARM7_BOOT_SYNC_READY)=1;return;}
 SystemHalt();
 }
 
@@ -380,7 +382,7 @@ void func_0200763c(s32 arg0) {
 }
 
 void ResetSystem(s32 arg0) {
-    M2C_UNK func_01ff81e4();
+    M2C_UNK RebootFromCardImage();
     void OS_SetIrqEnableMask(s32);
     void OS_SetIrqMask(s32);
     s32 OS_GetLockID(void);
@@ -404,7 +406,7 @@ void ResetSystem(s32 arg0) {
     }
     *(s32 *)0x027FFC20 = arg0;
     func_0200763c(0x10);
-    func_01ff81e4();
+    RebootFromCardImage();
 }
 
 void GetMacAddress(M2C_UNK arg0) {
@@ -434,10 +436,15 @@ void GetSystemUserProfile(UserProfile *profile) {
 s32 func_020077c4(u32 arg0) {
     return __CLZ(arg0);
 }
+/* Forget the owner of every VRAM bank and clear the owned-bank mask, so all
+ * nine banks count as free again. */
 void GX_ResetBankOwners(void) {
- s32 i=0;
- gVramBankOwnerMask=0;
- do { gVramBankOwners[i]=0; i++; } while(i<9);
+    s32 bank = 0;
+    gVramBankOwnerMask = 0;
+    do {
+        gVramBankOwners[bank] = 0;
+        bank++;
+    } while (bank < VRAM_BANK_COUNT);
 }
 
 /* Give back the banks selected in `banks` that are owned by `owner`: each one

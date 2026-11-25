@@ -97,12 +97,14 @@ if((*gKeyState &(KEY_A|KEY_START))||gTouchState[TOUCH_STARTED]||M2C_FIELD(arg0,u
 M2C_FIELD(arg0,u16 *,ARMY_INFO_FRAME)++;
 }
 
-void func_ov000_0216c068(void *arg0) {
+/* Exit step of the army info window: clear the layer its sprites are drawn on
+ * (layer 3), mark that layer's data dirty, and hide the window. */
+void ExitArmyInfoView(void *window) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     extern void *gCur3DSpriteEngine;
     Clear3DSpriteLayer(3);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 8;
-    M2C_FIELD(arg0, u8 *, 0x36) = 0;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= 8;
+    M2C_FIELD(window, u8 *, ARMY_INFO_SHOWN) = 0;
 }
 
 /* Enters the army info window's view of the map: runs the current map's view-setup
@@ -136,8 +138,8 @@ void func_ov000_0216c1d0(void) {
 }
 
 void func_ov000_0216c1dc(void) {
-    void func_ov000_0216c068();
-    func_ov000_0216c068();
+    void ExitArmyInfoView();
+    ExitArmyInfoView();
 }
 
 void func_ov000_0216c1e8(void) {

@@ -263,21 +263,24 @@ void func_ov001_0217c668(void) {
 void func_ov001_0217c66c(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
-    extern M2C_UNK func_ov001_0217c688;
+    extern M2C_UNK Ov001_CloseCodeEntryKeypad;
     Ov001_StartDelay(8);
-    Ov001_SetStepCallback(&func_ov001_0217c688);
+    Ov001_SetStepCallback(&Ov001_CloseCodeEntryKeypad);
 }
 
-void func_ov001_0217c688(void) {
-    M2C_UNK Ov001_StartKeypadClose();
-    s32 Ov001_IsFadeActive(M2C_UNK);
-    extern M2C_UNK Ov001_HandleCodeEntryResult;
+/* Step run 8 frames after the friend code is confirmed or rejected: wait for the
+ * fade to finish, start closing the code-entry keypad and hand over to
+ * Ov001_HandleCodeEntryResult, which applies the result once the keypad is gone. */
+void Ov001_CloseCodeEntryKeypad(void) {
+    void Ov001_StartKeypadClose(void);
+    s32 Ov001_IsFadeActive(s32);
+    extern void Ov001_HandleCodeEntryResult(void);
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     Ov001_StartKeypadClose();
     Ov001_PlaySound(0x15);
-    Ov001_SetStepCallback(&Ov001_HandleCodeEntryResult);
+    Ov001_SetStepCallback((s32 *)&Ov001_HandleCodeEntryResult);
 }
 
 /* Acts on the friend-code entry screen's result once its keypad has closed: a
@@ -314,7 +317,7 @@ M2C_UNK Ov001_LoadAsset(M2C_UNK *,M2C_UNK *);
 extern void *gOv001FriendCodeState;
 extern M2C_UNK data_ov001_021907d0,GX_LoadOBJPltt,InitMapListScreen;
 s32 sp0;void *state;
-Ov001_FreeOptionBackground();
+Ov001_FreeMessagePanel();
 state=gOv001FriendCodeState;Ov001_ReleaseSprite(M2C_FIELD(state,s32 *,4));
 Ov001_FreePageBackground(0);Ov001_LoadAsset(&data_ov001_021907d0,&GX_LoadOBJPltt);
 Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,0x15);

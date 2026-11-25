@@ -181,15 +181,18 @@ void GetMapPlayerCount(u32 arg0) {
     func_020a8948();
 }
 
-void GetMapName(u32 arg0) {
+/* The localized display name of the map with the given id: campaign maps
+ * ([MAP_ID_CAMPAIGN_FIRST, MAP_ID_CAMPAIGN_END)) take it from their own record,
+ * every other map from the name text id in its map-data record. */
+void GetMapName(u32 mapId) {
     M2C_UNK GetLocalizedText();
-    M2C_UNK func_020a8888();
-    M2C_UNK func_020c7fe4();
-    if ((arg0 >= 0xE1U) && (arg0 < 0x1A9U)) {
-        func_020c7fe4();
+    M2C_UNK MapData_GetNameTextId();
+    M2C_UNK GetCampaignMapName();
+    if ((mapId >= MAP_ID_CAMPAIGN_FIRST) && (mapId < MAP_ID_CAMPAIGN_END)) {
+        GetCampaignMapName();
         return;
     }
-    func_020a8888();
+    MapData_GetNameTextId();
     GetLocalizedText();
 }
 
@@ -515,12 +518,17 @@ s32 GetTerrainDefenseScore(s32 player, s32 kind, s32 terrain) {
     return score;
 }
 
-s32 GetTerrainMoveCost(s32 arg0,s32 arg1,s32 arg2) {
- s32 UnitKindTakesNoTerrainDefense(s32);
- s32 value;
- if(UnitKindTakesNoTerrainDefense(arg1)!=0) return 0;
- value=gTerrainDefenseStars[arg2]*10;
- if(value<0) value=0;
- return value;
+/* Terrain defense a unit gains from standing on `terrain`, from the terrain's
+ * defense stars alone (no player bonus; GetTerrainDefenseScore adds that):
+ * stars times ten, floored at zero.  Kinds that take no terrain defense
+ * (UnitKindTakesNoTerrainDefense) score zero.  `player` is unused. */
+s32 GetTerrainDefenseFromStars(s32 player, s32 unitKind, s32 terrain) {
+    s32 UnitKindTakesNoTerrainDefense(s32);
+    s32 score;
+
+    if (UnitKindTakesNoTerrainDefense(unitKind) != 0) return 0;
+    score = gTerrainDefenseStars[terrain] * 10;
+    if (score < 0) score = 0;
+    return score;
 }
 

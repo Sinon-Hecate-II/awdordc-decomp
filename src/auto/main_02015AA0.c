@@ -293,7 +293,7 @@ void DownloadSendStep(s32 sendCode, s32 sequence, s32 flags) {
     s32 DownloadStartNextFile(void);
     void DownloadBeginPacket(void);
     void DownloadSendChunkPacket(s32, s32, s32);
-    void DownloadFinishChunkFile(void);
+    void DownloadBeginRoster(void);
     void DownloadSendRosterPacket(s32, s32, s32);
     for (;;) switch (M2C_FIELD(&gDownloadSendState, u8 *, DL_STATE)) {
     case DL_STATE_IDLE:
@@ -307,7 +307,7 @@ void DownloadSendStep(s32 sendCode, s32 sequence, s32 flags) {
         DownloadSendChunkPacket(sendCode, sequence, flags);
         return;
     case DL_STATE_FILE_DONE:
-        DownloadFinishChunkFile();
+        DownloadBeginRoster();
         break;
     case DL_STATE_SEND_ROSTER:
         DownloadSendRosterPacket(sendCode, sequence, flags);
@@ -393,11 +393,14 @@ else M2C_FIELD(&gDownloadSendState,volatile u32 *,0x20)+=0x62;
 WFC_SubmitDownloadData(0,&gDownloadPacket,0x70,a,b,(u8)(c|3));
 }
 #pragma opt_propagation reset
-void DownloadFinishChunkFile(void) {
-extern M2C_UNK gDownloadSendState;
-M2C_FIELD(M2C_FIELD(&gDownloadSendState,void **,0x1c),u16 *,0x4b0)=1;
-M2C_FIELD(&gDownloadSendState,u8 *,0x26)=M2C_FIELD(M2C_FIELD(&gDownloadSendState,void **,0x1c),u8 *,0x4b4);
-M2C_FIELD(&gDownloadSendState,u8 *,0x24)=5;
+/* The current file's chunk phase is over: mark the sender as already having
+ * received its roster packets, reload the roster step from the file's step
+ * counter, and move the sender into the roster state. */
+void DownloadBeginRoster(void) {
+    extern M2C_UNK gDownloadSendState;
+    M2C_FIELD(M2C_FIELD(&gDownloadSendState, void **, DL_CURRENT), u16 *, DL_FILE_ROSTER_SENT) = 1;
+    M2C_FIELD(&gDownloadSendState, u8 *, DL_FILE_INDEX) = M2C_FIELD(M2C_FIELD(&gDownloadSendState, void **, DL_CURRENT), u8 *, DL_FILE_STEP);
+    M2C_FIELD(&gDownloadSendState, u8 *, DL_STATE) = DL_STATE_SEND_ROSTER;
 }
 
 #pragma push
@@ -411,7 +414,7 @@ u16 Mb_Checksum16(u16 *,s32);
 void WFC_SubmitDownloadData(s32,void *,s32,s32,s32,s32);
 void *p,*header,*state; u8 *dest; register s32 i;u32 count;u16 mask;void (*callback)(u32);
 p=M2C_FIELD(&gDownloadSendState,void **,0x1c);
-if(M2C_FIELD(&gDownloadSendState,u8 *,0x26)!=M2C_FIELD(p,u8 *,0x4b4))DownloadFinishChunkFile();
+if(M2C_FIELD(&gDownloadSendState,u8 *,0x26)!=M2C_FIELD(p,u8 *,0x4b4))DownloadBeginRoster();
 state=&gDownloadSendState;
 ((PacketBits *)((u8 *)state+0x44))->low=2;
 p=M2C_FIELD(state,void **,0x1c); header=(u8 *)p+0x300;

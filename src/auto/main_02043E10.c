@@ -346,12 +346,15 @@ s32 Transfer_SetEndCallback(s32 a){extern s32 gTransferManager;if(!gTransferMana
 
 s32 func_02044658(u16 a){extern s32 gTransferManager;if(!gTransferManager)return 0;M2C_FIELD(gTransferManager,u16 *,0x610)=a;return 1;}
 
-void BuildTransferHeader(void *arg0, s16 arg1, s32 arg2) {
-    M2C_UNK StringCopyPad(s32, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK gTransferMagic;
-    StringCopyPad(arg0 + 6, &gTransferMagic, 2);
-    M2C_FIELD(arg0, s16 *, 4) = arg1;
-    M2C_FIELD(arg0, s32 *, 0) = arg2;
+/* Build the 8-byte header at `header` that opens a transfer of `size` bytes
+ * of `kind`: the payload size, the transfer kind and the magic tag. */
+void BuildTransferHeader(void *header, s16 kind, s32 size) {
+    void StringCopyPad(void *, void *, s32);
+    extern s32 gTransferMagic;
+
+    StringCopyPad((u8 *)header + TRANSFER_HEADER_MAGIC, &gTransferMagic, 2);
+    *(s16 *)((u8 *)header + TRANSFER_HEADER_KIND) = kind;
+    *(s32 *)((u8 *)header + TRANSFER_HEADER_SIZE) = size;
 }
 
 /* Decode an 8-byte transfer header: return its kind when the trailing magic tag

@@ -13,12 +13,12 @@ static inline void SetSpriteSizeE19(void *p,u16 x,u16 y){ M2C_FIELD(p,u32 *,0x40
 void func_020e19e8(M2C_UNK arg0) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     void *func_02082028(M2C_UNK);
-    M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
+    M2C_UNK SpriteCellListSetCellRect(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, s16, s16, s16, s32);
     void *Create3DSprite(void *);
     M2C_UNK SetSpriteText(void *, M2C_UNK *);
-    void *func_0208bc24(void *);
+    void *CreateScrollingTextSprite(void *);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(void *);
     s32 GetUnitSpriteWidth(void *);
@@ -27,7 +27,7 @@ void func_020e19e8(M2C_UNK arg0) {
     M2C_UNK AcquireUsernameFont();
     extern M2C_UNK data_0212c5c4;
     extern M2C_UNK data_0212c6a8;
-    extern M2C_UNK data_0212d1e8;
+    extern M2C_UNK gPlayerLabelVTable;
     extern M2C_UNK gSpriteDesc64x32;
     extern void *data_027e00c4;
     extern void *data_027e00c8;
@@ -70,7 +70,7 @@ void func_020e19e8(M2C_UNK arg0) {
     if (temp_r0 == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_0212d1e8;
+    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gPlayerLabelVTable;
     M2C_FIELD(temp_r0, s32 *, 0x34) = 1;
     M2C_FIELD(temp_r0, s32 *, 0x38) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x3C) = 0;
@@ -119,7 +119,7 @@ void func_020e19e8(M2C_UNK arg0) {
         temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
         temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
         temp_r9 = GetUnitSpriteWidth(temp_r6);
-        func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
     }
     temp_r1 = M2C_FIELD(temp_r0, void **, 0x50);
     M2C_FIELD(temp_r1, s16 *, 0x34) = 0xC0;
@@ -141,7 +141,7 @@ void func_020e19e8(M2C_UNK arg0) {
         temp_r7_2 = M2C_FIELD(temp_r6_2, s16 *, 0x52);
         temp_r8_2 = M2C_FIELD(temp_r6_2, s16 *, 0x50);
         temp_r9_2 = GetUnitSpriteWidth(temp_r6_2);
-        func_02087d84(M2C_FIELD(temp_r6_2, void **, 0x64), 1, temp_r8_2, temp_r7_2, (u16) temp_r9_2, (u16) GetUnitSpriteHeight(temp_r6_2));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6_2, void **, 0x64), 1, temp_r8_2, temp_r7_2, (u16) temp_r9_2, (u16) GetUnitSpriteHeight(temp_r6_2));
     }
     temp_r1_3 = M2C_FIELD(temp_r0, void **, 0x54);
     M2C_FIELD(temp_r1_3, s16 *, 0x34) = 0xC0;
@@ -163,7 +163,7 @@ void func_020e19e8(M2C_UNK arg0) {
         temp_r7_3 = M2C_FIELD(temp_r6_3, s16 *, 0x52);
         temp_r8_3 = M2C_FIELD(temp_r6_3, s16 *, 0x50);
         temp_r9_3 = GetUnitSpriteWidth(temp_r6_3);
-        func_02087d84(M2C_FIELD(temp_r6_3, void **, 0x64), 1, temp_r8_3, temp_r7_3, (u16) temp_r9_3, (u16) GetUnitSpriteHeight(temp_r6_3));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6_3, void **, 0x64), 1, temp_r8_3, temp_r7_3, (u16) temp_r9_3, (u16) GetUnitSpriteHeight(temp_r6_3));
     }
     temp_r1_5 = M2C_FIELD(temp_r0, void **, 0x58);
     M2C_FIELD(temp_r1_5, s16 *, 0x34) = 0xE0;
@@ -182,7 +182,7 @@ void func_020e19e8(M2C_UNK arg0) {
         temp_r7_4 = M2C_FIELD(temp_r6_4, s16 *, 0x52);
         temp_r8_4 = M2C_FIELD(temp_r6_4, s16 *, 0x50);
         temp_r9_4 = GetUnitSpriteWidth(temp_r6_4);
-        func_02087d84(M2C_FIELD(temp_r6_4, void **, 0x64), 1, temp_r8_4, temp_r7_4, (u16) temp_r9_4, (u16) GetUnitSpriteHeight(temp_r6_4));
+        SpriteCellListSetCellRect(M2C_FIELD(temp_r6_4, void **, 0x64), 1, temp_r8_4, temp_r7_4, (u16) temp_r9_4, (u16) GetUnitSpriteHeight(temp_r6_4));
     }
     temp_r1_6 = M2C_FIELD(temp_r0, void **, 0x5C);
     M2C_FIELD(temp_r1_6, s16 *, 0x34) = -0x9F;
@@ -201,7 +201,7 @@ void func_020e19e8(M2C_UNK arg0) {
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), s16 *, 0x3E) = 0x388;
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), M2C_UNK **, 0x44) = &gSpriteDesc64x32;
     gCur3DSpriteEngine = data_027e00c4;
-    temp_r0_4 = func_0208bc24(temp_r0);
+    temp_r0_4 = CreateScrollingTextSprite(temp_r0);
     M2C_FIELD(temp_r0, void **, 0x64) = temp_r0_4;
     M2C_FIELD(temp_r0_4, s16 *, 0x3E) = 0x140;
     temp_r2 = M2C_FIELD(temp_r0, void **, 0x64);
@@ -216,12 +216,12 @@ void func_020e1f54(s32 arg0) {
 
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     void *func_02082028(M2C_UNK);
-    M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
+    M2C_UNK SpriteCellListSetCellRect(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, s16, s16, s16, s32);
     void *Create3DSprite(void *);
     M2C_UNK SetSpriteText(void *, M2C_UNK *);
-    void *func_0208bc24(void *);
+    void *CreateScrollingTextSprite(void *);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(void *);
     s32 GetUnitSpriteWidth(void *);
@@ -230,14 +230,14 @@ void func_020e1f54(s32 arg0) {
     M2C_UNK AcquireUsernameFont();
     extern M2C_UNK data_0212c5c4;
     extern M2C_UNK data_0212c6a8;
-    extern M2C_UNK data_0212d1e8;
+    extern M2C_UNK gPlayerLabelVTable;
     extern M2C_UNK gSpriteDesc64x32;
     extern void *data_027e00c4;
     extern void *data_027e00c8;
     extern void *gCur3DSpriteEngine;
 void *obj=CreateSpriteObject(&data_0212c6a8,arg0); void *saved; void *p; void *q;
 if(!obj)return;
-M2C_FIELD(obj,void**,0)=&data_0212d1e8;
+M2C_FIELD(obj,void**,0)=&gPlayerLabelVTable;
 M2C_FIELD(obj,s32*,0x34)=1; M2C_FIELD(obj,s32*,0x38)=1;M2C_FIELD(obj,s32*,0x3c)=0;
 M2C_FIELD(obj,u8*,0x40)=0;M2C_FIELD(obj,u8*,0x41)=0;M2C_FIELD(obj,u8*,0x42)=0;M2C_FIELD(obj,u8*,0x43)=4;M2C_FIELD(obj,u8*,0x44)=0;
 M2C_FIELD(obj,u16*,0x46)=0x3a8;M2C_FIELD(obj,u16*,0x48)=0;M2C_FIELD(obj,u16*,0x4a)=0;M2C_FIELD(obj,u16*,0x4c)=0x708;
@@ -252,7 +252,7 @@ M2C_FIELD(obj,void**,80)=CreateUnitSprite(obj);
 InitUnitSprite(M2C_FIELD(obj,void**,80),0,832,3,1);
 p=M2C_FIELD(obj,void**,80);Set3DSpriteSlideTargetAndStart(p,192,160,192,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,80);M2C_FIELD(q,s16*,0x34)=192;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,80));
 q=M2C_FIELD(obj,void**,80);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|((u32)((u16)(M2C_FIELD(q,MenuNibble*,0x59).low+2)<<24)>>6);M2C_FIELD(q,u8*,0x5a)=0;
@@ -262,7 +262,7 @@ M2C_FIELD(obj,void**,84)=CreateUnitSprite(obj);
 InitUnitSprite(M2C_FIELD(obj,void**,84),1,848,3,0);
 p=M2C_FIELD(obj,void**,84);Set3DSpriteSlideTargetAndStart(p,192,160,192,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,84);M2C_FIELD(q,s16*,0x34)=192;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,84));
 q=M2C_FIELD(obj,void**,84);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|((u32)((u16)(M2C_FIELD(q,MenuNibble*,0x59).low+2)<<24)>>6);M2C_FIELD(q,u8*,0x5a)=0;
@@ -272,7 +272,7 @@ M2C_FIELD(obj,void**,88)=CreateUnitSprite(obj);
 InitUnitSprite(M2C_FIELD(obj,void**,88),2,864,3,0);
 p=M2C_FIELD(obj,void**,88);Set3DSpriteSlideTargetAndStart(p,224,160,224,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,88);M2C_FIELD(q,s16*,0x34)=224;M2C_FIELD(q,s16*,0x36)=192;
 func_020aad18(M2C_FIELD(obj,void**,88));
 
@@ -282,7 +282,7 @@ M2C_FIELD(obj,void**,92)=CreateUnitSprite(obj);
 InitUnitSprite(M2C_FIELD(obj,void**,92),42,880,3,0);
 p=M2C_FIELD(obj,void**,92);Set3DSpriteSlideTargetAndStart(p,96,164,-159,164);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
-if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
+if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);SpriteCellListSetCellRect(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,92);M2C_FIELD(q,s16*,0x34)=-159;M2C_FIELD(q,s16*,0x36)=164;
 func_020aad18(M2C_FIELD(obj,void**,92));
 
@@ -296,7 +296,7 @@ M2C_FIELD(M2C_FIELD(obj,void**,0x60),u16*,0x3c)=0;
 q=M2C_FIELD(obj,void**,0x60);M2C_FIELD(q,MenuSpriteFlags*,0x40).layer=6;
 M2C_FIELD(M2C_FIELD(obj,void**,0x60),u16*,0x3e)=0x388;M2C_FIELD(M2C_FIELD(obj,void**,0x60),void**,0x44)=&gSpriteDesc64x32;
 gCur3DSpriteEngine=data_027e00c4;
-p=func_0208bc24(obj);M2C_FIELD(obj,void**,0x64)=p;M2C_FIELD(p,u16*,0x3e)=0x140;
+p=CreateScrollingTextSprite(obj);M2C_FIELD(obj,void**,0x64)=p;M2C_FIELD(p,u16*,0x3e)=0x140;
 q=M2C_FIELD(obj,void**,0x64);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc0000)|0x180000;
 SetSpriteText(M2C_FIELD(obj,void**,0x64),&data_0212c5c4);Hide3DSprite(M2C_FIELD(obj,void**,0x64));
 gCur3DSpriteEngine=saved;AcquireUsernameFont();

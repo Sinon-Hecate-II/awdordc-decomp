@@ -307,21 +307,23 @@ void CanDoAiAction2(s32 x, s32 y) {
     AiRangeReachesEnemyHq();
 }
 
+/* True when the AI's capturable properties outnumber its team's attack units;
+ * never true while it has no attack target to begin with. */
 u8 AiPropertiesOutnumberAttackUnits(void) {
     s32 CountAiAttackTargetUnits();
-    s32 temp_r4;
-    u8 var_r0;
+    s32 properties;
+    u8 outnumber;
 
     if (CountAiAttackTargetUnits() == 0) {
         return 0U;
     }
-    temp_r4 = CountCapturableProperties();
-    if (temp_r4 > CountTeamAttackUnits()) {
-        var_r0 = 1;
+    properties = CountCapturableProperties();
+    if (properties > CountTeamAttackUnits()) {
+        outnumber = 1;
     } else {
-        var_r0 = 0;
+        outnumber = 0;
     }
-    return var_r0;
+    return outnumber;
 }
 
 s32 AiPropertyCaptureScore(void) {

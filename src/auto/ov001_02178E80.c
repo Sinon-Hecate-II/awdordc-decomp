@@ -23,7 +23,7 @@ void Ov001_CloseMessageScreen(void) {
     if (Ov001_IsIconRowIdle() == 0) return;
     Ov001_FreePageBackground(0);
     if (M2C_FIELD(&gOv001MessageState, u8 *, OV001_MESSAGE_OPTION) == 0) {
-        Ov001_FreeOptionBackground();
+        Ov001_FreeMessagePanel();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
@@ -44,7 +44,7 @@ void Ov001_ShowProfileMessage(void) {
     void *func_ov001_02176114(void);
     void Ov001_LoadProfileMessageBg(void);
     void func_ov001_021792ec(void);
-    void func_ov001_02179078(void);
+    void Ov001_FadeInProfileMessage(void);
     s32 CreateTextPanel(s32, s32);
     M2C_UNK FillU16(s32, void *, s32);
     M2C_UNK CopyU16(void *, void *, s32);
@@ -65,7 +65,7 @@ void Ov001_ShowProfileMessage(void) {
     CloseTextPanel(panel);
     Ov001_SetProfileScreenCallback(func_ov001_021792ec);
     Ov001_ShowMessage(29, 4, 0, -1, 0);
-    Ov001_SetStepCallback(func_ov001_02179078);
+    Ov001_SetStepCallback(Ov001_FadeInProfileMessage);
 }
 
 /* Load the profile confirmation message's background map and put BG0/BG1/BG2 on
@@ -83,25 +83,26 @@ void Ov001_LoadProfileMessageBg(void) {
     REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_02179078(void) {
-    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_021790ac;
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_021790ac);
+/* Step that fades the profile confirmation-message screen in from white on the main
+ * engine, reveals its background and sprite planes, then hands over to the step that
+ * runs once the fade has finished. */
+void Ov001_FadeInProfileMessage(void) {
+    extern M2C_UNK Ov001_ProfileMessageFadeDone;
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
+    Ov001_SetStepCallback(&Ov001_ProfileMessageFadeDone);
 }
 
-void func_ov001_021790ac(void) {
+void Ov001_ProfileMessageFadeDone(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
-    extern M2C_UNK func_ov001_021790d0;
+    extern M2C_UNK Ov001_WaitProfileChoiceMenu;
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_021790d0);
+    Ov001_SetStepCallback(&Ov001_WaitProfileChoiceMenu);
 }
 
-void func_ov001_021790d0(void) {
+void Ov001_WaitProfileChoiceMenu(void) {
     s32 Ov001_GetRegionMenuSelection();
     void Ov001_ProfileChoiceStep(void);
     if (Ov001_GetRegionMenuSelection() == -2) {
@@ -194,7 +195,7 @@ if(!Ov001_IsProfileScreenDone())return;
 Ov001_FreePageBackground(0);
 Ov001_DisableVisiblePlanes(0,21);
 if(!M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_OPTION)) {
-Ov001_FreeOptionBackground();Ov001_DisableVisiblePlanes(1,1);
+Ov001_FreeMessagePanel();Ov001_DisableVisiblePlanes(1,1);
 }
 Ov001_SetNextScreenMode(0,1);
 if(M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_CONFIRMED)) {
@@ -253,16 +254,17 @@ void Ov001_LoadWfcEraseResultBackground(void) {
     REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
+/* Step that fades the Wi-Fi data-erase result screen in from white on the main
+ * engine, reveals its background and sprite planes, then hands over to the step
+ * that runs once the fade has finished. */
 void Ov001_FadeInWfcEraseResultScreen(void) {
-    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
-    void func_ov001_02179420(void);
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_02179420);
+    extern M2C_UNK Ov001_WfcEraseResultFadeDone;
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
+    Ov001_SetStepCallback(&Ov001_WfcEraseResultFadeDone);
 }
 
-void func_ov001_02179420(void) {
+void Ov001_WfcEraseResultFadeDone(void) {
     void func_ov001_0217944c(void);
     if (Ov001_IsFadeActive(0) != 0) return;
     Ov001_CreateMenuIconRow(1);
@@ -367,7 +369,7 @@ void func_ov001_021795a4(void) {
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
     if (gOv001WfcEraseResult == 0) {
-        Ov001_FreeOptionBackground();
+        Ov001_FreeMessagePanel();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
@@ -618,7 +620,7 @@ void Ov001_CloseWirelessScreen(void) {
     Ov001_FreePageBackground(0);
 
     if (gOv001WirelessState == 0) {
-        Ov001_FreeOptionBackground();
+        Ov001_FreeMessagePanel();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
@@ -683,12 +685,15 @@ void Ov001_WaitForWirelessConnection(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_AbandonWirelessConnection);
 }
 
+/* Start cancelling the local wireless (multi-card) setup screen: silence the
+ * screen's sounds, clear the connected flag and hand the step to
+ * Ov001_AbandonWirelessConnection. */
 void Ov001_BeginWirelessCancel(void) {
-extern u8 gOv001WirelessState;
-Ov001_StopSound();
-Ov001_PlaySound(7);
-gOv001WirelessState=0;
-Ov001_SetStepCallback((M2C_UNK *)&Ov001_AbandonWirelessConnection);
+    extern u8 gOv001WirelessState;
+    Ov001_StopSound();
+    Ov001_PlaySound(7);
+    M2C_FIELD(&gOv001WirelessState, u8 *, OV001_WIRELESS_CONNECTED) = 0;
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_AbandonWirelessConnection);
 }
 
 /* Step that opens the ov001 save screen once the wireless flow is done: reset the
@@ -720,16 +725,16 @@ void Ov001_LoadSaveScreenBg(void) {
     REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
+/* Fade in the save screen: fade the main screen from white and reveal its
+ * background/OBJ planes, then hand over to the step that waits for the fade. */
 void Ov001_FadeInSaveScreen(void) {
-    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_02179d90;
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_02179d90);
+    void Ov001_WaitSaveScreenFadeIn(void);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitSaveScreenFadeIn);
 }
 
-void func_ov001_02179d90(void) {
+void Ov001_WaitSaveScreenFadeIn(void) {
     extern M2C_UNK func_ov001_02179db4;
     if (Ov001_IsFadeActive(0) != 0) {
         return;
@@ -738,9 +743,9 @@ void func_ov001_02179d90(void) {
 }
 
 void func_ov001_02179db4(void) {
- void func_ov001_02179e74(void);
+ void Ov001_TickSaveDelay(void);
  void func_ov001_02179dc4(void);
- func_ov001_02179e74();
+ Ov001_TickSaveDelay();
  func_ov001_02179dc4();
 }
 
@@ -761,7 +766,7 @@ void Ov001_FadeOutSaveScreen(void) {
  * releases the screen's page and option backgrounds, hides the visible planes
  * and hands over to the step that commits the save and opens the save-slot menu. */
 void Ov001_CloseSaveScreen(void) {
-    M2C_UNK Ov001_FreeOptionBackground();
+    M2C_UNK Ov001_FreeMessagePanel();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
@@ -774,7 +779,7 @@ void Ov001_CloseSaveScreen(void) {
         return;
     }
     Ov001_FreePageBackground(0);
-    Ov001_FreeOptionBackground();
+    Ov001_FreeMessagePanel();
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
     Ov001_SetNextScreenMode(0, 0);

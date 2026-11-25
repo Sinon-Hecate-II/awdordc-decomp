@@ -299,17 +299,19 @@ void ShowMatchNameLabel(void *owner) {
  }
 }
 #pragma optimization_level reset
-void func_020d3ae4(void) {
+/* Overlay-cleanup step (map state 25): create the overlay-cleanup sprite and
+ * move on to wrapping up the battle (MAP_STATE_FINISH). */
+void CreateOverlayCleanupSprite(void) {
     void CreateSpriteFromClass(void *, s32);
     extern void **gCurrentMap;
-    extern char data_0212b9ac[];
-    CreateSpriteFromClass(data_0212b9ac, 7);
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 26;
+    extern char gOverlayCleanupSpriteClass[];
+    CreateSpriteFromClass(gOverlayCleanupSpriteClass, 7);
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = MAP_STATE_FINISH;
 }
 
 void func_020d3b18(void) {
-    M2C_UNK func_020d4614();
-    func_020d4614();
+    M2C_UNK BattleFinishStep();
+    BattleFinishStep();
 }
 
 /* Per-frame step of the battle-map state machine: run the map view controller's
@@ -325,27 +327,27 @@ void StepBattleMap(void) {
     void CheckTurnLimitStep();
     void AdvanceTurnStep();
     void BeginPlayerTurnSetup();
-    void func_020d4400();
+    void TurnStartWaitStep();
     void TurnStartSetupStep();
     void func_020d447c();
     M2C_UNK TurnBannerStep();
     void func_020d4280();
     void func_020d42a8();
     void func_020d42d0();
-    void func_020d42f8();
+    void TurnIntroWaitStep();
     void BeginPlayerTurn();
     M2C_UNK UpdateMapMode();
     M2C_UNK IsPlayerLocallyControlled(M2C_UNK);
     M2C_UNK UpdateAiTurn();
     void UpdateLinkAiCommand();
     void MapStateReturnStep();
-    M2C_UNK func_020d4614();
+    M2C_UNK BattleFinishStep();
     M2C_UNK func_020d466c();
     void StartEndTurn();
     void func_020d3628();
     void func_020d3830();
     void AdvanceAfterOverlayEvent();
-    void func_020d3ae4();
+    void CreateOverlayCleanupSprite();
     void func_020d3b18();
     extern void **gCurrentMap;
 
@@ -379,7 +381,7 @@ void StepBattleMap(void) {
             BeginPlayerTurnSetup();
             return;
         case MAP_STATE_TURN_START_WAIT:
-            func_020d4400();
+            TurnStartWaitStep();
             return;
         case MAP_STATE_TURN_START_SETUP:
             TurnStartSetupStep();
@@ -400,7 +402,7 @@ void StepBattleMap(void) {
             func_020d42d0();
             return;
         case MAP_STATE_TURN_INTRO_WAIT:
-            func_020d42f8();
+            TurnIntroWaitStep();
             return;
         case MAP_STATE_PLAYER_TURN:
             BeginPlayerTurn();
@@ -413,13 +415,13 @@ void StepBattleMap(void) {
             UpdateLinkAiCommand(); return;
         case MAP_STATE_LINK_TURN: UpdateLinkAiCommand(); return;
         case MAP_STATE_RETURN: MapStateReturnStep(); return;
-        case MAP_STATE_BATTLE_FINISH: func_020d4614(); return;
+        case MAP_STATE_BATTLE_FINISH: BattleFinishStep(); return;
         case MAP_STATE_RESUME_INPUT: func_020d466c(); return;
         case MAP_STATE_END_TURN: StartEndTurn(); return;
         case MAP_STATE_END_TURN_STEP: func_020d3628(); return;
         case MAP_STATE_OVERLAY_RESULT: func_020d3830(); return;
         case MAP_STATE_AFTER_OVERLAY: AdvanceAfterOverlayEvent(); return;
-        case MAP_STATE_OVERLAY_CLEANUP: func_020d3ae4(); return;
+        case MAP_STATE_OVERLAY_CLEANUP: CreateOverlayCleanupSprite(); return;
         case MAP_STATE_FINISH: func_020d3b18(); return;
         default: return;
         }
@@ -649,12 +651,15 @@ s32 IsCpuOnlyBattle(void) {
     return 1;
 }
 
+/* End an all-CPU (demo) battle: a link/online battle has no human on this
+ * console, so the property count decides the winner; a local demo just opens
+ * the battle-end screen. */
 void EndCpuOnlyBattle(void) {
     M2C_UNK ResolvePropertyCountVictory();
     void CreateSpriteFromClass(void *, s32);
     extern M2C_UNK gMapData;
     extern char data_0212ba3c[];
-    if (M2C_FIELD(&gMapData, u8 *, 4) != 0) {
+    if (M2C_FIELD(&gMapData, u8 *, MAPDATA_LINK_BATTLE) != 0) {
         ResolvePropertyCountVictory();
         return;
     }
@@ -742,15 +747,19 @@ void func_020d42d0(void) {
     M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 11;
 }
 
-void func_020d42f8(void) {
+/* Turn-intro wait step (MAP_STATE_TURN_INTRO_WAIT): wait while the intro's dialog
+ * is still up; once it is gone, create the turn-intro sprite and move on to the
+ * current player's turn. */
+void TurnIntroWaitStep(void) {
     M2C_UNK IsDialogActive();
     M2C_UNK func_020a5ac8();
     extern void **gCurrentMap;
+
     if (IsDialogActive() != 0) {
         return;
     }
     func_020a5ac8();
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = 0xc;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = MAP_STATE_PLAYER_TURN;
 }
 
 #pragma merge_duplicate_code off
@@ -778,12 +787,15 @@ case 6:M2C_FIELD(state,u16*,0xb0)=19;return;
 default:break;
 }}
 #pragma merge_duplicate_code reset
-void func_020d4400(void) {
+/* Turn-start wait step (MAP_STATE_TURN_START_WAIT): hold until the music from
+ * the turn transition has faded out, then move on to the turn-start setup. */
+void TurnStartWaitStep(void) {
     M2C_UNK IsMusicFadingOut();
     extern void **gCurrentMap;
+
     if (IsMusicFadingOut() != 0) {
         return;
     }
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = 5;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = MAP_STATE_TURN_START_SETUP;
 }
 

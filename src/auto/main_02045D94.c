@@ -15,10 +15,12 @@ s32 FifoReadSaveHeader(u16 *header) {
     return 1;
 }
 
-s32 FifoReadSaveSlots(M2C_UNK arg0) {
-
+/* Read the two save slots (0x400 bytes) from the block-transfer address in the
+ * ARM7's save area into saveData. */
+s32 FifoReadSaveSlots(void *saveData) {
     extern M2C_UNK gFifoBlockTransfer;
-    if (FifoReadBlock(M2C_FIELD(&gFifoBlockTransfer, s32 *, 8), 0x400, arg0) != 0) {
+
+    if (FifoReadBlock(M2C_FIELD(&gFifoBlockTransfer, s32 *, FIFO_XFER_ADDRESS), 0x400, saveData) != 0) {
         return 1;
     }
     return 0;
@@ -75,11 +77,14 @@ u8 CountSetBits(u8 *bytes) {
 }
 
 #pragma opt_common_subs off
-void func_02046058(u8 arg0, M2C_UNK *arg1) {
-    u8 *dst = (u8 *)arg1;
+/* Build the 4-byte dotted verification code of a save slot out of the slot's
+ * code bit count (SAVE_CODE_BITS): the top `bitCount` bits are set, stored most
+ * significant byte first. */
+void BuildSaveCodeWord(u8 bitCount, M2C_UNK *code) {
+    u8 *dst = (u8 *)code;
     u32 bits;
     s32 i, shift;
-    bits = ~0U ^ (~0U >> arg0);
+    bits = ~0U ^ (~0U >> bitCount);
     for (i = 0, shift = 0; i < 4; i++, shift += 8) {
         dst[i] = (u8)(bits >> (24 - shift));
     }
@@ -111,17 +116,19 @@ s32 IsSavedPlayerCodeValid(M2C_UNK playerCode, M2C_UNK slotCode) {
     return 0;
 }
 
-s32 IsValidTextChar(u8 *arg0) {
-    u8 temp_r0;
+/* Whether the byte at `text` is a valid text character: 1..0xDF, excluding the
+ * 0x7F erase character. */
+s32 IsValidTextChar(u8 *text) {
+    u8 value;
 
-    temp_r0 = *arg0;
-    if (temp_r0 == 0x7F) {
+    value = *text;
+    if (value == 0x7F) {
         return 0;
     }
-    if ((u32) temp_r0 < 1U) {
+    if ((u32) value < 1U) {
         return 0;
     }
-    if ((u32) temp_r0 <= 0xDFU) {
+    if ((u32) value <= 0xDFU) {
         return 1;
     }
     return 0;
@@ -220,9 +227,9 @@ fail:return state;
 }
 #pragma opt_propagation reset
 s32 FifoReadBlock(s32 arg0,s32 arg1,M2C_UNK arg2) {
-M2C_UNK DC_InvalidateRange(M2C_UNK,...); s32 IsFifoMessageReady(s32,s32); M2C_UNK SetFifoMessageHandler(s32,M2C_UNK *); s32 FifoTransferCommand(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK HandleFifoMessage;
+M2C_UNK DC_InvalidateRange(M2C_UNK,...); s32 IsFifoMessageReady(s32,s32); M2C_UNK SetFifoMessageHandler(s32,M2C_UNK *); s32 FifoTransferCommand(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK FifoBlockReplyHandler;
 register u16 len;
-DC_InvalidateRange(arg2); do {}while(!IsFifoMessageReady(4,1));SetFifoMessageHandler(4,&HandleFifoMessage);
+DC_InvalidateRange(arg2); do {}while(!IsFifoMessageReady(4,1));SetFifoMessageHandler(4,&FifoBlockReplyHandler);
 len=(u16)arg1;
 loop: if(FifoTransferCommand(1,arg0,len,arg2)!=1) {WaitByLoop(0x40000);goto loop;}DC_InvalidateRange(arg2,arg1);return 1; }
 
@@ -235,11 +242,11 @@ void FifoWriteBlock(s32 address, s32 size, s32 data) {
     M2C_UNK DC_CleanRange(s32, s32);
     s32 FifoTransferCommand(s32, s32, s32, s32);
     M2C_UNK WaitByLoop(s32);
-    extern M2C_UNK HandleFifoMessage;
+    extern M2C_UNK FifoBlockReplyHandler;
 
     do {
     } while (!IsFifoMessageReady(4, 1));
-    SetFifoMessageHandler(4, (M2C_UNK *)&HandleFifoMessage);
+    SetFifoMessageHandler(4, (M2C_UNK *)&FifoBlockReplyHandler);
     DC_CleanRange(data, size);
  loop:
     if (FifoTransferCommand(2, address, size, data) != 1) {
@@ -271,11 +278,11 @@ s32 FifoFinishTransfer(void) {
     M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
     s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
     s32 FifoTransferCommand(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK HandleFifoMessage;
+    extern M2C_UNK FifoBlockReplyHandler;
     do {
 
     } while (IsFifoMessageReady(FIFO_BLOCK_TAG, 1) == 0);
-    SetFifoMessageHandler(FIFO_BLOCK_TAG, &HandleFifoMessage);
+    SetFifoMessageHandler(FIFO_BLOCK_TAG, &FifoBlockReplyHandler);
 loop_3:
     if (FifoTransferCommand(7, 0, 0, 0) != 1) {
         WaitByLoop(0x40000);
@@ -284,7 +291,17 @@ loop_3:
     return 1;
 }
 
-s32 HandleFifoMessage(s32 a,s32 b,s32 c) { extern M2C_UNK gFifoBlockTransfer; M2C_FIELD(&gFifoBlockTransfer,u16 *,0)=(u8)b;M2C_FIELD(&gFifoBlockTransfer,s32 *,4)=1;if(c)M2C_FIELD(&gFifoBlockTransfer,u16 *,0)=255;return M2C_FIELD(&gFifoBlockTransfer,u16 *,0); }
+/* Handler for a reply on the save/profile block-transfer FIFO tag (4): latch the
+ * ARM7's reply value into the transfer state and mark it done, recording the
+ * failure sentinel when the ARM7 bounced the command back unhandled, then return
+ * the value for the transfer loop to check. */
+s32 FifoBlockReplyHandler(s32 tag, s32 payload, s32 reply) {
+    extern M2C_UNK gFifoBlockTransfer;
+    M2C_FIELD(&gFifoBlockTransfer, u16 *, FIFO_XFER_REPLY) = (u8)payload;
+    M2C_FIELD(&gFifoBlockTransfer, s32 *, FIFO_XFER_DONE) = 1;
+    if (reply) M2C_FIELD(&gFifoBlockTransfer, u16 *, FIFO_XFER_REPLY) = FIFO_XFER_FAILED;
+    return M2C_FIELD(&gFifoBlockTransfer, u16 *, FIFO_XFER_REPLY);
+}
 
 void *EncodeWfcProfileBlob(void *a) { M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK gWfcProfileCode,data_0213db3a,data_0213db40; u32 lo,hi,z; u64 x,y; hi=M2C_FIELD(a,u32 *,12);lo=M2C_FIELD(a,u32 *,8);((u32 *)&x)[1]=hi;((u32 *)&x)[0]=lo;MI_CpuCopy8((s32)a,&gWfcProfileCode,5);z=((M2C_FIELD(a,u64 *,0)>>40)&7ULL) | ((u32)(x&31)<<3);y=x>>5;x=y; M2C_FIELD(&gWfcProfileCode,u8 *,5)=z; MI_CpuCopy8((s32)&x,&data_0213db3a,4);M2C_FIELD(&gWfcProfileCode,u8 *,10)=((x>>32)&63)|((M2C_FIELD(a,u16 *,16)&3)<<6);M2C_FIELD(&gWfcProfileCode,u8 *,11)=M2C_FIELD(a,u16 *,16)>>2;MI_CpuCopy8((s32)a+18,&data_0213db40,2);return &gWfcProfileCode; }
 
@@ -453,7 +470,7 @@ s32 func_02046b8c(void *obj) {
         if ((u32) temp_r0_2 > 0x20U) {
             return 0;
         }
-        func_02046058(temp_r0_2, &sp0);
+        BuildSaveCodeWord(temp_r0_2, &sp0);
         if (IsSavedPlayerCodeValid(obj + 0xC0, &sp0) == 0) {
             return 0;
         }

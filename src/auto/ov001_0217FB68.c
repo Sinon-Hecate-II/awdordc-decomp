@@ -31,7 +31,7 @@ void Ov001_BeginOptionScreenExit(void) {
 void Ov001_CloseOptionScreen(void) {
     M2C_UNK Ov001_FreeOptionSprites(void);
     s32 Ov001_IsIconRowIdle(void);
-    M2C_UNK Ov001_FreeOptionBackground(void);
+    M2C_UNK Ov001_FreeMessagePanel(void);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_FreeOptionPage(void);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
@@ -45,7 +45,7 @@ void Ov001_CloseOptionScreen(void) {
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
     if (gOv001OptionExitToConnection == 0) {
-        Ov001_FreeOptionBackground();
+        Ov001_FreeMessagePanel();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
@@ -148,16 +148,18 @@ void Ov001_LoadXb4MultiBackground(void) {
     REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
+/* Fade the ov001 download-play match-setup screen in from white, revealing the
+ * BG0, BG2 and OBJ planes, then build the screen's menu icon row. */
 void Ov001_FadeInMatchSetupScreen(void) {
-    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_0217fe84;
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_0217fe84);
+    extern M2C_UNK Ov001_BeginMatchSetupMenu;
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN,
+                    OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN,
+                              OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
+    Ov001_SetStepCallback(&Ov001_BeginMatchSetupMenu);
 }
 
-void func_ov001_0217fe84(void) {
+void Ov001_BeginMatchSetupMenu(void) {
     void func_ov001_0217feb0(void);
     if (Ov001_IsFadeActive(0) != 0) return;
     Ov001_CreateMenuIconRow(1);
@@ -256,7 +258,7 @@ void Ov001_FadeOutMatchSetup(void) {
 void Ov001_CloseMatchSetupScreen(void) {
     M2C_UNK Ov001_FreeOptionSprites(void);
     s32 Ov001_IsIconRowIdle(void);
-    M2C_UNK Ov001_FreeOptionBackground(void);
+    M2C_UNK Ov001_FreeMessagePanel(void);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_FreeOptionPage(void);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
@@ -270,7 +272,7 @@ void Ov001_CloseMatchSetupScreen(void) {
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
     if (gOv001MatchSetupStored == 0) {
-        Ov001_FreeOptionBackground();
+        Ov001_FreeMessagePanel();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_FreeOptionPage();
@@ -325,9 +327,9 @@ void Ov001_AdvanceMatchSetup(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     void Ov001_LoadMatchSetupBackground(void);
     void Ov001_FadeInMatchSetupAdvance(void);
-    extern s8 data_ov001_02193dc0;
+    extern s8 gOv001MatchSetupSaveFrames;
 
-    data_ov001_02193dc0 = 0;
+    gOv001MatchSetupSaveFrames = 0;
     Ov001_LoadMatchSetupBackground();
     Ov001_LoadSaveSlotObjLayout();
     Ov001_ShowMessageBox(OV001_MSG_MATCH_SETUP_ADVANCE);
@@ -349,16 +351,17 @@ void Ov001_LoadMatchSetupBackground(void) {
     REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
+/* Step that fades the advance match-setup screen in from white on the main engine,
+ * reveals its background and sprite planes, then hands over to the step that runs
+ * once the fade has finished. */
 void Ov001_FadeInMatchSetupAdvance(void) {
-    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_021802b4;
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_021802b4);
+    extern M2C_UNK Ov001_MatchSetupAdvanceFadeDone;
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
+    Ov001_SetStepCallback(&Ov001_MatchSetupAdvanceFadeDone);
 }
 
-void func_ov001_021802b4(void) {
+void Ov001_MatchSetupAdvanceFadeDone(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK func_ov001_021802d8;
     if (Ov001_IsFadeActive(0) != 0) {
@@ -369,8 +372,8 @@ void func_ov001_021802b4(void) {
 
 void func_ov001_021802d8(void) {
     void func_ov001_021802e8(void);
-    void func_ov001_02180398(void);
-    func_ov001_02180398();
+    void Ov001_TickMatchSetupSaveDelay(void);
+    Ov001_TickMatchSetupSaveDelay();
     func_ov001_021802e8();
 }
 
@@ -389,7 +392,7 @@ void Ov001_FadeOutMatchSetupForSave(void) {
 
 /* Waits for both fades, clears the match setup display, and opens the save slot menu. */
 void Ov001_CloseMatchSetupForSave(void) {
-    M2C_UNK Ov001_FreeOptionBackground(void);
+    M2C_UNK Ov001_FreeMessagePanel(void);
     M2C_UNK Ov001_SetNextScreenMode(s32, s32);
     void Ov001_SetNameEntryMode(s32, s32);
     M2C_UNK Ov001_FreePageBackground(s32);
@@ -403,7 +406,7 @@ void Ov001_CloseMatchSetupForSave(void) {
         return;
     }
     Ov001_FreePageBackground(0);
-    Ov001_FreeOptionBackground();
+    Ov001_FreeMessagePanel();
     Ov001_DisableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
     Ov001_DisableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     Ov001_SetNextScreenMode(0, 0);
@@ -411,11 +414,13 @@ void Ov001_CloseMatchSetupForSave(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_PrepareSaveSlotMenu);
 }
 
-void func_ov001_02180398(void) {
-    extern s8 data_ov001_02193dc0;
+/* Wait 120 frames on the match-setup screen, then move on to fading both
+ * screens out towards the save slot menu. */
+void Ov001_TickMatchSetupSaveDelay(void) {
+    extern s8 gOv001MatchSetupSaveFrames;
     void Ov001_FadeOutMatchSetupForSave(void);
-    M2C_FIELD(&data_ov001_02193dc0,u8 *,0) = M2C_FIELD(&data_ov001_02193dc0,u8 *,0) + 1;
-    if ((u32)M2C_FIELD(&data_ov001_02193dc0,u8 *,0) < 120U) return;
+    M2C_FIELD(&gOv001MatchSetupSaveFrames,u8 *,0) = M2C_FIELD(&gOv001MatchSetupSaveFrames,u8 *,0) + 1;
+    if ((u32)M2C_FIELD(&gOv001MatchSetupSaveFrames,u8 *,0) < 120U) return;
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeOutMatchSetupForSave);
 }
 
@@ -586,7 +591,7 @@ void Ov001_OptionPage2FadeOutStep(void) {
 void Ov001_CloseOptionScreen2(void) {
     M2C_UNK Ov001_FreeOptionSprites(void);
     s32 Ov001_IsIconRowIdle(void);
-    M2C_UNK Ov001_FreeOptionBackground(void);
+    M2C_UNK Ov001_FreeMessagePanel(void);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_FreeOptionPage(void);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
@@ -600,7 +605,7 @@ void Ov001_CloseOptionScreen2(void) {
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
     if (gOv001OptionPage2ExitToConnection == 0) {
-        Ov001_FreeOptionBackground();
+        Ov001_FreeMessagePanel();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);

@@ -4,7 +4,7 @@
 #include "ov000_unit_move.h"
 #include "ds3dsprite.h"
 typedef struct { s32 values[3]; } FavouriteGroupTextIds; /* the favourite record group's text id per group */
-typedef struct { u32 value, threshold; } A564Entry;
+
 extern const FavouriteGroupTextIds gFavouriteGroupTextIds;
 extern u32 gRecordValues[];
 
@@ -155,11 +155,22 @@ s32 group,index,record,tier;group=0;*earned=0;*possible=0;
 do {record=GetRecordDefinition(group,0);index=0;if(M2C_FIELD(record,s32 *,0)){do {tier=GetRecordTier(group,index);index++;*earned+=tier;*possible+=3;record+=0x30;}while(M2C_FIELD(record,s32 *,0));}group++;}while(group<3);
 }
 
-s8 GetRecordRank(u32 a) { extern M2C_UNK data_ov000_021b67cc; s32 i=0; do {if(a>=((A564Entry *)&data_ov000_021b67cc)[i].threshold)return (s8)i;i++;}while(i<20);return 19; }
+/* The rank (RECORD_RANK_COUNT possible ranks, 0 the best) reached by a player who
+ * has earned `earnedTiers` record tiers: the first rank whose threshold those tiers
+ * meet, from the best down; the worst rank when none is met. */
+s8 GetRecordRank(u32 earnedTiers) {
+    extern M2C_UNK gRecordRankTable;
+    s32 rank = 0;
+    do {
+        if (earnedTiers >= ((RecordRankEntry *) &gRecordRankTable)[rank].threshold) return (s8) rank;
+        rank++;
+    } while (rank < RECORD_RANK_COUNT);
+    return (s8) (RECORD_RANK_COUNT - 1);
+}
 
 s32 GetRecordRankTextId(s32 i) {
-extern M2C_UNK data_ov000_021b67cc;
-return *(s32 *)((u8 *)&data_ov000_021b67cc+i*8);
+extern M2C_UNK gRecordRankTable;
+return *(s32 *)((u8 *)&gRecordRankTable+i*8);
 }
 
 /* Find the player's favourite record of group 1: each record's value times its

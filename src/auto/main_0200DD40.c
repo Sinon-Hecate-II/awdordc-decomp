@@ -536,10 +536,11 @@ s32 ReadPowerFlags(s32 *backlight0Off, s32 *backlight1Off) {
     return result;
 }
 
-void Arm7SendCommand(M2C_UNK arg0) {
+/* Queues one ARM7 command word, retrying until the FIFO accepts it. */
+void Arm7SendCommand(s32 command) {
     do {
 
-    } while (SendFifoMessage(8, arg0, 0) != 0);
+    } while (SendFifoMessage(ARM7_CMD_FIFO_TAG, command, 0) != 0);
 }
 
 #pragma push

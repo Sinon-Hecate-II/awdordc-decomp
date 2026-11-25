@@ -16,7 +16,9 @@ typedef struct VoiceChatWidget {
     s32 lastVoice;       /* +0x40 last voice-data-ready value seen */
     u8  filler_44[4];
     s32 talkHeld;        /* +0x48 Y button was held last update */
-    u8  filler_4c[2];
+    u8  mainScreen;      /* +0x4C nonzero while the widget is drawn on the main engine (func_02085ebc) */
+    u8  unk_4D;          /* +0x4D cleared whenever mainScreen is set */
+    /* +0x4E */
     s16 refreshTimer;    /* +0x4E cooldown before the fade may be re-targeted */
     SpriteTween *anim;   /* +0x50 volume fade */
 } VoiceChatWidget;
@@ -81,18 +83,21 @@ void func_02086370(void) {
     M2C_FIELD(temp_r0, s16 *, 0x36) = 1;
 }
 
-void func_0208639c(void) {
+/* Switch the push-to-talk voice-chat widget to the main engine (it is created on
+ * the sub engine) and load the scene panel graphics it draws with there. */
+void ShowVoiceChatWidgetOnMainScreen(void) {
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK LoadScenePanelGraphicsOnBothEngines(void *);
     extern M2C_UNK gVoiceChatWidgetClass;
-    void *temp_r0;
-    temp_r0 = FindObjectByClass(&gVoiceChatWidgetClass);
-    if (temp_r0 == 0) {
+    VoiceChatWidget *widget;
+
+    widget = FindObjectByClass(&gVoiceChatWidgetClass);
+    if (widget == 0) {
         return;
     }
-    M2C_FIELD(temp_r0, u8 *, 0x4C) = 1;
-    M2C_FIELD(temp_r0, u8 *, 0x4D) = 0;
-    LoadScenePanelGraphicsOnBothEngines(temp_r0);
+    widget->mainScreen = 1;
+    widget->unk_4D = 0;
+    LoadScenePanelGraphicsOnBothEngines(widget);
 }
 
 void func_020863cc(void) {
@@ -106,16 +111,20 @@ void func_020863cc(void) {
     }
 }
 
-void func_020863f0(void) {
+/* Restart the voice-chat widget's Y-press cooldown (3 seconds, 180 frames) when
+ * the display wakes: the widget then ignores a Y button that is still held from
+ * before the sleep until the player presses it again. */
+void RestartVoiceChatCooldown(void) {
     void *FindObjectByClass(M2C_UNK *);
     s16 Divide(s32, s32);
     extern M2C_UNK gVoiceChatWidgetClass;
-    void *temp_r0;
-    temp_r0 = FindObjectByClass(&gVoiceChatWidgetClass);
-    if (temp_r0 == NULL) {
+    VoiceChatWidget *widget;
+
+    widget = (VoiceChatWidget *)FindObjectByClass(&gVoiceChatWidgetClass);
+    if (widget == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, s16 *, 0x4E) = Divide(0x2BF20, 0x3E8);
+    widget->refreshTimer = Divide(0x2BF20, 1000);
 }
 
 /* Whether an online player has voice chat available: the online overlay must be
@@ -298,54 +307,70 @@ s32 GetUiMessageText(void) {
     return gUiMessageText;
 }
 
-void SetEventFlagMid(u32 arg0, s32 arg1) {
+/* Set (value nonzero) or clear bit `flagId` of the middle event-flag bank: one of
+ * the 64 flags in gEventFlagsMid, at bit flagId&7 of byte flagId>>3. */
+void SetEventFlagMid(u32 flagId, s32 value) {
     extern M2C_UNK gEventFlagsMid;
-    s32 shift = arg0 & 7;
+    s32 shift = flagId & 7;
     s32 mask = 1 << shift;
-    u8 byte = M2C_FIELD(&gEventFlagsMid,u8 *,arg0 >> 3);
-    M2C_FIELD(&gEventFlagsMid,u8 *,arg0 >> 3) = (byte & ~mask) | (mask * arg1);
+    u8 byte = M2C_FIELD(&gEventFlagsMid, u8 *, flagId >> 3);
+    M2C_FIELD(&gEventFlagsMid, u8 *, flagId >> 3) = (byte & ~mask) | (mask * value);
 }
 
-void SetMapBackgroundSeenFlag(u32 arg0, s32 arg1) {
- extern M2C_UNK gSeenMapBackgroundFlags;
- s32 shift = arg0 & 7;
- M2C_FIELD(&gSeenMapBackgroundFlags, u8 *, arg0 >> 3) = (M2C_FIELD(&gSeenMapBackgroundFlags, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+/* Mark the background of map `mapId` as seen (seen nonzero) or unseen, as bit
+ * mapId&7 of byte mapId>>3 in the game's seen-background bitmap. */
+void SetMapBackgroundSeenFlag(u32 mapId, s32 seen) {
+    extern M2C_UNK gSeenMapBackgroundFlags;
+    s32 shift = mapId & 7;
+    M2C_FIELD(&gSeenMapBackgroundFlags, u8 *, mapId >> 3) = (M2C_FIELD(&gSeenMapBackgroundFlags, u8 *, mapId >> 3) & ~(1 << shift)) | ((1 << shift) * seen);
 }
 
-void func_020867a8(u32 arg0, s32 arg1) {
- extern M2C_UNK data_02157734;
- s32 shift = arg0 & 7;
- M2C_FIELD(&data_02157734, u8 *, arg0 >> 3) = (M2C_FIELD(&data_02157734, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+/* Set (value nonzero) or clear bit `entry` of the records screen's "music entry
+ * heard" flags: one of the 0x40 bits in gRecordsMusicHeard. */
+void SetRecordsMusicHeard(u32 entry, s32 value) {
+ extern M2C_UNK gRecordsMusicHeard;
+ s32 shift = entry & 7;
+ M2C_FIELD(&gRecordsMusicHeard, u8 *, entry >> 3) = (M2C_FIELD(&gRecordsMusicHeard, u8 *, entry >> 3) & ~(1 << shift)) | ((1 << shift) * value);
 }
 
-void SetListRowFlag(u32 arg0, s32 arg1) {
- extern M2C_UNK gListRowFlags;
- s32 shift = arg0 & 7;
- M2C_FIELD(&gListRowFlags, u8 *, arg0 >> 3) = (M2C_FIELD(&gListRowFlags, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+/* Mark list row `rowId` as flagged (value nonzero) or clear it, as bit rowId&7 of
+ * byte rowId>>3 in the list-row flag bitmap. */
+void SetListRowFlag(u32 rowId, s32 value) {
+    extern M2C_UNK gListRowFlags;
+    s32 shift = rowId & 7;
+    M2C_FIELD(&gListRowFlags, u8 *, rowId >> 3) = (M2C_FIELD(&gListRowFlags, u8 *, rowId >> 3) & ~(1 << shift)) | ((1 << shift) * value);
 }
 
-void SetMapListFlag(u32 arg0, s32 arg1) {
+/* Set (value nonzero) or clear bit `flagId` of the map-list flag bitmap: one bit
+ * per map list entry, at bit flagId&7 of byte flagId>>3 of gMapListFlags. */
+void SetMapListFlag(u32 flagId, s32 value) {
  extern M2C_UNK gMapListFlags;
- s32 shift = arg0 & 7;
- M2C_FIELD(&gMapListFlags, u8 *, arg0 >> 3) = (M2C_FIELD(&gMapListFlags, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+ s32 shift = flagId & 7;
+ M2C_FIELD(&gMapListFlags, u8 *, flagId >> 3) = (M2C_FIELD(&gMapListFlags, u8 *, flagId >> 3) & ~(1 << shift)) | ((1 << shift) * value);
 }
 
-void SetCampaignMapPlayed(u32 arg0, s32 arg1) {
- extern M2C_UNK gCampaignMapPlayed;
- s32 shift = arg0 & 7;
- M2C_FIELD(&gCampaignMapPlayed, u8 *, arg0 >> 3) = (M2C_FIELD(&gCampaignMapPlayed, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+/* Mark campaign map `mapId` as played (value nonzero) or clear it, as bit mapId&7
+ * of byte mapId>>3 in the played-campaign-map bitmap. */
+void SetCampaignMapPlayed(u32 mapId, s32 value) {
+    extern M2C_UNK gCampaignMapPlayed;
+    s32 shift = mapId & 7;
+    M2C_FIELD(&gCampaignMapPlayed, u8 *, mapId >> 3) = (M2C_FIELD(&gCampaignMapPlayed, u8 *, mapId >> 3) & ~(1 << shift)) | ((1 << shift) * value);
 }
 
-void SetCampaignMapCleared(u32 arg0, s32 arg1) {
+/* Set (value nonzero) or clear bit `mapId` of the campaign-map-cleared bitmap:
+ * one bit per campaign map, at bit mapId&7 of byte mapId>>3 of gCampaignMapCleared. */
+void SetCampaignMapCleared(u32 mapId, s32 value) {
  extern M2C_UNK gCampaignMapCleared;
- s32 shift = arg0 & 7;
- M2C_FIELD(&gCampaignMapCleared, u8 *, arg0 >> 3) = (M2C_FIELD(&gCampaignMapCleared, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+ s32 shift = mapId & 7;
+ M2C_FIELD(&gCampaignMapCleared, u8 *, mapId >> 3) = (M2C_FIELD(&gCampaignMapCleared, u8 *, mapId >> 3) & ~(1 << shift)) | ((1 << shift) * value);
 }
 
-void SetCampaignMapSaved(u32 arg0, s32 arg1) {
- extern M2C_UNK gCampaignMapSaved;
- s32 shift = arg0 & 7;
- M2C_FIELD(&gCampaignMapSaved, u8 *, arg0 >> 3) = (M2C_FIELD(&gCampaignMapSaved, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+/* Mark campaign map `mapId` as saved (value nonzero) or clear it, as bit mapId&7
+ * of byte mapId>>3 in the saved-campaign-map bitmap gCampaignMapSaved. */
+void SetCampaignMapSaved(u32 mapId, s32 value) {
+    extern M2C_UNK gCampaignMapSaved;
+    s32 shift = mapId & 7;
+    M2C_FIELD(&gCampaignMapSaved, u8 *, mapId >> 3) = (M2C_FIELD(&gCampaignMapSaved, u8 *, mapId >> 3) & ~(1 << shift)) | ((1 << shift) * value);
 }
 
 /* Set (value nonzero) or clear bit `flagId` of the high event-flag bank: one of
@@ -396,8 +421,8 @@ u8 IsMapBackgroundSeenFlagSet(u32 arg0) {
 }
 
 u8 func_020869e0(u32 arg0) {
-    extern M2C_UNK data_02157734;
-    return (u8) (M2C_FIELD(&data_02157734, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
+    extern M2C_UNK gRecordsMusicHeard;
+    return (u8) (M2C_FIELD(&gRecordsMusicHeard, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
 }
 
 u8 IsListRowFlagSet(u32 arg0) {
@@ -526,7 +551,7 @@ void func_02086b9c(void) {
     } while (var_r5_4 < 0x80);
     var_r5_5 = 0;
     do {
-        func_020867a8(var_r5_5, 0);
+        SetRecordsMusicHeard(var_r5_5, 0);
         var_r5_5 += 1;
     } while (var_r5_5 < 0x40);
     var_r5_6 = 0;
@@ -557,11 +582,14 @@ void Init3DRendering(void) {
     REG_GX_MTX_MODE = 2;
 }
 
+/* Set the 3D engine's default material and light 0: white diffuse (taken from the
+ * vertex colour), ambient, specular and emission, a white light shining along the
+ * Z axis. */
 void SetDefault3DLightMaterial(void) {
-    M2C_FIELD((void *)0x040004C8, s32 *, 0) = 0x1FF00000;
-    M2C_FIELD((void *)0x040004C8, s32 *, 4) = 0x7FFF;
-    M2C_FIELD((void *)0x040004C8, s32 *, -8) = 0x7FFFFFFF;
-    M2C_FIELD((void *)0x040004C8, s32 *, -4) = 0x7FFF7FFF;
+    REG_GX_LIGHT_VECTOR = GX_DEFAULT_LIGHT_VECTOR;
+    REG_GX_LIGHT_COLOR = GX_DEFAULT_LIGHT_COLOR;
+    REG_GX_DIF_AMB = GX_DEFAULT_MATERIAL_DIF_AMB;
+    REG_GX_SPE_EMI = GX_DEFAULT_MATERIAL_SPE_EMI;
 }
 
 /* Set up the 3D engine for a flat sprite scene: clear its error state and set the

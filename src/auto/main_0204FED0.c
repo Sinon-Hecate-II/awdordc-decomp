@@ -3,13 +3,16 @@
 
 typedef struct { s32 unk_0; s32 unk_4; } Unk02050838Pair;
 
-void gpiAppendIntField(s32 a,s32 b) {
-    void StringFormat(void *,void *);
-    void gpiAppendStringField(s32,s32,void *);
-    extern M2C_UNK data_020fdfb0;
+/* Format an integer as decimal text and append it to a gpi connection's output
+ * buffer as a field. */
+void gpiAppendIntField(M2C_UNK connection, M2C_UNK buffer, s32 value) {
+    s32 StringFormat(void *, void *, ...);
+    void gpiAppendStringField(M2C_UNK, M2C_UNK, void *);
+    extern M2C_UNK gGpiFieldIntFormat;
     u8 buf[16];
-    StringFormat(buf,&data_020fdfb0);
-    gpiAppendStringField(a,b,(M2C_UNK *)buf);
+
+    StringFormat(buf, &gGpiFieldIntFormat, value);
+    gpiAppendStringField(connection, buffer, buf);
 }
 
 s32 gpiSendOrBufferChar(M2C_UNK arg0,s32 arg1,s8 *arg2,M2C_UNK arg3,M2C_UNK *arg4,s32 *arg5,M2C_UNK *arg6) {
@@ -118,10 +121,13 @@ s32 gpiSendOrBufferStringLen(M2C_UNK connection, M2C_UNK peer, M2C_UNK string, s
     return 0;
 }
 
-void gpiSendString(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Send `string` to `peer` over `connection`, buffering the bytes the socket
+ * cannot take yet; the string's length is measured here. */
+void gpiSendString(M2C_UNK connection, M2C_UNK peer, M2C_UNK string) {
     M2C_UNK gpiSendOrBufferStringLen(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 StringLength(M2C_UNK);
-    gpiSendOrBufferStringLen(arg0, arg1, arg2, StringLength(arg2));
+
+    gpiSendOrBufferStringLen(connection, peer, string, StringLength(string));
 }
 
 /* Receive from the connection's socket into its gpi receive buffer: grow the

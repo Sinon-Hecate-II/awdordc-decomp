@@ -142,7 +142,14 @@ void GX_DisableFog(void) {
     GX_SetFog(0, 0, 0, 0);
 }
 
-void SetMapViewDefaultLight(void) {extern M2C_UNK gMapHighlightState;M2C_FIELD(&gMapHighlightState,s32 *,4)=0;*(volatile u32 *)0x40004c8=0x20000000;*(volatile u32 *)0x40004cc=0x7fff;}
+/* Restore the battle map view's default lighting: no polygon-attribute tint on the
+ * map's quads and a white light shining straight along +Z. */
+void SetMapViewDefaultLight(void) {
+    extern M2C_UNK gMapHighlightState;
+    M2C_FIELD(&gMapHighlightState, s32 *, MAP_VIEW_POLY_ATTR) = 0;
+    REG_GX_LIGHT_VECTOR = GX_MAP_VIEW_LIGHT_VECTOR;
+    REG_GX_LIGHT_COLOR = GX_DEFAULT_LIGHT_COLOR;
+}
 
 /* Bring the battle map's presentation back up: begin the frame, reset the map's
  * default light and the raised-cells timer, load the map's texture and animation
@@ -215,13 +222,13 @@ void UpdateMapView(void) {
     M2C_UNK BuildMapViewTransform(s32);
     M2C_UNK BuildMapViewScreenTransform(s32, M2C_UNK *);
     M2C_UNK func_0207ce54(s32);
-    M2C_UNK func_0207d95c(M2C_UNK);
+    M2C_UNK SetGxViewport(M2C_UNK);
     extern M2C_UNK gMapViewProjection;
     extern s32 *gCurrentMap;
     s32 view;
 
     view = *gCurrentMap + 0x2F8;
-    func_0207d95c(0);
+    SetGxViewport(0);
     func_02077ab8(view + 0x6C00);
     func_0207ce54(view + 0x6C00);
     BuildMapViewTransform(view + 0x6C00);

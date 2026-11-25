@@ -9,7 +9,10 @@
  * the screen flag GetScreenFlag reads, and the display mode GetScreenMode reads. */
 #define SCREEN_STATE_FLAG 0x00 /* s8: nonzero when the screen is enabled */
 #define SCREEN_STATE_MODE 0x02 /* s8: display mode applied to the screen */
+#define SCREEN_MAIN       0    /* screen selector: the main engine */
+#define SCREEN_SUB        1    /* screen selector: the sub engine */
 #define SCREEN_CURRENT    3    /* screen selector: whichever engine is current */
+#define SCREEN_COUNT      2    /* screens: 0 (main engine) and 1 (sub engine) */
 
 #pragma opt_strength_reduction off
 /* Scroll update for a vertical list: once its opening animation ends, clamps the
@@ -315,9 +318,11 @@ u8 GetScreenMode(u8 screen) {
     return M2C_FIELD(gScreenStates + index, u8 *, SCREEN_STATE_MODE);
 }
 
-void func_020abf94(void) {
+/* Reset both screens to their startup display state: enable each screen (flag 1)
+ * and clear its display mode. */
+void ResetScreenStates(void) {
  void SetScreenFlag(u8,s8); void SetScreenStateMode(u8,s8);
- s32 i=0; do {SetScreenFlag(i,1);SetScreenStateMode(i,0);i++;}while(i<2);
+ s32 screen=0; do {SetScreenFlag(screen,1);SetScreenStateMode(screen,0);screen++;}while(screen<SCREEN_COUNT);
 }
 
 /* Animates the screen-split transition from its frame/length: eases the
@@ -503,16 +508,19 @@ void ConfigureScreenEngine(u8 screen, s32 flag, u8 mode) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_020ac598(s32 arg0) {
-    M2C_UNK func_01ff91d8();
-    M2C_UNK func_01ff9690();
+/* Writes the display registers of the screen the selector names from its 3D sprite
+ * bank: the main engine's for SCREEN_MAIN, the sub engine's for SCREEN_SUB, and both
+ * engines' otherwise (SCREEN_CURRENT or both screens). */
+void Apply3DSpriteBanksForScreen(s32 screen) {
+    M2C_UNK Apply3DSpriteBankMain();
+    M2C_UNK Apply3DSpriteBankSub();
     M2C_UNK Apply3DSpriteBanks();
-    switch (arg0) {                                 /* irregular */
-    case 0:
-        func_01ff91d8();
+    switch (screen) {
+    case SCREEN_MAIN:
+        Apply3DSpriteBankMain();
         return;
-    case 1:
-        func_01ff9690();
+    case SCREEN_SUB:
+        Apply3DSpriteBankSub();
         return;
     default:
         Apply3DSpriteBanks();
@@ -548,7 +556,7 @@ void func_020ac65c(void *arg0) {
     void UpdateSplitTransition(u16, u16);
     void SetScreenMode(s32);
     void Sprite_ResumeAnimation(void *);
-    void func_020ac598(s32);
+    void Apply3DSpriteBanksForScreen(s32);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain;
 
@@ -598,7 +606,7 @@ void func_020ac65c(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x18) != 1) {
         return;
     }
-    func_020ac598(M2C_FIELD(arg0, u8 *, 0x3c));
+    Apply3DSpriteBanksForScreen(M2C_FIELD(arg0, u8 *, 0x3c));
 }
 
 void func_020ac7a0(void *arg0) {

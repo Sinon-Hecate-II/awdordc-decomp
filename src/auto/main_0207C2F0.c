@@ -43,10 +43,12 @@ s32 RandomIntRange(s32 min, s32 max) {
     return min + Modulo(NextRandomValue() & 0x7fffffff, max - min + 1);
 }
 
-s32 StringHasTerminator(u8 *arg0, s32 arg1) {
+/* Return 1 when a NUL terminator occurs within the first `length` bytes of
+ * `string`, 0 when the whole range is non-zero (a full, unterminated field). */
+s32 StringHasTerminator(u8 *string, s32 length) {
     s32 i;
-    for (i = 0; i < arg1; i++, arg0++) {
-        if (*arg0 == 0) return 1;
+    for (i = 0; i < length; i++, string++) {
+        if (*string == 0) return 1;
     }
     return 0;
 }
@@ -390,11 +392,13 @@ s32 UnsignedDivide(s32 numerator, s32 denominator) {
     return REG_DIV_RESULT;
 }
 
-s32 HardwareSquareRoot(s32 arg0) {
-    *(volatile u16 *)0x040002B0 = 0;
-    *(volatile s32 *)0x040002B8 = arg0;
-    while (*(volatile u16 *)0x040002B0 & 0x8000) {}
-    return *(volatile s32 *)0x040002B4;
+/* Integer square root in the ARM9's square-root hardware: write the operand,
+ * wait for the busy bit to clear, then read the result. */
+s32 HardwareSquareRoot(s32 value) {
+    *(volatile u16 *)REG_SQRTCNT = 0;
+    *(volatile s32 *)REG_SQRT_PARAM = value;
+    while (*(volatile u16 *)REG_SQRTCNT & SQRTCNT_BUSY) {}
+    return *(volatile s32 *)REG_SQRT_RESULT;
 }
 
 /* Eased interpolation from `from` to `to` after `elapsed` of `duration` frames:
@@ -412,14 +416,16 @@ case EASE_OUT_CUBIC:remaining=duration-elapsed;return to-Divide((to-from)*(remai
 default:return 0;
 }}
 
-s32 IntPow(s32 arg0, s32 arg1) {
-    if (arg1 < 0) {
+/* `base` raised to the non-negative integer power `exponent`; a negative
+ * exponent yields 0. */
+s32 IntPow(s32 base, s32 exponent) {
+    if (exponent < 0) {
         return 0;
     }
-    if (arg1 == 0) {
+    if (exponent == 0) {
         return 1;
     }
-    return arg0 * IntPow(arg0, arg1 - 1);
+    return base * IntPow(base, exponent - 1);
 }
 
 s32 GetDigitCount(s32 arg0) {
@@ -521,12 +527,15 @@ void BuildMapViewScreenTransform(void *view, M2C_UNK projection) {
     MTX_Inverse33(projection33, (s32)view + MAP_VIEW_MATRIX);
 }
 
-void ResetMapViewCamera(M2C_UNK arg0) {
+/* Reset the map view's camera: put its eye and origin vectors back to the
+ * defaults at the map's corner, then apply the player's zoom option and rebuild
+ * the zoom-dependent view colours. */
+void ResetMapViewCamera(void *view) {
     M2C_UNK UpdateViewForZoom(M2C_UNK);
     M2C_UNK ApplyViewZoomOption(M2C_UNK);
-    InitMapViewCameraVectors(arg0, 0, 0, 0);
-    ApplyViewZoomOption(arg0);
-    UpdateViewForZoom(arg0);
+    InitMapViewCameraVectors(view, 0, 0, 0);
+    ApplyViewZoomOption(view);
+    UpdateViewForZoom(view);
 }
 
 void func_0207ce54(void) {

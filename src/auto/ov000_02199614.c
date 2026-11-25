@@ -369,7 +369,7 @@ void MarkKnownEnemyUnits(void) {
  * runs the turn's setup steps (unit parameters, target areas, ...), and leaves
  * the state machine in phase 1. */
 void BeginAiTurn(void) {
-    void func_020c93cc(void);
+    void ClearHeldDirections(void);
     void SetupAiUnitParameters(u16);
     void UpdateAiCapabilityFlags(void);
     void ClearPropertyCellCounters(void);
@@ -395,7 +395,7 @@ void BeginAiTurn(void) {
         u8 *map = *(u8 **)gCurrentMap;
         *(u8 **)(map + MAP_CURSOR_UNIT) = map + MAP_UNIT_RECORDS + map[MAP_CURSOR_UNIT_ID] * 0xe;
     }
-    func_020c93cc();
+    ClearHeldDirections();
     gAiCommandState[AI_COMMAND_STATE_WEATHER] = (*(u8 **)gCurrentMap)[MAP_WEATHER];
     if ((*(u8 **)gCurrentMap)[MAP_WEATHER_MODE] == 1) {
         gAiCommandState[AI_COMMAND_STATE_PLAN_WEATHER] = 0;

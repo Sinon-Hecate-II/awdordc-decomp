@@ -89,7 +89,7 @@ void SetWaypointPanelMode(void *panel, s32 layout)
   s32 GetUnitSpriteWidth(void *);
   s32 GetUnitSpriteHeight(void *);
   u32 InRange(u8, M2C_UNK, M2C_UNK);
-  s32 func_ov003_021e6d28();
+  s32 IsSessionGuest();
   void SetWaypointListLayout(void *, s32);
   s16 GetWaypointSlotX(u8);
   s32 IsLinkSessionActive();
@@ -129,7 +129,7 @@ void SetWaypointPanelMode(void *panel, s32 layout)
   {
     isWide = 0;
   }
-  if ((isWide & 0xFF) && (func_ov003_021e6d28() != 0))
+  if ((isWide & 0xFF) && (IsSessionGuest() != 0))
   {
     Show3DSprite(M2C_FIELD(panel, void **, WAYPOINT_PANEL_CURSOR));
     Show3DSpriteSlide(M2C_FIELD(panel, WaypointSelectSprites **, WAYPOINT_PANEL_SELECT_SPRITES)->slide);
@@ -177,7 +177,7 @@ void SetWaypointPanelMode(void *panel, s32 layout)
   }
   if (isCompact & 0xFF)
   {
-    if (func_ov003_021e6d28() != 0)
+    if (IsSessionGuest() != 0)
     {
       Hide3DSprite(M2C_FIELD(panelBytes, void **, WAYPOINT_PANEL_CURSOR));
       Hide3DSpriteSlide(M2C_FIELD(panel, WaypointSelectSprites **, WAYPOINT_PANEL_SELECT_SPRITES)->slide);
@@ -392,7 +392,7 @@ void InitWaypointOptionState(void *state, s8 slot, s8 option) {
 #pragma optimization_level 3
 void func_ov003_021e9eb4(void *p) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
-s32 Modulo(s32,s32); s16 func_ov003_022004f0(s32); s32 GetWaypointOptionCoId(u8);
+s32 Modulo(s32,s32); s16 GetWaypointSlotOffsetX(s32); s32 GetWaypointOptionCoId(u8);
 void ClearTileRect(void*,s32,s32); void FillFaceTileMap(u32,s32,s32,s32,u32,u16,u8); void LoadFacePalette(s32,s32,s32,s32,u8);
 u8 i; void *old,*saved; u8 a; s8 c;
 for(i=0;i<M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);i++){
@@ -400,7 +400,7 @@ for(i=0;i<M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);i++){
 old=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 a=(Modulo(i,2)!=0);
-if(i>=2)b=(s32)(((u32)func_ov003_022004f0(2)<<16)>>3)>>16;
+if(i>=2)b=(s32)(((u32)GetWaypointSlotOffsetX(2)<<16)>>3)>>16;
 else b=0;
 c=(s8)GetWaypointOptionCoId(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
 if(c==0){
@@ -415,7 +415,7 @@ saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 for(i=0;i<M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);i++){
 a=(Modulo(i,2)!=0);
-if(i>=2)func_ov003_022004f0(2);
+if(i>=2)GetWaypointSlotOffsetX(2);
 c=(s8)GetWaypointOptionCoId(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
 if(i==M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7)||!E9638Mode(p,2)){
 if(c)LoadFacePalette(c,1,a,i,0);

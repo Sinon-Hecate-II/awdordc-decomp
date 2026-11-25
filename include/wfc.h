@@ -263,6 +263,11 @@ WFC_SESSION_STATE_WIRELESS   = 4,  /* the wireless start command was queued and 
  * reports while the session is in WFC_SESSION_STATE_LINKING. */
 #define WFC_SIGNAL_SAMPLE_COUNT 16 /* samples the ring holds */
 #define WFC_SIGNAL_RING_FULL    16 /* a count above this means the ring has wrapped */
+/* Raw average-signal values at which WFC_GetSignalGrade reports the next
+ * connection level up: 1 at 16, 2 at 22, 3 at 28 (below 16 is level 0). */
+#define WFC_SIGNAL_GRADE_1_MIN 16
+#define WFC_SIGNAL_GRADE_2_MIN 22
+#define WFC_SIGNAL_GRADE_3_MIN 28
 
 /* The session's player-record list: a header followed by fixed 0xD0-byte nodes
  * in a buffer of capacity bytes (session +0x2270/+0x2274, also addressed as
@@ -310,6 +315,16 @@ typedef struct WfcSendState {
 
 #define WFC_SEND_OK 0 /* WfcSendState::result after a successful send */
 
+/* The 0x620-byte link data block peers exchange over the WFC channel (the
+ * session's send buffer at +0x1500): the transport header comes first, then the
+ * frame's SNAP header and payload, with the frame's six-byte link addresses just
+ * before it.  A received block is handed back to the IP stack by
+ * WFC_QueueReceivedFrame, which queues its frame for the network sender. */
+#define WFC_RECV_FRAME_LEN 0x06 /* u16 bytes in the frame at WFC_RECV_FRAME */
+#define WFC_RECV_DST_LINK  0x18 /* u8[6] destination link address */
+#define WFC_RECV_SRC_LINK  0x1E /* u8[6] source link address */
+#define WFC_RECV_FRAME     0x2C /* SNAP frame (ethertype + payload) */
+
 /* The completion record a WFC command's callback receives after a send: the
  * command id of the finished request, then its result. */
 #define WFC_COMPLETE_COMMAND 0x00 /* u16 command id of the finished request */
@@ -355,6 +370,10 @@ typedef struct WfcMeasureChannelRequest {
     s16 channel;
     u16 measureTime;
 } WfcMeasureChannelRequest;
+
+/* WFC_GetPlayerMask's value once the connection is fully established: bit 15 is
+ * set instead of a player bitmask (the mask is 0 while there is no session). */
+#define WFC_PLAYER_MASK_READY 0x8000
 
 #define WFC_CMD_OK         2 /* the command was posted, its completion arrives as an event */
 #define WFC_CMD_NO_BUFFER  8 /* no free block, or the FIFO refused the message */
@@ -559,7 +578,13 @@ enum {
 #define OV001_WFC_ERASE_LAYOUT   0x13 /* layout block its title/border objects come from */
 #define OV001_MSG_WFC_ERASE      0x3C /* the screen's message panel text */
 #define OV001_MSG_WFC_ERASE_INFO 0x1B /* the screen's one-shot info message box text */
+
+/* Object layout block and message id of the ov001 console-info (MAC address) screen. */
+#define OV001_MAC_ADDRESS_LAYOUT 0x11 /* layout block its title/border objects come from */
+#define OV001_MSG_MAC_ADDRESS    0x3A /* the screen's message panel text */
 #define OV001_MSG_PROFILE_RETURN 0x20 /* message box text of the ov001 profile-return screen */
+#define OV001_MSG_PROFILE_RESULT 0x21 /* message box text of the ov001 profile-result screen */
+#define OV001_MSG_WFC_SUCCESS    0x2D /* message box text of the ov001 Wi-Fi success screen */
 #define OV001_MSG_MATCH_SETUP    0x2A /* message box text of the ov001 download-play match-setup screen */
 #define OV001_MSG_MATCH_SETUP_ADVANCE 0x26 /* message box text of the ov001 match-setup advance screen */
 #define OV001_MSG_CONNECTION     0x25 /* message box text shown while opening the ov001 connection screen */
@@ -654,6 +679,7 @@ enum {
  * carries the outcome, the status block the caller copies out,
  * the request descriptor, the network handle the HTTP runs on and the task that
  * drives it. */
+#define GNAS_CONNECTION_BLOCK 0x08 /* void *: the NAS connection block (0 when none is open) */
 #define NAS_CONNECTION_SIZE  0x13F4
 #define NAS_CONN_STACK       0x0000 /* stack the connection task runs on */
 #define NAS_CONN_STACK_SIZE  0x1000 /* bytes of that stack */
@@ -688,6 +714,10 @@ enum {
 #define WFC_NET_CHECK_STATE          0x1000 /* s32 step code; 11 once the server answered */
 #define WFC_NET_CHECK_RESULT         0x1004 /* s32 result code of the check, negative on error */
 #define WFC_NET_CHECK_ABORTED        (-7)   /* WFC_NET_CHECK_RESULT when the check was aborted */
+
+/* Status of shutting the network stack down: 0, or this when it was not up (so it
+ * is down either way).  Wfc_IsNetworkDown accepts both. */
+#define WFC_NET_ALREADY_DOWN         (-39)
 
 /* Status the connection reports at NAS_CONN_STATUS: 0x4E20 (NAS_STATUS_BASE)
  * plus the NAS result code.  Codes below NAS_STATUS_ERROR_MIN report a step of

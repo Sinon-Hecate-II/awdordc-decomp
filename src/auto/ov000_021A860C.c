@@ -118,11 +118,13 @@ s32 GetAiUnitMoveRange(BattleMapUnitHead *a) {
     return range;
 }
 
-s32 ManhattanDistance(s32 a,s32 b,s32 c,s32 d) {
-s32 total=0;
-if(a-c>0)total+=a-c;else total+=c-a;
-if(b-d>0)total+=b-d;else total+=d-b;
-return total;
+/* Distance between two map cells, counted in grid steps along x plus grid
+ * steps along y (the map's four-way distance). */
+s32 ManhattanDistance(s32 x1, s32 y1, s32 x2, s32 y2) {
+    s32 total = 0;
+    if (x1 - x2 > 0) total += x1 - x2; else total += x2 - x1;
+    if (y1 - y2 > 0) total += y1 - y2; else total += y2 - y1;
+    return total;
 }
 
 s32 func_ov000_021a8a38(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -272,11 +274,14 @@ x++;
 return 0;
 }
 
-u8 IsCurrentPlayerUnit(s32 arg0) {
+/* Whether a unit id (a unit's slot index) belongs to the current player's unit
+ * group: its owner-group bits match the base id the map keeps at
+ * MAP_UNIT_GROUP_BASE. */
+u8 IsCurrentPlayerUnit(s32 unitId) {
     extern void **gCurrentMap;
     u8 var_r0;
 
-    if ((arg0 & 0xC0) == M2C_FIELD(*gCurrentMap, u16 *, 0x52A8)) {
+    if ((unitId & MAP_UNIT_ID_OWNER_MASK) == M2C_FIELD(*gCurrentMap, u16 *, MAP_UNIT_GROUP_BASE)) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -295,12 +300,16 @@ u8 IsPropertyTerrain(s32 arg0) {
     return var_r0;
 }
 
-u8 func_ov000_021a9014(s32 a) {
-extern s8 gTerrainIsProperty[];
-s32 i=a&31;u8 v;
-if(i==24)return 0;
-if(gTerrainIsProperty[i])v=1;else v=0;
-return v;
+/* Whether terrain byte `terrain` is a property a unit can capture: a property
+ * terrain kind other than the missile silo, which is never captured. */
+u8 IsCapturablePropertyTerrain(s32 terrain) {
+    extern s8 gTerrainIsProperty[];
+    s32 kind = terrain & MAP_TERRAIN_KIND_MASK;
+    u8 capturable;
+
+    if (kind == MAP_TERRAIN_SILO) return 0;
+    if (gTerrainIsProperty[kind]) capturable = 1; else capturable = 0;
+    return capturable;
 }
 
 /* Whether terrain kind `terrain` is passable for a unit of kind `unitKind`: look

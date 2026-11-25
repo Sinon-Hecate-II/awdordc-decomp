@@ -333,7 +333,7 @@ M2C_UNK func_ov002_021e3a7c(s32 *p) {
     extern u8 gEffectTable;
     void Set3DSpriteLayerBank(s32, s32);
     void Set3DSpriteLayerPalette(s32, s32);
-    void SetLayerSize(s32, s32);
+    void Set3DSpriteLayerSize(s32, s32);
     s32 i;
     if (*p & 1) {
         Set3DSpriteLayerBank(2, 0);
@@ -342,9 +342,9 @@ M2C_UNK func_ov002_021e3a7c(s32 *p) {
         Set3DSpriteLayerPalette(3, 14);
         i = M2C_FIELD(&gPlayerSettings, u8 *, 1);
         if (M2C_FIELD(M2C_FIELD(&gEffectTable, void **, i * 24), u8 *, 0x3D) != 2) {
-            SetLayerSize(3, 1);
+            Set3DSpriteLayerSize(3, 1);
         } else {
-            SetLayerSize(3, 0);
+            Set3DSpriteLayerSize(3, 0);
         }
     } else {
         Set3DSpriteLayerBank(2, 2);
@@ -357,9 +357,9 @@ M2C_UNK func_ov002_021e3a7c(s32 *p) {
             i = 0;
         }
         if (M2C_FIELD(M2C_FIELD(&gEffectTable, void **, i * 24), u8 *, 0x3D) != 2) {
-            SetLayerSize(3, 1);
+            Set3DSpriteLayerSize(3, 1);
         } else {
-            SetLayerSize(3, 0);
+            Set3DSpriteLayerSize(3, 0);
         }
     }
 }
@@ -401,7 +401,7 @@ void DrawBattleSpriteGrid(void) {
  * palettes, then install the three per-frame callbacks that swap the two screen
  * halves, reconfigure the layers and draw the sprite grid.  `phase` is the half
  * currently shown. */
-void InitBattleSpriteScene(s32 *phase) {M2C_UNK func_020033e0(void);M2C_UNK func_020033f4(void);void Set3DSpriteLayerPalette(s32,s32);void SetLayerSize(s32,s32);void CreateFrameCallbackTask(s32,s32);
+void InitBattleSpriteScene(s32 *phase) {M2C_UNK func_020033e0(void);M2C_UNK func_020033f4(void);void Set3DSpriteLayerPalette(s32,s32);void Set3DSpriteLayerSize(s32,s32);void CreateFrameCallbackTask(s32,s32);
 extern volatile u16 *g3DSpriteBankSub;extern u32 gCur3DSpriteEngine;extern u32 g3DSpriteEngineSub;
 func_020033e0();func_020033f4();
 g3DSpriteBankSub[0]=(u16)((g3DSpriteBankSub[0]&~0x7)|0x3);
@@ -415,14 +415,14 @@ g3DSpriteBankSub[1]=(u16)(g3DSpriteBankSub[1]&~0x100);
 {u32 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 g3DSpriteBankSub[6]=(u16)((g3DSpriteBankSub[6]&~0x3C)|0x4);
 g3DSpriteBankSub[6]=(u16)(g3DSpriteBankSub[6]|0x80);
-Set3DSpriteLayerPalette(3,0);SetLayerSize(3,1);gCur3DSpriteEngine=savedEngine;}
+Set3DSpriteLayerPalette(3,0);Set3DSpriteLayerSize(3,1);gCur3DSpriteEngine=savedEngine;}
 *phase=0;
 CreateFrameCallbackTask((s32)SwapBattleScreen,2);
 CreateFrameCallbackTask((s32)UpdateBattleSpriteLayers,7);
 CreateFrameCallbackTask((s32)DrawBattleSpriteGrid,9);
 }
 
-void func_ov002_021e3dd4(void) {
+void TeardownBattleSpriteScene(void) {
     M2C_UNK DeleteFrameCallbackTask(void (*)(void));
     DeleteFrameCallbackTask(SwapBattleScreen);
     DeleteFrameCallbackTask(UpdateBattleSpriteLayers);

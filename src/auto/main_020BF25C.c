@@ -129,16 +129,23 @@ return (u32)(M2C_FIELD(&gCoUnlocked,u8 *,a)<<31)>>31;
 
 void SetCoUnlocked(s32 a,s32 b){extern M2C_UNK gCoUnlocked;u32 old=M2C_FIELD(&gCoUnlocked,u8*,a); b&=1;M2C_FIELD(&gCoUnlocked,u8*,a)=(old&~1)|b;}
 
-u32 func_020bf8cc(s32 a) {
-extern M2C_UNK gCoUnlocked;
-if(a==0||a>=15)return 0;
-return (u32)(M2C_FIELD(&gCoUnlocked,u8 *,a)<<28)>>29;
+/* Return the mode a CO was left in: the 3-bit field beside the CO's unlock bit,
+ * 0 for the empty roster entry 0 and for every entry past the roster. */
+u32 GetCoSavedMode(s32 coId) {
+    extern M2C_UNK gCoUnlocked;
+
+    if (coId == 0 || coId >= CO_COUNT) return 0;
+    return ((SaveFlags *)&gCoUnlocked)[coId].mode;
 }
 
-void SetCoSavedMode(s32 a,s32 b) {
-extern M2C_UNK gCoUnlocked;
-if(a==0)return;if(a>=15)return;
-((SaveFlags *)&gCoUnlocked)[a].mode=(u8)b;
+/* Store the mode a CO was left in: the 3-bit field beside the CO's unlock bit,
+ * skipping the empty roster entry 0 and every entry past the roster. */
+void SetCoSavedMode(s32 coId, s32 mode) {
+    extern M2C_UNK gCoUnlocked;
+
+    if (coId == 0) return;
+    if (coId >= CO_COUNT) return;
+    ((SaveFlags *)&gCoUnlocked)[coId].mode = (u8)mode;
 }
 
 /* Apply the saved map-view zoom option to `view`: the options word's 3-bit zoom
@@ -282,9 +289,11 @@ s32 RandomSelectableMapId(void) {
     return 0;
 }
 
+/* Roll fog for a randomly generated map: true about 20% of the time (rolls above
+ * 80). */
 s32 RandomFog(void) {
-s32 NextRandomValue(void);
-return NextRandomValue()%100>80;
+    s32 NextRandomValue(void);
+    return NextRandomValue() % 100 > 80;
 }
 
 /* Roll the tileset a randomly generated map starts on: tileset 1 20% of the

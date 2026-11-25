@@ -67,7 +67,7 @@ void InitCardArchive(s32 device) {
     }
 }
 #pragma opt_propagation reset
-void func_0200beec(M2C_UNK arg0, M2C_UNK arg1) {
+void LoadCardArchiveIndex(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK LoadArchiveIndex(M2C_UNK *, M2C_UNK, M2C_UNK);
     extern M2C_UNK gCardArchive;
     LoadArchiveIndex(&gCardArchive, arg0, arg1);

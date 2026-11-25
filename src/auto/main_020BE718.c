@@ -55,7 +55,7 @@ void func_020be718(SaveSettingsSnapshot *save) {
     extern M2C_UNK gGameSettings, data_0215d990, data_0215d9c0;
     extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
     extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, data_0215dba4;
-    extern M2C_UNK gEventFlagsMid, gSeenMapBackgroundFlags, data_02157734, gListRowFlags;
+    extern M2C_UNK gEventFlagsMid, gSeenMapBackgroundFlags, gRecordsMusicHeard, gListRowFlags;
     extern M2C_UNK gMapListFlags, gCampaignMapPlayed, gCampaignMapCleared, gCampaignMapSaved;
     SaveRecordBlock *records = (SaveRecordBlock *)&data_0215dba4;
     s32 i;
@@ -80,7 +80,7 @@ void func_020be718(SaveSettingsSnapshot *save) {
     }
     save->listHeader = *(SaveBytes8 *)&gEventFlagsMid;
     save->listSelection = *(SaveBytes16 *)&gSeenMapBackgroundFlags;
-    save->listState = *(SaveBytes8 *)&data_02157734;
+    save->listState = *(SaveBytes8 *)&gRecordsMusicHeard;
     save->listRowFlags = *(SaveBytes8 *)&gListRowFlags;
     save->listData[0] = *(SaveBytes35 *)&gMapListFlags;
     save->listData[1] = *(SaveBytes35 *)&gCampaignMapPlayed;
@@ -99,7 +99,7 @@ void func_020beabc(SaveSettingsSnapshot *save) {
     extern M2C_UNK gGameSettings, data_0215d990, data_0215d9c0;
     extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
     extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, data_0215dba4;
-    extern M2C_UNK gEventFlagsMid, gSeenMapBackgroundFlags, data_02157734, gListRowFlags;
+    extern M2C_UNK gEventFlagsMid, gSeenMapBackgroundFlags, gRecordsMusicHeard, gListRowFlags;
     extern M2C_UNK gMapListFlags, gCampaignMapPlayed, gCampaignMapCleared, gCampaignMapSaved;
     s32 i;
 
@@ -123,7 +123,7 @@ void func_020beabc(SaveSettingsSnapshot *save) {
     }
     *(SaveBytes8 *)&gEventFlagsMid = save->listHeader;
     *(SaveBytes16 *)&gSeenMapBackgroundFlags = save->listSelection;
-    *(SaveBytes8 *)&data_02157734 = save->listState;
+    *(SaveBytes8 *)&gRecordsMusicHeard = save->listState;
     *(SaveBytes8 *)&gListRowFlags = save->listRowFlags;
     *(SaveBytes35 *)&gMapListFlags = save->listData[0];
     *(SaveBytes35 *)&gCampaignMapPlayed = save->listData[1];
@@ -135,12 +135,12 @@ void func_020beabc(SaveSettingsSnapshot *save) {
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
 s32 IsUnitAvailable(M2C_UNK arg0) {
-    s32 func_020be4c0(M2C_UNK);
+    s32 SaveRecordExistsForType(M2C_UNK);
     void *GetBattleRecord();
     if (M2C_FIELD(GetBattleRecord(), u16 *, 2) == 0) {
         return 0;
     }
-    return func_020be4c0(arg0);
+    return SaveRecordExistsForType(arg0);
 }
 
 /* Record the battle that just ended in its save slot: the map it was fought on,
@@ -149,13 +149,13 @@ s32 IsUnitAvailable(M2C_UNK arg0) {
  * the caller's r0, which GetBattleRecord passes on to pick the record. */
 void StampBattleRecord(void) {
     extern void **gCurrentMap;
-    M2C_UNK GetLocalTime(s32 *, s32 *);
+    M2C_UNK GetRtcDateTime(s32 *, s32 *);
     void *GetBattleRecord();
     s32 date[4];
     s32 time[3];
     void *record;
     record = GetBattleRecord();
-    GetLocalTime(date, time);
+    GetRtcDateTime(date, time);
     M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) = (M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) & ~0xFF) | (u8)date[0];
     M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) = (M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) & ~0x3F00) | ((u32)(date[1] << 26) >> 18);
     M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) = (M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) & ~0xFC000) | ((u32)(date[2] << 26) >> 12);
@@ -170,14 +170,14 @@ void StampBattleRecord(void) {
  * clear the map id and the day count; both are filled in when the battle ends
  * (see StampBattleRecord). */
 void StartBattleRecord(void) {
-    M2C_UNK GetLocalTime(s32 *, s32 *);
+    M2C_UNK GetRtcDateTime(s32 *, s32 *);
     void *GetBattleRecord();
     s32 date[4];
     s32 time[3];
     void *record;
 
     record = GetBattleRecord();
-    GetLocalTime(date, time);
+    GetRtcDateTime(date, time);
     M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) = (M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) & ~0xFF) | (u8)date[0];
     M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) = (M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) & ~0x3F00) | ((u32)(date[1] << 26) >> 18);
     M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) = (M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) & ~0xFC000) | ((u32)(date[2] << 26) >> 12);
@@ -217,13 +217,17 @@ s32 GetCurrentSaveType(void) {
     return saveType;
 }
 
-s32 GetSaveType(s32 arg0, s32 arg1) {
-    switch (arg0) {                                 /* irregular */
+/* Save-record type of a battle for save kind `kind` and campaign save slot
+ * `slot`: kinds 0 and 5 are campaign battles (record SAVE_RECORD_TYPE_CAMPAIGN +
+ * slot), kind 1 the versus battle (its single SAVE_RECORD_TYPE_VERSUS record),
+ * and every other kind saves nothing (0). */
+s32 GetSaveType(s32 kind, s32 slot) {
+    switch (kind) {                                 /* irregular */
     case 0:
     case 5:
-        return arg1 + 5;
+        return slot + SAVE_RECORD_TYPE_CAMPAIGN;
     case 1:
-        return 8;
+        return SAVE_RECORD_TYPE_VERSUS;
     default:
         return 0;
     }
@@ -242,11 +246,15 @@ s32 SaveTypeHasNoSlot(s32 saveType) {
     }
 }
 
-s32 GetSaveSlot(s32 arg0, s32 arg1) {
-    switch (arg0) {                                 /* irregular */
+/* Save slot of a battle for save kind `kind` and battle-save record type
+ * `saveType`, the inverse of GetSaveType: the campaign records (kinds 0 and 5)
+ * sit at SAVE_RECORD_TYPE_CAMPAIGN + slot, the versus record (kind 1) is slot 0,
+ * and any other kind saves nothing. */
+s32 GetSaveSlot(s32 kind, s32 saveType) {
+    switch (kind) {
     case 0:
     case 5:
-        return arg1 - 5;
+        return saveType - SAVE_RECORD_TYPE_CAMPAIGN;
     case 1:
         return 0;
     default:

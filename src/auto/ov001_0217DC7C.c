@@ -95,7 +95,7 @@ Ov001_ReturnTaskNodeVeneer(1,M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *
 for(i=0;i<7;i++)Ov001_ReleaseSprite(M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,8)+i*4,s32 *,24));
 if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,52))Ov001_ReleaseSprite(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,52));
 Ov001_DestroyScrollBar();Ov001_FreePageBackground(0);Ov001_FreeSpriteObjects();
-if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)!=12)Ov001_FreeOptionBackground();
+if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)!=12)Ov001_FreeMessagePanel();
 FreeMapPreview();
 Ov001_FreeFile(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,8));
 for(i=0;i<2;i++)Ov001_FreeFile(M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,8)+i*4,s32 *,12));

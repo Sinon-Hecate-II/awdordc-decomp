@@ -202,18 +202,21 @@ void UpdateAiCapabilityFlags(void) {
         }
     }
 }
-s32 ApplyStatSpread(s32 arg0, s32 arg1, s32 arg2) {
+/* Add a bounded random spread to `base`: `spread` scaled by the 0..100 `roll` and
+ * centred on zero, so the value varies by at most half the spread either way, then
+ * clamp the result to 1..255. */
+s32 ApplyStatSpread(s32 base, s32 spread, s32 roll) {
     s32 Divide(s32, M2C_UNK);
-    s32 var_r0;
+    s32 result;
 
-    var_r0 = arg0 + (Divide(arg1 * arg2, 0x64) - (arg1 >> 1));
-    if (var_r0 < 1) {
-        var_r0 = 1;
+    result = base + (Divide(spread * roll, 0x64) - (spread >> 1));
+    if (result < 1) {
+        result = 1;
     }
-    if (var_r0 > 0xFF) {
-        var_r0 = 0xFF;
+    if (result > 0xFF) {
+        result = 0xFF;
     }
-    return var_r0;
+    return result;
 }
 
 #pragma opt_strength_reduction off

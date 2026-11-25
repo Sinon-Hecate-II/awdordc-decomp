@@ -96,7 +96,7 @@ extern u32 data_ov007_0222076c;
 extern u32 data_ov007_02220ab8;
 s32 func_020b212c(void);
 void MI_CpuCopy32(const void*,void*,u32);
-void func_02019424(void*,u32);
+void Mb_StringCopy(void*,u32);
 int IsLeadByte(void*);
 int MeasureStringWidth(void*);
 int RectContainsPoint(u16,u16,void*);
@@ -124,7 +124,7 @@ text=table[index+150];}
 if(M2C_FIELD(state,s8 *,0x3c)>=16){SetTextIndex(state,oldIndex);ok=0;goto checked;}
 MI_CpuCopy32(gMapEditObjectList,copy,0x44);
 copy[M2C_FIELD(state,s8 *,0x3c)]=0;
-func_02019424(copy+M2C_FIELD(state,s8 *,0x3c),text);
+Mb_StringCopy(copy+M2C_FIELD(state,s8 *,0x3c),text);
 width=0;cursor=copy;
 if(*cursor){do{if(!IsLeadByte(cursor)&&width)width++;width+=MeasureStringWidth(cursor);cursor++;}while(*cursor);}
 width=(s16)width;SetTextIndex(state,oldIndex);ok=width<=64;

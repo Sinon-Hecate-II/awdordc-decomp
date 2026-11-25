@@ -60,7 +60,7 @@ s32 SocketListenTask(void *task) {
     M2C_UNK LockMutex(s32);
     M2C_UNK UnlockMutex(void *);
     M2C_UNK SetConnectionEndpoint(u16, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0201d2b8();
+    M2C_UNK ListenTransport();
     s32 GetSocketEndpoints(u16 *, M2C_UNK *);
     M2C_UNK peerAddr;
     u16 peerPort;
@@ -72,7 +72,7 @@ s32 SocketListenTask(void *task) {
     raw = M2C_FIELD(socket, void **, SOCK_RAW);
     LockMutex(raw + CONN_MUTEX);
     SetConnectionEndpoint(M2C_FIELD(task, u16 *, LISTEN_TASK_LOCAL_PORT), 0, 0);
-    func_0201d2b8();
+    ListenTransport();
     M2C_FIELD(raw, s32 *, CONN_RECV_PENDING) = 0;
     result = GetSocketEndpoints(&peerPort, &peerAddr);
     *M2C_FIELD(task, u16 **, LISTEN_TASK_PEER_PORT_PTR) = peerPort;

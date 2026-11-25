@@ -77,7 +77,9 @@ void func_ov000_0216ea1c(void) {
     }
 }
 
-void func_ov000_0216eb7c(void) {
+/* Close the army info window: free its state block (gArmyInfoState) and delete
+ * the text sprites it was drawn with. */
+void ArmyInfo_Close(void) {
     M2C_UNK DeleteTextSprites();
     M2C_UNK HeapFreeBlock();
     extern s32 gArmyInfoState;

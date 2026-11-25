@@ -42,7 +42,20 @@ M2C_UNK *SaveDevice_GetTransferHandler(void) {
     return &SaveDevice_TransferRom;
 }
 
-void func_02010c90(s32 a,s32 b,s32 c){extern u8 gSaveDeviceState[];void TaskWake(s32);s32 v;if(a!=11)return;if(!c)return;v=M2C_FIELD(gSaveDeviceState,s32 *,260);M2C_FIELD(gSaveDeviceState,s32 *,276)&=~32;TaskWake(v);}
+/* ARM7 backup FIFO (tag 11) handler: the ARM7 has answered the command queued
+ * to it, so clear the device's queued-command flag and wake the task of the
+ * request being transferred.  Other tags and unsolicited messages are ignored. */
+void SaveDevice_CommandReplyHandler(s32 tag, s32 message, s32 reply) {
+    extern u8 gSaveDeviceState[];
+    void TaskWake(s32);
+    s32 task;
+
+    if (tag != 11) return;
+    if (!reply) return;
+    task = M2C_FIELD(gSaveDeviceState, s32 *, SAVE_DEVICE_REQUEST_TASK);
+    M2C_FIELD(gSaveDeviceState, s32 *, SAVE_DEVICE_FLAGS) &= ~SAVE_DEVICE_FLAG_COMMAND;
+    TaskWake(task);
+}
 
 /* Save-device worker thread: keep waiting until a transfer signals the device's
  * asynchronous flag, then run the routine installed for it with the device state. */
@@ -528,11 +541,36 @@ if(WFC_CheckReady()!=0)return 0;
 return M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),s32 *,4);
 }
 
+/* The local player's aid in the WFC command channel's info block, 0 when the
+ * channel is not open.  Read under a critical section. */
 s32 WFC_GetLocalPlayerIndex(void) {
-extern M2C_UNK gWfcChannelState;s32 s=OS_DisableInterrupts();s32 r;void *p=M2C_FIELD(&gWfcChannelState,void **,4);if(p)r=M2C_FIELD(p,u16 *,0x150);else r=0;OS_RestoreInterrupts(s);return r;
+    s32 OS_DisableInterrupts(void);
+    M2C_UNK OS_RestoreInterrupts(s32);
+    extern M2C_UNK gWfcChannelState;
+    s32 saved = OS_DisableInterrupts();
+    s32 aid;
+    void *info = M2C_FIELD(&gWfcChannelState, void **, WFC_CMD_STATE_INFO);
+    if (info) aid = M2C_FIELD(info, u16 *, WFC_CMD_INFO_LOCAL_AID);
+    else aid = 0;
+    OS_RestoreInterrupts(saved);
+    return aid;
 }
 
-u16 func_02011964(void) { s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32); extern M2C_UNK gWfcChannelState;s32 s=OS_DisableInterrupts();s32 r;void *p=M2C_FIELD(&gWfcChannelState,void **,4);if(p)r=M2C_FIELD(p,s32 *,0x14c);else r=0;OS_RestoreInterrupts(s);return r;}
+/* The aid mask of the players currently connected to the WFC command channel,
+ * low 16 bits only (the packet format stores it as a u16); 0 when the channel
+ * is not open.  Read under a critical section. */
+u16 WFC_GetConnectedAidMask(void) {
+    s32 OS_DisableInterrupts(void);
+    M2C_UNK OS_RestoreInterrupts(s32);
+    extern M2C_UNK gWfcChannelState;
+    s32 irq = OS_DisableInterrupts();
+    s32 mask;
+    void *info = M2C_FIELD(&gWfcChannelState, void **, WFC_CMD_STATE_INFO);
+    if (info) mask = M2C_FIELD(info, s32 *, WFC_CMD_INFO_AID_MASK);
+    else mask = 0;
+    OS_RestoreInterrupts(irq);
+    return mask;
+}
 
 /* The bitmask of the WFC peers currently connected (one bit per player aid),
  * read from the firmware's connection-data block; 0 when the channel is down. */
@@ -608,7 +646,7 @@ s32 WFC_SetChannelHandler(s32 arg0, void (*callback)(void *), s32 arg2) {
     M2C_FIELD(p, void (**)(void *), 0xcc) = callback;
     M2C_FIELD(p, s32 *, 0x10c) = arg2;
     if (callback) {
-        M2C_FIELD(buf, u16 *, 34) = (void *)func_02011964();
+        M2C_FIELD(buf, u16 *, 34) = (void *)WFC_GetConnectedAidMask();
         M2C_FIELD(buf, u16 *, 32) = (void *)WFC_GetLocalPlayerIndex();
         callback(buf);
     }

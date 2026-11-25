@@ -75,9 +75,15 @@ void ToggleMapPick(s32 block, s32 picks, M2C_UNK map) {
     ((u16 *)picks)[i] = map;
 }
 
-s32 CountMapPicks(s32 unused,u16 *array) {
-    u8 count=0,i=0;
-    do { if(array[i]!=0xffff) ++count; ++i; } while(i<5);
+/* Count the maps picked in a side's five-slot map-pick list: every slot that is
+ * not MAP_PICK_EMPTY counts. */
+s32 CountMapPicks(s32 unused, u16 *picks) {
+    u8 count = 0, i = 0;
+
+    do {
+        if (picks[i] != MAP_PICK_EMPTY) count++;
+        i++;
+    } while (i < MAP_PICK_SLOTS);
     return count;
 }
 
@@ -93,10 +99,12 @@ u8 IsMapPickListFull(s32 arg0, s32 arg1) {
     return var_r0;
 }
 
-s32 FindFreeMapPick(s32 unused,s32 array) {
-    u8 i=0;
-    do { if(((u16 *)array)[i]==0xffff) return i; ++i; } while(i<5);
-    return 255;
+/* Return the first free (MAP_PICK_EMPTY) slot of a side's five-slot map-pick
+ * list, or MAP_PICK_NOT_FOUND when it is full. */
+s32 FindFreeMapPick(s32 unused, s32 picks) {
+    u8 i = 0;
+    do { if (((u16 *)picks)[i] == MAP_PICK_EMPTY) return i; ++i; } while (i < MAP_PICK_SLOTS);
+    return MAP_PICK_NOT_FOUND;
 }
 
 /* Pick or unpick the map the first side has selected in the link map-select
@@ -119,8 +127,8 @@ void func_ov003_021f2848(s32 arg0) {
 }
 
 void func_ov003_021f2860(s32 arg0) {
-    M2C_UNK func_ov003_021f24ec(s32, s32);
-    func_ov003_021f24ec(arg0 + 4, arg0 + 0xE);
+    M2C_UNK LoadMapPickLists(s32, s32);
+    LoadMapPickLists(arg0 + 4, arg0 + 0xE);
 }
 
 #pragma push
@@ -136,7 +144,7 @@ void func_ov003_021f2878(s32 entry) {
     M2C_UNK func_ov010_02228314(M2C_UNK *, M2C_UNK *);
     s32 GetOverlayEventFlags(void);
     s32 GetSessionPlayerCount(void);
-    s32 func_ov003_021f17fc(void);
+    s32 Ov003SceneObjectHasChildren(void);
     M2C_UNK func_ov003_021f14c8(void);
     s32 var_sp4;
     s32 var_sp0;
@@ -152,7 +160,7 @@ void func_ov003_021f2878(s32 entry) {
     }
     if (IsSpecial2e98(M2C_FIELD(M2C_FIELD(entry,void **,0x40),u8 **,8)[M2C_FIELD(M2C_FIELD(entry,void **,0x40),s8 *,5)])) return;
     {
-        s32 t = func_ov003_021f17fc();
+        s32 t = Ov003SceneObjectHasChildren();
         if (t != 0) {
             return;
         }
@@ -259,9 +267,9 @@ void InitMapSelectScreen(s32 arg0) {
     M2C_UNK ClearAll3DSpriteLayers(void);
     void GX_ReleaseBankGrants(void);
     void Set3DSpriteVramBanks(void);
-    void func_02003560(void);
+    void GX_ReleaseBankGrantForBGExtPalette(void);
     void GX_SetBankForObjExtPalette(s32);
-    void func_020035bc(void);
+    void GX_ReleaseBankGrantForOBJExtPltt(void);
     void GX_SetBankForBGExtPalette(s32);
     void SetSceneLayoutMain(s32);
     void SetSceneLayoutSub(s32);
@@ -270,7 +278,7 @@ void InitMapSelectScreen(s32 arg0) {
     void Ov003_SetMapConfirmDisabled(void);
     void CreateScene3DSprite(void *);
     void ApplySceneLayers(void *);
-    void ResetPlayerMask(void);
+    void ClearOverlayEventFlags(void);
     s32 IsLinkSessionActive(void);
     void CreateSubScreenLinkIndicator(void);
     void func_ov003_021f1884(s32);
@@ -290,9 +298,9 @@ void InitMapSelectScreen(s32 arg0) {
     ClearAll3DSpriteLayers();
     GX_ReleaseBankGrants();
     Set3DSpriteVramBanks();
-    func_02003560();
+    GX_ReleaseBankGrantForBGExtPalette();
     GX_SetBankForObjExtPalette(0x40);
-    func_020035bc();
+    GX_ReleaseBankGrantForOBJExtPltt();
     GX_SetBankForBGExtPalette(0x20);
     SetSceneLayoutMain((s32)&data_ov003_0220fcb4);
     SetSceneLayoutSub((s32)&data_ov003_0220fca8);
@@ -360,7 +368,7 @@ void InitMapSelectScreen(s32 arg0) {
     M2C_FIELD(M2C_FIELD(arg0,void **,0x38),u8 *,4)=2;
     M2C_FIELD(M2C_FIELD(arg0,void **,0x38),u8 *,5)=15;
     ApplySceneLayers(M2C_FIELD(arg0,void **,0x38));
-    ResetPlayerMask();
+    ClearOverlayEventFlags();
     if (IsLinkSessionActive() != 0) {
         CreateSubScreenLinkIndicator();
     }

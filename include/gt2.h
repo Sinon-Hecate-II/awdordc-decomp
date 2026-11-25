@@ -27,6 +27,7 @@ typedef struct Gt2PendingCommand {
 #define GT2_CONNECTION_SEND_SEQUENCE 0x64 /* u16 sequence number the next sent command carries */
 #define GT2_CONNECTION_LAST_SENT   0x88 /* s32 tick of the last successful raw send */
 #define GT2_CONNECTION_START_TIME  0x8C /* s32 connection start time in milliseconds, set when a handshake command was sent */
+#define GT2_PING_INTERVAL          30000 /* ms of silence after which the connection sends a ping */
 /* Set when received data still owes the peer an acknowledgement, and the tick it
  * was set at (Gt2NoteDataReceived).  After GT2_ACK_DELAY ms the delayed
  * acknowledgement (control message 100) is sent and the flag cleared; sending any
@@ -129,6 +130,14 @@ typedef struct Gt2SentCommand {
     u16 pad;      /* +0x0A */
     s32 lastSent; /* +0x0C tick it was last sent at */
 } Gt2SentCommand;
+
+/* Key used to find an entry in a socket's GT2_SOCKET_CONNECTION_TABLE: the
+ * remote address and port.  A connection keeps the same pair at its start, so
+ * one lookup type serves both. */
+typedef struct GT2ConnectionLookup {
+    u32 address; /* +0x00 remote IPv4 address (GT2_CONNECTION_IP) */
+    u16 port;    /* +0x04 remote port (GT2_CONNECTION_PORT) */
+} GT2ConnectionLookup;
 
 /* The four callbacks a connection reports events through, stored as a block at
  * GT2_CONNECTION_CALLBACK (0x28) .. GT2_CONNECTION_CALLBACK_PING (0x34). */

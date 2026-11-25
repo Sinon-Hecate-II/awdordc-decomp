@@ -7,7 +7,7 @@
 void func_ov011_02222204(M2C_UNK arg0) {
     M2C_UNK ClearAll3DSpriteLayers();
     M2C_UNK AddSpriteToMainEngine(M2C_UNK, M2C_UNK, s32, M2C_UNK *, s32);
-    M2C_UNK func_ov011_022216d8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadOpeningAssetSet(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK LoadOpeningScreenAssets(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov011_02224e04(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern M2C_UNK data_02101f2c;
@@ -74,9 +74,9 @@ void func_ov011_02222204(M2C_UNK arg0) {
     data_027e01d8 = temp_r11;
     func_ov011_02224e04(arg0, 2, 2, 0x80, 0x60);
     func_ov011_02224e04(arg0, 2, 3, 0x80, 0x60);
-    func_ov011_022216d8(arg0, 3, 0, 3);
-    func_ov011_022216d8(arg0, 4, 1, 3);
-    func_ov011_022216d8(arg0, 0x13, 2, 0);
+    LoadOpeningAssetSet(arg0, 3, 0, 3);
+    LoadOpeningAssetSet(arg0, 4, 1, 3);
+    LoadOpeningAssetSet(arg0, 0x13, 2, 0);
     LoadOpeningScreenAssets(arg0, 0, 0);
     LoadOpeningScreenAssets(arg0, 1, 0);
     LoadOpeningScreenAssets(arg0, 7, 1);

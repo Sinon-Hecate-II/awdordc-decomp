@@ -49,7 +49,7 @@ void HistoryMenu_DrawPage0Row(s32 arg0, s32 arg1) {
     void *GetRecordDefinition(M2C_UNK);
     u32 GetRecordValue(M2C_UNK, M2C_UNK);
     s32 GetRecordTier(M2C_UNK, M2C_UNK);
-    s32 func_ov005_02211a54(M2C_UNK, M2C_UNK);
+    s32 IsRecordValueUnset(M2C_UNK, M2C_UNK);
     M2C_UNK DrawLocalizedText(M2C_UNK, s16, M2C_UNK, s32, s32, s32);
     M2C_UNK DrawLocalizedTextLine(M2C_UNK, s16, M2C_UNK, M2C_UNK, s32, s32, s32);
     M2C_UNK DrawNumber(M2C_UNK, s16, M2C_UNK, u32, s32, s32);
@@ -77,7 +77,7 @@ void HistoryMenu_DrawPage0Row(s32 arg0, s32 arg1) {
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     y = 0x144 + (arg0 + 1) * 0x2E;
-    if (func_ov005_02211a54(0, arg1) == 0) {
+    if (IsRecordValueUnset(0, arg1) == 0) {
         DrawLocalizedText(2, (s16)(arg0 + 5), 1, M2C_FIELD(p, s32 *, 0), 0x1000, (u16)y);
         if (M2C_FIELD(p, u16 *, 0x4) == 0) {
             DrawNumber(0x10, (s16)(arg0 + 5), 1, M2C_FIELD(gHistoryMenu, s32 *, 0x4), 0x1000, (u16)(y + 0x1E));
@@ -122,12 +122,12 @@ s32 GetUnitVariantIndex(u16,M2C_UNK);
 void *GetRecordDefinition(M2C_UNK);
 u32 GetRecordValue(M2C_UNK,M2C_UNK);
 s32 GetRecordTier(M2C_UNK,M2C_UNK);
-s32 func_ov005_02211a54(M2C_UNK,M2C_UNK);
+s32 IsRecordValueUnset(M2C_UNK,M2C_UNK);
 extern void *g3DSpriteEngineMain,*gCur3DSpriteEngine;
 void *p;u32 money;s32 t,last;u32 saved;
 p=GetRecordDefinition(1);money=GetRecordValue(1,arg1);t=GetRecordTier(1,arg1);
 last=arg1;arg1=(arg0+1)*46+0x144;saved=(u32)gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-if(func_ov005_02211a54(1,last)==0){
+if(IsRecordValueUnset(1,last)==0){
 FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+4+((arg0+5)<<6),2,2,(u16)(GetUnitVariantIndex(M2C_FIELD(p,u16 *,4),0)*4+0xcc),3);
 DrawLocalizedText(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),0x1000,(u16)arg1);
 if(money>0x5f5e0ffU)money=0x5f5e0ff;
@@ -144,14 +144,14 @@ M2C_UNK DrawLocalizedTextLine(s32,s16,s32,s32,s32,s32,s32);
 M2C_UNK DrawNumber(s32,s16,s32,u32,s32,s32);
 s32 GetUnitVariantIndex(u16,s32);
 void *GetRecordDefinition(s32);
-u32 GetRecordValue(s32,s32);s32 GetRecordTier(s32,s32);s32 func_ov005_02211a54(s32,s32);
+u32 GetRecordValue(s32,s32);s32 GetRecordTier(s32,s32);s32 IsRecordValueUnset(s32,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 void *p;u32 value;register s32 status,position;void *saved;
 p=GetRecordDefinition(2);value=GetRecordValue(2,arg1);status=GetRecordTier(2,arg1);
 { s32 index=arg1;
 position=(arg0+1)*46+0x144;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-if(!func_ov005_02211a54(2,index)){
+if(!IsRecordValueUnset(2,index)){
 FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+4+((arg0+5)<<6),2,2,(u16)(GetUnitVariantIndex(M2C_FIELD(p,u16 *,4),1)*4+0xcc),6);
 DrawLocalizedText(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),4096,(u16)position);
 if(value>99999999U)value=99999999;
@@ -237,7 +237,7 @@ tile=(u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x20)+offset*2+0x340;
 CopyTileRect(tile,4,8,(u8 *)buffer+offset*2);
 j=0;row=0;
 do{
-AddToU16Array((u8 *)tile+row*2,8,1);
+OffsetTileIndices((u8 *)tile+row*2,8,1);
 row+=32;j++;
 }while(j<8);
 SetTileRectPalette(tile,4,8,(u16)(i+1));

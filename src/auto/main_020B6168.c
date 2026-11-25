@@ -298,15 +298,18 @@ void MarkBlastThreatArea(void *marker) {
     RefreshMapView();
 }
 
-void func_020b67e0(s16 arg0, s16 arg1, M2C_UNK arg2) {
-    extern M2C_UNK data_02128b8c;
+/* Spawn the falling-flare strike effect at tile (x, y) under `parent` and move the
+ * map view onto that tile.  The effect's script drops a flare, bursts a small
+ * flare and marks the blast threat area. */
+void CreateFallingFlareStrike(s16 x, s16 y, M2C_UNK parent) {
+    extern M2C_UNK gFallingFlareStrikeClass;
     void *temp_r0;
 
     void *CreateSpriteObject();
- temp_r0 = CreateSpriteObject(&data_02128b8c, arg2);
-    M2C_FIELD(temp_r0, s16 *, 0x44) = arg0;
-    M2C_FIELD(temp_r0, s16 *, 0x46) = arg1;
-    PanMapViewToTile(arg0, arg1);
+ temp_r0 = CreateSpriteObject(&gFallingFlareStrikeClass, parent);
+    M2C_FIELD(temp_r0, s16 *, 0x44) = x;
+    M2C_FIELD(temp_r0, s16 *, 0x46) = y;
+    PanMapViewToTile(x, y);
 }
 
 #pragma opt_propagation off

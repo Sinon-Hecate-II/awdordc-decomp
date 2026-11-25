@@ -47,7 +47,7 @@ void main(void)
 #pragma opt_strength_reduction off
 s32 MTX_Inverse33(void *arg0,void *arg1){
 void func_02002030(s32,s32);
-s32 func_02001ff8(void);
+s32 Div_GetResultRounded(void);
 void MTX_Copy33(void *,void *);
 s32 *m=arg0,*d=arg1; s32 temp[9];
 s64 c0,c1,c2; s32 det,inv,a,b,c,e;
@@ -62,7 +62,7 @@ a=(s32)(((s64)m[1]*m[8]-(s64)m[7]*m[2])>>12);
 b=(s32)(((s64)m[1]*m[5]-(s64)m[4]*m[2])>>12);
 c=(s32)(((s64)m[0]*m[8]-(s64)m[6]*m[2])>>12);
 e=(s32)(((s64)m[0]*m[5]-(s64)m[3]*m[2])>>12);
-inv=func_02001ff8();
+inv=Div_GetResultRounded();
 d[0]=(s32)((inv*c1)>>12);
 d[1]=-(s32)(((s64)inv*a)>>12);
 d[2]=(s32)(((s64)inv*b)>>12);

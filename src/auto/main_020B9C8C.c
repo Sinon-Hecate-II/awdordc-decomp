@@ -15,7 +15,7 @@ void LoadProductionMenuScreen(u8 *screen) {
  void RefreshMapView(void); void SetFileDirectory(void *);
  M2C_UNK GetLocalizedFileName(void *); void OpenNarcArchive(void);
  void LoadNarcFileDecompressed(M2C_UNK,M2C_UNK); void LoadNarcFileToSpriteBuffer(M2C_UNK,s32,s32); void CloseNarcArchive(void);
- void AddToU16Array(M2C_UNK,s32,s32); void CreateProductionMenuSprites(void); void DrawProductionMenuColumns(void);
+ void OffsetTileIndices(M2C_UNK,s32,s32); void CreateProductionMenuSprites(void); void DrawProductionMenuColumns(void);
  void PlaySoundEffect(s32); void DrawProductionUnitPreview(u8); void CreateMenuUnitSprite(void *);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
  extern M2C_UNK sProductionMenuDir; extern M2C_UNK sProductionMenuNarcName;
@@ -39,7 +39,7 @@ void LoadProductionMenuScreen(u8 *screen) {
  LoadNarcFileDecompressed(GetLocalizedFileName(&sProductionMenuScName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28));
  LoadNarcFileToSpriteBuffer(GetLocalizedFileName(&sProductionMenuClName),0xc0,0x20);
  CloseNarcArchive();
- AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),0x100,0x6124);
+ OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),0x100,0x6124);
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
  CreateProductionMenuSprites(); DrawProductionMenuColumns();
  PlaySoundEffect(0x10017);
@@ -55,11 +55,11 @@ void func_020b9dc8(void) {
  * layers, let the map view resume through its restore callback, then retire the
  * menu's remaining sprites. */
 void UnloadProductionMenuScreen(void) {
- void func_020b9978(void); void Clear3DSpriteLayer(s32); void func_0207a668(void); void CloseAllActiveSpriteSlots(void);
+ void ClearTerrainLayerTiles(void); void Clear3DSpriteLayer(s32); void func_0207a668(void); void CloseAllActiveSpriteSlots(void);
  extern void **gCurrentMap;
  extern void *gCur3DSpriteEngine;
  void (*restoreMapView)(void);
- func_020b9978();
+ ClearTerrainLayerTiles();
  Clear3DSpriteLayer(2);
  M2C_FIELD(gCur3DSpriteEngine,u8 *,DS3D_ENGINE_DIRTY)|=DS3D_DIRTY_LAYER2;
  restoreMapView=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),4);
@@ -225,19 +225,21 @@ u8 CanUnitAttackDirectly(void *unit) {
  return var_r0;
 }
 
-u8 func_020ba414(void *arg0) {
-    s32 GetUnitAttackRangeMax();
-    u8 var_r0;
+/* Whether `unit` can attack a target at range: its maximum attack range is 2 or
+ * more and it still has ammo. */
+u8 CanUnitAttackIndirectly(void *unit) {
+    s32 GetUnitAttackRangeMax(void *);
+    u8 canAttack;
 
-    if (GetUnitAttackRangeMax() < 2) {
+    if (GetUnitAttackRangeMax(unit) < 2) {
         return 0U;
     }
-    if (((u32) (M2C_FIELD(arg0, u16 *, 6) << 0x15) >> 0x1C) != 0) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(unit, u16 *, MAP_UNIT_AMMO) << 0x15) >> 0x1C) != 0) {
+        canAttack = 1;
     } else {
-        var_r0 = 0;
+        canAttack = 0;
     }
-    return var_r0;
+    return canAttack;
 }
 
 /* Report whether the tile (x, y) holds a unit the viewing side can see that is
@@ -246,7 +248,7 @@ u8 func_020ba414(void *arg0) {
 s32 IsFriendlyUnitAt(s32 unit, s32 x, s32 y) {
     extern void **gCurrentMap;
     s32 IsCellUnitEmpty(s32, s32);
-    s32 func_020a81c8(void *);
+    s32 IsUnitPresent(void *);
     s32 func_020d277c(s32, void *);
     u8 *map, *base;
     s32 offset;
@@ -262,7 +264,7 @@ valid:
     map = *gCurrentMap;
     base = map + MAP_UNIT_RECORDS;
     offset = (s16)map[x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)] * (s16)MAP_UNIT_STRIDE;
-    if (!func_020a81c8(base + offset)) return 0;
+    if (!IsUnitPresent(base + offset)) return 0;
     if (func_020d277c(unit, base + offset)) result = 1; else result = 0;
     return result;
 }
@@ -322,7 +324,7 @@ void CanDropSecondCarriedUnit(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     CanDropCarriedUnit(arg0, arg1, arg2, 1);
 }
 
-u8 func_020ba790(s32 x,s32 y){
+u8 CanLoadUnitAt(s32 x,s32 y){
 extern void **gCurrentMap;extern u8 gMovementTypeTable[];extern s8 gUnitProductionTerrain[];extern M2C_UNK gMovementCostTable;
 s32 CanUnitLoadKind(void *,s32);
 u8 *base=*gCurrentMap,*units=base+0x59a4;s32 offset,kind,tile;u8 *selected;u8 id;
@@ -393,13 +395,16 @@ void ClearCursorUnitCapture(void) {
     M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) &= ~MAP_UNIT_CAPTURE_MASK;
 }
 
-void func_020baaac(void) {
- extern void **gCurrentMap;
- void *p;
- p=*gCurrentMap;
- M2C_FIELD(p,s16 *,0x52d8)=M2C_FIELD(p,s16 *,0x52dc);
- p=*gCurrentMap;
- M2C_FIELD(p,s16 *,0x52da)=M2C_FIELD(p,s16 *,0x52de);
+/* Record where the cursor is now as its old position, so the cursor-moved test
+ * (MAP_CURSOR_OLD_X/Y against MAP_CURSOR_X/Y) comes out false. */
+void SyncCursorOldPosition(void) {
+    extern void **gCurrentMap;
+    void *map;
+
+    map = *gCurrentMap;
+    M2C_FIELD(map, s16 *, MAP_CURSOR_OLD_X) = M2C_FIELD(map, s16 *, MAP_CURSOR_X);
+    map = *gCurrentMap;
+    M2C_FIELD(map, s16 *, MAP_CURSOR_OLD_Y) = M2C_FIELD(map, s16 *, MAP_CURSOR_Y);
 }
 
 void func_020baae0(s16 x,s16 y) {

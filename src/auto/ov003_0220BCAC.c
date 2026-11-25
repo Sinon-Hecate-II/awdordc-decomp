@@ -335,7 +335,7 @@ void func_ov003_0220c6b0(void) {
 }
 
 void func_ov003_0220c6bc(void) {
-    M2C_UNK func_ov003_02209cdc();
-    func_ov003_02209cdc();
+    M2C_UNK Ov003_UpdateMenu();
+    Ov003_UpdateMenu();
 }
 

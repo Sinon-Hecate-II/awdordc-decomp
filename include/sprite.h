@@ -4,6 +4,11 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
+/* gSpritePool holds SPRITE_POOL_COUNT of these objects; a type of 0 is a free
+ * slot, which is what FindSpriteByType(0) hands out. */
+#define SPRITE_POOL_COUNT    32   /* sprites in gSpritePool */
+#define SPRITE_POOL_SIZE     0x34 /* bytes of one pool sprite */
+
 #define SPRITE_TYPE          0x00 /* s32 * non-null while the sprite is alive */
 #define SPRITE_DATA_BASE     0x04 /* void *frame data, or an offset table into it */
 #define SPRITE_LOOP_PTR      0x08 /* script cursor to restart from on command 0xFF */

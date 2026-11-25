@@ -53,12 +53,13 @@ s8 *StringCopyPad(s8 *dst, s8 *src, s32 size) {
     return dst;
 }
 
-s8 *StringAppend(s8 *a,s8 *b) {
-s8 *p=a;
-while(*p++);
-p--;
-while((*p++=*b++)!=0);
-return a;
+/* strcat: append the NUL-terminated string `src` to `dst` and return `dst`. */
+s8 *StringAppend(s8 *dst, s8 *src) {
+    s8 *p = dst;
+    while (*p++);
+    p--;
+    while ((*p++ = *src++) != 0);
+    return dst;
 }
 
 /* Compare two NUL-terminated strings: byte by byte until both pointers share an
@@ -93,16 +94,18 @@ do{ca=*++a;diff=ca-*++b;if(diff)return diff;}while(ca);
 return 0;
 }
 
-s32 StringCompareN(u8 *a,u8 *b,s32 n) {
-if(n) {
-do {
-u32 y=*b++;
-u32 x=*a++;
-if(x!=y) return x-y;
-if(x==0) break;
-} while(--n);
-}
-return 0;
+/* Compares `a` and `b` byte by byte for at most `n` bytes: returns the
+ * difference of the first pair that differs, or 0 when equal (or a NUL is hit). */
+s32 StringCompareN(u8 *a, u8 *b, s32 n) {
+    if (n) {
+        do {
+            u32 chB = *b++;
+            u32 chA = *a++;
+            if (chA != chB) return chA - chB;
+            if (chA == 0) break;
+        } while (--n);
+    }
+    return 0;
 }
 
 /* Find the first occurrence of character `ch` in the NUL-terminated string `s`.

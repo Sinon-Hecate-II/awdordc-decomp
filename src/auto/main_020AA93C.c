@@ -155,7 +155,7 @@ void InitUnitSprite(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     void *MemAlloc(M2C_UNK);
     M2C_UNK Set3DSpriteSlideLength(void *, M2C_UNK);
-    M2C_UNK func_02088e7c(void *, M2C_UNK);
+    M2C_UNK Set3DSpriteSlideBackLength(void *, M2C_UNK);
     M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, u32, s32);
     void func_020aad18(void *);
     s32 func_020aae78(void *);
@@ -199,7 +199,7 @@ void InitUnitSprite(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (((u32) (M2C_FIELD(arg0, u8 *, 0x59) << 0x1C) >> 0x1C) << 0x18) >> 6));
     M2C_FIELD(arg0, s16 *, 0x3C) = 0;
     Set3DSpriteSlideLength(arg0, 0xA);
-    func_02088e7c(arg0, 6);
+    Set3DSpriteSlideBackLength(arg0, 6);
     temp_r0 = MemAlloc(0x24);
     if (temp_r0 != NULL) {
         s32 unset = -1;
@@ -236,7 +236,7 @@ void MenuSpriteUpdate(void *arg0) {
 /* Updates the sprite entry for a unit: updates an existing slot when one is present, otherwise allocates a new one. */
 void func_020aad18(void *unit) {
     void AddSpriteCell(void *, s16, s16, u16, u16, s32, u16);
-    void func_02087d84(void *, s32, s32, s32, u16, u16);
+    void SpriteCellListSetCellRect(void *, s32, s32, s32, u16, u16);
     u32 GetUnitSpriteWidth(void *);
     u32 GetUnitSpriteHeight(void *);
     s32 func_020aae94(void *);
@@ -259,7 +259,7 @@ void func_020aad18(void *unit) {
         x = M2C_FIELD(unit, s16 *, 0x50);
         width = GetUnitSpriteWidth(unit);
         height = GetUnitSpriteHeight(unit);
-        func_02087d84(M2C_FIELD(unit, void **, 0x64), 1, x, y, (u16)width, (u16)height);
+        SpriteCellListSetCellRect(M2C_FIELD(unit, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         return;
     }
     y = M2C_FIELD(unit, s16 *, 0x52);
@@ -270,27 +270,31 @@ void func_020aad18(void *unit) {
     AddSpriteCell(M2C_FIELD(unit, void **, 0x64), x, y, width, height, 1, (u16)extra);
 }
 
-u32 GetUnitSpriteWidth(void *arg0) {
+/* Width of a unit sprite: its unit kind's sprite record width, or the object's
+ * own tile x when the record gives no width. */
+u32 GetUnitSpriteWidth(void *unit) {
     void *GetUnitSpriteDef(u32);
-    u32 idx;
-    void *ptr;
-    u32 value;
+    u32 kind;
+    void *def;
+    u32 width;
 
-    idx = (u32)(M2C_FIELD(arg0, u8 *, 0x58) << 25) >> 25;
-    ptr = GetUnitSpriteDef(idx);
-    value = M2C_FIELD(ptr, u8 *, 0);
-    if (value == 0) {
-        return M2C_FIELD(arg0, UnkAAFields *, 0x40).x;
+    kind = (u32)(M2C_FIELD(unit, u8 *, 0x58) << 25) >> 25;
+    def = GetUnitSpriteDef(kind);
+    width = M2C_FIELD(def, u8 *, 0);
+    if (width == 0) {
+        return M2C_FIELD(unit, UnkAAFields *, 0x40).x;
     }
-    return value;
+    return width;
 }
 
-u32 GetUnitSpriteHeight(void *arg0) {
+/* Height of a unit sprite: its unit kind's sprite record height, or the object's
+ * own tile y when the record gives no height. */
+u32 GetUnitSpriteHeight(void *unit) {
  void *GetUnitSpriteDef(u32);
- u32 idx; void *ptr; u32 value;
- idx=(u32)(M2C_FIELD(arg0,u8 *,0x58)<<25)>>25;
- ptr=GetUnitSpriteDef(idx);value=M2C_FIELD(ptr,u8 *,1);
- if(value==0){return M2C_FIELD(arg0,UnkAAFields *,0x40).y;} return value;
+ u32 kind; void *def; u32 height;
+ kind=(u32)(M2C_FIELD(unit,u8 *,0x58)<<25)>>25;
+ def=GetUnitSpriteDef(kind);height=M2C_FIELD(def,u8 *,1);
+ if(height==0){return M2C_FIELD(unit,UnkAAFields *,0x40).y;} return height;
 }
 
 s32 func_020aae78(void *arg0) {
@@ -342,8 +346,8 @@ M2C_UNK *func_020aaf74(void) {
  * state, advances the idle frame on its timer and plays the press animation when
  * the sprite's button is held. */
 void UpdateUnitSpriteAnimation(void *task) {
-    s32 IsLayerParent(void *);s32 Is3DSpriteAnimating(void *);s32 func_02089080(void *);
-    s32 IsScreenFadeActive(void);u8 func_020ab2a4(void);
+    s32 IsLayerParent(void *);s32 Is3DSpriteAnimating(void *);s32 Is3DSpriteHidden(void *);
+    s32 IsScreenFadeActive(void);u8 IsUnitSpriteHeld(void);
     void MenuSpriteUpdate(void *);void UpdateUnitSpriteFrame(void *);
     u16 GetSpriteButtonMask(void *);void InjectKeyPress(u16);
     void *GetUnitSpriteDef(u32);
@@ -357,11 +361,11 @@ void UpdateUnitSpriteAnimation(void *task) {
         if(cond&255)goto fail;
     }
     if(Is3DSpriteAnimating(sprite)!=0)goto fail;
-    if(func_02089080(sprite)!=0)goto fail;
+    if(Is3DSpriteHidden(sprite)!=0)goto fail;
     if(IsScreenFadeActive()!=0)goto fail;
     cond=M2C_FIELD(M2C_FIELD(sprite,void **,MENU_SPRITE_OWNER),u8 *,0x12)!=0?1:0;
     if(!(cond&255))goto fail;
-    if(func_020ab2a4()!=0)goto fail;
+    if(IsUnitSpriteHeld()!=0)goto fail;
     MenuSpriteUpdate(sprite);
     owner=M2C_FIELD(sprite,void **,MENU_SPRITE_OWNER);
     cond=1;
@@ -457,34 +461,37 @@ void func_020ab200(void) {
     fp(p);
 }
 
-void func_020ab214(void *arg0) {
- extern u8 data_0215c3a0;
+void MarkUnitSpritePressed(void *arg0) {
+ extern u8 gUnitSpriteInput;
  register unsigned test = M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s8 *,12)==1;
- if ((u8)test) *(&data_0215c3a0+1)=1;
+ if ((u8)test) *(&gUnitSpriteInput+1)=1;
 }
 
-u32 func_020ab240(void) {
-    extern u8 data_0215c3a0;
+/* Whether any unit sprite is currently pressed: clear the shared pressed flag,
+ * run the per-sprite check over every unit sprite, and return the flag. */
+u32 IsAnyUnitSpritePressed(void) {
+    extern u8 gUnitSpriteInput;
     extern M2C_UNK gUnitSpriteClass;
     void ApplyToSpriteClass(M2C_UNK *, void (*)(void *));
-    *(volatile u8 *)(&data_0215c3a0 + 1) = 0;
-    ApplyToSpriteClass(&gUnitSpriteClass, func_020ab214);
-    return *(volatile u8 *)(&data_0215c3a0 + 1);
+
+    *(volatile u8 *)(&gUnitSpriteInput + UNIT_SPRITE_PRESSED) = 0;
+    ApplyToSpriteClass(&gUnitSpriteClass, MarkUnitSpritePressed);
+    return *(volatile u8 *)(&gUnitSpriteInput + UNIT_SPRITE_PRESSED);
 }
 
-void func_020ab274(void) {
-    extern u8 data_0215c3a0;
-    data_0215c3a0 += 1;
+void AcquireUnitSpriteHold(void) {
+    extern u8 gUnitSpriteInput;
+    gUnitSpriteInput += 1;
 }
 
-void func_020ab28c(void) {
- extern u8 data_0215c3a0;
- data_0215c3a0 -= 1;
+void ReleaseUnitSpriteHold(void) {
+ extern u8 gUnitSpriteInput;
+ gUnitSpriteInput -= 1;
 }
 
-u8 func_020ab2a4(void) {
-    extern u8 data_0215c3a0;
-    return data_0215c3a0 != 0;
+u8 IsUnitSpriteHeld(void) {
+    extern u8 gUnitSpriteInput;
+    return gUnitSpriteInput != 0;
 }
 
 /* Step the three tweens an animated menu object runs: while the first tween's
@@ -511,14 +518,16 @@ void StepSpriteTweenGroup(void *object) {
 }
 
 #pragma opt_propagation off
-s16 GetScrollLimit(void *arg0) {
-    s16 c = M2C_FIELD(arg0, s16 *, 0xc);
-    s16 a = M2C_FIELD(arg0, s16 *, 6);
-    s16 b = M2C_FIELD(arg0, s16 *, 8);
-    s32 limit = M2C_FIELD(arg0, s32 *, 0x18);
-    s16 n = c + (s16)(a * b) - 1;
-    if (limit < n) n = limit;
-    return n;
+/* Last item index the list window can show from its current cursor: one page of
+ * rows past the cursor, capped by the list's highest scroll position. */
+s16 GetScrollLimit(void *list) {
+    s16 cursor = M2C_FIELD(list, s16 *, LIST_WIDGET_CURSOR);
+    s16 visibleRows = M2C_FIELD(list, s16 *, LIST_WIDGET_VISIBLE_ROWS);
+    s16 itemsPerRow = M2C_FIELD(list, s16 *, LIST_WIDGET_ITEMS_PER_ROW);
+    s32 maxScroll = M2C_FIELD(list, s32 *, LIST_WIDGET_SCROLL_MAX);
+    s16 lastItem = cursor + (s16)(visibleRows * itemsPerRow) - 1;
+    if (maxScroll < lastItem) lastItem = maxScroll;
+    return lastItem;
 }
 #pragma opt_propagation reset
 /* Move the scrolling list's cursor to `item` and start its window slide: record

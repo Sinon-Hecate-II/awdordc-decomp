@@ -216,34 +216,46 @@ s32 func_0209cf0c(void *arg0) {
     return 0;
 }
 
-s32 func_0209cf2c(void *arg0) {
+/* 3D-sprite state handler: stay on this state while any live sprite of the class
+ * the entry's data names remains; once none does, move on to the next entry. */
+s32 SpriteState_WaitForObjectClassRemoved(void *sprite) {
     s32 FindObjectByClass(s32);
-    if (FindObjectByClass(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4)) != 0) {
+
+    if (FindObjectByClass(M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA)) != 0) {
         return 0;
     }
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
-s32 func_0209cf60(void *arg0) {
-    CreateSpriteFromClass(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4), arg0);
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+/* 3D-sprite state handler: create a child sprite of the class the state's data
+ * names, parented to the sprite running the state machine, then move on to the
+ * next state entry. */
+s32 SpriteState_CreateChildOfClass(void *sprite) {
+    CreateSpriteFromClass(M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA), sprite);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
-s32 func_0209cf8c(void *arg0) {
+/* 3D-sprite state handler: create a child sprite of the class the state entry
+ * names on the current engine, parented to this sprite, then stop the state run
+ * for this frame. */
+s32 SpriteState_CreateChildSprite(void *sprite) {
     M2C_UNK CreateSpriteObject(s32, void *);
-    CreateSpriteObject(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4), arg0);
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    CreateSpriteObject(M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA), sprite);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 0;
 }
 
-s32 func_0209cfb8(void *arg0) {
-    void *temp_r0;
+/* 3D-sprite state handler: create a sprite of the class the state's data names,
+ * owned by the owner the state's parameter names (a layer index, or a parent
+ * object), then move on to the next state entry. */
+s32 SpriteState_CreateSpriteOfClass(void *sprite) {
+    void *entry;
 
-    temp_r0 = M2C_FIELD(arg0, void **, 8);
-    CreateSpriteFromClass(M2C_FIELD(temp_r0, s32 *, 4), M2C_FIELD(temp_r0, s16 *, 2));
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    entry = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    CreateSpriteFromClass(M2C_FIELD(entry, s32 *, DS3D_STATE_DATA), M2C_FIELD(entry, s16 *, DS3D_STATE_PARAM));
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
@@ -322,23 +334,25 @@ s32 func_0209d10c(void *arg0) {
     return 1;
 }
 
-void func_0209d124(void *arg0) {
+void SpriteState_WaitForTimeout(void *arg0) {
     void Sprite_ResumeAnimation(void *);
     M2C_FIELD(arg0, s16 *, 0x2C)--;
     if (M2C_FIELD(arg0, s16 *, 0x2C) > 0) return;
     Sprite_ResumeAnimation(arg0);
 }
 
-s32 func_0209d148(void *arg0) {
-    void func_0209d124(void *);
-    s16 temp_r2;
+/* 3D-sprite state handler: store the delay the state entry names in the sprite
+ * and switch its update callback to the countdown (SpriteState_WaitForTimeout);
+ * then continue with the next entry. */
+s32 SpriteState_StartWaitForTimeout(void *sprite) {
+    s16 delay;
 
-    temp_r2 = M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2);
-    if (temp_r2 != 0) {
-        M2C_FIELD(arg0, s16 *, 0x2C) = temp_r2;
-        M2C_FIELD(arg0, void (**)(void *), 0x10) = &func_0209d124;
+    delay = M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM);
+    if (delay != 0) {
+        M2C_FIELD(sprite, s16 *, 0x2C) = delay;
+        M2C_FIELD(sprite, void (**)(void *), DS3D_SPRITE_UPDATE_CB) = &SpriteState_WaitForTimeout;
     }
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 0;
 }
 
@@ -358,16 +372,19 @@ void SpriteState_WaitForInputOrTimeout(void *sprite) {
     Sprite_ResumeAnimation(sprite);
 }
 
-s32 func_0209d1d4(void *arg0) {
+/* 3D-sprite state handler: when the state gives a timeout, set the sprite's wait
+ * timer to it and install the update that resumes the animation when it runs out
+ * or sooner once a key is held or a touch starts; then move to the next state. */
+s32 SpriteState_StartWaitForInputOrTimeout(void *sprite) {
     void SpriteState_WaitForInputOrTimeout(void *);
-    s16 temp_r2;
+    s16 timeout;
 
-    temp_r2 = M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2);
-    if (temp_r2 != 0) {
-        M2C_FIELD(arg0, s16 *, 0x2C) = temp_r2;
-        M2C_FIELD(arg0, void (**)(void *), 0x10) = &SpriteState_WaitForInputOrTimeout;
+    timeout = M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM);
+    if (timeout != 0) {
+        M2C_FIELD(sprite, s16 *, DS3D_SPRITE_WAIT_TIMER) = timeout;
+        M2C_FIELD(sprite, void (**)(void *), DS3D_SPRITE_UPDATE_CB) = &SpriteState_WaitForInputOrTimeout;
     }
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 0;
 }
 
@@ -582,17 +599,23 @@ s32 func_0209d6a4(void *arg0) {
     return 1;
 }
 
-s32 func_0209d6cc(void *arg0) {
+/* 3D-sprite state handler: play the sound effect named by the state entry's data
+ * word in sound slot 0 on the default channel, then continue with the next entry
+ * in the same frame. */
+s32 SpriteState_PlaySlotSound(void *sprite) {
     M2C_UNK PlaySlotPendingSound(M2C_UNK, M2C_UNK, s32);
-    PlaySlotPendingSound(0, -1, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4));
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    PlaySlotPendingSound(0, -1, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA));
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
-s32 func_0209d6fc(void *arg0) {
+/* 3D-sprite state handler: stop the sound effect named by the state entry's
+ * parameter in sound slot 0, then continue with the next entry in the same
+ * frame. */
+s32 SpriteState_StopSlotSound(void *sprite) {
     M2C_UNK StopSlotSound(M2C_UNK, s16);
-    StopSlotSound(0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    StopSlotSound(0, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM));
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
@@ -779,13 +802,18 @@ s32 SpriteState_ShowTextPanelMode3(void *sprite) {
     return 0;
 }
 
-s32 func_0209da3c(void *arg0) {
-    M2C_UNK StartWindowClose();
-    s32 FindTextLayer();
-    if (FindTextLayer() != 0) {
-        StartWindowClose();
+/* 3D-sprite state handler: close the text layer's window when one is up, then
+ * continue with the next state entry. */
+s32 SpriteState_CloseTextLayerWindow(void *sprite) {
+    void StartWindowClose(void *);
+    s32 FindTextLayer(void);
+    void *window;
+
+    window = (void *) FindTextLayer();
+    if (window != 0) {
+        StartWindowClose(window);
     }
-    M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + 8);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 0;
 }
 

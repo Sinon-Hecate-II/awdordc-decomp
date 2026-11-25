@@ -102,17 +102,20 @@ void func_020c8e78(void *arg0) {
     } while (var_r4 < 0x32);
 }
 
-void func_020c8ea0(void *arg0) {
+/* Per-frame step of a campaign-map header loader: load the header for the map at
+ * the loader's current index (MAP_ID_CAMPAIGN_FIRST + counter), advance the
+ * counter, and once all MAP_ID_CAMPAIGN_PER_PLAYER maps are done resume the sprite. */
+void StepCampaignMapHeaderLoad(void *loader) {
     M2C_UNK Sprite_ResumeAnimation(void *);
-    s32 temp_r0;
+    s32 index;
 
-    LoadCampaignMapHeader(M2C_FIELD(arg0, s32 *, 0x5C) + 0xE1);
-    temp_r0 = M2C_FIELD(arg0, s32 *, 0x5C) + 1;
-    M2C_FIELD(arg0, s32 *, 0x5C) = temp_r0;
-    if (temp_r0 != 0x32) {
+    LoadCampaignMapHeader(M2C_FIELD(loader, s32 *, 0x5C) + MAP_ID_CAMPAIGN_FIRST);
+    index = M2C_FIELD(loader, s32 *, 0x5C) + 1;
+    M2C_FIELD(loader, s32 *, 0x5C) = index;
+    if (index != MAP_ID_CAMPAIGN_PER_PLAYER) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(loader);
 }
 
 #pragma optimization_level 2
@@ -165,14 +168,14 @@ GotoSpriteAnimationLabel(a,0);
  * counter of its stamp word - and sets that map's label.  When every queued
  * record is done the loader resumes its waiting owner. */
 void LoadNextCampaignMapRecord(void *loader) {
-    s32 func_020be1a8();
+    s32 IsSaveInProgress();
     s32 stamp;
     u16 mapId;
     u32 count;
     u8 index;
     void *record;
 
-    if (func_020be1a8() != 0) {
+    if (IsSaveInProgress() != 0) {
         return;
     }
     index = M2C_FIELD(loader, u8 *, 0x35);
@@ -215,7 +218,7 @@ void AppendCampaignMapLoadEntry(s16 mapId, s32 record) {
 }
 
 void func_020c9168(void *arg0) {
-    M2C_UNK func_020be488(s32);
+    M2C_UNK DeleteSaveRecordAndSaveSettings(s32);
     s32 GetCampaignMapSaveType(s32);
     M2C_UNK ClearCampaignMapProgress(s32);
     s32 temp_r4;
@@ -224,7 +227,7 @@ void func_020c9168(void *arg0) {
     temp_r5 = M2C_FIELD(arg0, s32 *, 0x34);
     temp_r4 = GetCampaignMapSaveType(temp_r5);
     ClearCampaignMapProgress(temp_r5);
-    func_020be488(temp_r4);
+    DeleteSaveRecordAndSaveSettings(temp_r4);
 }
 
 void func_020c9190(s32 arg0) {
@@ -274,23 +277,30 @@ sprite=CreateTextLayer(owner);RenderTextLayer(sprite,2,y<<5,buf);
 M2C_FIELD(sprite,u32 *,0x58)|=0x400;return 1;
 }
 
-void func_020c93cc(void) {
+/* Clears the cursor's held-direction state: each input channel's held direction
+ * (+0..+1), the two channels remembered as used (+2/+3), and the two
+ * direction-marker slots. */
+void ClearHeldDirections(void) {
     extern M2C_UNK gHeldDirections;
     extern M2C_UNK data_ov000_021e146c;
-    M2C_FIELD(&gHeldDirections, s8 *, 0) = 0;
-    M2C_FIELD(&gHeldDirections, s8 *, 1) = 0;
-    M2C_FIELD(&gHeldDirections, s8 *, 2) = 0;
-    M2C_FIELD(&gHeldDirections, s8 *, 3) = 0;
-    M2C_FIELD(&data_ov000_021e146c, s32 *, 0) = 0;
-    M2C_FIELD(&data_ov000_021e146c, s32 *, 4) = 0;
+    M2C_FIELD(&gHeldDirections, u8 *, 0) = 0;
+    M2C_FIELD(&gHeldDirections, u8 *, 1) = 0;
+    M2C_FIELD(&gHeldDirections, u8 *, 2) = 0;
+    M2C_FIELD(&gHeldDirections, u8 *, 3) = 0;
+    M2C_FIELD(&data_ov000_021e146c, void **, 0) = NULL;
+    M2C_FIELD(&data_ov000_021e146c, void **, 4) = NULL;
 }
 
-void func_020c93fc(s32 a,s32 b) {
-s32 func_020c9550(s32);
-extern M2C_UNK gHeldDirections;
-if (!func_020c9550(a)) M2C_FIELD(&gHeldDirections,u8 *,2)=a;
-else M2C_FIELD(&gHeldDirections,u8 *,3)=a;
-M2C_FIELD(&gHeldDirections,u8 *,a)=b;
+/* Set the direction held on cursor selector `selector` to `direction` (a
+ * direction code + 1, 0 = none) and remember this selector as the last one used,
+ * so that a release can clear that selector's direction. */
+void SetHeldDirection(s32 selector, s32 direction) {
+    s32 CountHeldDirections(s32);
+    extern M2C_UNK gHeldDirections;
+
+    if (!CountHeldDirections(selector)) M2C_FIELD(&gHeldDirections, u8 *, 2) = selector;
+    else M2C_FIELD(&gHeldDirections, u8 *, 3) = selector;
+    M2C_FIELD(&gHeldDirections, u8 *, selector) = direction;
 }
 
 u8 GetHeldDirection(s32 arg0) {
@@ -325,29 +335,32 @@ s32 GetHeldMapDirections(void) {
     return mask;
 }
 
-s32 func_020c9550(s32 a) {
-s32 v=0;
-if(GetHeldDirection(0)) v++;
-if(GetHeldDirection(1)) v++;
-return v;
+/* How many of the two cursor input channels currently hold a direction
+ * (0..2); the selector argument is not used. */
+s32 CountHeldDirections(s32 unused) {
+    s32 count = 0;
+
+    if (GetHeldDirection(0)) count++;
+    if (GetHeldDirection(1)) count++;
+    return count;
 }
 
 #pragma optimization_level 3
 void func_020c9580(s32 a) {
 extern void **gCurrentMap;
 extern M2C_UNK gMapCursorDirDX,gMapCursorDirDY,data_ov000_021e146c;
-s32 func_020a15b4(s32,s32);
+s32 CreateDirectionMarker(s32,s32);
 s32 i = (s32)GetHeldDirection(a) - 1;
 volatile void *p = *gCurrentMap;
 s32 x = M2C_FIELD(p,s16 *,0x52dc);
 s32 y = M2C_FIELD(p,s16 *,0x52de);
-M2C_FIELD(&data_ov000_021e146c,s32 *,a*4)=func_020a15b4(x + M2C_FIELD(&gMapCursorDirDX,s8 *,i*4), y + M2C_FIELD(&gMapCursorDirDY,s8 *,i*4));
+M2C_FIELD(&data_ov000_021e146c,s32 *,a*4)=CreateDirectionMarker(x + M2C_FIELD(&gMapCursorDirDX,s8 *,i*4), y + M2C_FIELD(&gMapCursorDirDY,s8 *,i*4));
 }
 #pragma optimization_level reset
 void func_020c95e4(void) {
 extern M2C_UNK gHeldDirections;
-s32 func_020c9550();
-u32 i=func_020c9550()+1;
+s32 CountHeldDirections();
+u32 i=CountHeldDirections()+1;
 u8 *p=(u8 *)&gHeldDirections;
 i=p[i];
 p[i]=0;

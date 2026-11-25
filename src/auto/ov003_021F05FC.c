@@ -214,7 +214,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
 M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     M2C_UNK IsLinkSessionActive();
     M2C_UNK GetLocalPlayerIdForOverlay();
-    void func_020850dc();
+    void Link_DeleteAnnounceRefreshers();
     M2C_UNK MemFree();
     M2C_UNK DeleteSpriteObject();
     M2C_UNK GetWaypointOptionCoId();
@@ -326,7 +326,7 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     SetPlayerArmyId(4, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x60) & 0xff);
 
     if (IsLinkSessionActive() != 0) {
-        func_020850dc();
+        Link_DeleteAnnounceRefreshers();
     }
 
     if (M2C_FIELD(obj, M2C_UNK **, 0x3c)) MemFree(M2C_FIELD(obj, M2C_UNK **, 0x3c));
@@ -428,7 +428,7 @@ M2C_UNK **DestroyBattleSetup(M2C_UNK **setup) {
 M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     M2C_UNK IsLinkSessionActive();
     M2C_UNK GetLocalPlayerIdForOverlay();
-    void func_020850dc();
+    void Link_DeleteAnnounceRefreshers();
     M2C_UNK MemFree();
     M2C_UNK DeleteSpriteObject();
     M2C_UNK GetWaypointOptionCoId();
@@ -540,7 +540,7 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     SetPlayerArmyId(4, M2C_FIELD(M2C_FIELD(obj, M2C_UNK **, 0x6c), M2C_UNK *, 0x60) & 0xff);
 
     if (IsLinkSessionActive() != 0) {
-        func_020850dc();
+        Link_DeleteAnnounceRefreshers();
     }
 
     // cleanup pointers 0x3c..0x50
@@ -648,7 +648,7 @@ void func_ov003_021f1348(s32 arg0) {
     DestroyBattleObject(arg0 + 0xFFFFFFCC);
 }
 
-s32 func_ov003_021f13c8(void) {
+s32 GetOv003SceneObject(void) {
     s32 FindObjectByClass();
     extern M2C_UNK gOv003SceneState;
     if (M2C_FIELD(&gOv003SceneState, s32 *, 0xC) == 0) {
@@ -774,22 +774,22 @@ s32 GetSceneEntryOffset(void) {
     }
 }
 
-u8 func_ov003_021f1584(void) {
+u8 GetNextMapSlideDirection(void) {
 extern M2C_UNK gOv003SceneState;
 return M2C_FIELD(&gOv003SceneState,u8 *,2);
 }
 
-s32 func_ov003_021f1594(void) {
+s32 GetNextMapSlideOffset(void) {
 extern M2C_UNK gOv003SceneState;
 return GetSlideDirectionOffset(M2C_FIELD(&gOv003SceneState,u8 *,2));
 }
 
-u8 func_ov003_021f15ac(void) {
+u8 GetPreviousMapSlideDirection(void) {
     extern M2C_UNK gOv003SceneState;
     return M2C_FIELD(&gOv003SceneState, u8 *, 3);
 }
 
-s32 func_ov003_021f15bc(void) {
+s32 GetPreviousMapSlideOffset(void) {
 extern M2C_UNK gOv003SceneState;
 return GetSlideDirectionOffset(M2C_FIELD(&gOv003SceneState,u8 *,3));
 }

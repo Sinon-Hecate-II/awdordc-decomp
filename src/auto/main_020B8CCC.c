@@ -10,7 +10,7 @@ static inline u8 IsUiB8ccc(UiB8ccc *p){return p->state[11]==1 || (p->active && p
 
 #pragma optimization_level 2
 void func_020b8ccc(void *a){
-s32 func_020b846c(s32);void RedrawListRows(s32);s32 GetUiMode(void);s32 GetScreenTransitionType(void);s32 CanStartScreenTransition(void);void StartShortScreenTransition(s32);void SetUiMode(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void func_020b8778(void);void MenuSpriteUpdate(void *);void ScrollListUp(void *);void ScrollListDown(void *);s32 FX_Div(s32,s32);void DrawFrameBorder(s32,s16,s32,s16,u16,s32,s32);
+s32 IsListRowUnavailable(s32);void RedrawListRows(s32);s32 GetUiMode(void);s32 GetScreenTransitionType(void);s32 CanStartScreenTransition(void);void StartShortScreenTransition(s32);void SetUiMode(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void func_020b8778(void);void MenuSpriteUpdate(void *);void ScrollListUp(void *);void ScrollListDown(void *);s32 FX_Div(s32,s32);void DrawFrameBorder(s32,s16,s32,s16,u16,s32,s32);
 extern u16 *gKeyState;extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 s16 step; void *old;s32 size,h,pos,v,t,pal;UiB8ccc *p;
 if(M2C_FIELD(a,s16*,0x3c)==0){
@@ -18,9 +18,9 @@ t=M2C_FIELD(a,s16*,0x40)*2;v=M2C_FIELD(a,s16*,0x3e);
 if(v!=t){h=t-v;if(h<0)h=-h;step=h>>1;if(step==0)step=1;if(v>t)M2C_FIELD(a,s16*,0x3e)-=step;else M2C_FIELD(a,s16*,0x3e)+=step;M2C_FIELD(a,s16*,0x3c)=1;RedrawListRows(M2C_FIELD(a,s16*,0x3e));}
 }else M2C_FIELD(a,s16*,0x3c)=0;
 if(M2C_FIELD(a,s16*,0x46)==0){
-if(func_020b846c(M2C_FIELD(a,s16*,0x38))){
+if(IsListRowUnavailable(M2C_FIELD(a,s16*,0x38))){
 if(GetUiMode()==2){
-if(M2C_FIELD(a,s16*,0x38)!=GetScreenTransitionType() && CanStartScreenTransition() && func_020b846c(M2C_FIELD(a,s16*,0x38)))StartShortScreenTransition(M2C_FIELD(a,s16*,0x38));
+if(M2C_FIELD(a,s16*,0x38)!=GetScreenTransitionType() && CanStartScreenTransition() && IsListRowUnavailable(M2C_FIELD(a,s16*,0x38)))StartShortScreenTransition(M2C_FIELD(a,s16*,0x38));
 }else SetUiMode(2,M2C_FIELD(a,s16*,0x38));
 }
 }else M2C_FIELD(a,s16*,0x46)--;
@@ -320,11 +320,16 @@ void BuildProductionMenuEntries(s8 mask) {
     gProductionChoices[count * 2] = 0;
 }
 #pragma pop
-void func_020b9978(void) {
+/* Wipe the current 3D-sprite engine's terrain layer (layer 1) tile buffer and
+ * mark that layer dirty so the engine uploads it again.  The layer's buffer
+ * pointer is passed along as well; Clear3DSpriteLayer only uses the layer
+ * number and looks the buffer up itself. */
+void ClearTerrainLayerTiles(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK, s32);
     extern void *gCur3DSpriteEngine;
-    Clear3DSpriteLayer(1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
+    Clear3DSpriteLayer(1, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_LAYER_TILES + 4));
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) =
+        (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER1);
 }
 
 #pragma opt_common_subs off

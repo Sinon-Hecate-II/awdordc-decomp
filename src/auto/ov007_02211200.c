@@ -184,13 +184,16 @@ void MapEditor_EraseUnit(M2C_UNK editor, s32 x, s32 y, s32 sound) {
     PlaySoundEffect(0x1001D);
 }
 
-void MapEditor_SelectCell(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+/* Map-editor select tool (unit page): open the AI-order menu of the unit on the
+ * cursor's cell; when the cell holds no unit, play the error sound if
+ * `playErrorSound` is set. */
+void MapEditor_OpenCellMenu(M2C_UNK editor, s32 x, s32 y, s32 playErrorSound) {
     M2C_UNK PlaySoundEffect(s32);
-    s32 func_ov007_02214718(M2C_UNK, M2C_UNK);
-    if (func_ov007_02214718(arg1, arg2) != 0) {
+    s32 MapEditor_OpenUnitAiMenu(s32, s32);
+    if (MapEditor_OpenUnitAiMenu(x, y) != 0) {
         return;
     }
-    if (arg3 == 0) {
+    if (playErrorSound == 0) {
         return;
     }
     PlaySoundEffect(0x1001D);
@@ -358,7 +361,7 @@ void MapEditor_Update(M2C_UNK editor) {
     extern u8 *gTouchState;
     extern void **gCurrentMap;
     s32 GetMapViewHoldCount(void);
-    s32 func_020ab240(void);
+    s32 IsAnyUnitSpritePressed(void);
     void func_020cf828(s32);
     void func_0207a7a4(s32, s32);
     s32 MapEditor_GetCursorType(s32, s32);
@@ -375,7 +378,7 @@ void MapEditor_Update(M2C_UNK editor) {
     void MapEditor_PickTerrain(M2C_UNK, M2C_UNK, M2C_UNK);
     void MapEditor_EraseUnit(M2C_UNK, s32, s32, s32);
     void MapEditor_EraseTerrain(M2C_UNK, s32, s32, s32);
-    void MapEditor_SelectCell(M2C_UNK, s32, s32, s32);
+    void MapEditor_OpenCellMenu(M2C_UNK, s32, s32, s32);
     void MapEditor_TryPaintTerrain(M2C_UNK, s32, s32, s32);
     s32 keyPressed;
     s32 keyHeld;
@@ -399,7 +402,7 @@ void MapEditor_Update(M2C_UNK editor) {
         keyHeld = keyPressed;
         if (keyPressed) M2C_FIELD(editor, u8 *, MAP_EDITOR_INPUT_LATCH) = 0;
     }
-    if (!func_020ab240()) {
+    if (!IsAnyUnitSpritePressed()) {
         func_020cf828(0x1001b);
         func_0207a7a4(1, 4);
     }
@@ -413,7 +416,7 @@ void MapEditor_Update(M2C_UNK editor) {
     if (keyPressed & KEY_START) { func_ov007_022144ec(); return; }
     if (keyPressed & KEY_SELECT) { func_ov007_0221330c(); return; }
     if (!gTouchState[TOUCH_ACTIVE]) goto L_b4c;
-    if (func_020ab240()) return;
+    if (IsAnyUnitSpritePressed()) return;
     tool = GetMapEditorTool();
     switch (tool) {
     case MAP_EDITOR_TOOL_PAINT:
@@ -453,7 +456,7 @@ void MapEditor_Update(M2C_UNK editor) {
         page = GetMapEditorMode();
         if (page == MAP_EDITOR_PAGE_TERRAIN) goto L_c3;
         if (page != MAP_EDITOR_PAGE_UNIT) return;
-        MapEditor_SelectCell(editor, cursorX, cursorY, keyPressed);
+        MapEditor_OpenCellMenu(editor, cursorX, cursorY, keyPressed);
         return;
     L_c3:
         MapEditor_TryPaintTerrain(editor, cursorX, cursorY, keyPressed);
@@ -469,7 +472,7 @@ L_b4c:
     if (mask) { MapEditor_PickUnit(editor, cursorX, cursorY, mask); return; }
     if (gKeyState->held & KEY_X) { MapEditor_EraseUnit(editor, cursorX, cursorY, keyPressed & KEY_X); return; }
     mask = keyPressed & KEY_Y;
-    if (mask) { MapEditor_SelectCell(editor, cursorX, cursorY, mask); return; }
+    if (mask) { MapEditor_OpenCellMenu(editor, cursorX, cursorY, mask); return; }
     return;
 L_be4:
     if (keyHeld & KEY_A) { PaintMapTerrain(editor, cursorX, cursorY, keyPressed & KEY_A); return; }

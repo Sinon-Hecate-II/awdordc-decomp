@@ -214,17 +214,19 @@ void func_0209dfe4(void *arg0) {
     DeleteSpriteObject(arg0);
 }
 
-void func_0209e008(void *arg0) {
+/* Task sprite's class destructor: free the thread object and stack block the
+ * sprite owns, then run its cleanup callback, if it has one. */
+void DestroyTaskSprite(void *sprite) {
     M2C_UNK HeapFreeBlock(s32);
-    M2C_UNK (*temp_r0)();
+    void (*cleanup)(void);
 
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x34));
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
-    temp_r0 = M2C_FIELD(arg0, M2C_UNK (**)(), 0x3C);
-    if (temp_r0 == NULL) {
+    HeapFreeBlock(M2C_FIELD(sprite, s32 *, TASK_SPRITE_THREAD));
+    HeapFreeBlock(M2C_FIELD(sprite, s32 *, TASK_SPRITE_STACK));
+    cleanup = M2C_FIELD(sprite, void (**)(void), TASK_SPRITE_CLEANUP);
+    if (cleanup == NULL) {
         return;
     }
-    temp_r0();
+    cleanup();
 }
 
 void TaskSpriteEntry(void *arg0) {
@@ -285,20 +287,25 @@ void LoadWindowGraphics(s32 layout, M2C_UNK dest) {
     }
 }
 
-void LoadWindowPalette(s32 arg0) {
+/* Load the scene window's 16-colour palette from window.cl into the 3D sprite
+ * palette slot `paletteSlot`. */
+void LoadWindowPalette(s32 paletteSlot) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
-    extern M2C_UNK data_0211f868;
-    extern M2C_UNK data_0211f870;
-    SetFileDirectory(&data_0211f868);
-    LoadFileToSpriteBuffer(&data_0211f870, arg0 << 5, 0x20);
+    extern M2C_UNK sWindowPaletteDirectory;
+    extern M2C_UNK sWindowPaletteFile;
+    SetFileDirectory(&sWindowPaletteDirectory);
+    LoadFileToSpriteBuffer(&sWindowPaletteFile, paletteSlot << DS3D_PALETTE_SHIFT, DS3D_PALETTE_BYTES);
 }
 
-void func_0209e184(void *arg0, s8 arg1, u32 arg2, s32 arg3) {
+/* Configure a freshly allocated scene-panel sprite: its window layout (talk or
+ * body), the texture row its tiles are drawn from (arg2 in 32-unit steps) and its
+ * OBJ palette row, then hide it so the change takes effect. */
+void ConfigureScenePanelSprite(void *sprite, s8 layout, u32 tileRow, s32 paletteRow) {
     M2C_UNK Hide3DSprite();
-    M2C_FIELD(arg0, s8 *, 0x5A) = arg1;
-    M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg2 >> 5);
-    M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg3 << 0x18) >> 6));
+    M2C_FIELD(sprite, s8 *, SCENE_PANEL_LAYOUT) = layout;
+    M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_TILE_ROW) = (s16) (tileRow >> 5);
+    M2C_FIELD(sprite, s32 *, SPRITE_ACTOR_PALETTE) = (s32) ((M2C_FIELD(sprite, s32 *, SPRITE_ACTOR_PALETTE) & ~SPRITE_ACTOR_PALETTE_MASK) | ((u32) (paletteRow << 0x18) >> 6));
     Hide3DSprite();
 }
 
@@ -332,7 +339,7 @@ void ReloadScenePanelGraphics(void *panel) {
     UpdateScenePanelPalette(panel);
 }
 
-void func_0209e25c(void *arg0, s8 arg1, s16 arg2, s16 arg3) {
+void SetScenePanelMotion(void *arg0, s8 arg1, s16 arg2, s16 arg3) {
     M2C_FIELD(arg0, s8 *, 0x5B) = arg1;
     M2C_FIELD(arg0, s16 *, 0x5C) = arg2;
     M2C_FIELD(arg0, s16 *, 0x5E) = arg3;

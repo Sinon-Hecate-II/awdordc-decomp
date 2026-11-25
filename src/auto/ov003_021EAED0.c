@@ -50,11 +50,11 @@ packet[8]=1;
 }
 if(((u32)(M2C_FIELD(arg0,u8 *,0x39)<<30)>>31) && IsMenuEnabled(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))DisableMenuSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
 if(IsMapListCategory3() && IsWaypointPanelIdle(arg0) && IsMenuEnabled(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))DisableMenuSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
-if(func_ov003_021e6d28() && IsWaypointPanelIdle(arg0) && IsMenuEnabled(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))DisableMenuSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
+if(IsSessionGuest() && IsWaypointPanelIdle(arg0) && IsMenuEnabled(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))DisableMenuSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
 if(func_ov003_021e9e58(arg0) && !IsMenuEnabled(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))EnableMenuSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
 if(M2C_FIELD(remote,u8 *,8)==1){
 SetWaypointPanelMode(arg0,1);PressWaypointSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,4));
-if(func_ov003_021e6d28())Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,4));
+if(IsSessionGuest())Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,4));
 M2C_FIELD(packet,s32 *,24)=1;Link_SendPacket(packet,36);return;
 }
 }
@@ -67,13 +67,13 @@ if(M2C_FIELD(remote,u8 *,8)==0){
 PlaySoundEffect(0x1000f);SetWaypointPanelMode(arg0,0);
 Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,4));
 func_ov003_021e9e4c(M2C_FIELD(arg0,void **,0x58));
-if(func_ov003_021e6d28())Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,0));
+if(IsSessionGuest())Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,0));
 Link_SendPacket(packet,36);return;
 }
 }
 Link_SendPacket(packet,36);
 for(i=0;i<count;i++){
-if(func_ov003_021e6d28()){
+if(IsSessionGuest()){
 current=func_ov003_021ebc90(M2C_FIELD(arg0,s32 *,0x6c),i);desired=M2C_FIELD((u8 *)remote+i,u8 *,14);
 if(current!=desired){PlaySoundEffect(0x10011);func_ov003_021ebca4(M2C_FIELD(arg0,s32 *,0x6c),i,desired);}
 }
@@ -100,7 +100,7 @@ if(IsMenuEnabled(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)) && MenuSprit
 if(M2C_FIELD(gTouchState,u8 *,0x12))return;
 if(!(*gKeyState&2))return;
 PressWaypointSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));HandleWaypointPanelCancel(arg0,func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c)));return;
-}else if(func_ov003_021e6d28() && func_ov003_021e9c30(arg0))return;
+}else if(IsSessionGuest() && func_ov003_021e9c30(arg0))return;
 }
 touch=M2C_FIELD(gTouchState,u8 *,0x12);ready=1;keys=gKeyState[0];held=gKeyState[1];
 UpdateWaypointSelectSprites(M2C_FIELD(arg0,void **,0x64));
@@ -188,14 +188,14 @@ done:
  * the host gates starting the match on this. */
 s32 AreNetworkPlayerRecordsReady(void) {
     s32 IsLinkSessionActive();
-    s32 GetReadyPlayerMask();
+    s32 GetSessionPlayerMask();
     void *GetNetworkPlayerRecord(s32);
     s8 i;
     s32 mask;
     void *record;
 
     if (IsLinkSessionActive() == 0) return 0;
-    mask = GetReadyPlayerMask();
+    mask = GetSessionPlayerMask();
     for (i = 0; i < 4; i++) {
         if (mask & (1 << i)) {
             record = GetNetworkPlayerRecord(i);
@@ -242,15 +242,17 @@ void PressWaypointSprite(void *sprite) {
     M2C_FIELD(sprite, s8 *, MENU_SPRITE_TIMER) = 12;
 }
 
-u8 IsMenuEnabled(void *arg0) {
-    u8 var_r0;
+/* Whether a menu sprite is in its enabled (clickable) state: its current frame
+ * is anything but the disabled frame, the base frame plus two. */
+u8 IsMenuEnabled(void *sprite) {
+    u8 enabled;
 
-    if ((((u32) (M2C_FIELD(arg0, u8 *, 0x59) << 0x1C) >> 0x1C) + 2) != (u16) ((u32) (M2C_FIELD(arg0, s32 *, 0x40) << 6) >> 0x18)) {
-        var_r0 = 1;
+    if ((((u32) (M2C_FIELD(sprite, u8 *, MENU_SPRITE_BASE) << 0x1C) >> 0x1C) + 2) != (u16) ((u32) (M2C_FIELD(sprite, s32 *, MENU_SPRITE_FRAME) << 6) >> 0x18)) {
+        enabled = 1;
     } else {
-        var_r0 = 0;
+        enabled = 0;
     }
-    return var_r0;
+    return enabled;
 }
 
 /* Put a menu sprite into its disabled (unavailable) frame - the base frame plus
@@ -271,9 +273,11 @@ u8 IsWaypointPanelIdle(void *arg0) {
     return var_r0;
 }
 
-void EnableMenuSprite(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) ((u32) (M2C_FIELD(arg0, u8 *, 0x59) << 0x1C) >> 0x1C) << 0x18) >> 6));
-    M2C_FIELD(arg0, s8 *, 0x5A) = 0;
+/* Put a menu sprite back into its enabled frame - the base frame - and clear its
+ * press timer, so it accepts clicks again. */
+void EnableMenuSprite(void *sprite) {
+    M2C_FIELD(sprite, s32 *, MENU_SPRITE_FRAME) = (s32) ((M2C_FIELD(sprite, s32 *, MENU_SPRITE_FRAME) & ~MENU_SPRITE_FRAME_MASK) | ((u32) ((u16) ((u32) (M2C_FIELD(sprite, u8 *, MENU_SPRITE_BASE) << 0x1C) >> 0x1C) << 0x18) >> 6));
+    M2C_FIELD(sprite, s8 *, MENU_SPRITE_TIMER) = 0;
 }
 
 u8 func_ov003_021ebc88(void *arg0) {

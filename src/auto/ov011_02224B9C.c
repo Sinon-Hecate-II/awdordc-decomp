@@ -23,7 +23,7 @@ extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain, *dat
 #pragma opt_common_subs off
 void func_ov011_02224b9c(M2C_UNK arg0, u32 arg1) {
     M2C_UNK LoadOpeningScreenAssets(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov011_022216d8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadOpeningAssetSet(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s16 EaseInterpolate(M2C_UNK, M2C_UNK, s16, u32, s32);
     M2C_UNK func_ov011_02222830(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void G3_SubmitSpriteQuad(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s16);
@@ -37,10 +37,10 @@ void func_ov011_02224b9c(M2C_UNK arg0, u32 arg1) {
         break;
     case 1:
         LoadOpeningScreenAssets(arg0, 5, 0);
-        func_ov011_022216d8(arg0, 9, 0, 2);
-        func_ov011_022216d8(arg0, 0xA, 1, 2);
-        func_ov011_022216d8(arg0, 0xD, 0, 3);
-        func_ov011_022216d8(arg0, 0xE, 1, 3);
+        LoadOpeningAssetSet(arg0, 9, 0, 2);
+        LoadOpeningAssetSet(arg0, 0xA, 1, 2);
+        LoadOpeningAssetSet(arg0, 0xD, 0, 3);
+        LoadOpeningAssetSet(arg0, 0xE, 1, 3);
         G3_SubmitSpriteQuad(arg0, 2, 2, 0x100, 0x80);
         G3_SubmitSpriteQuad(arg0, 2, 3, 0, 0x80);
         /* fallthrough */
@@ -66,8 +66,8 @@ void func_ov011_02224b9c(M2C_UNK arg0, u32 arg1) {
         G3_SubmitSpriteQuad(arg0, 2, 3, 0x80, 0x60);
         return;
     case 4:
-        func_ov011_022216d8(arg0, 0xF, 0, 3);
-        func_ov011_022216d8(arg0, 0x10, 1, 3);
+        LoadOpeningAssetSet(arg0, 0xF, 0, 3);
+        LoadOpeningAssetSet(arg0, 0x10, 1, 3);
         /* fallthrough */
     case 5:
         M2C_FIELD(&gIntroAnimState, u8 *, 0) = 0U;
@@ -99,8 +99,8 @@ gCur3DSpriteEngine=saved;
 void LoadIntroStage4Assets(M2C_UNK entry) {
     M2C_UNK LoadOpeningScreenAssets(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    func_ov011_022216d8(entry, 7, 0, 3);
-    func_ov011_022216d8(entry, 8, 1, 3);
+    LoadOpeningAssetSet(entry, 7, 0, 3);
+    LoadOpeningAssetSet(entry, 8, 1, 3);
     LoadOpeningScreenAssets(entry, 4, 0);
     G3_SubmitSpriteQuad(entry, 2, 2, 0x80, 0x20);
 }
@@ -133,9 +133,11 @@ void IntroFadeScanlineHandler(void) {
     *(u16 *)GX_BLDALPHA_MAIN = (eva & 31) | ((evb & 31) << 8);
 }
 
-void func_ov011_02224fe0(M2C_UNK arg0) {
-    func_ov011_022216d8(arg0, 1, 1, 0);
-    func_ov011_022216d8(arg0, 0, 0, 0);
+/* Load the opening's two company logos into screen buffer 0 of the main and sub
+   screens: logo_is on the main screen and logo_nintendo on the sub screen. */
+void LoadOpeningLogos(M2C_UNK unused) {
+    LoadOpeningAssetSet(unused, 1, 1, 0);
+    LoadOpeningAssetSet(unused, 0, 0, 0);
 }
 
 void func_ov011_02225010(M2C_UNK arg0) {
@@ -190,8 +192,8 @@ void func_ov011_022250a0(void) {
 }
 
 void func_ov011_022250ac(M2C_UNK arg0) {
-    M2C_UNK func_ov011_022216d8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_ov011_022216d8(arg0, 0x16, 0, 0);
+    M2C_UNK LoadOpeningAssetSet(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    LoadOpeningAssetSet(arg0, 0x16, 0, 0);
 }
 
 void func_ov011_022250c4(M2C_UNK arg0) {

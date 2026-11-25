@@ -318,11 +318,13 @@ void PlayOrderEffectStep(void *sprite) {
     GotoSpriteAnimationLabel(sprite, 0);
 }
 
-void func_020a561c(void *arg0) {
+/* Initialise an order-effect sprite to play the map's order queue: point its
+ * order cursor at the queue's first record and clear its two playback fields. */
+void InitOrderEffectSprite(void *sprite) {
     extern s32 *gCurrentMap;
-    M2C_FIELD(arg0, s32 *, 0x34) = (s32) (*gCurrentMap + 0x58A4);
-    M2C_FIELD(arg0, s32 *, 0x38) = 0;
-    M2C_FIELD(arg0, s8 *, 0x44) = 0;
+    M2C_FIELD(sprite, s32 *, 0x34) = (s32) (*gCurrentMap + MAP_ORDERS);
+    M2C_FIELD(sprite, s32 *, 0x38) = 0;
+    M2C_FIELD(sprite, s8 *, 0x44) = 0;
 }
 
 /* Ticks the order countdowns of the current player: every active order of type

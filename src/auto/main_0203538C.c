@@ -8,7 +8,7 @@ extern s32 gErrno;
 s32 HttpClientInit(void*,void*);s32 HttpAppendConnectionHeaders(void*);void HttpClientCleanup(void*);void Wfc_SetNetCheckState(s32);s32 GetThreadPriority(s32);void HttpClientStartTask(void*,s32);void OS_JoinThread(void*);
 s32 ParseHttpResponse(void*,s32);void *FindHttpHeader(void*,void*);s32 ParseInt(void*);s32 StringCompare(void*,void*);s32 func_020336c0(void*);s32 func_02033988(void*,void*,s32);
 s32 func_020346d0(void*,void*,void*,s32);s32 StringLength(void*);void StringCopyPad(void*,void*,s32);void GetWfcProfile(void*);
-s32 CreateNasConnection(void*,void*);void func_02032b68(void);s32 Nas_GetConnectionResult(void);void Nas_GetResult(void*);void FreeNasConnection(void);
+s32 CreateNasConnection(void*,void*);void Nas_JoinTask(void);s32 Nas_GetConnectionResult(void);void Nas_GetResult(void*);void FreeNasConnection(void);
 extern u8 data_020fb860[],data_0213d16c[],data_020fb914[],data_020fb91c[],data_020fb810[],data_020fb924[],data_020fb930[],data_020fb934[],data_020fb93c[],data_020fb87c[],data_020fb888[],data_020fb898[],data_020fb8a8[],data_020fb944[],data_020fb950[],data_020fb95c[];
 s32 ReadHttpHeader(void*,void*,void*,u32);s32 HttpBufferAppendString(void*,void*);void SleepMilliseconds(s32);
 
@@ -73,7 +73,7 @@ if(M2C_FIELD(clock,u64*,0)==0){
 M2C_FIELD(gWfcNet,s32*,0x1004)=-3;M2C_FIELD(state,u16*,0x34)=0;state[0x68]=0;
 requestText=gWfcNet;M2C_FIELD(state,void**,0x74)=M2C_FIELD(requestText,void**,0x1108);M2C_FIELD(state,void**,0x78)=M2C_FIELD(requestText,void**,0x110c);
 if(CreateNasConnection(data_0213d16c,NetHandle())){Wfc_SetNetCheckState(5);goto done;}
-func_02032b68();
+Nas_JoinTask();
 if(Nas_GetConnectionResult()!=21){
 if(Nas_GetConnectionResult()==9){M2C_FIELD(gWfcNet,s32*,0x1004)=-1;goto nasError;}else{
 Nas_GetResult(auth);

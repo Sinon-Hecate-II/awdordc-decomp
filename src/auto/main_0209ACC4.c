@@ -59,7 +59,8 @@ typedef struct TextState {
     u8  unk59;         /* +0x59 */
     u8  screenMode;    /* +0x5A which sprite engine to draw on */
     u8  unk5B;         /* +0x5B */
-    u8  flags;         /* +0x5C bit1 = pending redraw, bit3 = text stored */
+    u8  flags;         /* +0x5C bit0 = waiting for the active message box (IsTextWaitingForMessageBox),
+                        * bit1 = pending redraw, bit3 = text stored */
     u8  filler_5D[3];
     void *sound;       /* +0x60 sound effect played on each glyph */
 } TextState;
@@ -71,13 +72,13 @@ s32 DrawTextStep(void *arg0) {
     s32 PlaySoundEffect(void *);
     s32 DrawGlyph(u8, s32, u8, u16);
     M2C_UNK func_02099854(void *, s32, u8, u16);
-    s32 func_020999b8(void *);
+    s32 IsTextWaitingForMessageBox(void *);
     s32 func_020999e8(void *);
     M2C_UNK RedrawTextObject(void *);
     s32 IsLeadByte(void *);
     s32 IsGlyphEscape(void *);
     u32 func_02099e6c(void *, s32);
-    M2C_UNK func_0209ac6c(void *, s32);
+    M2C_UNK WriteTextCellTilePair(void *, s32);
     s32 AdvanceTextColumn(void *, s32);
     M2C_UNK func_0209c418(void *);
     TextState *st = arg0;
@@ -96,13 +97,13 @@ main_loop:
             if ((s8) st->delay < 0) goto end_block;
             return 1;
         case 2:
-            if (func_020999b8(st) != 0) goto end_block;
+            if (IsTextWaitingForMessageBox(st) != 0) goto end_block;
             return 1;
         default:
         case 1:
             temp_r7 = IsLeadByte(st->cursor);
             temp_r8 = IsGlyphEscape(st->cursor);
-            if (func_020999b8(st) == 0) {
+            if (IsTextWaitingForMessageBox(st) == 0) {
                 if (st->flags & 0x2) {
                     RedrawTextObject(st);
                     st->flags = (u8) (st->flags & ~0x2);
@@ -129,10 +130,10 @@ main_loop:
                     }
                 }
                 if ((u8) st->column <= 1U) {
-                    func_0209ac6c(st, func_020999e8(st));
+                    WriteTextCellTilePair(st, func_020999e8(st));
                 }
                 if (AdvanceTextColumn(st, var_r6) != 0) {
-                    func_0209ac6c(st, func_020999e8(st));
+                    WriteTextCellTilePair(st, func_020999e8(st));
                 }
                 if ((notify = st->sound) != 0 && (s8) st->speed != 0) {
                     PlaySoundEffect(notify);
@@ -161,7 +162,7 @@ void UpdateTextObject(TextState *st) {
     s32 IsMessageBoxIdle(void);
     s32 HideAllScenePanels(void);
     s32 IsAnyScenePanelAnimating(void);
-    s32 func_020999b8(void *);
+    s32 IsTextWaitingForMessageBox(void *);
     M2C_UNK StopTextObject(M2C_UNK);
     s32 DrawTextStep(void *);
     u32 GetTextObjectKeyAction(void);
@@ -197,7 +198,7 @@ void UpdateTextObject(TextState *st) {
         if ((actionMask & 0x30) && st->linePixel != st->lineStart)
             StopTextObject((s32)st);
     }
-    if (func_020999b8(st)) StopTextObject((s32)st);
+    if (IsTextWaitingForMessageBox(st)) StopTextObject((s32)st);
     st->delay = st->delay+1;
     {
         s32 t=st->delay;
@@ -244,7 +245,7 @@ void func_0209b084(void *entity) {
     void SetMessageBoxState(s8);
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     void Clear3DSpriteLayer(u8);
-    void func_02095fc0(void);
+    void DeleteTelopWindow(void);
     void func_02097768(void);
     extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
     extern M2C_UNK data_02102eac, data_02102e74;
@@ -282,7 +283,7 @@ void func_0209b084(void *entity) {
     }
 
     if (M2C_FIELD(entity, u8 *, 0x5c) & 0x8) {
-        func_02095fc0();
+        DeleteTelopWindow();
         func_02097768();
     }
 }
@@ -465,22 +466,26 @@ cells-=2;
 if(cells>=1)DrawSpritePairPriority(curX,curY,tile,gSpriteDesc8x8,priority);
 }
 #pragma pop
-void func_0209b8c0(void *arg0) {
+/* Text bitmap splitter sprite update: copy the source bitmap into the
+ * destination in split eight-row blocks, then free the source bitmap. */
+void UpdateTextBitmapSplitter(void *sprite) {
     void SplitTextBitmapHalves(s32, s32, u16);
     M2C_UNK HeapFreeBlock(s32);
-    SplitTextBitmapHalves(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), (u16) M2C_FIELD(arg0, s32 *, 0x3C));
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x34));
+    SplitTextBitmapHalves(M2C_FIELD(sprite, s32 *, TEXT_SPLIT_SOURCE), M2C_FIELD(sprite, s32 *, TEXT_SPLIT_DESTINATION), (u16) M2C_FIELD(sprite, s32 *, TEXT_SPLIT_WIDTH));
+    HeapFreeBlock(M2C_FIELD(sprite, s32 *, TEXT_SPLIT_SOURCE));
 }
 
-void CreateTextBitmapSplitter(s32 arg0, s32 arg1, s32 arg2) {
+/* Spawn a text bitmap splitter sprite that copies `bitmap` (of `width` pixels)
+ * into `destination`, one 8-row block at a time, and then frees the bitmap. */
+void CreateTextBitmapSplitter(s32 bitmap, s32 destination, s32 width) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gTextBitmapSplitterClass;
-    void *temp_r0;
+    void *sprite;
 
-    temp_r0 = CreateSpriteFromClass(&gTextBitmapSplitterClass, 1);
-    M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x3C) = arg2;
+    sprite = CreateSpriteFromClass(&gTextBitmapSplitterClass, 1);
+    M2C_FIELD(sprite, s32 *, TEXT_SPLIT_SOURCE) = bitmap;
+    M2C_FIELD(sprite, s32 *, TEXT_SPLIT_DESTINATION) = destination;
+    M2C_FIELD(sprite, s32 *, TEXT_SPLIT_WIDTH) = width;
 }
 
 /* Renders a text id into a temporary bitmap and hands it to a new splitter

@@ -372,11 +372,13 @@ loop_1:
     goto loop_1;
 }
 
-void TlsUpdateHandshakeHash(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK MD5_Update(s32, M2C_UNK, M2C_UNK);
+/* Feed a handshake message into both transcript hashes, SHA1 and MD5. */
+void TlsUpdateHandshakeHash(u8 *channel, void *data, u32 length) {
     M2C_UNK SHA1_Update();
-    SHA1_Update(arg0 + 0x2EC);
-    MD5_Update(arg0 + 0x3A4, arg1, arg2);
+    M2C_UNK MD5_Update();
+
+    SHA1_Update(channel + TLS_TRANSCRIPT_SHA1, data, length);
+    MD5_Update(channel + TLS_TRANSCRIPT_MD5, data, length);
 }
 
 /* Dispatches one record buffer received on a TLS connection: decrypts it if the
@@ -508,14 +510,14 @@ s32 TlsReadRecord(void *transport) {
  * big-endian carry add, and zero bytes are skipped so the stream never stalls.
  * On first use the pool is seeded from a 64-bit multiply-add state. */
 void GenerateRandomBytes(u8 *dst,s32 len){
-M2C_UNK SHA1_Init(void*);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);M2C_UNK SHA1_Update();void func_02026134(void*,void*);void Random_AddEntropy(M2C_UNK*,s32);
+M2C_UNK SHA1_Init(void*);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);M2C_UNK SHA1_Update();void SHA1_FinalZeroPadded(void*,void*);void Random_AddEntropy(M2C_UNK*,s32);
 extern s8 gTlsRandomState;extern u64 gRandomSeedState[3];extern M2C_UNK gRandomEntropyPool;extern u8 gRandomEntropyPoolEnd;
 u8 sha1Ctx[92],digest[20];u32 seed; s32 written,index,irq,j;u32 carry,total;u8 *poolPtr,*digestPtr;
 if(!*(u8*)&gTlsRandomState){gRandomSeedState[0]=gRandomSeedState[1]*gRandomSeedState[0]+gRandomSeedState[2];seed=gRandomSeedState[0]>>32;Random_AddEntropy((M2C_UNK*)&seed,4);}
 written=0;index=20;
 while(written<len){
 if(index==20){
-SHA1_Init(sha1Ctx);irq=OS_DisableInterrupts();SHA1_Update(sha1Ctx,&gRandomEntropyPool,20);func_02026134(sha1Ctx,digest);
+SHA1_Init(sha1Ctx);irq=OS_DisableInterrupts();SHA1_Update(sha1Ctx,&gRandomEntropyPool,20);SHA1_FinalZeroPadded(sha1Ctx,digest);
 carry=1;j=19;poolPtr=&gRandomEntropyPoolEnd;digestPtr=digest+19;
 for(;j>=0;j--){total=carry+(*poolPtr+*digestPtr--);*poolPtr--=total;carry=total>>8;}
 seed=total;OS_RestoreInterrupts(irq);index=0;

@@ -319,10 +319,10 @@ void func_ov002_021e7474(void *arg0) {
 void func_ov002_021e749c(void *arg0) {
     extern u8 gEffectVariants[];
     extern M2C_UNK gUnitViews, gPlayerSettings, gOv002EffectResources;
-    void func_ov002_021e994c(void *, s32, s32, s32, s32);
+    void SpawnEffectNodeForEvent(void *, s32, s32, s32, s32);
     void func_ov002_021e97d8(void *, s32, s32, s32);
     void func_ov002_021e42b0(void *);
-    void func_020afa64(s32);
+    void PlayOtherSlotStartSound(s32);
     void UpdateSlotEffectSound(s32, s32);
     BattleEffectEvent *event;
     s32 side, i;
@@ -340,7 +340,7 @@ void func_ov002_021e749c(void *arg0) {
                 s32 frame = event->frame;
                 if (frame == -1) break;
                 if (!event->skip) {
-                    func_ov002_021e994c(view->units[event->unit],
+                    SpawnEffectNodeForEvent(view->units[event->unit],
                                        frame - 1, 1, (s8)event->effect, (s8)event->flag);
                 }
                 i++;
@@ -385,7 +385,7 @@ void func_ov002_021e749c(void *arg0) {
                     func_ov002_021e97d8(view->units[event->unit], 1,
                                        (s8)event->effect, (s8)event->flag);
                     if (((BattleSideResources *)&gOv002EffectResources)[side == 0].handle[2]) {
-                        func_020afa64(side);
+                        PlayOtherSlotStartSound(side);
                     }
                 }
             }

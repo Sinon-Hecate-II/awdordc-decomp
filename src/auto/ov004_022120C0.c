@@ -34,7 +34,7 @@ void func_ov004_022120c0(void *arg0) {
     M2C_UNK OpenNarcArchive();
     M2C_UNK GetLocalizedFileName();
     M2C_UNK LoadNarcFileDecompressed();
-    M2C_UNK AddToU16Array();
+    M2C_UNK OffsetTileIndices();
     M2C_UNK CloseNarcArchive();
     M2C_UNK ApplyScreenMode(s32);
     M2C_UNK func_0208ca14();
@@ -108,11 +108,11 @@ void func_ov004_022120c0(void *arg0) {
             StringFormat(bp, &data_ov004_02218e34, *((u8 *)arg0 + 0x3a));
             LoadNarcFileDecompressed(GetLocalizedFileName(bp), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10) + 0x20);
             LoadDecompressedFileTo(&data_ov004_02218e44, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
-            AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x100, 1);
+            OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x100, 1);
             StringFormat(bp, &data_ov004_02218e4c, *((u8 *)arg0 + 0x3a));
             LoadNarcFileDecompressed(GetLocalizedFileName(bp), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14) + 0x20);
             LoadDecompressedFileTo(&data_ov004_02218e5c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
-            AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), 0x100, 0x1001);
+            OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), 0x100, 0x1001);
             CloseNarcArchive();
             LoadDecompressedFileTo(GetLocalizedFileName(&data_ov004_02218e64), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c));
             LoadFileToSpriteBuffer(&data_ov004_02218e70, 0x200, 0x20);
