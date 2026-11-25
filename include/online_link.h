@@ -16,6 +16,13 @@
 #define ONLINE_TICK_RATE_FX12 0x3C000 /* 60 updates per second, 20.12 fixed point */
 #define ONLINE_MS_PER_SECOND_FX12 0x3E8000
 
+/* Start/match flags of the ov010 online session (gOv010OnlineSession+0xFA).
+ * Ov010Online_StartSession sets STARTED and stores its argument at +0xFC; the
+ * match start paths raise MATCH and leaving a match clears it again. */
+#define OV010_SESSION_FLAGS        0xFA /* u8: OV010_SESSION_FLAG_* bits */
+#define OV010_SESSION_FLAG_STARTED 0x01 /* the session start was requested */
+#define OV010_SESSION_FLAG_MATCH   0x02 /* a match is running */
+
 /* The online session's outbound packet queue (gOv010OnlineSession): a singly
  * linked list of nodes {void *next; Ov010Packet packet;}, the packet's kind
  * byte at node+0x08 (Ov010Packet.kind sits at +0x04), its payload right after

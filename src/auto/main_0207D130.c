@@ -22,12 +22,12 @@ extern const u16 gVramBankBaseTable[8];
 extern s16 gSinCosTable[2048];
 extern s16 data_02101834[4][4][2];
 extern void *gCur3DSpriteEngine;
-void func_02004078(s32, s32);
+void GX_MatrixRotateZ(s32, s32);
 void func_0207d49c(s32, s32, s32);
 void DrawTexturedQuad(s32, s32, s32);
 s32 GetGxTextureSizeCode(s32);
 s32 GetGxTextureSizeCode2(s32);
-void func_0207d130(const u16 *attr, const s32 *position, u32 texture, u32 palette,
+void DrawSpriteFrameQuads(const u16 *attr, const s32 *position, u32 texture, u32 palette,
                   s32 scale, s32 angle, s32 centered, s32 texWidth, s32 texHeight,
                   s32 tileScale, s32 tileOffset) {
     register s32 count = *attr++;
@@ -93,7 +93,7 @@ void func_0207d130(const u16 *attr, const s32 *position, u32 texture, u32 palett
             gx[12] = posX;
             gx[12] = posY;
             gx[12] = posZ;
-            func_02004078(sine, cosine);
+            GX_MatrixRotateZ(sine, cosine);
             gx[11] = scale;
             gx[11] = scale;
             gx[11] = GX_FX_ONE;

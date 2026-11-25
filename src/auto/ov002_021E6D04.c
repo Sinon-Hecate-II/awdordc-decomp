@@ -99,7 +99,7 @@ void InitBattleScene(void *state) {
     void InitBattleUnitView(void *);
     void func_ov002_021e6cdc(void *);
     void func_020af7ac(void);
-    void func_020af760(void);
+    void LoadEffectSoundGroups(void);
     void func_ov002_021e8738(void *);
     void func_ov002_021e42a8(void *, s32);
     void func_ov002_021e8d04(void *, s32);
@@ -107,7 +107,7 @@ void InitBattleScene(void *state) {
     extern M2C_UNK gPlayerSettings;
     extern u8 gEffectVariants[];
     extern M2C_UNK gUnitViews;
-    extern M2C_UNK data_ov002_021f3018;
+    extern M2C_UNK gOv002EffectResources;
     extern void *g3DSpriteBankMain;
 
     SetupPlayerSettings(&gPlayerSettings);
@@ -124,9 +124,9 @@ void InitBattleScene(void *state) {
         } while (side < 2);
     }
 
-    func_ov002_021e6cdc(&data_ov002_021f3018);
+    func_ov002_021e6cdc(&gOv002EffectResources);
     func_020af7ac();
-    func_020af760();
+    LoadEffectSoundGroups();
 
     {
         void *unitView = &gUnitViews;
@@ -215,7 +215,7 @@ void func_ov002_021e712c(void *);
 void func_ov002_021e749c(void *);
 void StepUnitView(void *);
 void TickSlotSoundDelays(void);
-void func_ov002_021e78a4(void *);
+void StepBattleSceneEndDelay(void *);
 extern M2C_UNK gUnitViews;
 extern M2C_UNK gUnitViewsP2;
 extern u8 gDemoBattle;
@@ -229,7 +229,7 @@ StepUnitView(&gUnitViews);
 StepUnitView(&gUnitViewsP2);
 TickSlotSoundDelays();
 if(gDemoBattle) return;
-func_ov002_021e78a4(state);
+StepBattleSceneEndDelay(state);
 }
 
 void func_ov002_021e7120(void *arg0) {
@@ -318,7 +318,7 @@ void func_ov002_021e7474(void *arg0) {
 #pragma opt_loop_invariants off
 void func_ov002_021e749c(void *arg0) {
     extern u8 gEffectVariants[];
-    extern M2C_UNK gUnitViews, gPlayerSettings, data_ov002_021f3018;
+    extern M2C_UNK gUnitViews, gPlayerSettings, gOv002EffectResources;
     void func_ov002_021e994c(void *, s32, s32, s32, s32);
     void func_ov002_021e97d8(void *, s32, s32, s32);
     void func_ov002_021e42b0(void *);
@@ -384,7 +384,7 @@ void func_ov002_021e749c(void *arg0) {
                 if (!event->skip) {
                     func_ov002_021e97d8(view->units[event->unit], 1,
                                        (s8)event->effect, (s8)event->flag);
-                    if (((BattleSideResources *)&data_ov002_021f3018)[side == 0].handle[2]) {
+                    if (((BattleSideResources *)&gOv002EffectResources)[side == 0].handle[2]) {
                         func_020afa64(side);
                     }
                 }
@@ -436,15 +436,18 @@ if(!IsEntryReady((void *)&gUnitViews+0x2c)) return 0;
 return 1;
 }
 
-void func_ov002_021e78a4(void *arg0) {
-s32 AreUnitViewsReady(void *);
-s32 temp;
-if(!M2C_FIELD(arg0,u8 *,9)) return;
-if(!AreUnitViewsReady(arg0)) return;
-temp=M2C_FIELD(arg0,s32 *,4)+1;
-M2C_FIELD(arg0,s32 *,4)=temp;
-if(temp!=0x4B) return;
-EndBattleScene(arg0);
+/* Once the battle scene may be ended and its unit views have settled, count the
+ * frames it has been endable for and end it after the last one. */
+void StepBattleSceneEndDelay(void *state) {
+    s32 AreUnitViewsReady(void *);
+    s32 frames;
+
+    if (!M2C_FIELD(state, u8 *, BATTLE_SCENE_READY)) return;
+    if (!AreUnitViewsReady(state)) return;
+    frames = M2C_FIELD(state, s32 *, BATTLE_SCENE_END_DELAY) + 1;
+    M2C_FIELD(state, s32 *, BATTLE_SCENE_END_DELAY) = frames;
+    if (frames != BATTLE_SCENE_END_FRAMES) return;
+    EndBattleScene(state);
 }
 
 /* Draw one frame of the battle scene on the main screen: pick the screen's
@@ -482,18 +485,25 @@ void EndBattleScene(void *arg0) {
     func_ov002_021e15e0();
 }
 
-void func_ov002_021e7970(void) {
+/* Tears the ov002 battle scene down: destroys both sides' battle unit views,
+ * frees the scene's effect-resource table and stops the sound player. */
+void TeardownBattleScene(void) {
     void DestroyBattleUnitView(void *);
-    void func_020af79c(void);
+    void StopSoundPlayer(void);
     extern M2C_UNK gUnitViews;
-    extern M2C_UNK data_ov002_021f3018;
-    s32 i;
-    void *p;
-    p=&gUnitViews;
-    i=0;
-    do { DestroyBattleUnitView(p); i++; p+=0x2C; } while(i<2);
-    ReleaseBattleSceneResources(&data_ov002_021f3018);
-    func_020af79c();
+    extern M2C_UNK gOv002EffectResources;
+    s32 side;
+    void *unitView;
+
+    unitView = &gUnitViews;
+    side = 0;
+    do {
+        DestroyBattleUnitView(unitView);
+        side++;
+        unitView = (u8 *)unitView + UNIT_VIEW_SIZE;
+    } while (side < 2);
+    ReleaseBattleSceneResources(&gOv002EffectResources);
+    StopSoundPlayer();
 }
 
 u8 IsBattleSceneIntro(void *arg0) {

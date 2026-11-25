@@ -513,7 +513,7 @@ void func_0203bd0c(void) {
     func_0205d8f4();
 }
 
-s32 func_0203bd34(void) {
+s32 LeaveOnlineSession(void) {
     s32 CanLeaveOnlineSession();
     M2C_UNK DisconnectConnection();
     if (CanLeaveOnlineSession() == 0) {

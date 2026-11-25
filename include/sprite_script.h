@@ -32,6 +32,14 @@
 #define SPRITE_OWNER_SCRIPT        0x40 /* void *animation script buffer the players run */
 #define SPRITE_OWNER_OWNS_SCRIPT   0x44 /* u8 nonzero when the script buffer is freed with the object */
 
+/* One node of a sprite object's auxiliary object list (SPRITE_OWNER_AUX_LIST): a
+ * class instance whose vtable's third slot deletes it, linked through +0x0C and
+ * pointing back at the sprite object that owns the list at +0x04. */
+#define SPRITE_AUX_CLASS       0x00 /* void *class/vtable pointer */
+#define SPRITE_AUX_OWNER       0x04 /* void *sprite object that owns the list */
+#define SPRITE_AUX_DELETE_SLOT 0x08 /* vtable slot of the deleting destructor */
+#define SPRITE_AUX_NEXT        0x0C /* void *next auxiliary object */
+
 /* Fields of one script entry (0x10 bytes).  Byte 2 is the frame index while the
  * entry is a wait (kind == 0) and the command id while it is a command. */
 #define SPRITE_ENTRY_SIZE     0x10 /* size of one script entry */

@@ -148,7 +148,7 @@ s32 func_02014d6c(void) {
 /* Select units by state into priority groups, then dispatch the matching network action. */
 void func_02015008(void) {
 extern void *gMbWork;
-void FillU16(s32,void *,s32); s32 func_02014af4(s32,u16); s32 StartGroupBattle(u16); s32 func_02014d6c(void);
+void FillU16(s32,void *,s32); s32 Mb_SendPlayerCommand(s32,u16); s32 StartGroupBattle(u16); s32 func_02014d6c(void);
 u16 masks[5];u16 i; s32 result;
 FillU16(0,masks,10);
 for(i=1;i<=15;i++){
@@ -160,13 +160,13 @@ case 8:masks[3]|=1<<i;break;
 case 11:masks[4]|=1<<i;break;
 }
 }
-if(masks[3])result=func_02014af4(5,masks[3]);
-else if(masks[0])result=func_02014af4(1,masks[0]);
-else if(masks[4])result=func_02014af4(6,masks[4]);
-else if(masks[2])result=func_02014af4(2,masks[2]);
+if(masks[3])result=Mb_SendPlayerCommand(5,masks[3]);
+else if(masks[0])result=Mb_SendPlayerCommand(1,masks[0]);
+else if(masks[4])result=Mb_SendPlayerCommand(6,masks[4]);
+else if(masks[2])result=Mb_SendPlayerCommand(2,masks[2]);
 else if(masks[1])result=StartGroupBattle(masks[1]);
 else result=func_02014d6c();
-if(result==21)func_02014af4(0,0xffff);
+if(result==21)Mb_SendPlayerCommand(0,0xffff);
 }
 
 /* Move group `group`'s outgoing chunk cursor on towards the chunk its members

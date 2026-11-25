@@ -2,6 +2,8 @@
 #include "common.h"
 #include "ds3dsprite.h"
 #include "list_widget.h"
+#include "unit_sprite.h"
+#include "sprite_grid.h"
 
 /* Per-screen display state, indexed by screen 0 (main engine) or 1 (sub engine):
  * the screen flag GetScreenFlag reads, and the display mode GetScreenMode reads. */
@@ -75,15 +77,15 @@ s16 GetListScrollY(void *widget) {
 
 void func_020abb9c(void *arg0) {
     M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *, u16);
-    extern M2C_UNK data_02126b94;
-    Find3DSpriteByClassAndZ(&data_02126b94, M2C_FIELD(arg0, u16 *, 0x68));
+    extern M2C_UNK gUnitSpriteClass;
+    Find3DSpriteByClassAndZ(&gUnitSpriteClass, M2C_FIELD(arg0, u16 *, 0x68));
 }
 
-void func_020abbb4(void *arg0) {M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *,u16);extern M2C_UNK data_02126b94;Find3DSpriteByClassAndZ(&data_02126b94,M2C_FIELD(arg0,u16 *,106));}
+void func_020abbb4(void *arg0) {M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *,u16);extern M2C_UNK gUnitSpriteClass;Find3DSpriteByClassAndZ(&gUnitSpriteClass,M2C_FIELD(arg0,u16 *,106));}
 
-void func_020abbcc(void *arg0) {M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *,u16);extern M2C_UNK data_02126b94;Find3DSpriteByClassAndZ(&data_02126b94,M2C_FIELD(arg0,u16 *,108));}
+void func_020abbcc(void *arg0) {M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *,u16);extern M2C_UNK gUnitSpriteClass;Find3DSpriteByClassAndZ(&gUnitSpriteClass,M2C_FIELD(arg0,u16 *,108));}
 
-void func_020abbe4(void *arg0) {M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *,u16);extern M2C_UNK data_02126b94;Find3DSpriteByClassAndZ(&data_02126b94,M2C_FIELD(arg0,u16 *,110));}
+void func_020abbe4(void *arg0) {M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *,u16);extern M2C_UNK gUnitSpriteClass;Find3DSpriteByClassAndZ(&gUnitSpriteClass,M2C_FIELD(arg0,u16 *,110));}
 
 /* Advance one frame of a two-axis easing animation: when its target coordinate
    (+0x10/+0x11) changes, latch it and restart; ease +0xA from +8 towards 0xA0 or
@@ -162,27 +164,35 @@ void func_020abbfc(void *arg0) {
     M2C_FIELD(arg0, u16 *, 4) = (u16) (frame + 1);
 }
 
-void *func_020abdac(void *arg0) {
- extern M2C_UNK data_02126be4;
- void *p;
- M2C_FIELD(arg0,M2C_UNK **,0)=&data_02126be4;
- p=M2C_FIELD(arg0,void **,0x64);
- if(p!=NULL) {HeapFreeBlock(M2C_FIELD(p,s32 *,0x14));MemFree(p);}
- MemFree(arg0);return arg0;
+/* Deleting destructor of the unit sprite: restore the base vtable, free the
+ * sprite-cell list it owns (its cell block, then the list itself), then free the
+ * sprite object.  (UnitSprite_Destroy is the non-deleting twin.) */
+void *UnitSprite_Delete(void *sprite) {
+    extern M2C_UNK gUnitSpriteVtbl;
+    void *cells;
+    M2C_FIELD(sprite, M2C_UNK **, 0) = &gUnitSpriteVtbl;
+    cells = M2C_FIELD(sprite, void **, UNIT_SPRITE_CELLS);
+    if (cells != NULL) {
+        HeapFreeBlock(M2C_FIELD(cells, s32 *, SPRITE_CELL_LIST_CELLS));
+        MemFree(cells);
+    }
+    MemFree(sprite);
+    return sprite;
 }
 
-void *func_020abdec(void *arg0) {
-    M2C_UNK HeapFreeBlock(s32);
-    extern M2C_UNK data_02126be4;
-    void *temp_r4;
+/* Non-deleting destructor of the unit sprite: restore the base vtable, then free
+ * the sprite-cell list it owns (its cell block, then the list itself). */
+void *UnitSprite_Destroy(void *sprite) {
+    extern M2C_UNK gUnitSpriteVtbl;
+    void *cells;
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_02126be4;
-    temp_r4 = M2C_FIELD(arg0, void **, 0x64);
-    if (temp_r4 != NULL) {
-        HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
-        MemFree(temp_r4);
+    M2C_FIELD(sprite, M2C_UNK **, 0) = &gUnitSpriteVtbl;
+    cells = M2C_FIELD(sprite, void **, UNIT_SPRITE_CELLS);
+    if (cells != NULL) {
+        HeapFreeBlock(M2C_FIELD(cells, s32 *, SPRITE_CELL_LIST_CELLS));
+        MemFree(cells);
     }
-    return arg0;
+    return sprite;
 }
 
 void func_020abe24(void) {

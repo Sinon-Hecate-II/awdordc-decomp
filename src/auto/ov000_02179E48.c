@@ -247,7 +247,7 @@ u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
     extern void **gCurrentMap;
     extern u8 gUnitKindFlags[];
     extern s32 Divide(s32, s32);
-    extern s32 func_020a86f0(s32);
+    extern s32 GetPlayerFuelRate(s32);
     extern s32 func_020a86bc(s32, s32);
     void *base;
     u8 *sel;
@@ -282,7 +282,7 @@ u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
     {
         base = **(void **volatile *)&gCurrentMap;
     special:
-        A = func_020a86f0(*(u16 *)(base + 0x52A4));
+        A = GetPlayerFuelRate(*(u16 *)(base + 0x52A4));
         B = func_020a86bc(*(u16 *)(base + 0x52A4), kind);
         row = ((s8 **)(base + 0x52E8))[y];
         cell2 = row[x];
@@ -293,7 +293,7 @@ u8 func_ov000_0217a8a0(s32 x, s32 y, s32 arg2) {
     } 
     goto done;
     normal: {
-        A = func_020a86f0(*(u16 *)(base + 0x52A4));
+        A = GetPlayerFuelRate(*(u16 *)(base + 0x52A4));
         B = func_020a86bc(*(u16 *)(base + 0x52A4), kind);
         row = ((s8 **)(base + 0x52E8))[y];
         cell2 = row[x];

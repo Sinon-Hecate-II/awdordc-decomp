@@ -1,5 +1,6 @@
 /* 7 functions from 0x021E3500 to 0x021E4448 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_scene.h"
 
 typedef struct { u32 low:8; u32 middle:6; u32 high:6; u32 rest:12; } PreviewItemFields;
 typedef struct { u32 enabled:1; u32 rest:31; } PreviewItemStatus;
@@ -104,17 +105,20 @@ void func_ov003_021e3500(void *arg0) {
     Ov003_SetMapConfirmEnabled();
 }
 
-void func_ov003_021e36cc(void *arg0) {
+/* Leave the link map-select screen without starting a battle: keep map
+ * confirming enabled, hide the view's sprite if it is on screen, reset the
+ * scene phase and the view state, then show the view's sprites again. */
+void Ov003SceneView_CancelMapSelect(Ov003SceneView *view) {
     M2C_UNK Hide3DSprite(s32);
     M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK Ov003_SetMapConfirmEnabled();
     Ov003_SetMapConfirmEnabled();
-    if (M2C_FIELD(arg0, u8 *, 0x39) != 0) {
-        Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x4C));
+    if (view->visible != 0) {
+        Hide3DSprite(view->sprite4C);
     }
     SetOv003SceneState(2);
-    M2C_FIELD(arg0, s8 *, 0x38) = 0;
-    Sprite_ResumeAnimation(arg0);
+    view->state38 = 0;
+    Sprite_ResumeAnimation(view);
 }
 
 void func_ov003_021e3708(void) {

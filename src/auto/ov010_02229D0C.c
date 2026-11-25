@@ -44,14 +44,17 @@ M2C_UNK **Ov010Online_CreateStartRequest(s32 matchId, M2C_UNK owner) {
     return node;
 }
 
-M2C_UNK func_ov010_02229d9c(s32 arg0) {
+/* Start announcing the local player: while the online session is running, fill the
+ * local player's join record with this console's player bit and whether its status
+ * was published, then register that record with the session. */
+M2C_UNK Ov010Online_AnnounceLocalPlayer(s32 record) {
     s32 GetOnlineTransportPlayerId();
     s8 PublishLocalPlayerStatus();
     extern M2C_UNK gOv010OnlineSession;
-    if (IsOnlineSessionFlagSet(3) == 0) return;
-    M2C_FIELD(arg0, u16 *, 2) = 1 << GetOnlineTransportPlayerId();
-    M2C_FIELD(arg0, u8 *, 0) = PublishLocalPlayerStatus();
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x24) = arg0;
+    if (IsOnlineSessionFlagSet(OV010_FLAG_RUNNING) == 0) return;
+    M2C_FIELD(record, u16 *, OV010_PLAYER_MASK) = 1 << GetOnlineTransportPlayerId();
+    M2C_FIELD(record, u8 *, OV010_PLAYER_JOINED) = PublishLocalPlayerStatus();
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_PLAYER) = record;
 }
 
 /* Check the online session's local-player join record: returns 1 when the
@@ -88,8 +91,8 @@ M2C_FIELD(&gOv010OnlineSession, void **, 0x24) = NULL;
 }
 
 void func_ov010_02229e84(s32 arg0) {
-    M2C_UNK func_ov010_02229d9c(s32);
-    func_ov010_02229d9c(arg0 + 0x34);
+    M2C_UNK Ov010Online_AnnounceLocalPlayer(s32);
+    Ov010Online_AnnounceLocalPlayer(arg0 + 0x34);
 }
 
 void func_ov010_02229e94(s32 arg0) {
@@ -102,21 +105,24 @@ void func_ov010_02229ea4(s32 arg0) {
     func_ov010_02229e70(arg0 + 0x34);
 }
 
-M2C_UNK **SpawnOnlinePlayerAnnounce(M2C_UNK arg0) {
+/* Spawn the online (Wi-Fi) player-announce sprite under `owner`: it refreshes the
+ * other players' view of this console's status as it changes.  Returns NULL unless
+ * the online session is running. */
+M2C_UNK **SpawnOnlinePlayerAnnounce(M2C_UNK owner) {
     M2C_UNK **CreateSpriteObject(M2C_UNK *, M2C_UNK);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
-    extern M2C_UNK data_ov010_0222c288;
-    extern M2C_UNK data_ov010_0222c380;
-    M2C_UNK **temp_r0;
+    extern M2C_UNK gOnlinePlayerAnnounceClass;
+    extern M2C_UNK gOnlinePlayerAnnounceVtbl;
+    M2C_UNK **announce;
 
-    if (IsOnlineSessionFlagSet(3) == 0) {
+    if (IsOnlineSessionFlagSet(OV010_FLAG_RUNNING) == 0) {
         return NULL;
     }
-    temp_r0 = CreateSpriteObject(&data_ov010_0222c288, arg0);
-    if (temp_r0 != NULL) {
-        *temp_r0 = &data_ov010_0222c380;
+    announce = CreateSpriteObject(&gOnlinePlayerAnnounceClass, owner);
+    if (announce != NULL) {
+        *announce = &gOnlinePlayerAnnounceVtbl;
     }
-    return temp_r0;
+    return announce;
 }
 
 /* Start the WFC match query that looks up `count` player names on the WFC

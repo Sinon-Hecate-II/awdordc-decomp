@@ -163,11 +163,12 @@ w=(w+1)&~1;h=(h+1)&~1;
 for(y=h>>1;y<h;y++){for(x=0;x<w;x++){src=func_020c10a4(x,y,z);dst=(u16*)p+gPreviewColumnOffset[x]+gPreviewRowOffset[y];dst[0]=src[0];dst[2]=src[2];dst[4]=src[4];dst[6]=src[6];}}
 }
 
-void func_020c183c(void *arg0) {
+/* Update the cursor color for a map-preview layer from the animated palette ramp. */
+void AnimateMapPreviewLayerCursorColor(void *arg0) {
     M2C_UNK CopyBytesToObjPaletteShadow(void *, s32, M2C_UNK);
     extern s32 gMapPreviewPalettes;
     extern s32 gFrameCounter;
-    
+
     CopyBytesToObjPaletteShadow(
         (char *)&gMapPreviewPalettes + 0x40 + ((u32)(gFrameCounter & 0x3C) >> 1),
         (M2C_FIELD(arg0, s16 *, 0x5A) << 5) + 0x1C,

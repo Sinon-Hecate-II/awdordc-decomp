@@ -6,7 +6,7 @@
 static inline s32 ov001_event_value(u8 value) { return value; }
 
 struct MenuValues2 { u8 values[2]; };
-extern struct MenuValues2 data_ov001_0218f6f4;
+extern struct MenuValues2 gOv001WifiMenuOptionTiles;
 
 #pragma opt_common_subs off
 void func_ov001_02175f60(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -22,12 +22,12 @@ void func_ov001_02175f60(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
 void Ov001_InitProfileScreen(void *arg0) {
     s32 Ov001_Alloc(s32, s32);
     s32 Ov001_GetMessageText(M2C_UNK, u32);
-    s32 func_ov001_02175e34(void);
+    s32 Ov001_GetConnectEntryId(void);
     void func_ov001_02188c78(M2C_UNK, void *);
     s32 Ov001_StartProfileTransfer(void);
     void SystemHalt(void);
     M2C_UNK Ov001_AddTask(M2C_UNK, M2C_UNK *, M2C_UNK, M2C_UNK);
-    extern void *data_ov001_02193d50;
+    extern void *gOv001ProfileBlock;
     extern u8 data_ov001_0219031c[28];
     extern M2C_UNK gOv001MessageArchive;
     extern void func_ov001_0217612c(void *);
@@ -37,45 +37,48 @@ void Ov001_InitProfileScreen(void *arg0) {
         u8 pad[3];
     } Buf28;
     Buf28 buf;
-    data_ov001_02193d50 = (void *)Ov001_Alloc(0x1E2A4, 0x20);
-    M2C_FIELD(data_ov001_02193d50, M2C_UNK *, 0x1E298) = (M2C_UNK)arg0;
+    gOv001ProfileBlock = (void *)Ov001_Alloc(0x1E2A4, 0x20);
+    M2C_FIELD(gOv001ProfileBlock, M2C_UNK *, 0x1E298) = (M2C_UNK)arg0;
     arg0 = 0;
-    M2C_FIELD(data_ov001_02193d50, u8 *, 0x1E2A0) = 0;
-    M2C_FIELD(data_ov001_02193d50, u8 *, 0x1E2A1) = 0;
+    M2C_FIELD(gOv001ProfileBlock, u8 *, 0x1E2A0) = 0;
+    M2C_FIELD(gOv001ProfileBlock, u8 *, 0x1E2A1) = 0;
     buf = *(Buf28 *)data_ov001_0219031c;
     buf.b = Ov001_GetMessageText(gOv001MessageArchive, 0);
     buf.c = Ov001_GetMessageText(gOv001MessageArchive, 1);
-    buf.g = (u8)func_ov001_02175e34();
-    func_ov001_02188c78((M2C_UNK)data_ov001_02193d50, &buf);
+    buf.g = (u8)Ov001_GetConnectEntryId();
+    func_ov001_02188c78((M2C_UNK)gOv001ProfileBlock, &buf);
     if (Ov001_StartProfileTransfer() == 0) SystemHalt();
-    M2C_FIELD(data_ov001_02193d50, M2C_UNK *, 0x1E29C) = Ov001_AddTask(0, (M2C_UNK *)&func_ov001_0217612c, 0, 0x78);
+    M2C_FIELD(gOv001ProfileBlock, M2C_UNK *, 0x1E29C) = Ov001_AddTask(0, (M2C_UNK *)&func_ov001_0217612c, 0, 0x78);
 }
 
 void Ov001_StartProfileExitTask(void) {
     M2C_UNK Ov001_AddTask(M2C_UNK, M2C_UNK *, M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_02176098;
-    Ov001_AddTask(0, &func_ov001_02176098, 0, 0x78);
+    extern M2C_UNK Ov001_ExitProfileTask;
+    Ov001_AddTask(0, &Ov001_ExitProfileTask, 0, 0x78);
 }
 
-void func_ov001_02176098(M2C_UNK arg0) {
+/* The WFC profile screen's exit task: wait for the profile subsystem to finish
+ * leaving its setup, mark the screen's teardown as ready so the update task can
+ * free the work block, and complete this task. */
+void Ov001_ExitProfileTask(M2C_UNK task) {
     s32 Ov001_LeaveProfileSetup();
     M2C_UNK Ov001_PostTaskMessage(M2C_UNK, M2C_UNK);
-    extern void *data_ov001_02193d50;
+    extern void *gOv001ProfileBlock;
     if (Ov001_LeaveProfileSetup() == 0) {
         return;
     }
-    M2C_FIELD(data_ov001_02193d50, u8 *, 0x1E2A1) = 1;
-    Ov001_PostTaskMessage(0, arg0);
+    M2C_FIELD(gOv001ProfileBlock, u8 *, OV001_PROFILE_BLOCK_EXIT_DONE) = 1;
+    Ov001_PostTaskMessage(0, task);
 }
 
 s32 Ov001_IsProfileScreenDone(void) {
-    extern void *data_ov001_02193d50;
-    return data_ov001_02193d50 == 0;
+    extern void *gOv001ProfileBlock;
+    return gOv001ProfileBlock == 0;
 }
 
 void Ov001_SetProfileScreenCallback(s32 arg0) {
-    extern void *data_ov001_02193d50;
-    M2C_FIELD(data_ov001_02193d50, s32 *, 0x1E298) = arg0;
+    extern void *gOv001ProfileBlock;
+    M2C_FIELD(gOv001ProfileBlock, s32 *, 0x1E298) = arg0;
 }
 
 void Ov001_AdvanceProfileSetup(void) {
@@ -84,8 +87,8 @@ void Ov001_AdvanceProfileSetup(void) {
 }
 
 void *func_ov001_02176114(void) {
-    extern void *data_ov001_02193d50;
-    u8 *p = (u8 *)data_ov001_02193d50;
+    extern void *gOv001ProfileBlock;
+    u8 *p = (u8 *)gOv001ProfileBlock;
     p = p + 0x2280;
     p = p + 0x1C000;
     return p;
@@ -94,13 +97,13 @@ void *func_ov001_02176114(void) {
 #pragma push
 #pragma opt_propagation off
 void func_ov001_0217612c(void *arg0) {
-void Ov001_UpdateProfileSetup(void); s32 Ov001_PollProfileState(void*,void*); extern void *data_ov001_02193d50;
+void Ov001_UpdateProfileSetup(void); s32 Ov001_PollProfileState(void*,void*); extern void *gOv001ProfileBlock;
 M2C_UNK Ov001_PostTaskMessage(M2C_UNK,M2C_UNK); M2C_UNK Ov001_FreeAlloc(M2C_UNK*);
 void *func_ov001_02189308(void); void CopyU16(const void*,void*,u32);
 u8 sp1,sp0; u8 *main; void (*fp)(s32);
 Ov001_UpdateProfileSetup();
-if(M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)!=0 && M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a1)==0){
-fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);if(fp)fp(0);return;}
+if(M2C_FIELD(gOv001ProfileBlock,u8*,0x1e2a0)!=0 && M2C_FIELD(gOv001ProfileBlock,u8*,0x1e2a1)==0){
+fp=(void(*)(s32))M2C_FIELD(gOv001ProfileBlock,void**,0x1e298);if(fp)fp(0);return;}
 Ov001_PollProfileState(&sp1,&sp0);
 {s32 v=(s32)(u32)sp1;
 if(v>26)goto high26;
@@ -136,30 +139,30 @@ high29:if(v==34)goto tail;return;
 block5:
 
 if(sp0==0)return;
-main=(u8*)data_ov001_02193d50+0x2280;CopyU16(func_ov001_02189308(),main+0x1c000,0x16);
-fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
-if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(0);return;
+main=(u8*)gOv001ProfileBlock+0x2280;CopyU16(func_ov001_02189308(),main+0x1c000,0x16);
+fp=(void(*)(s32))M2C_FIELD(gOv001ProfileBlock,void**,0x1e298);
+if(fp==0){M2C_FIELD(gOv001ProfileBlock,u8*,0x1e2a0)=1;return;}fp(0);return;
 block13:
 if(sp0==0)return;
 
-fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
-if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(1);return;
+fp=(void(*)(s32))M2C_FIELD(gOv001ProfileBlock,void**,0x1e298);
+if(fp==0){M2C_FIELD(gOv001ProfileBlock,u8*,0x1e2a0)=1;return;}fp(1);return;
 block20:
 if(sp0==0)return;
 
-fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
-if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(3);return;
+fp=(void(*)(s32))M2C_FIELD(gOv001ProfileBlock,void**,0x1e298);
+if(fp==0){M2C_FIELD(gOv001ProfileBlock,u8*,0x1e2a0)=1;return;}fp(3);return;
 block26:
 if(sp0==0)return;
 
-fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
-if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(4);return;
+fp=(void(*)(s32))M2C_FIELD(gOv001ProfileBlock,void**,0x1e298);
+if(fp==0){M2C_FIELD(gOv001ProfileBlock,u8*,0x1e2a0)=1;return;}fp(4);return;
 block12:
 if(sp0==0)return;
 
-fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
-if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(2);return;
-tail:Ov001_PostTaskMessage(0,(M2C_UNK)arg0);Ov001_FreeAlloc((M2C_UNK*)&data_ov001_02193d50);done:return;}
+fp=(void(*)(s32))M2C_FIELD(gOv001ProfileBlock,void**,0x1e298);
+if(fp==0){M2C_FIELD(gOv001ProfileBlock,u8*,0x1e2a0)=1;return;}fp(2);return;
+tail:Ov001_PostTaskMessage(0,(M2C_UNK)arg0);Ov001_FreeAlloc((M2C_UNK*)&gOv001ProfileBlock);done:return;}
 #pragma pop
 /* Open the ov001 option page: allocate its 12-byte state block, start the overlay's
  * Wi-Fi session with the page's state/alloc/cleanup callbacks (0x800-byte packet
@@ -236,15 +239,17 @@ void Ov001_AllocWhBuffer(M2C_UNK arg0) {
 }
 
 void func_ov001_0217656c(void) {
-    M2C_UNK func_ov001_0218b760();
-    func_ov001_0218b760();
+    M2C_UNK Ov001_FreeHeapBlock();
+    Ov001_FreeHeapBlock();
 }
 
+/* Fade both screens to white across every plane, then hand over to
+ * Ov001_ShutdownScreen, which releases the ov001 resources and exits. */
 void Ov001_FadeToShutdownScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK Ov001_ShutdownScreen;
-    Ov001_StartFade(3, 1, 0x3F, 0x14);
-    Ov001_StartFade(3, 0, 0x3F, 0x14);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_ALL, 0x14);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_ALL, 0x14);
     Ov001_SetStepCallback(&Ov001_ShutdownScreen);
 }
 
@@ -323,7 +328,7 @@ void Ov001_InitScreen(void) {
     extern M2C_UNK GX_LoadOBJ;
     extern M2C_UNK GX_LoadOBJPltt;
     extern M2C_UNK GX_LoadBG1ScrSub;
-    extern M2C_UNK func_ov001_02176808;
+    extern M2C_UNK Ov001_FadeInInitialMenu;
 
     /* Bring up the screen's subsystems. */
     Ov001_AllocSaveData();
@@ -364,13 +369,15 @@ void Ov001_InitScreen(void) {
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
     Ov001_EnableVisiblePlanes(1, 2);
     Ov001_EnableVisiblePlanes(0, 2);
-    Ov001_SetStepCallback(&func_ov001_02176808);
+    Ov001_SetStepCallback(&Ov001_FadeInInitialMenu);
 }
 
-void func_ov001_02176808(void) {
+/* Second ov001 step: fade both screens in from white over BG1 and, once those
+ * fades finish, open the initial menu. */
+void Ov001_FadeInInitialMenu(void) {
     extern M2C_UNK Ov001_OpenInitialMenuAfterFade;
-    Ov001_StartFade(2, 1, 2, 0x14);
-    Ov001_StartFade(2, 0, 2, 0x14);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, OV001_BLEND_BG1, 20);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG1, 20);
     Ov001_SetStepCallback(&Ov001_OpenInitialMenuAfterFade);
 }
 
@@ -465,21 +472,24 @@ void Ov001_FadeInWifiMenu(void) {
     Ov001_SetStepCallback(&Ov001_OpenWifiMenuAfterFade);
 }
 
+/* Once the Wi-Fi menu's fade-in has finished on both engines, bring in its
+ * back/confirm icon row and hand over to the step that waits for the row to
+ * slide in and unlock. */
 void Ov001_OpenWifiMenuAfterFade(void) {
-    M2C_UNK func_ov001_02171e20(M2C_UNK);
+    M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
-    extern M2C_UNK func_ov001_02176ab0;
-    if (Ov001_IsFadeActive(1) != 0) {
+    extern M2C_UNK Ov001_WaitWifiMenuIconRow;
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
-    func_ov001_02171e20(0);
-    Ov001_SetStepCallback(&func_ov001_02176ab0);
+    Ov001_CreateMenuIconRow(OV001_ICON_ROW_WIFI_MENU);
+    Ov001_SetStepCallback(&Ov001_WaitWifiMenuIconRow);
 }
 
-void func_ov001_02176ab0(void) {
+void Ov001_WaitWifiMenuIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK func_ov001_02176ad8;
@@ -643,12 +653,14 @@ void Ov001_MoveChoiceSelection(s32 direction) {
     }
 }
 
+/* Copy the picture tile of the selected Wi-Fi menu option (its index is stored
+ * per option in gOv001WifiMenuOptionTiles) into the OBJ tile it is drawn from. */
 void Ov001_LoadSelectedWifiMenuTile(void) {
 M2C_UNK Ov001_LoadObjTile(s32,u8,u8);
 extern u8 gOv001WifiMenuSelection;
-struct MenuValues2 table=data_ov001_0218f6f4;
-u8 value=table.values[gOv001WifiMenuSelection];
-Ov001_LoadObjTile(M2C_FIELD(&gOv001WifiMenuSelection,s32 *,4),value,value);
+struct MenuValues2 tiles=gOv001WifiMenuOptionTiles;
+u8 tile=tiles.values[gOv001WifiMenuSelection];
+Ov001_LoadObjTile(M2C_FIELD(&gOv001WifiMenuSelection,s32 *,OV001_WIFI_MENU_TEXT),tile,tile);
 }
 
 /* Open the ov001 WFC settings screen from the option menu: clear the screen's
@@ -688,11 +700,11 @@ void Ov001_LoadWfcSettingsBackground(void) {
  * white with the screen's background and object planes, show those planes, then
  * run the step that waits for the fades and opens the settings menu. */
 void Ov001_FadeInWfcSettingsScreen(void) {
-    extern M2C_UNK func_ov001_02176f4c;
+    extern M2C_UNK Ov001_WaitWfcSettingsFadeIn;
     Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
     Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
     Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
     Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
-    Ov001_SetStepCallback(&func_ov001_02176f4c);
+    Ov001_SetStepCallback(&Ov001_WaitWfcSettingsFadeIn);
 }
 

@@ -179,7 +179,18 @@ s32 func_ov002_021e2994(void) {
     return 0;
 }
 
-void func_ov002_021e299c(void *a,s32 b){void SetEffectNodeFlash(s32,s32,s32);extern M2C_UNK data_ov002_021f312c;extern u8 data_ov002_021f3046;s32 n=M2C_FIELD(a,u8 *,0x53);s32 i=M2C_FIELD(a,u8 *,0x47);SetEffectNodeFlash(M2C_FIELD((u8 *)&data_ov002_021f312c+n*44,s32 *,i*4),b,(&data_ov002_021f3046+n*100)[i*8]);}
+/* Effect-script action (opcodes 16/17): flash the node's effect.  The node's
+ * palette/effect bank and its row in the CO's effect tables select both the
+ * effect node to flash (first table) and the palette to flash it with (second);
+ * the selected node flashes for `frames` ticks. */
+void SetEffectNodePaletteFlash(void *node, s32 frames) {
+    void SetEffectNodeFlash(s32, s32, s32);
+    extern M2C_UNK data_ov002_021f312c;
+    extern u8 data_ov002_021f3046;
+    s32 bank = M2C_FIELD(node, u8 *, FX_NODE_PALETTE);
+    s32 row = M2C_FIELD(node, u8 *, FX_NODE_TABLE_INDEX);
+    SetEffectNodeFlash(M2C_FIELD((u8 *)&data_ov002_021f312c + bank * 44, s32 *, row * 4), frames, (&data_ov002_021f3046 + bank * 100)[row * 8]);
+}
 
 void func_ov002_021e29d8(void *arg0) {
     M2C_UNK func_ov002_021e88a0(s32);
@@ -230,7 +241,7 @@ void UpdateEffectNode(void *node) {
     void ClearEffectNode(void *);
     void SetEffectNodeXY(void *, s32, s32);
     void func_ov002_021e1844(void *);
-    void func_ov002_021e299c(void *, s32);
+    void SetEffectNodePaletteFlash(void *, s32);
     s32 IsEffectNodeOffScreen(void *);
     s32 scale;
     if (M2C_FIELD(node, s32 *, FX_NODE_LIFETIME) >= 0) {
@@ -268,7 +279,7 @@ void UpdateEffectNode(void *node) {
             M2C_FIELD(node, u16 *, FX_NODE_SCALE) = (u16)scale;
             SetEffectNodeXY(node, (s32)(M2C_FIELD(node, s32 *, FX_NODE_X_FIXED) << 8) >> 16, (s32)(M2C_FIELD(node, s32 *, FX_NODE_Y_FIXED) << 8) >> 16);
             if (M2C_FIELD(node, s32 *, FX_NODE_LIFETIME) >= M2C_FIELD(node, s32 *, FX_NODE_DURATION)) {
-                func_ov002_021e299c(node, 6);
+                SetEffectNodePaletteFlash(node, 6);
                 ClearEffectNode(node);
                 M2C_FIELD(node, s32 *, FX_NODE_LIFETIME) = -1;
             }

@@ -33,29 +33,31 @@ s32 func_020c5d3c(void) {
     return 2;
 }
 
-u8 func_020c5d6c(void) {
-    s32 IsUnitAvailable();
-    M2C_UNK GetCurrentSaveType();
+/* Continue-command availability: hidden (2) once the battle has ended, disabled
+ * (1) when the current save kind has no battle record to resume, and available
+ * (0) when it does. */
+u8 CanContinueBattle(void) {
+    s32 IsUnitAvailable(s32);
+    M2C_UNK GetCurrentSaveType(void);
     extern u8 gBattleEndState;
-    u8 var_r0;
+    u8 available;
 
     if (gBattleEndState != 0) {
         return 2;
     }
-    GetCurrentSaveType();
-    if (IsUnitAvailable() == 0) {
-        var_r0 = 1;
+    if (IsUnitAvailable(GetCurrentSaveType()) == 0) {
+        available = 1;
     } else {
-        var_r0 = 0;
+        available = 0;
     }
-    return var_r0;
+    return available;
 }
 
 void func_020c5da4(void) {
-    M2C_UNK func_ov000_0216aaf4();
+    M2C_UNK RunMapMenuEvent();
     M2C_UNK DeleteMapMenuSprites();
     DeleteMapMenuSprites();
-    func_ov000_0216aaf4();
+    RunMapMenuEvent();
 }
 
 void func_020c5db4(void) {
@@ -196,13 +198,15 @@ s32 func_020c606c(void) {
     return IsCurrentPlayerOutOfUnits();
 }
 
-s32 func_020c6088(void) {
+/* Map action menu predicate: 0 when the tile under the cursor holds no visible
+ * unit, 2 when it holds one. */
+s32 IsCursorCellEmpty(void) {
     extern void **gCurrentMap;
-    void *base = *gCurrentMap;
-    s16 a = M2C_FIELD(base, s16 *, 0x52DE);
-    s16 b = M2C_FIELD(base, s16 *, 0x52DC);
-    u16 c = M2C_FIELD((u8 *)base + a * 2, u16 *, 0x3758);
-    if (M2C_FIELD(base, u8 *, b + c) == 0) { return 0; }
+    void *map = *gCurrentMap;
+    s16 cursorY = M2C_FIELD(map, s16 *, MAP_CURSOR_Y);
+    s16 cursorX = M2C_FIELD(map, s16 *, MAP_CURSOR_X);
+    u16 rowOffset = M2C_FIELD((u8 *)map + cursorY * 2, u16 *, MAP_ROW_OFFSETS);
+    if (M2C_FIELD(map, u8 *, MAP_CELL_VISIBLE_UNIT + cursorX + rowOffset) == 0) { return 0; }
     return 2;
 }
 
@@ -463,12 +467,15 @@ s32 func_020c6214(void) {
     return 2;
 }
 
+/* Availability of the Dive command: offered only while the unit under the
+ * cursor is a submarine (kind UNIT_KIND_SUBMARINE); CanSubmergeUnitAtCursor
+ * checks the rest. Returns 0 when the command is available, 2 when it is not. */
 s32 CanSubmergeCommand(void) {
     s32 CanSubmergeUnitAtCursor();
     extern void **gCurrentMap;
 
-    switch (((UnkStruct_020C5D0C *) M2C_FIELD(*gCurrentMap, u8 **, 0x52D0))->unk0) {
-    case 0x16:
+    switch (M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->kind) {
+    case UNIT_KIND_SUBMARINE:
         return CanSubmergeUnitAtCursor();
     }
     return 2;
@@ -485,12 +492,15 @@ s32 CanSurfaceUnitAtCursor(void) {
  return 2;
 }
 
+/* Availability of the Surface command: offered only while the unit under the
+ * cursor is a submarine (kind 0x16); CanSurfaceUnitAtCursor checks the rest.
+ * Returns 0 when the command is available, 2 when it is not. */
 s32 CanSurfaceCommand(void) {
     s32 CanSurfaceUnitAtCursor();
     extern void **gCurrentMap;
 
-    switch (((UnkStruct_020C5D0C *) M2C_FIELD(*gCurrentMap, u8 **, 0x52D0))->unk0) {
-    case 0x16:
+    switch (M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->kind) {
+    case UNIT_KIND_SUBMARINE:
         return CanSurfaceUnitAtCursor();
     }
     return 2;
@@ -574,7 +584,7 @@ void func_020c69f8(void) {
 }
 
 void func_020c6a10(void) {
-    M2C_UNK func_020844f8();
+    M2C_UNK SendTurnEndPacket();
     M2C_UNK EndPlayerTurn();
     extern u8 gBattleEndState;
     DeleteMapMenuSprites();
@@ -582,7 +592,7 @@ void func_020c6a10(void) {
     if (gBattleEndState == 0) {
         return;
     }
-    func_020844f8();
+    SendTurnEndPacket();
 }
 
 void func_020c6a38(void) {

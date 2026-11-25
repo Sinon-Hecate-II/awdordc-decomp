@@ -44,7 +44,7 @@ void func_ov005_02218fd0(void *arg0) {
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
     M2C_UNK CreateUnitSpriteButtonTask(void *, M2C_UNK);
-    void *func_020ab1c4(M2C_UNK);
+    void *CreateUnitSprite(M2C_UNK);
     M2C_UNK *func_020e3218(M2C_UNK *);
     s32 func_ov005_02218e54();
     s32 GetResultSecondCoFaceId();
@@ -189,7 +189,7 @@ void func_ov005_02218fd0(void *arg0) {
     } while (var_r7 < 2);
     gCur3DSpriteEngine = data_027e00c8;
     func_02091d4c(0);
-    M2C_FIELD(arg0, void **, 0x38) = func_020ab1c4(7);
+    M2C_FIELD(arg0, void **, 0x38) = CreateUnitSprite(7);
     func_020aab24(M2C_FIELD(arg0, void **, 0x38), 1, 0x158, 4, 1);
     temp_r5 = M2C_FIELD(arg0, void **, 0x38);
     Set3DSpriteSlideTargetAndStart(temp_r5, 0, 0xC0, 0, 0xC0);
@@ -226,7 +226,7 @@ void func_ov005_02218fd0(void *arg0) {
     if (var_r2 & 0xFF) {
         RemoveSpriteCell(temp_r0_8, 1);
     }
-    M2C_FIELD(arg0, void **, 0x3C) = func_020ab1c4(7);
+    M2C_FIELD(arg0, void **, 0x3C) = CreateUnitSprite(7);
     func_020aab24(M2C_FIELD(arg0, void **, 0x3C), 0xE, 0x168, 4, 1);
     temp_r5_2 = M2C_FIELD(arg0, void **, 0x3C);
     Set3DSpriteSlideTargetAndStart(temp_r5_2, 0, 0xC0, 0, 0xC0);
@@ -263,7 +263,7 @@ void func_ov005_02218fd0(void *arg0) {
     if (var_r2_2 & 0xFF) {
         RemoveSpriteCell(temp_r0_9, 1);
     }
-    M2C_FIELD(arg0, void **, 0x40) = func_020ab1c4(7);
+    M2C_FIELD(arg0, void **, 0x40) = CreateUnitSprite(7);
     func_020aab24(M2C_FIELD(arg0, void **, 0x40), 0xF, 0x170, 4, 1);
     temp_r5_3 = M2C_FIELD(arg0, void **, 0x40);
     Set3DSpriteSlideTargetAndStart(temp_r5_3, 0, 0xC0, 0, 0xC0);

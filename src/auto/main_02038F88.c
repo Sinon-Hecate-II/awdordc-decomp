@@ -30,26 +30,26 @@ s32 OpenGameSpySocket(void){
  * id `peerId`, returning that connection slot, or NULL when there is no session or
  * no player matches. */
 s32 FindPlayerConnection(s32 peerId) {
-    void *GetConnectionPeer();
+    void *gt2GetConnectionData();
     extern void *gNetSession;
     extern M2C_UNK gPlayerConnections;
     s32 i;
     if (gNetSession == NULL) return 0;
     for (i = 0; i < 32; i++) {
-        if ((&gPlayerConnections)[i] != 0 && peerId == ((PlayerPeer *)GetConnectionPeer((&gPlayerConnections)[i]))->peerId)
+        if ((&gPlayerConnections)[i] != 0 && peerId == ((PlayerPeer *)gt2GetConnectionData((&gPlayerConnections)[i]))->peerId)
             return (&gPlayerConnections)[i];
     }
     return 0;
 }
 
 u8 GetConnectionPlayerId(void) {
-    void *GetConnectionPeer();
-    return M2C_FIELD(GetConnectionPeer(), u8 *, 1);
+    void *gt2GetConnectionData();
+    return M2C_FIELD(gt2GetConnectionData(), u8 *, 1);
 }
 
 u8 GetCurrentConnectionIndex(void) {
-    void *GetConnectionPeer();
-    return M2C_FIELD(GetConnectionPeer(), u8 *, 0);
+    void *gt2GetConnectionData();
+    return M2C_FIELD(gt2GetConnectionData(), u8 *, 0);
 }
 
 s32 FindFreePlayerSlot(void) {
@@ -102,13 +102,13 @@ void *GetPlayerPeer(s32 arg0) {
 
 /* Whether any of the 32 player connection slots holds a session with peer `peerId`. */
 s32 HasPlayerConnection(s32 peerId) {
-    void *GetConnectionPeer(void *);
+    void *gt2GetConnectionData(void *);
     extern M2C_UNK gPlayerConnections;
     s32 i;
 
     for (i = 0; i < 32; i++) {
         if ((&gPlayerConnections)[i] != 0) {
-            if (((PlayerPeer *)GetConnectionPeer((void *)(&gPlayerConnections)[i]))->peerId == peerId) {
+            if (((PlayerPeer *)gt2GetConnectionData((void *)(&gPlayerConnections)[i]))->peerId == peerId) {
                 return 1;
             }
         }
@@ -242,14 +242,14 @@ void DispatchMatchSessionEvent(s32 event, s32 data) {
  * records this console's own player id; an error only refreshes the players. */
 void DispatchMatchEvent(s32 status, s32 closed, s32 targetCleared, s32 serving, M2C_UNK slot) {
     extern void *gNetSession;
-    s32 func_0203dcf4(void);
+    s32 ResetClientSession(void);
     void SetNetState(s32);
     u32 MaskPlayerIds(u8 *, s32);
     void UpdateConnectedPlayerCount(void);
 
     if (status == 0 && closed != 0) {
         if (M2C_FIELD(gNetSession, s32 *, 0x514) == 0) {
-            func_0203dcf4();
+            ResetClientSession();
             SetNetState(NET_STATE_READY);
         }
         goto refreshPlayers;
@@ -325,8 +325,8 @@ HandleConnectionTextCommand(conn,M2C_FIELD(info,s32 *,0),text+StringLength(sMatP
 }
 
 void func_02039838(void) {
-    M2C_UNK func_02044744();
-    func_02044744();
+    M2C_UNK HandleTransferReceive();
+    HandleTransferReceive();
 }
 
 void func_02039844(s32 arg0, s32 arg1) {
@@ -335,7 +335,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     extern u32 gEmptyString;
 
     s32 func_0203e558(void);
-    void *GetConnectionPeer();
+    void *gt2GetConnectionData();
     void ResetTransferSlot();
     s32 RemovePeerBySlot(s32);
     M2C_UNK func_0203dee8();
@@ -347,7 +347,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     M2C_UNK Qr2_StateChanged();
     M2C_UNK GetSessionPlayerSlot();
     M2C_UNK func_0203bd0c();
-    M2C_UNK func_0203dcf4();
+    M2C_UNK ResetClientSession();
     void SetNetState(s32);
 
     s32 r8;
@@ -378,7 +378,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     }
 
     if (r8 == 0) {
-        u8 *peer = GetConnectionPeer(arg0v);
+        u8 *peer = gt2GetConnectionData(arg0v);
         if (peer == NULL) return;
         r4 = peer[1];
         {
@@ -502,26 +502,30 @@ void func_02039844(s32 arg0, s32 arg1) {
         }
         if (M2C_FIELD(base, u8 *, 0x381) != 0) return;
         func_0203bd0c();
-        func_0203dcf4();
+        ResetClientSession();
         SetNetState(3);
         return;
     }
 }
 
 void func_02039b9c(void) {
-    M2C_UNK func_02044780();
-    func_02044780();
+    M2C_UNK ReportTransferError();
+    ReportTransferError();
 }
 
-void Gt2SocketErrorCallback(s32 *arg0) {
+/* GT2 socket-error callback: on a socket error, record the socket layer's last
+ * error on the session block, report the failure as a fatal WFC error and close
+ * the session by clearing its GT2 socket. */
+void Gt2SocketErrorCallback(s32 *gt2Socket) {
     extern void *gNetSession;
     void SetNetError(s32, s32);
     s32 GT2SocketHandle(s32 *);
     s32 ghiGetLastSocketError(void);
-    GT2SocketHandle(arg0);
-    M2C_FIELD(&gNetSession, s32 *, 4) = ghiGetLastSocketError();
+
+    (void)GT2SocketHandle(gt2Socket);
+    M2C_FIELD(&gNetSession, s32 *, NET_SESSION_LAST_SOCKET_ERROR) = ghiGetLastSocketError();
     SetNetError(9, 0xfffe8515);
-    M2C_FIELD(M2C_FIELD(&gNetSession, s32 *, 0), s32 *, 0) = 0;
+    M2C_FIELD(M2C_FIELD(&gNetSession, s32 *, 0), s32 *, NET_SESSION_SOCKET) = 0;
 }
 
 /* Clear the NAS login work area and install the parameters for the next request. */

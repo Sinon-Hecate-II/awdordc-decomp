@@ -9,15 +9,22 @@ static inline void DrawMapParticleAtX(u8 x,MapEffectParticle *p,void *map) {
 
 typedef struct { u16 first; u16 low:6; u16 type:4; u16 kind:4; u16 top:2; u8 value; u8 flags:4; u8 mode:4; u8 extra; u8 last; } Unk020AEntry;
 
-void SetWeatherChangeDelay(s32 a) {
- extern s32 *gCurrentMap;
- void *p;u32 index;
- switch(a){case 1:case 2:case 3:
- p=(void *)*gCurrentMap;
- index=(u32)M2C_FIELD(p,u16 *,0x52a4)-1;
- M2C_FIELD(p+index,u8 *,0x515c)=1;
- break;
- }
+/* Give the acting player a one-turn weather-change delay when the weather turns
+ * adverse (rain, snow or sandstorm). */
+void SetWeatherChangeDelay(s32 weather) {
+    extern s32 *gCurrentMap;
+    void *map;
+    u32 playerIndex;
+
+    switch (weather) {
+    case WEATHER_RAIN:
+    case WEATHER_SNOW:
+    case WEATHER_SANDSTORM:
+        map = (void *)*gCurrentMap;
+        playerIndex = (u32)M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) - 1;
+        M2C_FIELD(map + playerIndex, u8 *, MAP_WEATHER_DELAY) = 1;
+        break;
+    }
 }
 
 #pragma opt_instruction_scheduling off
@@ -50,16 +57,18 @@ void SetWeatherChangeDelayIfChanged(s32 a) {
  SetWeatherChangeDelay(a);
 }
 
-void StartWeatherChange(M2C_UNK arg0) {
-    s16 func_020a3790(M2C_UNK);
-    void SetWeatherChangeDelayForAllPlayers();
+/* Starts the map's weather transition to `weather`: every active player gets
+ * `turns` turns of weather-change delay, then the transition sprite (a normal
+ * change, not a reset to the start weather) is created. */
+void StartWeatherChange(s32 weather, s32 turns) {
+    void SetWeatherChangeDelayForAllPlayers(s32, s32);
     extern M2C_UNK gWeatherTransitionSpriteClass;
-    void *temp_r4;
+    void *sprite;
 
-    SetWeatherChangeDelayForAllPlayers();
-    temp_r4 = CreateSpriteFromClass(&gWeatherTransitionSpriteClass, 7);
-    M2C_FIELD(temp_r4, s16 *, 0x36) = func_020a3790(arg0);
-    M2C_FIELD(temp_r4, s16 *, 0x38) = 0;
+    SetWeatherChangeDelayForAllPlayers(weather, turns);
+    sprite = CreateSpriteFromClass(&gWeatherTransitionSpriteClass, 7);
+    M2C_FIELD(sprite, s16 *, WEATHER_SPRITE_TARGET) = NormalizeWeather(weather);
+    M2C_FIELD(sprite, s16 *, WEATHER_SPRITE_IS_RESET) = 0;
 }
 
 /* Decide the weather to announce for the next turn: manual weather (mode != 1)
@@ -180,9 +189,21 @@ particle++;particleOffset+=MAP_EFFECT_PARTICLE_STRIDE;
 }while(particle<MAP_EFFECT_PARTICLE_COUNT);
 }
 
-void ApplyWeatherEffects(u32 a) {
-void InitClearWeatherEffects(void);void InitRainEffects(void);void InitSnowEffects(void);void InitSandstormEffects(void);
-switch(a){case 0:InitClearWeatherEffects();return;case 1:InitRainEffects();return;case 2:InitSnowEffects();return;case 3:InitSandstormEffects();return;default:return;}
+/* Install the map effect set for the given weather: clear, rain, snow or
+ * sandstorm particles and their drift records. */
+void ApplyWeatherEffects(u32 weather) {
+    void InitClearWeatherEffects(void);
+    void InitRainEffects(void);
+    void InitSnowEffects(void);
+    void InitSandstormEffects(void);
+
+    switch (weather) {
+    case WEATHER_CLEAR:     InitClearWeatherEffects();     return;
+    case WEATHER_RAIN:      InitRainEffects();             return;
+    case WEATHER_SNOW:      InitSnowEffects();             return;
+    case WEATHER_SANDSTORM: InitSandstormEffects();        return;
+    default: return;
+    }
 }
 
 /* Fixes the map's weather to `weather`: current, start and reset weather all

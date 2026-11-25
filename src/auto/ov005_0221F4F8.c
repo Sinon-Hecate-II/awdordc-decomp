@@ -2,9 +2,11 @@
 #include "common.h"
 #include "ds3dsprite.h"
 #include "battle_map.h"
+#include "ov005_results.h"
+#include "sprite_grid.h"
 
 void func_ov005_0221f4f8(void *arg0){
-s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_01ffac9c(u16,u16,u16,void *,s32);void QueueBGExtPaletteUpload(void *,s32,s32,s32,s32);void Show3DSpriteSlide(void *);
+s32 EaseInterpolate(s32,s32,s32,s32,s32);void AddSpriteToMainEngine(u16,u16,u16,void *,s32);void QueueBGExtPaletteUpload(void *,s32,s32,s32,s32);void Show3DSpriteSlide(void *);
 extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineMain,**g3DSpriteEngineSub;extern u8 data_02101f78[];
 u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;u16 *volatile p5;u16 *volatile p6;u16 *volatile p7;u16 *volatile p8;u16 *volatile p9;u16 *volatile p10;
 s32 saved;u8 alpha;
@@ -25,8 +27,8 @@ p10=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+18); *p10=(*p10&~0xc0)|0x40;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,s32 *,0),u8 *,0x51)=16-alpha;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,s32 *,0),u8 *,0x52)=alpha;
 gCur3DSpriteEngine=saved;
-func_01ffac9c(0,0x440,(u16)((0x3FF&(0x140>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,s32 *,0),u16 *,0)<<0x11)>>0x1E)))|0x6000),data_02101f78,11);
-}else func_01ffac9c(0,64,(u16)((0x3FF&(0x140>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,s32 *,0),u16 *,0)<<0x11)>>0x1E)))|0x6000),data_02101f78,11);
+AddSpriteToMainEngine(0,0x440,(u16)((0x3FF&(0x140>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,s32 *,0),u16 *,0)<<0x11)>>0x1E)))|0x6000),data_02101f78,11);
+}else AddSpriteToMainEngine(0,64,(u16)((0x3FF&(0x140>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,s32 *,0),u16 *,0)<<0x11)>>0x1E)))|0x6000),data_02101f78,11);
 if(M2C_FIELD(arg0,s32 *,0x38)>30 && M2C_FIELD(arg0,s32 *,0x38)<126 && M2C_FIELD(arg0,s32 *,0x38)%8==0){
 {
 u16 index=0,color; u8 red,green,blue; u8 *data;
@@ -217,30 +219,37 @@ void CreateCampaignHintPanel(M2C_UNK parent) {
     CreateSpriteObject(&gCampaignHintPanelClass, parent);
 }
 
-void *func_ov005_0221fdb0(void *arg0) {
-    extern M2C_UNK data_ov005_02220f54;
-    void *temp_r4;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov005_02220f54;
-    temp_r4 = M2C_FIELD(arg0, void **, 0x34);
-    if (temp_r4 != NULL) {
-        HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
-        MemFree(temp_r4);
+/* Deleting destructor of the results map overview object: restore its vtable,
+ * free the sprite-cell list it owns (its cell block, then the list itself) and
+ * then free the object. */
+void *ResultsMap_Delete(void *map) {
+    extern M2C_UNK gResultsMapVtbl;
+    void *cells;
+
+    M2C_FIELD(map, M2C_UNK **, 0) = &gResultsMapVtbl;
+    cells = M2C_FIELD(map, void **, RESULTS_MAP_CELLS);
+    if (cells != NULL) {
+        HeapFreeBlock(M2C_FIELD(cells, s32 *, SPRITE_CELL_LIST_CELLS));
+        MemFree(cells);
     }
-    MemFree(arg0);
-    return arg0;
+    MemFree(map);
+    return map;
 }
 
-void *func_ov005_0221fdf0(void *arg0) {
-    extern M2C_UNK data_ov005_02220f54;
-    void *temp_r4;
+/* Non-deleting destructor of the results map overview object: restore its vtable
+ * and free the sprite-cell list it owns (its cell block, then the list itself),
+ * leaving the object itself to the caller. */
+void *ResultsMap_Destroy(void *map) {
+    extern M2C_UNK gResultsMapVtbl;
+    void *cells;
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov005_02220f54;
-    temp_r4 = M2C_FIELD(arg0, void **, 0x34);
-    if (temp_r4 != NULL) {
-        HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
-        MemFree(temp_r4);
+    M2C_FIELD(map, M2C_UNK **, 0) = &gResultsMapVtbl;
+    cells = M2C_FIELD(map, void **, RESULTS_MAP_CELLS);
+    if (cells != NULL) {
+        HeapFreeBlock(M2C_FIELD(cells, s32 *, SPRITE_CELL_LIST_CELLS));
+        MemFree(cells);
     }
-    return arg0;
+    return map;
 }
 
 s32 func_ov005_0221fe28(s32 arg0) {

@@ -1,5 +1,6 @@
 /* 44 functions from 0x02008EF0 to 0x02009EB0 (main), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 
 typedef struct { u16 values[5]; } Unk02009B0CFields;
 typedef struct { u16 values[6]; } Unk02009B0CRecord;
@@ -259,17 +260,52 @@ s32 Sound_IsCommandReached(u32 commandMark) {
     return reached;
 }
 
-s32 func_02009574(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();s32 count=0;void *p=M2C_FIELD(&gSoundCommandQueueState,void **,0);if(p){do{p=*(void **)p;count++;}while(p);}OS_RestoreInterrupts(state);return count;}
+/* Count the sound command nodes still unused: walk the queue's free list from
+ * its head with interrupts locked and return how many nodes remain. */
+s32 Sound_CountFreeCommands(void) {
+    s32 OS_DisableInterrupts(void);
+    s32 OS_RestoreInterrupts(s32);
+    extern M2C_UNK gSoundCommandQueueState;
+    s32 state = OS_DisableInterrupts();
+    s32 count = 0;
+    QueueNode09298 *node = ((State09100 *)&gSoundCommandQueueState)->head;
 
-s32 func_020095b0(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();s32 count=0;void *p=M2C_FIELD(&gSoundCommandQueueState,void **,8);if(p){do{p=*(void **)p;count++;}while(p);}OS_RestoreInterrupts(state);return count;}
+    if (node) {
+        do {
+            node = node->next;
+            count++;
+        } while (node);
+    }
+    OS_RestoreInterrupts(state);
+    return count;
+}
+
+/* Count commands waiting on the ARM7 queue's queued-command list while interrupts are disabled. */
+s32 Sound_CountQueuedCommands(void) {
+    s32 OS_DisableInterrupts(void);
+    s32 OS_RestoreInterrupts(s32);
+    extern M2C_UNK gSoundCommandQueueState;
+    s32 interruptState = OS_DisableInterrupts();
+    s32 count = 0;
+    void *node = M2C_FIELD(&gSoundCommandQueueState, void **, 8);
+
+    if (node) {
+        do {
+            node = *(void **)node;
+            count++;
+        } while (node);
+    }
+    OS_RestoreInterrupts(interruptState);
+    return count;
+}
 
 s32 Sound_CountInFlightCommands(void) {
-    s32 func_02009574();
-    s32 func_020095b0();
+    s32 Sound_CountFreeCommands();
+    s32 Sound_CountQueuedCommands();
     s32 temp_r4;
 
-    temp_r4 = func_02009574();
-    return (0x100 - temp_r4) - func_020095b0();
+    temp_r4 = Sound_CountFreeCommands();
+    return (0x100 - temp_r4) - Sound_CountQueuedCommands();
 }
 
 void Sound_CommandChannelHandler(int unused,int arg1) {
@@ -322,7 +358,23 @@ void *Sound_PopFreeCommand(void) {
     return command;
 }
 
-s32 Sound_IsCommandChannelReady(void){s32 func_020062b4(void);s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);s32 state,v,result;if(!func_020062b4())return 1;state=OS_DisableInterrupts();*(volatile s32 *)0x04fff200=16;v=*(volatile s32 *)0x04fff200;OS_RestoreInterrupts(state);if(v)result=1;else result=0;return result;}
+/* Test whether the ARM7 sound command channel can take commands: on hardware
+ * that has the channel, probe its status register with interrupts locked and
+ * report it ready when the probe reads back nonzero. */
+s32 Sound_IsCommandChannelReady(void) {
+    s32 func_020062b4(void);
+    s32 OS_DisableInterrupts(void);
+    s32 OS_RestoreInterrupts(s32);
+    s32 irq, status, result;
+
+    if (!func_020062b4()) return 1;
+    irq = OS_DisableInterrupts();
+    *(volatile s32 *)SND_CMD_CHANNEL_STATUS_REG = SND_CMD_CHANNEL_PROBE;
+    status = *(volatile s32 *)SND_CMD_CHANNEL_STATUS_REG;
+    OS_RestoreInterrupts(irq);
+    if (status) result = 1; else result = 0;
+    return result;
+}
 
 void func_0200973c(void){extern M2C_UNK gSoundChannelCallbacks;int i=0;u8 *p=(u8 *)&gSoundChannelCallbacks;int zero=i;do{*(s32 *)p=zero;*(s32 *)(p+4)=zero;i++;p[8]=zero;p+=12;}while(i<8);}
 
@@ -517,10 +569,13 @@ void SetPackedTableEntry(s32 arg0, s32 arg1, s32 arg2) {
     Sound_UnlockMutex();
 }
 
-void *GetPackedTableEntry(char *a,s32 b){
-void *v;Sound_LockMutex();v=M2C_FIELD(a+b*4,void **,60);
-if(v){if((u32)v<0x2000000U)v=a+(u32)v;}else v=0;
-Sound_UnlockMutex();return v;
+/* Resolve entry `index` of a wave archive's packed table: its slot holds either
+ * an absolute main-RAM pointer or, when below the main-RAM base, an offset into
+ * the archive.  Returns NULL when the entry is not loaded. */
+void *GetPackedTableEntry(char *archive,s32 index){
+void *entry;Sound_LockMutex();entry=M2C_FIELD(archive+index*4,void **,WAVE_ARCHIVE_ENTRIES);
+if(entry){if((u32)entry<WAVE_ARCHIVE_POINTER_BASE)entry=archive+(u32)entry;}else entry=0;
+Sound_UnlockMutex();return entry;
 }
 
 void PXI_Init(void) {

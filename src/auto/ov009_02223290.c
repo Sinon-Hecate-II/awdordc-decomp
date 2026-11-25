@@ -287,19 +287,22 @@ if(callback==NULL)return;
 callback(arg0,arg1,arg2,arg3,arg4);
 }
 
-void DeliverLinkSendResult(void *arg0) {
+/* Deliver the packet a completed link channel transfer carried to the link's
+ * registered packet handler: a failed result only signals the link event, and a
+ * completion with no payload does nothing. */
+void DeliverLinkSendResult(void *completion) {
     void DispatchLinkPacket(s32, u16, u16);
-    s32 temp_r0;
+    s32 packet;
 
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
+    if (M2C_FIELD(completion, u16 *, LINK_SEND_EVENT_RESULT) != 0) {
         SignalLinkEvent();
         return;
     }
-    temp_r0 = M2C_FIELD(arg0, s32 *, 0x14);
-    if (temp_r0 == 0) {
+    packet = M2C_FIELD(completion, s32 *, LINK_SEND_EVENT_DATA);
+    if (packet == 0) {
         return;
     }
-    DispatchLinkPacket(temp_r0, M2C_FIELD(arg0, u16 *, 0x18), M2C_FIELD(arg0, u16 *, 0x10));
+    DispatchLinkPacket(packet, M2C_FIELD(completion, u16 *, LINK_SEND_EVENT_LENGTH), M2C_FIELD(completion, u16 *, LINK_SEND_EVENT_INDEX));
 }
 
 /* Callback of the Download Play link channels 4 and 12: a failed event reports
@@ -373,23 +376,27 @@ s32 func_ov009_02223c08(void) {
 }
 
 void func_ov009_02223c38(void *arg0) {
- s32 func_ov009_02223c60(void); M2C_UNK RestartLinkSession();
+ s32 QueueLinkSetupCommand(void); M2C_UNK RestartLinkSession();
  if(M2C_FIELD(arg0,u16 *,2)!=0) {SignalLinkEvent();RestartLinkSession();return;}
- if(func_ov009_02223c60()!=0) return;
+ if(QueueLinkSetupCommand()!=0) return;
 }
 
-s32 func_ov009_02223c60(void) {
+/* Queue the link's next setup command, a WFC command whose completion callback
+ * FinishLinkSetupCommand continues the state machine: the link is marked pending
+ * first; when the command cannot be queued the link error is signalled and the
+ * channel closed.  Returns 1 once the command is queued, 0 on failure. */
+s32 QueueLinkSetupCommand(void) {
     s32 func_0201280c(void (*)(void *), s32);
-    void func_ov009_02223c98(void *);
+    void FinishLinkSetupCommand(void *);
     M2C_UNK CloseLinkChannel();
-    SetLinkPhase(3);
-    if (func_0201280c(func_ov009_02223c98, 0) == 2) return 1;
+    SetLinkPhase(LINK_PHASE_PENDING);
+    if (func_0201280c(FinishLinkSetupCommand, 0) == 2) return 1;
     SignalLinkError();
     CloseLinkChannel();
     return 0;
 }
 
-void func_ov009_02223c98(void *arg0) {
+void FinishLinkSetupCommand(void *arg0) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     M2C_UNK SignalLinkEvent();
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
@@ -407,11 +414,11 @@ void HandleLinkEndTaskEvent(void *arg0) {
     SetLinkPhase(0);
 }
 
-s32 func_ov009_02223ce4(void) {
-    s32 func_02012274(M2C_UNK *);
+s32 SendLinkStopCommand(void) {
+    s32 WFC_SendCommand1(M2C_UNK *);
     extern M2C_UNK func_ov009_02223d14;
     SetLinkPhase(3);
-    if (func_02012274(&func_ov009_02223d14) == 2) {
+    if (WFC_SendCommand1(&func_ov009_02223d14) == 2) {
         return 1;
     }
     SignalLinkError();
@@ -545,12 +552,16 @@ void SetLinkPlayerName(s32 src,u32 size){
  MI_CpuFill8((u8*)&gLinkConnectionExtraData+size,0,24-size);
 }
 
-void func_ov009_02223f7c(s32 a,s32 b){
- void func_ov009_0222140c(void*,s32,s32);
- extern M2C_UNK gLinkLocalPlayerInfo,gLinkState,gLinkDownloadHeader;
- func_ov009_0222140c(&gLinkLocalPlayerInfo,a,b);
- M2C_FIELD(&gLinkState,void**,0x100)=&gLinkLocalPlayerInfo;
- M2C_FIELD(&gLinkDownloadHeader,u16*,4)=0x60;
+/* Stage a buffer as this console's local-player record: copy it into the payload
+ * area of gLinkLocalPlayerInfo, point the link's download-play data at that block
+ * and set the transfer header's length to the full announce record size. */
+void StageLinkLocalPlayerRecord(s32 src, s32 size) {
+    void CopyLinkPlayerRecordPayload(void*, s32, s32);
+    extern M2C_UNK gLinkLocalPlayerInfo, gLinkState, gLinkDownloadHeader;
+
+    CopyLinkPlayerRecordPayload(&gLinkLocalPlayerInfo, src, size);
+    M2C_FIELD(&gLinkState, void **, LINK_STATE_DOWNLOAD_DATA) = &gLinkLocalPlayerInfo;
+    M2C_FIELD(&gLinkDownloadHeader, u16 *, LINK_DOWNLOAD_LENGTH) = LINK_PLAYER_ANNOUNCE_SIZE;
 }
 
 /* Announce this console's player record to the link: the host first publishes its
@@ -571,17 +582,20 @@ s32 AnnounceLinkPlayer(void){
  }return 1;
 }
 
-void func_ov009_02224024(void) {
+/* While this console is a guest in an active link, ask the host (player slot 0)
+ * for the connected-player mask again. */
+void RequestConnectedPlayers(void) {
     s32 GetLinkPhase();
     M2C_UNK QueueHostLinkPacket(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_ov009_022254d8();
-    if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
+    s32 IsLinkGuest();
+
+    if ((GetLinkPhase() != LINK_PHASE_ACTIVE) && (GetLinkPhase() != LINK_PHASE_INGAME)) {
         return;
     }
-    if (func_ov009_022254d8() == 0) {
+    if (IsLinkGuest() == 0) {
         return;
     }
-    QueueHostLinkPacket(5, 0, 0, 1);
+    QueueHostLinkPacket(LINK_MSG_CONNECT_REQUEST, 0, 0, 1);
 }
 
 M2C_UNK *GetLinkLocalPlayerInfo(void) {
@@ -589,14 +603,16 @@ M2C_UNK *GetLinkLocalPlayerInfo(void) {
     return &gLinkLocalPlayerInfo;
 }
 
-s32 GetActiveLinkPlayerSlot(s32 a){
- u16 GetConnectedPlayers(void);
- extern M2C_UNK gLinkPlayers;
- s32 p;
- if(!(GetConnectedPlayers()&(1<<a)))return 0;
- p=(s32)&gLinkPlayers+a*0x60;
- if(!(M2C_FIELD(p,u8*,0x16)&1))p=0;
- return p;
+/* Return player slot `player`'s record when the link lists it as connected and its
+ * slot flag still says it holds a player, otherwise NULL. */
+s32 GetActiveLinkPlayerSlot(s32 player) {
+    u16 GetConnectedPlayers(void);
+    extern M2C_UNK gLinkPlayers;
+    s32 slot;
+    if (!(GetConnectedPlayers() & (1 << player))) return 0;
+    slot = (s32)&gLinkPlayers + player * LINK_PLAYER_SLOT_STRIDE;
+    if (!(M2C_FIELD(slot, u8 *, LINK_PLAYER_FLAGS) & LINK_PLAYER_CONNECTED)) slot = 0;
+    return slot;
 }
 
 s32 GetLinkPlayerSlot(s32 arg0) {

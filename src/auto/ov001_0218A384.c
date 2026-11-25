@@ -130,17 +130,21 @@ void *Ov001_QueueCreate(s32 arg0) {
     return temp_r0;
 }
 
-void *Ov001_QueueCreateFromBuffer(s32 arg0, s32 arg1, s32 arg2) {
+/* Create an ov001 ring queue already holding `count` values: `first`, then
+ * `first + stride`, ...  Used to build an arena's free-node list (each entry is
+ * the address of one node).  The queue comes back full, so only the write index
+ * is set. */
+void *Ov001_QueueCreateFromRange(s32 count, s32 first, s32 stride) {
     void *Ov001_QueueCreate(s32);
-    M2C_UNK *base = (M2C_UNK *)Ov001_QueueCreate(arg0);
+    M2C_UNK *queue = (M2C_UNK *)Ov001_QueueCreate(count);
     s32 i;
-    s32 val = arg1;
-    for (i = 0; i < arg0; i++) {
-        base[i + 1] = (M2C_UNK)val;
-        val += arg2;
+    s32 value = first;
+    for (i = 0; i < count; i++) {
+        queue[i + 1] = (M2C_UNK)value;
+        value += stride;
     }
-    ((u8 *)base)[3] = (u8)arg0;
-    return base;
+    ((u8 *)queue)[OV001_QUEUE_WRITE] = (u8)count;
+    return queue;
 }
 
 void Ov001_FreeBlock(s32 arg0, ...) {
@@ -334,14 +338,18 @@ s32 Ov001_StartDelay(s32 frames) {
     return 1;
 }
 
-void Ov001_DelayStep(M2C_UNK arg0, void *arg1) {
+/* Frame step of the ov001 step delay: count one frame in the reused sub-engine
+ * fade slot and, once its duration is reached, mark the delay idle and post task
+ * message 1 back to the task. */
+void Ov001_DelayStep(M2C_UNK task, void *delaySlot) {
     void Ov001_PostTaskMessage(M2C_UNK, M2C_UNK);
-    M2C_FIELD(arg1, s16 *, 4) = (s16) (M2C_FIELD(arg1, s16 *, 4) + 1);
-    if ((s32) M2C_FIELD(arg1, s16 *, 4) < (s32) M2C_FIELD(arg1, u16 *, 6)) {
+    Ov001Fade *delay = (Ov001Fade *)delaySlot;
+    delay->counter = (s16) (delay->counter + 1);
+    if ((s32) delay->counter < (s32) delay->duration) {
         return;
     }
-    M2C_FIELD(arg1, s8 *, 9) = 0;
-    Ov001_PostTaskMessage(1, arg0);
+    delay->active = 0;
+    Ov001_PostTaskMessage(1, task);
 }
 
 #pragma opt_strength_reduction off
@@ -350,7 +358,7 @@ void Ov001_DelayStep(M2C_UNK arg0, void *arg1) {
  * file pair when the console language is Korean and the Latin pair otherwise. */
 void Ov001_CreateTextContext(void) {
     void *Ov001_Alloc(s32, M2C_UNK);
-    void *Ov001_QueueCreateFromBuffer(s32, s32, s32);
+    void *Ov001_QueueCreateFromRange(s32, s32, s32);
     s32 Ov001_GetLanguage(void);
     s32 Ov001_LoadFile(M2C_UNK, M2C_UNK *, M2C_UNK);
     void Ov001_InitFontSet(void *, M2C_UNK);
@@ -362,7 +370,7 @@ void Ov001_CreateTextContext(void) {
     context = (M2C_UNK)Ov001_Alloc(OV001_CTX_SIZE, 4);
     gOv001TextContext = context;
     M2C_FIELD((void *)gOv001TextContext, void **, OV001_CTX_PANEL_QUEUE) =
-        Ov001_QueueCreateFromBuffer(OV001_TEXT_PANEL_COUNT,
+        Ov001_QueueCreateFromRange(OV001_TEXT_PANEL_COUNT,
             (s32)context + OV001_CTX_PANEL_BUFFER, OV001_TEXT_PANEL_SIZE);
 
     if (Ov001_GetLanguage() == LANGUAGE_KOREAN) {
@@ -498,7 +506,7 @@ void Ov001_UploadTextPanelTiles(M2C_UNK taskArg, void *uploadPendingFlag) {
 M2C_UNK Ov001_FreePanelBackground(s32 panel) {
     extern M2C_UNK gOv001TextContext;
     M2C_UNK temp_r0;
-    func_ov001_0218c94c(1, M2C_FIELD((void *)panel, M2C_UNK *, OV001_PANEL_REFRESH_TASK));
+    Ov001_ReturnTaskNodeVeneer(1, M2C_FIELD((void *)panel, M2C_UNK *, OV001_PANEL_REFRESH_TASK));
     if (panel == (M2C_UNK)gOv001TextContext + OV001_CTX_SCREEN_PANELS) {
         temp_r0 = FillU16(0, GX_GetBG0CharPtr(), OV001_PANEL0_VRAM_BYTES);
     } else {
@@ -531,11 +539,13 @@ default:break;
 DrawAnchoredText(panel+0x18,x,y,colour,flags,text,dir);
 }
 
-void DrawFontSetGlyph(void *arg0, s32 arg1, s32 arg2, s32 arg3, u16 arg4, s32 arg5) {
+/* Draw the single character `ch` with the text context's font set `fontIndex`,
+ * through the panel's glyph ops, in `color` at (x, y). */
+void DrawFontSetGlyph(void *panel, s32 x, s32 y, s32 color, u16 ch, s32 fontIndex) {
     M2C_UNK DrawTextGlyph(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK gOv001TextContext;
     M2C_UNK base = gOv001TextContext;
-    DrawTextGlyph((M2C_UNK)arg0, (M2C_UNK)((u8 *)base + arg5 * 8), arg1, arg2, (M2C_UNK)arg3, (M2C_UNK)arg4);
+    DrawTextGlyph((M2C_UNK)panel, (M2C_UNK)((u8 *)base + fontIndex * 8), x, y, (M2C_UNK)color, (M2C_UNK)ch);
 }
 
 /* Draw a NUL-terminated UTF-16 string as one horizontal line of glyphs from the

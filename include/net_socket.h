@@ -8,7 +8,7 @@
 
 /* A socket operation is a small request record the caller fills in and hands to
  * the socket's task (func_0201f1d0 allocates one, SocketSubmitRecvTask/SocketSubmitSendTask/
- * func_0201f338 post it, the task calls the callback with the record).  Its
+ * SocketSubmitTaskAndWait post it, the task calls the callback with the record).  Its
  * fixed part is: +0x00 callback the task runs, +0x04 the socket, +0x08 the
  * task's message queue, +0x0C the socket's state and +0x0D nonzero when the
  * caller waits for the result; +0x10 onwards are the callback's own arguments.
@@ -48,6 +48,7 @@
  * one.  The raw send path also reads these as the packet tag and fallback address. */
 #define SOCK_CONNECT_PORT     0x76 /* u16 peer port of a connect request (packet tag of a raw send) */
 #define SOCK_CONNECT_ADDR     0x78 /* s32 peer IPv4 address of a connect request (fallback address of a raw send) */
+#define SOCK_NO_SOCKET  (-49) /* no socket object could be allocated for the config */
 #define SOCK_CONNECT_FAILED   (-76) /* the connect attempt failed */
 
 /* SocketConnect's task arguments (a socket task record, +0x10 onwards). */
@@ -93,7 +94,7 @@
 #define CONN_RECV_LIMIT  0x10a /* u16 queue capacity in bytes */
 #define CONN_RECV_THREAD 0x10c /* OSThreadQueue the reader sleeps on */
 #define CONN_RECV_HOLD   0xfe  /* s8 nonzero while a caller peeks, so recv keeps the record */
-#define CONN_RECV_PENDING 0xf8 /* s32 received bytes waiting to be consumed (func_0201d70c) */
+#define CONN_RECV_PENDING 0xf8 /* s32 received bytes waiting to be consumed (ConsumeConnectionReceivedData) */
 #define CONN_RECV_RELEASE_AT 0xfc /* u16 pending-byte count at which the receive window is released */
 
 /* A socket also holds a second raw connection at +0x68, used for sending.  Its
@@ -161,14 +162,15 @@ typedef struct SendRequest {
 #define REC_DATA 0x0c /* u8 payload */
 
 /* The game's network heap interface (gNetAllocator), installed at network init;
- * only the alloc/free slots are used so far. */
+ * the alloc/free slots and the socket-task count are used so far. */
 #define NET_ALLOC_ALLOC 0x18 /* void *(*)(s32 size) */
 #define NET_ALLOC_FREE  0x1c /* void (*)(void *block) */
+#define NET_ALLOC_TASKS 0x20 /* s32 socket task slots the network task pool holds */
 
 /* The socket task pool (gSocketTaskPool, main_0201E944): one block from the net
  * allocator holding the free-task message queue (gSocketTaskQueue, which sits
  * immediately at +0x04) followed by the task slots themselves.  A slot is taken
- * by receiving it from the queue (func_0201f1a8) and returned by posting it back
+ * by receiving it from the queue (ReceiveSocketTaskSlot) and returned by posting it back
  * (SocketFreeTask), so the queue holds every slot that is currently idle. */
 #define TASKPOOL_BLOCK 0x00 /* void *the allocated block */
 #define TASKPOOL_SLOTS 0x18 /* s32 slots the pool was created with (the queue's msgCount) */
@@ -180,6 +182,7 @@ typedef struct SendRequest {
 #define TASK_FUNC   0x00 /* void *(*)(void *) the task's function */
 #define TASK_SOCKET 0x04 /* void *socket the task works on */
 #define TASK_NOTIFY 0x08 /* void *message queue the task's result is sent to, 0 when no caller waits */
+#define TASK_STATE  0x0C /* s8 socket state copied from the socket (SOCK_STATE) */
 #define TASK_WAIT   0x0D /* s8: 1 when the caller blocks waiting for the task's result */
 #define TASK_BYTES  0x2C /* bytes per queued socket task slot */
 

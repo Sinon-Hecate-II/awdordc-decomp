@@ -49,37 +49,46 @@ s32 *RecordsMenu_GetRecord(s32);
  * each engine in turn and creates the fade on the selected ones, then puts the
  * previous engine back. */
 
-void func_020ad4a0(s32 arg0) {
+/* Build the localized "...<base>.cg" graphics file name of map background
+ * `background`: copy the background's base name, append the ".cg" extension and
+ * localize the result into the shared buffer. */
+void BuildMapBackgroundCgName(s32 background) {
  M2C_UNK StringCopy(M2C_UNK *, s32);
  M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
  M2C_UNK LocalizeMapBackgroundFileName(s32, M2C_UNK *);
  extern s32 gMapBackgroundNames[];
- extern M2C_UNK data_021279e0, data_0215c3e8;
- StringCopy(&data_0215c3e8, gMapBackgroundNames[arg0]);
- StringAppend(&data_0215c3e8, &data_021279e0);
- LocalizeMapBackgroundFileName(arg0, &data_0215c3e8);
+ extern M2C_UNK gCgFileExtension, gMapBackgroundCgName;
+ StringCopy(&gMapBackgroundCgName, gMapBackgroundNames[background]);
+ StringAppend(&gMapBackgroundCgName, &gCgFileExtension);
+ LocalizeMapBackgroundFileName(background, &gMapBackgroundCgName);
 }
 
-void func_020ad4e0(s32 arg0) {
+/* Build map background `background`'s .sc file name: start from the background's
+ * base name, append the ".sc" extension, then replace it with the localized name
+ * for the two special backgrounds that have one. */
+void BuildMapBackgroundScName(s32 background) {
  M2C_UNK StringCopy(M2C_UNK *, s32);
  M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
  M2C_UNK LocalizeMapBackgroundFileName(s32, M2C_UNK *);
  extern s32 gMapBackgroundNames[];
- extern M2C_UNK data_021279e4, data_0215c408;
- StringCopy(&data_0215c408, gMapBackgroundNames[arg0]);
- StringAppend(&data_0215c408, &data_021279e4);
- LocalizeMapBackgroundFileName(arg0, &data_0215c408);
+ extern M2C_UNK gScFileExtension, gMapBackgroundScName;
+ StringCopy(&gMapBackgroundScName, gMapBackgroundNames[background]);
+ StringAppend(&gMapBackgroundScName, &gScFileExtension);
+ LocalizeMapBackgroundFileName(background, &gMapBackgroundScName);
 }
 
-void func_020ad520(s32 arg0) {
+/* Build map background `background`'s .cl file name: start from the background's
+ * base name, append the ".cl" extension, then replace it with the localized name
+ * for the two special backgrounds that have one. */
+void BuildMapBackgroundClName(s32 background) {
  M2C_UNK StringCopy(M2C_UNK *, s32);
  M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
  M2C_UNK LocalizeMapBackgroundFileName(s32, M2C_UNK *);
  extern s32 gMapBackgroundNames[];
- extern M2C_UNK data_021279e8, data_0215c3a8;
- StringCopy(&data_0215c3a8, gMapBackgroundNames[arg0]);
- StringAppend(&data_0215c3a8, &data_021279e8);
- LocalizeMapBackgroundFileName(arg0, &data_0215c3a8);
+ extern M2C_UNK gClFileExtension, gMapBackgroundClName;
+ StringCopy(&gMapBackgroundClName, gMapBackgroundNames[background]);
+ StringAppend(&gMapBackgroundClName, &gClFileExtension);
+ LocalizeMapBackgroundFileName(background, &gMapBackgroundClName);
 }
 
 s32 func_020ad560(s32 arg0) {

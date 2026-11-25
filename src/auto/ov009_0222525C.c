@@ -2,20 +2,23 @@
 #include "common.h"
 #include "ov009_link.h"
 
+/* Close the download-play link: delete the link's live objects (the link actor,
+ * the packet sender and the packet receiver), then post the WFC stop command.
+ * When the command cannot be queued the link goes to the aborted phase. */
 void CloseLinkChannel(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     M2C_UNK SetLinkPhase(M2C_UNK);
-    s32 func_ov009_02223ce4();
+    s32 SendLinkStopCommand();
     extern M2C_UNK gLinkActorClass;
-    extern M2C_UNK data_ov009_022264e0;
+    extern M2C_UNK gLinkReceiverClass;
     extern M2C_UNK gLinkSenderClass;
     DeleteSpriteObjectsOfClass(&gLinkActorClass);
     DeleteSpriteObjectsOfClass(&gLinkSenderClass);
-    DeleteSpriteObjectsOfClass(&data_ov009_022264e0);
-    if (func_ov009_02223ce4() != 0) {
+    DeleteSpriteObjectsOfClass(&gLinkReceiverClass);
+    if (SendLinkStopCommand() != 0) {
         return;
     }
-    SetLinkPhase(9);
+    SetLinkPhase(LINK_PHASE_ABORTED);
 }
 
 /* Recovers the download-play link once it breaks or its in-game session ends:
@@ -31,7 +34,7 @@ void RestartLinkSession(void) {
     s32 func_ov009_02223c08();
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     M2C_UNK SetLinkPhase(M2C_UNK);
-    extern M2C_UNK gLinkActorClass, gLinkSenderClass, data_ov009_022264e0;
+    extern M2C_UNK gLinkActorClass, gLinkSenderClass, gLinkReceiverClass;
     s32 phase = GetLinkPhase();
     if (phase == LINK_PHASE_READY) return;
     if (phase == LINK_PHASE_REQUEST) {
@@ -46,7 +49,7 @@ void RestartLinkSession(void) {
     SetLinkPhase(LINK_PHASE_PENDING);
     DeleteSpriteObjectsOfClass(&gLinkActorClass);
     DeleteSpriteObjectsOfClass(&gLinkSenderClass);
-    DeleteSpriteObjectsOfClass(&data_ov009_022264e0);
+    DeleteSpriteObjectsOfClass(&gLinkReceiverClass);
     switch (GetLinkRequestKind()) {
     case 0:
         if (func_ov009_02223b5c() != 0) return;
@@ -59,7 +62,7 @@ void RestartLinkSession(void) {
     }
 }
 
-void func_ov009_02225348(M2C_UNK arg0) {
+void CreateLinkDepartureObject(M2C_UNK arg0) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov009_02226440;
     CreateSpriteObject(&data_ov009_02226440, arg0);
@@ -78,12 +81,12 @@ s32 EndLinkSession(void) {
     s32 WFC_SetChannelHandler(s32, s32, s32);
     s32 WFC_EndLink(void *);
     void HandleLinkEndTaskEvent(void);
-    extern M2C_UNK gLinkActorClass, gLinkSenderClass, data_ov009_022264e0;
+    extern M2C_UNK gLinkActorClass, gLinkSenderClass, gLinkReceiverClass;
     SetLinkPhase(LINK_PHASE_READY);
     ResetLinkQueues();
     DeleteSpriteObjectsOfClass(&gLinkActorClass);
     DeleteSpriteObjectsOfClass(&gLinkSenderClass);
-    DeleteSpriteObjectsOfClass(&data_ov009_022264e0);
+    DeleteSpriteObjectsOfClass(&gLinkReceiverClass);
     if (WFC_SetChannelHandler(0xC, 0, 0) != 0) {
         SignalLinkError();
         SetLinkPhase(LINK_PHASE_ERROR);
@@ -153,7 +156,7 @@ s32 IsLinkHost(void) {
     return 0;
 }
 
-s32 func_ov009_022254d8(void) {
+s32 IsLinkGuest(void) {
     if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
         return 0;
     }
@@ -301,12 +304,12 @@ void SpawnLinkPlayerAnnounce(M2C_UNK arg0) {
 }
 
 M2C_UNK func_ov009_022257d4(s32 arg0) {
-    M2C_UNK func_ov009_02224024();
+    M2C_UNK RequestConnectedPlayers();
     extern M2C_UNK gLinkState;
     M2C_FIELD(arg0, u8 *, 0) = 0;
     M2C_FIELD(arg0, u16 *, 2) = 0;
     M2C_FIELD(&gLinkState, s32 *, 0x24) = arg0;
-    return func_ov009_02224024();
+    return RequestConnectedPlayers();
 }
 
 /* Whether this console's connected-players request is still waiting: the request
@@ -609,8 +612,8 @@ s32 func_ov009_02225ce0(s32 arg0, s32 arg1) {
 }
 
 void func_ov009_02225d14(void) {
-    M2C_UNK func_01ffaa8c();
-    func_01ffaa8c();
+    M2C_UNK DetachSpriteFromParent();
+    DetachSpriteFromParent();
 }
 
 /* Link's error/abort outcome: on the ERROR or ABORTED phase, show the link status
@@ -779,17 +782,20 @@ void StartLinkStatusSplitFades(void *sprite) {
     StartScreenFadeChildren(2, 8, 1, sprite);
 }
 
-void func_ov009_022260a0(void *arg0) {
+/* Create the status labels of the ov009 link-status host object: its status label
+ * (drawn on the host's engine at the host's text value) and its match-name label.
+ * Nothing is created while the host has no status code. */
+void CreateLinkStatusLabels(void *host) {
     M2C_UNK CreateLinkStatusLabel(s8, u16, s32, void *);
     void CreateLinkMatchNameLabel(M2C_UNK, u16, void *);
-    s32 temp_r2;
+    s32 status;
 
-    temp_r2 = M2C_FIELD(arg0, s32 *, 0x38);
-    if (temp_r2 == 0) {
+    status = M2C_FIELD(host, s32 *, LINK_LABEL_HOST_STATUS);
+    if (status == 0) {
         return;
     }
-    CreateLinkStatusLabel(M2C_FIELD(arg0, s8 *, 0x35), M2C_FIELD(arg0, u16 *, 0x36), temp_r2, arg0);
-    CreateLinkMatchNameLabel(-1, M2C_FIELD(arg0, u16 *, 0x36), arg0);
+    CreateLinkStatusLabel(M2C_FIELD(host, s8 *, TEXT_LAYER_ENGINE), M2C_FIELD(host, u16 *, TEXT_LAYER_VALUE), status, host);
+    CreateLinkMatchNameLabel(-1, M2C_FIELD(host, u16 *, TEXT_LAYER_VALUE), host);
 }
 
 void func_ov009_022260d8(void) {

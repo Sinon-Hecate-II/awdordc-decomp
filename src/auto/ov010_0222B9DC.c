@@ -109,7 +109,7 @@ void RefreshOnlinePlayerAnnounce(M2C_UNK owner) {
     SpawnOnlinePlayerAnnounce(owner);
 }
 
-void func_ov010_0222bb64(M2C_UNK arg0) {
+void SpawnOnlinePlayerAnnounceRefresher(M2C_UNK arg0) {
     extern M2C_UNK data_ov010_0222c93c;
     extern M2C_UNK data_ov010_0222c4dc;
     M2C_UNK **temp_r0;

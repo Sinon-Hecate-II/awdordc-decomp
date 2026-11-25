@@ -29,26 +29,31 @@ return 1;
 return 0;
 }
 
-void Map_RefreshCellTile(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK Map_SetTileAndRefresh(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 Map_IsTerrainKindPlaceable(M2C_UNK, M2C_UNK, s32);
-    if (Map_IsTerrainKindPlaceable(arg0, arg1, Map_GetCellTerrainKind()) != 0) {
+/* Map editor: repair one cell.  When its terrain kind is no longer placeable
+ * (e.g. rubble whose neighbours changed) the cell becomes wasteland ground. */
+void Map_RefreshCellTile(s32 x, s32 y) {
+    M2C_UNK Map_SetTileAndRefresh(s32, s32, u16, u16);
+    s32 Map_IsTerrainKindPlaceable(s32, s32, s32);
+
+    if (Map_IsTerrainKindPlaceable(x, y, Map_GetCellTerrainKind()) != 0) {
         return;
     }
-    Map_SetTileAndRefresh(arg0, arg1, 8, 3);
+    Map_SetTileAndRefresh(x, y, MAP_TERRAIN_WASTELAND, MAP_TILE_WASTELAND);
 }
 
-s32 Map_GetCellTerrainKind(s32 arg0, s32 arg1) {
+/* The terrain kind of map cell (x, y): a bridge drawn over wasteland (kind 0xE)
+ * is reported as the ordinary bridge (0xD), the kind the editor's brush paints. */
+s32 Map_GetCellTerrainKind(s32 x, s32 y) {
     extern s32 *gCurrentMap;
-    s32 temp_r2;
-    s32 var_r0;
+    s32 map;
+    s32 terrainKind;
 
-    temp_r2 = *gCurrentMap;
-    var_r0 = M2C_FIELD((temp_r2 + (arg0 + M2C_FIELD((temp_r2 + (arg1 * 2)), u16 *, 0x3758))), u8 *, 0x1420) & 0x1F;
-    if (var_r0 == 0xE) {
-        var_r0 = 0xD;
+    map = *gCurrentMap;
+    terrainKind = M2C_FIELD((map + (x + M2C_FIELD((map + (y * 2)), u16 *, MAP_ROW_OFFSETS))), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK;
+    if (terrainKind == MAP_TERRAIN_BRIDGE_WASTELAND) {
+        terrainKind = MAP_TERRAIN_BRIDGE;
     }
-    return var_r0;
+    return terrainKind;
 }
 
 /* Return the owning player for a property at (x, y), or zero for non-property terrain. */
@@ -198,12 +203,16 @@ s32 MapEditor_PlaceUnit(s32 x,s32 y,s32 unitKind,s32 player,s32 unitState) {
  return 1;
 }
 
-s32 MapEditor_DestroyUnitAt(s32 a,s32 b) {
- extern s32 *gCurrentMap; M2C_UNK DestroyUnit(s32);
- s32 p=*gCurrentMap;
- u8 id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
- if(!id)return 0;
- DestroyUnit(id); return 1;
+/* Map editor: destroy the unit standing on cell (x, y) if one is visible there.
+ * Returns 1 when a unit was destroyed, 0 when the cell was empty. */
+s32 MapEditor_DestroyUnitAt(s32 x, s32 y) {
+    extern s32 *gCurrentMap;
+    M2C_UNK DestroyUnit(s32);
+    s32 map = *gCurrentMap;
+    u8 unitId = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_VISIBLE_UNIT);
+    if (!unitId) return 0;
+    DestroyUnit(unitId);
+    return 1;
 }
 
 /* True when a unit of `unitKind` may stand on the cell at (x, y): the terrain
@@ -232,12 +241,15 @@ s32 MapEditor_GetUnitKindAt(s32 x, s32 y) {
 #pragma push
 #pragma optimizewithasm off
 #pragma peephole off
-s32 MapEditor_GetUnitOwnerAt(s32 a,s32 b) {
- extern s32 *gCurrentMap;
- s32 p=*gCurrentMap;
- s32 id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
- if(!id)return -1;
- return ((id&0xC0)>>6)+1;
+/* Map editor: return the owner player (1-based) of the unit standing on cell
+ * (x, y), or -1 when that cell holds no visible unit. */
+s32 MapEditor_GetUnitOwnerAt(s32 x, s32 y) {
+    extern s32 *gCurrentMap;
+    s32 map = *gCurrentMap;
+    s32 unitId = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_VISIBLE_UNIT);
+
+    if (!unitId) return -1;
+    return ((unitId & MAP_UNIT_OWNER_MASK) >> MAP_UNIT_OWNER_SHIFT) + 1;
 }
 #pragma pop
 /* Map editor: the AI state (the low nibble of MAP_UNIT_AI_STATE) of the unit on

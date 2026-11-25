@@ -255,14 +255,17 @@ s32 VoiceLink_BroadcastPacket(void *context, void *packet) {
     return 0;
 }
 
-M2C_UNK VoiceLink_SendControl(s32 arg0) {
+/* Build and broadcast a voice-link control packet (kind 0xFF, handshake step 4):
+ * `flag` is stored in the packet's flag byte, which the broadcast uses to record
+ * or clear the exchange's peer mask. */
+M2C_UNK VoiceLink_SendControl(s32 flag) {
  extern M2C_UNK gVoiceLinkContext;
  M2C_UNK VoiceLink_InitPacket(void *,void *,u8);
- u8 sp0[0x10];
- sp0[4]=0xff;
- VoiceLink_InitPacket(&gVoiceLinkContext,sp0,4);
- sp0[0xa]=arg0;
- VoiceLink_BroadcastPacket(&gVoiceLinkContext,sp0);
+ u8 packet[VOICE_LINK_PACKET_SIZE];
+ ((VoiceLinkPacket *)packet)->kind=0xff;
+ VoiceLink_InitPacket(&gVoiceLinkContext,packet,4);
+ ((VoiceLinkPacket *)packet)->flag=flag;
+ VoiceLink_BroadcastPacket(&gVoiceLinkContext,packet);
 }
 
 #pragma opt_propagation off
@@ -280,14 +283,17 @@ void VoiceLink_InitContext(void *context, s32 peerId) {
  ((VoiceLinkContext *)context)->peerId=peerId;
 }
 #pragma opt_propagation reset
-s32 VoiceLink_TransmitPacket(void *arg0,void *arg1) {
- s32 SendTransferToPeer(u8,void *,u32);
- if(M2C_FIELD(arg1,u8 *,4)==0xff && M2C_FIELD(arg1,u8 *,6)==4) {
- VoiceLink_BroadcastPacket(arg0,arg1);
- } else {
- if(SendTransferToPeer(M2C_FIELD(arg0,u8 *,4),arg1,0x10)==0) return 0;
- }
- return 1;
+/* Send one packet of a voice-link exchange: a control packet of subtype 4 is
+ * broadcast to the connected peer set, every other packet goes to the exchange's
+ * own peer. Returns 0 when the send failed, 1 on success. */
+s32 VoiceLink_TransmitPacket(void *context, void *packet) {
+    s32 SendTransferToPeer(u8, void *, u32);
+    if (((VoiceLinkPacket *) packet)->kind == 0xff && ((VoiceLinkPacket *) packet)->subtype == 4) {
+        VoiceLink_BroadcastPacket(context, packet);
+    } else {
+        if (SendTransferToPeer(((VoiceLinkContext *) context)->peerId, packet, VOICE_LINK_PACKET_SIZE) == 0) return 0;
+    }
+    return 1;
 }
 
 /* Works out the reply type for a voice-chat link packet: control packets and
@@ -553,14 +559,23 @@ void func_ov010_02224ea0(void) {
     M2C_FIELD(&gLinkPacketPool, s32 *, 8) = 0;
 }
 
-void *func_ov010_02224eb8(void) {
-extern M2C_UNK gLinkPacketPool;
-s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
-void *r=0; void *p;
-M2C_FIELD(&gLinkPacketPool,s32 *,0)=OS_DisableInterrupts();
-p=M2C_FIELD(&gLinkPacketPool,void **,4);
-if(p){r=p;M2C_FIELD(&gLinkPacketPool,void **,4)=M2C_FIELD(p,void **,0);}
-OS_RestoreInterrupts(M2C_FIELD(&gLinkPacketPool,s32 *,0));return r;
+/* Take a packet buffer off the link's packet free list with interrupts held off;
+ * returns NULL when the pool has no free buffer. */
+void *Link_AllocPacket(void) {
+    extern M2C_UNK gLinkPacketPool;
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    void *packet = 0;
+    void *freeList;
+
+    ((LinkPacketPool *)&gLinkPacketPool)->intrState = OS_DisableInterrupts();
+    freeList = ((LinkPacketPool *)&gLinkPacketPool)->freeList;
+    if (freeList) {
+        packet = freeList;
+        ((LinkPacketPool *)&gLinkPacketPool)->freeList = M2C_FIELD(freeList, void **, 0);
+    }
+    OS_RestoreInterrupts(((LinkPacketPool *)&gLinkPacketPool)->intrState);
+    return packet;
 }
 
 void Link_FreePacket(void *p){extern M2C_UNK gLinkPacketPool;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);M2C_FIELD(&gLinkPacketPool,s32 *,0)=OS_DisableInterrupts();M2C_FIELD(p,void **,0)=M2C_FIELD(&gLinkPacketPool,void **,4);M2C_FIELD(&gLinkPacketPool,void **,4)=p;OS_RestoreInterrupts(M2C_FIELD(&gLinkPacketPool,s32 *,0));}

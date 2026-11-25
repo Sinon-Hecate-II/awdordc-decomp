@@ -187,7 +187,7 @@ void func_0209bf7c(void) {
     DeleteSpriteObjectsOfClass(&data_02103300);
 }
 
-void func_0209bfa8(void) {
+void DeleteTextSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_021032d8;
     extern M2C_UNK data_02103300;
@@ -535,22 +535,25 @@ void *Text_GetLineStart(void *text, s32 line) {
     return cur;
 }
 
-void *Text_FindLineBreakEnd(M2C_UNK arg0) {
+/* Point just past the text's first line break (TEXT_CODE_LINE_BREAK), skipping
+ * one more byte when the break is followed by a CR (0xD) or LF (0xA); NULL when
+ * the text has no line break. */
+void *Text_FindLineBreakEnd(void *text) {
     void *FindTextControlCode(M2C_UNK, M2C_UNK, M2C_UNK);
-    u8 temp_r1;
-    void *temp_r0;
-    void *var_r0;
+    u8 next;
+    void *code;
+    void *end;
 
-    temp_r0 = FindTextControlCode(arg0, 4, 1);
-    if (temp_r0 != NULL) {
-        temp_r1 = M2C_FIELD(temp_r0, u8 *, 1);
-        var_r0 = temp_r0 + 1;
-        if ((temp_r1 != 0xA) && (temp_r1 != 0xD)) {
+    code = FindTextControlCode((M2C_UNK)text, TEXT_CODE_LINE_BREAK, 1);
+    if (code != NULL) {
+        next = M2C_FIELD(code, u8 *, 1);
+        end = (void *)((u8 *)code + 1);
+        if ((next != 0xA) && (next != 0xD)) {
 
         } else {
-            var_r0 += 1;
+            end = (void *)((u8 *)end + 1);
         }
-        return var_r0;
+        return end;
     }
     return NULL;
 }
@@ -670,7 +673,7 @@ void func_0209c8d4(void) {
     s32 IsCoUnlocked(s32);
     s32 DidPlayerWin();
     s32 HasActiveHumanPlayer();
-    s32 func_020d1b40();
+    s32 HasHumanPlayerGivenUp();
     s32 IsFinalCampaignMap();
     extern M2C_UNK gCoState;
     extern M2C_UNK gCoPlayerSlots;
@@ -703,7 +706,7 @@ void func_0209c8d4(void) {
     if (IsLinkSessionActive() == 0) {
         SetCampaignMapPlayed(temp_r8, 1);
         if (DidPlayerWin() != 0) {
-            if ((HasActiveHumanPlayer() != 0) && (func_020d1b40() == 0)) {
+            if ((HasActiveHumanPlayer() != 0) && (HasHumanPlayerGivenUp() == 0)) {
                 AddRecordValue(0x1A, 1);
                 SetCampaignMapCleared(temp_r8, 1);
             }

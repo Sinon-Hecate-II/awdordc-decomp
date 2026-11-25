@@ -46,7 +46,7 @@ void FillUnitInfo(void *arg0, void *arg1) {
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x30) = func_020a7bf8((s32)kind);
     kind = ((UnitKind75310 *)unit)->value;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x34) = func_020a7bec((s32)kind);
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x38) = func_020a26c8(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x38) = GetUnitAttackRangeBonus(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x3C) = func_020a78ec(unit);
     kind = ((UnitKind75310 *)unit)->value;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x40) = GetUnitKindByte0((s32)kind);

@@ -332,9 +332,9 @@ void func_020903b0(void) {
 
 void func_020903d4(void) {
     void LoadSoundSequenceArchiveAndBank(s32, s32);
-    M2C_UNK func_02090448(M2C_UNK);
+    M2C_UNK Sound_LoadGroup(M2C_UNK);
     LoadSoundSequenceArchiveAndBank(1, 0x24);
-    func_02090448(1);
+    Sound_LoadGroup(1);
 }
 
 /* Load a sequence archive and a sound bank into the sound player's heap: the two
@@ -355,7 +355,7 @@ void LoadSoundSequenceArchiveAndBank(s32 archiveId, s32 bankId) {
     func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
 }
 
-M2C_UNK func_02090448(M2C_UNK arg0) {
+M2C_UNK Sound_LoadGroup(M2C_UNK arg0) {
     extern M2C_UNK gSoundDriverState;
     s32 func_0202c784(M2C_UNK *);
     M2C_UNK func_0202c848(M2C_UNK, M2C_UNK);
@@ -449,7 +449,7 @@ void UpdateStreamedMusicVolume(void) {
     }
 }
 
-void func_020905bc(void) {
+void Sound_ApplyMusicVolume(void) {
     M2C_UNK func_0202ab7c(M2C_UNK, s32);
     s32 GetMusicVolume();
 
@@ -457,7 +457,7 @@ void func_020905bc(void) {
     UpdateStreamedMusicVolume();
 }
 
-void func_020905d8(void) {
+void Sound_ApplyEffectVolume(void) {
     s32 Sound_GetEffectVolume();
     s32 temp_r4;
     s32 var_r5;
@@ -470,25 +470,27 @@ void func_020905d8(void) {
     } while (var_r5 <= 0xB);
 }
 
-void func_02090604(void) {
+/* Reset every music and sound-effect volume level to full, then apply the new
+ * effective volumes to the sound channels. */
+void Sound_InitVolumes(void) {
     extern M2C_UNK gMusicVolumeLevels;
     extern M2C_UNK gSoundEffectVolumeLevels;
-    void func_020905bc(void);
-    void func_020905d8(void);
-    u8 *var_r2;
-    u8 *var_r3;
-    s32 var_r1;
+    void Sound_ApplyMusicVolume(void);
+    void Sound_ApplyEffectVolume(void);
+    u8 *musicLevel;
+    u8 *effectLevel;
+    s32 level;
 
-    var_r2 = (u8 *)&gMusicVolumeLevels;
-    var_r3 = (u8 *)&gSoundEffectVolumeLevels;
-    var_r1 = 0;
+    musicLevel = (u8 *)&gMusicVolumeLevels;
+    effectLevel = (u8 *)&gSoundEffectVolumeLevels;
+    level = 0;
     do {
-        var_r1 += 1;
-        *var_r2++ = 0x7F;
-        *var_r3++ = 0x7F;
-    } while (var_r1 < 3);
-    func_020905bc();
-    func_020905d8();
+        level += 1;
+        *musicLevel++ = SOUND_VOLUME_MAX;
+        *effectLevel++ = SOUND_VOLUME_MAX;
+    } while (level < SOUND_VOLUME_LEVELS);
+    Sound_ApplyMusicVolume();
+    Sound_ApplyEffectVolume();
 }
 
 void SetMusicVolumeLevel(s32 arg0, s32 arg1) {
@@ -502,7 +504,7 @@ void SetMusicVolumeLevel(s32 arg0, s32 arg1) {
         var_r1 = 0;
     }
     M2C_FIELD(&gMusicVolumeLevels, u8 *, arg0) = var_r1;
-    func_020905bc();
+    Sound_ApplyMusicVolume();
 }
 
 void SetSoundEffectVolumeLevel(s32 arg0, s32 arg1) {
@@ -516,7 +518,7 @@ void SetSoundEffectVolumeLevel(s32 arg0, s32 arg1) {
         var_r1 = 0;
     }
     M2C_FIELD(&gSoundEffectVolumeLevels, u8 *, arg0) = var_r1;
-    func_020905d8();
+    Sound_ApplyEffectVolume();
 }
 
 u8 func_02090698(s32 arg0) {
@@ -845,23 +847,25 @@ void SpritePlayer_DrawList(void *player) {
     }
 }
 
-void Sprite_DestroyAuxList(void *arg0) {
-    void *var_r0;
-    void *temp_r5;
-    void *temp_r4;
+/* Tear down the auxiliary sprite-object list hung off a scripted sprite: call
+ * each node's deleting destructor, then clear the owner's aux-list pointer. */
+void Sprite_DestroyAuxList(void *aux) {
+    void *node;
+    void *first;
+    void *next;
 
-    var_r0 = arg0;
-    temp_r5 = var_r0;
-    if (temp_r5 != 0) {
+    node = aux;
+    first = node;
+    if (first != 0) {
         do {
-            temp_r4 = M2C_FIELD(var_r0, void **, 0xC);
-            if (var_r0 != 0) {
-                M2C_FIELD(M2C_FIELD(var_r0, void **, 0), void (**)(void *), 8)(var_r0);
+            next = M2C_FIELD(node, void **, SPRITE_AUX_NEXT);
+            if (node != 0) {
+                M2C_FIELD(M2C_FIELD(node, void **, SPRITE_AUX_CLASS), void (**)(void *), SPRITE_AUX_DELETE_SLOT)(node);
             }
-            var_r0 = temp_r4;
-        } while (temp_r4 != 0);
+            node = next;
+        } while (next != 0);
     }
-    M2C_FIELD(M2C_FIELD(temp_r5, void **, 4), s32 *, 0x3C) = 0;
+    M2C_FIELD(M2C_FIELD(first, void **, SPRITE_AUX_OWNER), s32 *, SPRITE_OWNER_AUX_LIST) = 0;
 }
 
 s32 func_02090cbc(void *p) {

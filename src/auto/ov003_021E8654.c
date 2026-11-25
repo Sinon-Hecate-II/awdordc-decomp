@@ -104,29 +104,41 @@ void Ov003_UpdateWaypointSlotButtons(void *list) {
     } while ((u32) index < 0x1AU);
 }
 
-u8 func_ov003_021e88a4(void *arg0) {
-s32 result=1;
-void *p=M2C_FIELD(arg0,void **,0x64);
-if(M2C_FIELD(p,s8 *,0xb)!=1 && ((((u32)(M2C_FIELD(arg0,u8 *,0x59)<<27)>>31)==0) || M2C_FIELD(p,s8 *,0xc)!=1))result=0;
-return result;
+/* Whether a menu sprite reads as clicked this frame: its owner's press flag
+ * (+0x0B) is set, or the sprite shows its alternate (pressed) frame and the
+ * owner's alternate press flag (+0x0C) is set. */
+u8 MenuSpriteIsClicked(void *sprite) {
+    s32 clicked = 1;
+    void *owner = M2C_FIELD(sprite, void **, MENU_SPRITE_OWNER);
+    if (M2C_FIELD(owner, s8 *, 0xb) != 1
+        && ((((u32) (M2C_FIELD(sprite, u8 *, MENU_SPRITE_BASE) << 27) >> 31) == 0)
+            || M2C_FIELD(owner, s8 *, 0xc) != 1))
+        clicked = 0;
+    return clicked;
 }
 
-void func_ov003_021e88e0(void) {
-s32 Link_ReceivePacket(s32 *,M2C_UNK);
-M2C_UNK Link_SendPacket(s32 *,M2C_UNK);
-s32 buffer[9];
-if(Link_ReceivePacket(buffer,0x24)==0)return;
-buffer[0]=1;
-Link_SendPacket(buffer,0x24);
+/* Tell the peers that this player opened the waypoint panel: take the shared
+ * panel packet, raise its "opened" word and send it back out. */
+void SendWaypointPanelOpened(void) {
+    s32 Link_ReceivePacket(s32 *, M2C_UNK);
+    M2C_UNK Link_SendPacket(s32 *, M2C_UNK);
+    s32 packet[9];
+
+    if (Link_ReceivePacket(packet, 0x24) == 0) return;
+    M2C_FIELD(packet, s32 *, WAYPOINT_PACKET_OPENED) = 1;
+    Link_SendPacket(packet, 0x24);
 }
 
+/* Reply to the waypoint panel's close: receive the shared 0x24-byte panel
+ * packet, set its word 1 (the panel-closed flag) and send the packet back. */
 void SendWaypointPanelClosed(void) {
-s32 Link_ReceivePacket(s32 *,M2C_UNK);
-M2C_UNK Link_SendPacket(s32 *,M2C_UNK);
-s32 buffer[9];
-if(Link_ReceivePacket(buffer,0x24)==0)return;
-buffer[1]=1;
-Link_SendPacket(buffer,0x24);
+    s32 Link_ReceivePacket(s32 *, M2C_UNK);
+    M2C_UNK Link_SendPacket(s32 *, M2C_UNK);
+    s32 packet[9];
+
+    if (Link_ReceivePacket(packet, 0x24) == 0) return;
+    packet[1] = 1;
+    Link_SendPacket(packet, 0x24);
 }
 
 void func_ov003_021e8958(void *arg0) {
@@ -140,7 +152,7 @@ void func_ov003_021e8958(void *arg0) {
     void CreateWaypointPanelSprites(void *, void *);
     void *CreateFrameBorderSprite(void *);
     void LoadFrameBorderSpritePattern(void *, s32, s32);
-    void func_ov003_021e97bc(void *, s32, s32, s32, s32);
+    void SetSpriteActorPositionAndSize(void *, s32, s32, s32, s32);
     void Sync3DSpriteToTarget(void *);
     void func_ov003_021e97fc(void *, s32);
     void func_ov003_021e9804(void *);
@@ -162,7 +174,7 @@ void func_ov003_021e8958(void *arg0) {
     void PlaceWaypointPanelCursor(void *);
     s32 GetWaypointSlotIndex(void *);
     s32 func_ov003_021e7450(void *);
-    void func_ov003_021e9e78(void *, s32, s32);
+    void InitWaypointOptionState(void *, s32, s32);
     void func_ov003_021e9eb4(void *);
     void DrawWaypointOption(void *);
     void SetFileDirectory(void *);
@@ -203,13 +215,13 @@ void func_ov003_021e8958(void *arg0) {
     CreateWaypointPanelSprites(M2C_FIELD(arg0, void **, 0x68), arg0);
     M2C_FIELD(arg0, void **, 0x58) = CreateFrameBorderSprite(arg0);
     LoadFrameBorderSpritePattern(M2C_FIELD(arg0, void **, 0x58), 0xb000, 0xa);
-    func_ov003_021e97bc(M2C_FIELD(arg0, void **, 0x58), 0xa, 0x10, 0x38, 0x38);
+    SetSpriteActorPositionAndSize(M2C_FIELD(arg0, void **, 0x58), 0xa, 0x10, 0x38, 0x38);
     Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x58));
     func_ov003_021e97fc(M2C_FIELD(arg0, void **, 0x58), 1);
     Hide3DSprite(M2C_FIELD(arg0, void **, 0x58));
     M2C_FIELD(arg0, void **, 0x5c) = CreateFrameBorderSprite(arg0);
     LoadFrameBorderSpritePattern(M2C_FIELD(arg0, void **, 0x5c), 0xb400, 0xa);
-    func_ov003_021e97bc(M2C_FIELD(arg0, void **, 0x5c), 0x38, 0x10, 0x38, 0x38);
+    SetSpriteActorPositionAndSize(M2C_FIELD(arg0, void **, 0x5c), 0x38, 0x10, 0x38, 0x38);
     Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x5c));
     func_ov003_021e97fc(M2C_FIELD(arg0, void **, 0x5c), 1);
     func_ov003_021e9804(M2C_FIELD(arg0, void **, 0x5c));
@@ -250,7 +262,7 @@ void func_ov003_021e8958(void *arg0) {
     {
         s32 a = GetWaypointSlotIndex(M2C_FIELD(arg0, void **, 0x6c));
         s32 b = func_ov003_021e7450(M2C_FIELD(arg0, void **, 0x6c));
-        func_ov003_021e9e78(M2C_FIELD(arg0, s32 *, 0x40), a, b);
+        InitWaypointOptionState(M2C_FIELD(arg0, s32 *, 0x40), a, b);
     }
     func_ov003_021e9eb4(arg0);
     DrawWaypointOption(arg0);
@@ -313,9 +325,9 @@ void func_ov003_021e8f98(void *arg0, M2C_UNK arg1) {
     M2C_UNK func_020aad18(void *);
     u32 func_020aae10(void *);
     u32 func_020aae44(void *);
-    void *func_020ab1c4(M2C_UNK);
+    void *CreateUnitSprite(M2C_UNK);
     s32 GetWaypointSlotX(u8);
 u8 i; s32 pos, left; s32 hidden; 
-M2C_FIELD(arg0,void**,0)=func_020ab1c4(arg1);func_020aab24(M2C_FIELD(arg0,void**,0),2,344,3,1);{ void *p=M2C_FIELD(arg0,void**,0);Set3DSpriteSlideTargetAndStart(p,224,160,224,192);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_020aad18(M2C_FIELD(arg0,void**,0));func_02088da8(M2C_FIELD(arg0,void**,0)); }M2C_FIELD(arg0,void**,4)=func_020ab1c4(arg1);func_020aab24(M2C_FIELD(arg0,void**,4),31,320,3,0);{ void *p=M2C_FIELD(arg0,void**,4);Set3DSpriteSlideTargetAndStart(p,96,164,96,192);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_020aad18(M2C_FIELD(arg0,void**,4));func_02088da8(M2C_FIELD(arg0,void**,4)); }hidden=-32;i=0;do{pos=GetWaypointSlotX(i);{ void *created=func_020ab1c4(arg1);M2C_FIELD(arg0+i*4,void**,8)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,8),23,360,3,0);{ void *p=M2C_FIELD(arg0+i*4,void**,8);left=(s16)(pos-1);Set3DSpriteSlideTargetAndStart(p,left,72,left,72);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=left;M2C_FIELD(p,s16*,0x36)=72;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,8)); }{ void *created=func_020ab1c4(arg1);M2C_FIELD(arg0+i*4,void**,24)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,24),24,364,3,0);pos=(s16)(pos+40);{ void *p=M2C_FIELD(arg0+i*4,void**,24);Set3DSpriteSlideTargetAndStart(p,pos,72,pos,72);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=pos;M2C_FIELD(p,s16*,0x36)=72;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,24)); }{ void *created=func_020ab1c4(arg1);M2C_FIELD(arg0+i*4,void**,40)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,40),8,368,3,0);{ void *p=M2C_FIELD(arg0+i*4,void**,40);Set3DSpriteSlideTargetAndStart(p,hidden,0,hidden,0);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=hidden;M2C_FIELD(p,s16*,0x36)=0;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,40)); }{ void *created=func_020ab1c4(arg1);M2C_FIELD(arg0+i*4,void**,56)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,56),9,376,3,0);{ void *p=M2C_FIELD(arg0+i*4,void**,56);Set3DSpriteSlideTargetAndStart(p,hidden,0,hidden,0);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=hidden;M2C_FIELD(p,s16*,0x36)=0;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,56)); }i++;}while(i<4);}
+M2C_FIELD(arg0,void**,0)=CreateUnitSprite(arg1);func_020aab24(M2C_FIELD(arg0,void**,0),2,344,3,1);{ void *p=M2C_FIELD(arg0,void**,0);Set3DSpriteSlideTargetAndStart(p,224,160,224,192);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_020aad18(M2C_FIELD(arg0,void**,0));func_02088da8(M2C_FIELD(arg0,void**,0)); }M2C_FIELD(arg0,void**,4)=CreateUnitSprite(arg1);func_020aab24(M2C_FIELD(arg0,void**,4),31,320,3,0);{ void *p=M2C_FIELD(arg0,void**,4);Set3DSpriteSlideTargetAndStart(p,96,164,96,192);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_020aad18(M2C_FIELD(arg0,void**,4));func_02088da8(M2C_FIELD(arg0,void**,4)); }hidden=-32;i=0;do{pos=GetWaypointSlotX(i);{ void *created=CreateUnitSprite(arg1);M2C_FIELD(arg0+i*4,void**,8)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,8),23,360,3,0);{ void *p=M2C_FIELD(arg0+i*4,void**,8);left=(s16)(pos-1);Set3DSpriteSlideTargetAndStart(p,left,72,left,72);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=left;M2C_FIELD(p,s16*,0x36)=72;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,8)); }{ void *created=CreateUnitSprite(arg1);M2C_FIELD(arg0+i*4,void**,24)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,24),24,364,3,0);pos=(s16)(pos+40);{ void *p=M2C_FIELD(arg0+i*4,void**,24);Set3DSpriteSlideTargetAndStart(p,pos,72,pos,72);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=pos;M2C_FIELD(p,s16*,0x36)=72;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,24)); }{ void *created=CreateUnitSprite(arg1);M2C_FIELD(arg0+i*4,void**,40)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,40),8,368,3,0);{ void *p=M2C_FIELD(arg0+i*4,void**,40);Set3DSpriteSlideTargetAndStart(p,hidden,0,hidden,0);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=hidden;M2C_FIELD(p,s16*,0x36)=0;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,40)); }{ void *created=CreateUnitSprite(arg1);M2C_FIELD(arg0+i*4,void**,56)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,56),9,376,3,0);{ void *p=M2C_FIELD(arg0+i*4,void**,56);Set3DSpriteSlideTargetAndStart(p,hidden,0,hidden,0);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=hidden;M2C_FIELD(p,s16*,0x36)=0;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,56)); }i++;}while(i<4);}
 #pragma opt_common_subs reset
 #pragma opt_propagation reset

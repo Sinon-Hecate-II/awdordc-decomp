@@ -258,7 +258,7 @@ return 1;
 }
 #pragma opt_strength_reduction reset
 #pragma opt_lifetimes reset
-u8 func_ov000_0217e6bc(s32 arg0,s32 arg1){
+u8 IsMoveDestinationAllowed(s32 arg0,s32 arg1){
 s32 ManhattanDistance(u8,u8,s16,s16);extern void **gCurrentMap;extern void *gAiCommandState;
 u32 base;void **unit,*world,*entry;u8 result;
 base=(u32)*gCurrentMap+0x5000;

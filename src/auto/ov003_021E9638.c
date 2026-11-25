@@ -44,7 +44,10 @@ Hide3DSprite(group->last);
 gCur3DSpriteEngine=savedEngine;
 }
 
-void func_ov003_021e97bc(void *p,s16 x,s16 y,s32 a,s32 b) { E9638Set(p,x,y,a,b); }
+/* Move the 3D sprite actor `sprite` to (x, y) and give it a width x height size. */
+void SetSpriteActorPositionAndSize(void *sprite, s16 x, s16 y, s32 width, s32 height) {
+    SetSpriteActorRect(sprite, x, y, width, height);
+}
 
 void func_ov003_021e97fc(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x58) = arg1;
@@ -208,7 +211,7 @@ void SetWaypointPanelMode(void *panel, s32 layout)
   unit = M2C_FIELD(M2C_FIELD(panelBytes, void **, WAYPOINT_PANEL_LIST), void **, WAYPOINT_LIST_UNIT);
   height = GetUnitSpriteHeight(unit);
   width = GetUnitSpriteWidth(unit);
-  E9638Set(M2C_FIELD(panel, void **, WAYPOINT_PANEL_CURSOR), M2C_FIELD(unit, s16 *, 0x34), M2C_FIELD(unit, s16 *, 0x36), width, height);
+  SetSpriteActorRect(M2C_FIELD(panel, void **, WAYPOINT_PANEL_CURSOR), M2C_FIELD(unit, s16 *, 0x34), M2C_FIELD(unit, s16 *, 0x36), width, height);
   M2C_FIELD(M2C_FIELD(panel, void **, WAYPOINT_PANEL_MARKER), s16 *, 0x34) = GetWaypointSlotX(M2C_FIELD(M2C_FIELD(panel, void **, WAYPOINT_PANEL_LIST), u8 *, WAYPOINT_LIST_SELECTED));
   textEnabled = ((u32) ((M2C_FIELD(panelBytes, u8 *, WAYPOINT_PANEL_TEXT_ENABLED)) << 0x1F)) >> 0x1F;
   if (textEnabled == 0)
@@ -302,7 +305,7 @@ void PlaceWaypointPanelCursor(void *panel) {
  void *unit; s32 width,height;
  unit = M2C_FIELD(M2C_FIELD(panel, void **, WAYPOINT_PANEL_LIST), void **, WAYPOINT_LIST_UNIT);
  height = GetUnitSpriteHeight(unit); width = GetUnitSpriteWidth(unit);
- E9638Set(M2C_FIELD(panel, void **, WAYPOINT_PANEL_CURSOR), M2C_FIELD(unit, s16 *, SPRITE_ACTOR_X), M2C_FIELD(unit, s16 *, SPRITE_ACTOR_Y), width, height);
+ SetSpriteActorRect(M2C_FIELD(panel, void **, WAYPOINT_PANEL_CURSOR), M2C_FIELD(unit, s16 *, SPRITE_ACTOR_X), M2C_FIELD(unit, s16 *, SPRITE_ACTOR_Y), width, height);
  M2C_FIELD(M2C_FIELD(panel, void **, WAYPOINT_PANEL_MARKER), s16 *, SPRITE_ACTOR_X) = GetWaypointSlotX(M2C_FIELD(M2C_FIELD(panel, void **, WAYPOINT_PANEL_LIST), u8 *, WAYPOINT_LIST_SELECTED));
 }
 
@@ -369,18 +372,21 @@ u8 func_ov003_021e9e58(void *arg0) {
     return var_r0;
 }
 
-void func_ov003_021e9e78(void *arg0, s8 arg1, s8 arg2) {
-    M2C_FIELD(arg0, s8 *, 0x10) = arg1;
-    M2C_FIELD(arg0, s8 *, 0x11) = arg2;
-    M2C_FIELD(arg0, s8 *, 0xE) = arg1;
-    M2C_FIELD(arg0, s8 *, 0xF) = arg2;
-    M2C_FIELD(arg0, s8 *, 0xC) = arg1;
-    M2C_FIELD(arg0, s8 *, 0xD) = arg2;
-    M2C_FIELD(arg0, s16 *, 4) = 0;
-    M2C_FIELD(arg0, s16 *, 6) = 0;
-    M2C_FIELD(arg0, s16 *, 8) = 0xA0;
-    M2C_FIELD(arg0, s16 *, 0xA) = 0xA0;
-    M2C_FIELD(arg0, s8 *, 0x12) = 1;
+/* Reset the waypoint panel's slot/option transition state to the selected slot
+ * and option: all three keyframe pairs take those values, the transition counters
+ * restart from zero, both amplitudes are 0xA0 and the state is marked ready. */
+void InitWaypointOptionState(void *state, s8 slot, s8 option) {
+    M2C_FIELD(state, s8 *, 0x10) = slot;
+    M2C_FIELD(state, s8 *, 0x11) = option;
+    M2C_FIELD(state, s8 *, 0xE) = slot;
+    M2C_FIELD(state, s8 *, 0xF) = option;
+    M2C_FIELD(state, s8 *, 0xC) = slot;
+    M2C_FIELD(state, s8 *, 0xD) = option;
+    M2C_FIELD(state, s16 *, 4) = 0;
+    M2C_FIELD(state, s16 *, 6) = 0;
+    M2C_FIELD(state, s16 *, 8) = 0xA0;
+    M2C_FIELD(state, s16 *, 0xA) = 0xA0;
+    M2C_FIELD(state, s8 *, 0x12) = 1;
 }
 
 #pragma optimization_level 3

@@ -71,12 +71,14 @@ s32 SocketGetSockName(void *socket, GhiSocketAddress *addr) {
     return 0;
 }
 
-s32 func_020218bc(void) {
+/* The console's local IPv4 address in network (big-endian) byte order: the host
+ * order address from GetLocalIpAddress with its four bytes reversed. */
+s32 GetLocalIpAddressNetworkOrder(void) {
     u32 GetLocalIpAddress();
-    u32 temp_r0;
+    u32 address;
 
-    temp_r0 = GetLocalIpAddress();
-    return ((temp_r0 << 0x18) & 0xFF000000) | (((temp_r0 << 8) & 0xFF0000) | ((u8) (temp_r0 >> 0x18) | ((temp_r0 >> 8) & 0xFF00)));
+    address = GetLocalIpAddress();
+    return ((address << 0x18) & 0xFF000000) | (((address << 8) & 0xFF0000) | ((u8) (address >> 0x18) | ((address >> 8) & 0xFF00)));
 }
 
 /* Set the two DNS server addresses from host-order IPv4 values: byte-swap each
@@ -161,7 +163,7 @@ void func_02021a90(void *cfg) {
 extern M2C_UNK data_02138b74;
 s32 *func_02021a38(s32);
 void func_02021a64(void *);
-void func_0201ee58(void *);
+void NetworkInit(void *);
 u32 v;
 M2C_FIELD(&gHostRecord,u32 *,0x40)=M2C_FIELD(cfg,u32 *,12)==1;
 v=M2C_FIELD(cfg,u32 *,16);M2C_FIELD(&gHostRecord,u32 *,68)=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
@@ -176,7 +178,7 @@ M2C_FIELD(&gHostRecord,u32 *,4)=M2C_FIELD(cfg,u32 *,8);
 M2C_FIELD(&gHostRecord,u32 *,0x60)=0x40;
 M2C_FIELD(&gHostRecord,u32 *,0x70)=M2C_FIELD(cfg,u32 *,0x2c);
 M2C_FIELD(&gHostRecord,u32 *,0x74)=M2C_FIELD(cfg,u32 *,0x30);
-func_0201ee58(&data_02138b74);
+NetworkInit(&data_02138b74);
 }
 
 void func_02021c04(void) {

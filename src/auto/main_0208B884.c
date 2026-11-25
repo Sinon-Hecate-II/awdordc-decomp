@@ -173,7 +173,7 @@ void LoadCompressedSpriteAssetsFromNarc(M2C_UNK sprite, M2C_UNK assetName, s32 d
 void LoadAnimatedSpriteAssets(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK list3, s32 value, u16 count, u8 flag) {
     s32 LoadFileToBuffer(M2C_UNK, M2C_UNK);
     s32 LoadDecompressedFile(M2C_UNK, M2C_UNK);
-    M2C_UNK func_0208143c(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK QueueFileToObjExtPalette(M2C_UNK, s32, M2C_UNK);
     void *CreateSpriteAnim(s32, M2C_UNK, M2C_UNK);
 
     s32 size;
@@ -184,7 +184,7 @@ void LoadAnimatedSpriteAssets(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK l
     M2C_FIELD(obj, s32 *, 0x54) = LoadFileToBuffer(list2, 1);
     if (flag != 0) {
         M2C_FIELD(obj, s32 *, 0x50) = LoadDecompressedFile(list1, 1);
-        func_0208143c(list3, size, 0x20);
+        QueueFileToObjExtPalette(list3, size, 0x20);
     }
     sub = CreateSpriteAnim(M2C_FIELD(obj, s32 *, 0x54), 0xD, 6);
     M2C_FIELD(obj, void **, 0x4C) = sub;
@@ -247,9 +247,9 @@ void func_0208c0dc(void *obj) {
     func_0208c0d0(obj, (u8)v);
 }
 
-s32 func_0208c1dc(void *arg0) {
-    s32 func_02091a70(s32);
-    return func_02091a70(M2C_FIELD(arg0, s32 *, 0x4C));
+s32 TakeSpriteAnimCommand(void *arg0) {
+    s32 Sprite_TakeCommand(s32);
+    return Sprite_TakeCommand(M2C_FIELD(arg0, s32 *, 0x4C));
 }
 
 s32 GetObjectTileX(void *arg0) {
@@ -373,8 +373,8 @@ void CreateEffectSpriteObject(M2C_UNK arg0) {
 s32 LoadSpriteGraphics(M2C_UNK assetName, s32 textureOffset, s32 paletteSlot) {
     M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
-    s32 func_020813c4(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_0208143c(M2C_UNK, s32, M2C_UNK);
+    s32 QueueFileToTextureBank(M2C_UNK *, M2C_UNK);
+    M2C_UNK QueueFileToObjExtPalette(M2C_UNK, s32, M2C_UNK);
     s32 BuildNarcPath();
     void OpenEffectNarcArchive(M2C_UNK);
     void CloseEffectNarcArchive(void);
@@ -388,8 +388,8 @@ s32 LoadSpriteGraphics(M2C_UNK assetName, s32 textureOffset, s32 paletteSlot) {
     StringCopy(palPath, narcPath);
     StringAppend(palPath, &sSpritePaletteExtension);
     OpenEffectNarcArchive(assetName);
-    textureSize = func_020813c4(texPath, textureOffset);
-    func_0208143c((M2C_UNK) palPath, paletteSlot << 5, 0x20);
+    textureSize = QueueFileToTextureBank(texPath, textureOffset);
+    QueueFileToObjExtPalette((M2C_UNK) palPath, paletteSlot << 5, 0x20);
     CloseEffectNarcArchive();
     return textureSize;
 }
@@ -486,13 +486,17 @@ void func_0208c748(void)
   DeleteSpriteObjectsOfClass(new_var);
 }
 
-void func_0208c75c(void *arg0, s32 arg1) {
+/* Copy the current OBJ palette shadow's `palette` slot (15 colours, index 0
+ * skipped) into the fade object's `to` palette; callers give the fade a black
+ * `from` palette to fade the palette in. */
+void CapturePaletteFadeTarget(void *arg0, s32 palette) {
     extern void *gCur3DSpriteEngine;
+    DS3DSpritePaletteFade *fade = (DS3DSpritePaletteFade *)arg0;
     u16 *src;
     s32 i;
-    src = (u16 *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + ((arg1 << 5) & ~1));
+    src = (u16 *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_PALETTES) + ((palette << 5) & ~1));
     for (i = 0; i < 15; i++) {
-        ((u16 *)arg0)[i + 0x2B] = src[i + 1];
+        fade->to[i] = src[i + 1];
     }
 }
 

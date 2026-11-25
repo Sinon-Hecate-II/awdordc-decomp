@@ -93,12 +93,12 @@ color=((u8*)&colors)[M2C_FIELD(unit,u8*,29)];
 LoadFileToSpriteBuffer(data_0212a46c,0,128);
 LoadDecompressedFileTo(data_0212a478,M2C_FIELD(gCur3DSpriteEngine,void**,12));
 LoadDecompressedFileTo(data_0212a484,M2C_FIELD(gCur3DSpriteEngine,void**,16));
-func_020814ac(data_0212a490,M2C_FIELD(gCur3DSpriteEngine,void**,32),0,color);
-func_020814ac(data_0212a49c,M2C_FIELD(gCur3DSpriteEngine,void**,36),0,color);
+LoadDecompressedFileAndDrawTilemapBlock(data_0212a490,M2C_FIELD(gCur3DSpriteEngine,void**,32),0,color);
+LoadDecompressedFileAndDrawTilemapBlock(data_0212a49c,M2C_FIELD(gCur3DSpriteEngine,void**,36),0,color);
 M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=1;
 M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=2;
 LoadDecompressedFileTo(data_0212a4a8,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,20)+32);
-func_020814ac(data_0212a4b4,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,40)+448,0,(u16)color);
+LoadDecompressedFileAndDrawTilemapBlock(data_0212a4b4,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,40)+448,0,(u16)color);
 M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=4;
 color=names.names[kind];
 StringFormat(buf,data_0212a4c0,color);
@@ -229,13 +229,16 @@ void func_020c488c(void *arg0) {
     CreateBattleSaveSprite(M2C_FIELD(arg0, s32 *, 0x38), arg0);
 }
 
-void func_020c48b0(void *arg0) {
- if(func_020c4b6c(M2C_FIELD(arg0,s32*,0x34))==0) {
- InitPlayerProfile(M2C_FIELD(arg0,s32*,0x34));
- InitBattleSaveRecords(M2C_FIELD(arg0,s32 **,0x38));
- return;
- }
- SetSpriteAnimation(arg0,1);
+/* Save/load screen step: if the profile save's id block fails its CRC (no save
+ * yet, or it is corrupt), create fresh profile and battle save blocks; otherwise
+ * move the screen on to its next animation step. */
+void EnsureSaveDataValid(void *sprite) {
+    if (IsProfileIdBlockValid(M2C_FIELD(sprite, s32 *, SAVE_SPRITE_BLOCK)) == 0) {
+        InitPlayerProfile(M2C_FIELD(sprite, s32 *, SAVE_SPRITE_BLOCK));
+        InitBattleSaveRecords(M2C_FIELD(sprite, s32 **, SAVE_SPRITE_BATTLE_BLOCK));
+        return;
+    }
+    GotoSpriteAnimationLabel(sprite, 1);
 }
 
 void func_020c48ec(void *arg0) {
@@ -366,7 +369,7 @@ M2C_UNK *GetBattleSaveBlock(void) {
     return &gBattleSaveBlock;
 }
 
-s32 func_020c4b6c(s32 arg0) {
+s32 IsProfileIdBlockValid(s32 arg0) {
     M2C_UNK VerifyProfileIdBlockCrc(s32);
     s32 var_r0;
 
@@ -410,7 +413,7 @@ void IsProfileKeySet(s32 arg0) {
     func_020324e4(var_r0 + 4);
 }
 
-void func_020c4bdc(s32 arg0) {
+void ClearProfileNasKey(s32 arg0) {
     M2C_UNK func_02032508(s32);
     s32 var_r0;
 
@@ -421,28 +424,36 @@ void func_020c4bdc(s32 arg0) {
     func_02032508(var_r0 + 4);
 }
 
-void func_020c4bf8(void *arg0) {
-    extern M2C_UNK data_0212a6a4;
-    func_020c4bdc(M2C_FIELD(arg0, s32 *, 0x34));
-    PruneSaveRecords(2, 1);
-    func_02075fd8(M2C_FIELD(arg0, s32 *, 0x34), &data_0212a6a4, 0x90, 2);
-    func_02076198();
+/* Save a profile-save sprite's local-play user data: clear the profile's NAS key,
+ * keep only the newest profile record, then queue the 0x90-byte "LinkUserData"
+ * record as the profile save and start writing it. */
+void SaveProfileLinkUserData(void *sprite) {
+    extern M2C_UNK sLinkUserDataName;
+    ClearProfileNasKey(M2C_FIELD(sprite, s32 *, SAVE_SPRITE_BLOCK));
+    PruneSaveRecords(SAVE_TYPE_PLAYER, 1);
+    SaveList_QueueUpdate(M2C_FIELD(sprite, s32 *, SAVE_SPRITE_BLOCK), &sLinkUserDataName, 0x90, SAVE_TYPE_PLAYER);
+    SaveList_StartFlush();
 }
 
-void func_020c4c34(M2C_UNK arg0) {
+/* Completion callback of the profile-save sprite: while the save task is still
+ * running, wait for it; if the save archive turned out unusable, show the
+ * missing-save-data message (which halts the game); otherwise continue the
+ * sprite's animation. */
+void FinishProfileSave(M2C_UNK sprite) {
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
-    s32 func_020761f8();
-    s32 func_02076208();
-    M2C_UNK func_02076244();
+    s32 IsSaveTaskRunning();
+    s32 IsSaveArchiveUnusable();
+    M2C_UNK HaltWithMessage();
     M2C_UNK GetLocalizedText(s32);
-    if (func_020761f8() != 0) {
+
+    if (IsSaveTaskRunning() != 0) {
         return;
     }
-    if (func_02076208() != 0) {
-        GetLocalizedText(0xC000034C);
-        func_02076244();
+    if (IsSaveArchiveUnusable() != 0) {
+        GetLocalizedText(TEXT_ID_NO_SAVE_DATA);
+        HaltWithMessage();
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 /* Create the profile-save screen sprite for the new-game path: the sprite of
@@ -483,13 +494,17 @@ void CreateLocalProfileSaveSprite(M2C_UNK arg0) {
     CreateProfileSaveSprite(0, arg0);
 }
 
-void func_020c4cf0(void *arg0) {
-    M2C_UNK func_02075fd8(s32, M2C_UNK *, s32, M2C_UNK);
+/* Write the whole battle save block held by save-screen sprite `sprite` (its block
+ * is at SAVE_SPRITE_BLOCK) as the "LinkFriendData" section: keep only the newest
+ * battle record, then queue and start writing the block. */
+void SaveBattleSaveBlock(void *sprite) {
+    M2C_UNK SaveList_QueueUpdate(s32, M2C_UNK *, s32, M2C_UNK);
     M2C_UNK PruneSaveRecords(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02076198();
-    extern M2C_UNK data_0212a6b4;
-    PruneSaveRecords(3, 1);
-    func_02075fd8(M2C_FIELD(arg0, s32 *, 0x34), &data_0212a6b4, 0xC34, 3);
-    func_02076198();
+    M2C_UNK SaveList_StartFlush();
+    extern M2C_UNK sLinkFriendDataName;
+
+    PruneSaveRecords(SAVE_TYPE_BATTLE, 1);
+    SaveList_QueueUpdate(M2C_FIELD(sprite, s32 *, SAVE_SPRITE_BLOCK), &sLinkFriendDataName, SAVE_BLOCK_SIZE, SAVE_TYPE_BATTLE);
+    SaveList_StartFlush();
 }
 

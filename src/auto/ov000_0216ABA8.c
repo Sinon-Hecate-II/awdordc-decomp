@@ -111,11 +111,13 @@ s32 func_ov000_0216b154(void) {
     return 0;
 }
 
-s32 func_ov000_0216b15c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    if (((s32) (arg0 + arg2) < 0) || (arg0 > 0x100)) {
+/* Whether a box at (x, y) of size width x height overlaps the 256x192 screen;
+ * the inlined copy of IsBoxOnScreen that clips ov000's overlay text sprites. */
+s32 IsOv000BoxOnScreen(s32 x, s32 y, s32 width, s32 height) {
+    if (((s32) (x + width) < 0) || (x > SCREEN_WIDTH)) {
         return 0;
     }
-    if (((s32) (arg1 + arg3) < 0) || (arg1 > 0xC0)) {
+    if (((s32) (y + height) < 0) || (y > SCREEN_HEIGHT)) {
         return 0;
     }
     return 1;

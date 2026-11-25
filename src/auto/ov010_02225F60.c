@@ -20,14 +20,14 @@ while(first!=last) { ov010CallMember(first,&copy); first+=12; }
 }
 
 /* Initializes/starts the overlay 010 subsystem: allocates its working buffers, sets callbacks and enables it. */
-s32 func_ov010_02225f60(void) {
+s32 Ov010_InitVoiceChat(void) {
     extern M2C_UNK gVoiceChatLink, data_ov010_0222ee98, data_ov010_0222ee78;
     void VoiceLink_HandleEvent();
     void func_ov010_02225f54();
     s32 GetOnlineTransportPlayerId();
     s32 func_ov010_02225cd8(s32);
     s32 func_ov010_02225640(void *);
-    void func_ov010_02228b50();
+    void Ov010_SetVoiceChatCallback();
     void func_ov010_02222c9c();
     void func_ov010_02225d00();
     void DisableVoiceStream();
@@ -53,7 +53,7 @@ s32 func_ov010_02225f60(void) {
     if (!func_ov010_02225640(&data_ov010_0222ee78)) {
         return 0;
     }
-    func_ov010_02228b50(func_ov010_02225f54);
+    Ov010_SetVoiceChatCallback(func_ov010_02225f54);
     func_ov010_02222c9c(1);
     M2C_FIELD(&gVoiceChatLink, s32 *, 4) = 0;
     func_ov010_02225d00();
@@ -92,19 +92,23 @@ s32 VoiceChat_ConnectPeer(s32 peerId) {
     return 1;
 }
 
-void func_ov010_022260b8(void) {
-    void func_ov010_02225d38();
+/* Shut down the ov010 voice-chat link: stop its streamed sound and voice stream,
+ * clear the online session's voice-chat callback, reset the voice-chat session,
+ * then free the link's work buffer and mark the link closed. */
+void Ov010_ShutdownVoiceChat(void) {
+    void VoiceChat_StopStreamSound();
     void StopStreamedVoice();
-    void func_ov010_02228b50(s32);
-    void func_ov010_02225778();
+    void Ov010_SetVoiceChatCallback(s32);
+    void VoiceChat_ResetSession();
     void FreeBuffer();
     extern M2C_UNK gVoiceChatLink;
-    func_ov010_02225d38();
+    VoiceChat_StopStreamSound();
     StopStreamedVoice();
-    func_ov010_02228b50(0);
-    func_ov010_02225778();
-    FreeBuffer(M2C_FIELD(&gVoiceChatLink, s32 *, 0), M2C_FIELD(&gVoiceChatLink, s32 *, 0x1C));
-    M2C_FIELD(&gVoiceChatLink, s32 *, 0) = 0;
+    Ov010_SetVoiceChatCallback(0);
+    VoiceChat_ResetSession();
+    FreeBuffer((s32)((VoiceChatLink *)&gVoiceChatLink)->streamBuffer,
+        (s32)((VoiceChatLink *)&gVoiceChatLink)->config.packetPoolSize);
+    ((VoiceChatLink *)&gVoiceChatLink)->streamBuffer = 0;
 }
 
 s32 AllocAlignedBuffer() {

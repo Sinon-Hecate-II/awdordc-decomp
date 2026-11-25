@@ -120,15 +120,18 @@ Ov001_MoveSpriteLayout(M2C_FIELD(gOv001RegionMenu+item*4,s32 *,OV001_REGION_ITEM
 Ov001_SetSpritePalette(M2C_FIELD(gOv001RegionMenu+item*4,s32 *,OV001_REGION_ITEM_SPRITES),-1,0);
 }
 
-void Ov001_RegionMenuCloseDelay(M2C_UNK arg0) {
+/* Close-delay step of the region column: stay on screen for
+ * OV001_REGION_CLOSE_DELAY_FRAMES frames, then hand the task to the step that
+ * slides the column out. */
+void Ov001_RegionMenuCloseDelay(s32 task) {
     M2C_UNK Ov001_SetSlideStep(M2C_UNK, M2C_UNK *);
     extern void *gOv001RegionMenu;
     extern M2C_UNK Ov001_SlideRegionMenuOut;
-    M2C_FIELD(gOv001RegionMenu, u8 *, 0x1D) = (u8) (M2C_FIELD(gOv001RegionMenu, u8 *, 0x1D) + 1);
-    if ((u32) M2C_FIELD(gOv001RegionMenu, u8 *, 0x1D) < 8U) {
+    M2C_FIELD(gOv001RegionMenu, u8 *, OV001_REGION_CLOSE_DELAY) = (u8) (M2C_FIELD(gOv001RegionMenu, u8 *, OV001_REGION_CLOSE_DELAY) + 1);
+    if ((u32) M2C_FIELD(gOv001RegionMenu, u8 *, OV001_REGION_CLOSE_DELAY) < OV001_REGION_CLOSE_DELAY_FRAMES) {
         return;
     }
-    Ov001_SetSlideStep(arg0, &Ov001_SlideRegionMenuOut);
+    Ov001_SetSlideStep(task, &Ov001_SlideRegionMenuOut);
 }
 
 /* One frame of the region column closing: slide it down by OV001_REGION_OPEN_STEP
@@ -172,12 +175,14 @@ void Ov001_RegionMenuCloseFinish(s32 a) {
     Ov001_FreeAlloc((void*)0x02193e18);
 }
 #pragma opt_strength_reduction reset
-void func_ov001_02186e40(void *arg0) {
-    M2C_UNK func_ov001_02187ad8(void *);
-    gOv001LinkWork = arg0;
-    func_ov001_02187ad8(arg0 + 0x1B160);
-    M2C_FIELD(gOv001LinkWork, s32 *, 0x1B140) = 0;
-    M2C_FIELD(gOv001LinkWork, s32 *, 0x1B144) = 0;
+/* Bind the Download Play link work block: publish it as gOv001LinkWork, attach the
+ * WH connection object embedded in it, and clear the two multiboot buffers. */
+void Ov001_InitLinkWork(void *work) {
+    M2C_UNK Ov001_SetWhConnection(void *);
+    gOv001LinkWork = work;
+    Ov001_SetWhConnection(work + OV001_LINK_WH_CONNECTION);
+    M2C_FIELD(gOv001LinkWork, s32 *, OV001_LINK_TRANSFER) = 0;
+    M2C_FIELD(gOv001LinkWork, s32 *, OV001_LINK_PROGRAM) = 0;
 }
 
 /* Start the overlay's DS Download Play (multiboot) parent transfer: build the
@@ -394,14 +399,14 @@ else Ov001_SetLinkStatus(4);
 }
 
 void func_ov001_0218754c(void) {
-M2C_UNK func_0201808c();M2C_UNK Ov001_SetLinkStatus(M2C_UNK);
-Ov001_SetLinkStatus(6);func_0201808c();
+M2C_UNK MultiBoot_CloseLink();M2C_UNK Ov001_SetLinkStatus(M2C_UNK);
+Ov001_SetLinkStatus(6);MultiBoot_CloseLink();
 }
 
 void Ov001_TryStartTransfer(void) {
     extern void *gOv001LinkWork;
     if ((M2C_FIELD(gOv001LinkWork, u16 *, 0) == 4) && (M2C_FIELD(gOv001LinkWork, u16 *, 2) == M2C_FIELD(gOv001LinkWork, u16 *, 0xC))) {
-        func_0201808c();
+        MultiBoot_CloseLink();
     }
 }
 

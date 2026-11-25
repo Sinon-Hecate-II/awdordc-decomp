@@ -4,7 +4,10 @@
 #include "ds3dsprite.h"
 #include "sound.h"
 
-typedef struct { u32 low:8; u32 mid:2; u32 hi:2; } Word020a334c;
+
+/* PLAYER_REC_SPRITE of a player record: the army id byte, then two small
+ * bitfields that pick the army's sprite tables; bits 10-11 are the army variant. */
+typedef struct { u32 armyId:8; u32 reserved:2; u32 armyVariant:2; } PlayerSpriteWord;
 
 /* Defense bonus the CO zone of `commander` gives unit kind `kind`: only kinds
  * the commander's zone covers receive it. */
@@ -104,18 +107,20 @@ s32 GetPlayerMusicTrack(u8 player) {
 }
 
 void PlayPlayerMusic(s32 arg0) {
-    M2C_UNK func_0208f7d0();
+    M2C_UNK ChangeMusicTrackWithFade();
     M2C_UNK GetPlayerMusicTrack(u8);
     GetPlayerMusicTrack((u8)(arg0 & 0xFF));
-    func_0208f7d0();
+    ChangeMusicTrackWithFade();
 }
 
-void func_020a2b98(s32 a,s32 b){
-s32 GetPlayerArmyVariantIfSet(s32);
-extern u16 gMapConfig;
-if(((u32)(gMapConfig<<19)>>31)==0)return;
-if(GetPlayerArmyVariantIfSet(a)!=0)return;
-AddCoPowerMeterPoints(a,b);
+/* Add `points` to `player`'s CO power meter when the map enables CO powers and
+ * the player is not using a fixed army variant. */
+void AddCoPowerMeterPointsIfEnabled(s32 player, s32 points) {
+    s32 GetPlayerArmyVariantIfSet(s32);
+    extern u16 gMapConfig;
+    if (((u32)(M2C_FIELD(&gMapConfig, u16 *, MAPCONFIG_FLAGS) << 19) >> 31) == 0) return;
+    if (GetPlayerArmyVariantIfSet(player) != 0) return;
+    AddCoPowerMeterPoints(player, points);
 }
 
 s32 GetCoPowerMeterPointsPerStar(void) {
@@ -291,10 +296,10 @@ void ChangeToRandomAdverseWeather(s32 player) {
 }
 
 u8 func_020a3060(u8 *arg0) {
-    s32 func_020a8560(u32);
+    s32 IsUnitKindClass6(u32);
     u8 var_r0;
 
-    if (func_020a8560((u32) (*arg0 << 0x1A) >> 0x1A) == 0) {
+    if (IsUnitKindClass6((u32) (*arg0 << 0x1A) >> 0x1A) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -318,10 +323,12 @@ void func_020a30bc(void) {
 
 }
 
-s32 GetRandomCoQuoteTextId(s32 a){
-extern u8 data_02126194[];
+/* One of the CO's quote lines picked at random: army `armyId`'s entry of
+ * ARMY_DATA_QUOTE_COUNT text ids at armydata+ARMY_DATA_QUOTE_TEXT_IDS. */
+s32 GetRandomCoQuoteTextId(s32 armyId){
+extern u8 gArmyQuoteTextIds[];
 s32 NextRandomValue(void);
-return ((s32 *)(data_02126194+a*0x9c))[NextRandomValue()%3];
+return ((s32 *)(gArmyQuoteTextIds+armyId*ARMY_DATA_SIZE))[NextRandomValue()%ARMY_DATA_QUOTE_COUNT];
 }
 
 void func_020a3100(s32 arg0) {
@@ -395,12 +402,14 @@ u8 *GetPlayerSelectedUnit(s32 player) {
     return (u8 *)(base + MAP_UNIT_RECORDS + MAP_UNIT_STRIDE * selected);
 }
 
-s32 GetPlayerArmyVariantIfSet(s32 a) {
+/* Player `player`'s army variant (bits 10-11 of its sprite state), or 0 when the
+ * player has no army at all: the sprite state's army-id byte is 0. */
+s32 GetPlayerArmyVariantIfSet(s32 player) {
     extern s32 *gCurrentMap;
-    s32 p = *gCurrentMap + 0x67a4 + 140 * a;
-    Word020a334c *w = (Word020a334c *)(p + 108);
-    if (w->low == 0) return 0;
-    return (u8)w->hi;
+    s32 record = *gCurrentMap + MAP_PLAYER_STATES + MAP_PLAYER_STRIDE * player;
+    PlayerSpriteWord *sprite = (PlayerSpriteWord *)(record + PLAYER_REC_SPRITE);
+    if (sprite->armyId == 0) return 0;
+    return (u8)sprite->armyVariant;
 }
 
 void func_020a338c(s32 a,s32 b){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&~0xc00)|((u32)(b<<30)>>20);}
@@ -527,7 +536,7 @@ void StartPlayerArmyDisplay(void *panel) {
     s16 pos[2];
     s32 SelectAreaEffectTargetForMode(s16 *, s32, s32, s32);
     if (!SelectAreaEffectTargetForMode(pos, M2C_FIELD(panel, s16 *, 0x6C), 0, 1)) {
-        SetSpriteAnimation(panel, 0);
+        GotoSpriteAnimationLabel(panel, 0);
         return;
     }
     M2C_FIELD(panel, s32 *, 0x34) = pos[0];
@@ -535,8 +544,8 @@ void StartPlayerArmyDisplay(void *panel) {
 }
 
 void func_020a3740(void *arg0) {
-    M2C_UNK func_020c7874(s32, s32, M2C_UNK, M2C_UNK, void *);
-    func_020c7874(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 2, 0x50, arg0);
+    M2C_UNK CreateTileMarkerSprite(s32, s32, M2C_UNK, M2C_UNK, void *);
+    CreateTileMarkerSprite(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 2, 0x50, arg0);
 }
 
 void func_020a3764(void *arg0) {
@@ -549,7 +558,7 @@ void func_020a3774(s16 arg0) {
     M2C_FIELD(CreateSpriteObject(&data_02120444), s16 *, 0x6C) = arg0;
 }
 
-s32 func_020a3790(s32 arg0) {
+s32 NormalizeWeather(s32 arg0) {
     s32 var_r0;
 
     var_r0 = arg0;

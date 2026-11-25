@@ -204,7 +204,7 @@ void func_ov000_02170110(void *arg0) {
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK Load3DSpritePattern(s32, M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_020994e0(M2C_UNK);
+    M2C_UNK ResetTextTiles(M2C_UNK);
     M2C_UNK DrawTextToTilemap(M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     M2C_UNK DrawTilemapNumber(M2C_UNK, M2C_UNK, s32, s16, s32, s32);
     s32 GetArmyStateLabel(u8);
@@ -248,7 +248,7 @@ void func_ov000_02170110(void *arg0) {
     if (t != NULL) {
         t();
     }
-    func_020994e0(0);
+    ResetTextTiles(0);
     M2C_FIELD(&gUnitListRows, s32 *, 4) = HeapAllocBlock(0x40);
     M2C_FIELD(arg0, s16 *, 0x3C) = CountCurrentPlayerUnits();
     M2C_FIELD(arg0, s16 *, 0x34) = 0;

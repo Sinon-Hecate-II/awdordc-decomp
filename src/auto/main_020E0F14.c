@@ -17,8 +17,8 @@ void func_020e0f14(M2C_UNK arg0) {
     M2C_UNK func_020aad18(void *);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
-    void *func_020ab1c4(void *);
-    M2C_UNK func_020e4c64();
+    void *CreateUnitSprite(void *);
+    M2C_UNK AcquireUsernameFont();
     extern M2C_UNK data_0212c5c4;
     extern M2C_UNK data_0212c6a8;
     extern M2C_UNK data_0212d1e8;
@@ -101,7 +101,7 @@ void func_020e0f14(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, void **, 0x68) = temp_r0_2;
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    M2C_FIELD(temp_r0, void **, 0x50) = func_020ab1c4(temp_r0);
+    M2C_FIELD(temp_r0, void **, 0x50) = CreateUnitSprite(temp_r0);
     InitUnitSprite(M2C_FIELD(temp_r0, void **, 0x50), 0, 0x340, 3, 1);
     temp_r6 = M2C_FIELD(temp_r0, void **, 0x50);
     Set3DSpriteSlideTargetAndStart(temp_r6, 0xC0, 0xA0, 0xC0, 0xC0);
@@ -123,7 +123,7 @@ void func_020e0f14(M2C_UNK arg0) {
     temp_r1_2 = M2C_FIELD(temp_r0, void **, 0x50);
     M2C_FIELD(temp_r1_2, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r1_2, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r1_2, u8 *, 0x59) << 0x1C) >> 0x1C) + 2) << 0x18) >> 6));
     M2C_FIELD(temp_r1_2, s8 *, 0x5A) = 0;
-    M2C_FIELD(temp_r0, void **, 0x54) = func_020ab1c4(temp_r0);
+    M2C_FIELD(temp_r0, void **, 0x54) = CreateUnitSprite(temp_r0);
     InitUnitSprite(M2C_FIELD(temp_r0, void **, 0x54), 1, 0x350, 3, 0);
     temp_r6_2 = M2C_FIELD(temp_r0, void **, 0x54);
     Set3DSpriteSlideTargetAndStart(temp_r6_2, 0xC0, 0xA0, 0xC0, 0xC0);
@@ -145,7 +145,7 @@ void func_020e0f14(M2C_UNK arg0) {
     temp_r1_4 = M2C_FIELD(temp_r0, void **, 0x54);
     M2C_FIELD(temp_r1_4, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r1_4, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r1_4, u8 *, 0x59) << 0x1C) >> 0x1C) + 2) << 0x18) >> 6));
     M2C_FIELD(temp_r1_4, s8 *, 0x5A) = 0;
-    M2C_FIELD(temp_r0, void **, 0x58) = func_020ab1c4(temp_r0);
+    M2C_FIELD(temp_r0, void **, 0x58) = CreateUnitSprite(temp_r0);
     InitUnitSprite(M2C_FIELD(temp_r0, void **, 0x58), 2, 0x360, 3, 0);
     temp_r6_3 = M2C_FIELD(temp_r0, void **, 0x58);
     Set3DSpriteSlideTargetAndStart(temp_r6_3, 0xE0, 0xA0, 0xE0, 0xC0);
@@ -164,7 +164,7 @@ void func_020e0f14(M2C_UNK arg0) {
     M2C_FIELD(temp_r1_5, s16 *, 0x34) = 0xE0;
     M2C_FIELD(temp_r1_5, s16 *, 0x36) = 0xC0;
     func_020aad18(M2C_FIELD(temp_r0, void **, 0x58));
-    M2C_FIELD(temp_r0, void **, 0x5C) = func_020ab1c4(temp_r0);
+    M2C_FIELD(temp_r0, void **, 0x5C) = CreateUnitSprite(temp_r0);
     InitUnitSprite(M2C_FIELD(temp_r0, void **, 0x5C), 0x2A, 0x370, 3, 0);
     temp_r6_4 = M2C_FIELD(temp_r0, void **, 0x5C);
     Set3DSpriteSlideTargetAndStart(temp_r6_4, 0x60, 0xA4, -0x9F, 0xA4);
@@ -205,7 +205,7 @@ void func_020e0f14(M2C_UNK arg0) {
     SetSpriteText(M2C_FIELD(temp_r0, void **, 0x64), &data_0212c5c4);
     Hide3DSprite(M2C_FIELD(temp_r0, void **, 0x64));
     gCur3DSpriteEngine = temp_r5;
-    func_020e4c64();
+    AcquireUsernameFont();
 }
 #pragma opt_common_subs reset
 void func_020e147c(M2C_UNK arg0) {
@@ -221,8 +221,8 @@ void func_020e147c(M2C_UNK arg0) {
     M2C_UNK func_020aad18(void *);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
-    void *func_020ab1c4(void *);
-    M2C_UNK func_020e4c64();
+    void *CreateUnitSprite(void *);
+    M2C_UNK AcquireUsernameFont();
     extern M2C_UNK data_0212c5c4;
     extern M2C_UNK data_0212c6a8;
     extern M2C_UNK data_0212d1e8;
@@ -306,7 +306,7 @@ void func_020e147c(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, void **, 0x68) = temp_r0_2;
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    M2C_FIELD(temp_r0, void **, 0x50) = func_020ab1c4(temp_r0);
+    M2C_FIELD(temp_r0, void **, 0x50) = CreateUnitSprite(temp_r0);
     InitUnitSprite(M2C_FIELD(temp_r0, void **, 0x50), 0, 0x340, 3, 1);
     temp_r6 = M2C_FIELD(temp_r0, void **, 0x50);
     Set3DSpriteSlideTargetAndStart(temp_r6, 0xC0, 0xA0, 0xC0, 0xC0);
@@ -328,7 +328,7 @@ void func_020e147c(M2C_UNK arg0) {
     temp_r1_2 = M2C_FIELD(temp_r0, void **, 0x50);
     M2C_FIELD(temp_r1_2, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r1_2, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r1_2, u8 *, 0x59) << 0x1C) >> 0x1C) + 2) << 0x18) >> 6));
     M2C_FIELD(temp_r1_2, s8 *, 0x5A) = 0;
-    M2C_FIELD(temp_r0, void **, 0x54) = func_020ab1c4(temp_r0);
+    M2C_FIELD(temp_r0, void **, 0x54) = CreateUnitSprite(temp_r0);
     InitUnitSprite(M2C_FIELD(temp_r0, void **, 0x54), 1, 0x350, 3, 0);
     temp_r6_2 = M2C_FIELD(temp_r0, void **, 0x54);
     Set3DSpriteSlideTargetAndStart(temp_r6_2, 0xC0, 0xA0, 0xC0, 0xC0);
@@ -350,7 +350,7 @@ void func_020e147c(M2C_UNK arg0) {
     temp_r1_4 = M2C_FIELD(temp_r0, void **, 0x54);
     M2C_FIELD(temp_r1_4, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r1_4, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r1_4, u8 *, 0x59) << 0x1C) >> 0x1C) + 2) << 0x18) >> 6));
     M2C_FIELD(temp_r1_4, s8 *, 0x5A) = 0;
-    M2C_FIELD(temp_r0, void **, 0x58) = func_020ab1c4(temp_r0);
+    M2C_FIELD(temp_r0, void **, 0x58) = CreateUnitSprite(temp_r0);
     InitUnitSprite(M2C_FIELD(temp_r0, void **, 0x58), 2, 0x360, 3, 0);
     temp_r6_3 = M2C_FIELD(temp_r0, void **, 0x58);
     Set3DSpriteSlideTargetAndStart(temp_r6_3, 0xE0, 0xA0, 0xE0, 0xC0);
@@ -369,7 +369,7 @@ void func_020e147c(M2C_UNK arg0) {
     M2C_FIELD(temp_r1_5, s16 *, 0x34) = 0xE0;
     M2C_FIELD(temp_r1_5, s16 *, 0x36) = 0xC0;
     func_020aad18(M2C_FIELD(temp_r0, void **, 0x58));
-    M2C_FIELD(temp_r0, void **, 0x5C) = func_020ab1c4(temp_r0);
+    M2C_FIELD(temp_r0, void **, 0x5C) = CreateUnitSprite(temp_r0);
     InitUnitSprite(M2C_FIELD(temp_r0, void **, 0x5C), 0x2A, 0x370, 3, 0);
     temp_r6_4 = M2C_FIELD(temp_r0, void **, 0x5C);
     Set3DSpriteSlideTargetAndStart(temp_r6_4, 0x60, 0xA4, -0x9F, 0xA4);
@@ -411,7 +411,7 @@ void func_020e147c(M2C_UNK arg0) {
     SetSpriteText(M2C_FIELD(temp_r0, void **, 0x64), &data_0212c5c4);
     Hide3DSprite(M2C_FIELD(temp_r0, void **, 0x64));
     gCur3DSpriteEngine = temp_r5;
-    func_020e4c64();
+    AcquireUsernameFont();
 }
 #pragma opt_common_subs reset
 

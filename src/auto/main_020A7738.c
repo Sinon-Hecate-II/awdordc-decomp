@@ -1,6 +1,7 @@
 /* 71 functions from 0x020A7738 to 0x020A86F8 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_unit_entry.h"
 static inline s32 A8240InBounds(s32 x, s32 y) {
 extern void **gCurrentMap;
 if (x>=0 && y>=0 && x<M2C_FIELD(*gCurrentMap,u16 *,0x5144) && y<M2C_FIELD(*gCurrentMap,u16 *,0x5146)) return 1;
@@ -37,11 +38,11 @@ void GetUnitMoveScoreWeather(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 /* Damage-free move penalty of entering the destination terrain: infantry and mech
  * (kinds 1 and 2) lose 3 points when the destination takes their movement type 4. */
 s32 GetUnitTerrainPenalty(u8 *arg0, M2C_UNK arg1, M2C_UNK arg2) {
- s32 func_020d04ec(M2C_UNK, M2C_UNK, M2C_UNK);
+ s32 IsTerrainKindAtTile(M2C_UNK, M2C_UNK, M2C_UNK);
  s32 penalty;
  u32 kind;
  penalty = 0;
- if (func_020d04ec(arg1, arg2, 4) != 0) {
+ if (IsTerrainKindAtTile(arg1, arg2, 4) != 0) {
   kind = (u32)(*arg0 << 26) >> 26;
   switch (kind) {
   case 1:
@@ -89,19 +90,23 @@ s32 func_020a7914(void *arg0) {
  return result;
 }
 
-s32 GetWeaponDamagePercent(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
- s32 func_020a72fc(s32, s32);
- extern u8 data_ov000_021b5c13[];
- s32 var_r1;
- var_r1 = arg1;
- if (arg3 != 0) var_r1 = func_020a72fc(var_r1, (u8)arg3);
- return *(var_r1 + (data_ov000_021b5c13 + arg0 * 0x70 + (arg2 << 5)));
+/* Damage percentage one weapon of attacker kind `attackerKind` deals to a target:
+ * the `weaponIndex` (0 primary, 1 secondary) block of the kind's damage table,
+ * indexed by the target's kind/row.  When the target is a submerged submarine
+ * (`targetFlags` nonzero) its dedicated damage row is used instead. */
+s32 GetWeaponDamagePercent(s32 attackerKind, s32 targetKind, s32 weaponIndex, s32 targetFlags) {
+ s32 GetSubmergedDamageRow(s32, s32);
+ extern u8 gUnitKindDamageTable[];
+ s32 damageRow;
+ damageRow = targetKind;
+ if (targetFlags != 0) damageRow = GetSubmergedDamageRow(damageRow, (u8)targetFlags);
+ return *(damageRow + (gUnitKindDamageTable + attackerKind * 0x70 + (weaponIndex << 5)));
 }
 
 u8 GetKindWeaponDamagePercent(s32 arg0, s32 arg1, s32 arg2) {
  s32 GetDamageTargetIndex(s32);
- extern u8 data_ov000_021b5c13[];
- return *(GetDamageTargetIndex(arg1) + (data_ov000_021b5c13 + arg0 * 0x70 + (arg2 << 5)));
+ extern u8 gUnitKindDamageTable[];
+ return *(GetDamageTargetIndex(arg1) + (gUnitKindDamageTable + arg0 * 0x70 + (arg2 << 5)));
 }
 
 /* The damage percent of the better of a unit kind's two weapons against a target
@@ -144,13 +149,13 @@ s32 GetEstimatedDamage(s32 kind, s32 row, s32 altRow, s32 weather, s32 player, s
  * properties (5 percent each), the sandstorm penalty that every army but the
  * weather-immune one takes, and the army's CO-zone attack bonus for the kind. */
 s32 GetKindDamageBonus(s32 kind, s32 weather, s32 player, s32 bonusType, u8 applyBonus) {
-    u8 func_020a8560();
+    u8 IsUnitKindClass6();
     s32 GetPlayerAttackPropertyBonus(s32);
     s32 GetCoZoneAttackBonus(s32, s32, s32);
     extern void **gCurrentMap;
     s32 bonus = 0;
 
-    if (func_020a8560(kind) != 0) return bonus;
+    if (IsUnitKindClass6(kind) != 0) return bonus;
     bonus += GetPlayerAttackPropertyBonus(player);
     if (((u32)(M2C_FIELD((u8 *)*gCurrentMap + player * MAP_PLAYER_STRIDE, s32 *, MAP_PLAYER_STATES + ARMY_REC_ARMY_ID) << 24) >> 24) != ARMY_WEATHER_IMMUNE && weather == WEATHER_SANDSTORM) bonus -= 30;
     if (applyBonus != 0 || bonusType != 0) bonus += GetCoZoneAttackBonus(kind, player, bonusType);
@@ -198,17 +203,20 @@ void func_020a7bec(void) {
 }
 
 u8 func_020a7bf8(s32 arg0) {
- extern u8 gUnitMinAttackRange[];
- return gUnitMinAttackRange[arg0 * 0x70];
+ extern u8 data_ov000_021b5c0c[];
+ return data_ov000_021b5c0c[arg0 * 0x70];
 }
 
-s32 ComputeUnitMaxAttackRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
+/* Highest attack range of a unit of `kind` for player `player`: the kind's base
+ * range, plus its CO-zone range bonus when one applies.  `weather` is unused here
+ * (unlike the move range). */
+s32 ComputeUnitMaxAttackRange(s32 kind, s32 weather, s32 player, s32 bonusType, u8 applyBonus) {
  s32 GetCoZoneRangeBonus(s32, s32, s32);
  extern u8 gUnitMaxAttackRange[];
- s32 var_r4;
- var_r4 = gUnitMaxAttackRange[arg0 * 0x70];
- if (arg3 != 0 || arg4 != 0) var_r4 += GetCoZoneRangeBonus(arg0, arg2, arg3);
- return var_r4;
+ s32 range;
+ range = gUnitMaxAttackRange[kind * 0x70];
+ if (bonusType != 0 || applyBonus != 0) range += GetCoZoneRangeBonus(kind, player, bonusType);
+ return range;
 }
 
 s32 GetUnitKindMaxFuel(u32 arg0) {
@@ -221,11 +229,13 @@ s32 GetUnitKindMaxAmmo(u32 arg0) {
  return gUnitKindMaxAmmo[arg0 * 0x70];
 }
 
-s32 func_020a7c80(arg0)
-s32 arg0;
+/* The class byte (a unit-kind record's +0x10 field, UNIT_KIND_STATS_CLASS) of
+ * unit kind `kind`.  The callers raise or lower it through the wrappers below. */
+s32 GetUnitKindClass(kind)
+s32 kind;
 {
- extern u8 data_ov000_021b5c0c[];
- return data_ov000_021b5c0c[arg0 * 0x70];
+ extern u8 gUnitKindClass[];
+ return gUnitKindClass[kind * 0x70];
 }
 
 u8 func_020a7c98(s32 arg0) {
@@ -383,7 +393,7 @@ void func_020a7f48(void *unit, s32 x, s32 y, s32 mode) {
     extern void **gCurrentMap;
     void InitAreaScan(void *, s32, s32, s32, s32, s32);
     s32 NextAreaTile(void *);
-    u8 func_020a8478(s32, s32);
+    u8 IsCellUnitOccupied(s32, s32);
     u8 IsEnemyUnit(s32, s32);
     u8 AreUnitsEnemies(s32, s32);
     void func_020a7f18(void *, u32);
@@ -399,7 +409,7 @@ void func_020a7f48(void *unit, s32 x, s32 y, s32 mode) {
         if (!NextAreaTile(iter)) {
             return;
         }
-        if (func_020a8478(iter[4], iter[5])) {
+        if (IsCellUnitOccupied(iter[4], iter[5])) {
             map = *gCurrentMap;
             unitIndex = M2C_FIELD(M2C_FIELD(map + 2 * iter[5], u16 *, MAP_ROW_OFFSETS) +
                 (map + iter[4]), u8 *, MAP_CELL_UNIT_ID);
@@ -479,19 +489,21 @@ u8 func_020a81d0(M2C_UNK arg0) {
     return var_r0;
 }
 
-u8 CanUnitUsePrimaryWeapon(void *arg0) {
-    s32 func_020a8630(u32);
-    u8 var_r0;
+/* True when `unit` still has primary-weapon ammo and its kind carries a primary
+ * weapon at all (the Flare, Rig and Carrier do not). */
+u8 CanUnitUsePrimaryWeapon(void *unit) {
+    s32 UnitKindLacksPrimaryWeapon(u32);
+    u8 usable;
 
-    if (((u32) (M2C_FIELD(arg0, u16 *, 6) << 0x15) >> 0x1C) == 0) {
+    if (((u32) (M2C_FIELD(unit, u16 *, MAP_UNIT_AMMO) << 21) >> 28) == 0) {
         return 0U;
     }
-    if (func_020a8630((u32) (M2C_FIELD(arg0, u8 *, 0) << 0x1A) >> 0x1A) == 0) {
-        var_r0 = 1;
+    if (UnitKindLacksPrimaryWeapon((u32) (M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 0x1A) >> 0x1A) == 0) {
+        usable = 1;
     } else {
-        var_r0 = 0;
+        usable = 0;
     }
-    return var_r0;
+    return usable;
 }
 
 /* Builds the MOVE_DIR_* step list that slides a unit from its current tile by
@@ -525,15 +537,38 @@ void func_020a8474(void) {
 
 }
 
-u8 func_020a8478(s32 a,s32 b){extern void **gCurrentMap;void *p=*gCurrentMap;return M2C_FIELD((u8 *)p+(a+M2C_FIELD((u8 *)p+b*2,u16 *,0x3758)),u8 *,0x508)!=0;}
+/* Whether a unit stands on the map cell (x, y): the cell's unit id is nonzero. */
+u8 IsCellUnitOccupied(s32 x, s32 y) {
+    extern void **gCurrentMap;
+    void *map = *gCurrentMap;
+    return M2C_FIELD((u8 *)map + (x + M2C_FIELD((u8 *)map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_UNIT_ID) != 0;
+}
 
-u8 IsCellUnitEmpty(s32 a,s32 b){extern void **gCurrentMap;void *p=*gCurrentMap;return M2C_FIELD((u8 *)p+(a+M2C_FIELD((u8 *)p+b*2,u16 *,0x3758)),u8 *,0x508)==0;}
+/* Whether the map tile (x, y) has no unit on it: the tile's unit id is zero. */
+u8 IsCellUnitEmpty(s32 x, s32 y) {
+    extern void **gCurrentMap;
+    void *map = *gCurrentMap;
+    return M2C_FIELD((u8 *)map + (x + M2C_FIELD((u8 *)map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_UNIT_ID) == 0;
+}
 
-u8 func_020a84f0(void) {
-    s32 func_020a7c80();
+/* Whether the unit kind has class 3.  The kind arrives in r0 from the caller's
+ * old-style call, so the accessor takes it implicitly. */
+u8 IsUnitKindClass3(void) {
+    s32 GetUnitKindClass();
+    u8 result;
+
+    if (GetUnitKindClass() == 3) {
+        result = 1;
+    } else {
+        result = 0;
+    }
+    return result;
+}
+
+u8 IsUnitKindClass4(void) {
     u8 var_r0;
 
-    if (func_020a7c80() == 3) {
+    if (GetUnitKindClass() == 4) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -541,10 +576,12 @@ u8 func_020a84f0(void) {
     return var_r0;
 }
 
-u8 func_020a850c(void) {
+s32 IsUnitKindClass3Or4(void *a){u8 IsUnitKindClass3();u8 IsUnitKindClass4();s32 v;if(IsUnitKindClass3(a)||IsUnitKindClass4(a))v=1;else v=0;return (u8)v;}
+
+u8 IsUnitKindClass6(void) {
     u8 var_r0;
 
-    if (func_020a7c80() == 4) {
+    if (GetUnitKindClass() == 6) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -552,20 +589,16 @@ u8 func_020a850c(void) {
     return var_r0;
 }
 
-s32 func_020a8528(void *a){u8 func_020a84f0();u8 func_020a850c();s32 v;if(func_020a84f0(a)||func_020a850c(a))v=1;else v=0;return (u8)v;}
+/* Whether a unit kind gets no terrain defense from the tile it stands on:
+ * unit-kind classes 3, 4 and 6 are exempt, every other kind takes cover. */
+s32 UnitKindTakesNoTerrainDefense(s32 kind) {
+    s32 IsUnitKindClass3Or4(void *);
+    u8 IsUnitKindClass6();
 
-u8 func_020a8560(void) {
-    u8 var_r0;
-
-    if (func_020a7c80() == 6) {
-        var_r0 = 1;
-    } else {
-        var_r0 = 0;
-    }
-    return var_r0;
+    if (!kind) return 0;
+    if (IsUnitKindClass3Or4((void *)kind) || IsUnitKindClass6(kind)) return 1;
+    return 0;
 }
-
-s32 func_020a857c(void *p){s32 func_020a8528(void *);u8 func_020a8560();if(!p)return 0;if(func_020a8528(p)||func_020a8560(p))return 1;return 0;}
 
 s32 func_020a85b8(void) {
     return 0;
@@ -619,7 +652,15 @@ s32 UnitKindCanSupply(s32 arg0) {
     }
 }
 
-s32 func_020a8630(u32 a){switch(a){case 5:return 1;case 13:return 1;case 21:return 1;default:return 0;}}
+/* True for the unit kinds that carry no primary weapon: the Flare, Rig and Carrier. */
+s32 UnitKindLacksPrimaryWeapon(u32 unitKind) {
+ switch (unitKind) {
+ case UNIT_KIND_FLARE: return 1;
+ case UNIT_KIND_RIG: return 1;
+ case UNIT_KIND_CARRIER: return 1;
+ default: return 0;
+ }
+}
 
 /* Unit kind at display slot `index` of gUnitKindMenuList, in the order the unit
  * list and the CO-zone panel draw them; 0 for the entry that ends the list. */
@@ -634,7 +675,7 @@ s32 func_020a86bc(void) {
 
 s32 func_020a86c4(s32 a,s32 b){extern s8 data_ov000_021b5520[];extern u8 gMapConfig[];s32 v=0;if(data_ov000_021b5520[b&31])v+=M2C_FIELD(gMapConfig,u16 *,6);return v;}
 
-s32 func_020a86f0(void) {
+s32 GetPlayerFuelRate(void) {
     return 1;
 }
 

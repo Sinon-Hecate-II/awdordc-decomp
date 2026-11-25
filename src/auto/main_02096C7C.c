@@ -588,7 +588,7 @@ s32 HighlightScenePanel(s32 panelIndex) {
             if (index == panelIndex) {
                 highlighted = 1;
             }
-            func_02091d6c(((ScenePanelState *) state)->palette, highlighted);
+            ApplyScenePanelPalette(((ScenePanelState *) state)->palette, highlighted);
             SetScenePanelFaceState((void *) panel, highlighted);
             UpdateScenePanelPalette((void *) panel);
         }

@@ -305,37 +305,42 @@ s32 HasScreenTransitionSprite(void) {
  return var_r0;
 }
 
-s32 func_020adff4(void) {
+s32 IsScreenTransitionEnabled(void) {
  extern s32 gScreenTransition;
  if(HasScreenTransitionSprite()==0) return 0;
  if(gScreenTransition==0) return 0;
  return *(s16 *)gScreenTransition & 2;
 }
 
-void SetScreenTransitionEnabled(s32 arg0) {
+/* Enable or disable the screen-change split transition: while its sprite and state
+ * block exist, set or clear the transition's TRANSITION_ENABLED flag. */
+void SetScreenTransitionEnabled(s32 enabled) {
  extern s32 gScreenTransition;
- s16 temp_r0;
+ s16 flags;
  if(HasScreenTransitionSprite()!=0 && gScreenTransition!=0) {
- temp_r0=*(s16 *)gScreenTransition;
- if(arg0!=0) { *(s16 *)gScreenTransition=temp_r0|2; return; }
- *(s16 *)gScreenTransition=temp_r0 & ~2;
+ flags=((ScreenTransition *)gScreenTransition)->flags;
+ if(enabled!=0) { ((ScreenTransition *)gScreenTransition)->flags=flags|TRANSITION_ENABLED; return; }
+ ((ScreenTransition *)gScreenTransition)->flags=flags & ~TRANSITION_ENABLED;
  }
 }
 
-s32 func_020ae068(void) {
+/* Cancel the running split screen-change transition: set its TRANSITION_CANCEL
+ * flag.  Returns 1 when a transition was cancelled, 0 when its sprite or its
+ * state block is missing. */
+s32 CancelScreenTransition(void) {
     s32 HasScreenTransitionSprite(void);
     extern s32 gScreenTransition;
     if (HasScreenTransitionSprite() == 0) {
         return 0;
     }
     if (gScreenTransition != 0) {
-        *(s16 *)gScreenTransition |= 4;
+        ((ScreenTransition *)gScreenTransition)->flags |= TRANSITION_CANCEL;
         return 1;
     }
     return 0;
 }
 
-s32 func_020ae0a8(void) {
+s32 GetScreenTransitionType(void) {
     extern s32 gScreenTransition;
     if (HasScreenTransitionSprite() == 0) return -1;
     if (gScreenTransition == 0) return -1;
@@ -359,23 +364,30 @@ void BeginScreenTransition(s32 type, s32 length) {
     PlaySoundEffect(0x10021);
 }
 
-void StartScreenTransition(s32 arg0) {
+/* Start the split screen-change transition of the given variant for the
+ * standard 20 frames, but only if its sprite exists and the old one is done. */
+void StartScreenTransition(s32 type) {
     s32 IsScreenTransitionDone();
     void BeginScreenTransition(s32, s32);
     extern s32 gScreenTransition;
+
     if (HasScreenTransitionSprite() != 0 && gScreenTransition != 0) {
         if (IsScreenTransitionDone() == 0) return;
-        BeginScreenTransition(arg0, 0x14);
+        BeginScreenTransition(type, 20);
     }
 }
 
-void func_020ae164(s32 arg0) {
-s32 IsScreenTransitionDone();
-extern s32 gScreenTransition;
-if(HasScreenTransitionSprite()!=0 && gScreenTransition!=0) {
-if(IsScreenTransitionDone()==0)return;
-BeginScreenTransition(arg0,14);
-}
+/* Start the split screen-change transition of `type` over a short 14 frames,
+ * but only while its sprite exists and the previous transition has finished. */
+void StartShortScreenTransition(s32 type) {
+    s32 IsScreenTransitionDone();
+    void BeginScreenTransition(s32, s32);
+    extern s32 gScreenTransition;
+
+    if (HasScreenTransitionSprite() != 0 && gScreenTransition != 0) {
+        if (IsScreenTransitionDone() == 0) return;
+        BeginScreenTransition(type, 14);
+    }
 }
 
 /* Whether a screen-change transition may be started: its sprite must exist, the
@@ -533,15 +545,18 @@ u16 ConvertRgb555ToSepia(u16 color) {
     return (red & GX_RGB_CHANNEL_MASK) | ((green & GX_RGB_CHANNEL_MASK) << GX_RGB_GREEN_SHIFT) | ((blue & GX_RGB_CHANNEL_MASK) << GX_RGB_BLUE_SHIFT);
 }
 
-void ApplySepiaToPalette(u16 *arg0, s32 arg1) {
+/* Replace each colour of `length` bytes of palette (two bytes per colour) with
+ * the sepia version of its RGB555 value. */
+void ApplySepiaToPalette(u16 *palette, s32 length) {
     u16 ConvertRgb555ToSepia(u16);
     s32 i;
     u16 *ptr;
-    arg1 /= 2;
-    ptr = arg0;
+
+    length /= 2;
+    ptr = palette;
     i = 0;
-    if (arg1 > 0) {
-        for (; i < arg1; i++) {
+    if (length > 0) {
+        for (; i < length; i++) {
             *ptr = ConvertRgb555ToSepia(*ptr);
             ptr++;
         }
@@ -557,15 +572,17 @@ s32 gray=luminance&GX_RGB_CHANNEL_MASK;
 return gray|(gray<<GX_RGB_GREEN_SHIFT)|(gray<<GX_RGB_BLUE_SHIFT);
 }
 
-void ApplyGrayscaleToPalette(u16 *arg0, s32 arg1) {
+/* Convert every RGB555 colour of the `length`-byte palette at `palette` to
+ * grayscale in place. */
+void ApplyGrayscaleToPalette(u16 *palette, s32 length) {
     u16 ConvertRgb555ToGrayscale(u16);
     s32 i;
     u16 *ptr;
-    arg1 /= 2;
-    ptr = arg0;
+    length /= 2;
+    ptr = palette;
     i = 0;
-    if (arg1 > 0) {
-        for (; i < arg1; i++) {
+    if (length > 0) {
+        for (; i < length; i++) {
             *ptr = ConvertRgb555ToGrayscale(*ptr);
             ptr++;
         }

@@ -97,24 +97,28 @@ s32 AiNeedsMoreFootUnitsInRange(void) {
     return 0;
 }
 
+/* AI production score for foot units: how far the team's active foot units fall
+ * short of the capturable properties plus two (AI_FOOT_UNIT_BUFFER_WITH_TARGETS),
+ * capped at AI_SCORE_MAX; AI_SCORE_FLAG is added while the AI has neither an
+ * attack target nor an allied foot unit on the map, so foot units come first. */
 s32 AiFootUnitBalanceScore(void) {
     s32 CountActiveTeamFootUnits();
     s32 AiHasAttackTargetOrFootUnit();
-    s32 temp_r4;
-    s32 var_r0;
-    s32 var_r5;
+    s32 properties;
+    s32 balance;
+    s32 flag;
 
-    temp_r4 = CountCapturableProperties();
+    properties = CountCapturableProperties();
     if (AiHasAttackTargetOrFootUnit() == 0) {
-        var_r5 = 0x80;
+        flag = AI_SCORE_FLAG;
     } else {
-        var_r5 = 0;
+        flag = 0;
     }
-    var_r0 = (temp_r4 + 2) - CountActiveTeamFootUnits();
-    if (var_r0 & 0x80) {
-        var_r0 = 0x7F;
+    balance = (properties + 2) - CountActiveTeamFootUnits();
+    if (balance & AI_SCORE_FLAG) {
+        balance = AI_SCORE_MAX;
     }
-    return var_r0 | var_r5;
+    return balance | flag;
 }
 
 /* AI production priority for foot units: install the "needs more foot units in

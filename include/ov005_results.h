@@ -36,6 +36,11 @@
 /* Sprite layer the score digits of every row are drawn on. */
 #define RESULT_SCORE_LAYER 2
 
+/* The results map overview object (gResultsMapVtbl): the map picture, the CO
+ * faces and the per-player unit counts that slide onto the results screen.  It
+ * owns one SpriteCellList (see sprite_grid.h). */
+#define RESULTS_MAP_CELLS 0x34 /* SpriteCellList *cells the overview draws */
+
 /* The screen split a results screen plays before the winning CO's quote: the two
  * halves of the sprite's cell grid (RESULT_SPLIT_ROWS rows) are moved apart over
  * RESULT_SPLIT_FRAMES frames, then the bank is restored. */

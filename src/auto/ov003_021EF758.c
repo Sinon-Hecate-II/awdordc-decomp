@@ -9,7 +9,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
     s16 GetSpriteAnimValue(void *);
     M2C_UNK GetUnitSpriteWidth(void *);
     M2C_UNK GetUnitSpriteHeight(void *);
-    M2C_UNK func_ov003_021e6cc4(s16, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK IsRectOnScreen(s16, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK GetWaypointSlotX(u8);
     extern M2C_UNK gSpriteDesc64x32;
     extern u16 **gCur3DSpriteEngine;
@@ -97,7 +97,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
             func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
         }
         temp_r4_6 = temp_r9 - 1;
-        if (func_ov003_021e6cc4(temp_r4_6, 0x78, 0x40, 0x20) != 0) {
+        if (IsRectOnScreen(temp_r4_6, 0x78, 0x40, 0x20) != 0) {
             if (((u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x18) >> 0x1C) == 3) {
                 var_r0_5 = 1;
             } else {
@@ -114,7 +114,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
                           &gSpriteDesc64x32, 0xB);
         }
         temp_r4_7 = temp_r9 - 4;
-        if (func_ov003_021e6cc4(temp_r4_7, 0x80, 0x40, 0x10) != 0) {
+        if (IsRectOnScreen(temp_r4_7, 0x80, 0x40, 0x10) != 0) {
             AddSprite((u16) (temp_r4_7 & 0x1FF), 0x80,
                           (u16) ((sp10 & ((s32) (u16) ((((u8) M2C_FIELD(((var_r8 * 0x18) + (s32) M2C_FIELD(arg0, void **, 0x6C)), s32 *, 0x18) - 1) * 0x10) + 0x620) >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6400),
                           &data_ov003_0220f89e, 0xB);
@@ -149,7 +149,7 @@ void func_ov003_021efb74(void *arg0) {
     M2C_UNK IsLinkSessionActive(void);
     M2C_UNK SetTextById(void *, s32);
     M2C_UNK IsWaypointOptionValid(u8);
-    M2C_UNK func_ov003_021e6cc4(s16, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK IsRectOnScreen(s16, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK IsSessionHost(void);
     M2C_UNK func_ov003_021e6d28(void);
     M2C_UNK InRange(s32, s32, s32);

@@ -37,7 +37,7 @@ void func_020e4490(void) {
     M2C_UNK func_02086574();
     M2C_UNK InitSound();
     M2C_UNK Init3DSpritePool();
-    M2C_UNK func_020e4458();
+    M2C_UNK InstallVBlankHandler();
     M2C_UNK RTC_Init();
     M2C_UNK SeedRandomFromRtc();
     M2C_UNK SaveManager_Start();
@@ -86,7 +86,7 @@ void func_020e4490(void) {
     func_02086574();
     InitSound();
     Init3DSpritePool();
-    func_020e4458();
+    InstallVBlankHandler();
     RTC_Init();
     SeedRandomFromRtc();
     SaveManager_Start();
@@ -210,7 +210,7 @@ void ResetGameState(void) {
     M2C_UNK ResetSpriteSlots();
     M2C_UNK InitDefaultGameSettings();
     M2C_UNK ClearCampaignMapHeaders();
-    M2C_UNK func_020d3cec();
+    M2C_UNK ResetMapListsAndGraphics();
     M2C_UNK ClearUnitMoveSlots();
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
@@ -241,7 +241,7 @@ void ResetGameState(void) {
     } while (screen < 2);
     gCur3DSpriteEngine = savedEngine;
     ResetCurrentMapBlocks();
-    func_020d3cec();
+    ResetMapListsAndGraphics();
     ResetMapConfig();
     ClearUnitMoveSlots();
     func_020960b4();
@@ -273,7 +273,7 @@ header[0]&=~0xff000000;
 
 #pragma peephole off
 void StoreSaveSlotProgress(s32 arg0) {
-    extern M2C_UNK data_0215d9b8;
+    extern M2C_UNK gOptionBits;
     extern M2C_UNK gSaveSlotSummary;
     extern void **gCurrentMap;
     extern u8 data_0215dba4[];
@@ -284,7 +284,7 @@ void StoreSaveSlotProgress(s32 arg0) {
     extern u8 data_0215dcb4[];
     extern M2C_UNK gEventValues;
 
-    SaveSlotBits *slot = (SaveSlotBits *)((u8 *)&data_0215d9b8 + 6);
+    SaveSlotBits *slot = (SaveSlotBits *)((u8 *)&gOptionBits + 6);
     u32 *summary = (u32 *)&gSaveSlotSummary;
     u16 slotFlags = *(u16 *)slot;
     u32 word = summary[0];
@@ -350,7 +350,7 @@ void LoadSaveSlotProgress(s32 slot)
   extern M2C_UNK gMapProgressRecords;
   extern M2C_UNK gEventFlagsHigh;
   extern M2C_UNK gEventValues;
-  extern M2C_UNK data_0215d9b8;
+  extern M2C_UNK gOptionBits;
   s32 saveBuffer;
   s32 offset;
   s32 *slotRecord;
@@ -375,9 +375,9 @@ void LoadSaveSlotProgress(s32 slot)
   {
     u8 *entry = ((u8 *) saveBuffer) + (i * 8);
     u16 first = *((u16 *) (entry + 0xcc));
-    *((u16 *) ((((u8 *) (&data_0215d9b8)) + (i * 8)) + 0x34)) = first;
-    *((u16 *) ((((u8 *) (&data_0215d9b8)) + (i * 8)) + 0x36)) = *((u16 *) (entry + 0xce));
-    *((s32 *) ((((u8 *) (&data_0215d9b8)) + (i * 8)) + 0x38)) = *((s32 *) (entry + 0xd0));
+    *((u16 *) ((((u8 *) (&gOptionBits)) + (i * 8)) + 0x34)) = first;
+    *((u16 *) ((((u8 *) (&gOptionBits)) + (i * 8)) + 0x36)) = *((u16 *) (entry + 0xce));
+    *((s32 *) ((((u8 *) (&gOptionBits)) + (i * 8)) + 0x38)) = *((s32 *) (entry + 0xd0));
   }
 }
 #pragma pop
@@ -421,23 +421,25 @@ u16 *LowerBoundU16(u16 *first, u16 *last, u16 *key, u32 unused) {
     return first;
 }
 #pragma opt_propagation reset
-void func_020e4c64(void) {
+/* Acquire the shared username font: count the acquire and load the font on the
+ * first one, so every user shares a single decompressed copy. */
+void AcquireUsernameFont(void) {
     s32 LoadDecompressedFile(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212da20;
-    extern M2C_UNK data_02168fec;
-    u8 temp_r2;
+    extern M2C_UNK sUsernameFontPath;
+    extern M2C_UNK gUsernameFontCache;
+    u8 refCount;
 
-    temp_r2 = M2C_FIELD(&data_02168fec, u8 *, 0);
-    M2C_FIELD(&data_02168fec, u8 *, 0) = (u8) (temp_r2 + 1);
-    if (temp_r2 != 0) {
+    refCount = ((UsernameFontCache *) &gUsernameFontCache)->refCount;
+    ((UsernameFontCache *) &gUsernameFontCache)->refCount = (u8) (refCount + 1);
+    if (refCount != 0) {
         return;
     }
-    M2C_FIELD(&data_02168fec, s32 *, 4) = LoadDecompressedFile(&data_0212da20, 1);
+    ((UsernameFontCache *) &gUsernameFontCache)->glyphs = (void *) LoadDecompressedFile(&sUsernameFontPath, 1);
 }
 
-void func_020e4ca0(void) {M2C_UNK HeapFreeBlock(s32);extern M2C_UNK data_02168fec;u32 n=M2C_FIELD(&data_02168fec,u8 *,0)-1;M2C_FIELD(&data_02168fec,u8 *,0)=n;if(n&255)return;HeapFreeBlock(M2C_FIELD(&data_02168fec,s32 *,4));M2C_FIELD(&data_02168fec,s32 *,4)=0;}
+void ReleaseUsernameFont(void) {M2C_UNK HeapFreeBlock(s32);extern M2C_UNK gUsernameFontCache;u32 n=M2C_FIELD(&gUsernameFontCache,u8 *,0)-1;M2C_FIELD(&gUsernameFontCache,u8 *,0)=n;if(n&255)return;HeapFreeBlock(M2C_FIELD(&gUsernameFontCache,s32 *,4));M2C_FIELD(&gUsernameFontCache,s32 *,4)=0;}
 
-void DrawGlyphString(u16 *keys,u32 dst,u32 map,u32 pal,u16 x,u16 y,u32 tileArg) {M2C_UNK MI_CpuCopy32();extern M2C_UNK data_02168fec;u16 *p;u32 bits;u32 i;u32 next,next2,cur;u32 source;if(!*keys)return;bits=pal<<28;{u32 offset=y<<5;p=(u16 *)(map+((x+offset)*2));}i=0;do {s32 index=func_020e4b9c(*keys);source=M2C_FIELD(&data_02168fec,u32 *,4)+index*128;MI_CpuCopy32(source,dst+((tileArg&0x7ffffffU)<<5),128);next=(tileArg+1)|(bits>>16);next2=(tileArg+2)|(bits>>16);cur=tileArg|(bits>>16);p[i]=cur;p[i+1]=next;p[i+32]=next2;p[i+33]=(tileArg+3)|(bits>>16);keys++;tileArg+=4;i+=2;}while(*keys);}
+void DrawGlyphString(u16 *keys,u32 dst,u32 map,u32 pal,u16 x,u16 y,u32 tileArg) {M2C_UNK MI_CpuCopy32();extern M2C_UNK gUsernameFontCache;u16 *p;u32 bits;u32 i;u32 next,next2,cur;u32 source;if(!*keys)return;bits=pal<<28;{u32 offset=y<<5;p=(u16 *)(map+((x+offset)*2));}i=0;do {s32 index=func_020e4b9c(*keys);source=M2C_FIELD(&gUsernameFontCache,u32 *,4)+index*128;MI_CpuCopy32(source,dst+((tileArg&0x7ffffffU)<<5),128);next=(tileArg+1)|(bits>>16);next2=(tileArg+2)|(bits>>16);cur=tileArg|(bits>>16);p[i]=cur;p[i+1]=next;p[i+32]=next2;p[i+33]=(tileArg+3)|(bits>>16);keys++;tileArg+=4;i+=2;}while(*keys);}
 
 /* Advance and confirm a menu button: update its sprite, and when its owner
  * reports a click (or the button's alternate frame is enabled while the owner is
@@ -498,9 +500,9 @@ s32 TickMicTestTimer(MicTestScreen *screen) {
 }
 #pragma scheduling reset
 void func_020e4e8c(void *arg0) {
-    M2C_UNK func_0200dedc(M2C_UNK *);
+    M2C_UNK Arm7TransferStartWait(M2C_UNK *);
     extern M2C_UNK data_02168ff8;
-    func_0200dedc(&data_02168ff8);
+    Arm7TransferStartWait(&data_02168ff8);
     M2C_FIELD(arg0, u8 *, 0x3C) = (u8) (M2C_FIELD(arg0, u8 *, 0x3C) | 2);
 }
 

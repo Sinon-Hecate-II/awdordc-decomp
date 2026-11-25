@@ -23,42 +23,47 @@ typedef struct {
 #define OV001_PALETTE_PROFILE    0xC0  /* colours replaced when none exists */
 #define OV001_PALETTE_SIZE       0x200 /* bytes uploaded to palette RAM */
 
-void func_ov001_02176f4c(void) {
-    M2C_UNK func_ov001_02171e20(M2C_UNK);
+/* Step after the Wi-Fi settings screen's fade-in: once both its fades have
+ * finished, open the screen's three-icon row and hand over to the step that
+ * enables menu input. */
+void Ov001_WaitWfcSettingsFadeIn(void) {
+    M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
-    void func_ov001_02176f88(void);
+    void Ov001_EnableWfcSettingsMenuInput(void);
     if (Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsFadeActive(0) != 0) return;
-    func_ov001_02171e20(3);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02176f88);
+    Ov001_CreateMenuIconRow(3);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_EnableWfcSettingsMenuInput);
 }
 
-void func_ov001_02176f88(void) {
+void Ov001_EnableWfcSettingsMenuInput(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
-    void func_ov001_02176fb0(void);
+    void Ov001_UpdateWfcSettingsMenu(void);
     if (Ov001_GetIconRowSelection() == -2) return;
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02176fb0);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_UpdateWfcSettingsMenu);
 }
 
-void func_ov001_02176fb0(void) {
-    void func_ov001_02176fc4(void);
+void Ov001_UpdateWfcSettingsMenu(void) {
+    void Ov001_HandleWfcSettingsMenuInput(void);
     void func_ov001_02176ffc(void);
     void Ov001_HandleWfcSettingsChoice(void);
-    func_ov001_02176fc4();
+    Ov001_HandleWfcSettingsMenuInput();
     func_ov001_02176ffc();
     Ov001_HandleWfcSettingsChoice();
 }
 
-void func_ov001_02176fc4(void) {
-    if (KeyPressed(1) != 0) {
-        Ov001_LatchIconRowSelection(1);
+/* Wi-Fi settings screen input: A latches the confirm choice, B the back choice
+ * (the icon row keeps the first choice latched). */
+void Ov001_HandleWfcSettingsMenuInput(void) {
+    if (KeyPressed(KEY_A) != 0) {
+        Ov001_LatchIconRowSelection(OV001_CHOICE_CONFIRM);
     }
-    if (KeyPressed(2) == 0) {
+    if (KeyPressed(KEY_B) == 0) {
         return;
     }
-    Ov001_LatchIconRowSelection(0);
+    Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
 void func_ov001_02176ffc(void) {
@@ -209,7 +214,7 @@ void func_ov001_021772b8(void) {
 void func_ov001_021772ec(void) {
     void func_ov001_02177318(void);
     if (Ov001_IsFadeActive(0) != 0) return;
-    func_ov001_02171e20(5);
+    Ov001_CreateMenuIconRow(5);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177318);
 }
 
@@ -341,23 +346,26 @@ CloseTextPanel(panel);
  * from white, enable its background and object planes, then move on to the
  * step that opens its icon row. */
 void Ov001_FadeInMacAddressScreen(void) {
-    extern M2C_UNK func_ov001_0217771c;
+    extern M2C_UNK Ov001_MacAddressFadeDone;
     Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
     Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
     Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
     Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
-    Ov001_SetStepCallback(&func_ov001_0217771c);
+    Ov001_SetStepCallback(&Ov001_MacAddressFadeDone);
 }
 
-void func_ov001_0217771c(void) {
-    void func_ov001_02177758(void);
-    if (Ov001_IsFadeActive(1) != 0) return;
-    if (Ov001_IsFadeActive(0) != 0) return;
-    func_ov001_02171e20(2);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177758);
+/* Step that runs once the ov001 MAC-address screen's fade-in has finished: wait
+ * for both engine fades, then put up the screen's icon row and hand over to the
+ * step that waits for it to slide in. */
+void Ov001_MacAddressFadeDone(void) {
+    void Ov001_MacAddressWaitIconRow(void);
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) return;
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) return;
+    Ov001_CreateMenuIconRow(2);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_MacAddressWaitIconRow);
 }
 
-void func_ov001_02177758(void) {
+void Ov001_MacAddressWaitIconRow(void) {
     extern M2C_UNK func_ov001_02177780;
     if (Ov001_GetIconRowSelection() == -2) {
         return;
@@ -524,21 +532,24 @@ void Ov001_FadeInOptionMenu(void) {
     Ov001_SetStepCallback(&Ov001_OptionMenuFadeDone);
 }
 
+/* Step that runs once the ov001 option menu's fade-in has finished: wait for the
+ * sub and main engine fades, then put up the shared back/confirm icon row and
+ * hand over to the step that waits for it to slide in. */
 void Ov001_OptionMenuFadeDone(void) {
-    M2C_UNK func_ov001_02171e20(M2C_UNK);
+    M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
-    extern M2C_UNK func_ov001_02177bb4;
-    if (Ov001_IsFadeActive(1) != 0) {
+    extern M2C_UNK Ov001_OptionMenuWaitIconRow;
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
-    func_ov001_02171e20(0);
-    Ov001_SetStepCallback(&func_ov001_02177bb4);
+    Ov001_CreateMenuIconRow(0);
+    Ov001_SetStepCallback(&Ov001_OptionMenuWaitIconRow);
 }
 
-void func_ov001_02177bb4(void) {
+void Ov001_OptionMenuWaitIconRow(void) {
     extern M2C_UNK func_ov001_02177bdc;
     if (Ov001_GetIconRowSelection() == -2) {
         return;

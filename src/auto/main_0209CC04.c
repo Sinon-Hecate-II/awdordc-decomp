@@ -140,63 +140,73 @@ s32 func_0209cdf0(void *arg0) {
     return 1;
 }
 
-s32 func_0209ce14(void *arg0) {
-    void *temp_r1;
-    s32 (*fn)();
+/* 3D-sprite state handler: call the state entry's callback and stay on this state
+ * while it returns nonzero; once it returns zero, continue with the next entry. */
+s32 SpriteState_WaitForFalseCallback(void *sprite) {
+    void *entry;
+    s32 (*callback)();
 
-    temp_r1 = M2C_FIELD(arg0, void **, 8);
-    fn = M2C_FIELD(temp_r1, s32 (**)(), 4);
-    M2C_FIELD(arg0, void **, 8) = (void *) (temp_r1 + 8);
-    if (fn(arg0) == 0) {
+    entry = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    callback = M2C_FIELD(entry, s32 (**)(), DS3D_STATE_DATA);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (entry + DS3D_STATE_SIZE);
+    if (callback(sprite) == 0) {
         return 1;
     }
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) - 8);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) - DS3D_STATE_SIZE);
     return 0;
 }
 
-s32 func_0209ce50(void *arg0) {
-    void *temp_r2;
-    s16 value;
-    s32 (*fn)();
+/* 3D-sprite state handler: call the state entry's callback with the entry's
+ * parameter and stay on this state while it returns nonzero; once it returns 0,
+ * continue with the next entry. */
+s32 SpriteState_WaitForCallbackWithParam(void *sprite) {
+    void *entry;
+    s16 param;
+    s32 (*callback)();
 
-    temp_r2 = M2C_FIELD(arg0, void **, 8);
-    value = M2C_FIELD(temp_r2, s16 *, 2);
-    fn = M2C_FIELD(temp_r2, s32 (**)(), 4);
-    M2C_FIELD(arg0, void **, 8) = (void *) (temp_r2 + 8);
-    if (fn(arg0, value) == 0) {
+    entry = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    param = M2C_FIELD(entry, s16 *, DS3D_STATE_PARAM);
+    callback = M2C_FIELD(entry, s32 (**)(), DS3D_STATE_DATA);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (entry + DS3D_STATE_SIZE);
+    if (callback(sprite, param) == 0) {
         return 1;
     }
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) - 8);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) - DS3D_STATE_SIZE);
     return 0;
 }
 
-s32 func_0209ce90(void *arg0) {
-    void *temp_r1;
-    s32 (*fn)();
+/* 3D-sprite state handler: call the state entry's callback and move on to the next
+ * entry once it returns nonzero; while it returns 0, stay on this state. */
+s32 SpriteState_WaitForTrueCallback(void *sprite) {
+    void *entry;
+    s32 (*callback)();
 
-    temp_r1 = M2C_FIELD(arg0, void **, 8);
-    fn = M2C_FIELD(temp_r1, s32 (**)(), 4);
-    M2C_FIELD(arg0, void **, 8) = (void *) (temp_r1 + 8);
-    if (fn(arg0) != 0) {
+    entry = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    callback = M2C_FIELD(entry, s32 (**)(), DS3D_STATE_DATA);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (entry + DS3D_STATE_SIZE);
+    if (callback(sprite) != 0) {
         return 1;
     }
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) - 8);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) - DS3D_STATE_SIZE);
     return 0;
 }
 
-s32 func_0209cecc(void *arg0) {
-    void *temp_r2;
-    s16 value;
-    s32 (*fn)();
+/* 3D-sprite state handler: call the state entry's callback with the entry's
+ * parameter and move on to the next entry once it returns nonzero; while it
+ * returns 0, stay on this state. */
+s32 SpriteState_WaitForTrueCallbackWithParam(void *sprite) {
+    void *entry;
+    s16 param;
+    s32 (*callback)();
 
-    temp_r2 = M2C_FIELD(arg0, void **, 8);
-    value = M2C_FIELD(temp_r2, s16 *, 2);
-    fn = M2C_FIELD(temp_r2, s32 (**)(), 4);
-    M2C_FIELD(arg0, void **, 8) = (void *) (temp_r2 + 8);
-    if (fn(arg0, value) != 0) {
+    entry = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    param = M2C_FIELD(entry, s16 *, DS3D_STATE_PARAM);
+    callback = M2C_FIELD(entry, s32 (**)(), DS3D_STATE_DATA);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (entry + DS3D_STATE_SIZE);
+    if (callback(sprite, param) != 0) {
         return 1;
     }
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) - 8);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) - DS3D_STATE_SIZE);
     return 0;
 }
 
@@ -237,39 +247,44 @@ s32 func_0209cfb8(void *arg0) {
     return 1;
 }
 
-s32 func_0209cfe4(void *arg0) {
+/* 3D-sprite state handler: delete every live sprite of the class the entry names
+ * (only on the current 3D sprite engine when the entry's parameter is set), then
+ * move on to the next entry. */
+s32 SpriteState_DeleteObjectsOfClass(void *sprite) {
     M2C_UNK DeleteSpriteObjectsOfClass(s32);
-    M2C_UNK func_01ffa9f8(s32);
-    void *temp_r1;
+    void *entry;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 8);
-    if (M2C_FIELD(temp_r1, s16 *, 2) != 0) {
-        func_01ffa9f8(M2C_FIELD(temp_r1, s32 *, 4));
+    entry = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    if (M2C_FIELD(entry, s16 *, DS3D_STATE_PARAM) != 0) {
+        DeleteSpriteObjectsOfClassOnCurrentEngine(M2C_FIELD(entry, s32 *, DS3D_STATE_DATA));
     } else {
-        DeleteSpriteObjectsOfClass(M2C_FIELD(temp_r1, s32 *, 4));
+        DeleteSpriteObjectsOfClass(M2C_FIELD(entry, s32 *, DS3D_STATE_DATA));
     }
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
-s32 func_0209d020(void *arg0) {
-    M2C_UNK func_01ffa9bc(s32);
-    M2C_UNK func_01ffa9d0(s32);
-    void *temp_r1;
+/* 3D-sprite state handler: resume the animation of every object of the state's
+ * class (on the current engine only when its parameter is nonzero), then move on
+ * to the next state entry. */
+s32 SpriteState_ResumeObjectsOfClass(void *sprite) {
+    void ResumeAnimationOfSpriteClass(M2C_UNK);
+    void ResumeAnimationOfSpriteClassOnCurrentEngine(M2C_UNK);
+    void *entry;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 8);
-    if (M2C_FIELD(temp_r1, s16 *, 2) != 0) {
-        func_01ffa9d0(M2C_FIELD(temp_r1, s32 *, 4));
+    entry = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    if (M2C_FIELD(entry, s16 *, DS3D_STATE_PARAM) != 0) {
+        ResumeAnimationOfSpriteClassOnCurrentEngine(M2C_FIELD(entry, s32 *, DS3D_STATE_DATA));
     } else {
-        func_01ffa9bc(M2C_FIELD(temp_r1, s32 *, 4));
+        ResumeAnimationOfSpriteClass(M2C_FIELD(entry, s32 *, DS3D_STATE_DATA));
     }
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
 s32 func_0209d05c(void *arg0) {
-    M2C_UNK SetSpriteAnimation(void *, s16);
-    SetSpriteAnimation(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
+    M2C_UNK GotoSpriteAnimationLabel(void *, s16);
+    GotoSpriteAnimationLabel(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
     return 1;
 }
 
@@ -280,7 +295,7 @@ s32 SpriteState_GotoIfPredicate(void *sprite) {
     s32 (*predicate)(void *);
     predicate = M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 (**)(void *), DS3D_STATE_DATA);
     if (predicate == NULL || predicate(sprite) != 0) {
-        SetSpriteAnimation(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM));
+        GotoSpriteAnimationLabel(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM));
     } else {
         M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     }
@@ -294,7 +309,7 @@ s32 SpriteState_GotoIfNotPredicate(void *sprite) {
     s32 (*predicate)(void *);
     predicate = M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 (**)(void *), DS3D_STATE_DATA);
     if (predicate == NULL || predicate(sprite) == 0) {
-        SetSpriteAnimation(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM));
+        GotoSpriteAnimationLabel(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM));
     } else {
         M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     }
@@ -588,18 +603,21 @@ s32 func_0209d728(void *arg0) {
     return 1;
 }
 
-s32 func_0209d750(void *arg0) {
+/* 3D-sprite state handler: load the UI graphics bank named by the state entry's
+ * parameter when its data word is nonzero, free that bank otherwise, then
+ * continue with the next entry. */
+s32 SpriteState_LoadOrUnloadUiGraphicsBank(void *sprite) {
     void LoadUiGraphicsBank(u8);
     void FreeUiGraphicsBank(u8);
-    void *temp_r1;
+    void *entry;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 8);
-    if (M2C_FIELD(temp_r1, s32 *, 4) != 0) {
-        LoadUiGraphicsBank(M2C_FIELD(temp_r1, s16 *, 2));
+    entry = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    if (M2C_FIELD(entry, s32 *, DS3D_STATE_DATA) != 0) {
+        LoadUiGraphicsBank(M2C_FIELD(entry, s16 *, DS3D_STATE_PARAM));
     } else {
-        FreeUiGraphicsBank(M2C_FIELD(temp_r1, s16 *, 2));
+        FreeUiGraphicsBank(M2C_FIELD(entry, s16 *, DS3D_STATE_PARAM));
     }
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
@@ -623,27 +641,32 @@ s32 SpriteState_ShowMessage(void *sprite) {
     return 0;
 }
 
-s32 func_0209d7d8(void *arg0) {
+/* 3D-sprite state handler: load the resource the state entry's parameter names
+ * when its data word is nonzero, unload it otherwise, then continue. */
+s32 SpriteState_LoadOrUnloadResource(void *sprite) {
     void LoadResource(u8);
     void UnloadResource(u8);
-    void *temp_r1;
+    void *entry;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 8);
-    if (M2C_FIELD(temp_r1, s32 *, 4) != 0) {
-        LoadResource(M2C_FIELD(temp_r1, s16 *, 2));
+    entry = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    if (M2C_FIELD(entry, s32 *, DS3D_STATE_DATA) != 0) {
+        LoadResource(M2C_FIELD(entry, s16 *, DS3D_STATE_PARAM));
     } else {
-        UnloadResource(M2C_FIELD(temp_r1, s16 *, 2));
+        UnloadResource(M2C_FIELD(entry, s16 *, DS3D_STATE_PARAM));
     }
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
-void TextLayer_ShowMessage(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-    void func_0208999c(void *, u8, s32);
+/* Lay the localized message `textId` onto a text layer in text mode `mode`, at the
+ * palette offset of line `row` (a negative row uses the default offset), then mark
+ * the panel's text as drawn. */
+void TextLayer_ShowMessage(void *layer, s32 mode, s32 textId, s32 row) {
+    void RenderTextLayerMessageDefault(void *, u8, s32);
     void RenderTextLayerMessage(void *, u8, s32, s32);
-    if (arg3 < 0) func_0208999c(arg0, (u8)arg1, arg2);
-    else RenderTextLayerMessage(arg0, (u8)arg1, arg3 << 5, arg2);
-    M2C_FIELD(arg0, s32 *, 0x58) |= 0x1000;
+    if (row < 0) RenderTextLayerMessageDefault(layer, (u8)mode, textId);
+    else RenderTextLayerMessage(layer, (u8)mode, row << 5, textId);
+    M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) |= 0x1000;
 }
 
 /* 3D-sprite state handler: create the sprite's text panel and draw the localized

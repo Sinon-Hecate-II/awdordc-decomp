@@ -151,13 +151,15 @@ s32 Mb_ValidateChunkRange(u32 chunk, u32 addr, u32 size) {
     return 0;
 }
 
-void SendMatchPacket(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void SendMatchPacket(s32 packetLength, M2C_UNK playerMask, M2C_UNK packetBuffer) {
     M2C_UNK DC_FlushRange(M2C_UNK, s32);
-    M2C_UNK func_02006804();
+    M2C_UNK DC_Sync();
     M2C_UNK Mb_SendMatchPacket(M2C_UNK, s32, M2C_UNK);
-    DC_FlushRange(arg2, (arg0 + 0x1F) & ~0x1F);
-    func_02006804();
-    Mb_SendMatchPacket(arg2, arg0, arg1);
+
+    /* Flush the packet data from the CPU cache before sending it to the multiboot link. */
+    DC_FlushRange(packetBuffer, (packetLength + 0x1F) & ~0x1F);
+    DC_Sync();
+    Mb_SendMatchPacket(packetBuffer, packetLength, playerMask);
 }
 
 /* 16-bit one's-complement checksum (RFC 1071) over `bytes` bytes of native-order

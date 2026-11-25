@@ -2,16 +2,16 @@
 #include "common.h"
 typedef void (*VFn)(void *);
 static inline void RestoreByte(void *p,u8 v) { M2C_FIELD(p,u8 *,15)=v; }
-static inline void RestoreBits12(u16 x) { extern u8 data_0215d9b8[8]; M2C_FIELD(data_0215d9b8,u16 *,6)=(M2C_FIELD(data_0215d9b8,u16 *,6)&~0x3000)|((x&3)<<12); }
-static inline void RestoreBits10(u16 x) { extern u8 data_0215d9b8[8]; M2C_FIELD(data_0215d9b8,u16 *,6)=(M2C_FIELD(data_0215d9b8,u16 *,6)&~0xc00)|((x&3)<<10); }
-static inline void RestoreBit14(u16 x) { extern u8 data_0215d9b8[8]; M2C_FIELD(data_0215d9b8,u16 *,6)=(M2C_FIELD(data_0215d9b8,u16 *,6)&~0x4000)|((x&1)<<14); }
+static inline void RestoreBits12(u16 x) { extern u8 gOptionBits[8]; M2C_FIELD(gOptionBits,u16 *,6)=(M2C_FIELD(gOptionBits,u16 *,6)&~0x3000)|((x&3)<<12); }
+static inline void RestoreBits10(u16 x) { extern u8 gOptionBits[8]; M2C_FIELD(gOptionBits,u16 *,6)=(M2C_FIELD(gOptionBits,u16 *,6)&~0xc00)|((x&3)<<10); }
+static inline void RestoreBit14(u16 x) { extern u8 gOptionBits[8]; M2C_FIELD(gOptionBits,u16 *,6)=(M2C_FIELD(gOptionBits,u16 *,6)&~0x4000)|((x&1)<<14); }
 typedef struct { u8 low:4, high:4; } Unk0220C6C8Nibbles;
 typedef struct { u8 b0:1,b1:1,b2:1,b3:1,b4:1,b5:1,b6:1,b7:1; } Unk0220C6C8Bits;
 typedef struct { u8 kind, unk1; u16 unk2, unk4, unk6, unk8, unkA, unkC, unkE, unk10; } Unk0220C6C8Sprite;
 typedef struct { Unk0220C6C8Sprite *sprite; u32 *start, *current; u16 index; u8 unkE, unkF; } Unk0220C6C8Anim;
 extern u8 data_ov003_02210ac4[], data_ov003_02210b0c[], data_ov003_02210c44[];
 extern u8 data_ov003_02210a4c[], data_ov003_02211018[], data_ov003_0220fb28[];
-extern u8 data_0215d9b8[];
+extern u8 gOptionBits[];
 typedef struct { void *vtable; u8 unk4,unk5,unk6,unk7; s16 unk8,unkA; u8 unkC,unkD; s16 unkE,unk10,unk12,unk14,unk16; u8 unk18,pad[3]; void *child; } Unk0220C6C8Slider;
 static inline void Unk0220C6C8Reset(Unk0220C6C8Anim *p) { p->unkE=0; p->unkF=0; }
 
@@ -33,10 +33,10 @@ void ScrollBar_PlaceThumb(void *, int, int);
 int func_020bf9e0(void);
 int func_020bfa20(void);
 int Divide(int, int);
-extern int data_ov003_02211028;
+extern int gScrollBarVTable;
 static inline u8 *Unk0220DE5CCreateSlider(int y,int childY) { u8 *q,*t; q=MemAlloc(0x20);
 if(q) {
-M2C_FIELD(q,void **,0)=&data_ov003_02211028;
+M2C_FIELD(q,void **,0)=&gScrollBarVTable;
 q[6]=0;q[5]=0;q[4]=0;q[13]=0;q[12]=0;
 M2C_FIELD(q,s16 *,10)=0; M2C_FIELD(q,s16 *,8)=0;
 q[24]=0; M2C_FIELD(q,s16 *,22)=0; M2C_FIELD(q,s16 *,20)=0; M2C_FIELD(q,s16 *,18)=0; M2C_FIELD(q,s16 *,16)=0; M2C_FIELD(q,s16 *,14)=0;
@@ -198,7 +198,7 @@ MI_CpuFill8(M2C_FIELD(q,void **,0x14),0,0x168);
 M2C_FIELD(p,u8 **,0x5c)=q;
 q=MemAlloc(0x20);
 if(q) {
-M2C_FIELD(q,void **,0)=&data_ov003_02211028;
+M2C_FIELD(q,void **,0)=&gScrollBarVTable;
 q[6]=0;q[5]=0;q[4]=0;q[13]=0;q[12]=0;
 M2C_FIELD(q,s16 *,10)=0; M2C_FIELD(q,s16 *,8)=0;
 q[24]=0; M2C_FIELD(q,s16 *,22)=0; M2C_FIELD(q,s16 *,20)=0; M2C_FIELD(q,s16 *,18)=0; M2C_FIELD(q,s16 *,16)=0; M2C_FIELD(q,s16 *,14)=0;
@@ -223,7 +223,7 @@ i=base+Divide(M2C_FIELD(q,s16 *,18)*(s16)(M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,
 ScrollBar_PlaceThumb(M2C_FIELD(q,u8 **,28),(s16)i,M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,10));
 q=MemAlloc(0x20);
 if(q) {
-M2C_FIELD(q,void **,0)=&data_ov003_02211028;
+M2C_FIELD(q,void **,0)=&gScrollBarVTable;
 q[6]=0;q[5]=0;q[4]=0;q[13]=0;q[12]=0;
 M2C_FIELD(q,s16 *,10)=0; M2C_FIELD(q,s16 *,8)=0;
 q[24]=0; M2C_FIELD(q,s16 *,22)=0; M2C_FIELD(q,s16 *,20)=0; M2C_FIELD(q,s16 *,18)=0; M2C_FIELD(q,s16 *,16)=0; M2C_FIELD(q,s16 *,14)=0;
@@ -253,13 +253,13 @@ q=MemAlloc(72);
 if(q) {M2C_FIELD(q,void **,0)=data_ov003_0220fb28;M2C_FIELD(q,s32 *,4)=0;M2C_FIELD(q,s32 *,8)=2;M2C_FIELD(q,s32 *,12)=0;M2C_FIELD(q,s32 *,16)=1;q[20]=1;
 M2C_FIELD(q,void **,24)=data_ov003_0220fb28;M2C_FIELD(q,s32 *,28)=0;M2C_FIELD(q,s32 *,32)=2;M2C_FIELD(q,s32 *,36)=0;M2C_FIELD(q,s32 *,40)=1;q[44]=1;
 M2C_FIELD(q,void **,48)=data_ov003_0220fb28;M2C_FIELD(q,s32 *,52)=0;M2C_FIELD(q,s32 *,56)=1;M2C_FIELD(q,s32 *,60)=0;M2C_FIELD(q,s32 *,64)=1;q[68]=1;
-M2C_FIELD(q,s32 *,4)=((u32)M2C_FIELD(data_0215d9b8,u16 *,6)<<18)>>30;
+M2C_FIELD(q,s32 *,4)=((u32)M2C_FIELD(gOptionBits,u16 *,6)<<18)>>30;
 if(q[20]) { while(M2C_FIELD(q,s32 *,4)>M2C_FIELD(q,s32 *,8)) M2C_FIELD(q,s32 *,4)-=M2C_FIELD(q,s32 *,8)-M2C_FIELD(q,s32 *,12)+1; while(M2C_FIELD(q,s32 *,4)<M2C_FIELD(q,s32 *,12)) M2C_FIELD(q,s32 *,4)+=M2C_FIELD(q,s32 *,8)-M2C_FIELD(q,s32 *,12)+1; }
 else { if(M2C_FIELD(q,s32 *,8)>=M2C_FIELD(q,s32 *,4)) M2C_FIELD(q,s32 *,4)=M2C_FIELD(q,s32 *,12)>M2C_FIELD(q,s32 *,4)?M2C_FIELD(q,s32 *,12):M2C_FIELD(q,s32 *,4); }
-M2C_FIELD(q,s32 *,28)=((u32)M2C_FIELD(data_0215d9b8,u16 *,6)<<20)>>30;
+M2C_FIELD(q,s32 *,28)=((u32)M2C_FIELD(gOptionBits,u16 *,6)<<20)>>30;
 if(q[44]) { while(M2C_FIELD(q,s32 *,28)>M2C_FIELD(q,s32 *,32)) M2C_FIELD(q,s32 *,28)-=M2C_FIELD(q,s32 *,32)-M2C_FIELD(q,s32 *,36)+1; while(M2C_FIELD(q,s32 *,28)<M2C_FIELD(q,s32 *,36)) M2C_FIELD(q,s32 *,28)+=M2C_FIELD(q,s32 *,32)-M2C_FIELD(q,s32 *,36)+1; }
 else { if(M2C_FIELD(q,s32 *,32)>=M2C_FIELD(q,s32 *,28)) M2C_FIELD(q,s32 *,28)=M2C_FIELD(q,s32 *,36)>M2C_FIELD(q,s32 *,28)?M2C_FIELD(q,s32 *,36):M2C_FIELD(q,s32 *,28); }
-M2C_FIELD(q,s32 *,52)=((u32)M2C_FIELD(data_0215d9b8,u16 *,6)<<17)>>31;
+M2C_FIELD(q,s32 *,52)=((u32)M2C_FIELD(gOptionBits,u16 *,6)<<17)>>31;
 if(q[68]) { while(M2C_FIELD(q,s32 *,52)>M2C_FIELD(q,s32 *,56)) M2C_FIELD(q,s32 *,52)-=M2C_FIELD(q,s32 *,56)-M2C_FIELD(q,s32 *,60)+1; while(M2C_FIELD(q,s32 *,52)<M2C_FIELD(q,s32 *,60)) M2C_FIELD(q,s32 *,52)+=M2C_FIELD(q,s32 *,56)-M2C_FIELD(q,s32 *,60)+1; }
 else { if(M2C_FIELD(q,s32 *,56)>=M2C_FIELD(q,s32 *,52)) M2C_FIELD(q,s32 *,52)=M2C_FIELD(q,s32 *,60)>M2C_FIELD(q,s32 *,52)?M2C_FIELD(q,s32 *,60):M2C_FIELD(q,s32 *,52); }
 }
@@ -353,17 +353,21 @@ for(i=0;i<6;i++) {
     return self;
 }
 
-void *func_ov003_0220ed30(void *arg0) {
-    extern M2C_UNK data_ov003_02211028;
+/* Deleting destructor of a generic scroll bar: restore the bar's vtable, delete
+ * the thumb it owns through the thumb's own deleting destructor (vtable[1]), then
+ * free the bar itself. */
+void *ScrollBar_Delete(void *bar) {
+    extern M2C_UNK gScrollBarVTable;
     M2C_UNK MemFree();
-    void **temp_r0;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov003_02211028;
-    temp_r0 = M2C_FIELD(arg0, void ***, 0x1C);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(*temp_r0, void (**)(void *), 4)(temp_r0);
+    void **thumb;
+
+    M2C_FIELD(bar, M2C_UNK **, 0) = &gScrollBarVTable;
+    thumb = M2C_FIELD(bar, void ***, SCROLLBAR_THUMB);
+    if (thumb != NULL) {
+        M2C_FIELD(*thumb, void (**)(void *), 4)(thumb);
     }
-    MemFree(arg0);
-    return arg0;
+    MemFree(bar);
+    return bar;
 }
 
 s32 func_ov003_0220ed6c(s32 arg0) {

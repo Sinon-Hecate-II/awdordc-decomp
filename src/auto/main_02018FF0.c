@@ -6,7 +6,7 @@ typedef struct Work19334 { s32 (*first)(struct Work19334 *); void (*second)(stru
 
 void Mb_SendBootParams(void) {
     extern M2C_UNK gMbBootState;
-    extern s16 data_02136c9c;
+    extern s16 gMbBootSync;
     extern M2C_UNK data_02136cc0;
     extern M2C_UNK data_02136cc4;
     extern s32 func_02018c9c(void);
@@ -19,7 +19,7 @@ void Mb_SendBootParams(void) {
     void DC_InvalidateRange(M2C_UNK, M2C_UNK);
     M2C_UNK DmaCopy16(s32, M2C_UNK, M2C_UNK, u32);
     void MIi_CpuCopy32(void *, void *, s32);
-    void func_02006774(void);
+    void DC_FlushAll(void);
     void WaitByLoop(s32);
 
     u8 buf[16];
@@ -44,7 +44,7 @@ void Mb_SendBootParams(void) {
     old = OS_SetIrqEnableMask(0x40000);
     saved_ie = *(volatile u16 *)0x4000208;
     *(volatile u16 *)0x4000208 = 1;
-    Mb_LockCartridgeAccess(*(u16 *)((u8 *)&data_02136c9c + 2), buf + 8);
+    Mb_LockCartridgeAccess(*(u16 *)((u8 *)&gMbBootSync + 2), buf + 8);
 
     carry = (*(volatile u16 *)0x4000204 & 0x8000) >> 15;
     Mb_SaveCartridgeBusConfig(buf);
@@ -58,7 +58,7 @@ void Mb_SendBootParams(void) {
     *(volatile u16 *)0x4000204 = (hw & ~0x8000) | (carry << 15);
     Mb_RestoreCartridgeBusConfig(buf);
 
-    Mb_UnlockCartridgeAccess(*(u16 *)((u8 *)&data_02136c9c + 2), buf + 8);
+    Mb_UnlockCartridgeAccess(*(u16 *)((u8 *)&gMbBootSync + 2), buf + 8);
 
     p = (u8 *)0x027FFF9A;
     if (p[1] != 0 || p[0] == 0) {
@@ -74,11 +74,11 @@ void Mb_SendBootParams(void) {
     }
 
     MIi_CpuCopy32((void *)0xFFFF0020, (void *)&data_02136cc4, 0x9C);
-    func_02006774();
+    DC_FlushAll();
     Mb_SendControlMessage((((u32)&data_02136cc0 + 0xFE000000) >> 5) << 6 | 1);
 
     delay = 1;
-    while (*(u16 *)((u8 *)&data_02136c9c + 0) != 1) {
+    while (*(u16 *)((u8 *)&gMbBootSync + 0) != 1) {
         WaitByLoop(delay);
     }
 
@@ -88,8 +88,8 @@ void Mb_SendBootParams(void) {
 }
 
 void Mb_BootHandshakeHandler(s32 a,s32 b) {
-extern s16 data_02136c9c;
-if((b&63)==1){data_02136c9c=1;return;}
+extern s16 gMbBootSync;
+if((b&63)==1){gMbBootSync=1;return;}
 SystemHalt();
 }
 

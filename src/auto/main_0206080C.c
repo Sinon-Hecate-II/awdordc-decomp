@@ -115,14 +115,16 @@ s32 GetStringInternTable(void) {
     return M2C_FIELD(&gQr2ParseState, s32 *, SB_QR2_PARSE_INTERN_TABLE);
 }
 
-void func_02060a20(void) {
+/* Release the QR2 parser's shared string-intern table once no string is interned
+ * in it any more. */
+void FreeStringInternTableIfEmpty(void) {
     extern M2C_UNK gQr2ParseState;
     s32 TableCount(s32);
     M2C_UNK TableFree(s32);
-    if (M2C_FIELD(&gQr2ParseState, s32 *, 8) == 0) return;
-    if (TableCount(M2C_FIELD(&gQr2ParseState, s32 *, 8)) != 0) return;
-    TableFree(M2C_FIELD(&gQr2ParseState, s32 *, 8));
-    M2C_FIELD(&gQr2ParseState, s32 *, 8) = 0;
+    if (M2C_FIELD(&gQr2ParseState, s32 *, SB_QR2_PARSE_INTERN_TABLE) == 0) return;
+    if (TableCount(M2C_FIELD(&gQr2ParseState, s32 *, SB_QR2_PARSE_INTERN_TABLE)) != 0) return;
+    TableFree(M2C_FIELD(&gQr2ParseState, s32 *, SB_QR2_PARSE_INTERN_TABLE));
+    M2C_FIELD(&gQr2ParseState, s32 *, SB_QR2_PARSE_INTERN_TABLE) = 0;
 }
 
 void SBServerFree(void **arg0) {
@@ -135,13 +137,15 @@ void SBServerFree(void **arg0) {
     gpiFree(temp_r4);
 }
 
-M2C_UNK gpiPlayerSetString(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
-    s32 StringIntern(s32, M2C_UNK *);
-    M2C_UNK TableEnter(s32, s32 *);
+/* Store an interned key/value string pair in a gpi player record's key/value
+ * table (GpiPlayer.keyValues at +0x18). */
+void gpiPlayerSetString(GpiPlayer *player, const char *key, const char *value) {
+    s32 StringIntern(s32, const char *);
+    void TableEnter(s32, s32 *);
     s32 values[2];
-    values[0] = StringIntern(0, arg1);
-    values[1] = StringIntern(0, arg2);
-    TableEnter(M2C_FIELD(arg0, s32 *, 0x18), values);
+    values[0] = StringIntern(0, key);
+    values[1] = StringIntern(0, value);
+    TableEnter(player->keyValues, values);
 }
 
 void gpiPlayerSetInt(M2C_UNK a,M2C_UNK *b){
@@ -280,7 +284,6 @@ M2C_UNK *Qr2_NextField(s32 input, s32 delimiter) {
  * every ordinary server field in the server record; a key without a value gets
  * the empty string.  The 'queryid' and 'final' meta fields are skipped. */
 void Qr2Query_ParseTextFields(M2C_UNK server, s32 reply) {
-    M2C_UNK gpiPlayerSetString(M2C_UNK, M2C_UNK *, M2C_UNK *);
     s32 Qr2_IsServerField(M2C_UNK *);
     M2C_UNK *Qr2_NextField(s32, M2C_UNK);
     extern M2C_UNK sQr2EmptyString;
@@ -481,8 +484,8 @@ void *func_020613dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4
 
 void DestroyServerBrowser(s32 arg0) {
     M2C_UNK func_02060430(s32);
-    M2C_UNK func_02062738(s32);
-    func_02062738(arg0 + 0x4C);
+    M2C_UNK SBServerListClear(s32);
+    SBServerListClear(arg0 + 0x4C);
     func_02060430(arg0);
     gpiFree(arg0);
 }

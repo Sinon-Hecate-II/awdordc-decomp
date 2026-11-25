@@ -133,14 +133,14 @@ void InitIntroLogo(void *logo) {
  * animation 6); on the later stages only mode 2 does anything, playing
  * animation 4. */
 void AdvanceIntroLogo(void *logo) {
-    M2C_UNK SetSpriteAnimation(void *, s32);
+    M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     s32 mode;
     if (M2C_FIELD(logo, u8 *, INTRO_STAGE) == 0) {
         mode = M2C_FIELD(logo, s32 *, INTRO_MODE);
         if (mode == 1) {
             M2C_FIELD(logo, u8 *, INTRO_STATE) = 2;
             M2C_FIELD(logo, s16 *, INTRO_TIMER) = 0x10;
-            SetSpriteAnimation(logo, 2);
+            GotoSpriteAnimationLabel(logo, 2);
             return;
         }
         if (mode != 2) {
@@ -148,11 +148,11 @@ void AdvanceIntroLogo(void *logo) {
             return;
         }
         M2C_FIELD(logo, u8 *, INTRO_STATE) = 3;
-        SetSpriteAnimation(logo, 6);
+        GotoSpriteAnimationLabel(logo, 6);
         return;
     }
     if (M2C_FIELD(logo, s32 *, INTRO_MODE) != 2) return;
-    SetSpriteAnimation(logo, 4);
+    GotoSpriteAnimationLabel(logo, 4);
 }
 
 void func_ov011_022216d8(void *arg0, void *arg1, s32 arg2, s32 arg3) {

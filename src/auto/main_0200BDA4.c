@@ -84,20 +84,23 @@ u32 func_0200bf0c(void *arg0) {
     return M2C_FIELD(arg0, u32 *, 8);
 }
 #pragma opt_strength_reduction reset
-void ClearFileBss(void *arg0) {
+/* Clear the BSS part of a loaded resource file: invalidate the instruction and
+ * data caches over the file's whole image, then zero the bssSize bytes that
+ * follow its data. */
+void ClearFileBss(FSFileHeader *header) {
     M2C_UNK DC_InvalidateRange(s32, s32);
-    M2C_UNK func_0200681c(s32, s32);
+    M2C_UNK IC_InvalidateRange(s32, s32);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
-    s32 temp_r4;
-    s32 temp_r5;
-    s32 temp_r6;
+    s32 data;
+    s32 dataSize;
+    s32 imageSize;
 
-    temp_r4 = M2C_FIELD(arg0, s32 *, 4);
-    temp_r5 = M2C_FIELD(arg0, s32 *, 8);
-    temp_r6 = temp_r5 + M2C_FIELD(arg0, s32 *, 0xC);
-    func_0200681c(temp_r4, temp_r6);
-    DC_InvalidateRange(temp_r4, temp_r6);
-    MI_CpuFill8(temp_r4 + temp_r5, 0, temp_r6 - temp_r5);
+    data = (s32) header->data;
+    dataSize = (s32) header->dataSize;
+    imageSize = dataSize + (s32) header->bssSize;
+    IC_InvalidateRange(data, imageSize);
+    DC_InvalidateRange(data, imageSize);
+    MI_CpuFill8(data + dataSize, 0, imageSize - dataSize);
 }
 
 void BuildFileRange(u32 *arg0,void *arg1) {

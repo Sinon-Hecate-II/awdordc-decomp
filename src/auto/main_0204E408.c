@@ -231,7 +231,7 @@ s32 gpiHandleServerData(void *ctx) {
     s32 gpiProcessErrorReply(void *, void *, s32);
     s32 StringCompareN(void *, void *, s32);
     s32 func_0204eee8(void *, void *);
-    s32 func_02054520(void *);
+    s32 gpiHasPendingBlockingOperation(void *);
     void gpiSleep(s32);
 
     void *operation;
@@ -295,7 +295,7 @@ s32 gpiHandleServerData(void *ctx) {
             gpiCallErrorCallback(ctx, 3, 1);
             return 0;
         }
-        again = func_02054520(ctx);
+        again = gpiHasPendingBlockingOperation(ctx);
         if (again) gpiSleep(10);
     } while (again);
     return 0;

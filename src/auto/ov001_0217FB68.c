@@ -2,6 +2,7 @@
 #include "common.h"
 #include "wfc.h"
 #include "gx.h"
+#include "ov001_wh.h"
 
 /* First step of leaving the ov001 option screen: once the sub-screen fade has
  * finished, slide the icon row out (unless the menu is exiting to the
@@ -36,7 +37,7 @@ void Ov001_CloseOptionScreen(void) {
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern u8 gOv001OptionExitToConnection;
-    extern M2C_UNK func_ov001_0217fd94;
+    extern M2C_UNK Ov001_OpenMatchSetupScreen;
     extern M2C_UNK func_ov001_02181a84;
     if (Ov001_IsFadeActive(0) != 0) return;
     if ((gOv001OptionExitToConnection == 0) && (Ov001_IsFadeActive(1) != 0)) return;
@@ -55,7 +56,7 @@ void Ov001_CloseOptionScreen(void) {
         return;
     }
     Ov001_SetNextScreenMode(0, 0);
-    Ov001_SetStepCallback(&func_ov001_0217fd94);
+    Ov001_SetStepCallback(&Ov001_OpenMatchSetupScreen);
 }
 
 /* Handle a choice on the ov001 option menu's first page: the second menu item
@@ -115,19 +116,22 @@ s32 func_ov001_0217fd74(void) {
     return 0;
 }
 
-void func_ov001_0217fd94(void) {
+/* Open the ov001 download-play match-setup screen: clear the stored-setup flag,
+ * load the shared "xb4Multi" background and the save-slot object layout, show the
+ * screen's help text and banner sprite, then hand over to the fade-in. */
+void Ov001_OpenMatchSetupScreen(void) {
     M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
     M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
     M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
     void Ov001_LoadXb4MultiBackground(void);
-    void func_ov001_0217fe50(void);
+    void Ov001_FadeInMatchSetupScreen(void);
     extern u8 gOv001MatchSetupStored;
     gOv001MatchSetupStored = 0;
     Ov001_LoadXb4MultiBackground();
     Ov001_LoadSaveSlotObjLayout();
-    Ov001_ShowMessageBox(0x2A);
+    Ov001_ShowMessageBox(OV001_MSG_MATCH_SETUP);
     Ov001_CreateAnimSprite(2);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fe50);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInMatchSetupScreen);
 }
 
 /* Load the "xb4Multi" background screen map and give the main and sub background
@@ -144,7 +148,7 @@ void Ov001_LoadXb4MultiBackground(void) {
     REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_0217fe50(void) {
+void Ov001_FadeInMatchSetupScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_0217fe84;
@@ -156,45 +160,49 @@ void func_ov001_0217fe50(void) {
 void func_ov001_0217fe84(void) {
     void func_ov001_0217feb0(void);
     if (Ov001_IsFadeActive(0) != 0) return;
-    func_ov001_02171e20(1);
+    Ov001_CreateMenuIconRow(1);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217feb0);
 }
 
 void func_ov001_0217feb0(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
-    extern M2C_UNK func_ov001_0217fed8;
+    extern M2C_UNK Ov001_UpdateMatchSetupMenu;
     if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_0217fed8);
+    Ov001_SetStepCallback(&Ov001_UpdateMatchSetupMenu);
 }
 
-void func_ov001_0217fed8(void) {
+void Ov001_UpdateMatchSetupMenu(void) {
     M2C_UNK SleepMilliseconds(s32);
     void Ov001_HandleMatchSetupPage2Choice(void);
-    void func_ov001_0217fef8(void);
+    void Ov001_HandleMatchSetupMenuInput(void);
     void func_ov001_0217ff30(void);
     void func_ov001_0217ff34(void);
     SleepMilliseconds(10);
     Ov001_HandleMatchSetupPage2Choice();
-    func_ov001_0217fef8();
+    Ov001_HandleMatchSetupMenuInput();
     func_ov001_0217ff30();
     func_ov001_0217ff34();
 }
 
-void func_ov001_0217fef8(void) {
+/* Match-setup popup input: B latches the popup's only choice, the back icon,
+ * and so does closing the console's lid (func_ov001_0217fd74 is the inlined copy
+ * of the shared lid-state test). */
+void Ov001_HandleMatchSetupMenuInput(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     s32 KeyPressed(M2C_UNK);
-    if (KeyPressed(2) != 0) {
-        Ov001_LatchIconRowSelection(0);
+    s32 func_ov001_0217fd74(void);
+    if (KeyPressed(KEY_B) != 0) {
+        Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
         return;
     }
     if (func_ov001_0217fd74() == 0) {
         return;
     }
-    Ov001_LatchIconRowSelection(0);
+    Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
 void func_ov001_0217ff30(void) {
@@ -310,19 +318,21 @@ void func_ov001_021801a4(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217ff60);
 }
 
+/* Open the advance match-setup screen, reset its timer, show its background and message, then schedule the fade-in. */
 void Ov001_AdvanceMatchSetup(void) {
-M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
-M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
-M2C_UNK Ov001_PlaySound(M2C_UNK);
-void Ov001_LoadMatchSetupBackground(void);
-void func_ov001_02180280(void);
-extern s8 data_ov001_02193dc0;
-data_ov001_02193dc0=0;
-Ov001_LoadMatchSetupBackground();
-Ov001_LoadSaveSlotObjLayout();
-Ov001_ShowMessageBox(0x26);
-Ov001_PlaySound(0x10);
-Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180280);
+    M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
+    M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
+    M2C_UNK Ov001_PlaySound(M2C_UNK);
+    void Ov001_LoadMatchSetupBackground(void);
+    void Ov001_FadeInMatchSetupAdvance(void);
+    extern s8 data_ov001_02193dc0;
+
+    data_ov001_02193dc0 = 0;
+    Ov001_LoadMatchSetupBackground();
+    Ov001_LoadSaveSlotObjLayout();
+    Ov001_ShowMessageBox(OV001_MSG_MATCH_SETUP_ADVANCE);
+    Ov001_PlaySound(0x10);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInMatchSetupAdvance);
 }
 
 /* Loads the background map of the match-setup advance screen and gives the
@@ -339,7 +349,7 @@ void Ov001_LoadMatchSetupBackground(void) {
     REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_02180280(void) {
+void Ov001_FadeInMatchSetupAdvance(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021802b4;
@@ -368,10 +378,12 @@ void func_ov001_021802e8(void) {
 
 }
 
-void func_ov001_021802ec(void) {
+/* Fade both screens out to white, then move on to closing the match set-up and
+ * opening the save-slot menu. */
+void Ov001_FadeOutMatchSetupForSave(void) {
     extern M2C_UNK Ov001_CloseMatchSetupForSave;
-    Ov001_StartFade(3, 1, 1, 8);
-    Ov001_StartFade(3, 0, 0x15, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
     Ov001_SetStepCallback(&Ov001_CloseMatchSetupForSave);
 }
 
@@ -401,10 +413,10 @@ void Ov001_CloseMatchSetupForSave(void) {
 
 void func_ov001_02180398(void) {
     extern s8 data_ov001_02193dc0;
-    void func_ov001_021802ec(void);
+    void Ov001_FadeOutMatchSetupForSave(void);
     M2C_FIELD(&data_ov001_02193dc0,u8 *,0) = M2C_FIELD(&data_ov001_02193dc0,u8 *,0) + 1;
     if ((u32)M2C_FIELD(&data_ov001_02193dc0,u8 *,0) < 120U) return;
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021802ec);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeOutMatchSetupForSave);
 }
 
 s32 func_ov001_021803cc(void) {
@@ -467,19 +479,22 @@ void Ov001_FadeInOptionPage2(void) {
     Ov001_SetStepCallback(&Ov001_OptionPage2FadeInStep);
 }
 
+/* Completion step of the option page 2 fade-in: once both the sub and the main
+ * fade have finished, open the option page, build the option menu's icon row
+ * (menu id 1) and wait for that row's intro before unlocking it. */
 void Ov001_OptionPage2FadeInStep(void) {
-void func_ov001_02180584(void);
+void Ov001_UnlockOptionPage2IconRow(void);
 M2C_UNK Ov001_OpenOptionPage(void);
-M2C_UNK func_ov001_02171e20(M2C_UNK);
+M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
 s32 Ov001_IsFadeActive(s32);
-if(Ov001_IsFadeActive(1))return;
-if(Ov001_IsFadeActive(0))return;
+if(Ov001_IsFadeActive(OV001_FADE_SUB))return;
+if(Ov001_IsFadeActive(OV001_FADE_MAIN))return;
 Ov001_OpenOptionPage();
-func_ov001_02171e20(1);
-Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180584);
+Ov001_CreateMenuIconRow(1);
+Ov001_SetStepCallback((M2C_UNK *)&Ov001_UnlockOptionPage2IconRow);
 }
 
-void func_ov001_02180584(void) {
+void Ov001_UnlockOptionPage2IconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK func_ov001_021805ac;
@@ -493,25 +508,30 @@ void func_ov001_02180584(void) {
 void func_ov001_021805ac(void) {
     M2C_UNK SleepMilliseconds(s32);
     void Ov001_HandleOptionPage2Choice();
-    void func_ov001_021805cc(void);
+    void Ov001_HandleOptionPage2MenuInput(void);
     void func_ov001_02180604(void);
     void func_ov001_02180608(void);
     SleepMilliseconds(10);
     Ov001_HandleOptionPage2Choice();
-    func_ov001_021805cc();
+    Ov001_HandleOptionPage2MenuInput();
     func_ov001_02180604();
     func_ov001_02180608();
 }
 
-void func_ov001_021805cc(void) {
-    if (KeyPressed(2) != 0) {
-        Ov001_LatchIconRowSelection(0);
+/* Option page 2's popup input: B latches the page's only choice, the back icon,
+ * and so does closing the console's lid (func_ov001_021803cc is the inlined copy
+ * of the shared lid-state test). */
+void Ov001_HandleOptionPage2MenuInput(void) {
+    M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
+    s32 KeyPressed(M2C_UNK);
+    if (KeyPressed(KEY_B) != 0) {
+        Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
         return;
     }
     if (func_ov001_021803cc() == 0) {
         return;
     }
-    Ov001_LatchIconRowSelection(0);
+    Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
 void func_ov001_02180604(void) {
@@ -572,7 +592,7 @@ void Ov001_CloseOptionScreen2(void) {
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern u8 gOv001OptionPage2ExitToConnection;
-    extern M2C_UNK func_ov001_0217f97c;
+    extern M2C_UNK Ov001_OpenConnectionScreen;
     extern M2C_UNK func_ov001_02181a84;
     if (Ov001_IsFadeActive(0) != 0) return;
     if ((gOv001OptionPage2ExitToConnection == 0) && (Ov001_IsFadeActive(1) != 0)) return;
@@ -591,7 +611,7 @@ void Ov001_CloseOptionScreen2(void) {
         return;
     }
     Ov001_SetNextScreenMode(0, 0);
-    Ov001_SetStepCallback(&func_ov001_0217f97c);
+    Ov001_SetStepCallback(&Ov001_OpenConnectionScreen);
 }
 
 /* Handle a choice on the second page of the ov001 option menu: the first choice
@@ -691,28 +711,31 @@ void Ov001_FadeInFriendListScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    extern M2C_UNK func_ov001_021809c4;
+    extern M2C_UNK Ov001_FriendListFadeDone;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x15, 8);
     Ov001_EnableVisiblePlanes(1, 1);
     Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_021809c4);
+    Ov001_SetStepCallback(&Ov001_FriendListFadeDone);
 }
 
-void func_ov001_021809c4(void) {
-    M2C_UNK func_ov001_02171e20(M2C_UNK);
-    extern M2C_UNK func_ov001_02180a00;
-    if (Ov001_IsFadeActive(1) != 0) {
+/* Step that runs once the friend-list screen's fade-in has finished: wait for the
+ * sub and main engine fades, then put up its single-button icon row and hand over
+ * to the step that waits for it to slide in. */
+void Ov001_FriendListFadeDone(void) {
+    M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
+    extern M2C_UNK Ov001_FriendListWaitIconRow;
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
-    func_ov001_02171e20(1);
-    Ov001_SetStepCallback(&func_ov001_02180a00);
+    Ov001_CreateMenuIconRow(1);
+    Ov001_SetStepCallback(&Ov001_FriendListWaitIconRow);
 }
 
-void func_ov001_02180a00(void) {
+void Ov001_FriendListWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK func_ov001_02180a28;

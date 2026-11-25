@@ -337,7 +337,7 @@ s32 SocketCloseTask(void *request) {
 }
 
 /* Tear down an object: free its children, detach from queues, then free the object itself. */
-M2C_UNK func_02020d90(s32 obj) {
+M2C_UNK SocketDestroy(s32 obj) {
 extern void *gNetAllocator;
 void ConnectionAbort(s32);
 void SocketRemoveFromActiveList(M2C_UNK);
@@ -406,16 +406,18 @@ void ConnectionAbort(s32 conn) {
     OS_RestoreInterrupts(irq);
 }
 
+/* With interrupts disabled, hand every socket on the closed list to SocketDestroy
+ * until the list is empty. */
 M2C_UNK ReapClosedSockets(void) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    M2C_UNK func_02020d90();
+    M2C_UNK SocketDestroy(s32);
     extern M2C_UNK gClosedSocketList;
-    s32 temp_r5 = OS_DisableInterrupts();
+    s32 irq = OS_DisableInterrupts();
     if (gClosedSocketList != 0) {
-        do { func_02020d90(); } while (gClosedSocketList != 0);
+        do { SocketDestroy(gClosedSocketList); } while (gClosedSocketList != 0);
     }
-    OS_RestoreInterrupts(temp_r5);
+    OS_RestoreInterrupts(irq);
 }
 
 /* Shuts the network stack down: latches its init token, waits while sockets are

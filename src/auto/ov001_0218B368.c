@@ -136,11 +136,16 @@ void func_ov001_0218b4dc(s32 engine, u32 target, u32 value, s32 blend) {
     }
 }
 
-void func_ov001_0218b648(s32 a){
-M2C_UNK MI_CpuFill8(s32,M2C_UNK,M2C_UNK);
-s32 CreateExpHeapInRange(s32,s32,s32);void SystemHalt(void);extern s32 gOv001Heap;
-MI_CpuFill8(a,0,0x40000);gOv001Heap=CreateExpHeapInRange(a,0x40000,0);
-if(gOv001Heap==0)SystemHalt();
+/* Clear the ov001 heap arena and create the expansion heap the rest of the
+ * overlay allocates from; halts the system when the heap cannot be created. */
+void Ov001_InitExpHeap(s32 arena) {
+    M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
+    s32 CreateExpHeapInRange(s32, s32, s32);
+    void SystemHalt(void);
+    extern s32 gOv001Heap;
+    MI_CpuFill8(arena, 0, OV001_HEAP_SIZE);
+    gOv001Heap = CreateExpHeapInRange(arena, OV001_HEAP_SIZE, 0);
+    if (gOv001Heap == 0) SystemHalt();
 }
 
 void func_ov001_0218b688(void) {
@@ -194,13 +199,15 @@ s32 Ov001_FreeAlloc(s32 *p) {
     return 0;
 }
 
-void func_ov001_0218b760(s32 a) {
-s32 OS_DisableIrqMask(s32);
-extern s32 gOv001Heap;
-s32 saved=OS_DisableIrqMask(1);
-if(a==0)return;
-FreeExpHeapBlock(gOv001Heap,a);
-OS_EnableIrqMask(saved);
+/* Free the block on the ov001 expansion heap with IRQ 1 (DMA0) masked.  Freeing a
+ * null block does nothing - and, as in the original, leaves that IRQ masked. */
+void Ov001_FreeHeapBlock(s32 block) {
+    s32 OS_DisableIrqMask(s32);
+    extern s32 gOv001Heap;
+    s32 saved = OS_DisableIrqMask(1);
+    if (block == 0) return;
+    FreeExpHeapBlock(gOv001Heap, block);
+    OS_EnableIrqMask(saved);
 }
 
 void Ov001_UpdateInput(void);
@@ -221,17 +228,20 @@ void Ov001_StartInput(void) {
     Ov001_UpdateInput();
 }
 
+/* Stop the shell's input: tell the ARM7's touch driver to stop auto-sampling and
+ * wait until it reports that sampling has stopped, then free the input block (the
+ * state field of gOv001Input, at +4) and clear its pointer. */
 void Ov001_StopInput(void) {
     M2C_UNK TP_StopSampling();
     M2C_UNK TP_WaitBusy(M2C_UNK);
     s32 TP_CheckBusy(M2C_UNK);
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
-    extern M2C_UNK data_ov001_02193e4c;
+    extern M2C_UNK gOv001InputState;
     do {
         TP_StopSampling();
         TP_WaitBusy(4);
     } while (TP_CheckBusy(4) != 0);
-    Ov001_FreeAlloc(&data_ov001_02193e4c);
+    Ov001_FreeAlloc(&gOv001InputState);
 }
 
 void Ov001_UpdateInput(void) {
@@ -451,11 +461,17 @@ void Ov001_InstallVBlankHandler(void) {
     }
 }
 
+/* Restore what Ov001_InstallVBlankHandler replaced: disable interrupts, then
+ * put back the saved IE mask (gOv001SavedVBlankIrq[1]) and the saved VBlank
+ * handler (gOv001SavedVBlankIrq[0]); IME is left off. */
 void Ov001_RemoveVBlankHandler(void) {
-(void)*(volatile u16 *)0x04000208;
-*(volatile u16 *)0x04000208=0;
-OS_SetIrqEnableMask(gOv001SavedVBlankIrq[1]);
-OS_SetIrqHandler(1,gOv001SavedVBlankIrq[0]);
+    s32 OS_SetIrqEnableMask(s32);
+    void OS_SetIrqHandler(s32, void (*)(void));
+
+    (void)REG_IME;
+    REG_IME = 0;
+    OS_SetIrqEnableMask(gOv001SavedVBlankIrq[1]);
+    OS_SetIrqHandler(IRQ_VBLANK, gOv001SavedVBlankIrq[0]);
 }
 
 void Ov001_VBlankHandler(void) {
@@ -495,14 +511,14 @@ void Ov001_InitSpriteObjs(void) {
     void Ov001_FlushSpriteObjs(void);
     extern s32 gOv001SpriteArena;
     void MI_CpuFill32(s32, s32, s32);
-    s32 Ov001_QueueCreateFromBuffer(s32, s32, s32);
+    s32 Ov001_QueueCreateFromRange(s32, s32, s32);
     s32 Ov001_AddTask(s32, void (*)(void), s32, s32);
     s32 i, offset;
     s32 arena = ((s32 (*)(s32, s32))Ov001_Alloc)(OV001_SPRITE_OBJ_ARENA_SIZE, 4);
     gOv001SpriteArena = arena;
     MI_CpuFill32(0x200, arena, OV001_SPRITE_OBJ_BUFFER);
     for (i = 0, offset = 0; i < 2; i++) {
-        s32 result = Ov001_QueueCreateFromBuffer(OV001_SPRITE_OBJ_COUNT, gOv001SpriteArena + offset, OV001_SPRITE_OBJ_STRIDE);
+        s32 result = Ov001_QueueCreateFromRange(OV001_SPRITE_OBJ_COUNT, gOv001SpriteArena + offset, OV001_SPRITE_OBJ_STRIDE);
         offset += OV001_SPRITE_OBJS_PER_SCREEN;
         ((s32 *)gOv001SpriteArena)[i + OV001_SPRITE_OBJ_FREE_QUEUES / 4] = result;
     }
@@ -528,7 +544,7 @@ void Ov001_FlushSpriteObjs(void) {
 void func_ov001_0218c0b8(void) {
     extern s32 gOv001SpriteArena;
     extern s32 gOv001TilePools;
-    func_ov001_0218c94c(1, M2C_FIELD(gOv001SpriteArena, s32 *, 0x808));
+    Ov001_ReturnTaskNodeVeneer(1, M2C_FIELD(gOv001SpriteArena, s32 *, 0x808));
     Ov001_FreeAlloc(&gOv001TilePools-1);
 }
 #pragma pool_constants reset
@@ -562,7 +578,7 @@ void Ov001_InitTilePools(void){
 s32 i;
 gOv001TilePools=((s32 (*)(s32,s32))Ov001_Alloc)(OV001_TILE_POOL_STRIDE*OV001_TILE_POOL_COUNT,4);
 for(i=0;i<OV001_TILE_POOL_COUNT;i++){
-M2C_FIELD(gOv001TilePools+i*OV001_TILE_POOL_STRIDE,s32 *,OV001_TILE_POOL_FREE_NODES)=Ov001_QueueCreateFromBuffer(OV001_TILE_POOL_NODE_COUNT,gOv001TilePools+i*OV001_TILE_POOL_STRIDE,sizeof(Ov001RangeNode));
+M2C_FIELD(gOv001TilePools+i*OV001_TILE_POOL_STRIDE,s32 *,OV001_TILE_POOL_FREE_NODES)=Ov001_QueueCreateFromRange(OV001_TILE_POOL_NODE_COUNT,gOv001TilePools+i*OV001_TILE_POOL_STRIDE,sizeof(Ov001RangeNode));
 M2C_FIELD(gOv001TilePools+i*OV001_TILE_POOL_STRIDE,s32 *,OV001_TILE_POOL_USED_LIST)=Ov001_ListCreate();
 M2C_FIELD(gOv001TilePools+i*OV001_TILE_POOL_STRIDE,u16 *,OV001_TILE_POOL_HEAD_START)=OV001_TILE_POOL_FREE_START;
 M2C_FIELD(gOv001TilePools+i*OV001_TILE_POOL_STRIDE,u16 *,OV001_TILE_POOL_TAIL_START)=OV001_TILE_POOL_FREE_END;

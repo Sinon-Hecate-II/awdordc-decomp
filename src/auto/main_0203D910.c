@@ -15,7 +15,7 @@ void func_0203d910(s32 a, s32 b)
     s32 FindFreePlayerSlot(void);
     s32 *GetPlayerConnectionSlot(s32);
     u8 *GetPlayerPeer(s32);
-    void func_0205b058(s32, void *);
+    void gt2SetConnectionData(s32, void *);
     M2C_UNK func_020411dc(M2C_UNK);
 
     extern M2C_UNK data_020fc908;
@@ -150,7 +150,7 @@ void func_0203d910(s32 a, s32 b)
             0x2d0
         );
 
-        func_0205b058(a, p);
+        gt2SetConnectionData(a, p);
 
         if (M2C_FIELD(GetConnection(), s32 *, 0x1a0) == 12) {
             func_020411dc(0);
@@ -211,14 +211,16 @@ void ReportConnectionError(s32 errorCode, s32 errorDetail) {
     TeardownConnectionSession();
 }
 
-void func_0203dcf4(void) {
+/* A client session has ended: forget the match's peer-slot count and capacity
+ * and have QR2 re-report the connection state.  A hosting session keeps them. */
+void ResetClientSession(void) {
     M2C_UNK Qr2_StateChanged(s32);
-    if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 2) {
+    if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 2) {
         return;
     }
-    M2C_FIELD(GetConnection(), s8 *, 0x14) = 0;
-    M2C_FIELD(GetConnection(), s8 *, 0x16) = 0;
-    Qr2_StateChanged(M2C_FIELD(GetConnection(), s32 *, 0x10));
+    M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_SLOT) = 0;
+    M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_CAPACITY) = 0;
+    Qr2_StateChanged(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_QR2_RECORD));
 }
 
 /* Receive handler for the connection handshake packets (types 2..4), the

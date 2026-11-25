@@ -150,14 +150,21 @@ void Ov001Rc4Init(CipherState *st, unsigned char *key, unsigned int len, unsigne
 }
 
 #pragma thumb on
-unsigned int func_ov001_0216cb34(CipherState *st) {
- unsigned int n=st->n; unsigned char *s=st->s;
- unsigned char i=(st->i+1)%n;
- unsigned char a=s[i];
- unsigned char j=(a+st->j)%n;
- unsigned char b=s[j];
- st->i=i; st->j=j; s[j]=a; s[i]=b;
- return s[(a+b)%st->n];
+/* RC4 keystream generator (the PRGA step): advance the cipher state's indices,
+ * swap the two S-box bytes they point at, and return the next keystream byte. */
+unsigned int Ov001Rc4NextByte(CipherState *st) {
+    unsigned int n = st->n;
+    unsigned char *s = st->s;
+    unsigned char i = (st->i + 1) % n;
+    unsigned char a = s[i];
+    unsigned char j = (a + st->j) % n;
+    unsigned char b = s[j];
+
+    st->i = i;
+    st->j = j;
+    s[j] = a;
+    s[i] = b;
+    return s[(a + b) % st->n];
 }
 #pragma thumb off
 

@@ -227,16 +227,18 @@ void Ov001_InitSaveSlotSprites(void) {
  * from white with the menu's planes, show them, then run the step that opens
  * the menu once the fades finish. */
 void Ov001_FadeInAccessPointMenu(void) {
-    extern M2C_UNK func_ov001_02181010;
+    extern M2C_UNK Ov001_WaitAccessPointMenuFadeIn;
     Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
     Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
     Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
     Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
-    Ov001_SetStepCallback(&func_ov001_02181010);
+    Ov001_SetStepCallback(&Ov001_WaitAccessPointMenuFadeIn);
 }
 
-void func_ov001_02181010(void) {
-    M2C_UNK func_ov001_02171e20(M2C_UNK);
+/* Wait for both of the access-point menu's fade-ins to finish, then create the
+ * menu's icon row and hand over to its input step. */
+void Ov001_WaitAccessPointMenuFadeIn(void) {
+    M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
     void func_ov001_0218104c(void);
     if (Ov001_IsFadeActive(1) != 0) {
@@ -245,7 +247,7 @@ void func_ov001_02181010(void) {
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    func_ov001_02171e20(0);
+    Ov001_CreateMenuIconRow(0);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0218104c);
 }
 
@@ -327,7 +329,7 @@ s32 Ov001_GetSaveSlotStatus();
 M2C_UNK Ov001_PlaySound(s32),Ov001_SetIconRowSelection(s32),Ov001_LockIconRow(void);
 M2C_UNK Ov001_ShowMessage(s32,s32,s32,s32,s32);
 M2C_UNK LoadSaveSlot(u8);
-void Ov001_ShowSelectedSaveSlot(void),Ov001_ShowRegionIcon(void),func_ov001_021812c0(void);
+void Ov001_ShowSelectedSaveSlot(void),Ov001_ShowRegionIcon(void),Ov001_EndRegionMenuChoice(void);
 extern s8 data_ov001_0218fa74[];
 extern M2C_UNK Ov001_FadeToShutdownScreen,Ov001_HandleEraseSaveSlotChoice;
 u8 region;
@@ -352,17 +354,20 @@ Ov001_ShowSelectedSaveSlot();Ov001_LockIconRow();Ov001_SetStepCallback(&Ov001_Ha
 if(region<=2)LoadSaveSlot(region);
 Ov001_PlaySound(6);Ov001_ShowRegionIcon();
 done:
-Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021812c0);
+Ov001_SetStepCallback((M2C_UNK *)&Ov001_EndRegionMenuChoice);
 break;
 }
 }
 
-void func_ov001_021812c0(void) {
-    M2C_UNK func_ov001_0218560c();
+/* Step after the region menu's icon-row choice: close the region selector's
+ * popup menu when the choice was cancelled, lock the icon row, wait 8 frames,
+ * then start the menu's fade-out. */
+void Ov001_EndRegionMenuChoice(void) {
+    M2C_UNK Ov001_CloseMenu();
     extern M2C_UNK gOv001MenuRegion;
     extern M2C_UNK Ov001_FadeOutRegionMenu;
-    if (M2C_FIELD(M2C_FIELD(&gOv001MenuRegion, void **, 4), u8 *, 0x1D) == 2) {
-        func_ov001_0218560c();
+    if (((Ov001MenuRegion *) &gOv001MenuRegion)->sprites->mode == OV001_MENU_MODE_CANCEL) {
+        Ov001_CloseMenu();
     }
     Ov001_LockIconRow();
     Ov001_StartDelay(8);

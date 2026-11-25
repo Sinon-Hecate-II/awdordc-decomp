@@ -239,13 +239,15 @@ M2C_UNK HeapAllocAligned(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
     return (s32)InitHeapBlock(temp_r0, arg1);
 }
 
-void HeapFree(M2C_UNK a, M2C_UNK b, M2C_UNK c) {
+/* Free an allocator block: a null block is a no-op, otherwise the block's header
+ * (the user data minus HEAP_BLOCK_HEADER bytes) goes to the heap's free callback. */
+void HeapFree(M2C_UNK heap, M2C_UNK block, M2C_UNK size) {
     extern M2C_UNK gHeapCallbacks;
-    if (b == 0) {
+    if (block == 0) {
         return;
     }
     M2C_FIELD(&gHeapCallbacks, void (**)(s32, s32, s32), 0)(
-        a, GetHeapBlockHeader(b), c);
+        heap, GetHeapBlockHeader(block), size);
 }
 
 M2C_UNK func_02037714(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
@@ -353,7 +355,9 @@ void Wfc_StartConnection(void) {
     }
 }
 
-s32 func_02037954(void) {
+/* Put the WFC connection into its connecting state and poll it once; returns 0
+ * when there is no connection object or the library step has not been created. */
+s32 Wfc_PollConnecting(void) {
     extern void *gWfcConnection;
     s32 GetNetConnectionStatus(void);
     s32 dummy = 0;
@@ -361,10 +365,10 @@ s32 func_02037954(void) {
     if (!gWfcConnection) {
         return 0;
     }
-    if (!M2C_FIELD(gWfcConnection, s32 *, 0)) {
+    if (!M2C_FIELD(gWfcConnection, s32 *, WFC_CONN_STEP)) {
         return 0;
     }
-    M2C_FIELD(gWfcConnection, u16 *, 4) = 3;
+    M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) = WFC_CONN_CONNECTING;
     GetNetConnectionStatus();
     return 1;
 }
@@ -562,16 +566,18 @@ M2C_UNK FormatKeyValue(s32 a,s32 b,s32 c,s32 d){
  StringFormatN(c,0x1000,&data_020fc884,d,a,d,b);StringLength(c);
 }
 
-void AppendKeyValue(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+/* Append a "separator key separator value" field to the end of the accumulated
+ * status text in `text` and refresh its length. */
+void AppendKeyValue(M2C_UNK key, M2C_UNK value, M2C_UNK text, M2C_UNK separator) {
     M2C_UNK FormatKeyValue(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK StringLength(M2C_UNK);
     s32 StringFindChar(M2C_UNK, M2C_UNK);
-    s32 temp_r0;
+    s32 end;
     s32 dummy = 0;
     (void)dummy;
-    temp_r0 = StringFindChar(arg2, 0);
-    FormatKeyValue(arg0, arg1, temp_r0, arg3);
-    StringLength(arg2);
+    end = StringFindChar(text, 0);
+    FormatKeyValue(key, value, end, separator);
+    StringLength(text);
 }
 
 /* Extract the value of "key=value" from a string made of separator-delimited

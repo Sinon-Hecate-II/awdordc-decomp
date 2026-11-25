@@ -45,7 +45,7 @@ s32 FX_Div(s32,s32);
 M2C_UNK PlaySoundEffect(s32);
 u8 EaseInterpolate(M2C_UNK,s16,s16,u8,s32);
 void ResetBattleMap(void);void PreloadMapTileset(s32);void LoadBattleMap(s32);void Ov003_SyncMapMenuMap(void);
-s32 MapData_GetCategory(s32);void SetSpriteAnimation(void *,s32);M2C_UNK Sprite_ResumeAnimation(void *);
+s32 MapData_GetCategory(s32);void GotoSpriteAnimationLabel(void *,s32);M2C_UNK Sprite_ResumeAnimation(void *);
 s32 i,value,id,ok; void *entry,*sprite,*q,*base; u32 old;u8 selected;s16 x,y;u8 *cursor;
 entry=Entry175(M2C_FIELD(state,void **,0x5c),M2C_FIELD(state,u8 *,0x37));
 switch(M2C_FIELD(state,u8 *,0x35)){
@@ -112,7 +112,7 @@ M2C_FIELD(q,u8 *,5)=(gMapProgressRecords[id]<<3)>>29;
 id=M2C_FIELD(entry,u8 *,7);
 ((Flags175 *)gMapProgressRecords)[id].previous=((Flags175 *)gMapProgressRecords)[id].current;
 if(M2C_FIELD(entry,u8 *,7)+161==186 && old==0)PlaySoundEffect(286);
-SetSpriteAnimation(state,3);return;
+GotoSpriteAnimationLabel(state,3);return;
 default:Sprite_ResumeAnimation(state);return;
 }
 }

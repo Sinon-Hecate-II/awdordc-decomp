@@ -243,17 +243,20 @@ void SetSceneLayoutMain(void *layout) {
     M2C_FIELD(&gSceneConfig, void **, SCENE_CONFIG_MAIN_LAYOUT) = layout;
 }
 
-void SetSceneLayoutSub(s32 arg0) {
-    M2C_UNK Apply3DSpriteLayout();
+/* Apply a 3D sprite layout preset on the sub 2D engine and remember it as the
+ * scene's sub-screen layout. */
+void SetSceneLayoutSub(void *layout) {
+    M2C_UNK Apply3DSpriteLayout(void *);
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
     extern M2C_UNK gSceneConfig;
-    s32 temp_r4;
-    temp_r4 = gCur3DSpriteEngine;
+    s32 savedEngine;
+
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    Apply3DSpriteLayout();
-    gCur3DSpriteEngine = temp_r4;
-    M2C_FIELD(&gSceneConfig, s32 *, 12) = arg0;
+    Apply3DSpriteLayout(layout);
+    gCur3DSpriteEngine = savedEngine;
+    M2C_FIELD(&gSceneConfig, void **, SCENE_CONFIG_SUB_LAYOUT) = layout;
 }
 
 /* Set one BG-layer override on the main 2D engine: apply the override with the
@@ -447,45 +450,52 @@ void SortMapIdList(u16 *mapIds) {
     } while ((u32)pass < MAP_PICK_SLOTS - 1);
 }
 
-void func_ov003_021f24ac(void *arg0, void *arg1) {
+/* Copy the first and second sides' picked map lists into the caller's `firstPicks`
+ * and `secondPicks` (MAP_PICK_SLOTS ids each), then sort the stored lists so their
+ * empty (MAP_PICK_EMPTY) slots move to the end. */
+void CopyMapPickLists(u16 *firstPicks, u16 *secondPicks) {
     void CopyU16(void *, void *, u32);
-    extern M2C_UNK data_ov003_022111de;
+    extern M2C_UNK gSelectedMapIds;
     extern M2C_UNK gDownloadedMapIds;
-    CopyU16(arg0, &data_ov003_022111de, 10);
-    CopyU16(arg1, &gDownloadedMapIds, 10);
-    SortMapIdList((u16 *)&data_ov003_022111de);
-    SortMapIdList((u16 *)&gDownloadedMapIds);
+
+    CopyU16(firstPicks, &gSelectedMapIds, MAP_PICK_SLOTS * 2);
+    CopyU16(secondPicks, &gDownloadedMapIds, MAP_PICK_SLOTS * 2);
+    SortMapIdList((u16 *) &gSelectedMapIds);
+    SortMapIdList((u16 *) &gDownloadedMapIds);
 }
 
 void func_ov003_021f24ec(void *arg0, void *arg1) {
     void CopyU16(void *, void *, u32);
-    extern M2C_UNK data_ov003_022111de;
+    extern M2C_UNK gSelectedMapIds;
     extern M2C_UNK gDownloadedMapIds;
-    CopyU16(&data_ov003_022111de, arg0, 10);
+    CopyU16(&gSelectedMapIds, arg0, 10);
     CopyU16(&gDownloadedMapIds, arg1, 10);
 }
 
-M2C_UNK func_ov003_021f2524(M2C_UNK *arg0) {
+/* Count the picked maps of a five-slot map-id list (MAP_PICK_EMPTY slots are
+ * skipped). */
+M2C_UNK CountMapIds(M2C_UNK *mapIds) {
     u8 count, i;
+
     count = 0;
     i = 0;
     do {
-        if (((u16 *)arg0)[i] != 0xFFFF) count++;
+        if (((u16 *)mapIds)[i] != MAP_PICK_EMPTY) count++;
         i++;
-    } while ((u32)i < 5);
+    } while ((u32)i < MAP_PICK_SLOTS);
     return count;
 }
 
 void func_ov003_021f2560(void) {
-    M2C_UNK func_ov003_021f2524(M2C_UNK *);
-    extern M2C_UNK data_ov003_022111de;
-    func_ov003_021f2524(&data_ov003_022111de);
+    M2C_UNK CountMapIds(M2C_UNK *);
+    extern M2C_UNK gSelectedMapIds;
+    CountMapIds(&gSelectedMapIds);
 }
 
 void func_ov003_021f2574(void) {
-    M2C_UNK func_ov003_021f2524(M2C_UNK *);
+    M2C_UNK CountMapIds(M2C_UNK *);
     extern M2C_UNK gDownloadedMapIds;
-    func_ov003_021f2524(&gDownloadedMapIds);
+    CountMapIds(&gDownloadedMapIds);
 }
 
 /* Remove a downloaded map ID from the five-slot list, then keep the remaining IDs sorted. */

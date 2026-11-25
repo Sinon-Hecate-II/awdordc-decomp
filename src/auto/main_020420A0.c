@@ -196,7 +196,17 @@ s32 UpdateConnectionSyncTimers(void) {
  return 1;
 }
 #pragma opt_strength_reduction reset
-u8 func_020427b4(void){extern u8 gSessionPlayers[];u8 i=0;do{if(gSessionPlayers[i*12]==0)return i+100;i++;}while(i<154);return 0;}
+/* Key id of the first free record in the session player table, or 0 when the
+ * table is full. */
+u8 FindFreeSessionPlayerKey(void){
+extern u8 gSessionPlayers[];
+u8 i=0;
+do{
+if(gSessionPlayers[i*QR2_PLAYER_STRIDE]==0)return i+QR2_GAMEKEY_TABLE_BASE;
+i++;
+}while(i<QR2_PLAYER_COUNT);
+return 0;
+}
 
 /* Releases the session player table: frees the heap string of every record that
  * holds one, then fills all 154 records with zero. */

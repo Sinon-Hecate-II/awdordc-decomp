@@ -546,15 +546,18 @@ s32 MultiBoot_RecordComplete(s32 player) {
     return 1;
 }
 
+/* Initialise the DS Download Play boot state: clear the ARM7 boot sync word and
+ * remember the OS lock id that guards cartridge-bus access during boot. */
 void Mb_InitBootState(void) {
     M2C_UNK CpuSet(s32 *, M2C_UNK *, s32);
-    s16 OS_GetLockID();
+    s16 OS_GetLockID(void);
     extern M2C_UNK gMbBootConfig;
-    extern M2C_UNK data_02136c9c;
-    s32 sp0;
+    extern M2C_UNK gMbBootSync;
+    s32 zero;
 
-    sp0 = 0;
-    CpuSet(&sp0, &data_02136c9c, 0x05000001);
+    zero = 0;
+    /* 32-bit fill of one word with zero (bits 26 and 24 of the CpuSet control). */
+    CpuSet(&zero, &gMbBootSync, 0x05000001);
     M2C_FIELD(&gMbBootConfig, s16 *, 6) = OS_GetLockID();
 }
 

@@ -113,7 +113,17 @@ s32 GetSaveData(void) {
     return gSaveData;
 }
 
-void Ov001_EraseSaveSlot(s32 a) {void UpdateSaveChecksums(s32);M2C_UNK MI_CpuFill8(void *,s32,s32);extern s32 gSaveData;u8 *p=(u8 *)(gSaveData+(a<<8));MI_CpuFill8(p,0,0xef);p[0xe7]=255;UpdateSaveChecksums(a);}
+/* Erase the save slot at `slotIndex`: clear its image, mark the slot erased and
+ * refresh the save checksums. */
+void Ov001_EraseSaveSlot(s32 slotIndex) {
+    void UpdateSaveChecksums(s32);
+    M2C_UNK MI_CpuFill8(void *,s32,s32);
+    extern s32 gSaveData;
+    u8 *slot=(u8 *)(gSaveData+(slotIndex<<8));
+    MI_CpuFill8(slot,0,SAVE_SLOT_CLEAR_SIZE);
+    slot[SAVE_SLOT_STATUS_REL]=SAVE_SLOT_STATUS_ERASED;
+    UpdateSaveChecksums(slotIndex);
+}
 
 /* Reset the save data: clear the four save slot images, mark the first three
  * erased, store the local Wi-Fi profile code in the first two slots and refresh
@@ -356,7 +366,17 @@ void func_ov001_021855e4(s32 a) {
     *(s32 *)((u8 *)*(void **)((u8 *)&gOv001MenuLayout + 4) + 0x14) = 0;
 }
 #pragma opt_instruction_scheduling reset
-void func_ov001_0218560c(void){ s32 Ov001_AddTask(s32,void (*)(),s32,s32); void Ov001_SlideMenuCloseStep0(s32); extern M2C_UNK gOv001MenuLayout; s32 result; M2C_FIELD(M2C_FIELD(&gOv001MenuLayout,void **,4),s8 *,24)=1; result=Ov001_AddTask(0,Ov001_SlideMenuCloseStep0,0,120); M2C_FIELD(M2C_FIELD(&gOv001MenuLayout,void **,4),s32 *,20)=result; }
+/* Start closing the ov001 option menu: flag it as closing and give the menu a
+ * task that slides the rows out (Ov001_SlideMenuCloseStep0). */
+void Ov001_CloseMenu(void) {
+    s32 Ov001_AddTask(s32,void (*)(),s32,s32);
+    void Ov001_SlideMenuCloseStep0(s32);
+    extern M2C_UNK gOv001MenuLayout;
+    s32 task;
+    M2C_FIELD(M2C_FIELD(&gOv001MenuLayout,void **,OV001_MENU_SPRITES),s8 *,OV001_MENU_CLOSING)=1;
+    task=Ov001_AddTask(0,Ov001_SlideMenuCloseStep0,0,OV001_MENU_TASK_FRAMES);
+    M2C_FIELD(M2C_FIELD(&gOv001MenuLayout,void **,OV001_MENU_SPRITES),s32 *,OV001_MENU_TASK)=task;
+}
 
 /* Load the ov001 option menu's row sprites for one variant, reusing the sprite
  * objects the rows already have: for every second row (0, 2, 4) it loads the

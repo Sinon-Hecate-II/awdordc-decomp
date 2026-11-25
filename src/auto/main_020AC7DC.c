@@ -78,15 +78,14 @@ break;
 /* Configure the active display for the requested mode. */
 }
 
-M2C_UNK ApplyScreenMode(M2C_UNK arg0) {
+s32 ApplyScreenMode(M2C_UNK arg0) {
     s32 GetScreenMode(u8);
-    void DeleteScreenTransitionSprites(M2C_UNK);
     void ConfigureScreenEngine(u8, s32, s32);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
-    u8 currentIsPrimary;
-    u8 screen;
     s32 mode;
+    u8 screen;
+    u8 currentIsPrimary;
     u16 *volatile sp44;
     u16 *volatile sp40;
     u16 *volatile sp3c;
@@ -122,78 +121,83 @@ M2C_UNK ApplyScreenMode(M2C_UNK arg0) {
         ConfigureScreenEngine(screen, 1, mode);
         switch (mode) {
         case 0:
-            *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = -16;
+            *(s8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = -16;
             break;
         case 1:
-            *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = 0x10;
+            *(s8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x50) = 0x10;
             break;
         case 2:
-            break;
+            goto reset_engine;
         }
-    } else {
-        sp44 = (u16 *)*(u8 **)gCur3DSpriteEngine;
-        *sp44 = *sp44 | 0x200;
-
-        sp40 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
-        *sp40 = *sp40 & ~1;
-
-        sp3c = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
-        *sp3c = *sp3c & ~2;
-
-        sp38 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
-        *sp38 = *sp38 & ~4;
-
-        sp34 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
-        *sp34 = *sp34 & ~8;
-
-        sp30 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
-        *sp30 = *sp30 & ~0x10;
-
-        sp2c = (u16 *)*(u8 **)gCur3DSpriteEngine;
-        *sp2c = *sp2c | 0x400;
-
-        sp28 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
-        *sp28 = *sp28 & ~0x100;
-
-        sp24 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
-        *sp24 = *sp24 & ~0x200;
-
-        sp20 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
-        *sp20 = *sp20 & ~0x400;
-
-        sp1c = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
-        *sp1c = *sp1c & ~0x800;
-
-        sp18 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
-        *sp18 = *sp18 & ~0x1000;
-
-        sp14 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
-        *sp14 = (*sp14 & ~1) | 1;
-
-        sp10 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
-        *sp10 = *sp10 | 0x2;
-
-        spC = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
-        *spC = *spC | 0x4;
-
-        sp8 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
-        *sp8 = *sp8 | 0x8;
-
-        sp4 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
-        *sp4 = *sp4 | 0x10;
-
-        sp0 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
-        *sp0 = *sp0 | 0x20;
-
-        *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x48) = 0;
-        *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4a) = 0;
-        *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x49) = 0xff;
-        *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4b) = 0xc0;
-        *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4c) = 1;
-        *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4e) = 0;
-        *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4d) = 0;
-        *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4f) = 0xc0;
+        goto epilogue;
     }
+
+reset_engine:
+    sp44 = (u16 *)*(u8 **)gCur3DSpriteEngine;
+    *sp44 = *sp44 | 0x200;
+
+    sp40 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+    *sp40 = *sp40 & ~1;
+
+    sp3c = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+    *sp3c = *sp3c & ~2;
+
+    sp38 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+    *sp38 = *sp38 & ~4;
+
+    sp34 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+    *sp34 = *sp34 & ~8;
+
+    sp30 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+    *sp30 = *sp30 & ~0x10;
+
+    sp2c = (u16 *)*(u8 **)gCur3DSpriteEngine;
+    *sp2c = *sp2c | 0x400;
+
+    sp28 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+    *sp28 = *sp28 & ~0x100;
+
+    sp24 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+    *sp24 = *sp24 & ~0x200;
+
+    sp20 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+    *sp20 = *sp20 & ~0x400;
+
+    sp1c = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+    *sp1c = *sp1c & ~0x800;
+
+    sp18 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x0e);
+    *sp18 = *sp18 & ~0x1000;
+
+    sp14 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
+    *sp14 = (*sp14 & ~1) | 1;
+
+    sp10 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
+    *sp10 = *sp10 | 0x2;
+
+    spC = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
+    *spC = *spC | 0x4;
+
+    sp8 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
+    *sp8 = *sp8 | 0x8;
+
+    sp4 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
+    *sp4 = *sp4 | 0x10;
+
+    sp0 = (u16 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x10);
+    *sp0 = *sp0 | 0x20;
+
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x48) = 0;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4a) = 0;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x49) = 0xff;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4b) = 0xc0;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4c) = 1;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4e) = 0;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4d) = 0;
+    *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4f) = 0xc0;
+
+epilogue:
+    return 0;
 }
 
 /* When the current screen's state flag shows its transition has finished (1),
@@ -467,21 +471,23 @@ void StartScreenFadeChildren(s32 mode, s16 length, s32 target, s32 parent) {
     gCur3DSpriteEngine = savedEngine;
 }
 
+/* True while a screen change is still running: either a slide/split transition
+ * or a fade is alive.  Screens wait for this before changing the display again. */
 u8 IsScreenFadeActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gScreenTransitionClass;
     extern M2C_UNK gScreenFadeClass;
-    u8 var_r0;
+    u8 active;
 
     if (FindObjectByClass(&gScreenTransitionClass) != 0) {
         return 1U;
     }
     if (FindObjectByClass(&gScreenFadeClass) != 0) {
-        var_r0 = 1;
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 M2C_UNK LocalizeMapBackgroundFileName(s32 arg0, M2C_UNK *arg1) {

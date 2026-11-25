@@ -95,11 +95,18 @@ void func_0206e39c(void) {
 
 }
 
-void RoundDecimalToDigits(u8 *p,s32 n) {
- s32 r;
- if(n<=0)return; if(n>=p[4])return;
- r=DecimalShouldRoundUp(p,n); p[4]=n; if(r<0)return;
- DecimalIncrementDigits(p,n);
+/* Round a decimal number to its first `digits` digits: leave it alone when it is
+ * shorter, otherwise keep those digits and, when the dropped part rounds up
+ * (DecimalShouldRoundUp), increment them. */
+void RoundDecimalToDigits(DecimalNumber *number, s32 digits) {
+    s32 roundUp;
+
+    if (digits <= 0) return;
+    if (digits >= number->length) return;
+    roundUp = DecimalShouldRoundUp((u8 *) number, digits);
+    number->length = (u8) digits;
+    if (roundUp < 0) return;
+    DecimalIncrementDigits((u8 *) number, digits);
 }
 
 u64 U64Divide(u64,u64);

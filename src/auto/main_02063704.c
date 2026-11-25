@@ -392,11 +392,13 @@ s32 Abs(s32 arg0) {
     return var_r0;
 }
 
-void AssertFailed(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+/* Report a failed assertion - its expression text, source file, function name and
+ * line - on stdout, then flush the buffered output. */
+void AssertFailed(M2C_UNK expression, M2C_UNK file, M2C_UNK function, s32 line) {
     M2C_UNK func_02063df8();
     M2C_UNK StdoutPrintf(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    extern M2C_UNK data_021002b0;
-    StdoutPrintf(&data_021002b0, arg0, arg1, arg2, arg3);
+    extern M2C_UNK sAssertFailedFormat;
+    StdoutPrintf(&sAssertFailedFormat, expression, file, function, line);
     func_02063df8();
 }
 

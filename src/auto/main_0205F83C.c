@@ -320,7 +320,12 @@ u8 GsCryptByte(void *cipher, u8 data) {
     return state->d;
 }
 
-void GsCryptData(void *a,u8 *b,s32 n){u8 GsCryptByte(void *,u8);s32 i;for(i=0;i<n;i++)b[i]=GsCryptByte(a,b[i]);}
+/* Crypt `length` bytes of `data` in place with the GameSpy stream cipher, one byte at a time. */
+void GsCryptData(void *cipher, u8 *data, s32 length) {
+    u8 GsCryptByte(void *, u8);
+    s32 i;
+    for (i = 0; i < length; i++) data[i] = GsCryptByte(cipher, data[i]);
+}
 
 void QueryQueue_Append(void *arg0, void *arg1) {
     void *temp_r2;

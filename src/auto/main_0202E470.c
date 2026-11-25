@@ -362,11 +362,13 @@ void Sound_ReleaseFileSource(s32 arg0) {
     CloseFileRequest(arg0 + 0x5C);
 }
 
-void Sound_ReadFileSource(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+void Sound_ReadFileSource(void *player, M2C_UNK destination, M2C_UNK byteCount, s32 sourceOffset) {
     M2C_UNK FileRead(void *, M2C_UNK, M2C_UNK);
     M2C_UNK FileSeek(void *, s32, M2C_UNK);
-    FileSeek(arg0 + 0x5C, M2C_FIELD(arg0, s32 *, 0xA4) + arg3, 0);
-    FileRead(arg0 + 0x5C, arg1, arg2);
+
+    /* Seek within the archive-backed request and stream the requested sample bytes into the caller's buffer. */
+    FileSeek(player + SOUND_HANDLE_FILE_REQUEST, M2C_FIELD(player, s32 *, SOUND_HANDLE_SOURCE_BASE) + sourceOffset, 0);
+    FileRead(player + SOUND_HANDLE_FILE_REQUEST, destination, byteCount);
 }
 
 void Sound_CloseFileSource(s32 arg0) {
@@ -411,13 +413,16 @@ Sound_FillRequestBuffers(request);Sound_FreeRequest(request);UnlockMutex(task+0x
 }}
 }
 #pragma opt_common_subs reset
-void *GetSoundArchiveEntry(void *arg0,s32 arg1) {
- void *p;
- if(arg1<0)return NULL;
- if((u32)arg1>=M2C_FIELD(arg0,u32 *,0x1C))return NULL;
- p=arg0+0x20+arg1*12;
- if(M2C_FIELD(p,s32 *,0)==-1)return NULL;
- return p;
+/* Return entry `index` of the loaded sequence-archive file `archive`, or NULL
+ * when the index is out of range or the entry is unused. */
+void *GetSoundArchiveEntry(void *archive, s32 index) {
+    SoundArchiveEntry *entry;
+
+    if (index < 0) return NULL;
+    if ((u32)index >= M2C_FIELD(archive, u32 *, SOUND_FILE_ENTRY_COUNT)) return NULL;
+    entry = (SoundArchiveEntry *)((u8 *)archive + SOUND_FILE_ENTRIES + index * SOUND_FILE_ENTRY_SIZE);
+    if (entry->soundId == SOUND_FILE_ENTRY_NONE) return NULL;
+    return entry;
 }
 
 void Sound_ResetFade(void *arg0) {
@@ -552,16 +557,24 @@ u8 GetWfcFriendSlot(void) {
     return slot;
 }
 
+/* Ends the WFC session: when the session has not started or is already over,
+ * release its work blocks and report that it is done; otherwise advance its
+ * state machine one step and publish the new state.  Returns 1 once the session
+ * is over (0 while it is still winding down). */
 s32 Wfc_EndSession(void) {
- u32 Wfc_GetSessionState();
- void Wfc_FreeWorkBlocks(void);
- void Wfc_AdvanceSessionState(u8 *);
- void Wfc_PublishState(u32);
- u8 n=Wfc_GetSessionState();
- if(n==0 || n==18) {
- Wfc_FreeWorkBlocks(); return 1;
- }
- Wfc_AdvanceSessionState(&n);Wfc_PublishState(n);return 0;
+    u32 Wfc_GetSessionState();
+    void Wfc_FreeWorkBlocks(void);
+    void Wfc_AdvanceSessionState(u8 *);
+    void Wfc_PublishState(u32);
+    u8 state = Wfc_GetSessionState();
+
+    if (state == WFC_SESSION_STATE_NONE || state == WFC_SESSION_STATE_ENDED) {
+        Wfc_FreeWorkBlocks();
+        return 1;
+    }
+    Wfc_AdvanceSessionState(&state);
+    Wfc_PublishState(state);
+    return 0;
 }
 
 void Wfc_SetSlotImage(s32 arg0, M2C_UNK arg1) {

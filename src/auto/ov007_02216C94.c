@@ -1,6 +1,7 @@
 /* 19 functions from 0x02216C94 to 0x02217C80 (ov007), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov007_map_editor.h"
 
 typedef struct MapPoint { s16 x, y; } MapPoint;
 typedef struct MapScan { u8 pad0[0xa10]; u16 cells[0x16a4]; u16 rows[0xcf6]; u16 width, height; } MapScan;
@@ -444,7 +445,21 @@ s8 *MapEditor_GetPaletteEntries(s32 arg0) {
  return arr[arg0];
 }
 
-s32 func_ov007_02217b90(s32 a,s32 b){s8 *p=MapEditor_GetPaletteEntries(a);s32 i=0;while(*p>=0){if(*p==b)return i;p+=5;i++;}return -1;}
+/* Index of `kind` in the map editor's palette entries for `page`
+ * (MAP_EDITOR_PAGE_TERRAIN or MAP_EDITOR_PAGE_UNIT), or -1 when the page has no
+ * entry for it.  Entries are MAP_EDITOR_PALETTE_ENTRY_SIZE bytes and their first
+ * byte is the kind; a negative kind ends the list. */
+s32 MapEditor_FindPaletteEntryIndex(s32 page, s32 kind) {
+    s8 *entry = MapEditor_GetPaletteEntries(page);
+    s32 index = 0;
+
+    while (*entry >= 0) {
+        if (*entry == kind) return index;
+        entry += MAP_EDITOR_PALETTE_ENTRY_SIZE;
+        index++;
+    }
+    return -1;
+}
 
 s32 MapEditor_GetPaletteKind(s32 a,s32 b){
  s8 *MapEditor_GetPaletteEntries(s32);

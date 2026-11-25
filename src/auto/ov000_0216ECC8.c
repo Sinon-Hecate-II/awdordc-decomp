@@ -345,14 +345,14 @@ void ScrollListConfirm(u8 *selectedRow) {
     list->selectedId = M2C_FIELD(&gUnitListRows, u8 **, UNIT_LIST_ROWS_PTR)[list->scrollPos + *selectedRow];
     PlaySoundEffect(0x10016);
     Sprite_ResumeAnimation(list);
-    func_020b21a0();
+    HideEnabledSpriteSlots();
     CloseAllActiveSpriteSlots();
 }
 
 void ScrollListCancel(void) {
     M2C_UNK Sprite_ResumeAnimation(s32);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020b21a0();
+    M2C_UNK HideEnabledSpriteSlots();
     M2C_UNK CloseAllActiveSpriteSlots();
     s32 GetScrollList();
     s32 temp_r4;
@@ -360,6 +360,6 @@ void ScrollListCancel(void) {
     temp_r4 = GetScrollList();
     PlaySoundEffect(0x10018);
     Sprite_ResumeAnimation(temp_r4);
-    func_020b21a0();
+    HideEnabledSpriteSlots();
     CloseAllActiveSpriteSlots();
 }

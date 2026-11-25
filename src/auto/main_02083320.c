@@ -113,14 +113,14 @@ void ResetTextState(void) {
  * reveal start spread evenly over the label's length by averaging two eased
  * ramps. */
 void InitSpriteTextReveal(SpriteText *text) {
-    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     s32 i, count, delay;
 
     i = 0;
     text->timer = 0;
     if (text->active == 0) {
-        SetSpriteAnimation(text, 0);
+        GotoSpriteAnimationLabel(text, 0);
         return;
     }
     count = text->length;

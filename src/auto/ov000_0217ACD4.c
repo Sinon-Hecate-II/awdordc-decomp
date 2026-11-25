@@ -244,7 +244,7 @@ switch((u32)dir){case 0:case 1:break;case 2:M2C_FIELD(gMoveSearchState,u8 *,MOVE
 if(gMoveSearchCount>=MOVE_SEARCH_QUEUE_MAX)return 0;
 map=*gCurrentMap;p=gMoveSearchState;
 x=p[MOVE_SEARCH_WIDTH];w=M2C_FIELD(map,u16 *,MAP_WIDTH);if(x<w){y=p[MOVE_SEARCH_HEIGHT];h=M2C_FIELD(map,u16 *,MAP_HEIGHT);if(y<h)goto valid;}return 0;valid:;
-if(!IsTerrainPassable(2,M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&31))return 0;
+if(!IsTerrainPassableForUnitKind(2,M2C_FIELD((u8 *)map+(x+M2C_FIELD((u8 *)map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&31))return 0;
 c=M2C_FIELD(gMoveSearchCurrent,u8 *,3)+1;p=gMoveSearchState;limit=M2C_FIELD(p,s16 *,MOVE_SEARCH_COST_LIMIT);
 if(c>limit)return 0;
 if(gMoveSearchGoal(p[MOVE_SEARCH_WIDTH],p[MOVE_SEARCH_HEIGHT],p[MOVE_SEARCH_MOVEMENT_TYPE])==1)return 1;

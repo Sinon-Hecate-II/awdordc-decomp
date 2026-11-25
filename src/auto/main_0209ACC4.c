@@ -69,11 +69,11 @@ typedef struct TextState {
  * return 0 once the script is exhausted (1 means keep going). */
 s32 DrawTextStep(void *arg0) {
     s32 PlaySoundEffect(void *);
-    s32 func_02099818(u8, s32, u8, u16);
+    s32 DrawGlyph(u8, s32, u8, u16);
     M2C_UNK func_02099854(void *, s32, u8, u16);
     s32 func_020999b8(void *);
     s32 func_020999e8(void *);
-    M2C_UNK func_02099a30(void *);
+    M2C_UNK RedrawTextObject(void *);
     s32 IsLeadByte(void *);
     s32 IsGlyphEscape(void *);
     u32 func_02099e6c(void *, s32);
@@ -104,7 +104,7 @@ main_loop:
             temp_r8 = IsGlyphEscape(st->cursor);
             if (func_020999b8(st) == 0) {
                 if (st->flags & 0x2) {
-                    func_02099a30(st);
+                    RedrawTextObject(st);
                     st->flags = (u8) (st->flags & ~0x2);
                     return 1;
                 }
@@ -121,11 +121,11 @@ main_loop:
                     if (temp_r8 != 0) {
                         u16 t1 = st->linePixel;
                         pixels = M2C_FIELD(st, volatile s32 *, 0x3c);
-                        var_r6 = func_02099818(M2C_FIELD(p, u8 *, 1), pixels + (t1 << 5), st->column, st->attr16);
+                        var_r6 = DrawGlyph(M2C_FIELD(p, u8 *, 1), pixels + (t1 << 5), st->column, st->attr16);
                     } else {
                         u16 t1 = st->linePixel;
                         pixels = M2C_FIELD(st, volatile s32 *, 0x3c);
-                        var_r6 = func_02099818(M2C_FIELD(p, u8 *, 0), pixels + (t1 << 5), st->column, st->attr16);
+                        var_r6 = DrawGlyph(M2C_FIELD(p, u8 *, 0), pixels + (t1 << 5), st->column, st->attr16);
                     }
                 }
                 if ((u8) st->column <= 1U) {

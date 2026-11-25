@@ -178,11 +178,11 @@ SetWhStatus(WH_STATUS_PARENT_START);return 0;
 
 void func_ov001_02188c78(void *p, void *a) {
     extern void *gOv001ProfileState;
-    void func_ov001_02186e40(void *);
+    void Ov001_InitLinkWork(void *);
     void FifoReadSaveSlots(void *);
     void *GetSaveData(void);
     gOv001ProfileState = p;
-    func_ov001_02186e40((u8 *)p + 0xb00);
+    Ov001_InitLinkWork((u8 *)p + 0xb00);
     M2C_FIELD(gOv001ProfileState, u16 *, 1608) = 0;
     M2C_FIELD(gOv001ProfileState, u16 *, 1610) = 0;
     M2C_FIELD(gOv001ProfileState, u8 *, 2704) = 1;
@@ -208,7 +208,7 @@ void func_ov001_02188c78(void *p, void *a) {
  * link is up) and returns whether the current state could be left. */
 int Ov001_LeaveProfileSetup(void) {
     extern void *gOv001ProfileState;
-    void func_0201808c(void);
+    void MultiBoot_CloseLink(void);
     unsigned int state = M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE);
 
     /* idle / list wait states: go straight to the exit state */
@@ -220,7 +220,7 @@ int Ov001_LeaveProfileSetup(void) {
     /* download-play / link states: end the transfer and leave through state 16 */
     if (state == 4 || state == 5 || state == 6 || state == 13) {
         if (state == 4 && M2C_FIELD(gOv001ProfileState, u32 *, PROFILE_LINK_FRAMES) < 6) return 0;
-        func_0201808c();
+        MultiBoot_CloseLink();
         M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) = 16;
         M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_RESULT) = 2;
         return 1;
@@ -281,7 +281,7 @@ void Ov001_UpdateProfileSetup(void) {
     s32 Ov001_GetTaskStep(void);
     s32 Ov001_EndLink(void);
     void func_ov001_02188b20(void);
-    void func_0201808c(void);
+    void MultiBoot_CloseLink(void);
     extern void *gOv001ProfileState;
     u8 *state = gOv001ProfileState;
     switch (state[PROFILE_STATE]) {
@@ -329,7 +329,7 @@ void Ov001_UpdateProfileSetup(void) {
             func_ov001_021897bc();
         return;
     case 18:
-        func_0201808c();
+        MultiBoot_CloseLink();
         *(u32 *)((u8 *)gOv001ProfileState + PROFILE_STATE_TIMER) = 0;
         ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 22;
         return;

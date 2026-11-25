@@ -4,8 +4,21 @@
 typedef struct { u8 values[128]; } ColorTable;
 extern const ColorTable data_020eb2e0, data_020eb360, data_020eb3e0, data_020eb460;
 
-void BuildCrc8Table(u8 *table,u32 poly){u32 v,i,j;
-for(i=0;i<256;i++){v=i;for(j=0;j<8;j++){if(v&128)v=(v<<1)^poly;else v<<=1;}table[i]=v;}
+/* Build the CRC-8 lookup table (one entry per input byte, bits fed in from the
+ * most significant) that Crc8Update indexes. */
+void BuildCrc8Table(u8 *table, u32 polynomial) {
+    u32 crc;
+    u32 tableIndex;
+    u32 bitIndex;
+
+    for (tableIndex = 0; tableIndex < 256; tableIndex++) {
+        crc = tableIndex;
+        for (bitIndex = 0; bitIndex < 8; bitIndex++) {
+            if (crc & 128) crc = (crc << 1) ^ polynomial;
+            else crc <<= 1;
+        }
+        table[tableIndex] = crc;
+    }
 }
 
 s32 Crc8Update(s32 table,u8 *crc,s32 data,s32 size){u32 v,i;u8 *p=(u8*)data;v=*crc;
@@ -30,25 +43,53 @@ void BuildCrc16Table(u16 *table, u32 polynomial) {
     }
 }
 
-s32 Crc16Update(s32 table,u16 *state,s32 data,s32 size) {
- u32 crc=*state; u32 i; u8 *p=(u8 *)data;
- for(i=0;i<(u32)size;i++) crc=M2C_FIELD(table,u16 *, ((crc ^ *p++) << 24) >> 23) ^ (crc >> 8);
- *state=crc;
+/* Fold `size` bytes at `data` through the reflected CRC-16 lookup table and
+ * store the updated checksum back in *state. */
+s32 Crc16Update(s32 table, u16 *state, s32 data, s32 size) {
+    u32 crc = *state;
+    u32 i;
+    u8 *bytes = (u8 *)data;
+
+    for (i = 0; i < (u32)size; i++) {
+        crc = M2C_FIELD(table, u16 *, ((crc ^ *bytes++) << 24) >> 23) ^ (crc >> 8);
+    }
+    *state = crc;
 }
 
-void BuildCrc32Table(u32 *table,u32 poly) {
- u32 crc; u32 i; u32 j; u32 zero;
- i=0; zero=0;
- do { crc=i; j=zero;
- do { if(crc&1) crc=poly^(crc>>1); else crc>>=1; j++; }while(j<8);
- table[i]=crc; i++;
- }while(i<256);
+/* Build the reflected CRC-32 lookup table (one entry per input byte) that
+ * Crc32Update indexes with CRC32_POLYNOMIAL. */
+void BuildCrc32Table(u32 *table, u32 polynomial) {
+    u32 crc;
+    u32 tableIndex;
+    u32 bitIndex;
+    u32 zero;
+
+    tableIndex = 0;
+    zero = 0;
+    do {
+        crc = tableIndex;
+        bitIndex = zero;
+        do {
+            if (crc & 1) crc = polynomial ^ (crc >> 1);
+            else crc >>= 1;
+            bitIndex++;
+        } while (bitIndex < 8);
+        table[tableIndex] = crc;
+        tableIndex++;
+    } while (tableIndex < 256);
 }
 
-s32 Crc32Update(s32 table,s32 *state,s32 data,s32 size) {
- u32 crc=*state; u32 i; u8 *p=(u8 *)data;
- for(i=0;i<(u32)size;i++) crc=((u32 *)table)[(u8)(crc ^ *p++)] ^ (crc >> 8);
- *state=crc;
+/* Fold `size` bytes at `data` through the reflected CRC-32 lookup table and
+ * store the updated checksum back in *state. */
+s32 Crc32Update(s32 table, s32 *state, s32 data, s32 size) {
+    u32 crc = *state;
+    u32 i;
+    u8 *bytes = (u8 *)data;
+
+    for (i = 0; i < (u32)size; i++) {
+        crc = ((u32 *)table)[(u8)(crc ^ *bytes++)] ^ (crc >> 8);
+    }
+    *state = crc;
 }
 
 u8 Crc8Block(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -280,7 +321,7 @@ void func_02077480(void){extern M2C_UNK gMapHighlightState;
 if(M2C_FIELD(&gMapHighlightState,s32*,12)==0)M2C_FIELD(&gMapHighlightState,s32*,12)=1;
 }
 
-void func_0207749c(void) {
+void ResetMapViewRaiseTimer(void) {
     extern M2C_UNK gMapHighlightState;
     M2C_FIELD(&gMapHighlightState, s32 *, 0xC) = 0;
 }
@@ -291,11 +332,15 @@ void func_020774b0(void) {
  if(n<8) M2C_FIELD(&gMapHighlightState,s32 *,12)=n+1;
 }
 
-s32 func_020774cc(void) {
- extern void *gCurrentMap;
- extern M2C_UNK gMapHighlightState;
- if(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),s32 *,0x60)) return M2C_FIELD(&gMapHighlightState,s32 *,12)!=0;
- return 0;
+/* True while the map view shows a map order's effect highlight: the view has the
+ * highlight enabled and the cells' raise timer has started. */
+s32 IsOrderEffectHighlightActive(void) {
+    extern void *gCurrentMap;
+    extern M2C_UNK gMapHighlightState;
+
+    if (M2C_FIELD(M2C_FIELD(gCurrentMap, void **, MAP_VIEW_PTR), s32 *, MAPVIEW_ORDER_EFFECT))
+        return M2C_FIELD(&gMapHighlightState, s32 *, MAP_VIEW_RAISE_TIMER) != 0;
+    return 0;
 }
 
 void func_0207750c(void) {

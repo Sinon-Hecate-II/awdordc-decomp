@@ -653,11 +653,13 @@ void func_ov003_021e5060(s32 arg0) {
 }
 #pragma interworking reset
 #pragma peephole reset
-s32 func_ov003_021e50e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    if (((s32) (arg0 + arg2) < 0) || (arg0 > 0x100)) {
+/* Whether the box at (x, y) of `width` x `height` overlaps the DS screen: its
+ * right/bottom edge must not be off the top/left, its x/y not past the far edge. */
+s32 Ov003_IsBoxOnScreen(s32 x, s32 y, s32 width, s32 height) {
+    if (((s32) (x + width) < 0) || (x > SCREEN_WIDTH)) {
         return 0;
     }
-    if (((s32) (arg1 + arg3) < 0) || (arg1 > 0xC0)) {
+    if (((s32) (y + height) < 0) || (y > SCREEN_HEIGHT)) {
         return 0;
     }
     return 1;

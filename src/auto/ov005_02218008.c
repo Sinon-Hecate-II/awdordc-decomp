@@ -246,12 +246,25 @@ void Ov005MenuInput(M2C_UNK owner) {
     }
 }
 
-void func_ov005_02218dfc(void) {
- M2C_UNK func_020af1e4(); M2C_UNK func_020842d4(); M2C_UNK HideAllSpriteSlots(); M2C_UNK HeapFreeBlock(); M2C_UNK FreeUiGraphicsBank(s32);
- extern void *gOv005MenuState;
- func_020af1e4(); func_020842d4(); HideAllSpriteSlots();
- if(gOv005MenuState) {HeapFreeBlock(); gOv005MenuState=0;}
- FreeUiGraphicsBank(10);
+/* Tear down the ov005 two-page menu: delete its wallpaper and sub-screen sprite
+ * objects, hide the touch slots, free the menu state and release the UI graphics
+ * bank it loaded (bank 10). */
+void Ov005_CloseMenu(void) {
+    M2C_UNK func_020af1e4();
+    M2C_UNK func_020842d4();
+    M2C_UNK HideAllSpriteSlots();
+    M2C_UNK HeapFreeBlock();
+    M2C_UNK FreeUiGraphicsBank(s32);
+    extern void *gOv005MenuState;
+
+    func_020af1e4();
+    func_020842d4();
+    HideAllSpriteSlots();
+    if (gOv005MenuState) {
+        HeapFreeBlock();
+        gOv005MenuState = 0;
+    }
+    FreeUiGraphicsBank(10);
 }
 
 void func_ov005_02218e3c(M2C_UNK arg0) {

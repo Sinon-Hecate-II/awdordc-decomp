@@ -1,5 +1,6 @@
 /* 12 functions from 0x022131F8 to 0x022141CC (ov005), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 typedef struct {u16 a,b,c,d,e,f;} MenuInit;
 #define RECORDS_SCREEN ((RecordsScreen *)M2C_FIELD(&gRecordsMenuState, void **, 8))
 extern u8 data_ov005_022203dc[];
@@ -346,7 +347,10 @@ sprite=M2C_FIELD(gHistoryMenu,void **,0x5c);SetMenuAnimFrame(sprite,((MenuAnimSp
     return;
   }
 }
-void func_ov005_02214094(void) {
+/* Close the ov005 history/records menu: tear down the wallpaper sprite class on
+ * the sub engine, hide the sprite slots and free the menu object. Does nothing
+ * when no menu is open. */
+void HistoryMenu_Close(void) {
     M2C_UNK func_020af1e4();
     M2C_UNK func_020842d4();
     M2C_UNK HideAllSpriteSlots();
@@ -386,16 +390,18 @@ s32 func_ov005_02214120(s32 arg0) {
     return IsMapBackgroundSeen(arg0);
 }
 
+/* Move the records list's top visible row up one, stopping at the start of the
+ * list; plays the select sound when it moves. */
 s32 RecordsMenu_ScrollUp(void) {
     extern M2C_UNK gRecordsMenuState;
-    s16 temp_r1;
+    s16 scroll;
 
-    temp_r1 = M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98);
-    if (temp_r1 == 0) {
+    scroll = RECORDS_SCREEN->scroll;
+    if (scroll == 0) {
         return 0;
     }
-    M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) = (s16) (temp_r1 - 1);
-    PlaySoundEffect(0x10019);
+    RECORDS_SCREEN->scroll = (s16) (scroll - 1);
+    PlaySoundEffect(SOUND_MENU_SELECT);
     return 1;
 }
 

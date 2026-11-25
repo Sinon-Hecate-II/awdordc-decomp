@@ -42,12 +42,12 @@ SetSpriteSlotScroll(0,0);
 }
 
 void func_020d9d5c(void *arg0) {
-    M2C_UNK SetSpriteAnimation(void *, u8);
+    M2C_UNK GotoSpriteAnimationLabel(void *, u8);
     s32 IsMapConfirmEnabled();
     if (IsMapConfirmEnabled() != 0) {
         return;
     }
-    SetSpriteAnimation(arg0, M2C_FIELD(arg0, u8 *, 0x40));
+    GotoSpriteAnimationLabel(arg0, M2C_FIELD(arg0, u8 *, 0x40));
 }
 
 /* Draw four 5-wide progress bars (level rows 1/6/11/16) onto the UI screen,
@@ -528,22 +528,22 @@ void func_020da7e8(void *entity) {
     case 0:
         func_ov009_02225d88(HandleLinkResult, entity);
         switch (M2C_FIELD(entity, s32 *, 0x38)) {
-        case 0: SetSpriteAnimation(entity, 6); break;
-        case 1: SetSpriteAnimation(entity, 7); break;
+        case 0: GotoSpriteAnimationLabel(entity, 6); break;
+        case 1: GotoSpriteAnimationLabel(entity, 7); break;
         }
         break;
     case 1:
         func_ov010_0222a20c(HandleOnlineLinkResult, entity);
         switch (M2C_FIELD(entity, s32 *, 0x38)) {
-        case 0: SetSpriteAnimation(entity, 2); break;
-        case 1: SetSpriteAnimation(entity, 17); break;
+        case 0: GotoSpriteAnimationLabel(entity, 2); break;
+        case 1: GotoSpriteAnimationLabel(entity, 17); break;
         }
         break;
     case 2:
         func_ov010_0222a20c(HandleOnlineLinkResult, entity);
         switch (M2C_FIELD(entity, s32 *, 0x38)) {
-        case 0: SetSpriteAnimation(entity, 12); break;
-        case 1: SetSpriteAnimation(entity, 13); break;
+        case 0: GotoSpriteAnimationLabel(entity, 12); break;
+        case 1: GotoSpriteAnimationLabel(entity, 13); break;
         }
         break;
     }
@@ -568,7 +568,7 @@ void HandleLinkResult(s32 resultCode, void *entity) {
     }
     CreateLinkStatusLabel((s8) M2C_FIELD(entity, u8 *, 0x44), M2C_FIELD(entity, u16 *, 0x46), resultCode, entity);
     DisableMapConfirm();
-    SetSpriteAnimation(entity, 1);
+    GotoSpriteAnimationLabel(entity, 1);
 }
 
 /* Online session result callback: when the menu state no longer allows the link
@@ -584,7 +584,7 @@ void HandleOnlineLinkResult(s32 netError, M2C_UNK errorParam, u32 errorClass, vo
     M2C_UNK CreateNetErrorSprite(s8, u16, s32, M2C_UNK, u32, void *);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     M2C_UNK DisableMapConfirm(void);
-    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
 
     if (GetScreenFlag(M2C_FIELD(entity, u8 *, 0x44)) == 1 || IsScreenFadeActive() != 0) {
         ClearLinkResultFlag(1); return;
@@ -594,7 +594,7 @@ void HandleOnlineLinkResult(s32 netError, M2C_UNK errorParam, u32 errorClass, vo
     func_ov010_02228320();
     switch (errorClass) {
     case 0: case 1: case 2: Ov010Online_ClearStepFlag(6); return;
-    case 3: case 4: case 5: case 6: DisableMapConfirm(); SetSpriteAnimation(entity, 1); return;
+    case 3: case 4: case 5: case 6: DisableMapConfirm(); GotoSpriteAnimationLabel(entity, 1); return;
     case 7: default: return;
     }
 }

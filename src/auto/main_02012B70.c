@@ -445,7 +445,7 @@ s32 WFC_PlayerDataOffset(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     return (M2C_FIELD(arg0, u16 *, 0x810) * CountBits(arg1 & ((1 << arg3) - 1))) + arg2;
 }
 
-void func_02013b2c(M2C_UNK arg0, M2C_UNK arg1) {
+void WFC_StartChannel(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_02012fac(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     func_02012fac(arg0, arg1, 0xFFFF, 2, 1);
 }

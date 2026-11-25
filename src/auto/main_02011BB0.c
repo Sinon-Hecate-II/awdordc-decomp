@@ -298,23 +298,26 @@ s32 WFC_StartCommandChannel(void *work, void (*callback)(void *), s32 mode) {
     return result;
 }
 
-s32 func_02012274(M2C_UNK arg0) {
+/* Post WFC command 1: fail while the command channel is not open yet, give the
+ * command its single `param` and post it.  Returns WFC_CMD_OK (2) once the
+ * command was queued, or a Wi-Fi error code. */
+s32 WFC_SendCommand1(s32 param) {
+    s32 WFC_CheckChannelOpen(void);
     M2C_UNK WFC_SetChannelParam(M2C_UNK, M2C_UNK);
     s32 WFC_SendCommand();
-    s32 WFC_CheckChannelOpen();
-    s32 temp_r0;
-    s32 var_r0;
+    s32 checkResult;
+    s32 result;
 
-    temp_r0 = WFC_CheckChannelOpen();
-    if (temp_r0 != 0) {
-        return temp_r0;
+    checkResult = WFC_CheckChannelOpen();
+    if (checkResult != 0) {
+        return checkResult;
     }
-    WFC_SetChannelParam(1, arg0);
-    var_r0 = WFC_SendCommand(1, 0);
-    if (var_r0 == 0) {
-        var_r0 = 2;
+    WFC_SetChannelParam(1, param);
+    result = WFC_SendCommand(1, 0);
+    if (result == 0) {
+        result = WFC_CMD_OK;
     }
-    return var_r0;
+    return result;
 }
 
 /* End the WFC link (command 2, WFC_CMD_SHUTDOWN): once the command channel is in

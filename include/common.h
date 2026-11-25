@@ -74,6 +74,15 @@ typedef struct FormatBuffer {
     u32   position;/* +0x08 bytes written so far */
 } FormatBuffer;
 
+/* The same writer state for the wide (UTF-16) formatter (StringFormatWideToBuffer
+ * and its writer callback): the output buffer, its capacity and how many
+ * characters of it have been written. */
+typedef struct WideFormatBuffer {
+    u16 *buffer;   /* +0x00 output UTF-16 buffer */
+    u32  size;     /* +0x04 capacity in characters */
+    s32  count;    /* +0x08 characters written so far */
+} WideFormatBuffer;
+
 /* The game's block allocator (HeapAlloc/HeapFree and the WFC library's callbacks):
  * every block carries a 0x20-byte header with a magic word and its user-data size. */
 #define HEAP_BLOCK_HEADER 0x20   /* bytes in front of the user data */
@@ -479,6 +488,8 @@ enum {
 #define MENU_ENTITY_PAGER     0x5c /* paging object, +4 page index */
 #define MENU_MAP_PAGE_SIZE    0x200 /* bytes per map-list page */
 #define MENU_MAP_ENTRY_OFFSET 0x2e /* u16 map id per row within a page */
+#define MENU_MAP_LIST_DRAWN   0x186C /* u8[13]: one bit per row, set while the row is drawn */
+#define MENU_MAP_LIST_DRAWN_SIZE 0x0D /* bytes of drawn-row markers (104 rows) */
 
 /* ov003 map-list menu kinds (MENU_ENTITY_MODE low nibble) that open an ov006
  * map sub-panel: the campaign map list (6) and the two map-pick lists (7, 8). */
@@ -590,6 +601,12 @@ typedef struct WaypointSlotGroup {
 #define WAYPOINT_PANEL_LIST           0x6C /* the waypoint list */
 #define WAYPOINT_PANEL_ICON_RECORD    0x40 /* CO panel record the icon refresh updates */
 #define WAYPOINT_GROUP_READY          0x7C /* u8[4]: that slot's player record has arrived */
+
+/* The waypoint panel's 0x24-byte link packet (36 bytes, copied into peers'
+ * records): the two s32 words the panel toggles tell the peers when this player
+ * opened or closed the panel. */
+#define WAYPOINT_PACKET_OPENED 0x00 /* s32: set by SendWaypointPanelOpened */
+#define WAYPOINT_PACKET_CLOSED 0x04 /* s32: set by SendWaypointPanelClosed */
 
 /* The ov003 setup menu (the object the setup screen holds at +0x44): nine entry
  * sprites -- the eight option rows plus a ninth button -- each with its own
@@ -729,6 +746,15 @@ typedef struct WaypointSlotGroup {
 #define GAME_OPTIONS_WORD     0x2E
 #define GAME_OPTION_ZOOM_MASK 0x0380
 #define GAME_OPTION_ZOOM_OUT  0x0080
+
+/* The in-memory option bits (gOptionBits, beside the settings block above): the
+ * option flags packed into the halfword at +6.  Bits 10-11 are the battle
+ * animation speed; its four codes count 1 and 2 as fast, with 0 the default and
+ * 3 the slowest. */
+#define GAME_OPTIONS_HALFWORD      0x06 /* u16 packed option bits */
+#define GAME_OPTION_ANIMATION_MASK 0x0C00 /* bits 10-11: battle animation speed */
+#define GAME_OPTION_ANIMATION_FAST 1
+#define GAME_OPTION_ANIMATION_FASTEST 2
 
 /* NitroSDK NARC archive header and block tags. A block holds its tag at +0 and
  * its byte size at +4; the header's u16 at +0x0C is the offset of the block
@@ -923,6 +949,9 @@ typedef struct RecordDefinition {
  * is at gRecordValues[RECORD_UNIT_KIND_BASE + kind]. */
 #define RECORD_UNIT_KIND_BASE 0x43
 
+/* 3D sprite layer the ov000 map info window's own sprite is created in. */
+#define OV000_INFO_SPRITE_LAYER 8
+
 /* Panels of the ov000 map info window (the box that follows the map cursor). */
 enum {
     OV000_INFO_IDLE = 1,        /* no panel shown */
@@ -954,10 +983,20 @@ typedef struct Ov000StatsWindow {
     s32 toggle;      /* +0x00 alternates each redraw, copied to the info panel */
     s32 drawMode;    /* +0x04 0 idle, 1/2 a full redraw was requested */
     s32 blinkFrame;  /* +0x08 blink counter, 0..79 */
-    s8  unk0C;       /* +0x0C */
+    u8  hasUnit;     /* +0x0C set while a unit is shown (Ov000_InfoWindow_SetUnitFlags) */
     u8  pad0D[3];
     void *panel;     /* +0x10 0x104-byte unit panel descriptor */
 } Ov000StatsWindow; /* 0x14 bytes */
+
+/* The ov000 map info window's terrain/unit info panel controller (0x1C bytes,
+ * created by Ov000_InfoPanel_Create; it owns the 0x11C-byte record block at
+ * +0x18). Ov000_InfoWindow_Update sets NO_TERRAIN for the terrain panel and
+ * clears it for the unit panel. */
+#define OV000_INFO_PANEL_DRAW_MODE   0x04 /* s32 0 idle, 1/2 a redraw was requested */
+#define OV000_INFO_PANEL_COUNTER     0x08 /* s32 per-frame draw counter, wraps at 90 */
+#define OV000_INFO_PANEL_HAS_UNIT    0x14 /* u8 set while a unit's info is shown */
+#define OV000_INFO_PANEL_NO_TERRAIN  0x15 /* u8 set when the panel has nothing selected */
+#define OV000_INFO_PANEL_RECORDS     0x18 /* void * 0x11C-byte record block (four 0x38-byte unit records at +0x3C) */
 #endif
 
 /* Current key input state; the global gKeyState points at one of these. */
@@ -1115,7 +1154,7 @@ typedef struct BreakCutIn {
 } BreakCutIn;
 
 /* The 20-byte battle-command packet at gBattleCommand (sent by
- * SendBattleCommandPacket and func_020844f8): the random seed the battle uses
+ * SendBattleCommandPacket and SendTurnEndPacket): the random seed the battle uses
  * is captured in the s32 at +8. */
 #define BATTLE_COMMAND_SEED 0x08
 
@@ -1692,7 +1731,8 @@ typedef struct PeerAddress {
  * player's profile id, or for a PLAYER_RECORD_CODE record a 64-bit player code
  * whose low word is that id and whose high word is a 7-bit checksum of the id
  * and the local user id. */
-#define PLAYER_RECORD_TYPE       0x00 /* u32 bits 11..12: a PLAYER_RECORD_KIND_* value, bits 0..10: player-code high bits */
+#define PLAYER_RECORD_TYPE       0x00 /* u32 bits 11..12: a PLAYER_RECORD_KIND_* value, bit 13: PLAYER_RECORD_JOINED, bits 0..10: player-code high bits */
+#define PLAYER_RECORD_JOINED     0x4 /* bit 2 of a record's type word (PLAYER_RECORD_TYPE >> 11): a profile record whose player joined the match */
 #define PLAYER_RECORD_CODE       0x04 /* u64 player code of a PLAYER_RECORD_KIND_CODE record */
 #define PLAYER_RECORD_ID         0x04 /* s32 GameSpy profile id of a PLAYER_RECORD_KIND_PROFILE record */
 
@@ -1843,6 +1883,7 @@ typedef struct MbLockState {
 /* gMbState+0xC, the download work block: nonzero once the block has been set up
  * for a download-play session (MultiBoot_StartParent), cleared when it ends. */
 #define MB_DOWNLOAD_SET_UP  0x1316 /* u16 */
+#define MB_WORK_STARTED     0x1320 /* s32 nonzero once the multiboot library was started (func_02017f90); a link cannot be closed before that */
 
 /* The DS Download Play send queue the WFC download channel drains
  * (gDownloadSendState, main_02015AA0): the files waiting to be sent, the file being
@@ -1997,6 +2038,10 @@ typedef struct MbRecordRx {
 #define OV001_SCREEN_ENTRY_MODE 0x18 /* s32 name-entry mode (see Ov001_SetNameEntryMode) */
 #define OV001_SCREEN_ENTRY_ARG  0x1c /* s32 argument of the name-entry mode */
 
+/* Bytes of the expansion heap created in the ov001 work buffer; every ov001
+ * allocation comes from it. */
+#define OV001_HEAP_SIZE 0x40000
+
 /* Initial layouts stored in the low nibble of OV001_SCREEN_OPTIONS. */
 enum {
     OV001_LAYOUT_WIFI_MENU = 0,
@@ -2077,7 +2122,8 @@ typedef struct NetError {
  * connected flag and player id, a status word, the GameSpy skill rating, five
  * per-slot state bytes, then the 0x40-byte network panel record (NET_PLAYER_*). */
 #define ONLINE_PLAYER_RECORD_SIZE 0x6C
-#define ONLINE_PLAYER_FLAGS 0x1a /* u8: bit 0 set while the record holds a connected peer */
+#define ONLINE_PLAYER_FLAGS 0x1a /* u8: ONLINE_PLAYER_FLAG_* bits */
+#define ONLINE_PLAYER_FLAG_CONNECTED 0x01 /* the record holds a connected peer */
 #define ONLINE_PLAYER_FLAG_VOICE 0x04 /* u8: bit 2 set while the peer has voice chat available */
 #define ONLINE_PLAYER_ID    0x1b /* s8: the player id the peer plays as, -1 when unset */
 #define ONLINE_PLAYER_RATING 0x20 /* s32: GameSpy skill rating (RATING_DEFAULT for a new player) */
@@ -2106,6 +2152,7 @@ typedef struct NetError {
 #define OV010_START_RECORD_ID      0x00 /* s32 match id both sides compare */
 #define OV010_START_RECORD_ACKS    0x04 /* u16 one bit per player that acknowledged the start request */
 #define OV010_SESSION_CALLBACK 0x0c /* void (*)(s32 error, s32 aborted, s32 data): the running match's event callback */
+#define OV010_SESSION_VOICE_CALLBACK 0x2c /* void (*)(s32 peerId, void *packet, s32 length): receives each packet for the voice chat, 0 when voice chat is off */
 #define OV010_SESSION_PLAYER   0x24 /* void *: the local player's join record (OV010_PLAYER_*) */
 #define OV010_PLAYER_JOINED    0x00 /* u8 nonzero once the local player joined the session */
 #define OV010_PLAYER_MASK      0x02 /* u16 this console's player bit */
@@ -2232,8 +2279,12 @@ typedef struct Ov001MenuSprites {
     void *top[3];     /* +0x04 top-row item sprites */
     void *middle[3];  /* +0x10 middle-row item sprites */
     u8   column;      /* +0x1C last column of the two rows */
-    u8   mode;        /* +0x1D 1 = item chosen, 2 = cancel */
+    u8   mode;        /* +0x1D OV001_MENU_MODE_* */
 } Ov001MenuSprites;
+
+/* Ov001MenuSprites::mode: what the player's icon-row choice did. */
+#define OV001_MENU_MODE_CHOSEN 1 /* an item was chosen, so open it */
+#define OV001_MENU_MODE_CANCEL 2 /* the choice was cancelled, so close the menu */
 
 /* The ov001 menu screen's selection state (gOv001MenuRegion): the selected
  * region (0..6, the touch rectangles are at data_ov001_0218fa02) and its
@@ -2299,6 +2350,7 @@ typedef struct Ov001IconMenuState {
 #define SAVE_SLOT_EMPTY_A      0xF5 /* offset within one slot image of SAVE_EXTRA_EMPTY_A */
 #define SAVE_SLOT_EMPTY_B      0xF6 /* offset within one slot image of SAVE_EXTRA_EMPTY_B */
 #define SAVE_SLOT_FLAGS        0xEF /* u8: bitmap of written slots (bit n = slot n), mirrored in the first two slot images */
+#define SAVE_SLOT_CLEAR_SIZE   0xEF /* bytes of a slot image cleared when the slot is erased: everything before its flags byte */
 #define SAVE_SLOT_CRC          0xFE /* offset within one slot image of its trailing 2-byte CRC16 */
 #define SAVE_SLOT_CRC_SIZE     0xFE /* bytes of a slot image covered by that CRC16 (everything before it) */
 #define SAVE_SLOT_STATUS_ERASED 0xFF /* SAVE_SLOT_STATUS value of an erased slot */
@@ -2370,6 +2422,14 @@ typedef struct Ov001IconMenuState {
 #define SAVE_TYPE_PLAYER        2          /* player/profile save */
 #define SAVE_TYPE_BATTLE        3          /* battle save */
 #define SAVE_TYPE_CAMPAIGN_MAP  9          /* campaign map index 0; record type = 9 + map index */
+/* The save block a save/load screen sprite reads or writes, at its +0x34.  The
+ * main save/load screen holds both: the profile block at +0x34 and the battle
+ * save block at +0x38 (CreateSaveLoadScreen). */
+#define SAVE_SPRITE_BLOCK       0x34       /* void *: profile or battle save block */
+#define SAVE_SPRITE_BATTLE_BLOCK 0x38      /* void *: battle save block */
+/* The save-progress indicator sprite (gSaveIndicatorClass) keeps the save block
+ * it was handed at +0x54 and frees it once the save is done. */
+#define SAVE_INDICATOR_BLOCK     0x54       /* void *: save block the indicator owns */
 
 /* Battle-save record types GetCurrentSaveType returns and SaveTypeHasNoSlot
  * tests: a campaign battle uses SAVE_RECORD_TYPE_CAMPAIGN + its save slot
@@ -2430,7 +2490,7 @@ typedef struct Ov001IconMenuState {
 #define SAVE_REQUEST_RECORD 0x0C /* u16 record id of a delete request */
 #define SAVE_REQUEST_KIND   0x0F /* u8 SAVE_REQUEST_* */
 enum {
-    SAVE_REQUEST_UPDATE = 1, /* write a record back (func_02075cbc) */
+    SAVE_REQUEST_UPDATE = 1, /* write a record back (SaveList_EnqueueUpdate) */
     SAVE_REQUEST_DELETE = 2  /* drop a record (a delete request) */
 };
 
@@ -2605,6 +2665,7 @@ typedef struct NamedRsaKey {
  * array of NamedRsaKey pointers and the number of entries. */
 #define TLS_KEY_LIST  0x814 /* NamedRsaKey ** */
 #define TLS_KEY_COUNT 0x818 /* s32 */
+#define TLS_RSA_KEY   0x81C /* RsaCrtKey *: private key TlsProcessClientKeyExchange decrypts the premaster secret with */
 
 /* TLS handshake fields used by the signature verification. */
 #define TLS_DIGEST        0x468 /* u8[] hash of the handshake message that was signed */
@@ -2661,6 +2722,8 @@ typedef struct Ov001KeyboardState {
  * id picks the pair of wide bar sprites that slide in; tapping a bar selects it
  * for a moment before the row restores itself. */
 #define OV001_ICON_ROW_NOT_READY (-2) /* selected: the row has not slid in yet and takes no input */
+#define OV001_ICON_ROW_WIFI_MENU   0 /* the two-bar back/confirm row of the Wi-Fi menu */
+#define OV001_ICON_ROW_WFC_CONNECT 6 /* the two-bar back/confirm row of the WFC connect screen */
 typedef struct Ov001IconRow {
     void *bars[2];    /* +0x00 the two option bar sprites */
     void *backdrop;   /* +0x08 wide background bar sprite */
@@ -2840,6 +2903,7 @@ typedef struct Ov001SpriteLayout {
 } Ov001SpriteLayout;
 
 /* The DS screen is 256x192 pixels: sprite layouts are clipped to its height. */
+#define SCREEN_WIDTH  256
 #define SCREEN_HEIGHT 192
 
 /* Non-printing characters the on-screen keyboard produces. */
@@ -3014,6 +3078,11 @@ enum {
 
 /* The low bits of MOVE_SEARCH_MOVE_RANGE double as this flood fill's behaviour
  * flags, read by func_01ffb114 (which units and terrains may be passed). */
+#define MOVE_SEARCH_BLOCK_ALL_UNITS 0x1 /* a unit in a cell stops the search, own team's included */
+#define MOVE_SEARCH_TEAM_VISION    0x2 /* consult MAP_CELL_BITMAP_TEAM_A before a unit blocks */
+
+#define MOVE_SEARCH_FLAG_ANY_OWNER 0x01 /* cells held by other players do not block the fill */
+#define MOVE_SEARCH_FLAG_ANY_VISIBILITY 0x02 /* units outside the current team's view do not block the fill */
 
 #define MOVE_SEARCH_TERRAIN_COST 0x00 /* s8[32] movement cost per terrain kind */
 #define MOVE_SEARCH_COST_LIMIT   0x20 /* s16 accumulated-cost limit */
@@ -3355,6 +3424,11 @@ typedef struct TransferSlot {
 } TransferSlot;         /* 0x30 bytes */
 
 #define TRANSFER_SLOT_COUNT    32    /* identity bits, one slot each */
+/* The 8-byte header that opens every multiplayer transfer (SendTransfer /
+ * BuildTransferHeader): the payload size, the transfer kind and the magic tag. */
+#define TRANSFER_HEADER_SIZE   0x00 /* s32 payload bytes that follow the header */
+#define TRANSFER_HEADER_KIND   0x04 /* s16 transfer kind (1..4) */
+#define TRANSFER_HEADER_MAGIC  0x06 /* u16 must equal gTransferMagic */
 #define TRANSFER_DEFAULT_CHUNK 0x5B9 /* default bytes sent per frame */
 #define TICKS_TO_MS_DIVISOR    0x82EA /* ((GetSystemTick delta) << 6) / this = ms */
 #define TICKS_TO_SECONDS_DIVISOR 0x1FF6210ULL /* ((GetSystemTick delta) << 6) / this = seconds */
@@ -3364,7 +3438,7 @@ typedef struct TransferManager {
     void (*onSent)(s32 size, s32 id);                 /* +0x600: outgoing transfer done */
     void (*onReceived)(s32 id, void *buf, s32 size);  /* +0x604: incoming buffer complete */
     void (*onTimeout)(s32 id);                        /* +0x608: idle timeout elapsed */
-    void (*onError)(s32 id, s32 error);               /* +0x60C */
+    void (*onError)(s32 error, s32 id);               /* +0x60C: called with the error code and the connection's player id */
     u16  chunkSize;                                   /* +0x610: bytes sent per frame */
     u8   pad612[2];
 } TransferManager;      /* 0x614 bytes */
@@ -4167,6 +4241,9 @@ typedef struct MicTestScreen {
  * (SetFifoMessageHandler). */
 #define SHARED_WORK_BASE     0x027FFC00
 #define SHARED_FIFO_TAG_WORD 226 /* s32 index: bit per handled FIFO tag */
+/* Reset parameter kept across a soft reset: the boot code reads it back, so the
+ * reboot path bounces a value through it. */
+#define SHARED_RESET_PARAMETER 0x027FFC20 /* s32 */
 
 /* Word of the ARM7/ARM9 shared work area that the ARM7 keeps up to date; its
  * top bit is set while the lid is closed. */
@@ -4210,6 +4287,7 @@ typedef struct Ov001MapPreview {
     u8  dirty;         /* +0x604 nonzero: the tilemap must be flushed */
 } Ov001MapPreview;     /* 0x608 bytes */
 #define OV001_MAP_LIST_BG_TILEMAP 0x08 /* object: s32 loaded list-background tilemap */
+#define OV001_MAP_LIST_PALETTE    0x0C /* object: s32 loaded map-list background palette (the step-2 palette file) */
 #define OV001_MAP_LIST_TEXT_PANEL 0x14 /* object: s32 text panel for the info rows */
 #define OV001_MAP_LIST_TASK       0x38 /* object: s32 id of the running scroll task, 0 while idle */
 #define OV001_MAP_LIST_BG_DIRTY   0x44 /* object: u8 set when the background scroll needs refreshing */
@@ -4322,8 +4400,17 @@ typedef struct LocalizedTextBank {
 #define TEXT_BANK_INDEX_MASK 0xFFFFFF /* low bits of a text id: index in the bank's offset table */
 #define TEXT_BANK_COUNT 0x28 /* slots in gTextBankTable / loaded banks in gUiGraphicsBanks */
 
+/* Refcounted cache of the decompressed username font ("/link/username_font"),
+ * whose 128-byte glyphs DrawGlyphString copies into the name sprites. */
+typedef struct UsernameFontCache {
+    u8 refCount;  /* +0x00 live acquires of the font */
+    u8 pad01[3];
+    void *glyphs; /* +0x04 decompressed glyph data */
+} UsernameFontCache;
+
 /* UI message text ids passed to SetUiMessageText. */
 #define TEXT_ID_NO_SAVE_DATA 0xC000034C /* the save data the current menu needs is missing */
+#define TEXT_ID_SAVE_LOAD_FAILED 0xC000034D /* the save data could not be loaded */
 
 /* The generated text-label slot table (gTextLabelSlotState): 13 slots, each a
  * used flag (one byte at the table base) plus two 12-byte rows, one row per slot
@@ -4500,6 +4587,11 @@ typedef struct DialogSequence {
  * ready, polling every SND_CMD_LINK_POLL_DELAY cycles. */
 #define SND_CMD_FIFO_TAG       7
 #define SND_CMD_LINK_POLL_DELAY 100 /* WaitCycles between link-ready polls */
+/* The sound command channel's status register, probed by
+ * Sound_IsCommandChannelReady: writing SND_CMD_CHANNEL_PROBE and reading it back
+ * gives a nonzero value once the channel can carry commands. */
+#define SND_CMD_CHANNEL_STATUS_REG 0x04FFF200
+#define SND_CMD_CHANNEL_PROBE      0x10
 
 /* The ARM7 sound driver's shared command-argument buffer (gSoundCommandBuffer,
  * 640 bytes): two handshake counters the ARM9 polls, then 16 argument entries —

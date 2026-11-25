@@ -31,8 +31,8 @@ u32 GetUnitSpriteWidth(void *);u32 GetUnitSpriteHeight(void *);
 int IsLinkSessionActive(void);
 s16 GetWaypointSlotX(u8);
 int GetWaypointOptionCoId(u8);
-int func_ov003_021e6cc4(s16,int,int,int);
-int func_ov003_021e6e5c(void);
+int IsRectOnScreen(s16,int,int,int);
+int IsCampaignMapListCategory(void);
 
 
 #pragma opt_common_subs off
@@ -451,7 +451,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
         }
         if (M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0xE) == 2) {
             var_r2 = 0x1E0;
-        } else if (func_ov003_021e6e5c() != 0) {
+        } else if (IsCampaignMapListCategory() != 0) {
             var_r2 = (M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0x74) * 0x10) + 0x1A0;
         } else {
             var_r2 = (var_r8 * 0x10) + 0x1A0;
@@ -465,7 +465,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
         }
         if ((var_r0_5 & 0xFF) && (var_r8 == M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7))) {
             temp_r5_3 = temp_r9 - 2;
-            if (func_ov003_021e6cc4(temp_r5_3, 0x48, 0x40, 0x20) != 0) {
+            if (IsRectOnScreen(temp_r5_3, 0x48, 0x40, 0x20) != 0) {
                 AddSprite((u16) (temp_r5_3 & 0x1FF), 0x48, (u16) ((sp2C & (0x680 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x9800), gSpriteDesc64x32, 0xB);
             }
         }

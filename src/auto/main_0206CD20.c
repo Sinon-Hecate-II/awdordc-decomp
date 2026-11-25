@@ -2,16 +2,16 @@
 #include "common.h"
 
 s32 StringFormatWideToBuffer(u16 *buffer, u32 bufferCapacity, M2C_UNK format, M2C_UNK arguments) {
-    s32 func_0206ccb8(void *, M2C_UNK, s32);
-    s32 func_0206c3c8(s32 (*)(void *, M2C_UNK, s32), void *, M2C_UNK, M2C_UNK);
-    struct { u16 *buffer; u32 size; s32 count; } output;
+    s32 StringFormatWideWrite(WideFormatBuffer *, const u16 *, s32);
+    s32 func_0206c3c8(s32 (*)(WideFormatBuffer *, const u16 *, s32), void *, M2C_UNK, M2C_UNK);
+    WideFormatBuffer output;
     s32 result;
 
     /* Format into a bounded UTF-16 buffer, always terminate it, and report truncation as -1. */
     output.buffer = buffer;
     output.size = bufferCapacity;
     output.count = 0;
-    result = func_0206c3c8(func_0206ccb8, &output, format, arguments);
+    result = func_0206c3c8(StringFormatWideWrite, &output, format, arguments);
     if (result < 0) return result;
     if ((u32)result < bufferCapacity) {
         buffer[result] = 0;

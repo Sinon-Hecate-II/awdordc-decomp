@@ -21,7 +21,7 @@ else palette=data_020ebd98[(c>>6)+1];
 player=(c>>6)+1;
 flag=d;
 if(flag)flag=1;
-tile=func_020a72b0(player,b);
+tile=GetPlayerUnitSpriteTile(player,b);
 if(Map_ShowsCargoForUnit(b,M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,0x52a4),(u16)player))mark=0x92;
 else if(flag)mark=0x86;
 else if((u8)e)mark=0x8a;
@@ -91,15 +91,18 @@ void WriteMapTileQuad(s32 x, s32 y) {
  M2C_FIELD(cell,u16 *,0x42)=0x127;
 }
 
-void func_0207a710(void *arg0) {
+/* Spawn the map-order effect sprite as a child of `parent` (a layer index or a
+ * parent sprite) and copy the order effect `parent` shows, so the new sprite
+ * raises the same map cells. */
+void SpawnMapOrderEffectSprite(void *parent) {
     extern void *gCurrentMap;
-    s32 temp_r0;
+    s32 script;
 
-    temp_r0 = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), s32 *, 0x5C);
-    if (temp_r0 == 0) {
+    script = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, MAP_VIEW_PTR), s32 *, MAPVIEW_ORDER_EFFECT_SCRIPT);
+    if (script == 0) {
         return;
     }
-    M2C_FIELD(CreateSpriteFromClass(temp_r0, arg0), s16 *, 0x6C) = (s16) M2C_FIELD(arg0, s16 *, 0x6C);
+    M2C_FIELD(CreateSpriteFromClass(script, parent), s16 *, MAPORDER_EFFECT_SPRITE_KIND) = (s16) M2C_FIELD(parent, s16 *, MAPORDER_EFFECT_SPRITE_KIND);
 }
 
 void SetMapCursorVisible(s16 arg0) {

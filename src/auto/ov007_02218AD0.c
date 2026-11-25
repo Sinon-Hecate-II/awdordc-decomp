@@ -1,6 +1,8 @@
 /* 21 functions from 0x02218AD0 to 0x02219ACC (ov007), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "ov007_map_editor.h"
+#include "sound.h"
 
 static inline s32 ov007_item_id(void *p) {
     void *q = M2C_FIELD(p, void **, 0);
@@ -286,15 +288,15 @@ M2C_UNK func_ov007_02218e98(void *arg0) {
 }
 
 M2C_UNK func_ov007_02219230(void *arg) {
-void MapEditor_ConfirmPaletteEntry(void *); s32 func_ov007_02217c80(void *); s32 func_ov007_02217ca8(void *); void func_ov007_02219bb4(void *,s32); void SetSpriteAnimation(void *,s32); s32 func_ov007_02217d30(void *); M2C_UNK PlaySoundEffect(s32); void func_02088044(void *);
+void MapEditor_ConfirmPaletteEntry(void *); s32 func_ov007_02217c80(void *); s32 func_ov007_02217ca8(void *); void func_ov007_02219bb4(void *,s32); void GotoSpriteAnimationLabel(void *,s32); s32 func_ov007_02217d30(void *); M2C_UNK PlaySoundEffect(s32); void func_02088044(void *);
 extern u16 *gKeyState;
 u32 keys; void *p; void *q; s32 v; s32 selected;
 keys=*gKeyState;
 if(keys&1) {MapEditor_ConfirmPaletteEntry(arg);return;}
 if(keys&0x400) {func_ov007_02219bb4(arg,func_ov007_02217c80(arg));return;}
 if(keys&0x800) {func_ov007_02219bb4(arg,func_ov007_02217ca8(arg));return;}
-if(keys&0x304) {SetSpriteAnimation(arg,1);return;}
-if(keys&2) {SetSpriteAnimation(arg,2);return;}
+if(keys&0x304) {GotoSpriteAnimationLabel(arg,1);return;}
+if(keys&2) {GotoSpriteAnimationLabel(arg,2);return;}
 if(func_ov007_02217d30(arg)) {PlaySoundEffect(0x10019);return;}
 func_02088044(M2C_FIELD(arg,void **,0x58));
 p=M2C_FIELD(arg,void **,0x58);
@@ -346,20 +348,22 @@ void func_ov007_022193d4(void) {
     func_ov007_02219230();
 }
 
-M2C_UNK func_ov007_022193e0(void *arg0) {
+/* Palette-panel page tab: flip the panel between the unit and terrain palette
+ * pages (MAP_EDITOR_PANEL_PAGE) and play the tab-change sound. */
+M2C_UNK MapEditor_SwitchPalettePage(void *panel) {
     M2C_UNK PlaySoundEffect(M2C_UNK);
-    u8 temp_r1;
+    u8 page;
 
-    temp_r1 = M2C_FIELD(arg0, u8 *, 0x37);
-    switch (temp_r1) {
-    case 1:
-        M2C_FIELD(arg0, u8 *, 0x37) = 0U;
+    page = M2C_FIELD(panel, u8 *, MAP_EDITOR_PANEL_PAGE);
+    switch (page) {
+    case MAP_EDITOR_PAGE_UNIT:
+        M2C_FIELD(panel, u8 *, MAP_EDITOR_PANEL_PAGE) = MAP_EDITOR_PAGE_TERRAIN;
         break;
-    case 0:
-        M2C_FIELD(arg0, u8 *, 0x37) = 1U;
+    case MAP_EDITOR_PAGE_TERRAIN:
+        M2C_FIELD(panel, u8 *, MAP_EDITOR_PANEL_PAGE) = MAP_EDITOR_PAGE_UNIT;
         break;
     }
-    return PlaySoundEffect((M2C_UNK)0x10020);
+    return PlaySoundEffect((M2C_UNK)SOUND_MENU_TAB);
 }
 
 M2C_UNK func_ov007_02219418(void) {

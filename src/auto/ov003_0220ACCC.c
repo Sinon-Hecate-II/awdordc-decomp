@@ -53,7 +53,7 @@ void func_ov003_0220adb4(void *a) {
 extern void *gKeyState,*gTouchState;
 u8 Ov003_GetSelectedRowIndex(void *);
 s16 func_ov003_0220b7b8(void *);
-void func_ov003_0220b7c0(void *);
+void Ov003_AnimateUnitListButtons(void *);
 u8 func_ov003_0220b7fc(void *,s32);
 u8 func_ov003_0220b8ac(void *,s32);
 u8 IsMenuSplitOptionRow(void *,s32);
@@ -69,7 +69,7 @@ i=Ov003_GetSelectedRowIndex(a);
 left=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x60));
 right=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x64));
 active=1;
-func_ov003_0220b7c0(M2C_FIELD(a,void **,0x68));
+Ov003_AnimateUnitListButtons(M2C_FIELD(a,void **,0x68));
 held=M2C_FIELD(gKeyState,u16 *,2);press=M2C_FIELD(gKeyState,u16 *,0);
 if((((held&64)&&i!=0)||(press&64))&&!M2C_FIELD(gTouchState,u8 *,0x12)) {
 if(i==0){if(press&64)i=M2C_FIELD(M2C_FIELD(a,void **,0x44),u8 *,0)-1;else i=Ov003_GetSelectedRowIndex(a);}else i--;
@@ -102,33 +102,33 @@ if(func_020e4b28(i)){RequestMenuMode(a,2);PressWaypointSprite(M2C_FIELD(M2C_FIEL
 else PlaySoundEffect(0x1001d);
 } active=0;
 }
-if(i!=Ov003_GetSelectedRowIndex(a)){func_02087ec0(M2C_FIELD(a,void **,0x5c),(s16)(i+11));PlaySoundEffect(0x10010);}
+if(i!=Ov003_GetSelectedRowIndex(a)){SpriteCellListSelectTile(M2C_FIELD(a,void **,0x5c),(s16)(i+11));PlaySoundEffect(0x10010);}
 ScrollBar_HandleTouch(M2C_FIELD(a,void **,0x60));
 if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60)))ScrollBar_HandleTouch(M2C_FIELD(a,void **,0x64));
-if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_0220b7fc(a,Ov003_GetSelectedRowIndex(a)))func_02087ec0(M2C_FIELD(a,void **,0x5c),11);
-if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x64))&&!func_ov003_0220b8ac(a,Ov003_GetSelectedRowIndex(a)))func_02087ec0(M2C_FIELD(a,void **,0x5c),12);
+if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_0220b7fc(a,Ov003_GetSelectedRowIndex(a)))SpriteCellListSelectTile(M2C_FIELD(a,void **,0x5c),11);
+if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x64))&&!func_ov003_0220b8ac(a,Ov003_GetSelectedRowIndex(a)))SpriteCellListSelectTile(M2C_FIELD(a,void **,0x5c),12);
 if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_02209cc8(M2C_FIELD(a,void **,0x64)))func_02088044(M2C_FIELD(a,void **,0x5c));
 old=Ov003_GetSelectedRowIndex(a);pos=func_ov003_0220bf68(M2C_FIELD(a,void **,0x5c));
 if((active&&(M2C_FIELD(gKeyState,u16 *,0)&9)&&!M2C_FIELD(gTouchState,u8 *,0x12))||old==pos-11){Ov003_ActivateUnitListEntry(a,(u16)old);active=0;}
-else if((active&&(M2C_FIELD(gKeyState,u16 *,0)&2)&&!M2C_FIELD(gTouchState,u8 *,0x12))||func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0))){
+else if((active&&(M2C_FIELD(gKeyState,u16 *,0)&2)&&!M2C_FIELD(gTouchState,u8 *,0x12))||MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0))){
 PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));Ov003_ConfirmRowValue(a,(u16)old);PlaySoundEffect(0x1000f);active=0;
-}else if(active&&func_ov003_02207a54(a)&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,20))){
+}else if(active&&func_ov003_02207a54(a)&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,20))){
 if(func_ov003_02207a70(a))func_ov003_0220bbcc(a);active=0;
-}else if(active&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12))){
+}else if(active&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12))){
 if(func_ov003_02207a70(a)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12));func_ov003_0220bcac(a);PlaySoundEffect(0x1000d);MarkMenuSplitSelection(a);}active=0;
 }
-if(func_ov003_02209258(a)){if(func_020e4b28(old))func_ov003_021ebc54(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));else func_ov003_021ebc00(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));}
-if(active&&func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16))&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16))){
+if(func_ov003_02209258(a)){if(func_020e4b28(old))EnableMenuSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));else DisableMenuSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));}
+if(active&&IsMenuEnabled(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16))&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16))){
 if(func_ov003_02209258(a)){RequestMenuMode(a,2);PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));func_020b4df4(old,a);PlaySoundEffect(0x1000d);}active=0;
 }
 if(active&&pos>=3&&pos<=M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)+2){
 Ov003_SetRowAnimation(a,M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void **,0x58)+(pos-3)*4,void **,12),u8 *,4));
 M2C_FIELD(a,u8 *,0x34)=30;Ov003_RefreshListRowAnimations(a,5,255);func_ov003_0220bf70(a);PlaySoundEffect(0x1000f);active=0;
 }
-if(active&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4))){
+if(active&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4))){
 PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));
 if(func_ov003_02209274(a,(u8)old))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);if(IsMenuSplitOptionRow(a,(u8)old))PlaySoundEffect(0x10011);MarkMenuSplitSelection(a);}
-if(active&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8))){
+if(active&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8))){
 PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));
 if(func_ov003_02209274(a,(u8)old))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);if(IsMenuSplitOptionRow(a,(u8)old))PlaySoundEffect(0x10011);MarkMenuSplitSelection(a);}
 
@@ -148,14 +148,15 @@ s16 func_ov003_0220b7b8(void *arg0) {
     return M2C_FIELD(arg0, s16 *, 0x12);
 }
 
-void func_ov003_0220b7c0(void *arg0) {
+/* Animate the unit-list menu's six button sprites (MENU_BUTTONS) by one frame. */
+void Ov003_AnimateUnitListButtons(void *buttons) {
     M2C_UNK MenuSpriteUpdate(s32);
-    MenuSpriteUpdate(M2C_FIELD(arg0, s32 *, 0));
-    MenuSpriteUpdate(M2C_FIELD(arg0, s32 *, 4));
-    MenuSpriteUpdate(M2C_FIELD(arg0, s32 *, 8));
-    MenuSpriteUpdate(M2C_FIELD(arg0, s32 *, 0xC));
-    MenuSpriteUpdate(M2C_FIELD(arg0, s32 *, 0x10));
-    MenuSpriteUpdate(M2C_FIELD(arg0, s32 *, 0x14));
+    MenuSpriteUpdate(M2C_FIELD(buttons, s32 *, MENU_BUTTON_CONFIRM));
+    MenuSpriteUpdate(M2C_FIELD(buttons, s32 *, MENU_BUTTON_STEP_LEFT));
+    MenuSpriteUpdate(M2C_FIELD(buttons, s32 *, MENU_BUTTON_STEP_RIGHT));
+    MenuSpriteUpdate(M2C_FIELD(buttons, s32 *, MENU_BUTTON_RESET));
+    MenuSpriteUpdate(M2C_FIELD(buttons, s32 *, MENU_BUTTON_SUBMENU));
+    MenuSpriteUpdate(M2C_FIELD(buttons, s32 *, MENU_BUTTON_BACK));
 }
 
 u8 func_ov003_0220b7fc(void *arg0, s32 arg1) { s32 active; s32 result; if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) active=1; else active=0; if ((active & 255) && arg1 == 0) result=1; else result=0; return result; }
@@ -288,7 +289,7 @@ void func_ov003_0220bbcc(void *entity) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK EnableMapConfirm();
     M2C_UNK SetMapCategory(M2C_UNK);
-    extern M2C_UNK data_0215d9b8;
+    extern M2C_UNK gOptionBits;
     void *subObject;
     void *linkedObject;
 
@@ -302,8 +303,8 @@ void func_ov003_0220bbcc(void *entity) {
     Sprite_ResumeAnimation(entity);
     PlaySoundEffect(0x1000E);
     linkedObject = M2C_FIELD(entity, void **, 0x40);
-    M2C_FIELD(&data_0215d9b8, u16 *, 6) = (u16) ((M2C_FIELD(&data_0215d9b8, u16 *, 6) & ~0x3000) | ((u32) ((u16) M2C_FIELD(linkedObject, s32 *, 4) << 0x1E) >> 0x12));
-    M2C_FIELD(&data_0215d9b8, u16 *, 6) = (u16) ((M2C_FIELD(&data_0215d9b8, u16 *, 6) & ~0xC00) | ((u32) ((u16) M2C_FIELD(linkedObject, s32 *, 0x1C) << 0x1E) >> 0x14));
-    M2C_FIELD(&data_0215d9b8, u16 *, 6) = (u16) ((M2C_FIELD(&data_0215d9b8, u16 *, 6) & ~0x4000) | ((u32) ((u16) M2C_FIELD(linkedObject, s32 *, 0x34) << 0x1F) >> 0x11));
+    M2C_FIELD(&gOptionBits, u16 *, 6) = (u16) ((M2C_FIELD(&gOptionBits, u16 *, 6) & ~0x3000) | ((u32) ((u16) M2C_FIELD(linkedObject, s32 *, 4) << 0x1E) >> 0x12));
+    M2C_FIELD(&gOptionBits, u16 *, 6) = (u16) ((M2C_FIELD(&gOptionBits, u16 *, 6) & ~0xC00) | ((u32) ((u16) M2C_FIELD(linkedObject, s32 *, 0x1C) << 0x1E) >> 0x14));
+    M2C_FIELD(&gOptionBits, u16 *, 6) = (u16) ((M2C_FIELD(&gOptionBits, u16 *, 6) & ~0x4000) | ((u32) ((u16) M2C_FIELD(linkedObject, s32 *, 0x34) << 0x1F) >> 0x11));
 }
 

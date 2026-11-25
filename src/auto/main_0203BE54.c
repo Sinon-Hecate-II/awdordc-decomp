@@ -8,7 +8,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     s32 HeapAlloc(M2C_UNK, s32);
     M2C_UNK HeapFree(M2C_UNK);
     M2C_UNK ReportConnectionError(M2C_UNK, s32);
-    s8 func_020427b4(void);
+    s8 FindFreeSessionPlayerKey(void);
     M2C_UNK StringLength(s32);
     M2C_UNK StringCopy(M2C_UNK, s32);
     s32 StringCompare(void);
@@ -33,7 +33,7 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
             return 0;
         }
     } else {
-        var_r7 = func_020427b4();
+        var_r7 = FindFreeSessionPlayerKey();
         if ((u32) var_r7 == 0) {
             return 0;
         }
@@ -62,7 +62,7 @@ s8 func_0203bf80(s8 arg0, s32 arg1, s32 arg2) {
     s32 HeapAlloc(M2C_UNK, s32);
     M2C_UNK HeapFree(M2C_UNK);
     M2C_UNK ReportConnectionError(M2C_UNK, s32);
-    s8 func_020427b4(void);
+    s8 FindFreeSessionPlayerKey(void);
     M2C_UNK StringLength(s32);
     M2C_UNK StringCopy(M2C_UNK, s32);
     s32 StringCompare(void);
@@ -88,7 +88,7 @@ s8 func_0203bf80(s8 arg0, s32 arg1, s32 arg2) {
             return 0;
         }
     } else {
-        var_r7 = func_020427b4();
+        var_r7 = FindFreeSessionPlayerKey();
         if ((u32) var_r7 == 0) {
             return 0;
         }

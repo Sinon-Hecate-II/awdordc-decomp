@@ -84,32 +84,38 @@ void NatNeg_SendConnectPong(void *peer) {
     }
 }
 #pragma opt_propagation reset
-s32 func_0205dd98(M2C_UNK arg0) {
+/* The IPv4 address of `hostName`: its numeric form when it is an address,
+ * otherwise the first address ghiResolveHostname looks up.  0 when the name
+ * does not resolve. */
+s32 ResolveHostNameAddress(M2C_UNK hostName) {
     void *ghiResolveHostname(M2C_UNK);
-    s32 ghiInetAddr();
-    s32 temp_r0_2;
-    void *temp_r0;
+    s32 ghiInetAddr(M2C_UNK);
+    s32 address;
+    void *hostEntry;
 
-    temp_r0_2 = ghiInetAddr();
-    if (temp_r0_2 != -1) {
-        return temp_r0_2;
+    address = ghiInetAddr(hostName);
+    if (address != -1) {
+        return address;
     }
-    temp_r0 = ghiResolveHostname(arg0);
-    if (temp_r0 == NULL) {
+    hostEntry = ghiResolveHostname(hostName);
+    if (hostEntry == NULL) {
         return 0;
     }
-    return **M2C_FIELD(temp_r0, s32 ***, 0xC);
+    return **M2C_FIELD(hostEntry, s32 ***, 0xC);
 }
 
-s32 NatNeg_ResolveServerAddress(void *arg0, s32 arg1) {
- M2C_UNK func_020675bc(void *,s32,void *,void *,s32);
- extern M2C_UNK data_020ff894, gServiceNameBuffer;
+/* The IPv4 address of the NAT-negotiation `serverName`: resolve `hostName`, or
+ * first build the service-qualified name "<service name>.<server name>" into a
+ * local buffer when none was given. */
+s32 NatNeg_ResolveServerAddress(void *hostName, s32 serverName) {
+ M2C_UNK StringFormatBuffer(void *,s32,void *,void *,s32);
+ extern M2C_UNK sNatNegHostNameFormat, gServiceNameBuffer;
  u8 buffer[0x80];
- if (arg0 == NULL) {
- func_020675bc(buffer,0x80,&data_020ff894,&gServiceNameBuffer,arg1);
- arg0=buffer;
+ if (hostName == NULL) {
+ StringFormatBuffer(buffer,0x80,&sNatNegHostNameFormat,&gServiceNameBuffer,serverName);
+ hostName=buffer;
  }
- return func_0205dd98((M2C_UNK)arg0);
+ return ResolveHostNameAddress((M2C_UNK)hostName);
 }
 
 /* Resolve the addresses of the two NAT-negotiation servers: look up each

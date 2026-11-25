@@ -21,7 +21,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     M2C_UNK func_02094ba0();
     M2C_UNK func_02094bc0();
     M2C_UNK func_02094be0();
-    M2C_UNK func_02094c00(s32, s32, s32, s32);
+    M2C_UNK CallScenePanelFaceOp(s32, s32, s32, s32);
     M2C_UNK func_02094c38(s32, s32, s32);
     M2C_UNK func_02094c68(s32, M2C_UNK);
     M2C_UNK func_02094c90(s32, void *);
@@ -33,7 +33,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     M2C_UNK StartScriptedScreenTransition(M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020953d0();
     M2C_UNK func_0209544c(s32);
-    M2C_UNK func_02095c58(M2C_UNK, s32, void *);
+    M2C_UNK CreateScreenSplitSprite(M2C_UNK, s32, void *);
     M2C_UNK func_02095f94(u8 *);
     s32 func_020999b8(void *);
     s32 func_020999e8(void *);
@@ -352,7 +352,7 @@ loop_1:
                     func_0209c428(arg0);
                     break;
                 case 7:
-                    func_02094c00(temp_r0_10, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 3) & 0x7F, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 4) & 0x7F, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 5) & 0x7F);
+                    CallScenePanelFaceOp(temp_r0_10, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 3) & 0x7F, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 4) & 0x7F, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 5) & 0x7F);
                     func_0209c418(arg0);
                     func_0209c418(arg0);
                     func_0209c418(arg0);
@@ -437,10 +437,10 @@ loop_1:
                     func_02094df0(1, GetOther3DSpriteScreenMode(1), temp_r8);
                     break;
                 case 4:
-                    func_02095c58(0, temp_r8, arg0);
+                    CreateScreenSplitSprite(0, temp_r8, arg0);
                     break;
                 case 5:
-                    func_02095c58(1, temp_r8, arg0);
+                    CreateScreenSplitSprite(1, temp_r8, arg0);
                     break;
                 }
                 func_0209c418(arg0);

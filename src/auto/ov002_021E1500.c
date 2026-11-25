@@ -48,17 +48,17 @@ void func_ov002_021e1598(void) {
 
 void func_ov002_021e15ac(void) {
     void func_ov002_021e3dd4(void *);
-    void func_ov002_021e7970(void *);
+    void TeardownBattleScene(void *);
     extern M2C_UNK gBattleSpriteState,gBattleSceneState;
     func_ov002_021e3dd4(&gBattleSpriteState);
-    func_ov002_021e7970(&gBattleSceneState);
+    TeardownBattleScene(&gBattleSceneState);
     *(volatile u16 *)0x4000304 &= ~0x8000;
 }
 
 void func_ov002_021e15e0(void) {
-    M2C_UNK func_01ffa9bc(M2C_UNK *);
+    M2C_UNK ResumeAnimationOfSpriteClass(M2C_UNK *);
     extern M2C_UNK data_ov002_021ea68c;
-    func_01ffa9bc(&data_ov002_021ea68c);
+    ResumeAnimationOfSpriteClass(&data_ov002_021ea68c);
 }
 
 void CreateBattleSceneSprite(s32 a) {
@@ -208,7 +208,7 @@ next:
 #pragma optimization_level 3
 void func_ov002_021e1844(void *arg0) {
     void ClearEffectNode(void *);
-    M2C_UNK func_ov002_021e299c(void *, M2C_UNK);
+    M2C_UNK SetEffectNodePaletteFlash(void *, M2C_UNK);
     M2C_UNK func_ov002_021e29d8(void *);
     M2C_UNK func_ov002_021e29f8(void *, M2C_UNK, M2C_UNK);
     M2C_UNK Ov002_EnableEffectNodes(void *);
@@ -278,10 +278,10 @@ void func_ov002_021e1844(void *arg0) {
             break;
         }
         case 16:
-            func_ov002_021e299c(arg0, 4);
+            SetEffectNodePaletteFlash(arg0, 4);
             break;
         case 17:
-            func_ov002_021e299c(arg0, 6);
+            SetEffectNodePaletteFlash(arg0, 6);
             break;
         case 18:
             func_ov002_021e29d8(arg0);
@@ -410,7 +410,7 @@ void SetEffectNodeMatrix(void *node, s32 flip) {
 #pragma scheduling off
 void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2, u8 kind, volatile s32 diff, volatile s32 temp) {
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
-    M2C_UNK func_02004078(s16, s16);
+    M2C_UNK GX_MatrixRotateZ(s16, s16);
     extern M2C_UNK gSinCosTable;
     s16 var_r4;
     s16 var_r5;
@@ -460,7 +460,7 @@ void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2,
         M2C_FIELD((void *) 0x0400046C, volatile s32 *, 0) = (s32) ((s32) (var_r6 << 0xC) >> 8);
         M2C_FIELD((void *) 0x0400046C, volatile s32 *, 0) = (s32) ((s32) (var_r8 << 0xC) >> 8);
         M2C_FIELD((void *) 0x0400046C, volatile s32 *, 0) = 0x1000;
-        func_02004078(sn, cs);
+        GX_MatrixRotateZ(sn, cs);
         M2C_FIELD((void *) 0x0400046C, volatile s32 *, 4) = (s32) var_r4;
         M2C_FIELD((void *) 0x0400046C, volatile s32 *, 4) = (s32) var_r5;
         M2C_FIELD((void *) 0x0400046C, volatile s32 *, 4) = 0;
@@ -475,7 +475,7 @@ void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2,
             M2C_FIELD((void *) 0x0400046C, volatile s32 *, 0) = (s32) ((s32) (var_r6 << 0xC) >> 8);
             M2C_FIELD((void *) 0x0400046C, volatile s32 *, 0) = (s32) ((s32) (var_r8 << 0xC) >> 8);
             M2C_FIELD((void *) 0x0400046C, volatile s32 *, 0) = 0x1000;
-            func_02004078(sn, cs);
+            GX_MatrixRotateZ(sn, cs);
         }
     }
 }

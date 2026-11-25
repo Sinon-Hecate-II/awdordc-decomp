@@ -15,7 +15,7 @@ void func_ov003_021fe780(M2C_UNK arg0) {
     extern void **data_027e0058;
     extern M2C_UNK gMapPickSelectionIfaceVTable;
     extern M2C_UNK gSceneBaseIfaceVTable;
-    extern M2C_UNK data_ov003_0220ff2c;
+    extern M2C_UNK gOv003MapListMenuClass;
     extern M2C_UNK data_ov003_022100d4;
     extern M2C_UNK data_ov003_02210104;
     extern M2C_UNK data_ov003_02210130;
@@ -33,8 +33,8 @@ void func_ov003_021fe780(M2C_UNK arg0) {
     void *temp_r5_2;
     void *temp_r5_3;
 
-    SetOv003SceneClass(&data_ov003_0220ff2c);
-    temp_r0 = CreateSpriteFromClass(&data_ov003_0220ff2c, arg0);
+    SetOv003SceneClass(&gOv003MapListMenuClass);
+    temp_r0 = CreateSpriteFromClass(&gOv003MapListMenuClass, arg0);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gSceneBaseVTable;
         M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gSceneBaseIfaceVTable;
@@ -164,7 +164,7 @@ void func_ov003_021feb4c(M2C_UNK arg0) {
     extern void **data_027e0058;
     extern M2C_UNK gMapPickSelectionIfaceVTable;
     extern M2C_UNK gSceneBaseIfaceVTable;
-    extern M2C_UNK data_ov003_0220ff2c;
+    extern M2C_UNK gOv003MapListMenuClass;
     extern M2C_UNK data_ov003_022100d4;
     extern M2C_UNK data_ov003_02210104;
     extern M2C_UNK data_ov003_02210130;
@@ -182,8 +182,8 @@ void func_ov003_021feb4c(M2C_UNK arg0) {
     void *temp_r5_2;
     void *temp_r5_3;
 
-    SetOv003SceneClass(&data_ov003_0220ff2c);
-    temp_r0 = CreateSpriteFromClass(&data_ov003_0220ff2c, arg0);
+    SetOv003SceneClass(&gOv003MapListMenuClass);
+    temp_r0 = CreateSpriteFromClass(&gOv003MapListMenuClass, arg0);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gSceneBaseVTable;
         M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gSceneBaseIfaceVTable;
@@ -301,19 +301,21 @@ void func_ov003_021feb4c(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, u8 *, 0x3B) = (u8) ((M2C_FIELD(temp_r0, u8 *, 0x3B) & ~0xF) | 0x8);
 }
 
-void func_ov003_021fef18(void) {
+/* Clear every row's drawn marker of the map-list menu entity so the whole map
+ * list is redrawn, then redraw the map preview. */
+void Ov003_RedrawMapList(void) {
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK Ov003_RefreshMapPreview(void *, M2C_UNK);
-    extern M2C_UNK data_ov003_0220ff2c;
-    void *temp_r0;
+    extern M2C_UNK gOv003MapListMenuClass;
+    void *entity;
 
-    temp_r0 = FindObjectByClass(&data_ov003_0220ff2c);
-    if (temp_r0 == NULL) {
+    entity = FindObjectByClass(&gOv003MapListMenuClass);
+    if (entity == NULL) {
         return;
     }
-    MI_CpuFill8(M2C_FIELD(temp_r0, s32 *, 0x44) + 0x186C, 0, 0xD);
-    Ov003_RefreshMapPreview(temp_r0, 0);
+    MI_CpuFill8(M2C_FIELD(entity, s32 *, MENU_ENTITY_MAP_LIST) + MENU_MAP_LIST_DRAWN, 0, MENU_MAP_LIST_DRAWN_SIZE);
+    Ov003_RefreshMapPreview(entity, 0);
 }
 
 void func_ov003_021fef58(M2C_UNK arg0) {

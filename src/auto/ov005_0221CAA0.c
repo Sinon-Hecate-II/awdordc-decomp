@@ -138,7 +138,7 @@ extern void *g3DSpriteEngineSub;
 extern void **gCurrentMap;
 extern u8 data_ov005_02220f1c[],data_ov005_02220e5c[],data_ov005_02220eec[],gResultsScreenClass[];
 void func_02088044(void *);
-void func_02087ec0(void *,s16);
+void SpriteCellListSelectTile(void *,s16);
 void CopyToObjPaletteShadow(s32,s32,s32);
 s32 func_020a72e8(u8);
 s32 GetTerrainPalette(s32,u8);
@@ -189,7 +189,7 @@ void func_ov005_0221d160(void *arg0){
             else
                 n = func_020cfb94();
             M2C_FIELD(arg0, s32 *, 0x50) = n - 1;
-            func_02087ec0(M2C_FIELD(arg0, void **, 0x34), (s16)((s16)M2C_FIELD(arg0, u16 *, 0x50) + 3));
+            SpriteCellListSelectTile(M2C_FIELD(arg0, void **, 0x34), (s16)((s16)M2C_FIELD(arg0, u16 *, 0x50) + 3));
             {
                 void *sprite = M2C_FIELD(arg0, void **, 0x38);
                 void *p = *(void **)M2C_FIELD(arg0, void **, 0x34);
@@ -208,7 +208,7 @@ void func_ov005_0221d160(void *arg0){
         }
         if ((gKeyState[1] & 16) && (M2C_FIELD(arg0, s32 *, 0x50) < func_020cfb94() - 1 || (gKeyState[0] & 16))) {
             M2C_FIELD(arg0, s32 *, 0x50) = M2C_FIELD(arg0, s32 *, 0x50) == func_020cfb94() - 1 ? 0 : M2C_FIELD(arg0, s32 *, 0x50) + 1;
-            func_02087ec0(M2C_FIELD(arg0, void **, 0x34), (s16)((s16)M2C_FIELD(arg0, u16 *, 0x50) + 3));
+            SpriteCellListSelectTile(M2C_FIELD(arg0, void **, 0x34), (s16)((s16)M2C_FIELD(arg0, u16 *, 0x50) + 3));
             {
                 void *sprite = M2C_FIELD(arg0, void **, 0x38);
                 void *p = *(void **)M2C_FIELD(arg0, void **, 0x34);

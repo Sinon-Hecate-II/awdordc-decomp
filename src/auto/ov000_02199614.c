@@ -12,7 +12,7 @@ typedef struct { u16 value:7; } Field7;
 void BuildPlayerInfluence(u8 player) {
 extern s32 *gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-s32 func_ov000_021973f8(s32);
+s32 IsCurrentPlayerAiControlled(s32);
 s32 GetModifiedDamagePercent(s32,s32);
 s32 ApplyAttackBonus(s32,s32,s32);
 s32 ApplyCoZoneBonus(s32,s32,void*);
@@ -28,7 +28,7 @@ s32 unitId,influence;
 UnkStruct_ov000_021A860C *unit;
 u8 *map,*cell;
 s32 owner,id,amount;
-if(!func_ov000_021973f8(21))return;
+if(!IsCurrentPlayerAiControlled(21))return;
 M2C_FIELD(*gCurrentMap,u16 *,MAP_ACTIVE_PLAYER)=player;
 for(unitId=gPlayerUnitIdBase[player]+1;unitId<gPlayerUnitIdBase[player]+51;unitId++){
 map=(u8 *)*gCurrentMap;
@@ -225,7 +225,7 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     M2C_UNK func_02072b10(M2C_UNK *, M2C_UNK);
     void BuildUnitMoveRange(void *);
     void BuildMovePathForTile(M2C_UNK, M2C_UNK, s32);
-    s32 UnpackCursorPath(void *, void *);
+    s32 PackCommandPath(void *, void *);
     s32 GetRandomSeed(void);
     s32 GetUnitMoveFuelCost(s32, s32);
     void func_ov000_02199ce0(void);
@@ -253,7 +253,7 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     }
     BuildUnitMoveRange(unit);
         BuildMovePathForTile(arg0, arg1, (s32)(((u8 *)*gCurrentMap) + 0x5388));
-        UnpackCursorPath(((u8 *)*gCurrentMap) + 0x5388, gCommandPath);
+        PackCommandPath(((u8 *)*gCurrentMap) + 0x5388, gCommandPath);
 
         gAiCommand[1] = ((u8 *)*gCurrentMap)[0x52D4];
 
@@ -290,7 +290,7 @@ void func_ov000_02199f38(void) {
  * parameters and the random seed, plus the fuel the actor has left after the
  * move.  When the battle has ended the finished record is sent over the link. */
 void SetBattleCommand(s32 kind, s32 actor, s32 arg, s32 argY) {
-    s32 UnpackCursorPath(void *, void *);
+    s32 PackCommandPath(void *, void *);
     s32 GetRandomSeed(void);
     s32 GetUnitMoveFuelCost(s32, s32);
     void SendBattleCommandPacket(s32, s32, s32, s32);
@@ -298,7 +298,7 @@ void SetBattleCommand(s32 kind, s32 actor, s32 arg, s32 argY) {
     extern u8 gCommandPath[];
     extern u8 gAiCommand[];
     extern u8 gBattleEndState[];
-    UnpackCursorPath((u8 *)*gCurrentMap + MAP_CURSOR_PATH, gCommandPath);
+    PackCommandPath((u8 *)*gCurrentMap + MAP_CURSOR_PATH, gCommandPath);
     gAiCommand[AI_COMMAND_ACTOR] = (u8)actor;
     *(s32 *)(gAiCommand + AI_COMMAND_SEED) = GetRandomSeed();
     gAiCommand[AI_COMMAND_KIND] = (u8)kind;
@@ -381,7 +381,7 @@ void BeginAiTurn(void) {
     void func_ov000_02181c88(void);
     void func_ov000_0219a350(void);
     void UpdateAiSupplyStates(void);
-    s32 func_ov000_021a9b84(void);
+    s32 AiMayAttackMapFeatures(void);
     extern s32 *gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 *gAiCommandState;
@@ -413,7 +413,7 @@ void BeginAiTurn(void) {
     func_ov000_02181c88();
     func_ov000_0219a350();
     UpdateAiSupplyStates();
-    if (func_ov000_021a9b84() == 1) {
+    if (AiMayAttackMapFeatures() == 1) {
         gAiCommandState[AI_COMMAND_STATE_FLAGS] |= 0x04;
     } else {
         gAiCommandState[AI_COMMAND_STATE_FLAGS] &= ~0x04;

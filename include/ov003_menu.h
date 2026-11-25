@@ -27,6 +27,16 @@ typedef struct Ov003HelpPanel {
 #define MENU_ROWS          0x48 /* row entry array, MENU_ROW_STRIDE bytes each */
 #define MENU_SELECTED_UNIT 0x5C /* void ** selected unit, or 0 */
 
+/* The unit-list menu's six button sprites, the block kept at MENU_BUTTONS and
+ * animated every frame by Ov003_AnimateUnitListButtons. */
+#define MENU_BUTTONS            0x68 /* void *: the button sprite block */
+#define MENU_BUTTON_CONFIRM     0x00 /* s32: confirm the selected row */
+#define MENU_BUTTON_STEP_LEFT   0x04 /* s32: step the selected row's option left */
+#define MENU_BUTTON_STEP_RIGHT  0x08 /* s32: step it right */
+#define MENU_BUTTON_RESET       0x0C /* s32: reset the list's scrolls and option values */
+#define MENU_BUTTON_SUBMENU     0x10 /* s32: open the selected row's submenu */
+#define MENU_BUTTON_BACK        0x14 /* s32: leave the unit list */
+
 #define MENU_FLAG_PENDING  0x02 /* an action is queued for the next update */
 #define MENU_FLAG_ANIM     0x08 /* a row animation is running */
 #define MENU_FLAG_MODE     0x10 /* the mode byte in MENU_MODE has been set */
@@ -52,6 +62,17 @@ typedef struct Ov003HelpPanel {
 #define MENU_ROW_ANIM_A    0x18 /* animations shown for an unselected row */
 #define MENU_ROW_ANIM_B    0x1C
 #define MENU_ROW_ANIM_C    0x20 /* shown for the selected row */
+
+/* The ov003 mode-select background textures (gGameModeTextures): one entry per
+ * selectable game mode ("MainMode.tex", "SingleMode.tex", "WiFiMode.tex", ...),
+ * indexed by the mode value the selection context carries at +0x11.  Only the
+ * file record is named; the rest is the per-mode layout data. */
+typedef struct Ov003ModeTexture {
+    const void *file;   /* +0x00 localized file record of the mode's .tex */
+    u8 layout[0x0C];    /* +0x04 mode layout data */
+} Ov003ModeTexture;     /* 0x10 bytes, OV003_MODE_TEXTURE_SIZE */
+
+#define OV003_MODE_TEXTURE_SIZE 0x10
 
 #define MENU_SELECTION_MODE 0x0F /* u8 current selection mode, indexes MENU_SELECTION_SLOTS */
 #define MENU_SELECTION_SLOTS 0x00 /* u8[] row index selected in each mode */

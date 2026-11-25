@@ -3,10 +3,10 @@
 #include "gx.h"
 extern M2C_UNK gMapListState;
 extern const u8 data_ov001_0218f9bc[];
-void func_ov001_0217f6cc(void);
+void MapList_DismissMessage(void);
 void func_ov001_0217ded8(void);
 void MapListSetExtraEmptyA(s32);
-void func_ov001_0217dc44(s32);
+void MapListSetExtraEmptyB(s32);
 
 void *GetCurrentMapRecord();
 
@@ -77,24 +77,27 @@ DrawPanelText(panel,13,60,230,94,2,Ov001_GetTextFontId(),messageText);
 CloseTextPanel(panel);
 }
 
-void func_ov001_0217d044(void) {
+void Ov001_FadeInWfcErrorScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_0217d078;
+    extern M2C_UNK Ov001_WfcErrorFadeDone;
     Ov001_StartFade(2, 0, 0x15, 8);
     Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_0217d078);
+    Ov001_SetStepCallback(&Ov001_WfcErrorFadeDone);
 }
 
-void func_ov001_0217d078(void) {
-    void func_ov001_0217d0b4(void);
-    if (Ov001_IsFadeActive(1) != 0) return;
-    if (Ov001_IsFadeActive(0) != 0) return;
-    func_ov001_02171e20(4);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217d0b4);
+/* Step that runs once the Wi-Fi error screen's fade-in has finished: wait for the
+ * sub and main engine fades, then put up its single-button icon row and hand over
+ * to the step that waits for it to slide in. */
+void Ov001_WfcErrorFadeDone(void) {
+    void Ov001_WfcErrorWaitIconRow(void);
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) return;
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) return;
+    Ov001_CreateMenuIconRow(4);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcErrorWaitIconRow);
 }
 
-void func_ov001_0217d0b4(void) {
+void Ov001_WfcErrorWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK func_ov001_0217d0dc;
@@ -215,7 +218,7 @@ void InitMapListScreen(void) {
     void *GetCurrentMapRecord(void);
     void *Ov001_Alloc(s32, s32);
     extern M2C_UNK gMapListState;
-    void func_ov001_0217d680(void);
+    void ResetMapListState(void);
     void InitMapListGraphics(void);
     u8 Ov001_GetLanguage(void);
     M2C_UNK Ov001_ShowMessagePanel(s32, s32, s32);
@@ -242,7 +245,7 @@ void InitMapListScreen(void) {
     M2C_FIELD(&gMapListState, void **, 8) = Ov001_Alloc(0x48, 4);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x43) = M2C_FIELD(profile, u8 *, 0xf6);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x42) = 0xc;
-    func_ov001_0217d680();
+    ResetMapListState();
     InitMapListGraphics();
     if (M2C_FIELD(&gMapListState, u8 *, 1) == 0) {
         value = Ov001_GetLanguage();
@@ -332,20 +335,23 @@ void InitMapListGraphics(void) {
     M2C_FIELD((void *)0x0400000A, volatile u16 *, 4) = (M2C_FIELD((void *)0x0400000A, volatile u16 *, 4) & ~3) | 2;
 }
 
-void func_ov001_0217d680(void) {
+/* Set up the ov001 map list's position: unless the screen was reached from the
+ * name-entry step (a pending name-entry variant), start the list at the top with
+ * no scroll, state 0 and row 0 selected. */
+void ResetMapListState(void) {
     M2C_UNK Ov001_GetNameEntryMode(M2C_UNK, s32 *);
     void *GetCurrentMapRecord();
     extern M2C_UNK gMapListState;
-    s32 sp0;
+    s32 nameEntryVariant;
 
     GetCurrentMapRecord();
-    Ov001_GetNameEntryMode(0, &sp0);
-    if (sp0 != 0) {
+    Ov001_GetNameEntryMode(0, &nameEntryVariant);
+    if (nameEntryVariant != 0) {
         return;
     }
-    M2C_FIELD(&gMapListState, s16 *, 4) = 0;
-    M2C_FIELD(&gMapListState, s8 *, 0) = 0;
-    M2C_FIELD(&gMapListState, s8 *, 2) = 0;
+    M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL) = 0;
+    M2C_FIELD(&gMapListState, u8 *, OV001_MAP_LIST_STATE) = 0;
+    M2C_FIELD(&gMapListState, u8 *, OV001_MAP_LIST_ROW) = 0;
 }
 
 /* Fades in the ov001 map-list screen: start the sub and main fades from white
@@ -514,14 +520,14 @@ s32 DispatchMapListChoice(u32 a){
 if(IsMapListChoiceAvailable()==0){Ov001_PlaySound(9);return;}
 switch(a){
 case 2:case 3:Ov001_PlaySound(6);MapListSetExtraEmptyA(((a-2)^1)!=0);return;
-case 7:case 8:Ov001_PlaySound(6);func_ov001_0217dc44(((a-7)^1)!=0);return;
+case 7:case 8:Ov001_PlaySound(6);MapListSetExtraEmptyB(((a-7)^1)!=0);return;
 case 0:case 1:case 4:case 5:case 6:break;
 }
 M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,64)=a;
 if(a-11<=1){
 func_ov001_0217f4e0();
 if(IsCurrentSaveSlotValid()==0){
-Ov001_PlaySound(9);Ov001_ShowMessage(6,1,1,-1,0);Ov001_SetStepCallback((M2C_UNK *)func_ov001_0217f6cc);return;
+Ov001_PlaySound(9);Ov001_ShowMessage(6,1,1,-1,0);Ov001_SetStepCallback((M2C_UNK *)MapList_DismissMessage);return;
 }
 if(a==11)Ov001_PlaySound(6);else Ov001_PlaySound(14);
 }else if(a==13){func_ov001_0217f4e0();Ov001_PlaySound(7);}
@@ -554,15 +560,20 @@ void MapListSetExtraEmptyA(s32 empty) {
     MapListRedrawInfoPanel();
 }
 
-void func_ov001_0217dc44(s32 arg0) {
+/* Set whether the current map's second optional player code is absent
+ * (SAVE_SLOT_EMPTY_B) in the working save slot: nothing to do when the flag
+ * already matches, otherwise cache it in the screen object, hand it to the save
+ * slot and redraw the info panel. */
+void MapListSetExtraEmptyB(s32 empty) {
     M2C_UNK MapListRedrawInfoPanel();
     M2C_UNK Ov001_SetSaveExtraEmptyB(s32);
     extern M2C_UNK gMapListState;
     s32 current;
-    current = M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF6);
-    if (current == arg0) return;
-    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x43) = arg0;
-    Ov001_SetSaveExtraEmptyB(arg0);
+
+    current = M2C_FIELD(GetCurrentMapRecord(), u8 *, SAVE_SLOT_EMPTY_B);
+    if (current == empty) return;
+    M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), u8 *, OV001_MAP_LIST_EMPTY_B) = empty;
+    Ov001_SetSaveExtraEmptyB(empty);
     MapListRedrawInfoPanel();
 }
 

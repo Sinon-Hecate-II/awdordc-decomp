@@ -1,5 +1,6 @@
 /* 55 functions from 0x0208EE90 to 0x0208FE7C (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 #include "sound.h"
 extern M2C_UNK gSoundTimerState;
 extern u32 gSoundTimerTicks[9], gSoundTimerElapsed[9];
@@ -306,35 +307,38 @@ s32 GetCurrentMusicTrack(void) {
     return gCurrentMusicTrack;
 }
 
-M2C_UNK PlayMusicTrack(s32 arg0) {
-extern s32 gCurrentMusicTrack;
-void func_0208f904(void);
-void StartMusicTrack(s32);
-void RecordsMenu_FindTrackIndex(s32);
-void func_020ad640(void);
-s32 current=gCurrentMusicTrack;
-if(current==arg0) return current;
-func_0208f904();
-StartMusicTrack(arg0);
-gCurrentMusicTrack=arg0;
-RecordsMenu_FindTrackIndex(arg0);
-func_020ad640();
+/* Switch the running music to `track`: unless it is already playing, cancel any
+ * pending fades, start the track, remember it, and mark its records-menu entry as
+ * heard. */
+s32 PlayMusicTrack(s32 track) {
+    extern s32 gCurrentMusicTrack;
+    void StopMusicAndFades(void);
+    void StartMusicTrack(s32);
+    s32 RecordsMenu_FindTrackIndex(s32);
+    void MarkRecordsMusicEntryHeard(s32);
+    s32 current = gCurrentMusicTrack;
+
+    if (current == track) return current;
+    StopMusicAndFades();
+    StartMusicTrack(track);
+    gCurrentMusicTrack = track;
+    MarkRecordsMusicEntryHeard(RecordsMenu_FindTrackIndex(track));
 }
 
 void func_0208f7c0(void *arg0) {
     PlayMusicTrack(M2C_FIELD(arg0, s32 *, 0x5C));
 }
 
-void func_0208f7d0(s32 arg0) {
+void ChangeMusicTrackWithFade(s32 arg0) {
     M2C_UNK FadeOutMusicDefault();
     void *CreateSpriteFromClass(M2C_UNK *, s32);
     extern s32 gCurrentMusicTrack;
-    extern M2C_UNK data_0210295c;
+    extern M2C_UNK gMusicPlayAfterFadeClass;
     if (gCurrentMusicTrack == arg0) {
         return;
     }
     FadeOutMusicDefault();
-    M2C_FIELD(CreateSpriteFromClass(&data_0210295c, 7), s32 *, 0x5C) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&gMusicPlayAfterFadeClass, 7), s32 *, 0x5C) = arg0;
 }
 
 void func_0208f808(void) {
@@ -398,13 +402,15 @@ void FadeMusicToFullVolume(void) {
 
 s32 func_0208f8ec(s32 a,s32 b){s32 Sound_FadeVolume(s32,s32,s32);return Sound_FadeVolume(-1,a,b);}
 
-void func_0208f904(void){
+/* Stop all music: delete the pending fade-out and play-after-fade sprite objects,
+ * cut the current track and mark that no track is playing. */
+void StopMusicAndFades(void){
  M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK*);
  void FadeOutMusic(s32);
- extern M2C_UNK gMusicFadeOutClass,data_0210295c;
+ extern M2C_UNK gMusicFadeOutClass,gMusicPlayAfterFadeClass;
  extern s32 gCurrentMusicTrack;
- DeleteSpriteObjectsOfClass(&gMusicFadeOutClass);DeleteSpriteObjectsOfClass(&data_0210295c);
- FadeOutMusic(0);gCurrentMusicTrack=0xffff;
+ DeleteSpriteObjectsOfClass(&gMusicFadeOutClass);DeleteSpriteObjectsOfClass(&gMusicPlayAfterFadeClass);
+ FadeOutMusic(0);gCurrentMusicTrack=MUSIC_NONE;
 }
 
 void func_0208f940(void *arg0) {
@@ -431,16 +437,18 @@ void UpdateDelayedSoundEffect(void *sprite) {
     DeleteSpriteObject(sprite);
 }
 
-void func_0208f998(s32 arg0, s16 arg1) {
+/* Spawn a delayed one-shot sound effect that plays `soundId` at maximum volume,
+ * centered, after `delay` frames. */
+void SpawnSoundEffectFullVolume(s32 soundId, s16 delay) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gDelayedSoundEffectClass;
-    void *temp_r0;
+    void *sprite;
 
-    temp_r0 = CreateSpriteFromClass(&gDelayedSoundEffectClass, 7);
-    M2C_FIELD(temp_r0, s32 *, 0x5C) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x60) = 0x7F;
-    M2C_FIELD(temp_r0, s32 *, 0x64) = 0;
-    M2C_FIELD(temp_r0, s16 *, 0x52) = arg1;
+    sprite = CreateSpriteFromClass(&gDelayedSoundEffectClass, 7);
+    M2C_FIELD(sprite, s32 *, SOUND_EFFECT_ID) = soundId;
+    M2C_FIELD(sprite, s32 *, SOUND_EFFECT_VOLUME) = SOUND_VOLUME_MAX;
+    M2C_FIELD(sprite, s32 *, SOUND_EFFECT_PAN) = 0;
+    M2C_FIELD(sprite, s16 *, SOUND_EFFECT_DELAY) = delay;
 }
 
 void func_0208f9d0(void *a){
@@ -464,20 +472,22 @@ void StopLoopingSoundEffects(void) {
     DeleteSpriteObjectsOfClass(&gLoopingSoundEffectClass);
 }
 
+/* Volume map sound effects play at: reduced while the view is zoomed out (small
+ * cells), full while it is zoomed in. */
 s32 GetSoundEffectVolume(void) {
     s32 GetViewZoom(s32);
     extern s32 *gCurrentMap;
-    s32 var_r0;
+    s32 cellSize;
 
-    if (GetViewZoom(*gCurrentMap + 0x6EF8) <= 0) {
-        var_r0 = 0x10;
+    if (GetViewZoom(*gCurrentMap + MAP_VIEW_ZOOM) <= 0) {
+        cellSize = MAP_SPRITE_ZOOM_SMALL;
     } else {
-        var_r0 = 0x18;
+        cellSize = MAP_SPRITE_ZOOM_LARGE;
     }
-    if (var_r0 == 0x10) {
-        return 0x5F;
+    if (cellSize == MAP_SPRITE_ZOOM_SMALL) {
+        return SOUND_EFFECT_VOLUME_FAR;
     }
-    return 0x7F;
+    return SOUND_EFFECT_VOLUME_NEAR;
 }
 
 /* Stereo pan (-32..32) for a sound played at map tile (tileX, tileY): based on
@@ -565,7 +575,7 @@ void InitSound(void) {
     func_0208fc4c();
     func_020903d4();
     func_0208fc4c();
-    func_02090604();
+    Sound_InitVolumes();
     func_020903b0();
 }
 void func_0208fc4c(void) {
@@ -594,14 +604,14 @@ void OpenSoundPlayer(void){
    sound heap and, when the raw heap block is still allocated, release it and
    clear the state. */
 void ShutdownSound(void) {
-    M2C_UNK func_0202ac70(M2C_UNK);
+    M2C_UNK Sound_FadeOutAllVoices(M2C_UNK);
     M2C_UNK Sound_DestroyHeap(s32);
     M2C_UNK HeapFreeBlock();
     extern M2C_UNK gSoundDriverState;
     if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return;
     }
-    func_0202ac70(0);
+    Sound_FadeOutAllVoices(0);
     Sound_DestroyHeap(M2C_FIELD(&gSoundDriverState, s32 *, SOUND_STATE_HEAP));
     M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) = 0U;
     if (M2C_FIELD(&gSoundDriverState, s32 *, SOUND_STATE_HEAP) == 0) {

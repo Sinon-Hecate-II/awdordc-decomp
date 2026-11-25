@@ -136,7 +136,7 @@ void RunAiRole5Action(void) {
         FinishAiUnitAction();
         return;
     }
-    func_ov000_02189df4();
+    RunAiCargoOrLoadAction();
     FinishAiUnitAction();
 }
 

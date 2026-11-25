@@ -1,6 +1,7 @@
 /* 16 functions from 0x020D5430 to 0x020D6398 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 
 /* MAP_MODE 8 handler: after a tile was selected, play the cursor sound and step
  * the cursor toward it; once the input that selected it is released, hide the
@@ -63,7 +64,7 @@ void ShowCursorUnitRanges(s32 x, s32 y) {
     M2C_UNK CanUnitAttackDirectly();
     M2C_UNK func_020ba414();
     M2C_UNK SelectMapLayer();
-    M2C_UNK func_01ffc2e8();
+    M2C_UNK BuildUnitMoveRangeBlockingUnits();
     void MarkUnitMoveRangeCells(s32);
     M2C_UNK IsMobileIndirectUnitKind();
     void MarkUnitAttackRangeCells(void *);
@@ -79,7 +80,7 @@ void ShowCursorUnitRanges(s32 x, s32 y) {
     if (showMoveRange) {
         map = M2C_FIELD(gCurrentMap, u8 **, 0);
         M2C_FIELD(map, u16 *, MAP_ACTIVE_PLAYER) = (M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID) >> 6) + 1;
-        func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+        BuildUnitMoveRangeBlockingUnits(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_ACTIVE_PLAYER) =
             M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_CURRENT_PLAYER);
         map = M2C_FIELD(gCurrentMap, u8 **, 0);
@@ -95,7 +96,7 @@ void ShowCursorUnitRanges(s32 x, s32 y) {
     if (IsMobileIndirectUnitKind(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), BattleMapUnitHead **, MAP_CURSOR_UNIT)->kind)) {
         map = M2C_FIELD(gCurrentMap, u8 **, 0);
         M2C_FIELD(map, u16 *, MAP_ACTIVE_PLAYER) = (M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID) >> 6) + 1;
-        func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+        BuildUnitMoveRangeBlockingUnits(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_ACTIVE_PLAYER) =
             M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_CURRENT_PLAYER);
         map = M2C_FIELD(gCurrentMap, u8 **, 0);
@@ -198,7 +199,7 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)=(u8 *)M2C_FI
 
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_CARRIER)=0;
 if(IsOwnedProductionSite(x,y)) { if(playMoveEffect)OpenProductionMenu(x,y); return 1; }
-if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS)) == 0 || HasUnitActed(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)) != 0 || ((u32)(gMapConfig<<22)>>31)) { if(!consumeInvalid)return 0; func_020c752c();return 1; }
+if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS)) == 0 || HasUnitActed(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)) != 0 || ((u32)(gMapConfig<<22)>>31)) { if(!consumeInvalid)return 0; OpenBattleMenu();return 1; }
 RunUnitSelectedEvent(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 CreateUnitMoveForUnit(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),56);if(cb)cb();
@@ -207,7 +208,7 @@ ShowCursorUnitRanges(x,y);
 func_0209fb70();
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_ACTIVE_PLAYER)=(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_UNIT_ID)>>6)+1;
 SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap,void **,0)+MAP_CELL_ORDER);
-func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
+BuildUnitMoveRangeBlockingUnits(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_ACTIVE_PLAYER)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER);
 MarkTargetCellsInGrid();
 SetMapCursorVisible(0);CreateCursorCellBurst(7);
@@ -245,7 +246,7 @@ void SelectCarriedUnit(u8 *transport, s32 cargoSlot, s32 menuMode) {
     func_0209fb70();
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_ACTIVE_PLAYER) = (M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_UNIT_ID) >> 6) + 1;
     SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CELL_ORDER);
-    func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    BuildUnitMoveRangeBlockingUnits(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_ACTIVE_PLAYER) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_CURRENT_PLAYER);
     MarkTargetCellsInGrid();
     SetMapCursorVisible(0); CreateCursorCellBurst(7);
@@ -373,7 +374,7 @@ void func_020d61f0(void) {
     func_ov000_021696d4();
 }
 
-void func_020d6310(void);
+void UpdateMapCommandReplay(void);
 /* MAP_MODE 5 update handler (the cursor settled on a tile): on a non-target tile
  * it re-opens the map action menu when the cursor moved, restores the idle cursor,
  * selects the transport's carried unit, or confirms the tile; on a unit-target tile
@@ -417,17 +418,21 @@ void UpdateMapTargetCursor(void) {
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = 6;
         SetAiCommandPhase(3);
         func_ov000_0219c7d8(0);
-        func_020d6310();
+        UpdateMapCommandReplay();
         return;
     }
 }
 
-void func_020d6310(void) {
- extern void *gCurrentMap;
- if(!IsMapCursorIdle())return;
- ProcessAiCommandStep();
- if(func_ov000_0219c7b0()!=2)return;
- M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=0;
+/* MAP_MODE 6 handler (the command just queued at the cursor is replaying): once
+ * the cursor is idle, step the replay, and when it is done (the command phase is
+ * back to picking an action) return the map to normal cursor mode. */
+void UpdateMapCommandReplay(void) {
+    extern void *gCurrentMap;
+
+    if (!IsMapCursorIdle()) return;
+    ProcessAiCommandStep();
+    if (GetAiCommandPhase() != AI_COMMAND_PHASE_PICK_ACTION) return;
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = MAP_MODE_CURSOR;
 }
 
 /* MAP_MODE 7 handler: snap the cursor's move target back to its own tile, mark the

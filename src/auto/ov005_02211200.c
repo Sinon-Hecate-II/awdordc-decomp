@@ -25,7 +25,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     void Reset3DSpriteBankState(void);
     void *CreateFrameBorderSprite(void *);
     void func_02089424(void);
-    void *func_020ab1c4(void *);
+    void *CreateUnitSprite(void *);
     void InitUnitSprite(void *, s32, s32, s32, s32);
     void Set3DSpriteSlideTargetAndStart(void *, s16, s16, s16, s32);
     s32 GetUnitSpriteWidth(void *);
@@ -68,7 +68,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         M2C_FIELD(p,Menu005Flags*,0x40).y=32;
     }
     tile=0x140;
-    { void *sprite; sprite = func_020ab1c4((void *)arg0);
+    { void *sprite; sprite = CreateUnitSprite((void *)arg0);
     InitUnitSprite(sprite, 0, tile, 3, 1);
     Set3DSpriteSlideTargetAndStart(sprite, 0xC0, 0xA0, 0xE0, 0xC0);
     if ((u8)(M2C_FIELD(M2C_FIELD(sprite, void **, 0x64), u8 *, 0x12)!=0)) {
@@ -82,7 +82,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     func_020aad18(sprite);
 
     }
-    { void *sprite2; sprite2 = func_020ab1c4((void *)arg0);
+    { void *sprite2; sprite2 = CreateUnitSprite((void *)arg0);
     InitUnitSprite(sprite2, 3, 0x150, 3, 1);
     Set3DSpriteSlideTargetAndStart(sprite2, 0xE0, 0xA0, 0xC0, 0xC0);
     if ((u8)(M2C_FIELD(M2C_FIELD(sprite2, void **, 0x64), u8 *, 0x12)!=0)) {
@@ -104,7 +104,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         tile+=0x20;
         do {
             void *spSprite;
-            M2C_FIELD((u8 *)(void *)arg0 + r9 * 4, void **, 0x38) = func_020ab1c4((void *)arg0);
+            M2C_FIELD((u8 *)(void *)arg0 + r9 * 4, void **, 0x38) = CreateUnitSprite((void *)arg0);
             InitUnitSprite(M2C_FIELD((u8 *)(void *)arg0+r9*4,void**,0x38), (r9 + 0x3F) & 0xFF, tile, 3, 0);
             spSprite=M2C_FIELD((u8 *)(void *)arg0+r9*4,void**,0x38);
             pos = (s16)r8;
@@ -176,7 +176,7 @@ FreeUiGraphicsBank(4); func_020af1e4(); func_ov003_021ff7ac(); func_02088624();
 void UpdateTabMenu(void *menu) {
     void MenuSpriteUpdate(void *);
     void PlaySoundEffect(s32);
-    void SetSpriteAnimation(void *, s32);
+    void GotoSpriteAnimationLabel(void *, s32);
     extern KeyState *gKeyState;
     s32 confirm;
     s32 cancel;
@@ -252,10 +252,10 @@ void UpdateTabMenu(void *menu) {
     }
     if (confirm) {
         PlaySoundEffect(0x1000D);
-        SetSpriteAnimation(menu, 1);
+        GotoSpriteAnimationLabel(menu, 1);
     } else if (cancel) {
         PlaySoundEffect(0x1000F);
-        SetSpriteAnimation(menu, 2);
+        GotoSpriteAnimationLabel(menu, 2);
     }
 }
 #pragma opt_common_subs reset
@@ -341,11 +341,11 @@ gCur3DSpriteEngine = old;
 
 void func_ov005_02211b4c(void) {
     s32 Divide(s32, s32);
-    extern M2C_UNK data_0215d9b8;
+    extern M2C_UNK gOptionBits;
     extern s32 gHistoryMenu;
     s32 timeVal;
 
-    timeVal = M2C_FIELD(&data_0215d9b8, s32 *, 0x74);
+    timeVal = M2C_FIELD(&gOptionBits, s32 *, 0x74);
     M2C_FIELD(gHistoryMenu, s32 *, 4) = Divide(timeVal, 0x34BC0);
     if (M2C_FIELD(gHistoryMenu, s32 *, 4) > 0x3E7) {
         M2C_FIELD(gHistoryMenu, s32 *, 4) = 0x3E7;

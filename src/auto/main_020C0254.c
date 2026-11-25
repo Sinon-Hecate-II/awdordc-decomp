@@ -3,6 +3,7 @@
 #include "sprite_slot.h"
 #include "ds3dsprite.h"
 #include "battle_map.h"
+#include "sound.h"
 /* A row of the caller-supplied 0x28-byte entry table a carried-unit list menu is
  * built from: the row kind (0xff ends the table), the callback that reports the
  * row's status, the row's icon/highlight/action callbacks and the sprite-slot id
@@ -93,10 +94,10 @@ void func_020c0278(void) {
 }
 
 void func_020c0374(void) {
-    M2C_UNK func_02075fd8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02076198();
-    func_02075fd8(0, 0, 0, 0);
-    func_02076198();
+    M2C_UNK SaveList_QueueUpdate(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK SaveList_StartFlush();
+    SaveList_QueueUpdate(0, 0, 0, 0);
+    SaveList_StartFlush();
 }
 
 void func_020c0394(M2C_UNK arg0) {
@@ -161,7 +162,7 @@ void RunCarriedUnitRowAction(void *arg0, s32 arg1) {
     callback(entry, (u8)arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
 }
 
-void func_020c04b4(void *arg0, s32 arg1) {
+void RunListMenuRowCancelAction(void *arg0, s32 arg1) {
     void (*callback)(s32, u8, u8);
     s32 entry;
     entry = GetCarriedUnitListEntry(arg0, arg1);
@@ -256,11 +257,15 @@ void func_020c05f0(void) {
     DeleteMapMenuSprites();
 }
 
-void func_020c05fc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
-    M2C_UNK func_020c0634(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+/* Open the carried-unit list menu from the caller's 0x28-byte entry table: clear
+ * the saved menu-state stack, then build the menu at (x, y), `width` pixels wide,
+ * starting on row `selection`. */
+void CreateMenuFromEntries(s32 entries, s32 x, s32 y, s32 selection, s32 width) {
+    M2C_UNK func_020c0634(s32, s32, s32, s32, s32);
     void ResetCarriedUnitMenuStack();
+
     ResetCarriedUnitMenuStack();
-    func_020c0634(arg0, arg1, arg2, arg3, arg4);
+    func_020c0634(entries, x, y, selection, width);
 }
 
 #pragma opt_instruction_scheduling off
@@ -292,17 +297,22 @@ p->x=x;p->y=y;
 AcquireMapViewHold();return (s32)p;
 }
 #pragma opt_instruction_scheduling reset
-void CreateMenuAt(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+/* Create a list menu from the caller's entry table `entries` at screen position
+ * (x, y), `width` pixels wide, starting on its first row, with the menu-open
+ * sound. */
+void CreateMenuAt(M2C_UNK entries, M2C_UNK x, M2C_UNK y, s32 width) {
     M2C_UNK PlaySoundEffect(s32);
-    PlaySoundEffect(0x10017);
-    func_020c05fc(arg0, arg1, arg2, 0, arg3);
+    void CreateMenuFromEntries(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+
+    PlaySoundEffect(SOUND_MENU_OPEN);
+    CreateMenuFromEntries(entries, x, y, 0, width);
 }
 
 void DeleteMapMenuSprites(void) {
-    M2C_UNK func_0209bfa8();
+    M2C_UNK DeleteTextSprites();
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02129630;
-    func_0209bfa8();
+    DeleteTextSprites();
     DeleteSpriteObjectsOfClass(&data_02129630);
 }
 
@@ -510,10 +520,12 @@ else {PlaySoundEffect(0x10016);RunCarriedUnitRowAction(list,index);}
 return 1;
 }
 
-s32 func_020c0df8(void *arg0) {
-u8 index=M2C_FIELD(arg0,u8 *,0); void *p=M2C_FIELD(arg0,void **,0x10);
+/* Cancel handler of a list-menu row: clear the row's old text sprites, play the
+ * back sound (SOUND_MENU_BACK) and run the row's cancel action. */
+s32 CancelListMenuRow(void *slot) {
+u8 index=M2C_FIELD(slot,u8 *,SPRITE_SLOT_ID); void *menu=M2C_FIELD(slot,void **,SPRITE_SLOT_OWNER);
 if(!IsCarriedUnitListOpen())return 0;
-func_0209bfa8();PlaySoundEffect(0x10018);func_020c04b4(p,index);return 1;
+DeleteTextSprites();PlaySoundEffect(0x10018);RunListMenuRowCancelAction(menu,index);return 1;
 }
 
 void func_020c0e38(void *arg0) {
@@ -576,14 +588,14 @@ DrawSpriteBatchAt(list->x,list->y);
  * 3), positions it at (0xe0, 0xa0) with a 0x100 x 0xa0 box, and, when it has a
  * visible entry, sets that entry's cell rectangle. Returns the new sprite. */
 void *CreateMenuUnitSprite(void *owner) {
-void *func_020ab1c4(s32);
+void *CreateUnitSprite(s32);
 void InitUnitSprite(void *,s32,s32,s32,s32);
 void Set3DSpriteSlideTargetAndStart(void *,s16,s16,s16,s32);
 u32 GetUnitSpriteWidth(void *); u32 GetUnitSpriteHeight(void *);
 void func_02087d84(void *,s32,s32,s32,u16,u16);
 void CreateUnitSpriteButtonTask(void *,s16); void func_020aad18(void *);void Show3DSpriteSlide(void *);
 void *unit; s16 y; s16 x; u32 width,height; u32 visible;
-unit=func_020ab1c4((s32)owner);
+unit=CreateUnitSprite((s32)owner);
 InitUnitSprite(unit,2,0x120,3,1);
 Set3DSpriteSlideTargetAndStart(unit,0xe0,0xa0,0x100,0xa0);
 visible=M2C_FIELD(M2C_FIELD(unit,void **,0x64),u8 *,0x12)!=0?1:0;

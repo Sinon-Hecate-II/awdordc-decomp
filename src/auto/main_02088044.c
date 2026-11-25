@@ -5,8 +5,8 @@
 typedef struct { u32 words[2]; } Unk0200FilePair;
 
 void func_02088044(void *arg0) {
-    void *func_02087e68();
-    M2C_UNK func_02087ea0(void *, void *);
+    void *SpriteCellListFindCell();
+    M2C_UNK SpriteCellListSelectCell(void *, void *);
     s32 WidgetRectContainsPoint(void *, void *, u16, u16);
     s32 SpriteCellListBackgroundHit(void *, u16, u16);
     extern void *gTouchState;
@@ -45,14 +45,14 @@ loop_2:
                             if ((temp_r0_2 != NULL) && (temp_r1 = M2C_FIELD(var_r4, u16 *, 8), (temp_r1 == M2C_FIELD(temp_r0_2, u16 *, 8)))) {
                                 M2C_FIELD(arg0, s8 *, 0xB) = (s8) temp_r1;
                             } else {
-                                func_02087ea0(arg0, var_r4);
+                                SpriteCellListSelectCell(arg0, var_r4);
                             }
                         } else {
                             M2C_FIELD(arg0, s8 *, 0xB) = (s8) M2C_FIELD(var_r4, u16 *, 8);
-                            func_02087ea0(arg0, var_r4);
+                            SpriteCellListSelectCell(arg0, var_r4);
                         }
                     } else if (temp_r0 & 0xC) {
-                        func_02087ea0(arg0, var_r4);
+                        SpriteCellListSelectCell(arg0, var_r4);
                     }
                 } else {
                     temp_r2 = M2C_FIELD(var_r4, u16 *, 8);
@@ -72,7 +72,7 @@ loop_2:
                             M2C_FIELD(arg0, u8 *, 0xE) = 0U;
                         }
                         if (M2C_FIELD(var_r4, u16 *, 0xA) & 8) {
-                            func_02087ea0(arg0, var_r4);
+                            SpriteCellListSelectCell(arg0, var_r4);
                         }
                     }
                 }
@@ -108,7 +108,7 @@ loop_2:
         temp_r1_2 = M2C_FIELD(arg0, s8 *, 8);
         if ((temp_r1_2 != -1) && ((u32) M2C_FIELD(gTouchState, u8 *, 0x10) < 0x1EU)) {
             if (temp_r1_2 != -2) {
-                temp_r0_3 = func_02087e68();
+                temp_r0_3 = SpriteCellListFindCell();
                 if ((WidgetRectContainsPoint(arg0, temp_r0_3, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2)) != 0) && (M2C_FIELD(temp_r0_3, u16 *, 0xA) & 2)) {
                     if (M2C_FIELD(arg0, u8 *, 0xE) == 0) {
                         M2C_FIELD(arg0, s8 *, 0xB) = (s8) M2C_FIELD(arg0, s8 *, 8);

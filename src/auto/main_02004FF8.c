@@ -402,7 +402,7 @@ void *UnlinkThreadFromQueue(OSThreadQueue *queue, Thread *thread) {
     return p;
 }
 
-void *func_020057c8(void *arg0) {
+void *PopThreadMutex(void *arg0) {
     void *temp_r1;
     void *temp_r2;
 

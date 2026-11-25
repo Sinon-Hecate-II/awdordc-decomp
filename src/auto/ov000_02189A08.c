@@ -116,11 +116,14 @@ void ChooseCaptureDestination(void) {
     PlanMoveDestination(bestX, bestY);
 }
 #pragma opt_strength_reduction reset
-void func_ov000_02189df4(void) {
+/* Final step of the AI's role-5 (transport) action: a transport that is carrying
+ * a unit hands the action to that unit (SelectCarriedUnitAction); an empty one
+ * instead picks the unit it should load (func_ov000_021895bc). */
+void RunAiCargoOrLoadAction(void) {
     M2C_UNK SelectCarriedUnitAction();
     M2C_UNK func_ov000_021895bc();
     extern void **gCurrentMap;
-    if (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xC) != 0) {
+    if (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_CARRIED) != 0) {
         SelectCarriedUnitAction();
         return;
     }

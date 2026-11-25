@@ -5,16 +5,19 @@
 typedef struct { u8 bytes[0x8c]; } PlayerRecord02180738;
 static inline u8 PlayerMode02180738(PlayerRecord02180738 *players, s32 index) { return players[index].bytes[0x2a]; }
 
-void func_ov000_02180738(void) {
+/* Role-4/6 AI step-6 handler (case 6 of the RunAiRole4Or6ActionByStep
+ * dispatcher): clear the influence maps, select the acting unit's attack target,
+ * then place the target cursor on that unit's tile. */
+void RunAiRole4Or6Step6Action(void) {
 M2C_UNK ClearAiInfluenceMaps();
 M2C_UNK SelectUnitAttackTarget();
 M2C_UNK SetMapCursor(u8, u8, s32, s32, s32);
 extern void **gCurrentMap;
-void *temp_r1;
+BattleMapUnit *target;
 ClearAiInfluenceMaps();
 SelectUnitAttackTarget();
-temp_r1 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
-SetMapCursor(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2), 2, 0, 0);
+target = M2C_FIELD(*gCurrentMap, BattleMapUnit **, MAP_CURSOR_UNIT);
+SetMapCursor(M2C_FIELD(target, u8 *, MAP_UNIT_X), M2C_FIELD(target, u8 *, MAP_UNIT_Y), MAP_CURSOR_KIND_TARGET, 0, 0);
 }
 
 /* Role-4/6 AI step-7 handler (case 7 of the RunAiRole4Or6ActionByStep dispatcher for
@@ -281,7 +284,7 @@ void RunAiRole3Step3Action(void) {
 M2C_UNK BuildAiInfluenceMaps();
 M2C_UNK SelectAiActionTarget();
 M2C_UNK FindBestMoveTarget();
-M2C_UNK func_ov000_02195750();
+M2C_UNK PlanCapturablePropertyDestination();
 M2C_UNK PlanProductionSiteDestination();
 M2C_UNK SelectAttackMoveDestination();
 M2C_UNK SelectPropertyAttackDestination();
@@ -297,7 +300,7 @@ SelectAiActionTarget();
 map = *gCurrentMap;
 if (M2C_FIELD(map, u8 *, MAP_FOG) != 0 || M2C_FIELD(map, u8 *, MAP_WEATHER) == MAP_WEATHER_SNOW || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) != 0) { RunAiAttackAction(); }
 FindBestMoveTarget();
-func_ov000_02195750();
+PlanCapturablePropertyDestination();
 PlanProductionSiteDestination();
 SelectAttackMoveDestination();
 SelectPropertyAttackDestination();
@@ -632,7 +635,7 @@ case 5: if(PlayerHasHq(M2C_FIELD(state,u16 *,0x52a4))==1)RunAiRole4Or6Step5Actio
 case 7: RunAiRole4Or6Step7Action(); return;
 case 8: RunAiRole4Or6Step8Action(); return;
 case 9: RunAiRole4Or6Step9Action(); return;
-case 6: func_ov000_02180738(); return;
+case 6: RunAiRole4Or6Step6Action(); return;
 case 10: RunAiRole4Or6Step10Action(); return;
 }
 }

@@ -1,6 +1,8 @@
 /* 37 functions from 0x0217EB6C to 0x0217FB68 (ov001), found by ds-decomp. */
 #include "common.h"
 #include "gx.h"
+#include "wfc.h"
+#include "ov001_wh.h"
 typedef struct { u8 bytes[4]; } FourBytes;
 typedef struct { u8 bytes[14]; } FourteenBytes;
 typedef struct { u16 a,b,c,d; } FourShorts;
@@ -373,9 +375,26 @@ s32 IsCurrentSaveSlotValid(void) {
     return 1;
 }
 
-void func_ov001_0217f6cc(void){s32 Ov001_GetRegionMenuSelection(void);M2C_UNK Ov001_PlaySound(s32);M2C_UNK Ov001_CloseRegionMenu();M2C_UNK func_ov001_0218384c(s32);extern M2C_UNK gMapListState;extern M2C_UNK func_ov001_0217f70c;if(Ov001_GetRegionMenuSelection())return;Ov001_PlaySound(6);Ov001_CloseRegionMenu();func_ov001_0218384c(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,12));Ov001_SetStepCallback(&func_ov001_0217f70c);}
+/* Map-list message-box step: wait for the player to confirm the message, then
+ * play the confirm sound, close the box, restore the list background's palette
+ * from its loaded palette file, and switch to the step that waits for the box to
+ * finish closing. */
+void MapList_DismissMessage(void) {
+    s32 Ov001_GetRegionMenuSelection(void);
+    M2C_UNK Ov001_PlaySound(s32);
+    M2C_UNK Ov001_CloseRegionMenu();
+    M2C_UNK Ov001_LoadMainPalette(s32);
+    extern M2C_UNK gMapListState;
+    extern M2C_UNK MapList_WaitMessageClosed;
 
-void func_ov001_0217f70c(void) {
+    if (Ov001_GetRegionMenuSelection()) return;
+    Ov001_PlaySound(6);
+    Ov001_CloseRegionMenu();
+    Ov001_LoadMainPalette(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, OV001_MAP_LIST_PALETTE));
+    Ov001_SetStepCallback(&MapList_WaitMessageClosed);
+}
+
+void MapList_WaitMessageClosed(void) {
     s32 Ov001_IsRegionMenuActive();
     extern M2C_UNK func_ov001_0217d744;
     if (Ov001_IsRegionMenuActive() != 0) {
@@ -445,7 +464,7 @@ void Ov001_ShowMapListConnectMessage(void) {
     Ov001_SetStepCallback(&func_ov001_0217f894);
 }
 
-void func_ov001_0217f894(void){s32 Ov001_IsRegionMenuActive(void);void func_ov001_0217f8bc(void);void func_ov001_0217f8c0(void);void func_ov001_0217f8c4(void);func_ov001_0217f8bc();func_ov001_0217f8c0();if(Ov001_IsRegionMenuActive())return;Ov001_SetStepCallback(func_ov001_0217f8c4);}
+void func_ov001_0217f894(void){s32 Ov001_IsRegionMenuActive(void);void func_ov001_0217f8bc(void);void func_ov001_0217f8c0(void);void Ov001_FadeOutMapListForAccessPoint(void);func_ov001_0217f8bc();func_ov001_0217f8c0();if(Ov001_IsRegionMenuActive())return;Ov001_SetStepCallback(Ov001_FadeOutMapListForAccessPoint);}
 
 void func_ov001_0217f8bc(void) {
 
@@ -455,10 +474,12 @@ void func_ov001_0217f8c0(void) {
 
 }
 
-void func_ov001_0217f8c4(void) {
+/* Fade the map list out to white (sub BG0, main BG2 and OBJ) and move on to the
+ * step that closes it and opens the access-point menu. */
+void Ov001_FadeOutMapListForAccessPoint(void) {
     extern M2C_UNK Ov001_CloseMapListForAccessPoint;
-    Ov001_StartFade(3, 1, 1, 8);
-    Ov001_StartFade(3, 0, 0x14, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
     Ov001_SetStepCallback(&Ov001_CloseMapListForAccessPoint);
 }
 
@@ -484,14 +505,29 @@ void Ov001_CloseMapListForAccessPoint(void) {
     Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);
 }
 
-s32 func_ov001_0217f95c(void) {
+s32 Ov001_CheckLidClosed(void) {
     if (((s32) (*(u16 *)0x027FFFA8 & 0x8000) >> 0xF) != 0) {
         return 1;
     }
     return 0;
 }
 
-void func_ov001_0217f97c(void){void Ov001_LoadConnectionBackground(void);void func_ov001_0217fa38(void);M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);M2C_UNK Ov001_ShowMessageBox(M2C_UNK);M2C_UNK Ov001_LoadSaveSlotObjLayout(void);extern M2C_UNK gOv001OptionExitToConnection;M2C_FIELD(&gOv001OptionExitToConnection,u8 *,0)=0;Ov001_LoadConnectionBackground();Ov001_LoadSaveSlotObjLayout();Ov001_ShowMessageBox(0x25);Ov001_CreateAnimSprite(1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fa38);}
+/* Open the connection screen by loading its background and message, then scheduling its fade-in. */
+void Ov001_OpenConnectionScreen(void) {
+    void Ov001_LoadConnectionBackground(void);
+    void Ov001_FadeInConnectionScreen(void);
+    M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
+    M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
+    M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
+    extern u8 gOv001OptionExitToConnection;
+
+    gOv001OptionExitToConnection = 0;
+    Ov001_LoadConnectionBackground();
+    Ov001_LoadSaveSlotObjLayout();
+    Ov001_ShowMessageBox(OV001_MSG_CONNECTION);
+    Ov001_CreateAnimSprite(1);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInConnectionScreen);
+}
 
 /* Loads the connection screen's background map and gives both engines'
  * background planes the lowest priority so the screen's sprites and text draw
@@ -509,7 +545,7 @@ void Ov001_LoadConnectionBackground(void) {
     REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_0217fa38(void) {
+void Ov001_FadeInConnectionScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_0217fa6c;
@@ -521,7 +557,7 @@ void func_ov001_0217fa38(void) {
 void func_ov001_0217fa6c(void) {
     void func_ov001_0217fa98(void);
     if (Ov001_IsFadeActive(0) != 0) return;
-    func_ov001_02171e20(1);
+    Ov001_CreateMenuIconRow(1);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fa98);
 }
 
@@ -539,27 +575,30 @@ void func_ov001_0217fa98(void) {
 void func_ov001_0217fac0(void) {
     M2C_UNK SleepMilliseconds(s32);
     M2C_UNK Ov001_HandleOptionPage1Choice();
-    void func_ov001_0217fae0(void);
+    void Ov001_CancelOptionSelection(void);
     void func_ov001_0217fb18(void);
     void func_ov001_0217fb1c(void);
     SleepMilliseconds(10);
     Ov001_HandleOptionPage1Choice();
-    func_ov001_0217fae0();
+    Ov001_CancelOptionSelection();
     func_ov001_0217fb18();
     func_ov001_0217fb1c();
 }
 
-void func_ov001_0217fae0(void) {
+/* Cancel the option-screen selection, latching the back choice: either the
+ * player pressed B, or the console's lid was closed. */
+void Ov001_CancelOptionSelection(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     s32 KeyPressed(M2C_UNK);
-    if (KeyPressed(2) != 0) {
-        Ov001_LatchIconRowSelection(0);
+    s32 Ov001_CheckLidClosed(void);
+    if (KeyPressed(KEY_B) != 0) {
+        Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
         return;
     }
-    if (func_ov001_0217f95c() == 0) {
+    if (Ov001_CheckLidClosed() == 0) {
         return;
     }
-    Ov001_LatchIconRowSelection(0);
+    Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
 void func_ov001_0217fb18(void) {

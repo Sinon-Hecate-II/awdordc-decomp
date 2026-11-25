@@ -236,13 +236,15 @@ s32 func_02055aa0(void **connection, s32 playerId) {
     return 0;
 }
 
-s32 gpiFindBuddyStatus(void **arg0,s32 arg1,s32 *arg2) {
+/* GameSpy gpi: look up the buddy-status record for `profileId` in the
+ * connection's buddy table; store it in *buddyOut and return whether it exists. */
+s32 gpiFindBuddyStatus(void **connection,s32 profileId,s32 *buddyOut) {
 s32 TableLookup(s32,void *);
-s32 key[7];s32 v;void *p=*arg0;
-key[0]=arg1;
-v=TableLookup(M2C_FIELD(p,s32 *,0x428),key);
-if(arg2)*arg2=v;
-return v!=0;
+s32 key[7];s32 record;GpiConnectionHead *gpi=*connection;
+key[0]=profileId;
+record=TableLookup((s32)gpi->buddyTable,key);
+if(buddyOut)*buddyOut=record;
+return record!=0;
 }
 
 void func_02055bc0(void **arg0, M2C_UNK arg1) {
@@ -295,15 +297,19 @@ s32 gpiFindBuddyByNickEmail(void **connection, s32 nick, s32 email, s32 *result)
     return 0;
 }
 
-void func_02055cb4(M2C_UNK arg0, void *arg1) {
+void gpiWalkBuddyTableCallback(M2C_UNK arg0, void *arg1) {
     M2C_FIELD(arg1, M2C_UNK (**)(s32, M2C_UNK, s32), 4)(M2C_FIELD(arg1, s32 *, 0), arg0, M2C_FIELD(arg1, s32 *, 8));
 }
 
-s32 gpiWalkBuddyTable(void **arg0,s32 (*arg1)(s32,void *,void *),void *arg2) {
+/* Run `callback` over every buddy-status record of the connection's buddy
+ * table; returns 1 when the callback accepted one of them, 0 when none was
+ * accepted. */
+s32 gpiWalkBuddyTable(void **connection,s32 (*callback)(s32,void *,void *),void *userData) {
 s32 TableMapSafe2(s32,void (*)(s32,void *),void *);
-s32 data[3];void *p=*arg0;
-data[1]=(s32)arg1;data[2]=(s32)arg2;data[0]=(s32)arg0;
-return TableMapSafe2(M2C_FIELD(p,s32 *,0x428),func_02055cb4,data)==0;
+s32 data[3];
+GpiConnectionHead *gpi=*connection;
+data[1]=(s32)callback;data[2]=(s32)userData;data[0]=(s32)connection;
+return TableMapSafe2((s32)gpi->buddyTable,gpiWalkBuddyTableCallback,data)==0;
 }
 
 s32 func_02055d10(s32 arg0,void *arg1,void *arg2) {
@@ -317,8 +323,14 @@ s32 data[2]; data[0]=arg1;data[1]=0;
 gpiWalkBuddyTable(arg0,func_02055d10,data);return data[1];
 }
 
-s32 gpiPeerConnectionDone(void *arg0) {
-    if ((arg0 != NULL) && (M2C_FIELD(arg0, s32 *, 0xC) == 0) && (M2C_FIELD(arg0, s32 *, 8) == 0) && (M2C_FIELD(arg0, s32 *, 0x18) == 0) && (M2C_FIELD(arg0, s32 *, 0x10) == 0)) {
+/* Whether a gpi peer record holds no live connection state: its player id,
+ * socket, receive buffer and handshake deadline are all clear. */
+s32 gpiPeerConnectionDone(void *peer) {
+    if ((peer != NULL)
+        && (M2C_FIELD(peer, s32 *, GPI_PEER_PLAYER_ID) == 0)
+        && (M2C_FIELD(peer, s32 *, GPI_PEER_SOCKET) == 0)
+        && (M2C_FIELD(peer, s32 *, GPI_PEER_RX_BUFFER) == 0)
+        && (M2C_FIELD(peer, s32 *, GPI_PEER_DEADLINE) == 0)) {
         return 1;
     }
     return 0;

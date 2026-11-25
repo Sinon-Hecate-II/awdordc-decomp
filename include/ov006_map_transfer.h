@@ -27,8 +27,8 @@
 #define MAP_TRANSFER_PANEL_PAGES   0x3C /* s32[4] each ready player's page pointer */
 #define MAP_TRANSFER_PANEL_LOCAL   0x4C /* s8 local player id */
 #define MAP_TRANSFER_PANEL_READY   0x4D /* u8 bit per player whose page is ready */
-#define MAP_TRANSFER_PANEL_RECORDS 0x50 /* s32 received map-records buffer */
-#define MAP_TRANSFER_PANEL_CHOSEN  0x54 /* s32 chosen received map record */
+#define MAP_TRANSFER_PANEL_RECORDS 0x50 /* u8 * the local player's own five-map record list (MAP_RECORD_LIST_SIZE bytes) */
+#define MAP_TRANSFER_PANEL_CHOSEN  0x54 /* u8 * the players' downloaded-map list, the same shape, received over the link */
 
 /* The map-code entry panel (class gMapCodeEntryPanelVTable): the code-entry
  * screen that types a campaign map's code, built by CreateMapCodeEntryPanel.
@@ -39,7 +39,7 @@
 #define MAP_CODE_PANEL_Y        0x3C /* s16 panel y, -0x8000 before it is placed */
 #define MAP_CODE_PANEL_GRID     0x40 /* void *sprite-grid child; its +0x14 is the glyph heap block it owns */
 #define MAP_CODE_PANEL_SUBPANEL 0x44 /* void *heap sub-panel child, freed through its own vtable */
-#define MAP_CODE_PANEL_SPRITE   0x48 /* void *sprite child */
+#define MAP_CODE_PANEL_SPRITE   0x48 /* SpriteTween *: the panel's reveal tween, stepped by UpdateMapCodeEntryPanel */
 
 /* The ov006 map-list screen object: the online map-trade screen that lists the
  * campaign maps it can join, and can show the player's own map code.  It keeps

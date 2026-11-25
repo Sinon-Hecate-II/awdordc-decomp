@@ -79,7 +79,7 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
     void func_020d166c(u8, s32, void *);
     s32 Divide(s32, s32);
     s32 GetMoveRangeCommanderId(s32, s32, s32);
-    void func_020a2b98(s32, s32);
+    void AddCoPowerMeterPointsIfEnabled(s32, s32);
     s16 GetCoPowerMeterPoints(s32);
     s32 func_020cd614(void);
     void *CreateSpriteFromClass(void *, s32);
@@ -87,8 +87,8 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
     void BattleUpdateUnitCursor(void);
     extern void **gCurrentMap;
     extern M2C_UNK gBattleCommand;
-    extern M2C_UNK data_0211f984;
-    extern M2C_UNK data_0211f8fc;
+    extern M2C_UNK gBattlePreviewFullDef;
+    extern M2C_UNK gBattlePreviewMapDef;
 
     u8 selectedBucket;
     s32 unitBucket;
@@ -167,8 +167,8 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
 
         s32 udiff = unitRng - baseRng;
 
-        if (GetMoveRangeCommanderId(selectedBucket, M2C_FIELD(*gCurrentMap, s16 *, 0x52dc), M2C_FIELD(*gCurrentMap, s16 *, 0x52de)) != -1) func_020a2b98(selectedBucket, udiff);
-        if (GetMoveRangeCommanderId(unitBucket, M2C_FIELD(*gCurrentMap, s16 *, 0x52dc), M2C_FIELD(*gCurrentMap, s16 *, 0x52de)) != -1) func_020a2b98(unitBucket, sdiff);
+        if (GetMoveRangeCommanderId(selectedBucket, M2C_FIELD(*gCurrentMap, s16 *, 0x52dc), M2C_FIELD(*gCurrentMap, s16 *, 0x52de)) != -1) AddCoPowerMeterPointsIfEnabled(selectedBucket, udiff);
+        if (GetMoveRangeCommanderId(unitBucket, M2C_FIELD(*gCurrentMap, s16 *, 0x52dc), M2C_FIELD(*gCurrentMap, s16 *, 0x52de)) != -1) AddCoPowerMeterPointsIfEnabled(unitBucket, sdiff);
     }
 
     {
@@ -178,8 +178,8 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
         M2C_FIELD(side, s16 *, 0x12) = GetCoPowerMeterPoints(unitBucket);
     }
 
-    if (func_020cd614()) p = CreateSpriteFromClass(&data_0211f984, 7);
-    else p = CreateSpriteFromClass(&data_0211f8fc, 7);
+    if (func_020cd614()) p = CreateSpriteFromClass(&gBattlePreviewFullDef, 7);
+    else p = CreateSpriteFromClass(&gBattlePreviewMapDef, 7);
     M2C_FIELD(p, s32 *, 0x60) = arg1;
     M2C_FIELD(p, void **, 0x34) = unitPtr;
     M2C_FIELD(p, s32 *, 0x38) = (s32)M2C_FIELD(unitPtr, u8 *, 0x1);

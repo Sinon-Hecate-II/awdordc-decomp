@@ -48,7 +48,7 @@ extern u8 gHttpLowRecvBufName[], gHttpLowSendBufName[];
 s32 func_02033210(void){
 extern M2C_UNK gNasConnection;extern s32 gErrno;
 extern u8 data_020fb398[],data_020fb3a0[],data_020fb3ac[],data_020fb3b8[],data_020fb3c0[],data_020fb3c8[],data_020fb3d4[],data_020fb3e0[];
-void *FindHttpHeader(void*,void*);s32 ParseHttpDate(void*);s32 ParseInt(s8*);s32 ReadHttpHeader(void*,void*,void*,s32);s32 func_02034fa4(void*,void*,void*,s32);s32 strtol(void*,void**,s32);s32 StringLength(s32);
+void *FindHttpHeader(void*,void*);s32 ParseHttpDate(void*);s32 ParseInt(s8*);s32 ReadHttpHeader(void*,void*,void*,s32);s32 CopyHttpHeaderValue(void*,void*,void*,s32);s32 strtol(void*,void**,s32);s32 StringLength(s32);
 void *end; s32 status; void *response;void *p;
 p=M2C_FIELD(&gNasConnection,void **,8);status=0;end=(void*)status;
 response=M2C_FIELD(p,void **,0x1314);end=FindHttpHeader(response,data_020fb398);if(end)ParseHttpDate(end);
@@ -69,7 +69,7 @@ ReadHttpHeader(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),da
 ReadHttpHeader(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3c0,M2C_FIELD(&gNasConnection,void **,8)+0x101f,0x33);
 ReadHttpHeader(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3c8,M2C_FIELD(&gNasConnection,void **,8)+0x117f,9);
 ReadHttpHeader(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3d4,M2C_FIELD(&gNasConnection,void **,8)+0x1010,15);
-func_02034fa4(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3e0,M2C_FIELD(&gNasConnection,void **,8)+0x1188,65);
+CopyHttpHeaderValue(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),data_020fb3e0,M2C_FIELD(&gNasConnection,void **,8)+0x1188,65);
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),u8*,0x11b3)=0;if(status!=40)M2C_FIELD(&gNasConnection,s32*,0)=1;else M2C_FIELD(&gNasConnection,s32*,0)=2;
 }return 0;}
 #pragma pop

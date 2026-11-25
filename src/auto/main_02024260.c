@@ -186,10 +186,10 @@ TlsSendFinished(transport);
 #pragma peephole on
 #pragma scheduling off
 void func_02024b24(void *p) {
-void func_0201d25c(void *); void TcpCloseConnection(void *); void SHA1_Init(void *); void MD5_Init(void *);
+void SocketStartListen(void *); void TcpCloseConnection(void *); void SHA1_Init(void *); void MD5_Init(void *);
 void *q = M2C_FIELD(p, void **, 12);
 retry:
-func_0201d25c(p);
+SocketStartListen(p);
 M2C_FIELD(q,u8 *,0x455)=0; M2C_FIELD(q,s32 *,0x1d4)=0; M2C_FIELD(q,u8 *,0x454)=1;
 SHA1_Init((u8 *)q+0x2ec);MD5_Init((u8 *)q+0x3a4);
 if (!TlsServerHandshake(p)) {M2C_FIELD(q,u8 *,0x455)=8; return;}

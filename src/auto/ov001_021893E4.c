@@ -123,10 +123,10 @@ void Ov001_UpdateLinkState(void) {
 void func_ov001_0218959c(void) {
     M2C_UNK Ov001_InitProfileSharing(void);
     void func_ov001_02188a20(s32);
-    extern s32 func_ov001_021897ec(s32);
+    extern s32 Ov001_StoreLinkPlayerRecord(s32);
     extern void *gOv001ProfileState;
     Ov001_InitProfileSharing();
-    func_ov001_02188a20((s32) &func_ov001_021897ec);
+    func_ov001_02188a20((s32) &Ov001_StoreLinkPlayerRecord);
     M2C_FIELD(gOv001ProfileState, u8 *, 0xA90) = 8;
 }
 
@@ -207,17 +207,21 @@ s32 func_ov001_021897bc(void) {
     return 1;
 }
 
-s32 func_ov001_021897ec(s32 arg0) {
-    s32 func_ov001_02187a30(s32);
-    s32 func_ov001_021879fc(s32);
+/* WH data-sharing callback: look up the connected link player whose six-byte
+ * link address sits at +0xA of `userInfo` and remember that player's link record
+ * in the profile block's per-player pointer table (0xAA0 + (player - 1) * 4).
+ * Returns 0 when no connected player matches. */
+s32 Ov001_StoreLinkPlayerRecord(s32 userInfo) {
+    s32 Ov001_FindLinkPlayerByAddress(s32);
+    s32 Ov001_GetLinkPlayerRecord(s32);
     extern void *gOv001ProfileState;
-    s32 temp_r0;
+    s32 player;
 
-    temp_r0 = func_ov001_02187a30(arg0 + 0xA);
-    if (temp_r0 == 0) {
+    player = Ov001_FindLinkPlayerByAddress(userInfo + 0xA);
+    if (player == 0) {
         return 0;
     }
-    M2C_FIELD((u8 *) gOv001ProfileState + (temp_r0 - 1) * 4, s32 *, 0xAA0) = func_ov001_021879fc(temp_r0);
+    M2C_FIELD((u8 *) gOv001ProfileState + (player - 1) * 4, s32 *, 0xAA0) = Ov001_GetLinkPlayerRecord(player);
     return 1;
 }
 
@@ -339,7 +343,7 @@ void func_ov001_02189ad0(void) {
     void SetArchiveProc(void *, s32, s32);
     s32 ConfigureArchiveLayout(void *, s32, s32, s32, s32, s32, void *, void *);
     s32 LoadArchiveIndex(void *, s32, s32);
-    s32 Ov001_QueueCreateFromBuffer(s32, s32, s32);
+    s32 Ov001_QueueCreateFromRange(s32, s32, s32);
     void func_0200563c(void *, void *, ...);
     void SetFileDirectory(void *);
     extern void *gOv001UtilityState;
@@ -347,7 +351,7 @@ void func_ov001_02189ad0(void) {
     extern char data_ov001_0218fd04[];
     extern char data_ov001_021917ac[];
     s32 Ov001_UtilityArchiveCommand(s32, s32);
-    s32 func_ov001_02189d70(void *, M2C_UNK, s32,s32);
+    s32 Ov001_UtilityArchiveRead(void *, M2C_UNK, s32,s32);
     s32 func_ov001_02189dc0(void);
 
     u8 request[0x48];
@@ -372,14 +376,14 @@ void func_ov001_02189ad0(void) {
         SystemHalt();
     }
     SetArchiveProc((u8 *)gOv001UtilityState + 0x88, (s32)Ov001_UtilityArchiveCommand, 0x602);
-    if (!ConfigureArchiveLayout((u8 *)gOv001UtilityState + 0x88, fileSize, lo[0], lo[1], hi[0], hi[1], (void *)func_ov001_02189d70, (void *)func_ov001_02189dc0)) {
+    if (!ConfigureArchiveLayout((u8 *)gOv001UtilityState + 0x88, fileSize, lo[0], lo[1], hi[0], hi[1], (void *)Ov001_UtilityArchiveRead, (void *)func_ov001_02189dc0)) {
         SystemHalt();
     }
     dataSize = LoadArchiveIndex((u8 *)gOv001UtilityState + 0x88, 0, 0);
     data = (void *)Ov001_Alloc(dataSize, 4);
     *(void **)gOv001UtilityState = data;
     LoadArchiveIndex((u8 *)gOv001UtilityState + 0x88, (s32)*(void **)gOv001UtilityState, dataSize);
-    M2C_FIELD(gOv001UtilityState, s32 *, 0x84) = (s32)Ov001_QueueCreateFromBuffer(0x20, (s32)((u8 *)gOv001UtilityState + 4), 4);
+    M2C_FIELD(gOv001UtilityState, s32 *, 0x84) = (s32)Ov001_QueueCreateFromRange(0x20, (s32)((u8 *)gOv001UtilityState + 4), 4);
     func_0200563c(dirName, data_ov001_021917ac, data_ov001_0218fd04);
     SetFileDirectory(dirName);
 }
@@ -427,15 +431,18 @@ s32 Ov001_UtilityArchiveCommand(s32 request, s32 command) {
     }
 }
 
-void func_ov001_02189db0(M2C_UNK arg0);
+void Ov001_UtilityArchiveReadDone(M2C_UNK arg0);
 
-s32 func_ov001_02189d70(void *arg0,s32 arg1,s32 arg2,s32 arg3) {
- void func_02010b1c(s32,s32,s32,s32,s32,void*,s32);
- func_02010b1c(-1,arg2+M2C_FIELD(arg0,s32*,0x28),arg1,arg3,(s32)func_ov001_02189db0,arg0,1);
- return 6;
+/* The ov001 utility archive's read procedure: start an asynchronous card read of
+ * `length` bytes from `offset`, relative to the archive image, into `buffer`, and
+ * report the request as still in progress (6) until the done callback runs. */
+s32 Ov001_UtilityArchiveRead(void *archive, s32 buffer, s32 offset, s32 length) {
+    void StartCardArchiveRead(s32, s32, s32, s32, s32, void *, s32);
+    StartCardArchiveRead(-1, offset + M2C_FIELD(archive, s32 *, 0x28), buffer, length, (s32)Ov001_UtilityArchiveReadDone, archive, 1);
+    return 6;
 }
 
-void func_ov001_02189db0(M2C_UNK arg0) {
+void Ov001_UtilityArchiveReadDone(M2C_UNK arg0) {
     M2C_UNK FileOperationCompleted(M2C_UNK, M2C_UNK);
     FileOperationCompleted(arg0, 0);
 }
@@ -508,7 +515,7 @@ s32 Ov001_FileHasSuffix(void *name, s32 suffix, s32 suffixLen) {
  * the list with the head and tail sentinels that bound the pool's 0x200-byte
  * block region in the sprite arena. */
 void Ov001_InitSpritePools(void) {
-    s32 Ov001_QueueCreateFromBuffer(s32, s32, s32);
+    s32 Ov001_QueueCreateFromRange(s32, s32, s32);
     s32 Ov001_Alloc(s32, s32);
     s32 Ov001_ListCreate(void);
     void Ov001_ListPushBack(s32, void *);
@@ -521,7 +528,7 @@ void Ov001_InitSpritePools(void) {
     gOv001SpritePools = Ov001_Alloc(sizeof(Ov001SpritePool) * OV001_SPRITE_POOL_COUNT, 4);
     for (i = 0; i < OV001_SPRITE_POOL_COUNT; i++) {
         /* 0x20 free-object slots of 0x10 bytes each fill the pool's first 0x200 bytes. */
-        OV001_SPRITE_POOLS[i].freeObjs = Ov001_QueueCreateFromBuffer(0x20, (s32)&OV001_SPRITE_POOLS[i], 0x10);
+        OV001_SPRITE_POOLS[i].freeObjs = Ov001_QueueCreateFromRange(0x20, (s32)&OV001_SPRITE_POOLS[i], 0x10);
         OV001_SPRITE_POOLS[i].list = Ov001_ListCreate();
         OV001_SPRITE_POOLS[i].head.start = Ov001_SpriteObjAddr(i, 0x40);
         OV001_SPRITE_POOLS[i].tail.start = Ov001_SpriteObjAddr(i, 0x7f) + 8;

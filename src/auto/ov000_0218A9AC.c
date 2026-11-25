@@ -24,7 +24,7 @@ void SelectAttackMoveDestination(void) {
     s32 MapOrder_IsEnemyOwned(void);
     s32 func_ov000_0217aa2c(s32, s32);
     s32 FindAttackPosition(void *);
-    s32 func_ov000_0217e6bc(s32, s32);
+    s32 IsMoveDestinationAllowed(s32, s32);
     void PlanMoveDestination(s32, s32);
 
     extern void **gCurrentMap;
@@ -86,7 +86,7 @@ next:;
     if (bestScore == 0x7fff) return;
 
     if (!FindAttackPosition(bestTile)) return;
-    if (!func_ov000_0217e6bc(bestTile[0], bestTile[1])) return;
+    if (!IsMoveDestinationAllowed(bestTile[0], bestTile[1])) return;
     PlanMoveDestination(bestTile[0], bestTile[1]);
     return;
 }

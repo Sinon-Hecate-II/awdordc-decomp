@@ -6,7 +6,7 @@
    the entity asks for (0 = main engine, 1 = sub engine, 3 = the engine that is active), and
    then moves the entity on to the matching next state. */
 void UpdateEntityCursor(void *arg0){
-M2C_UNK func_ov010_02228180(void *);M2C_UNK SetSpriteAnimation(void *,s32);M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK SetPanelChoice(void *,s32);s32 func_020c4ba4(s32);s32 func_020c4b88(s32);M2C_UNK func_ov010_0222a20c(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
+M2C_UNK func_ov010_02228180(void *);M2C_UNK GotoSpriteAnimationLabel(void *,s32);M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK SetPanelChoice(void *,s32);s32 func_020c4ba4(s32);s32 func_020c4b88(s32);M2C_UNK func_ov010_0222a20c(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 if(func_ov010_02228180(arg0)==3){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
@@ -20,7 +20,7 @@ if(mode==3&&bank!=savedBank)continue;
 created=CreateTextLayer(arg0);RenderTextLayerMessage(created,2,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000013);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 
-}while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,8);return;}
+}while(++i<2);gCur3DSpriteEngine=savedBank;}GotoSpriteAnimationLabel(arg0,8);return;}
 func_ov010_0222a20c((M2C_UNK *)func_ov010_0222ad50,(M2C_UNK)arg0);
 if(!func_020c4ba4(0)){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
@@ -33,7 +33,7 @@ if(mode==3&&bank!=savedBank)continue;
 created=CreateTextLayer(arg0);RenderTextLayerMessage(created,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000015);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 SetPanelChoice(created,1);
-}while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,10);return;}
+}while(++i<2);gCur3DSpriteEngine=savedBank;}GotoSpriteAnimationLabel(arg0,10);return;}
 if(!func_020c4b88(0)){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 savedBank=gCur3DSpriteEngine;i=0;do{
@@ -45,7 +45,7 @@ if(mode==3&&bank!=savedBank)continue;
 created=CreateTextLayer(arg0);RenderTextLayerMessage(created,2,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000017);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 
-}while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,12);return;}
+}while(++i<2);gCur3DSpriteEngine=savedBank;}GotoSpriteAnimationLabel(arg0,12);return;}
 if(M2C_FIELD(arg0,s8 *,0x35)>=0){
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 savedBank=gCur3DSpriteEngine;i=0;do{
@@ -57,7 +57,7 @@ if(mode==3&&bank!=savedBank)continue;
 created=CreateTextLayer(arg0);RenderTextLayerMessage(created,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000014);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 SetPanelChoice(created,0);
-}while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,9);
+}while(++i<2);gCur3DSpriteEngine=savedBank;}GotoSpriteAnimationLabel(arg0,9);
 }
 
 /* Settles one text layer on a display bank: creates the layer's label with the chosen
@@ -69,7 +69,7 @@ void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     M2C_UNK CreateNetErrorSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, void *);
     M2C_UNK func_ov010_02228320(void);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
-    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
     if (GetScreenFlag(M2C_FIELD(arg3, u8 *, 0x35)) == 1) {
         return;
     }
@@ -92,7 +92,7 @@ void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     case 5:
     case 6:
     case 7:
-        SetSpriteAnimation(arg3, 1);
+        GotoSpriteAnimationLabel(arg3, 1);
         break;
     default:
         break;
@@ -139,10 +139,12 @@ void func_ov010_0222aef8(M2C_UNK arg0) {
     Sprite_ResumeAnimation(arg0);
 }
 
-void func_ov010_0222af18(void) {
+/* Start the online (Wi-Fi) session with no custom handlers installed, then clear
+ * the link command queues so the session begins from a clean state. */
+void Ov010Online_BeginSession(void) {
     M2C_UNK ClearLinkCommandQueues();
-    M2C_UNK func_ov010_02228760(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32, s32);
-    func_ov010_02228760(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    M2C_UNK Ov010Online_InitSession(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32, s32);
+    Ov010Online_InitSession(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     ClearLinkCommandQueues();
 }
 
@@ -175,10 +177,10 @@ void Ov010_StartMatchQuery(void *label) {
         StartWindowClose();
     }
     if (M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) & TEXT_LAYER_FLAG_CONFIRMED) {
-        SetSpriteAnimation(label, 0xB);
+        GotoSpriteAnimationLabel(label, 0xB);
         return;
     }
-    SetSpriteAnimation(label, 0x10);
+    GotoSpriteAnimationLabel(label, 0x10);
 }
 
 /* Online-match name-label step: while the WFC match query started by
@@ -196,10 +198,10 @@ void Ov010_UpdateMatchQuery(void *label) {
         StartWindowClose();
     }
     if (M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) & TEXT_LAYER_FLAG_CONFIRMED) {
-        SetSpriteAnimation(label, 0xB);
+        GotoSpriteAnimationLabel(label, 0xB);
         return;
     }
-    SetSpriteAnimation(label, 0x10);
+    GotoSpriteAnimationLabel(label, 0x10);
 }
 
 void func_ov010_0222b074(void) {
@@ -217,7 +219,7 @@ void func_ov010_0222b08c(M2C_UNK arg0) {
     if (func_ov010_02228720() != 0) {
         return;
     }
-    SetSpriteAnimation(arg0, 0x12);
+    GotoSpriteAnimationLabel(arg0, 0x12);
 }
 
 /* Online match name-label update: start the split-screen fade on each screen
@@ -243,7 +245,7 @@ void func_ov010_0222b11c(M2C_UNK arg0) {
     M2C_UNK CreateLocalBattleSaveSprite(M2C_UNK);
     CreateLocalProfileSaveSprite();
     CreateLocalBattleSaveSprite(arg0);
-    SetSpriteAnimation(arg0, 1);
+    GotoSpriteAnimationLabel(arg0, 1);
 }
 
 /* Refresh the entity's sprite on the selected display banks, then queue command 19. */
@@ -266,14 +268,14 @@ M2C_FIELD(created,s32 *,0x58)|=0x1000;
 }while(++i<2);
 gCur3DSpriteEngine=savedBank;
 }
-SetSpriteAnimation((s32)entity,19);
+GotoSpriteAnimationLabel((s32)entity,19);
 }
 
 /* Hide the entity's sprite on the display banks it selects (0 = main engine,
  * 1 = sub engine, 3 = the engine active when called), then play its hide
  * animation. */
 void Ov010_HideEntitySprite(void *entity) {
-M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayerChild(void *);M2C_UNK SetSpriteAnimation(s32,s32);
+M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayerChild(void *);M2C_UNK GotoSpriteAnimationLabel(s32,s32);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedBank;u32 bank;s32 i;s8 engine;void *sprite;
 if(M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE)>=0){
@@ -290,7 +292,7 @@ M2C_FIELD(sprite,s32 *,0x58)=((M2C_FIELD(sprite,s32 *,0x58)|0x1000)&~0x400)|0x80
 }while(++i<2);
 gCur3DSpriteEngine=savedBank;
 }
-SetSpriteAnimation((s32)entity,7);
+GotoSpriteAnimationLabel((s32)entity,7);
 }
 
 /* Creates a draw entry in both active banks when the entity's bank selector allows. */
@@ -298,7 +300,7 @@ void func_ov010_0222b314(void *entity) {
     s32 GetLastNasError();
     M2C_UNK RenderTextLayerMessage(void *, M2C_UNK, s32, s32);
     void *CreateTextLayer(void *);
-    M2C_UNK SetSpriteAnimation(M2C_UNK, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(M2C_UNK, M2C_UNK);
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
@@ -334,10 +336,10 @@ void func_ov010_0222b314(void *entity) {
             }
             gCur3DSpriteEngine = savedBank;
         }
-        SetSpriteAnimation(entity, 0x11);
+        GotoSpriteAnimationLabel(entity, 0x11);
         return;
     }
-    SetSpriteAnimation(entity, 2);
+    GotoSpriteAnimationLabel(entity, 2);
 }
 
 void func_ov010_0222b414(void) {
@@ -361,7 +363,7 @@ void func_ov010_0222b418(void *layer) {
     if (IsMapConfirmEnabled() != 0) {
         ResetProfileIdBlock(0);
         M2C_FIELD(layer, u8 *, TEXT_LAYER_FLAGS) = (u8)(M2C_FIELD(layer, u8 *, TEXT_LAYER_FLAGS) | TEXT_LAYER_FLAG_CONFIRMED);
-        SetSpriteAnimation(layer, 3);
+        GotoSpriteAnimationLabel(layer, 3);
         return;
     }
 
@@ -383,14 +385,14 @@ void func_ov010_0222b418(void *layer) {
         gCur3DSpriteEngine = temp_r9;
     }
 
-    SetSpriteAnimation(layer, 0xC);
+    GotoSpriteAnimationLabel(layer, 0xC);
 }
 
 /* Draws the "chosen" label of the entity on the display banks the entity asks
  * for (0 = main engine, 1 = sub engine, 3 = the active engine) and moves the
  * entity to animation 14. */
 void func_ov010_0222b520(void *entity) {
-M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK SetSpriteAnimation(s32,s32);M2C_UNK SetPanelChoice(void *,s32);
+M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK GotoSpriteAnimationLabel(s32,s32);M2C_UNK SetPanelChoice(void *,s32);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 if(M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE)>=0){
@@ -408,7 +410,7 @@ SetPanelChoice(created,1);
 }while(++i<2);
 gCur3DSpriteEngine=savedBank;
 }
-SetSpriteAnimation((s32)entity,14);
+GotoSpriteAnimationLabel((s32)entity,14);
 }
 
 /* Show the "map confirm" prompt for the entity: with the confirm prompt enabled, draw the
@@ -433,7 +435,7 @@ M2C_FIELD(created,s32 *,0x58)|=0x1000;
 }while(++i<2);
 gCur3DSpriteEngine=savedBank;return;
 }
-SetSpriteAnimation((s32)entity,1);
+GotoSpriteAnimationLabel((s32)entity,1);
 }
 
 /* Draws the entity's "decided" label on the display banks the entity asks for
@@ -458,11 +460,11 @@ SetPanelChoice(created,1);
 }while(++i<2);
 gCur3DSpriteEngine=savedBank;
 }
-SetSpriteAnimation((s32)entity,13);
+GotoSpriteAnimationLabel((s32)entity,13);
 }
 
 void func_ov010_0222b7d0(M2C_UNK arg0) {
-    SetSpriteAnimation(arg0, 0x10);
+    GotoSpriteAnimationLabel(arg0, 0x10);
 }
 
 /* Draws the entity's message label (text id 0x42000016) on the display banks the
@@ -487,27 +489,30 @@ M2C_FIELD(label,s32 *,0x58)|=0x1000;
 gCur3DSpriteEngine=savedEngine;
 }
 
-void func_ov010_0222b8ac(void *arg0) {
+/* Online map-choice label step: when the current map allows confirming, mark
+ * the label confirmed and play its confirmed animation; otherwise play its
+ * normal animation. */
+void Ov010_ConfirmMapChoiceLabel(void *label) {
     if (IsMapConfirmEnabled() != 0) {
-        M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
-        SetSpriteAnimation(arg0, 3);
+        M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) = (u8) (M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) | TEXT_LAYER_FLAG_CONFIRMED);
+        GotoSpriteAnimationLabel(label, 3);
         return;
     }
-    SetSpriteAnimation(arg0, 1);
+    GotoSpriteAnimationLabel(label, 1);
 }
 
 void func_ov010_0222b8ec(M2C_UNK arg0) {
     s32 IsMapConfirmEnabled();
     if (IsMapConfirmEnabled() != 0) {
-        SetSpriteAnimation(arg0, 3);
+        GotoSpriteAnimationLabel(arg0, 3);
         return;
     }
-    SetSpriteAnimation(arg0, 1);
+    GotoSpriteAnimationLabel(arg0, 1);
 }
 
 void func_ov010_0222b91c(M2C_UNK arg0) {
-    M2C_UNK SetSpriteAnimation(M2C_UNK, M2C_UNK);
-    SetSpriteAnimation(arg0, 1);
+    M2C_UNK GotoSpriteAnimationLabel(M2C_UNK, M2C_UNK);
+    GotoSpriteAnimationLabel(arg0, 1);
 }
 
 /* Online-match label update: create the split-screen transition on each screen

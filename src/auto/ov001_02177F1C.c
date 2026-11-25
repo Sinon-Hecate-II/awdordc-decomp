@@ -36,9 +36,12 @@ void Ov001_LoadSelectedOptionTile(void) {
     Ov001_LoadObjTile(M2C_FIELD(&gOv001OptionMenuState,s32 *,4),value,value);
 }
 
-void func_ov001_02177fd8(void) {
+/* Open the ov001 WFC profile-setup screen: load the shared Multi background, put
+ * up its message box, the profile-setup sprite and the WFC icon, play the open
+ * sound and hand over to the fade-in step. */
+void Ov001_OpenProfileSetupScreen(void) {
     void Ov001_LoadMultiBackground(void);
-    void func_ov001_02178090(void);
+    void Ov001_FadeInProfileSetupScreen(void);
     M2C_UNK Ov001_ShowMessageBox(s32);
     M2C_UNK Ov001_CreateAnimSprite(s32);
     M2C_UNK Ov001_ShowWfcIcon(s32);
@@ -47,8 +50,8 @@ void func_ov001_02177fd8(void) {
     Ov001_ShowMessageBox(30);
     Ov001_CreateAnimSprite(0);
     Ov001_ShowWfcIcon(1);
-    Ov001_PlaySound(11);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178090);
+    Ov001_PlaySound(OV001_SOUND_OPEN);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInProfileSetupScreen);
 }
 
 /* Set up the shared ov001 "Multi" background: load its screen map and give the
@@ -66,7 +69,7 @@ void Ov001_LoadMultiBackground(void) {
     REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_02178090(void) {
+void Ov001_FadeInProfileSetupScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021780c4;
@@ -123,7 +126,7 @@ void Ov001_CloseWfcProfileScreen(void) {
     extern s8 gOv001ProfileScreenResult;
     void func_ov001_02178250(void);
     void func_ov001_021789d8(void);
-    void func_ov001_02178bc0(void);
+    void Ov001_OpenProfileReturnScreen(void);
     if (Ov001_IsFadeActive(0) != 0) return;
     if (Ov001_IsProfileScreenDone() == 0) return;
     Ov001_HideWfcIcon();
@@ -132,7 +135,7 @@ void Ov001_CloseWfcProfileScreen(void) {
     Ov001_DisableVisiblePlanes(0, 0x15);
     Ov001_SetNextScreenMode(0, 1);
     if ((u8) gOv001ProfileScreenResult == 0) {
-        Ov001_SetStepCallback((M2C_UNK *) &func_ov001_02178bc0);
+        Ov001_SetStepCallback((M2C_UNK *) &Ov001_OpenProfileReturnScreen);
         return;
     }
     if ((u8) gOv001ProfileScreenResult == 2) {
@@ -201,7 +204,7 @@ void func_ov001_021782d8(void) {
 void func_ov001_0217830c(void) {
     void func_ov001_02178338(void);
     if (Ov001_IsFadeActive(0) != 0) return;
-    func_ov001_02171e20(5);
+    Ov001_CreateMenuIconRow(5);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178338);
 }
 
@@ -299,21 +302,24 @@ void Ov001_ResetBackgroundPriorities(void) {
 }
 
 void func_ov001_021784e8(void) {
-    extern M2C_UNK func_ov001_0217851c;
+    extern M2C_UNK Ov001_WfcEraseMessageFadeDone;
     Ov001_StartFade(2, 0, 0x15, 8);
     Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_0217851c);
+    Ov001_SetStepCallback(&Ov001_WfcEraseMessageFadeDone);
 }
 
-void func_ov001_0217851c(void) {
-    void func_ov001_02178558(void);
-    if (Ov001_IsFadeActive(1) != 0) return;
-    if (Ov001_IsFadeActive(0) != 0) return;
-    func_ov001_02171e20(4);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178558);
+/* Step that runs once the Wi-Fi erase-in-progress message's fade-in has
+ * finished: wait for both engine fades, then put up its icon row and hand over
+ * to the step that waits for it to slide in. */
+void Ov001_WfcEraseMessageFadeDone(void) {
+    void Ov001_WfcEraseMessageWaitIconRow(void);
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) return;
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) return;
+    Ov001_CreateMenuIconRow(4);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcEraseMessageWaitIconRow);
 }
 
-void func_ov001_02178558(void) {
+void Ov001_WfcEraseMessageWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK func_ov001_02178580;
@@ -357,20 +363,23 @@ void func_ov001_021785e0(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
-    extern M2C_UNK func_ov001_02178600;
+    extern M2C_UNK Ov001_FadeOutWfcEraseMessage;
     Ov001_LockIconRow();
     Ov001_StartDelay(8);
-    Ov001_SetStepCallback(&func_ov001_02178600);
+    Ov001_SetStepCallback(&Ov001_FadeOutWfcEraseMessage);
 }
 
-void func_ov001_02178600(void) {
+/* Leave the Wi-Fi erase-in-progress message: once the icon row has settled,
+ * slide it out, fade the main screen to white and hand over to the step that
+ * closes the message and opens the erase-result screen. */
+void Ov001_FadeOutWfcEraseMessage(void) {
     M2C_UNK Ov001_StartIconRowSlideOut();
     extern M2C_UNK Ov001_CloseWfcEraseMessage;
-    if (Ov001_IsFadeActive(1) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
     Ov001_StartIconRowSlideOut();
-    Ov001_StartFade(3, 0, 0x15, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
     Ov001_SetStepCallback(&Ov001_CloseWfcEraseMessage);
 }
 
@@ -442,38 +451,40 @@ void Ov001_FadeInWfcEraseScreen(void) {
 void func_ov001_021787a8(void) {
     void func_ov001_021787d4(void);
     if (Ov001_IsFadeActive(0) != 0) return;
-    func_ov001_02171e20(3);
+    Ov001_CreateMenuIconRow(3);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021787d4);
 }
 
 void func_ov001_021787d4(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
-    extern M2C_UNK func_ov001_021787fc;
+    extern M2C_UNK Ov001_UpdateWfcEraseMenu;
     if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_021787fc);
+    Ov001_SetStepCallback(&Ov001_UpdateWfcEraseMenu);
 }
 
-void func_ov001_021787fc(void) {
-    void func_ov001_02178810(void);
+void Ov001_UpdateWfcEraseMenu(void) {
+    void Ov001_HandleWfcEraseMenuInput(void);
     void func_ov001_02178848(void);
     void Ov001_HandleWfcEraseChoice(void);
-    func_ov001_02178810();
+    Ov001_HandleWfcEraseMenuInput();
     func_ov001_02178848();
     Ov001_HandleWfcEraseChoice();
 }
 
-void func_ov001_02178810(void) {
-    if (KeyPressed(1) != 0) {
-        Ov001_LatchIconRowSelection(1);
+/* Wi-Fi data-erase confirmation input: A latches the confirm choice, B the back
+ * choice (the icon row keeps the first choice latched). */
+void Ov001_HandleWfcEraseMenuInput(void) {
+    if (KeyPressed(KEY_A) != 0) {
+        Ov001_LatchIconRowSelection(OV001_CHOICE_CONFIRM);
     }
-    if (KeyPressed(2) == 0) {
+    if (KeyPressed(KEY_B) == 0) {
         return;
     }
-    Ov001_LatchIconRowSelection(0);
+    Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
 void func_ov001_02178848(void) {
@@ -607,10 +618,12 @@ void func_ov001_02178ae8(void) {
 
 }
 
+/* Fade the sub and main screens out to white, then move on to the step that
+ * closes the Wi-Fi profile-result screen. */
 void Ov001_FadeOutProfileResultScreen(void) {
     extern M2C_UNK Ov001_CloseProfileResultScreen;
-    Ov001_StartFade(3, 1, 1, 8);
-    Ov001_StartFade(3, 0, 0x15, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
     Ov001_SetStepCallback(&Ov001_CloseProfileResultScreen);
 }
 
@@ -642,13 +655,15 @@ void func_ov001_02178b8c(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeOutProfileResultScreen);
 }
 
-void func_ov001_02178bc0(void) {
+/* Open the Wi-Fi profile-return screen: load its background, show its message
+ * box and text panel, then start the screen's fade-in. */
+void Ov001_OpenProfileReturnScreen(void) {
     s8 Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     void Ov001_LoadProfileReturnBg(void);
     extern s8 gOv001MessageState;
     extern M2C_UNK Ov001_FadeInProfileReturnScreen;
     Ov001_LoadProfileReturnBg();
-    Ov001_ShowMessageBox(0x20);
+    Ov001_ShowMessageBox(OV001_MSG_PROFILE_RETURN);
     gOv001MessageState = Ov001_ShowMessagePanel(0x3C, -1, 0);
     Ov001_SetStepCallback(&Ov001_FadeInProfileReturnScreen);
 }
@@ -682,18 +697,21 @@ void Ov001_FadeInProfileReturnScreen(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitProfileReturnFadeIn);
 }
 
+/* Step that runs once the profile-return screen's fade-in has finished: wait for
+ * the sub and main engine fades, then put up the popup's back/confirm icon row and
+ * hand over to the step that waits for the row and the profile task. */
 void Ov001_WaitProfileReturnFadeIn(void) {
-    M2C_UNK func_ov001_02171e20(M2C_UNK);
+    M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
-    void func_ov001_02178d20(void);
-    if (Ov001_IsFadeActive(1) != 0) return;
-    if (Ov001_IsFadeActive(0) != 0) return;
-    func_ov001_02171e20(3);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178d20);
+    void Ov001_ProfileReturnWaitIconRow(void);
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) return;
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) return;
+    Ov001_CreateMenuIconRow(3);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_ProfileReturnWaitIconRow);
 }
 
-void func_ov001_02178d20(void) {
-    extern M2C_UNK func_ov001_02178d54;
+void Ov001_ProfileReturnWaitIconRow(void) {
+    extern M2C_UNK Ov001_UpdateMessageMenu;
     if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
@@ -701,26 +719,28 @@ void func_ov001_02178d20(void) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_02178d54);
+    Ov001_SetStepCallback(&Ov001_UpdateMessageMenu);
 }
 
-void func_ov001_02178d54(void) {
-    void func_ov001_02178d68(void);
+void Ov001_UpdateMessageMenu(void) {
+    void Ov001_HandleMessageMenuInput(void);
     void func_ov001_02178da0(void);
     void Ov001_MessageChoiceStep(void);
-    func_ov001_02178d68();
+    Ov001_HandleMessageMenuInput();
     func_ov001_02178da0();
     Ov001_MessageChoiceStep();
 }
 
-void func_ov001_02178d68(void) {
-    if (KeyPressed(1) != 0) {
-        Ov001_LatchIconRowSelection(1);
+/* Message popup input: A latches the confirm choice, B the back choice (the icon
+ * row keeps the first choice latched). */
+void Ov001_HandleMessageMenuInput(void) {
+    if (KeyPressed(KEY_A) != 0) {
+        Ov001_LatchIconRowSelection(OV001_CHOICE_CONFIRM);
     }
-    if (KeyPressed(2) == 0) {
+    if (KeyPressed(KEY_B) == 0) {
         return;
     }
-    Ov001_LatchIconRowSelection(0);
+    Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
 void func_ov001_02178da0(void) {

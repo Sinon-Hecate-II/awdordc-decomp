@@ -34,13 +34,13 @@ void func_ov000_02197990(void) {
     M2C_UNK SelectMapLayer(void *);
     M2C_UNK DrawOrderTargetArea(void *, M2C_UNK, M2C_UNK);
     s32 IsSameTeam(u16, u32);
-    s32 func_ov000_021973f8(u32);
+    s32 IsCurrentPlayerAiControlled(u32);
     extern void **data_027e0058;
     u32 temp_r1;
     u8 temp_r0;
     void *var_r6;
 
-    if (func_ov000_021973f8((u32) (*M2C_FIELD(*data_027e0058, u8 **, 0x52D0) << 0x1A) >> 0x1A) == 0) {
+    if (IsCurrentPlayerAiControlled((u32) (*M2C_FIELD(*data_027e0058, u8 **, 0x52D0) << 0x1A) >> 0x1A) == 0) {
         return;
     }
     SelectMapLayer(*data_027e0058 + 0x2D48);

@@ -284,12 +284,16 @@ void (*cb)(void *)=M2C_FIELD(p,void (**)(void *),0x34);
 if(!cb)return;cb(p);
 }
 
-s32 RectContainsPoint(s32 x,s32 y,void *p) {
-s16 a=M2C_FIELD(p,s16 *,0),b;
-if(a<=x && (b=M2C_FIELD(p,s16 *,2))<=y) {
-if(a+M2C_FIELD(p,s16 *,4)>=x && b+M2C_FIELD(p,s16 *,6)>=y)return 1;
-}
-return 0;
+/* Whether the point (x, y) lies inside the rectangle at `rect`: its upper-left
+ * corner plus its width (at +0x04) and height (at +0x06).  The right and bottom
+ * edges are included. */
+s32 RectContainsPoint(s32 x, s32 y, void *rect) {
+    s16 rectX = M2C_FIELD(rect, s16 *, 0), rectY;
+
+    if (rectX <= x && (rectY = M2C_FIELD(rect, s16 *, 2)) <= y) {
+        if (rectX + M2C_FIELD(rect, s16 *, 4) >= x && rectY + M2C_FIELD(rect, s16 *, 6) >= y) return 1;
+    }
+    return 0;
 }
 
 /* Builds the scrolling sprite grid widget in `grid`: a rows x columns raster of

@@ -35,7 +35,7 @@ func_ov005_0221339c kind:function(arm,size=0x2c) addr:0x0221339c
 func_ov005_022133c8 kind:function(arm,size=0x92c) addr:0x022133c8
 HistoryMenu_CreateRowSlots kind:function(arm,size=0xa0) addr:0x02213cf4
 HistoryMenu_Update kind:function(arm,size=0x300) addr:0x02213d94
-func_ov005_02214094 kind:function(arm,size=0x38) addr:0x02214094
+HistoryMenu_Close kind:function(arm,size=0x38) addr:0x02214094
 func_ov005_022140cc kind:function(arm,size=0x18) addr:0x022140cc
 func_ov005_022140e4 kind:function(arm,size=0x14) addr:0x022140e4
 RecordsMenu_IsRecordAvailable kind:function(arm,size=0x28) addr:0x022140f8
@@ -82,7 +82,7 @@ Ov005RefreshEntryFace kind:function(arm,size=0x118) addr:0x022174f4
 Ov005RefreshEntryLabel kind:function(arm,size=0x94) addr:0x0221760c
 func_ov005_022176a0 kind:function(arm,size=0x720) addr:0x022176a0
 Ov005MoveCoListSelection kind:function(arm,size=0x8c) addr:0x02217dc0
-func_ov005_02217e4c kind:function(arm,size=0x38) addr:0x02217e4c
+Ov005SelectCoSlot kind:function(arm,size=0x38) addr:0x02217e4c
 Ov005MoveDetailSelection kind:function(arm,size=0x94) addr:0x02217e84
 Ov005ApplyDetailSelection kind:function(arm,size=0x54) addr:0x02217f18
 Ov005AddCoGridSprites kind:function(arm,size=0x5c) addr:0x02217f6c
@@ -93,7 +93,7 @@ Ov005SyncMenuState kind:function(arm,size=0x198) addr:0x0221887c
 Ov005ListMenuInput kind:function(arm,size=0x1bc) addr:0x02218a14
 Ov005DetailMenuInput kind:function(arm,size=0x1e4) addr:0x02218bd0
 Ov005MenuInput kind:function(arm,size=0x48) addr:0x02218db4
-func_ov005_02218dfc kind:function(arm,size=0x40) addr:0x02218dfc
+Ov005_CloseMenu kind:function(arm,size=0x40) addr:0x02218dfc
 func_ov005_02218e3c kind:function(arm,size=0x18) addr:0x02218e3c
 GetCurrentCoFaceId kind:function(arm,size=0x88) addr:0x02218e54
 GetResultSecondCoFaceId kind:function(arm,size=0x74) addr:0x02218edc
@@ -185,8 +185,8 @@ CreateUnlockedCoListScreen kind:function(arm,size=0x44) addr:0x0221fbc8
 Ov005_InitScreenGraphics kind:function(arm,size=0x104) addr:0x0221fc0c
 func_ov005_0221fd10 kind:function(arm,size=0x10) addr:0x0221fd10
 CreateCampaignHintPanel kind:function(arm,size=0x90) addr:0x0221fd20
-func_ov005_0221fdb0 kind:function(arm,size=0x40) addr:0x0221fdb0
-func_ov005_0221fdf0 kind:function(arm,size=0x38) addr:0x0221fdf0
+ResultsMap_Delete kind:function(arm,size=0x40) addr:0x0221fdb0
+ResultsMap_Destroy kind:function(arm,size=0x38) addr:0x0221fdf0
 func_ov005_0221fe28 kind:function(arm,size=0x14) addr:0x0221fe28
 func_ov005_0221fe3c kind:function(arm,size=0x4) addr:0x0221fe3c
 func_ov005_0221fe40 kind:function(arm,size=0x14) addr:0x0221fe40
@@ -349,7 +349,7 @@ data_ov005_02220f0c kind:data(any) addr:0x02220f0c
 data_ov005_02220f1c kind:data(any) addr:0x02220f1c
 data_ov005_02220f2c kind:data(any) addr:0x02220f2c
 data_ov005_02220f3c kind:data(any) addr:0x02220f3c
-data_ov005_02220f54 kind:data(any) addr:0x02220f54
+gResultsMapVtbl kind:data(any) addr:0x02220f54
 data_ov005_02220f68 kind:data(any) addr:0x02220f68
 data_ov005_02220f7c kind:data(any) addr:0x02220f7c
 data_ov005_02220f90 kind:data(any) addr:0x02220f90

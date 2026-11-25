@@ -31,7 +31,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     u16 GetUnitSpriteWidth(void *);
     u16 GetUnitSpriteHeight(void *);
-    void *func_020ab1c4(void *);
+    void *CreateUnitSprite(void *);
     s32 GetUiColor(M2C_UNK);
     M2C_UNK DimPalette(s32);
     M2C_UNK DrawMapPreview(s32, s32, M2C_UNK, M2C_UNK);
@@ -104,7 +104,7 @@ void func_ov003_021e5118(void *arg0) {
     SetSceneLayerOverrideSub(3, &data_ov003_0220f60a);
     Apply3DSpriteBanks();
     temp_r4 = M2C_FIELD(arg0, void ***, 0x48);
-    *temp_r4 = func_020ab1c4(arg0);
+    *temp_r4 = CreateUnitSprite(arg0);
     InitUnitSprite(*temp_r4, 2, 0x1A4, 3, 0);
     temp_r5 = *temp_r4;
     Set3DSpriteSlideTargetAndStart(temp_r5, 0xE0, 0xA0, 0xE0, 0xC0);
@@ -215,7 +215,7 @@ void func_ov003_021e5118(void *arg0) {
 
 void Ov003_DrawUnitCategoryGrid(void *,s16,s16);
 void func_ov003_021e583c(void *a) {
-void AddSprite(u16,u8,u16,void *,s32);void UpdateSpriteAnimation(s32);s16 GetSpriteAnimValue(s32);void DrawTextSprite(void *);void AddSprite32x16(u16,s32,u16,s32);s32 func_ov003_021e50e0(s16,s32,s32,s32);void func_ov003_021e5e24(void *,s16,s16);
+void AddSprite(u16,u8,u16,void *,s32);void UpdateSpriteAnimation(s32);s16 GetSpriteAnimValue(s32);void DrawTextSprite(void *);void AddSprite32x16(u16,s32,u16,s32);s32 Ov003_IsBoxOnScreen(s16,s32,s32,s32);void func_ov003_021e5e24(void *,s16,s16);
 extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub;extern void *g3DSpriteEngineMain;extern u8 gSpriteDesc16x16[],gSpriteDesc32x32[],data_ov003_0220f61c[];
 u16 **old; s32 i; s16 pos; s32 x,scroll; s16 scroll2;u16 neg;
 if(!M2C_FIELD(a,u8 *,0x39))return;
@@ -227,7 +227,7 @@ i=0;M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x46)=0;
 M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x38)=neg;M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x40)=0;
 M2C_FIELD(M2C_FIELD(a,void **,0x58),s16 *,6)=scroll+0xab;
 if(M2C_FIELD(M2C_FIELD(a,void **,0x58),s32 *,0x1c))DrawTextSprite(M2C_FIELD(a,void **,0x58));
-else {x=0xab;do {pos=x;if(func_ov003_021e50e0(pos,0x80,0x20,0x20))AddSprite((scroll+pos)&0x1ff,0x80,(u16)((0x3ff&(0x2ec>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x8000),gSpriteDesc32x32,11);x+=0x22;i++;}while(i<2);}
+else {x=0xab;do {pos=x;if(Ov003_IsBoxOnScreen(pos,0x80,0x20,0x20))AddSprite((scroll+pos)&0x1ff,0x80,(u16)((0x3ff&(0x2ec>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x8000),gSpriteDesc32x32,11);x+=0x22;i++;}while(i<2);}
 AddSprite((scroll+0xc5)&0x1ff,0x8e,(u16)((0x3ff&(0x288>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x6000),gSpriteDesc16x16,11);
 AddSprite(0,(u8)(u32)GetSpriteAnimValue(M2C_FIELD(a,s32 *,0x44)),(u16)((0x3ff&(0x28c>>((**gCur3DSpriteEngine>>13)&3)))|0x8c00),data_ov003_0220f61c,11);
 AddSprite32x16((scroll+0x30)&0x1ff,0x38,(u16)((0x3ff&(0x2fc>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|0x9000),11);

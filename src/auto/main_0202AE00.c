@@ -242,14 +242,18 @@ M2C_UNK Sound_InsertActiveVoice(void *voice) {
     ListInsertBefore(&gActiveVoices, p, voice);
 }
 
-void Sound_ReleaseVoice(void *arg0) {
+/* Release driver voice `voice`: when it is playing, drive its hardware channel's
+ * volume down to the release level (-0x2D3, the driver's near-silent value)
+ * first, then release that channel and put the voice back on the free list. */
+void Sound_ReleaseVoice(void *voice) {
     M2C_UNK func_02008bd0(u8);
     M2C_UNK func_02008c38(u8, s32);
-    if (M2C_FIELD(arg0, u8 *, 0x2C) == 2) {
-        func_02008c38(M2C_FIELD(arg0, u8 *, 0x3C), 0xFFFFFD2D);
+
+    if (M2C_FIELD(voice, u8 *, SOUND_VOICE_STATE) == SOUND_VOICE_PLAYING) {
+        func_02008c38(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL), 0xFFFFFD2D);
     }
-    func_02008bd0(M2C_FIELD(arg0, u8 *, 0x3C));
-    Sound_RecycleVoice(arg0);
+    func_02008bd0(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL));
+    Sound_RecycleVoice(voice);
 }
 
 /* Take a voice of at least `priority`: the first free voice, or the lowest-priority

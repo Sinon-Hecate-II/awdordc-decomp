@@ -32,7 +32,7 @@ Ov002_ClearEffectNodesWithScript kind:function(arm,size=0x64) addr:0x021e2928
 func_ov002_021e298c kind:function(arm,size=0x4) addr:0x021e298c
 func_ov002_021e2990 kind:function(arm,size=0x4) addr:0x021e2990
 func_ov002_021e2994 kind:function(arm,size=0x8) addr:0x021e2994
-func_ov002_021e299c kind:function(arm,size=0x3c) addr:0x021e299c
+SetEffectNodePaletteFlash kind:function(arm,size=0x3c) addr:0x021e299c
 func_ov002_021e29d8 kind:function(arm,size=0x20) addr:0x021e29d8
 func_ov002_021e29f8 kind:function(arm,size=0x28) addr:0x021e29f8
 InitEffectNode kind:function(arm,size=0x60) addr:0x021e2a20
@@ -100,10 +100,10 @@ func_ov002_021e712c kind:function(arm,size=0x348) addr:0x021e712c
 func_ov002_021e7474 kind:function(arm,size=0x28) addr:0x021e7474
 func_ov002_021e749c kind:function(arm,size=0x340) addr:0x021e749c
 AreUnitViewsReady kind:function(arm,size=0xc8) addr:0x021e77dc
-func_ov002_021e78a4 kind:function(arm,size=0x40) addr:0x021e78a4
+StepBattleSceneEndDelay kind:function(arm,size=0x40) addr:0x021e78a4
 DrawBattleSceneUnitView kind:function(arm,size=0x78) addr:0x021e78e4
 EndBattleScene kind:function(arm,size=0x14) addr:0x021e795c
-func_ov002_021e7970 kind:function(arm,size=0x3c) addr:0x021e7970
+TeardownBattleScene kind:function(arm,size=0x3c) addr:0x021e7970
 IsBattleSceneIntro kind:function(arm,size=0x18) addr:0x021e79ac
 Ov002_SelectUnitSetVariant kind:function(arm,size=0x50) addr:0x021e79c4
 Ov002_SelectUnitSetVariantAlt kind:function(arm,size=0x50) addr:0x021e7a14
@@ -120,7 +120,7 @@ func_ov002_021e80c8 kind:function(arm,size=0x3a8) addr:0x021e80c8
 func_ov002_021e8470 kind:function(arm,size=0x140) addr:0x021e8470
 SetupBattleAnimation kind:function(arm,size=0x38) addr:0x021e85b0
 InitBattleUnitView kind:function(arm,size=0x110) addr:0x021e85e8
-func_ov002_021e86f8 kind:function(arm,size=0x40) addr:0x021e86f8
+GetUnitPlacementZOffset kind:function(arm,size=0x40) addr:0x021e86f8
 func_ov002_021e8738 kind:function(arm,size=0x160) addr:0x021e8738
 func_ov002_021e8898 kind:function(arm,size=0x8) addr:0x021e8898
 func_ov002_021e88a0 kind:function(arm,size=0xc) addr:0x021e88a0
@@ -1238,7 +1238,7 @@ gDemoBattle kind:bss addr:0x021f2f40
 gEffectVariants kind:bss addr:0x021f2f44
 data_ov002_021f2fa9 kind:bss addr:0x021f2fa9
 gBattleSpriteState kind:bss addr:0x021f3014
-data_ov002_021f3018 kind:bss addr:0x021f3018
+gOv002EffectResources kind:bss addr:0x021f3018
 data_ov002_021f301c kind:bss addr:0x021f301c
 gEffectNodeResource kind:bss addr:0x021f3020
 data_ov002_021f3024 kind:bss addr:0x021f3024

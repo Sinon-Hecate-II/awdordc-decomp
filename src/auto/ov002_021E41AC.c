@@ -212,7 +212,7 @@ void DrawGaugeFillAnchoredLeft(u8 *x, s32 y, s32 z, s32 fill) {
 #pragma scheduling off
 void func_ov002_021e497c(s32 x,s32 y,s32 flip,s32 tile) {
 void AddSprite(u16,u16,u16,void *,s32);
-void func_01ffad0c(u16,u16,u16,void *,s32);
+void AddAffineSprite(u16,u16,u16,void *,s32);
 extern u16 **gCur3DSpriteEngine;
 extern u8 data_ov002_021f2d2a[],data_ov002_021f2d1c[];
 u16 attr,px,py;
@@ -224,7 +224,7 @@ AddSprite((u16)((x+16)&511),(u16)((y+8)&255),(u16)((0x3ff&((0x150+(tile<<4))>>((
 } else {
 attr=(u16)((0x3ff&(0x11e>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((flip==0?1:2)<<12));
 px=(u16)((x+80)&511);py=(u16)(y&255);
-func_01ffad0c(px,py,attr,data_ov002_021f2d2a,1);
+AddAffineSprite(px,py,attr,data_ov002_021f2d2a,1);
 AddSprite((u16)((x+8)&511),(u16)((y+8)&255),(u16)((0x3ff&((0x150+(tile<<4))>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((flip==0?1:2)<<12)),data_ov002_021f2d1c,0);
 }
 }

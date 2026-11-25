@@ -16,26 +16,31 @@ extern Unk0207Color data_021017f4[4];
 extern void **gCurrentMap;
 s32 EaseInterpolate(s32, s32, s32, s32, s32);
 
+/* Advance gRandomSeed one step of the game's pseudo-random generator and return
+ * the new value, kept non-negative. */
 s32 NextRandomValue(void) {
     s32 Divide(s32, M2C_UNK);
     extern s32 gRandomSeed;
-    s32 temp_r2;
-    s32 temp_r4;
-    temp_r2 = (gRandomSeed * 4) + 2;
-    temp_r4 = temp_r2 * (temp_r2 + 1);
-    return gRandomSeed = (temp_r4 + Divide(temp_r4 & ~0x80000000, 7)) & ~0x80000000;
+    s32 base;
+    s32 mixed;
+
+    base = (gRandomSeed * 4) + 2;
+    mixed = base * (base + 1);
+    return gRandomSeed = (mixed + Divide(mixed & ~0x80000000, 7)) & ~0x80000000;
 }
 
-s32 RandomIntRange(s32 arg0, s32 arg1) {
+/* Return a random integer in [min, max], bounds included: order the two bounds
+ * first, then spread the generator's 31-bit value over the range's size. */
+s32 RandomIntRange(s32 min, s32 max) {
     s32 Modulo(s32, s32);
     s32 temp;
-    if (arg0 == arg1) return arg0;
-    if (arg0 > arg1) {
-        temp = arg0;
-        arg0 = arg1;
-        arg1 = temp;
+    if (min == max) return min;
+    if (min > max) {
+        temp = min;
+        min = max;
+        max = temp;
     }
-    return arg0 + Modulo(NextRandomValue() & 0x7fffffff, arg1 - arg0 + 1);
+    return min + Modulo(NextRandomValue() & 0x7fffffff, max - min + 1);
 }
 
 s32 StringHasTerminator(u8 *arg0, s32 arg1) {
@@ -46,19 +51,22 @@ s32 StringHasTerminator(u8 *arg0, s32 arg1) {
     return 0;
 }
 
-void RunMemoryCopyTask(void *arg0) {
+/* Run a queued memory-copy task: copy the task's byte count from its source to its
+ * destination (byte by byte when the count is not a whole number of words, in
+ * 32-bit words otherwise), then free the source block when the task owns it. */
+void RunMemoryCopyTask(void *task) {
     M2C_UNK MI_CpuCopy32(s32, s32, s32);
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
-    s32 flags = M2C_FIELD(arg0, s32 *, 0x40);
-    s32 src = M2C_FIELD(arg0, s32 *, 0x38);
-    s32 dst = M2C_FIELD(arg0, s32 *, 0x3C);
-    if (flags & 3) {
-        MI_CpuCopy8(src, dst, flags);
+    s32 size = M2C_FIELD(task, s32 *, DS3D_TASK_SIZE);
+    s32 src = M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE);
+    s32 dst = M2C_FIELD(task, s32 *, DS3D_TASK_DEST);
+    if (size & 3) {
+        MI_CpuCopy8(src, dst, size);
     } else {
-        MI_CpuCopy32(src, dst, flags);
+        MI_CpuCopy32(src, dst, size);
     }
-    if (M2C_FIELD(arg0, s32 *, 0x50) == 0) return;
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
+    if (M2C_FIELD(task, s32 *, DS3D_TASK_FREE_SOURCE) == 0) return;
+    HeapFreeBlock(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE));
 }
 
 /* Queue a memory copy: the task runner copies `size` bytes from `source` to
@@ -80,18 +88,21 @@ void QueueMemoryCopy(s32 source, s32 dest, s32 size, s32 freeSource) {
     SetSpriteZ(task, DS3D_COPY_TASK_Z);
 }
 
-void TextureBankCopyTask(void *arg0) {
+/* Run a queued texture-bank copy: upload the task's source block into the 3D
+ * texture area at the task's byte offset, then free the source block when the
+ * task owns it. */
+void TextureBankCopyTask(void *task) {
     M2C_UNK GX_BeginLoadTex();
     M2C_UNK LoadTextureBankBlock(s32, s32, s32);
     M2C_UNK GX_EndLoadTex();
     M2C_UNK HeapFreeBlock(s32);
     GX_BeginLoadTex();
-    LoadTextureBankBlock(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
+    LoadTextureBankBlock(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE), M2C_FIELD(task, s32 *, DS3D_TASK_OFFSET), M2C_FIELD(task, s32 *, DS3D_TASK_SIZE));
     GX_EndLoadTex();
-    if (M2C_FIELD(arg0, s32 *, 0x50) == 0) {
+    if (M2C_FIELD(task, s32 *, DS3D_TASK_FREE_SOURCE) == 0) {
         return;
     }
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
+    HeapFreeBlock(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE));
 }
 
 /* Queue a copy of `size` bytes from `source` into the texture-bank region at byte
@@ -109,17 +120,19 @@ void QueueTextureBankCopy(s32 source, s32 offset, s32 size, s32 freeSource) {
     SetSpriteZ(task, DS3D_COPY_TASK_Z);
 }
 
-void CopyMainOBJExtPaletteWordsTask(void *arg0) {
+void CopyMainOBJExtPaletteWordsTask(void *task) {
     M2C_UNK GX_BeginLoadTexPltt();
     M2C_UNK GX_LoadTexPltt(s32, s32, s32);
     M2C_UNK GX_EndLoadTexPltt();
+
+    /* Upload the queued palette block to texture-palette VRAM, then free it when owned by the task. */
     GX_BeginLoadTexPltt();
-    GX_LoadTexPltt(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
+    GX_LoadTexPltt(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE), M2C_FIELD(task, s32 *, DS3D_TASK_OFFSET), M2C_FIELD(task, s32 *, DS3D_TASK_SIZE));
     GX_EndLoadTexPltt();
-    if (M2C_FIELD(arg0, s32 *, 0x50) == 0) {
+    if (M2C_FIELD(task, s32 *, DS3D_TASK_FREE_SOURCE) == 0) {
         return;
     }
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
+    HeapFreeBlock(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE));
 }
 
 /* Fill a range of the main-engine OBJ extended palette with one halfword: release
@@ -336,20 +349,22 @@ s32 DecompressChunk(void *decoder, u32 src, u32 size) {
     return remaining;
 }
 
-s32 Divide(s32 arg0, s32 arg1) {
-    *(volatile u16 *)0x04000280 = 0;
-    *(volatile s32 *)0x04000290 = arg0;
-    *(volatile s64 *)0x04000298 = (u32)arg1;
-    while (*(volatile u16 *)0x04000280 & 0x8000) {}
-    return *(volatile s32 *)0x040002A0;
+/* Signed 32-bit quotient from the ARM9's hardware divider. */
+s32 Divide(s32 numerator, s32 denominator) {
+    REG_DIVCNT = 0;
+    REG_DIV_NUMER = numerator;
+    REG_DIV_DENOM = (u32) denominator;
+    while (REG_DIVCNT & DIVCNT_BUSY) {}
+    return REG_DIV_RESULT;
 }
 
-s32 Modulo(s32 arg0, s32 arg1) {
-    *(volatile u16 *)0x04000280 = 0;
-    *(volatile s32 *)0x04000290 = arg0;
-    *(volatile s64 *)0x04000298 = (u32)arg1;
-    while (*(volatile u16 *)0x04000280 & 0x8000) {}
-    return *(volatile s32 *)0x040002A8;
+/* Signed 32-bit remainder from the ARM9's hardware divider. */
+s32 Modulo(s32 numerator, s32 denominator) {
+    REG_DIVCNT = 0;
+    REG_DIV_NUMER = numerator;
+    REG_DIV_DENOM = (u32) denominator;
+    while (REG_DIVCNT & DIVCNT_BUSY) {}
+    return REG_DIVREM_RESULT;
 }
 
 /* Hardware 32-bit divide: start the ARM9 divider with the numerator and
@@ -364,14 +379,15 @@ void DivMod(s32 numerator, s32 denominator, s32 *quotient, s32 *remainder) {
     *remainder = REG_DIVREM_RESULT;
 }
 
-s32 func_0207c9c8(s32 arg0, s32 arg1) {
-    *(volatile u16 *)0x04000280 = 2;
-    *(volatile s32 *)0x04000290 = arg0;
-    *(volatile s32 *)0x04000294 = 0;
-    *(volatile s32 *)0x04000298 = arg1;
-    *(volatile s32 *)0x0400029C = 0;
-    while (*(volatile u16 *)0x04000280 & 0x8000) {}
-    return *(volatile s32 *)0x040002A0;
+/* Unsigned 32-bit division on the ARM9 divider: the numerator is written as a
+ * zero-extended 64-bit value (division mode 2), so both operands are treated as
+ * unsigned, and the quotient is returned. */
+s32 UnsignedDivide(s32 numerator, s32 denominator) {
+    REG_DIVCNT = 2;
+    REG_DIV_NUMER64 = (u32) numerator;
+    REG_DIV_DENOM = (u32) denominator;
+    while (REG_DIVCNT & DIVCNT_BUSY) {}
+    return REG_DIV_RESULT;
 }
 
 s32 HardwareSquareRoot(s32 arg0) {
@@ -420,10 +436,10 @@ s32 GetDigitCount(s32 arg0) {
     return var_r5;
 }
 
-void func_0207cbb0(void) {
+void InitDefaultMapCamera(void) {
     M2C_UNK InitMapViewCameraVectors(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_0214bfac;
-    InitMapViewCameraVectors(&data_0214bfac, 0, 0, 0);
+    extern M2C_UNK gDefaultMapCamera;
+    InitMapViewCameraVectors(&gDefaultMapCamera, 0, 0, 0);
 }
 
 #pragma opt_if-conversion off
@@ -505,7 +521,7 @@ void BuildMapViewScreenTransform(void *view, M2C_UNK projection) {
     MTX_Inverse33(projection33, (s32)view + MAP_VIEW_MATRIX);
 }
 
-void func_0207ce28(M2C_UNK arg0) {
+void ResetMapViewCamera(M2C_UNK arg0) {
     M2C_UNK UpdateViewForZoom(M2C_UNK);
     M2C_UNK ApplyViewZoomOption(M2C_UNK);
     InitMapViewCameraVectors(arg0, 0, 0, 0);
@@ -584,8 +600,11 @@ u8 GetMapViewHeight(void) {
  return M2C_FIELD(*gCurrentMap, u8 *, 0x6F05);
 }
 
-void DrawSprite3DGeometry(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8 arg6) {
- M2C_UNK func_0207d130(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
- func_0207d130(arg0,arg1,arg2,arg3,arg4,arg5,arg6,0,0,0,0);
+/* Submit a sprite frame's 3D geometry: draw each quad of the frame's attribute
+ * list with the given texture, palette, scale, rotation and centring flag. */
+void DrawSprite3DGeometry(const u16 *attr, const s32 *position, u32 texture, u32 palette,
+                          s32 scale, s32 angle, u8 centered) {
+    void DrawSpriteFrameQuads(const u16 *, const s32 *, u32, u32, s32, s32, s32, s32, s32, s32, s32);
+    DrawSpriteFrameQuads(attr, position, texture, palette, scale, angle, centered, 0, 0, 0, 0);
 }
 

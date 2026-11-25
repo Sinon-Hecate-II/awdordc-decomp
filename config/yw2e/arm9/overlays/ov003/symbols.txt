@@ -6,7 +6,7 @@ func_ov003_021e16ec kind:function(arm,size=0xe2c) addr:0x021e16ec
 func_ov003_021e2518 kind:function(arm,size=0x110) addr:0x021e2518
 func_ov003_021e2628 kind:function(arm,size=0xed8) addr:0x021e2628
 func_ov003_021e3500 kind:function(arm,size=0x1cc) addr:0x021e3500
-func_ov003_021e36cc kind:function(arm,size=0x3c) addr:0x021e36cc
+Ov003SceneView_CancelMapSelect kind:function(arm,size=0x3c) addr:0x021e36cc
 func_ov003_021e3708 kind:function(arm,size=0xc) addr:0x021e3708
 func_ov003_021e3714 kind:function(arm,size=0x24c) addr:0x021e3714
 Ov003_DrawPreviewUnitCategoryGrid kind:function(arm,size=0x18c) addr:0x021e3960
@@ -47,7 +47,7 @@ func_ov003_021e50a0 kind:function(arm,size=0x10) addr:0x021e50a0
 func_ov003_021e50b0 kind:function(arm,size=0x10) addr:0x021e50b0
 func_ov003_021e50c0 kind:function(arm,size=0x10) addr:0x021e50c0
 func_ov003_021e50d0 kind:function(arm,size=0x10) addr:0x021e50d0
-func_ov003_021e50e0 kind:function(arm,size=0x38) addr:0x021e50e0
+Ov003_IsBoxOnScreen kind:function(arm,size=0x38) addr:0x021e50e0
 func_ov003_021e5118 kind:function(arm,size=0x724) addr:0x021e5118
 func_ov003_021e583c kind:function(arm,size=0x2dc) addr:0x021e583c
 Ov003_MapInfoConfirmInput kind:function(arm,size=0x150) addr:0x021e5b18
@@ -83,7 +83,7 @@ func_ov003_021e6c7c kind:function(arm,size=0x10) addr:0x021e6c7c
 func_ov003_021e6c8c kind:function(arm,size=0x10) addr:0x021e6c8c
 func_ov003_021e6c9c kind:function(arm,size=0x10) addr:0x021e6c9c
 InRange kind:function(arm,size=0x18) addr:0x021e6cac
-func_ov003_021e6cc4 kind:function(arm,size=0x38) addr:0x021e6cc4
+IsRectOnScreen kind:function(arm,size=0x38) addr:0x021e6cc4
 IsSessionHost kind:function(arm,size=0x2c) addr:0x021e6cfc
 func_ov003_021e6d28 kind:function(arm,size=0x2c) addr:0x021e6d28
 func_ov003_021e6d54 kind:function(arm,size=0x18) addr:0x021e6d54
@@ -92,7 +92,7 @@ GetWaypointGroupFirstSlot kind:function(arm,size=0x10) addr:0x021e6e08
 GetWaypointGroupCount kind:function(arm,size=0x10) addr:0x021e6e18
 func_ov003_021e6e28 kind:function(arm,size=0x18) addr:0x021e6e28
 IsMapListCategory3 kind:function(arm,size=0x1c) addr:0x021e6e40
-func_ov003_021e6e5c kind:function(arm,size=0x38) addr:0x021e6e5c
+IsCampaignMapListCategory kind:function(arm,size=0x38) addr:0x021e6e5c
 GetWaypointOptionTextId kind:function(arm,size=0x24) addr:0x021e6e94
 IsWaypointOptionValid kind:function(arm,size=0x3c) addr:0x021e6eb8
 HandleWaypointInput kind:function(arm,size=0x4c8) addr:0x021e6ef4
@@ -112,14 +112,14 @@ StepCounterUp kind:function(arm,size=0x300) addr:0x021e8354
 StepCounter kind:function(arm,size=0x17c) addr:0x021e8654
 func_ov003_021e87d0 kind:function(arm,size=0xc) addr:0x021e87d0
 Ov003_UpdateWaypointSlotButtons kind:function(arm,size=0xc8) addr:0x021e87dc
-func_ov003_021e88a4 kind:function(arm,size=0x3c) addr:0x021e88a4
-func_ov003_021e88e0 kind:function(arm,size=0x3c) addr:0x021e88e0
+MenuSpriteIsClicked kind:function(arm,size=0x3c) addr:0x021e88a4
+SendWaypointPanelOpened kind:function(arm,size=0x3c) addr:0x021e88e0
 SendWaypointPanelClosed kind:function(arm,size=0x3c) addr:0x021e891c
 func_ov003_021e8958 kind:function(arm,size=0x628) addr:0x021e8958
 func_ov003_021e8f80 kind:function(arm,size=0x18) addr:0x021e8f80
 func_ov003_021e8f98 kind:function(arm,size=0x6a0) addr:0x021e8f98
 CreateWaypointPanelSprites kind:function(arm,size=0x184) addr:0x021e9638
-func_ov003_021e97bc kind:function(arm,size=0x40) addr:0x021e97bc
+SetSpriteActorPositionAndSize kind:function(arm,size=0x40) addr:0x021e97bc
 func_ov003_021e97fc kind:function(arm,size=0x8) addr:0x021e97fc
 func_ov003_021e9804 kind:function(arm,size=0xc) addr:0x021e9804
 func_ov003_021e9810 kind:function(arm,size=0x8) addr:0x021e9810
@@ -136,7 +136,7 @@ SetWaypointPanelState kind:function(arm,size=0x130) addr:0x021e9cfc
 func_ov003_021e9e2c kind:function(arm,size=0x20) addr:0x021e9e2c
 func_ov003_021e9e4c kind:function(arm,size=0xc) addr:0x021e9e4c
 func_ov003_021e9e58 kind:function(arm,size=0x20) addr:0x021e9e58
-func_ov003_021e9e78 kind:function(arm,size=0x3c) addr:0x021e9e78
+InitWaypointOptionState kind:function(arm,size=0x3c) addr:0x021e9e78
 func_ov003_021e9eb4 kind:function(arm,size=0x280) addr:0x021e9eb4
 func_ov003_021ea134 kind:function(arm,size=0x20) addr:0x021ea134
 DrawWaypointOption kind:function(arm,size=0x128) addr:0x021ea154
@@ -153,10 +153,10 @@ GetLocalPlayerWaypointSlot kind:function(arm,size=0x50) addr:0x021eba24
 AreNetworkPlayerRecordsReady kind:function(arm,size=0x6c) addr:0x021eba74
 OpenWaypointPanel kind:function(arm,size=0xa8) addr:0x021ebae0
 PressWaypointSprite kind:function(arm,size=0x44) addr:0x021ebb88
-func_ov003_021ebbcc kind:function(arm,size=0x34) addr:0x021ebbcc
-func_ov003_021ebc00 kind:function(arm,size=0x38) addr:0x021ebc00
+IsMenuEnabled kind:function(arm,size=0x34) addr:0x021ebbcc
+DisableMenuSprite kind:function(arm,size=0x38) addr:0x021ebc00
 IsWaypointPanelIdle kind:function(arm,size=0x1c) addr:0x021ebc38
-func_ov003_021ebc54 kind:function(arm,size=0x34) addr:0x021ebc54
+EnableMenuSprite kind:function(arm,size=0x34) addr:0x021ebc54
 func_ov003_021ebc88 kind:function(arm,size=0x8) addr:0x021ebc88
 func_ov003_021ebc90 kind:function(arm,size=0x14) addr:0x021ebc90
 func_ov003_021ebca4 kind:function(arm,size=0xc0) addr:0x021ebca4
@@ -234,7 +234,7 @@ func_ov003_021f14a0 kind:function(arm,size=0x14) addr:0x021f14a0
 func_ov003_021f14b4 kind:function(arm,size=0x14) addr:0x021f14b4
 func_ov003_021f14c8 kind:function(arm,size=0x10) addr:0x021f14c8
 func_ov003_021f14d8 kind:function(arm,size=0x18) addr:0x021f14d8
-func_ov003_021f14f0 kind:function(arm,size=0x3c) addr:0x021f14f0
+GetSlideDirectionOffset kind:function(arm,size=0x3c) addr:0x021f14f0
 func_ov003_021f152c kind:function(arm,size=0x10) addr:0x021f152c
 GetSceneEntryOffset kind:function(arm,size=0x48) addr:0x021f153c
 func_ov003_021f1584 kind:function(arm,size=0x10) addr:0x021f1584
@@ -267,9 +267,9 @@ GetMapConfirmState kind:function(arm,size=0x10) addr:0x021f1bfc
 ApplyBgLayerVisibility kind:function(arm,size=0x3fc) addr:0x021f1c0c
 ApplySceneLayerVisibility kind:function(arm,size=0x424) addr:0x021f2008
 SortMapIdList kind:function(arm,size=0x80) addr:0x021f242c
-func_ov003_021f24ac kind:function(arm,size=0x40) addr:0x021f24ac
+CopyMapPickLists kind:function(arm,size=0x40) addr:0x021f24ac
 func_ov003_021f24ec kind:function(arm,size=0x38) addr:0x021f24ec
-func_ov003_021f2524 kind:function(arm,size=0x3c) addr:0x021f2524
+CountMapIds kind:function(arm,size=0x3c) addr:0x021f2524
 func_ov003_021f2560 kind:function(arm,size=0x14) addr:0x021f2560
 func_ov003_021f2574 kind:function(arm,size=0x14) addr:0x021f2574
 RemoveDownloadedMapId kind:function(arm,size=0x44) addr:0x021f2588
@@ -302,7 +302,7 @@ func_ov003_021f3df4 kind:function(arm,size=0x14) addr:0x021f3df4
 func_ov003_021f3e08 kind:function(arm,size=0x100) addr:0x021f3e08
 func_ov003_021f3f08 kind:function(arm,size=0x4) addr:0x021f3f08
 func_ov003_021f3f0c kind:function(arm,size=0x18) addr:0x021f3f0c
-func_ov003_021f3f24 kind:function(arm,size=0x38) addr:0x021f3f24
+IsOv003BoxOnScreen kind:function(arm,size=0x38) addr:0x021f3f24
 RectsOverlap kind:function(arm,size=0x44) addr:0x021f3f5c
 WrapValueToRange kind:function(arm,size=0x44) addr:0x021f3fa0
 func_ov003_021f3fe4 kind:function(arm,size=0x28) addr:0x021f3fe4
@@ -328,7 +328,7 @@ func_ov003_021fbcd8 kind:function(arm,size=0x20) addr:0x021fbcd8
 Ov003_ScrollMapList kind:function(arm,size=0x50) addr:0x021fbcf8
 func_ov003_021fbd48 kind:function(arm,size=0x524) addr:0x021fbd48
 func_ov003_021fc26c kind:function(arm,size=0x5b4) addr:0x021fc26c
-func_ov003_021fc820 kind:function(arm,size=0x40) addr:0x021fc820
+Ov003_AcknowledgeMapSelection kind:function(arm,size=0x40) addr:0x021fc820
 Ov003_LeaveMapPanel kind:function(arm,size=0xfc) addr:0x021fc860
 Ov003_CloseMapPanel kind:function(arm,size=0x30) addr:0x021fc95c
 SetMenuPanelState kind:function(arm,size=0xf8) addr:0x021fc98c
@@ -363,7 +363,7 @@ func_ov003_021fdfe8 kind:function(arm,size=0x3cc) addr:0x021fdfe8
 func_ov003_021fe3b4 kind:function(arm,size=0x3cc) addr:0x021fe3b4
 func_ov003_021fe780 kind:function(arm,size=0x3cc) addr:0x021fe780
 func_ov003_021feb4c kind:function(arm,size=0x3cc) addr:0x021feb4c
-func_ov003_021fef18 kind:function(arm,size=0x40) addr:0x021fef18
+Ov003_RedrawMapList kind:function(arm,size=0x40) addr:0x021fef18
 func_ov003_021fef58 kind:function(arm,size=0x3d8) addr:0x021fef58
 func_ov003_021ff330 kind:function(arm,size=0x14) addr:0x021ff330
 func_ov003_021ff344 kind:function(arm,size=0x14) addr:0x021ff344
@@ -584,7 +584,7 @@ func_ov003_02209cc8 kind:function(arm,size=0x14) addr:0x02209cc8
 func_ov003_02209cdc kind:function(arm,size=0x30) addr:0x02209cdc
 func_ov003_02209d0c kind:function(arm,size=0x8f0) addr:0x02209d0c
 Ov003_LoadMapSelectTitleBlock kind:function(arm,size=0x5c) addr:0x0220a5fc
-func_ov003_0220a658 kind:function(arm,size=0x40) addr:0x0220a658
+Ov003_LoadModeTexture kind:function(arm,size=0x40) addr:0x0220a658
 Ov003_SetRowAnimation kind:function(arm,size=0x24) addr:0x0220a698
 func_ov003_0220a6bc kind:function(arm,size=0x1a8) addr:0x0220a6bc
 func_ov003_0220a864 kind:function(arm,size=0x3f4) addr:0x0220a864
@@ -592,7 +592,7 @@ Ov003_UpdateHelpPanelSlide kind:function(arm,size=0x74) addr:0x0220ac58
 func_ov003_0220accc kind:function(arm,size=0xe8) addr:0x0220accc
 func_ov003_0220adb4 kind:function(arm,size=0xa04) addr:0x0220adb4
 func_ov003_0220b7b8 kind:function(arm,size=0x8) addr:0x0220b7b8
-func_ov003_0220b7c0 kind:function(arm,size=0x3c) addr:0x0220b7c0
+Ov003_AnimateUnitListButtons kind:function(arm,size=0x3c) addr:0x0220b7c0
 func_ov003_0220b7fc kind:function(arm,size=0x34) addr:0x0220b7fc
 ScrollBar_ScrollBy kind:function(arm,size=0x7c) addr:0x0220b830
 func_ov003_0220b8ac kind:function(arm,size=0x34) addr:0x0220b8ac
@@ -619,7 +619,7 @@ func_ov003_0220c6c8 kind:function(arm,size=0xbc8) addr:0x0220c6c8
 func_ov003_0220d290 kind:function(arm,size=0xbcc) addr:0x0220d290
 func_ov003_0220de5c kind:function(arm,size=0xbcc) addr:0x0220de5c
 MapSelectScreen_Delete kind:function(arm,size=0x308) addr:0x0220ea28
-func_ov003_0220ed30 kind:function(arm,size=0x3c) addr:0x0220ed30
+ScrollBar_Delete kind:function(arm,size=0x3c) addr:0x0220ed30
 func_ov003_0220ed6c kind:function(arm,size=0x14) addr:0x0220ed6c
 MapSelectScreen_Destroy kind:function(arm,size=0x300) addr:0x0220ed80
 func_ov003_0220f080 kind:function(arm,size=0x34) addr:0x0220f080
@@ -632,7 +632,7 @@ data_ov003_0220f21d kind:data(any) addr:0x0220f21d
 data_ov003_0220f238 kind:data(any) addr:0x0220f238
 data_ov003_0220f239 kind:data(any) addr:0x0220f239
 gMapSelectEntries kind:data(any) addr:0x0220f240
-data_ov003_0220f244 kind:data(any) addr:0x0220f244
+gGameModeTextures kind:data(any) addr:0x0220f244
 data_ov003_0220f340 kind:data(any) addr:0x0220f340
 data_ov003_0220f342 kind:data(any) addr:0x0220f342
 data_ov003_0220f344 kind:data(any) addr:0x0220f344
@@ -743,7 +743,7 @@ data_ov003_0220fe00 kind:data(any) addr:0x0220fe00
 gOv003MapMenuClass kind:data(any) addr:0x0220fe1c
 data_ov003_0220fe64 kind:data(any) addr:0x0220fe64
 data_ov003_0220feac kind:data(any) addr:0x0220feac
-data_ov003_0220ff2c kind:data(any) addr:0x0220ff2c
+gOv003MapListMenuClass kind:data(any) addr:0x0220ff2c
 data_ov003_022100d4 kind:data(any) addr:0x022100d4
 data_ov003_022100e4 kind:data(any) addr:0x022100e4
 data_ov003_022100f4 kind:data(any) addr:0x022100f4
@@ -857,7 +857,7 @@ data_ov003_02210fe0 kind:data(any) addr:0x02210fe0
 data_ov003_02210ff0 kind:data(any) addr:0x02210ff0
 data_ov003_02211000 kind:data(any) addr:0x02211000
 data_ov003_02211018 kind:data(any) addr:0x02211018
-data_ov003_02211028 kind:data(any) addr:0x02211028
+gScrollBarVTable kind:data(any) addr:0x02211028
 data_ov003_02211030 kind:data(any) addr:0x02211030
 data_ov003_02211044 kind:data(any) addr:0x02211044
 gMapSelectVTable kind:data(any) addr:0x02211060
@@ -885,5 +885,5 @@ sMapSelectDir kind:data(any) addr:0x0221118c
 sMapSelectTitleCgFile kind:data(any) addr:0x0221119c
 gOv003SceneState kind:bss addr:0x022111c0
 gDownloadedMapIds kind:bss addr:0x022111d4
-data_ov003_022111de kind:bss addr:0x022111de
+gSelectedMapIds kind:bss addr:0x022111de
 data_ov003_022111e8 kind:bss addr:0x022111e8

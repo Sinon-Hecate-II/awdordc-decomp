@@ -46,7 +46,7 @@ void HttpClientTask(Unk02034164 *client) {
     void LockMutex(void *);
     void UnlockMutex(void *);
     s32 HttpParseContentLength(Unk02034164 *);
-    void func_0201d70c(u32);
+    void ConsumeConnectionReceivedData(u32);
     u64 U64Divide(u64, u64);
     void CloseTransport(void);
     void WaitForTlsCloseNotify(void);
@@ -144,10 +144,10 @@ void HttpClientTask(Unk02034164 *client) {
                 parsed = HttpParseContentLength(client);
             }
             if ((u32)received > (u32)copied) {
-                func_0201d70c(received);
+                ConsumeConnectionReceivedData(received);
                 break;
             }
-            func_0201d70c(copied);
+            ConsumeConnectionReceivedData(copied);
         }
         if (M2C_FIELD(work, s32 *, 0xa30) >= 0 &&
             M2C_FIELD(work, s32 *, 0xa34) >= M2C_FIELD(work, s32 *, 0xa30)) break;
@@ -355,12 +355,14 @@ M2C_FIELD(arg1,s32 *,8)=v;
 return (v!=0);
 }
 
-void HttpBufferFree(void *arg0,s32 *arg1) {
+/* Release the storage of the buffer descriptor `buffer` through the client's
+ * allocator, then clear the descriptor. */
+void HttpBufferFree(void *client,s32 *buffer) {
 M2C_UNK MI_CpuFill8(void *,s32,s32); extern M2C_UNK sHttpFreeBufBufferName;
-s32 v=*arg1;
-M2C_UNK (*fn)(M2C_UNK *,s32,s32)=M2C_FIELD(arg0,M2C_UNK (**)(M2C_UNK *,s32,s32),0x1014);
-if(v)fn(&sHttpFreeBufBufferName,v,0);
-MI_CpuFill8(arg1,0,16);
+s32 data=*buffer;
+M2C_UNK (*freeFn)(M2C_UNK *,s32,s32)=M2C_FIELD(client,M2C_UNK (**)(M2C_UNK *,s32,s32),0x1014);
+if(data)freeFn(&sHttpFreeBufBufferName,data,0);
+MI_CpuFill8(buffer,0,16);
 }
 
 s32 HttpBufferGrow(s32 client, void *arg, s32 extra) {
@@ -512,7 +514,17 @@ c[n]=0;return n;
 }
 #pragma scheduling reset
 #pragma optimize_ifs reset
-s32 func_02034fa4(void *a,s32 b,void *c,s32 d){s32 FindHttpHeader(void *,s32);s32 StringLength(s32);void StringCopy(void *,s32);s32 p=FindHttpHeader(a,b);if(!p)return 0;if(StringLength(p)>=d)return 0;StringCopy(c,p);return 1;}
+/* Copy the value of the response header named `name` into `dest`, which holds at
+ * most `size` bytes.  Returns 0 when the header is absent or its value does not
+ * fit. */
+s32 CopyHttpHeaderValue(void *client,s32 name,void *dest,s32 size){
+s32 FindHttpHeader(void *,s32);s32 StringLength(s32);void StringCopy(void *,s32);
+s32 value=FindHttpHeader(client,name);
+if(!value)return 0;
+if(StringLength(value)>=size)return 0;
+StringCopy(dest,value);
+return 1;
+}
 
 /* Frees every name and value string held in an HTTP header pair table and
  * clears each pair. */

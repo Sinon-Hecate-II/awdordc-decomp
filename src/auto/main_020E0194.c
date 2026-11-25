@@ -37,9 +37,9 @@ static inline u32 func_020e_low(void *p) { return M2C_FIELD(p,E0194Bits*,0x59).v
 static inline u16 func_020e_get_value(void *p) { return (M2C_FIELD(p,u32*,0x40)<<6)>>24; }
 static inline u8 func_020e_check(void *p) { return func_020e_low(p)+2 != func_020e_get_value(p); }
 
-M2C_UNK func_ov010_022294ec();
-M2C_UNK func_ov010_02228c88();
-M2C_UNK func_ov009_02225348();
+M2C_UNK Ov010Online_LeaveMatch();
+M2C_UNK CreateOnlineDepartureObject();
+M2C_UNK CreateLinkDepartureObject();
 M2C_UNK Hide3DSpriteSlide();
 s32 Is3DSpriteVisible();
 s16 GetSpriteAnimValue();
@@ -53,7 +53,7 @@ M2C_UNK CloseLinkMenu(void *menu) {
     SpriteTween *slide;
     u16 start;
 
-    func_ov009_02225348();
+    CreateLinkDepartureObject();
     button = M2C_FIELD(menu, void **, 0x54);
     if (func_020e_check(button)) Hide3DSpriteSlide(button);
     Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x58));
@@ -75,7 +75,7 @@ M2C_UNK CloseLinkMenu(void *menu) {
 M2C_UNK HideOnlineMenuSprites(void *menu) {
     void *button;
 
-    func_ov010_022294ec(); func_ov010_02228c88(menu);
+    Ov010Online_LeaveMatch(); CreateOnlineDepartureObject(menu);
     button = M2C_FIELD(menu, void **, 0x54);
     if (func_020e_check(button)) Hide3DSpriteSlide(button);
     Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x58));
@@ -91,7 +91,7 @@ M2C_UNK CloseOnlineMenu(void *menu) {
     SpriteTween *slide;
     u16 start;
 
-    func_ov010_022294ec(); func_ov010_02228c88(menu);
+    Ov010Online_LeaveMatch(); CreateOnlineDepartureObject(menu);
     button = M2C_FIELD(menu, void **, 0x54);
     if (func_020e_check(button)) Hide3DSpriteSlide(button);
     Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x58));
@@ -122,7 +122,7 @@ void func_020e0368(void) {
 }
 
 s32 IsMapConfirmEnabled();
-M2C_UNK func_020e0374(void *arg0) { s16 v; void *q; u16 value; HideOnlineMenuSprites(arg0);  v=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x68));
+M2C_UNK SlideOutOnlineMenu(void *arg0) { s16 v; void *q; u16 value; HideOnlineMenuSprites(arg0);  v=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x68));
  q=M2C_FIELD(arg0,void**,0x68);
  M2C_FIELD(q,s16*,0xe)=v;
  M2C_FIELD(q,s16*,0x10)=-255;
@@ -146,7 +146,7 @@ M2C_UNK DismissOnlineMenu(void *menu) {
     SpriteTween *slide;
     u16 start;
 
-    if (!IsMapConfirmEnabled()) { func_ov010_022294ec(); func_ov010_02228c88(menu); }
+    if (!IsMapConfirmEnabled()) { Ov010Online_LeaveMatch(); CreateOnlineDepartureObject(menu); }
     button = M2C_FIELD(menu, void **, 0x54);
     if (func_020e_check(button)) Hide3DSpriteSlide(button);
     Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x58));
@@ -386,7 +386,7 @@ void func_020e0b04(void *entity) {
     s32 IsLinkSessionActive(void); s32 IsSessionResultHandled(void); s32 GetOverlayEventFlags(void);
     s32 FindTextLayer(void); M2C_UNK StartWindowClose(void); void *CreateTextLayer(void *);
     M2C_UNK RenderTextLayerMessage(void *, s32, s32, s32);
-    void DisableMapConfirm(void); void SetSpriteAnimation(void *, s32);
+    void DisableMapConfirm(void); void GotoSpriteAnimationLabel(void *, s32);
     void PlaySoundEffect(s32); void Sprite_ResumeAnimation(void *);
     void MenuSpriteUpdate(void *);
     extern u16 *gKeyState;
@@ -401,7 +401,7 @@ void func_020e0b04(void *entity) {
     M2C_FIELD(entity, u16 *, 0x48) &= ~0x20;
     if (E0B04Process(entity)) {
         DisableMapConfirm();
-        SetSpriteAnimation(entity, 0x40);
+        GotoSpriteAnimationLabel(entity, 0x40);
         return;
     }
     primaryChild = M2C_FIELD(entity, void **, 0x50);
@@ -495,8 +495,8 @@ void func_020e0e6c(M2C_UNK arg0) {
 
 M2C_UNK func_020e0e8c(void *arg0) { M2C_UNK HideAllSpriteSlots();
 M2C_UNK SetSpriteSlotScroll();
-func_ov010_022294ec();
-func_ov010_02228c88(arg0);
+Ov010Online_LeaveMatch();
+CreateOnlineDepartureObject(arg0);
 HideAllSpriteSlots();
 return SetSpriteSlotScroll(0,0);
 }

@@ -105,15 +105,17 @@ if(x==0) break;
 return 0;
 }
 
-s8 *StringFindChar(s8 *a,s32 b) {
-s8 c=*a++;
-b=(s8)b;
-while(c!=0) {
-if(c==b) return a-1;
-c=*a++;
-}
-if(b!=0) return 0;
-return a-1;
+/* Find the first occurrence of character `ch` in the NUL-terminated string `s`.
+ * Searching for 0 returns the terminator; a nonzero `ch` gives NULL when absent. */
+s8 *StringFindChar(s8 *s, s32 ch) {
+    s8 c = *s++;
+    ch = (s8)ch;
+    while (c != 0) {
+        if (c == ch) return s - 1;
+        c = *s++;
+    }
+    if (ch != 0) return 0;
+    return s - 1;
 }
 
 /* strspn: returns the length of the leading run of `string` made up only of

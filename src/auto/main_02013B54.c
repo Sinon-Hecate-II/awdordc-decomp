@@ -367,12 +367,15 @@ void ProcessGroupStartMessages(s32 batch) {
  }
 }
 
-void func_02014af4(u8 arg0,s32 arg1) {
- void SerializeCommand(u8 *,s32); void SendMatchPacket(s32,s32,s32);
+/* Send a bare multiboot control command (only its type byte set) to every player
+ * in `playerMask`: serialize the command into the work area's outgoing command
+ * buffer and send the resulting 6-byte packet. */
+void Mb_SendPlayerCommand(u8 command, u16 playerMask) {
+ void SerializeCommand(u8 *,s32); s32 SendMatchPacket(s32,s32,s32);
  extern s32 gMbWork;
  u8 packet[8];
- packet[0]=arg0;
+ packet[0]=command;
  SerializeCommand(packet,gMbWork);
- SendMatchPacket(6,arg1,gMbWork);
+ SendMatchPacket(6,playerMask,gMbWork);
 }
 

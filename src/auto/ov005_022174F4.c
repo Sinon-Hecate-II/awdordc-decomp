@@ -122,12 +122,15 @@ M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_INDEX)=value;
 M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX)=M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_INDEX)+1;
 }
 
-void func_ov005_02217e4c(u8 *arg0) {
+/* Select the page-0 CO grid slot that `selection` records: set the menu's list
+ * index to it and the detail list's base index to the CO after it, then play the
+ * menu-select sound. */
+void Ov005SelectCoSlot(u8 *selection) {
     M2C_UNK PlaySoundEffect(s32);
     extern void *gOv005MenuState;
-    M2C_FIELD(gOv005MenuState, s16 *, 0xE) = (s16) *arg0;
-    M2C_FIELD(gOv005MenuState, s16 *, 0x10) = (s16) (M2C_FIELD(gOv005MenuState, s16 *, 0xE) + 1);
-    PlaySoundEffect(0x10019);
+    M2C_FIELD(gOv005MenuState, s16 *, OV005_MENU_INDEX) = (s16) *selection;
+    M2C_FIELD(gOv005MenuState, s16 *, OV005_MENU_BASE_INDEX) = (s16) (M2C_FIELD(gOv005MenuState, s16 *, OV005_MENU_INDEX) + 1);
+    PlaySoundEffect(SOUND_MENU_SELECT);
 }
 
 /* Left/right input on the detail row's four entries: step the selection kept in
@@ -172,18 +175,20 @@ void Ov005AddCoGridSprites(void) {
     } while (i < OV005_MENU_CO_COUNT);
 }
 
+/* Create the four slot sprites of the detail row, one per entry, laid out left to
+ * right at the row's position. */
 void Ov005AddDetailSprites(void) {
-    M2C_UNK AddSpriteSlot(s32, M2C_UNK, M2C_UNK *, s32);
+    M2C_UNK AddSpriteSlot(s32, s32, M2C_UNK *, s32);
     extern M2C_UNK gOv005DetailRowSlotDef;
-    s32 var_r6;
-    s32 var_r7;
+    s32 entry;
+    s32 x;
 
-    var_r6 = 0;
-    var_r7 = 0xE;
+    entry = 0;
+    x = OV005_DETAIL_ROW_X0;
     do {
-        AddSpriteSlot(var_r7, 0x5A, &gOv005DetailRowSlotDef, var_r6);
-        var_r6 += 1;
-        var_r7 += 0x3C;
-    } while (var_r6 < 4);
+        AddSpriteSlot(x, OV005_DETAIL_ROW_Y, &gOv005DetailRowSlotDef, entry);
+        entry += 1;
+        x += OV005_DETAIL_ROW_STEP;
+    } while (entry < OV005_MENU_DETAIL_COUNT);
 }
 

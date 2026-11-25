@@ -86,9 +86,9 @@ void func_ov000_02170ca0(void) {
 void LoadSituationScreen(void *object){
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;
 extern M2C_UNK sSituationDir,sSituationNarcName,sSituationCgName,sSituationScName,sSituationClName;
-void func_020994e0(s32);M2C_UNK Clear3DSpriteLayer(M2C_UNK);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void AddTileRectPalette(void *,s32,s32,s32);void CloseNarcArchive(void);void LoadFileToSpriteBuffer(void *,s32,s32);void CreateMenuUnitSprite(void *);s32 func_020cfb94(void);void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);void MI_CpuCopy32(void *,void *,s32);void CopyToObjPaletteShadow(void *,s32,s32);void DimPalette(void *);void func_ov000_021707d8(void);
+void ResetTextTiles(s32);M2C_UNK Clear3DSpriteLayer(M2C_UNK);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void AddTileRectPalette(void *,s32,s32,s32);void CloseNarcArchive(void);void LoadFileToSpriteBuffer(void *,s32,s32);void CreateMenuUnitSprite(void *);s32 func_020cfb94(void);void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);void MI_CpuCopy32(void *,void *,s32);void CopyToObjPaletteShadow(void *,s32,s32);void DimPalette(void *);void func_ov000_021707d8(void);
 void *oldEngine=gCur3DSpriteEngine;s32 i;void *dest;u8 *player;s32 tile,paletteOff;
-gCur3DSpriteEngine=g3DSpriteEngineMain;func_020994e0(0);Clear3DSpriteLayer(1);Clear3DSpriteLayer(2);
+gCur3DSpriteEngine=g3DSpriteEngineMain;ResetTextTiles(0);Clear3DSpriteLayer(1);Clear3DSpriteLayer(2);
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x3a)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x42)=1;
 SetFileDirectory(&sSituationDir);OpenNarcArchive(GetLocalizedFileName(&sSituationNarcName));
@@ -262,13 +262,13 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;return 1;
 void LoadUsernameScreen(u8 *screen){
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern M2C_UNK sUsernameDir,sUsernameNarcName,sUsernameCgName,sUsernameClName;
-void func_020e4c64(void);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
+void AcquireUsernameFont(void);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void LoadNarcFileToSpriteBuffer(void *,s32,s32);
 s32 func_ov000_0217122c(s32);void CloseNarcArchive(void);void LoadScenePanelPalette(s32);
 s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void *,u16,s32);void CreateMenuUnitSprite(void *);
 void *oldEngine=gCur3DSpriteEngine;s32 i;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_020e4c64();SetFileDirectory(&sUsernameDir);
+AcquireUsernameFont();SetFileDirectory(&sUsernameDir);
 OpenNarcArchive(GetLocalizedFileName(&sUsernameNarcName));
 LoadNarcFileDecompressed(GetLocalizedFileName(&sUsernameCgName),M2C_FIELD(gCur3DSpriteEngine,void **,0x14));
 LoadNarcFileToSpriteBuffer(GetLocalizedFileName(&sUsernameClName),0x60,0x20);
@@ -307,7 +307,7 @@ gCur3DSpriteEngine=oldEngine;
 void UnloadUsernameScreen(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020e4ca0();
+    M2C_UNK ReleaseUsernameFont();
     extern void *gCur3DSpriteEngine;
     Clear3DSpriteLayer(1);
     Clear3DSpriteLayer(2);
@@ -315,7 +315,7 @@ void UnloadUsernameScreen(void) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER2;
     M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, DS3D_CORNER_X(1)) = 0;
     M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, DS3D_CORNER_Y(1)) = 0;
-    func_020e4ca0();
+    ReleaseUsernameFont();
     PlaySoundEffect(0x10018);
 }
 

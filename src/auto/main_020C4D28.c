@@ -1,5 +1,6 @@
 /* 50 functions from 0x020C4D28 to 0x020C5D0C (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 static inline s32 IsNewerValue(u32 b, u32 a) {
 register u32 result asm("lr") = a & 0xffff0000;
 if(result==0xffff0000 && !(b&0xffff0000) && b!=0) result=0;
@@ -9,20 +10,25 @@ return result;
 }
 extern void *gCur3DSpriteEngine;
 
-void func_020c4d28(M2C_UNK arg0) {
+/* Completion callback of the battle-save sprite: while the save task is still
+ * running, wait for it; if the save archive turned out unusable, show the
+ * missing-save-data message (which halts the game); otherwise continue the
+ * sprite's animation. */
+void FinishBattleSave(M2C_UNK sprite) {
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
-    s32 func_020761f8();
-    s32 func_02076208();
-    M2C_UNK func_02076244();
+    s32 IsSaveTaskRunning();
+    s32 IsSaveArchiveUnusable();
+    M2C_UNK HaltWithMessage();
     M2C_UNK GetLocalizedText(s32);
-    if (func_020761f8() != 0) {
+
+    if (IsSaveTaskRunning() != 0) {
         return;
     }
-    if (func_02076208() != 0) {
-        GetLocalizedText(0xC000034C);
-        func_02076244();
+    if (IsSaveArchiveUnusable() != 0) {
+        GetLocalizedText(TEXT_ID_NO_SAVE_DATA);
+        HaltWithMessage();
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 /* Create the battle-save screen sprite for the new-game path: the sprite of
@@ -142,15 +148,19 @@ void func_020c4de4(void *arg0) {
     M2C_FIELD(base, s32 *, 0x8C) = d.v[2];
 }
 #pragma pop
-void func_020c4ff4(M2C_UNK arg0) {
-    if (func_020761f8() != 0) {
+/* Completion callback of the profile-load sprite: while the load/save task is
+ * still running, wait for it; if the save archive turned out unusable, show the
+ * save-load failure message (which halts the game); otherwise continue the
+ * sprite's animation. */
+void FinishProfileLoad(M2C_UNK sprite) {
+    if (IsSaveTaskRunning() != 0) {
         return;
     }
-    if (func_02076208() != 0) {
-        GetLocalizedText(0xC000034D);
-        func_02076244();
+    if (IsSaveArchiveUnusable() != 0) {
+        GetLocalizedText(TEXT_ID_SAVE_LOAD_FAILED);
+        HaltWithMessage();
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 /* Create the profile display sprite for the load/continue path: the sprite of
@@ -208,15 +218,19 @@ M2C_FIELD(block,s8 *,0x2f4)=-1;M2C_FIELD(block,s8 *,0x2f5)=-2;slot++;M2C_FIELD(b
 }while(slot<SAVE_SLOT_COUNT);
 }
 
-void func_020c5230(M2C_UNK arg0) {
-    if (func_020761f8() != 0) {
+/* Completion callback of the battle-load sprite: while the load task is still
+ * running, wait for it; if the save archive turned out unusable, show the
+ * save-load failure message (which halts the game); otherwise continue the
+ * sprite's animation. */
+void FinishBattleLoad(M2C_UNK sprite) {
+    if (IsSaveTaskRunning() != 0) {
         return;
     }
-    if (func_02076208() != 0) {
-        GetLocalizedText(0xC000034D);
-        func_02076244();
+    if (IsSaveArchiveUnusable() != 0) {
+        GetLocalizedText(TEXT_ID_SAVE_LOAD_FAILED);
+        HaltWithMessage();
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 /* Create the battle-save display sprite for the load/continue path: the sprite of
@@ -257,20 +271,22 @@ void func_020c52d8(M2C_UNK arg0) {
     CreateBattleLoadSprite(0, arg0);
 }
 
-s32 GetBattleSlotSummary(s32 arg0) {
+/* Return battle-save slot `slot`'s 12-byte summary, or NULL when there is no
+ * battle save block or the slot holds no player record. */
+s32 GetBattleSlotSummary(s32 slot) {
     s32 GetBattleSaveBlock();
-    s32 temp_r0;
-    s32 var_r4;
+    s32 block;
+    s32 summary;
 
-    temp_r0 = GetBattleSaveBlock();
-    if (temp_r0 == 0) {
+    block = GetBattleSaveBlock();
+    if (block == 0) {
         return 0;
     }
-    var_r4 = (arg0 * 0xC) + (temp_r0 + 4);
-    if (IsPlayerRecordPresent(var_r4) == 0) {
-        var_r4 = 0;
+    summary = (slot * SAVE_SLOT_SUMMARY_SIZE) + (block + SAVE_SUMMARIES_OFFSET);
+    if (IsPlayerRecordPresent(summary) == 0) {
+        summary = 0;
     }
-    return var_r4;
+    return summary;
 }
 
 #pragma optimize_for_size off
@@ -331,8 +347,8 @@ void CopyLocalPlayerRecord(M2C_UNK arg0) {
 }
 
 void func_020c5424(void) {
-    M2C_UNK func_02032634();
-    func_02032634();
+    M2C_UNK InitPlayerCodeRecord();
+    InitPlayerCodeRecord();
 }
 
 u64 GetBattleSlotMapCode(s32 arg0) {
@@ -439,7 +455,7 @@ s32 CreateBattleSaveSlot(s32 slot, M2C_UNK summary) {
 
 void func_020c5618(s32 arg0) {
 u8 sp0[12];
-func_02032634(sp0);
+InitPlayerCodeRecord(sp0);
 CreateBattleSaveSlot(arg0,(s32)sp0);
 }
 
@@ -608,27 +624,32 @@ s32 func_020c5b10(s32 arg0) {
     return arg0;
 }
 
+/* Remember where the battle cursor was (the map's pre-move cursor position) so
+ * RestoreBattleCursorPosition can put it back after the help panel has moved it. */
 void SaveBattleCursorPosition(void) {
     extern M2C_UNK gBattleHelpPanel;
     extern void **gCurrentMap;
-    M2C_FIELD(&gBattleHelpPanel, s16 *, 2) = (s16) M2C_FIELD(*gCurrentMap, s16 *, 0x52D8);
-    M2C_FIELD(&gBattleHelpPanel, s16 *, 4) = (s16) M2C_FIELD(*gCurrentMap, s16 *, 0x52DA);
+    M2C_FIELD(&gBattleHelpPanel, s16 *, MAP_HELP_SAVED_X) = (s16) M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_OLD_X);
+    M2C_FIELD(&gBattleHelpPanel, s16 *, MAP_HELP_SAVED_Y) = (s16) M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_OLD_Y);
 }
 
+/* Put the battle cursor back where it was before the help panel took it over,
+ * from the position SaveBattleCursorPosition saved. */
 void RestoreBattleCursorPosition(void) {
-extern M2C_UNK gBattleHelpPanel;
-extern void **gCurrentMap;
-M2C_FIELD(*gCurrentMap,s16 *,0x52d8)=M2C_FIELD(&gBattleHelpPanel,s16 *,2);
-M2C_FIELD(*gCurrentMap,s16 *,0x52da)=M2C_FIELD(&gBattleHelpPanel,s16 *,4);
+    extern M2C_UNK gBattleHelpPanel;
+    extern void **gCurrentMap;
+
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_OLD_X) = M2C_FIELD(&gBattleHelpPanel, s16 *, MAP_HELP_SAVED_X);
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_OLD_Y) = M2C_FIELD(&gBattleHelpPanel, s16 *, MAP_HELP_SAVED_Y);
 }
 
 #pragma opt_common_subs off
 M2C_UNK func_020c5b98(s32 a) {
- void DrawWindowFrame(s32,s32,s32,s32,s32);void func_0209bfa8(void);void ClearTileRect(void*,s32,s32);void DrawLocalizedText(s32,s32,s32,s32,s32,u16);
+ void DrawWindowFrame(s32,s32,s32,s32,s32);void DeleteTextSprites(void);void ClearTileRect(void*,s32,s32);void DrawLocalizedText(s32,s32,s32,s32,s32,u16);
  extern M2C_UNK gBattleHelpPanel;
  s32 tile; s16 index;
  DrawWindowFrame(7,18,18,6,1);
- func_0209bfa8();
+ DeleteTextSprites();
  ClearTileRect((u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x24)+0x48e,18,6);
  M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x3a)=0;
  M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x42)=0;

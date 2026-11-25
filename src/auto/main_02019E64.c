@@ -188,7 +188,7 @@ void func_0201a26c(void *arg0) {
     void func_0201dd08(void);
     extern s32 gNetStack;
     extern s32 gLocalMacAddress;
-    extern s32 data_020faf74;
+    extern s32 gNetworkThreadPriority;
     extern s32 gNetReceiveThread;
     extern s32 data_02138ac0;
     extern s32 gNetworkTask;
@@ -261,8 +261,8 @@ hi=M2C_FIELD(arg0,s32 *,0x18);lo=M2C_FIELD(arg0,u32 *,0x14);
 
     M2C_FIELD((u8 *)&gNetStack, u8 *, 0x1) = 0;
     {
-        TaskCreate((void *)&gNetReceiveThread, (void *)NetReceiveThreadMain, 0, (void *)&data_02138ac0, 0x800, data_020faf74);
-        TaskCreate((void *)&gNetworkTask, (void *)&func_0201dd08, 0, (void *)&data_021382c0, 0x800, data_020faf74);
+        TaskCreate((void *)&gNetReceiveThread, (void *)NetReceiveThreadMain, 0, (void *)&data_02138ac0, 0x800, gNetworkThreadPriority);
+        TaskCreate((void *)&gNetworkTask, (void *)&func_0201dd08, 0, (void *)&data_021382c0, 0x800, gNetworkThreadPriority);
     }
     TaskWake((s32)&gNetReceiveThread);
     TaskWake((s32)&gNetworkTask);
@@ -311,14 +311,17 @@ M2C_FIELD(&gNetStack,s32 *,NETSTACK_RING_BUF)=0;
 M2C_FIELD(&gNetStack,s32 *,NETSTACK_RING_SIZE)=0;
 }
 
-void func_0201a550(s32 arg0) {
+/* Set both network worker threads (the receive thread and the network task) to
+ * `priority`, and remember it as the priority new workers are created with. */
+void SetNetworkThreadPriority(s32 priority) {
     M2C_UNK SetThreadPriority(M2C_UNK *, s32);
-    extern s32 data_020faf74;
+    extern s32 gNetworkThreadPriority;
     extern M2C_UNK gNetworkTask;
     extern M2C_UNK gNetReceiveThread;
-    data_020faf74 = arg0;
-    SetThreadPriority(&gNetReceiveThread, arg0);
-    SetThreadPriority(&gNetworkTask, arg0);
+
+    gNetworkThreadPriority = priority;
+    SetThreadPriority(&gNetReceiveThread, priority);
+    SetThreadPriority(&gNetworkTask, priority);
 }
 
 /* Adds the 16-bit words of a buffer to a running one's-complement checksum and
@@ -354,11 +357,31 @@ s32 IsTransportChecksumBad(u8 *segment,s32 length,u8 *ipHeader,u32 protocol){
     return sum!=65535;
 }
 
-s32 IsLocalSubnetAddress(s32 a){extern M2C_UNK gNetStack;s32 r=1;if(a!=-1&&a!=0x7f000001){s32 mask=M2C_FIELD(&gNetStack,s32 *,28);if((a&mask)!=(M2C_FIELD(&gNetStack,s32 *,80)&mask))r=0;}return r;}
+/* True when an IPv4 address is the limited broadcast or loopback address, or is
+ * in this host's own subnet (same network bits under NETSTACK_SUBNET_MASK). */
+s32 IsLocalSubnetAddress(s32 address){
+    extern M2C_UNK gNetStack;
+    s32 isLocal = 1;
+    if (address != IP_BROADCAST && address != IP_LOOPBACK) {
+        s32 mask = M2C_FIELD(&gNetStack, s32 *, NETSTACK_SUBNET_MASK);
+        if ((address & mask) != (M2C_FIELD(&gNetStack, s32 *, NETSTACK_LOCAL_IP) & mask)) isLocal = 0;
+    }
+    return isLocal;
+}
 
 s32 GetIpNextHop(s32 a){s32 IsLocalSubnetAddress(s32);extern M2C_UNK gNetStack;if(!IsLocalSubnetAddress(a))a=M2C_FIELD(&gNetStack,s32 *,44);return a;}
 
-s32 IsBroadcastAddress(s32 a){extern M2C_UNK gNetStack;s32 r=0;if(IsLocalSubnetAddress(a)){s32 m=~M2C_FIELD(&gNetStack,s32 *,28);if(m==(m&a))r=1;}return r;}
+/* True when `address` is this subnet's directed broadcast address: a local-subnet
+   address whose host bits (those outside NETSTACK_SUBNET_MASK) are all set. */
+s32 IsBroadcastAddress(s32 address) {
+    extern M2C_UNK gNetStack;
+    s32 isBroadcast = 0;
+    if (IsLocalSubnetAddress(address)) {
+        s32 hostMask = ~M2C_FIELD(&gNetStack, s32 *, NETSTACK_SUBNET_MASK);
+        if (hostMask == (hostMask & address)) isBroadcast = 1;
+    }
+    return isBroadcast;
+}
 
 s32 IsMulticastAddress(s32 arg0) {
     if ((arg0 & 0xF0000000) == 0xE0000000) {

@@ -484,7 +484,18 @@ if(!gti2ResendPendingCommand(connection,command))return 0;
 return 1;
 }
 
-s32 gti2CheckDelayedAck(void *p,u32 t) {s32 func_0205ca48(void *,u32);if(!M2C_FIELD(p,s32 *,0x90))return 1;if(t-M2C_FIELD(p,u32 *,0x94)>100){if(!func_0205ca48(p,t-M2C_FIELD(p,u32 *,0x94)))return 0;}return 1;}
+/* Send a connection's delayed acknowledgement once it has owed one for
+ * GT2_ACK_DELAY ms: resend the acknowledgement (control message 100), which clears
+ * the pending flag.  Returns 0 once the resend fails (the socket may have been
+ * freed), 1 otherwise. */
+s32 gti2CheckDelayedAck(void *connection, u32 now) {
+    s32 gti2SendDelayedAck(void *, u32);
+    if (!M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_PENDING)) return 1;
+    if (now - M2C_FIELD(connection, u32 *, GT2_CONNECTION_ACK_TIME) > GT2_ACK_DELAY) {
+        if (!gti2SendDelayedAck(connection, now - M2C_FIELD(connection, u32 *, GT2_CONNECTION_ACK_TIME))) return 0;
+    }
+    return 1;
+}
 
 s32 gti2CheckPing(void *p,u32 t) {s32 gti2SendPing(void *,u32);if(t-M2C_FIELD(p,u32 *,0x88)>30000){if(!gti2SendPing(p,t-M2C_FIELD(p,u32 *,0x88)))return 0;}return 1;}
 

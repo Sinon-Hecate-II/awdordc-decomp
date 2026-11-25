@@ -124,17 +124,19 @@ s32 IsPlayerOneUnitUnder90Hp(void) {
     return 0;
 }
 
-s32 func_ov004_0221322c(void) {
+/* Mission condition: from the second turn on, true while the map cursor is on
+ * tile (11,6). */
+s32 IsCursorOnTileAfterFirstTurn(void) {
  extern void **gCurrentMap;
- void *p;
- s32 n;
- s16 x, y;
- p = *gCurrentMap;
- n = M2C_FIELD(p, u16 *, 0x52A2);
- if (n < 2) return 0;
- x = M2C_FIELD(p, s16 *, 0x52DC);
- y = M2C_FIELD(p, s16 *, 0x52DE);
- return x == 11 && y == 6;
+ void *map;
+ s32 turn;
+ s16 cursorX, cursorY;
+ map = *gCurrentMap;
+ turn = M2C_FIELD(map, u16 *, MAP_TURN);
+ if (turn < 2) return 0;
+ cursorX = M2C_FIELD(map, s16 *, MAP_CURSOR_X);
+ cursorY = M2C_FIELD(map, s16 *, MAP_CURSOR_Y);
+ return cursorX == 11 && cursorY == 6;
 }
 
 /* Mission condition: from the second turn on, true while any unit of player 1

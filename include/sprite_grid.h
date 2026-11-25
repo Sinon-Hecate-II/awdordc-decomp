@@ -29,6 +29,8 @@ typedef struct SpriteCell {
 #define SPRITE_CELL_LIST_CURRENT  0x00 /* SpriteCell * cell the list is on */
 #define SPRITE_CELL_LIST_PREVIOUS 0x04 /* void *cell the list was on before SPRITE_CELL_LIST_CURRENT */
 #define SPRITE_CELL_LIST_HIT_ID   0x0C /* s8 tile id of the cell the touch last hit, -1 = none */
+#define SPRITE_CELL_LIST_SYNC     0x0F /* u8 0 = the current/previous cells just changed; the owner copies their tile ids and counts this up, so it stops changing */
+#define SPRITE_CELL_LIST_SYNC_DONE 0xFF /* sync value once nothing is selected */
 
 /* Fields the widget that owns the list adds: the box a touch must fall in for
  * the list to respond at all, and the tolerance added around each cell when a

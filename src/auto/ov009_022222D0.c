@@ -388,29 +388,36 @@ test:if(i<16)goto loop;
 }
 done:return result;
 }
-s32 func_ov009_02222ac4(void) {
+/* Start the overlay's DS Download Play session: move the link to the pending
+ * phase and queue the start request, whose completion HandleLinkDownloadPlayResult
+ * takes.  A failed queue signals the link error and aborts the session. */
+s32 StartLinkDownloadPlay(void) {
     s32 WFC_StartDownloadPlay(M2C_UNK *, M2C_UNK *);
     void SignalLinkError();
     extern M2C_UNK gLinkDownloadHeader;
-    extern M2C_UNK func_ov009_02222b04;
-    SetLinkPhase(3);
-    if (WFC_StartDownloadPlay(&func_ov009_02222b04, &gLinkDownloadHeader) == 2) return 1;
+    extern M2C_UNK HandleLinkDownloadPlayResult;
+    SetLinkPhase(LINK_PHASE_PENDING);
+    if (WFC_StartDownloadPlay(&HandleLinkDownloadPlayResult, &gLinkDownloadHeader) == 2 /* WFC_CMD_OK */) return 1;
     SignalLinkError();
-    SetLinkPhase(8);
+    SetLinkPhase(LINK_PHASE_ERROR);
     return 0;
 }
 
-void func_ov009_02222b04(void *arg0) {
+/* Completion callback of the DS Download Play start (WFC_StartDownloadPlay): a
+ * nonzero result signals the link event and moves the link to its error phase;
+ * otherwise the child-indication task is queued, and if that fails the link is
+ * put into the error phase too (StartLinkChildIndicate already signalled it). */
+void HandleLinkDownloadPlayResult(void *result) {
     s32 StartLinkChildIndicate();
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
+    if (M2C_FIELD(result, u16 *, LINK_WFC_EVENT_RESULT) != 0) {
         SignalLinkEvent();
-        SetLinkPhase(8);
+        SetLinkPhase(LINK_PHASE_ERROR);
         return;
     }
     if (StartLinkChildIndicate() != 0) {
         return;
     }
-    SetLinkPhase(8);
+    SetLinkPhase(LINK_PHASE_ERROR);
 }
 
 /* Queue the Download Play child-indication task, whose callback HandleLinkChildIndicate

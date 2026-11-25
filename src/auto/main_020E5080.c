@@ -11,7 +11,7 @@ void SetFileDirectory(void*);void *GetLocalizedFileName(void*);
 void OpenNarcArchive(void);void Clear3DSpriteLayer(s32);
 void LoadNarcFileDecompressed(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);
 void SetTileRectPalette(void*,s32,s32,s32);void CloseNarcArchive(void);
-void *func_020ab1c4(void*);void InitUnitSprite(void*,s32,s32,s32,s32);
+void *CreateUnitSprite(void*);void InitUnitSprite(void*,s32,s32,s32,s32);
 void Set3DSpriteSlideTargetAndStart(void*,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void*);s32 GetUnitSpriteHeight(void*);
 void func_02087d84(void*,s32,s32,s32,u16,u16);void func_020aad18(void*);
 void *Create3DSprite(void*);void LoadSpriteResource(s32,s32,s32,void*);s32 func_020aaf74(void*);
@@ -37,7 +37,7 @@ LoadNarcFileDecompressed(GetLocalizedFileName(data_0212db78),M2C_FIELD((void*)gC
 LoadFileToSpriteBuffer(data_0212da4c,0xa0,0x20);
 SetTileRectPalette(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0x20),0x20,0x18,5);
 M2C_FIELD((void*)gCur3DSpriteEngine,u8 *,0x46)|=1;CloseNarcArchive();
-M2C_FIELD(arg0,void **,0x38)=func_020ab1c4(arg0);
+M2C_FIELD(arg0,void **,0x38)=CreateUnitSprite(arg0);
 InitUnitSprite(M2C_FIELD(arg0,void **,0x38),2,0x140,3,1);
 obj=M2C_FIELD(arg0,void **,0x38);Set3DSpriteSlideTargetAndStart(obj,0xe0,0xa0,0xe0,0xa0);
 if((u8)(M2C_FIELD(M2C_FIELD(obj,void **,0x64),u8 *,0x12)!=0)){
@@ -90,13 +90,13 @@ M2C_FIELD(&gMicTestIpc,s32 *,0x1c)=0;
 }
 #pragma opt_cse reset
 void func_020e5678(void) {
-    M2C_UNK func_0200df70();
+    M2C_UNK Arm7TransferEndWait();
     M2C_UNK Arm7SetAmpParam2(M2C_UNK);
     M2C_UNK SetMusicVolumeLevel(M2C_UNK, M2C_UNK);
     M2C_UNK func_020af1e4();
     func_020af1e4();
     SetMusicVolumeLevel(2, 0x7F);
-    func_0200df70();
+    Arm7TransferEndWait();
     Arm7SetAmpParam2(0);
 }
 
@@ -135,7 +135,7 @@ void CreateMicTestObject(s32 owner) {
  * state, starting the meter animation the first time round. */
 void StartMicTestMeasurement(void) {
     void *FindObjectByClass(M2C_UNK *);
-    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
     s16 Divide(s32, M2C_UNK);
     extern M2C_UNK gMicTestClass;
     MicTestScreen *screen;
@@ -150,18 +150,21 @@ void StartMicTestMeasurement(void) {
     screen->timer = Divide(0x2BF20, 0x3E8);
     if ((screen->flags &= ~MIC_TEST_FLAG_START) & MIC_TEST_FLAG_RUNNING) return;
     screen->flags |= MIC_TEST_FLAG_RUNNING;
-    SetSpriteAnimation(screen, 1);
+    GotoSpriteAnimationLabel(screen, 1);
 }
 
-M2C_UNK **func_020e57b4(M2C_UNK **arg0) {
- M2C_UNK HeapFreeBlock();
- M2C_UNK MemFree(M2C_UNK **);
- extern M2C_UNK gMicTestVtbl;
- extern s32 gMicTestIpc;
- *arg0 = &gMicTestVtbl;
- if (gMicTestIpc != 0) HeapFreeBlock();
- MemFree(arg0);
- return arg0;
+/* Destroy the mic test screen object: install the base vtable, free the
+ * microphone sample buffer, then free the object itself. */
+MicTestScreen *DestroyMicTestObject(MicTestScreen *screen) {
+    extern M2C_UNK gMicTestVtbl;
+    extern s32 gMicTestIpc;
+    M2C_UNK HeapFreeBlock(s32);
+    M2C_UNK MemFree(M2C_UNK **);
+
+    screen->vtable = &gMicTestVtbl;
+    if (gMicTestIpc != 0) HeapFreeBlock(gMicTestIpc);
+    MemFree((M2C_UNK **) screen);
+    return (MicTestScreen *)screen;
 }
 
 M2C_UNK **func_020e57f0(M2C_UNK **arg0) {

@@ -213,7 +213,7 @@ void func_ov001_0218c668(void) {
 
 void Ov001_InitTasks(void) {
     M2C_UNK Ov001_Alloc(s32, s32);
-    M2C_UNK Ov001_QueueCreateFromBuffer(s32, s32, s32);
+    M2C_UNK Ov001_QueueCreateFromRange(s32, s32, s32);
     M2C_UNK Ov001_QueueCreate(s32);
     Ov001TaskList *Ov001_ListCreate(void);
     void Ov001_ListPushFront(Ov001TaskList *, Ov001TaskNode *);
@@ -230,7 +230,7 @@ void Ov001_InitTasks(void) {
     for (; i < OV001_TASK_GROUP_COUNT; i++) {
         OV001_TASKS[i].nodeCount = *src;
         OV001_TASKS[i].pool = (Ov001TaskNode *)Ov001_Alloc((u32)*src * sizeof(Ov001TaskNode), 4);
-        OV001_TASKS[i].freeNodes = Ov001_QueueCreateFromBuffer(*src, (s32)OV001_TASKS[i].pool, sizeof(Ov001TaskNode));
+        OV001_TASKS[i].freeNodes = Ov001_QueueCreateFromRange(*src, (s32)OV001_TASKS[i].pool, sizeof(Ov001TaskNode));
         OV001_TASKS[i].pendingNodes = Ov001_QueueCreate(*src++);
         OV001_TASKS[i].list = Ov001_ListCreate();
         OV001_TASKS[i].head.priority = 0;
@@ -327,7 +327,7 @@ extern s32 gOv001Tasks;
 Ov001_QueuePush(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,4),arg);
 }
 
-void func_ov001_0218c94c(void) {
+void Ov001_ReturnTaskNodeVeneer(void) {
     M2C_UNK Ov001_ReturnTaskNode();
     Ov001_ReturnTaskNode();
 }

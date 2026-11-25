@@ -1,6 +1,7 @@
 /* 17 functions from 0x022144AC to 0x022153FC (ov006), found by ds-decomp. */
 #include "common.h"
 #include "ov006_menu_sprite.h"
+#include "ov006_map_transfer.h"
 
 #pragma optimization_level 3
 void func_ov006_022144ac(void *arg0) {
@@ -149,16 +150,18 @@ void func_ov006_02215090(void *arg0) {
     DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
-void func_ov006_022150a8(void *arg0) {
+/* Frame step of an ov006 panel: advance the panel's reveal tween and, once the
+ * tween has reached its end, resume the panel sprite's animation. */
+void UpdatePanelRevealTween(void *panel) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK UpdateSpriteAnimation(void *);
-    void *ptr = M2C_FIELD(arg0, void **, 0x48);
-    u8 equal = M2C_FIELD(ptr, u16 *, 2) == M2C_FIELD(ptr, s16 *, 0xC);
-    if (equal) {
-        Sprite_ResumeAnimation(arg0);
+    SpriteTween *tween = M2C_FIELD(panel, SpriteTween **, MAP_CODE_PANEL_SPRITE);
+    u8 finished = M2C_FIELD(tween, u16 *, 2) == M2C_FIELD(tween, s16 *, 0xC);
+    if (finished) {
+        Sprite_ResumeAnimation(panel);
         return;
     }
-    UpdateSpriteAnimation(ptr);
+    UpdateSpriteAnimation(tween);
 }
 
 void func_ov006_022150e0(void) {

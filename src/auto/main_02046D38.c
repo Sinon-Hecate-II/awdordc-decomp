@@ -179,7 +179,7 @@ void WebRequestProgress(void) {
 #pragma opt_propagation on
 void WebRequestComplete(void *arg0, u32 arg1, s32 arg2) {
     void MemCopy(void *, const void *, s32);
-    void func_02076658(u8 *, u8 *, s32);
+    void Sha1Digest(u8 *, u8 *, s32);
     s32 StringLength(const void *);
     s32 StringCompareN(void *, void *, s32);
     void HeapFree(s32, s32, s32);
@@ -208,7 +208,7 @@ void WebRequestComplete(void *arg0, u32 arg1, s32 arg2) {
             digits=*(HexDigits *)data_020ea95c;
             prefix=*(HashPrefix *)data_020fca88;
             MemCopy(input, arg0, 0x20);
-            func_02076658(target, prefix.bytes, 0x34);
+            Sha1Digest(target, prefix.bytes, 0x34);
             for (i = 0; i < 20; i++) {
                 M2C_FIELD(&gWebRequestState,u8 **,0x58)[i*2] = digits.bytes[target[i] >>4];
                 M2C_FIELD(&gWebRequestState,u8 **,0x58)[i*2+1] = digits.bytes[target[i]&15];
@@ -251,7 +251,16 @@ void WebPrngSeed(s32 arg0) {
     sWebPrngState = arg0 | (arg0 << 0x10);
 }
 
-s32 WebPrngNextByte(void) { extern M2C_UNK gWebRequestState; extern s32 sWebPrngState; sWebPrngState=(M2C_FIELD(&gWebRequestState,s32 *,0x44)*sWebPrngState+M2C_FIELD(&gWebRequestState,s32 *,0x48))%M2C_FIELD(&gWebRequestState,s32 *,0x4c); return (sWebPrngState>>16)&255; }
+/* Advance the WFC request-body obfuscation PRNG (a linear congruential
+ * generator) one step and return the next byte, bits 16..23 of its state. */
+s32 WebPrngNextByte(void) {
+    extern M2C_UNK gWebRequestState;
+    extern s32 sWebPrngState;
+    sWebPrngState = (M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PRNG_MUL) * sWebPrngState +
+                     M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PRNG_ADD)) %
+                    M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PRNG_MOD);
+    return (sWebPrngState >> 16) & 255;
+}
 
 /* Builds a WFC request body in out: copies the header and payload into a
  * scratch buffer, seeds the obfuscation PRNG with their byte sum, XORs the

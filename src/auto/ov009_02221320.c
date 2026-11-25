@@ -108,7 +108,7 @@ void func_ov009_022213f0(M2C_UNK arg0, M2C_UNK arg1) {
     CopyU16(arg1, arg0, 0x14);
 }
 
-void func_ov009_0222140c(s32 arg0, M2C_UNK arg1, s32 arg2) {
+void CopyLinkPlayerRecordPayload(s32 arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK MI_CpuCopy8();
     MI_CpuCopy8(arg1, arg0 + 0x20, arg2);
 }

@@ -83,18 +83,30 @@ void FloodFillUnitRangeForPlayer(s16 player, M2C_UNK x, M2C_UNK y, M2C_UNK kind,
     M2C_FIELD(map, u16 *, MAP_ACTIVE_PLAYER) = (u16) M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
 }
 
-void func_01ffc2e8(void *arg0) {
-s32 GetUnitRemainingMoveRange(void);
-M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-s16 value=GetUnitRemainingMoveRange();
-FloodFillUnitRange(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26,value,1);
+/* Build the move range of `unit` into the currently selected map layer: flood
+ * fill from the unit's tile with its remaining movement, with every unit in a
+ * cell stopping the search. */
+void BuildUnitMoveRangeBlockingUnits(void *unit) {
+    s32 GetUnitRemainingMoveRange(void);
+    M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    s16 range;
+
+    range = GetUnitRemainingMoveRange();
+    FloodFillUnitRange(M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y),
+                       (u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26,
+                       range, MOVE_SEARCH_BLOCK_ALL_UNITS);
 }
 
-void BuildUnitMoveRange(void *arg0) {
-s32 GetUnitRemainingMoveRange(void);
-M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-s16 value=GetUnitRemainingMoveRange();
-FloodFillUnitRange(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26,value,3);
+/* Build the move range of `unit`: flood-fill from its tile with its kind, its
+ * remaining movement and the flags of a normal move check (other players' units
+ * and hidden units do not block the fill). */
+void BuildUnitMoveRange(BattleMapUnit *unit) {
+    s32 GetUnitRemainingMoveRange(void);
+    M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    s16 moveRange = GetUnitRemainingMoveRange();
+
+    FloodFillUnitRange(unit->x, unit->y, ((BattleMapUnitKindRank *) unit)->kind, moveRange,
+                       MOVE_SEARCH_FLAG_ANY_OWNER | MOVE_SEARCH_FLAG_ANY_VISIBILITY);
 }
 
 /* Marks the cells the unit at (x, y) can attack in the map grid: fills its whole

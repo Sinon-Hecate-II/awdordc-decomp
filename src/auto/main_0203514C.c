@@ -22,15 +22,18 @@ void Wfc_AbortNetworkSession(void) {
     M2C_FIELD(gWfcNet, s32 *, WFC_NET_CHECK_RESULT) = WFC_NET_CHECK_ABORTED;
 }
 
+/* Read the network check's step state under WFC_NET_CHECK_MUTEX (the counterpart of
+ * Wfc_SetNetCheckState). */
 s32 Wfc_GetNetCheckState(void) {
     M2C_UNK LockMutex(void *);
     M2C_UNK UnlockMutex(void *);
     extern void *gWfcNet;
-    s32 result;
-    LockMutex(gWfcNet + 0x11DC);
-    result = M2C_FIELD(gWfcNet, s32 *, 0x1000);
-    UnlockMutex(gWfcNet + 0x11DC);
-    return result;
+    s32 state;
+
+    LockMutex(gWfcNet + WFC_NET_CHECK_MUTEX);
+    state = M2C_FIELD(gWfcNet, s32 *, WFC_NET_CHECK_STATE);
+    UnlockMutex(gWfcNet + WFC_NET_CHECK_MUTEX);
+    return state;
 }
 
 s32 Wfc_GetNetResultCode(void) {

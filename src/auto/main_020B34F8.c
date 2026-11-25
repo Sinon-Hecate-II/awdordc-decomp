@@ -5,7 +5,7 @@
 #include "sprite_grid.h"
 #include "sound.h"
 extern void **gCurrentMap;
-extern u16 data_0215d9b8[];
+extern u16 gOptionBits[];
 extern u8 gMapConfig[];
 extern u8 *gMapData;
 typedef struct { u8 a[33],b;u16 c,d,e; s16 f,g,h,i;u16 j,k;u8 l,m,n,o,p,q,r,s;u8 t[2],u[2];u8 v[322]; } SettingsB3C;
@@ -292,7 +292,7 @@ M2C_FIELD(p,s16*,0x18)=M2C_FIELD(src,s16*,0);
 M2C_FIELD(p,s16*,0x1a)=M2C_FIELD(src,s16*,2);
 M2C_FIELD(p,u16*,0x16)=M2C_FIELD(*gCurrentMap,u16*,0x52a2);
 M2C_FIELD(p,u16*,0x14)=M2C_FIELD(*gCurrentMap,u16*,0x52a4);
-M2C_FIELD(p,u8*,0x125b)=((u32)data_0215d9b8[3]<<22)>>29;
+M2C_FIELD(p,u8*,0x125b)=((u32)gOptionBits[3]<<22)>>29;
 src=(u8 *)*gCurrentMap+0x5120;dst=(u8 *)p+0x2c;
 M2C_FIELD(dst,Bytes33B3C*,0)=M2C_FIELD(src,Bytes33B3C*,0);
 M2C_FIELD(dst,u8*,33)=M2C_FIELD(src,u8*,33);

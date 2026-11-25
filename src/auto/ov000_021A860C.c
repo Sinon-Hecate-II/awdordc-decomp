@@ -110,10 +110,10 @@ u8 IsMidActionStep(s32 aiStep) {
  * the player's movement fuel rate, capped by the unit kind's movement range. */
 s32 GetAiUnitMoveRange(BattleMapUnitHead *a) {
     extern void **gCurrentMap;
-    s32 func_020a86f0(s32);
+    s32 GetPlayerFuelRate(s32);
     s32 Divide(s32, s32);
     s32 GetUnitMovement(void *);
-    s32 range = Divide(a->fuel, func_020a86f0(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)));
+    s32 range = Divide(a->fuel, GetPlayerFuelRate(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)));
     if (GetUnitMovement(a) <= range) range = GetUnitMovement(a);
     return range;
 }
@@ -155,7 +155,17 @@ s32 GetUnitCaptureRateHere(void *arg0) {
     GetUnitCaptureRate(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
 }
 
-u8 WillCaptureCompleteThisTurn(void *a){u8 r;if(!((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27))return 0;if(GetUnitCaptureRateHere(a)+(s32)((u32)(M2C_FIELD(a,u16 *,6)<<16)>>27)>=20)r=1;else r=0;return r;}
+/* Whether `unit` finishes capturing the property it stands on this turn: it must
+ * already have capture points, and those plus the capture rate at its tile must
+ * reach MAP_UNIT_CAPTURE_COMPLETE. */
+u8 WillCaptureCompleteThisTurn(void *unit) {
+    u8 result;
+
+    if (!((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) << 16) >> 27)) return 0;
+    if (GetUnitCaptureRateHere(unit) + (s32)((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) << 16) >> 27) >= MAP_UNIT_CAPTURE_COMPLETE) result = 1;
+    else result = 0;
+    return result;
+}
 
 /* Whether the unit finishes capturing the property it stands on this turn: its
  * capture points plus the capture rate at its tile reach MAP_UNIT_CAPTURE_COMPLETE.
@@ -293,12 +303,17 @@ if(gTerrainIsProperty[i])v=1;else v=0;
 return v;
 }
 
-u8 IsTerrainPassable(s32 a,s32 b){
-extern u8 gMovementTypeTable[];
-extern M2C_UNK gMovementCostTable;
-u32 row=gMovementTypeTable[a*0x70];
-s8 *table=M2C_FIELD(&gMovementCostTable,s8 **,0x64)+row*32;
-u8 r;if(table[b&31]>0)r=1;else r=0;return r;
+/* Whether terrain kind `terrain` is passable for a unit of kind `unitKind`: look
+ * up the unit kind's movement type, then that type's row in the army's movement-
+ * cost table, and require a positive cost. */
+u8 IsTerrainPassableForUnitKind(s32 unitKind, s32 terrain) {
+    extern u8 gMovementTypeTable[];
+    extern M2C_UNK gMovementCostTable;
+    u32 row = gMovementTypeTable[unitKind * UNIT_KIND_STATS_SIZE];
+    s8 *table = M2C_FIELD(&gMovementCostTable, s8 **, ARMY_DATA_MOVE_COSTS) + row * 32;
+    u8 passable;
+    if (table[terrain & MAP_TERRAIN_KIND_MASK] > 0) passable = 1; else passable = 0;
+    return passable;
 }
 
 u8 IsUnitProductionTerrain(s32 arg0) {
@@ -390,7 +405,13 @@ s32 func_ov000_021a93a8(void) {
     return 0;
 }
 
-s32 func_ov000_021a93b0(s32 a,s32 b,s32 c){extern void **gCurrentMap;s32 IsTerrainExcludedForPlayer(u8,u8);void *p=*gCurrentMap;return IsTerrainExcludedForPlayer(a,M2C_FIELD((u8 *)p+(b+M2C_FIELD((u8 *)p+c*2,u16 *,0x3758)),u8 *,0x1420));}
+/* Check whether the terrain at (x, y) is excluded for the specified player. */
+s32 IsCellTerrainExcludedForPlayer(s32 player, s32 x, s32 y) {
+    extern void **gCurrentMap;
+    s32 IsTerrainExcludedForPlayer(u8, u8);
+    void *map = *gCurrentMap;
+    return IsTerrainExcludedForPlayer(player, M2C_FIELD((u8 *)map + (x + M2C_FIELD((u8 *)map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN));
+}
 
 /* Whether the current team can see tile (x, y): a unit standing there must be in
  * sight, and the tile must be marked in the first team's sight bitmap. */

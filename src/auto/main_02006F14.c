@@ -97,16 +97,19 @@ else if(delta<0x10000)timer=(u16)~(u32)delta;
 OS_EnableIrqMask(0x10);
 }
 #pragma opt_if_conversion reset
-void func_02007140(void) {
+/* Set up the OS timer queue once: mark it ready, enable the TIMER1 interrupt
+ * that drives it, clear the head and tail, and leave the TIMER1 IRQ masked
+ * until an armed timer re-enables it. */
+void InitTimerQueue(void) {
  void func_02006ef8(s32);
  M2C_UNK OS_DisableIrqMask(M2C_UNK);
  extern u16 gTimerQueue;
- if (M2C_FIELD(&gTimerQueue, u16 *, 0) != 0) return;
- M2C_FIELD(&gTimerQueue, u16 *, 0) = 1;
+ if (M2C_FIELD(&gTimerQueue, u16 *, TIMER_QUEUE_READY) != 0) return;
+ M2C_FIELD(&gTimerQueue, u16 *, TIMER_QUEUE_READY) = 1;
  func_02006ef8(1);
- M2C_FIELD(&gTimerQueue, s32 *, 4) = 0;
- M2C_FIELD(&gTimerQueue, s32 *, 8) = 0;
- OS_DisableIrqMask(0x10);
+ M2C_FIELD(&gTimerQueue, s32 *, TIMER_QUEUE_HEAD) = 0;
+ M2C_FIELD(&gTimerQueue, s32 *, TIMER_QUEUE_TAIL) = 0;
+ OS_DisableIrqMask(IRQ_TIMER1);
 }
 
 u16 func_02007180(void) {
@@ -376,7 +379,7 @@ void func_0200763c(s32 arg0) {
     } while (SendFifoMessage(0xC, arg0 << 8, 0) != 0);
 }
 
-void func_02007668(s32 arg0) {
+void ResetSystem(s32 arg0) {
     M2C_UNK func_01ff81e4();
     void OS_SetIrqEnableMask(s32);
     void OS_SetIrqMask(s32);

@@ -391,14 +391,14 @@ void func_020d8b28(void) {
 void ApplyMapCategorySelection(void) {
     extern M2C_UNK gMapCategorySelectionCallbacks;
     extern M2C_UNK gMapCategorySelectionModes;
-    extern M2C_UNK data_0215d9b8;
+    extern M2C_UNK gOptionBits;
     s32 GetMapCategory(void);
     void (*setupCallback)(void);
     u16 mapListMode;
 
     setupCallback = M2C_FIELD((u8 *)&gMapCategorySelectionCallbacks + GetMapCategory() * 8, void (**)(void), 0);
     mapListMode = M2C_FIELD((u8 *)&gMapCategorySelectionModes + GetMapCategory() * 8, u32 *, 0);
-    M2C_FIELD(&data_0215d9b8, u16 *, 6) = (M2C_FIELD(&data_0215d9b8, u16 *, 6) & ~15) | (mapListMode & 15);
+    M2C_FIELD(&gOptionBits, u16 *, 6) = (M2C_FIELD(&gOptionBits, u16 *, 6) & ~15) | (mapListMode & 15);
     setupCallback();
 }
 

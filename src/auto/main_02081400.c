@@ -1,6 +1,7 @@
 /* 62 functions from 0x02081400 to 0x02082340 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "gx.h"
 
 typedef struct DS3DSpritePreset {
     u8 mode;
@@ -22,42 +23,50 @@ typedef struct DS3DSpritePresetFlagRef {
     DS3DSpritePresetFlags *flags;
 } DS3DSpritePresetFlagRef;
 
-void func_02081400(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK CopyMainOBJExtPalette(s32, M2C_UNK, M2C_UNK);
-    s32 temp_r0;
+/* Load the file at `path` and copy its first `size` bytes into the main OBJ
+ * extended palette at byte `offset`, then free the loaded buffer. */
+void LoadFileToObjExtPalette(s32 path, s32 paletteOffset, s32 size) {
+    M2C_UNK CopyMainOBJExtPalette(s32, s32, s32);
+    s32 data;
 
-    temp_r0 = LoadFileToBuffer(arg0, 0);
-    DC_FlushRange(temp_r0, arg2);
-    CopyMainOBJExtPalette(temp_r0, arg1, arg2);
-    HeapFreeBlock(temp_r0);
+    data = LoadFileToBuffer(path, 0);
+    DC_FlushRange(data, size);
+    CopyMainOBJExtPalette(data, paletteOffset, size);
+    HeapFreeBlock(data);
 }
 
-void func_0208143c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Load the file at `path`, flush it, and queue a copy of its first `size` bytes
+ * into the main OBJ extended palette at byte `paletteOffset`; the loaded buffer
+ * is freed once the queued copy has run. */
+void QueueFileToObjExtPalette(s32 path, s32 paletteOffset, s32 size) {
     M2C_UNK DC_FlushRange(s32, M2C_UNK);
     M2C_UNK QueueMainOBJExtPaletteCopy(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 LoadFileToBuffer(M2C_UNK, M2C_UNK);
-    s32 temp_r0;
+    s32 data;
 
-    temp_r0 = LoadFileToBuffer(arg0, 0);
-    DC_FlushRange(temp_r0, arg2);
-    QueueMainOBJExtPaletteCopy(temp_r0, arg1, arg2, 1);
+    data = LoadFileToBuffer(path, 0);
+    DC_FlushRange(data, size);
+    QueueMainOBJExtPaletteCopy(data, paletteOffset, size, 1);
 }
 
-void func_02081474(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+void LoadFileAndDrawTilemapBlock(M2C_UNK path, M2C_UNK tilemap, M2C_UNK tileOffset, M2C_UNK palette) {
     M2C_UNK DrawTilemapBlock(s32, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 temp_r0;
+    s32 fileBuffer;
 
-    temp_r0 = LoadFileToBuffer(arg0, 0);
-    DrawTilemapBlock(temp_r0, arg1, arg2, arg3);
-    HeapFreeBlock(temp_r0);
+    /* Load the raw tilemap block, draw it into the destination tilemap, and release the temporary buffer. */
+    fileBuffer = LoadFileToBuffer(path, 0);
+    DrawTilemapBlock(fileBuffer, tilemap, tileOffset, palette);
+    HeapFreeBlock(fileBuffer);
 }
 
-void func_020814ac(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    s32 temp_r0;
+/* Load the decompressed file at `path` into a buffer and draw it as a tile block
+ * into `tilemap`, using `tileBase` and `palette`, then free the buffer. */
+void LoadDecompressedFileAndDrawTilemapBlock(s32 path, M2C_UNK tilemap, M2C_UNK tileBase, M2C_UNK palette) {
+    s32 data;
 
-    temp_r0 = LoadDecompressedFile(arg0, 0);
-    DrawTilemapBlock(temp_r0, arg1, arg2, arg3);
-    HeapFreeBlock(temp_r0);
+    data = LoadDecompressedFile(path, 0);
+    DrawTilemapBlock(data, tilemap, tileBase, palette);
+    HeapFreeBlock(data);
 }
 
 /* Open the NARC archive at `path`: load the archive file into the shared buffer
@@ -144,8 +153,8 @@ void LoadNarcLayerPalette(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3
 
 void func_0208166c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
  s32 BuildNarcPath(M2C_UNK);
- void func_02081400(M2C_UNK, M2C_UNK, M2C_UNK);
- func_02081400(BuildNarcPath(arg0),arg1,arg2);
+ void LoadFileToObjExtPalette(M2C_UNK, M2C_UNK, M2C_UNK);
+ LoadFileToObjExtPalette(BuildNarcPath(arg0),arg1,arg2);
 }
 
 s32 func_0208168c(void *arg0, void *arg1) {
@@ -154,14 +163,14 @@ s32 func_0208168c(void *arg0, void *arg1) {
 
 void func_020816a4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
  s32 BuildNarcPath(M2C_UNK);
- void func_02081474(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- func_02081474(BuildNarcPath(arg0), arg1, arg2, arg3);
+ void LoadFileAndDrawTilemapBlock(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+ LoadFileAndDrawTilemapBlock(BuildNarcPath(arg0), arg1, arg2, arg3);
 }
 
 void LoadNarcFileToBuffer(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
  s32 BuildNarcPath(M2C_UNK);
- void func_020814ac(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- func_020814ac(BuildNarcPath(arg0), arg1, arg2, arg3);
+ void LoadDecompressedFileAndDrawTilemapBlock(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+ LoadDecompressedFileAndDrawTilemapBlock(BuildNarcPath(arg0), arg1, arg2, arg3);
 }
 
 s32 BuildNarcPath(M2C_UNK arg0) {
@@ -196,16 +205,20 @@ void ResetKeyState(void) {
     M2C_FIELD(&gInputBlockState, u8 *, 1) = 0;
 }
 
+/* Soft reset (L+R+START+SELECT): turn both displays off, flush and synchronise
+ * the data cache, then reset the system, passing on the reset parameter so the
+ * boot code can tell this boot came from a reset. */
 void RebootConsole(void) {
     M2C_UNK GX_TurnOffDisplay();
-    M2C_UNK func_02006774();
-    M2C_UNK func_02006804();
-    M2C_UNK func_02007668(s32);
+    M2C_UNK DC_FlushAll();
+    M2C_UNK DC_Sync();
+    M2C_UNK ResetSystem(s32);
+
     GX_TurnOffDisplay();
-    *(s32 *)0x04001000 &= ~0x10000;
-    func_02006774();
-    func_02006804();
-    func_02007668(*(s32 *)0x027FFC20 + 1);
+    REG_DISPCNT_SUB &= ~DISPCNT_DISPLAY_MODE_GRAPHICS;
+    DC_FlushAll();
+    DC_Sync();
+    ResetSystem(*(s32 *)SHARED_RESET_PARAMETER + 1);
 }
 
 /* Soft reset: reboot the console when L+R+START+SELECT is held, was not
@@ -431,12 +444,16 @@ func_020863f0();
 M2C_FIELD(&gInputBlockState,u8 *,1) = 0;
 }
 
-u8 func_02081dd8(void) {
-extern M2C_UNK gInputBlockState;
-u8 var_r0;
-if (M2C_FIELD(&gInputBlockState,s8 *,0) > 0) return 0;
-if (((s32)(*(u16 *)0x027FFFA8 & 0x8000) >> 15) != 0) var_r0 = 1; else var_r0 = 0;
-return var_r0;
+/* Whether the sleep screen should be shown: only when no input-lock countdown is
+ * running and the shared lid word reports the console closed. */
+u8 ShouldShowSleepScreen(void) {
+    extern M2C_UNK gInputBlockState;
+    u8 result;
+
+    if (((InputBlockState *)&gInputBlockState)->inputLockFrames > 0) return 0;
+    if (((s32) (*(u16 *) SHARED_LID_WORD & SHARED_LID_CLOSED) >> 15) != 0) result = 1;
+    else result = 0;
+    return result;
 }
 
 u8 IsSleepRequested(void) {
@@ -495,9 +512,9 @@ void func_02081ec8(void *arg0) {
 }
 
 void func_02081ee4(void) {
-    u8 func_02081dd8(void);
+    u8 ShouldShowSleepScreen(void);
     extern M2C_UNK data_02101eac;
-    if (func_02081dd8() == 0) {
+    if (ShouldShowSleepScreen() == 0) {
         return;
     }
     CreateSpriteFromClass(&data_02101eac, 3);

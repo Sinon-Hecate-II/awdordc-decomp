@@ -109,15 +109,16 @@ void func_020bf858(void) {
 
 }
 
+/* Advance the battle turn counter, which saturates at MAP_TURN_MAX (999). */
 void AdvanceMapTurn(void) {
     extern void **gCurrentMap;
-    u16 temp_r2;
-    void *temp_r3;
+    u16 turn;
+    void *map;
 
-    temp_r3 = *gCurrentMap;
-    temp_r2 = M2C_FIELD(temp_r3, u16 *, 0x52A2);
-    if ((s32) temp_r2 < 0x3E7) {
-        M2C_FIELD(temp_r3, u16 *, 0x52A2) = (u16) (temp_r2 + 1);
+    map = *gCurrentMap;
+    turn = M2C_FIELD(map, u16 *, MAP_TURN);
+    if ((s32) turn < MAP_TURN_MAX) {
+        M2C_FIELD(map, u16 *, MAP_TURN) = (u16) (turn + 1);
     }
 }
 
@@ -404,16 +405,20 @@ void func_020c01ec(M2C_UNK arg0) {
     CreateSpriteObject(&data_02129514, arg0);
 }
 
-void func_020c0204(void) {
-    s32 func_02076208();
-    M2C_UNK func_02076244();
+/* Open the save/load screen from the main menu: halt with the load-failure
+ * message when the save archive is unusable, load the saved game settings, count
+ * the opening of the screen, then create the screen's sprite. */
+void OpenSaveLoadScreen(void) {
+    s32 IsSaveArchiveUnusable();
+    M2C_UNK HaltWithMessage();
     M2C_UNK GetLocalizedText(s32);
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     M2C_UNK LoadGameSettings();
     M2C_UNK CreateSaveLoadScreen();
-    if (func_02076208() != 0) {
-        GetLocalizedText(0xC000034D);
-        func_02076244();
+
+    if (IsSaveArchiveUnusable() != 0) {
+        GetLocalizedText(TEXT_ID_SAVE_LOAD_FAILED);
+        HaltWithMessage();
     }
     LoadGameSettings();
     AddRecordValue(0x27, 1);

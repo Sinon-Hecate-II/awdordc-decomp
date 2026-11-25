@@ -22,7 +22,7 @@ void func_ov003_021ea57c(void *arg0) {
     M2C_UNK UpdateSpriteAnimation(s32);
     s32 GetSpriteAnimValue(s32);
     M2C_UNK func_020abbfc(void *);
-    s32 func_ov003_021e6cc4(M2C_UNK, s32, M2C_UNK, M2C_UNK);
+    s32 IsRectOnScreen(M2C_UNK, s32, M2C_UNK, M2C_UNK);
     s32 func_ov003_021e6d28();
     s32 IsMapListCategory3();
     M2C_UNK GetWaypointOptionTextId(s8);
@@ -270,7 +270,7 @@ after_56:
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), u16 *, 0x3E) = temp_r4_3;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x46) = 7;
     M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), void **, 0x78), s16 *, 0x34) = (s16) (M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), s16 *, 0xA) + 0x60);
-    if (func_ov003_021e6cc4(0, GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x44)), 0x100, 0x20) != 0) {
+    if (IsRectOnScreen(0, GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x44)), 0x100, 0x20) != 0) {
         AddSprite(0, (u8) GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x44)), (u16) ((0x3FF & (0x140 >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0x6C00), &data_ov003_0220f8ac, 0xB);
     }
     gCur3DSpriteEngine = sp14;

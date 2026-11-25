@@ -3,11 +3,11 @@
 void func_ov001_0217a880(void);
 
 void func_ov001_02179e74(void) {
-    extern s8 data_ov001_02193d94;
-    void func_ov001_02179dc8(void);
-    M2C_FIELD(&data_ov001_02193d94,u8 *,0) = M2C_FIELD(&data_ov001_02193d94,u8 *,0) + 1;
-    if ((u32)M2C_FIELD(&data_ov001_02193d94,u8 *,0) < 120U) return;
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179dc8);
+    extern s8 gOv001SaveScreenTimer;
+    void Ov001_FadeOutSaveScreen(void);
+    M2C_FIELD(&gOv001SaveScreenTimer,u8 *,0) = M2C_FIELD(&gOv001SaveScreenTimer,u8 *,0) + 1;
+    if ((u32)M2C_FIELD(&gOv001SaveScreenTimer,u8 *,0) < 120U) return;
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeOutSaveScreen);
 }
 
 /* Enter the map-select list screen: allocate and initialise its list object,
@@ -168,21 +168,24 @@ void MapSelectList_FadeIn(void) {
     Ov001_SetStepCallback((M2C_UNK *)&MapSelectList_FadeInDone);
 }
 
+/* Step that runs once the map-select list's fade-in has finished: wait for the
+ * sub and main engine fades, then put up the shared back/confirm icon row and
+ * hand over to the step that waits for it to slide in. */
 void MapSelectList_FadeInDone(void) {
-    M2C_UNK func_ov001_02171e20(M2C_UNK);
+    M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
-    extern M2C_UNK func_ov001_0217a380;
-    if (Ov001_IsFadeActive(1) != 0) {
+    extern M2C_UNK MapSelectList_WaitIconRow;
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
-    func_ov001_02171e20(0);
-    Ov001_SetStepCallback(&func_ov001_0217a380);
+    Ov001_CreateMenuIconRow(0);
+    Ov001_SetStepCallback(&MapSelectList_WaitIconRow);
 }
 
-void func_ov001_0217a380(void) {
+void MapSelectList_WaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK func_ov001_0217a3a8;
@@ -403,13 +406,13 @@ s32 i; void *obj;
 if(Ov001_IsFadeActive(1))return;
 if(Ov001_IsFadeActive(0))return;
 if(!Ov001_IsIconRowIdle())return;
-func_ov001_0218c94c(1,M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x3c));
+Ov001_ReturnTaskNodeVeneer(1,M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x3c));
 for(i=0;i<MAPSELECT_ROWS;i++){
 obj=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4)+i*4,void **,MAPSELECT_ROW_OBJS_A);if(obj)Ov001_ReleaseSprite(obj);
 obj=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4)+i*4,void **,MAPSELECT_ROW_OBJS_B);if(obj)Ov001_ReleaseSprite(obj);
 }
 Ov001_FreePanelBackground(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,12));
-func_ov001_02183980();Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();FreeMapPreview();
+Ov001_DestroyScrollBar();Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();FreeMapPreview();
 Ov001_FreeFile(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,4));
 Ov001_FreeFile(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,8));
 Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,29);

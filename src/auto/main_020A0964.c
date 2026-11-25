@@ -350,8 +350,8 @@ void func_020a12d8(void) {
   }
 
   void func_020a12f4(void) {
-      M2C_UNK func_0207749c();
-      func_0207749c();
+      M2C_UNK ResetMapViewRaiseTimer();
+      ResetMapViewRaiseTimer();
   }
 
 #pragma push
@@ -362,7 +362,7 @@ void func_020a12d8(void) {
  * the cell's world position. Nothing is drawn for an empty path or when the
  * path belongs to a unit of another player. */
 void DrawUnitMovePath(s32 arg0, s32 arg1) {
-    M2C_UNK func_0207d130(M2C_UNK *, s32 *, s32, M2C_UNK, s32, s32, s32, s32, s32, s32, s32);
+    M2C_UNK DrawSpriteFrameQuads(M2C_UNK *, s32 *, s32, M2C_UNK, s32, s32, s32, s32, s32, s32, s32);
     s32 UnitPath_GetOutgoingDir(s32);
     s32 UnitPath_GetIncomingDir(s32);
     extern s32 *gCurrentMap;
@@ -429,7 +429,7 @@ void DrawUnitMovePath(s32 arg0, s32 arg1) {
         }
         pos[0] = pos[0] * 0x30;
         pos[1] = pos[1] * 0x30;
-        func_0207d130(&gSpriteDesc16x16, pos, 0x22F20, 0x1460, 0x30000, 0, 0, 0x80, 0x80, 0x1800, arrow);
+        DrawSpriteFrameQuads(&gSpriteDesc16x16, pos, 0x22F20, 0x1460, 0x30000, 0, 0, 0x80, 0x80, 0x1800, arrow);
     }
     *(volatile s32 *)0x04000448 = 1;
     return;
@@ -443,7 +443,7 @@ void func_020a1508(void) {
  * the marker's direction (0x100 + 2 * direction) at the world position of the
  * tile the marker sits on. */
 void DrawDirectionMarker(DirectionMarker *marker) {
-    M2C_UNK func_0207d130(M2C_UNK *, s32 *, s32, M2C_UNK, s32, s32, s32, s32, s32, s32, s32);
+    M2C_UNK DrawSpriteFrameQuads(M2C_UNK *, s32 *, s32, M2C_UNK, s32, s32, s32, s32, s32, s32, s32);
     extern M2C_UNK gSpriteDesc16x16;
     s32 pos[3];
     s32 arrowIndex = marker->direction * 2;
@@ -451,7 +451,7 @@ void DrawDirectionMarker(DirectionMarker *marker) {
     pos[0] = (marker->x << 4) * 0x30;
     pos[1] = (marker->y << 4) * 0x30;
     pos[2] = 0x891;
-    func_0207d130(&gSpriteDesc16x16, pos, 0x22F20, 0x1480, 0x30000, 0, 0, 0x80, 0x80, 0x1800, arrowIndex + 0x100);
+    DrawSpriteFrameQuads(&gSpriteDesc16x16, pos, 0x22F20, 0x1480, 0x30000, 0, 0, 0x80, 0x80, 0x1800, arrowIndex + 0x100);
 }
 
 void func_020a15b4(s32 arg0, s32 arg1, s16 arg2) {

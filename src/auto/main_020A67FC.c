@@ -256,7 +256,7 @@ return 1;
 
 #pragma opt_instruction_scheduling off
 void DamageUnitAtTile(s32 x,s32 y,s32 amount) {
-s32 func_020a8560(u32);
+s32 IsUnitKindClass6(u32);
 void *base;
 u8 *p;
 u32 type; s16 health;
@@ -267,7 +267,7 @@ p=(u8 *)base+MAP_UNIT_RECORDS+(s16)M2C_FIELD((u8 *)base+(x+M2C_FIELD((u8 *)base+
 type=(u32)(p[0]<<26)>>26;
 if(!type)return;
 if(M2C_FIELD(p,u16 *,MAP_UNIT_FLAGS)&UNIT_FLAG_LOADED)return;
-if(func_020a8560(type))return;
+if(IsUnitKindClass6(type))return;
 health=((UnkStruct_ov000_021A860C *)p)->unk6;
 if(amount+1>health) ((UnkStruct_ov000_021A860C *)p)->unk6=1;
 else ((UnkStruct_ov000_021A860C *)p)->unk6=(u16)(health-amount);
@@ -289,10 +289,12 @@ s32 func_020a7290(void) {
 
 s32 GetUnitVariantIndex(s32 a,u8 b){return ((u8 *)b)[(s32)data_ov000_021b5c6a+a*0x70];}
 
-s32 func_020a72b0(s32 arg0, M2C_UNK arg1) {
-    s32 GetUnitVariantIndex(M2C_UNK, u8);
+/* The sprite tile index (four tiles per sprite variant) that player `player`'s
+ * units of `kind` use: the player record's cached sprite state picks the variant. */
+s32 GetPlayerUnitSpriteTile(s32 player, s32 kind) {
+    s32 GetUnitVariantIndex(s32, u8);
     extern void **gCurrentMap;
-    return GetUnitVariantIndex(arg1, M2C_FIELD(((arg0 * 0x8C) + (s32)*gCurrentMap), u8 *, 0x67CD)) * 4;
+    return GetUnitVariantIndex(kind, M2C_FIELD(((player * MAP_PLAYER_STRIDE) + (s32)*gCurrentMap), u8 *, PLAYER_SPRITE_STATE_OFF)) * 4;
 }
 
 void *func_020a72e8(s32 arg0) {
@@ -300,7 +302,7 @@ void *func_020a72e8(s32 arg0) {
     return (u8 *)&gArmyPalettes + ((arg0 - 1) << 5);
 }
 
-s32 func_020a72fc(s32 arg0, s32 arg1) {
+s32 GetSubmergedDamageRow(s32 arg0, s32 arg1) {
     s32 var_r0;
 
     var_r0 = arg0;
@@ -333,9 +335,9 @@ u32 func_020a735c(u8 *arg0) {
    power bonus, -30 in a sandstorm unless that player's sprite state is 10, then
    the unit's weapon bonus and its stat-block bonus.  0 for excluded kinds. */
 s32 GetUnitDamageBonus(u8 *unit,s32 x,s32 y){
-s32 func_020a8560(u32);s32 GetPlayerAttackPropertyBonus(s32);s32 func_020a87ec(void *);s32 func_020a25d8(void *,s32,s32);
+s32 IsUnitKindClass6(u32);s32 GetPlayerAttackPropertyBonus(s32);s32 func_020a87ec(void *);s32 func_020a25d8(void *,s32,s32);
 s32 bonus=0,owner;
-if(func_020a8560((u32)(unit[0]<<26)>>26))return bonus;
+if(IsUnitKindClass6((u32)(unit[0]<<26)>>26))return bonus;
 if(unit){if(!unit)owner=0;else owner=((s32)unit-(s32)((u8 *)*gCurrentMap+0x59a4))/14;owner=(owner>>6)+1;}else owner=0;
 bonus+=GetPlayerAttackPropertyBonus(owner);
 if(unit){if(!unit)owner=0;else owner=((s32)unit-(s32)((u8 *)*gCurrentMap+0x59a4))/14;owner=(owner>>6)+1;}else owner=0;
@@ -350,12 +352,12 @@ return bonus+func_020a25d8(unit,x,y);
    `unit` at tile (x, y): the owner's power bonus, the unit's rank bonus and the
    stat block's valueA; 0 for the unit kinds the bonus does not apply to. */
 s32 GetUnitAttackPowerBonus(u8 *unit, s32 x, s32 y) {
-    s32 func_020a8560(u32);
+    s32 IsUnitKindClass6(u32);
     s32 func_020a8844(s32);
     s32 func_020a8804(void *);
     s32 func_020a2608(void *, s32, s32);
     s32 bonus = 0, owner;
-    if (func_020a8560((u32)(unit[0] << 26) >> 26)) return bonus;
+    if (IsUnitKindClass6((u32)(unit[0] << 26) >> 26)) return bonus;
     if (unit) {
         if (!unit) owner = 0;
         else owner = ((s32)unit - (s32)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
@@ -412,13 +414,40 @@ s32 GetUnitMovement(void *arg0) {
     return penalty + (base + bonus);
 }
 
-s32 GetUnitRemainingMoveRange(void *p){s32 GetUnitMovement(void *);s32 func_020a86f0(s32);s32 Divide(s32,s32);s32 cap,v;u32 n;n=(u32)(M2C_FIELD(p,u8 *,10)<<25)>>25;cap=GetUnitMovement(p);v=Divide(n,func_020a86f0(GetUnitOwner(p)));if(v>=cap)v=cap;return v;}
+/* How far `unit` can still move this turn: its remaining fuel divided by its
+ * owner's fuel rate, capped at its kind's movement range. */
+s32 GetUnitRemainingMoveRange(BattleMapUnitHead *unit) {
+    s32 GetUnitMovement(void *);
+    s32 GetPlayerFuelRate(s32);
+    s32 Divide(s32, s32);
+    u32 fuel;
+    s32 moveRange, range;
 
-s32 GetUnitAttackRangeMax(u8 *p){s32 GetUnitKindMaxAttackRange(s32);s32 func_020a26c8(void *,u8,u8);s32 cap,v;GetUnitOwner(p);cap=GetUnitKindMaxAttackRange((u32)(p[0]<<26)>>26);v=func_020a26c8(p,p[1],p[2]);if(cap>=2)cap+=v;return cap;}
+    fuel = unit->fuel;
+    moveRange = GetUnitMovement(unit);
+    range = Divide(fuel, GetPlayerFuelRate(GetUnitOwner(unit)));
+    if (range >= moveRange) range = moveRange;
+    return range;
+}
+
+/* Highest attack range of unit `unit`: its kind's base range plus the
+ * attack-range bonus from its commander's stat block, which a unit only gets
+ * when its base range is 2 or more. */
+s32 GetUnitAttackRangeMax(u8 *unit) {
+    s32 GetUnitKindMaxAttackRange(s32);
+    s32 GetUnitAttackRangeBonus(void *, u8, u8);
+    s32 maxRange, bonus;
+
+    GetUnitOwner(unit);
+    maxRange = GetUnitKindMaxAttackRange((u32)(unit[0] << 26) >> 26);
+    bonus = GetUnitAttackRangeBonus(unit, unit[1], unit[2]);
+    if (maxRange >= 2) maxRange += bonus;
+    return maxRange;
+}
 
 s32 func_020a7714(void *arg0) {
-    s32 func_020a26c8(void *, u8, u8);
+    s32 GetUnitAttackRangeBonus(void *, u8, u8);
     GetUnitOwner();
-    return func_020a26c8(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 5;
+    return GetUnitAttackRangeBonus(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 5;
 }
 

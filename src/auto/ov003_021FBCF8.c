@@ -260,7 +260,7 @@ void func_ov003_021fc26c(void *arg0) {
  s32 func_ov003_021f4038(void);
  void *GetMapRecord(u16);
  void MapSettings_Apply(void *);
- void func_ov003_021fc820(void *);
+ void Ov003_AcknowledgeMapSelection(void *);
  void Ov003_CloseMapPanel(void *);
  u8 value;
  s32 category;
@@ -345,24 +345,26 @@ void func_ov003_021fc26c(void *arg0) {
  if(PanelModeIs(arg0,4)||PanelModeIs(arg0,2)) PlaySoundEffect(0x1000e);
  else PlaySoundEffect(0x1000d);
  if(PanelModeIs(arg0,4)) func_ov003_021f2848((u8 *)M2C_FIELD(arg0,void **,0x44)+4);
- else if(func_ov003_021f4038()) func_ov003_021fc820(arg0);
+ else if(func_ov003_021f4038()) Ov003_AcknowledgeMapSelection(arg0);
  if(PanelModeIs(arg0,0) && selected>=0xe1 && selected<0x1a9) {
   if((u32)(M2C_FIELD(GetMapRecord(selected),u32 *,0x38)<<31)>>31)
    MapSettings_Apply((u8 *)GetMapRecord(selected)+0x30);
  }
 }
 #pragma opt_strength_reduction reset
-void func_ov003_021fc820(void *arg0) {
+/* Host-side link step of the map-select confirm: take the pending 0x24-byte link
+ * packet, mark it confirmed in its first word and send it back to the peers. */
+void Ov003_AcknowledgeMapSelection(void *unused) {
     s32 Link_ReceivePacket(s32 *, M2C_UNK);
     M2C_UNK Link_SendPacket(s32 *, M2C_UNK);
     M2C_UNK Link_FlushSend();
-    s32 buffer[9];
+    s32 packet[9];
 
-    if (Link_ReceivePacket(buffer, 0x24) == 0) {
+    if (Link_ReceivePacket(packet, 0x24) == 0) {
         return;
     }
-    buffer[0] = 1;
-    Link_SendPacket(buffer, 0x24);
+    packet[0] = 1;
+    Link_SendPacket(packet, 0x24);
     Link_FlushSend();
 }
 

@@ -7,6 +7,7 @@
  * high word is cleared too. */
 #define REG_DIVCNT      (*(volatile u16 *)0x04000280)
 #define REG_DIV_NUMER   (*(volatile s32 *)0x04000290)
+#define REG_DIV_NUMER64 (*(volatile s64 *)0x04000290) /* 64-bit numerator: writing a 32-bit value clears the high word, so the divide is unsigned */
 #define REG_DIV_DENOM   (*(volatile s64 *)0x04000298)
 #define REG_DIV_RESULT  (*(volatile s32 *)0x040002A0)
 #define REG_DIVREM_RESULT (*(volatile s32 *)0x040002A8)

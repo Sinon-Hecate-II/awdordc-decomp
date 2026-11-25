@@ -90,13 +90,13 @@ s32 Wfc_StepStartHost(M2C_UNK state) {
  * address it waits WFC_ADDRESS_WAIT_SECONDS, then fails with 0xB and marks the
  * selected friend record's result. */
 s32 Wfc_StepFriendConnect(void *state) {
-    s32 func_020218bc();
+    s32 GetLocalIpAddressNetworkOrder();
     void func_020316c4(void *);
     u64 GetSystemTick(void);
     u64 U64Divide(u64, u64);
     u32 selection;
 
-    if (func_020218bc() != 0) {
+    if (GetLocalIpAddressNetworkOrder() != 0) {
         func_020316c4(state);
         selection = (u32)(M2C_FIELD(state, u8 *, WFC_STATE_FLAGS) << 0x1A) >> 0x1E;
         return (selection == 1) ? 0xF : 0xD;
@@ -550,7 +550,7 @@ void func_02031dfc(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 8) = arg1;
 }
 
-void func_02031e04(void *arg0, s32 arg1, s32 arg2) {
+void SetPlayerCodeValue(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s32 *, 4) = arg1;
     M2C_FIELD(arg0, s32 *, 8) = arg2;
 }
@@ -559,25 +559,23 @@ void SetProfileRecordId(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 4) = arg1;
 }
 
-s32 func_02031e14(u32 *arg0) {
+s32 GetPlayerRecordTypeWord(u32 *arg0) {
     return 0x1FFFFF & ((u32) *arg0 >> 0xB);
 }
 
 s32 GetPlayerRecordKind(void) {
-    s32 func_02031e14();
-    return func_02031e14() & 3;
+    s32 GetPlayerRecordTypeWord();
+    return GetPlayerRecordTypeWord() & 3;
 }
 
-s32 IsPlayerRecordJoined(M2C_UNK arg0) {
-    s32 var_r0;
+/* True when the player record at `record` is a profile record (its kind is
+ * PLAYER_RECORD_KIND_PROFILE) whose player has joined the match: the joined
+ * mark of its type word is set. */
+s32 IsPlayerRecordJoined(void *record) {
+    s32 GetPlayerRecordTypeWord(u32 *);
 
-    if (GetPlayerRecordKind() == 3) {
-        if ((func_02031e14((u32 *)arg0) & 4) == 4) {
-            var_r0 = 1;
-        } else {
-            var_r0 = 0;
-        }
-        return var_r0;
+    if (GetPlayerRecordKind() == PLAYER_RECORD_KIND_PROFILE) {
+        return (GetPlayerRecordTypeWord((u32 *)record) & PLAYER_RECORD_JOINED) == PLAYER_RECORD_JOINED;
     }
     return 0;
 }
@@ -590,25 +588,25 @@ void GetPlayerRecordType(void) {
 #pragma optimization_level 2
 void func_02031e7c(M2C_UNK a,M2C_UNK b) { M2C_UNK func_02031d64(M2C_UNK,M2C_UNK,M2C_UNK,s32); func_02031d64(a,b,11,0x1fffff); }
 void SetPlayerRecordKind(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 func_02031e14(u32 *);
+    s32 GetPlayerRecordTypeWord(u32 *);
     void func_02031e7c(M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_02031e14((u32 *) arg0);
+    temp_r0 = GetPlayerRecordTypeWord((u32 *) arg0);
     temp_r0 = temp_r0 & ~3;
     func_02031e7c(arg0, temp_r0 | arg1);
 }
 
 void MarkPlayerRecordJoined(M2C_UNK arg0) {
     s32 GetPlayerRecordKind();
-    s32 func_02031e14(u32 *);
+    s32 GetPlayerRecordTypeWord(u32 *);
     void func_02031e7c(M2C_UNK, M2C_UNK);
     s32 res;
 
     if (GetPlayerRecordKind() != 3) {
         return;
     }
-    res = func_02031e14((u32 *) arg0) | 4;
+    res = GetPlayerRecordTypeWord((u32 *) arg0) | 4;
     func_02031e7c(arg0, res);
 }
 
@@ -616,7 +614,7 @@ void func_02031ee4(M2C_UNK arg0) {
     if (GetPlayerRecordKind() != 3) {
         return;
     }
-    func_02031e7c(arg0, func_02031e14((u32 *)arg0) & ~4);
+    func_02031e7c(arg0, GetPlayerRecordTypeWord((u32 *)arg0) & ~4);
 }
 
 /* Build a 64-bit player code from a GameSpy profile id and the game id: the low

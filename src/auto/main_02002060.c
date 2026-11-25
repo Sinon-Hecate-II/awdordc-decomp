@@ -1,6 +1,7 @@
 /* 24 functions from 0x02002060 to 0x02003058 (main), found by ds-decomp. */
 #include "common.h"
 #include "gx.h"
+#include "hw_div.h"
 
 void func_02002060(s32 arg0, s32 arg1) {
     M2C_FIELD((void *)0x04000280, s16 *, 0) = 1;
@@ -10,24 +11,27 @@ void func_02002060(s32 arg0, s32 arg1) {
     M2C_FIELD((void *)0x04000280, s32 *, 0x1C) = 0;
 }
 
-s32 HardwareDivide(s32 arg0, s32 arg1) {
-    *(volatile u16 *)0x04000280 = 0;
-    *(volatile s32 *)0x04000290 = arg0;
-    *(volatile s64 *)0x04000298 = (u32)arg1;
-    while (*(volatile u16 *)0x04000280 & 0x8000) {}
-    return *(volatile s32 *)0x040002A0;
+/* Signed 32-bit quotient from the ARM9's hardware divider. */
+s32 HardwareDivide(s32 numerator, s32 denominator) {
+    REG_DIVCNT = 0;
+    REG_DIV_NUMER = numerator;
+    REG_DIV_DENOM = (u32)denominator;
+    while (REG_DIVCNT & DIVCNT_BUSY) {}
+    return REG_DIV_RESULT;
 }
 
-s32 HardwareDivideRemainder(s32 arg0, s32 arg1) {
-    *(volatile u16 *)0x04000280 = 0;
-    *(volatile s32 *)0x04000290 = arg0;
-    *(volatile s64 *)0x04000298 = (u32)arg1;
-    while (*(volatile u16 *)0x04000280 & 0x8000) {}
-    return *(volatile s32 *)0x040002A8;
+/* Signed 32-bit remainder from the ARM9's hardware divider. */
+s32 HardwareDivideRemainder(s32 numerator, s32 denominator) {
+    REG_DIVCNT = 0;
+    REG_DIV_NUMER = numerator;
+    REG_DIV_DENOM = (u32)denominator;
+    while (REG_DIVCNT & DIVCNT_BUSY) {}
+    return REG_DIVREM_RESULT;
 }
 
-s32 Vec3DotProduct(s32 *arg0, s32 *arg1) {
-    return ((s64)arg0[0] * arg1[0] + (s64)arg0[1] * arg1[1] + (s64)arg0[2] * arg1[2] + 0x800) >> 12;
+/* Dot product of two 20.12 fixed-point 3-vectors, rounded back to 20.12. */
+s32 Vec3DotProduct(s32 *a, s32 *b) {
+    return ((s64)a[0] * b[0] + (s64)a[1] * b[1] + (s64)a[2] * b[2] + 0x800) >> 12;
 }
 
 /* Cross product of two 12-bit fixed-point 3-vectors, rounded back to 12-bit
@@ -108,15 +112,17 @@ if(a!=0){*(volatile u16 *)0x4000004 |= 8;return v;}
 return v;
 }
 
+/* Save the main display's 2D mode, turn that mode off in DISPCNT and mark the
+ * display as configured off. */
 void GX_TurnOffDisplay(void) {
     extern s16 gGxDisplayConfig;
     extern s16 gGxDisplayStatus;
-    s32 temp_ip;
+    u32 displayControl;
 
-    temp_ip = *(s32 *)0x04000000;
-    gGxDisplayConfig = 0;
-    gGxDisplayStatus = (s16) ((u32) (temp_ip & 0x30000) >> 0x10);
-    *(s32 *)0x04000000 = temp_ip & ~0x30000;
+    displayControl = REG_DISPCNT;
+    ((GxDisplayConfig *)&gGxDisplayConfig)->on = 0;
+    ((GxDisplayStatus *)&gGxDisplayStatus)->mode = (u16) ((u32) (displayControl & DISPCNT_DISPLAY_MODE_MASK) >> DISPCNT_DISPLAY_MODE_SHIFT);
+    REG_DISPCNT = displayControl & ~DISPCNT_DISPLAY_MODE_MASK;
 }
 
 /* Turn the main display on: mark it configured, then put the saved display mode

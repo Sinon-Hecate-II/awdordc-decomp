@@ -130,7 +130,7 @@ SaveList_Sort((void*)p+0xc4c);
 }
 }
 
-M2C_UNK func_02075cbc(M2C_UNK *p,M2C_UNK a,M2C_UNK b,M2C_UNK c,s32 type){
+M2C_UNK SaveList_EnqueueUpdate(M2C_UNK *p,M2C_UNK a,M2C_UNK b,M2C_UNK c,s32 type){
 M2C_UNK *GetSaveRecordList(void);s32 GetSaveRecordCount(void);
 u8 *q=(u8 *)p+0x2054; u32 seq=0,i,n; s32 found=0;u8 *best,*entry;s32 j,cmp;u32 x,y;
 if(!((Queue02075 *)p)->active||((Queue02075 *)p)->state==1)return;
@@ -205,10 +205,13 @@ CARD_UnlockBackup(rootLock);OS_ReleaseLockID(rootLock);
 CreateTaskSprite(SaveManager_InitTask,1,0x400,0x11,0);
 }
 
-void func_02075fd8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    M2C_UNK func_02075cbc(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+/* Queue a save-record write on the global save manager: hand the save data
+ * block, its record name, the byte size and the save type (SAVE_TYPE_*) to the
+ * queue writer. */
+void SaveList_QueueUpdate(void *block, const char *name, s32 size, s32 type) {
+    M2C_UNK SaveList_EnqueueUpdate(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern M2C_UNK gSaveManager;
-    func_02075cbc(&gSaveManager, arg0, arg1, arg2, arg3);
+    SaveList_EnqueueUpdate(&gSaveManager, block, name, size, type);
 }
 
 /* Deletes the oldest save-directory records of `type` so that at most `maxKeep`
@@ -247,7 +250,7 @@ void DeleteSaveRecord(M2C_UNK arg0) {
     SaveList_QueueDelete(&gSaveManager, arg0);
 }
 
-void func_02076198(void){CreateTaskSprite(func_02075ee8,1,0x400,0x11,0);}
+void SaveList_StartFlush(void){CreateTaskSprite(func_02075ee8,1,0x400,0x11,0);}
 
 void LoadSaveRecord(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK ReadSaveBlockChain(M2C_UNK *, M2C_UNK, M2C_UNK);
@@ -260,11 +263,11 @@ void GetSaveRecordSize(M2C_UNK arg0) {
     GetSaveBlockChainSize(&gSaveManager, arg0);
 }
 
-void func_020761f8(void) {
+void IsSaveTaskRunning(void) {
     IsTaskSpriteRunning(1);
 }
 
-u8 func_02076208(void) {
+u8 IsSaveArchiveUnusable(void) {
     extern M2C_UNK data_02140a18;
     return M2C_FIELD(&data_02140a18, u8 *, 0x52);
 }
@@ -280,7 +283,7 @@ s32 GetSaveRecordCount(void){extern M2C_UNK data_02140a18;return M2C_FIELD(&data
 
 #pragma push
 #pragma opt_common_subs off
-void func_02076244(M2C_UNK arg0) {
+void HaltWithMessage(M2C_UNK arg0) {
     M2C_UNK Apply3DSpriteBanks();
     M2C_UNK Update3DSpriteVram();
     M2C_UNK GX_TurnOnDisplay();
@@ -418,8 +421,15 @@ u8 CountBits(u32 value) {
     return (u8) (halfwords + (halfwords >> 0x10));
 }
 
-void func_02076658(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2){
-M2C_UNK sp0[26];
-Sha1Init(sp0);Sha1Update(sp0,arg1,arg2);SHA1_Finalize(sp0,arg0);
+/* Compute the SHA-1 digest of `length` message bytes and write the 20-byte
+ * digest to `digest`. */
+void Sha1Digest(u8 *digest, const u8 *message, s32 length) {
+    void Sha1Init(Sha1Context *);
+    void Sha1Update(void *, void *, u32);
+    void SHA1_Finalize(void *, void *);
+    u8 context[0x68];
+    Sha1Init((Sha1Context *)context);
+    Sha1Update(context, (void *)message, length);
+    SHA1_Finalize(context, digest);
 }
 

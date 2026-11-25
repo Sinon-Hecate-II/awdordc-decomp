@@ -7,7 +7,7 @@ void DrawTextSprite(void *arg0) {
     extern void *gCur3DSpriteEngine;
     extern u8 gSpriteDesc16x16[], gSpriteDesc8x8[];
     s16 GetTextSpriteGlyphX(void *, s32);
-    s32 func_020a8c54(s32, s32, s32, s32);
+    s32 IsBoxOnScreen(s32, s32, s32, s32);
     M2C_UNK SetTextSpriteValue(void *, s32);
     void AddSprite(s32, s32, s32, s32, s32);
     s32 i;
@@ -34,7 +34,7 @@ void DrawTextSprite(void *arg0) {
     for (i=0; i<p[TEXT_SPRITE_COUNT]; i++) {
         x=GetTextSpriteGlyphX(p,(u8)i);
         y=*(s16 *)(p + TEXT_SPRITE_X);
-        if (func_020a8c54(x,y,p[0x14],p[0x15])) {
+        if (IsBoxOnScreen(x,y,p[0x14],p[0x15])) {
             descriptor = *(s32 *)(p + 0x24);
             if (descriptor) {
                 AddSprite((u16)(x & 0x1ff), y & 0xff,

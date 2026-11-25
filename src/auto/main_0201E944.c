@@ -24,7 +24,7 @@ static inline u64 NextPacketRandom64(void) {
    (high, low half) when outLen is 0, or fails with 2 when the name does not fit in
    outLen bytes.  A "name does not exist" answer gives -1, a timeout 0. */
 s32 DnsResolveName(M2C_UNK a,s32 b,M2C_UNK c,s32 d,u32 e) {
-void SendNetPacket(void*,s32); s32 GetSocketReceivedDataSize(void); void func_0201a238(void); u8 *PeekSocketReceivedData(u32*); void func_0201d70c(u32); u8 *DnsSkipName(u8*); u64 GetSystemTick(void); void MI_CpuCopy8(void*,void*,u32);
+void SendNetPacket(void*,s32); s32 GetSocketReceivedDataSize(void); void func_0201a238(void); u8 *PeekSocketReceivedData(u32*); void ConsumeConnectionReceivedData(u32); u8 *DnsSkipName(u8*); u64 GetSystemTick(void); void MI_CpuCopy8(void*,void*,u32);
 extern M2C_UNK gNetStack;
 u8 qname[48]; u16 packet[6]; u32 size; u8 *name=(u8*)a; s32 result; u32 start;u8 *label,*p,*end; s32 n; u8 ch; s32 questions; u16 len,type,v1,v2;
 packet[0]=(c>>8)|(c<<8);if(b!=32)packet[1]=1;else packet[1]=0x1001;packet[2]=DNS_QUESTION_CLASS;packet[3]=0;label=qname;p=label;packet[4]=0;packet[5]=0;
@@ -60,7 +60,7 @@ p+=len+10;
 }
 }
 }
-func_0201d70c(size);
+ConsumeConnectionReceivedData(size);
 }
 return result;
 }
@@ -160,38 +160,46 @@ if(out==-1)out=0;
 return out;
 }
 #pragma pop
-s32 func_0201ee58(s32 arg0) {
+/* Brings the network up: installs `allocator` (the network heap interface) when
+ * one is not installed yet, then configures the stack from the saved setup and
+ * creates the socket layer.  Returns 0 when the network was already up. */
+s32 NetworkInit(s32 allocator) {
     M2C_UNK func_02000b9c(s32);
-    s32 func_0201ee94();
-    void func_0201eed4(void);
+    s32 NetworkInitSocketLayer();
+    void NetworkInitStack(void);
     extern s32 gNetAllocator;
     func_02000b9c(0x02000BF4);
     if (gNetAllocator != 0) {
         return 0;
     }
-    gNetAllocator = arg0;
-    func_0201eed4();
-    return func_0201ee94();
+    gNetAllocator = allocator;
+    NetworkInitStack();
+    return NetworkInitSocketLayer();
 }
 
-s32 func_0201ee94(void) {
+/* Network stack init step: allocate the socket task pool with the task count the
+ * network allocator asks for, then create the stack's socket from
+ * gNetSocketConfig and keep it in the stack state.  Returns the pool allocation
+ * result (0, or -1 when the pool could not be allocated). */
+s32 NetworkInitSocketLayer(void) {
     s32 NetworkAllocTaskPool(s32);
     s32 SocketCreateFromConfig();
     extern s32 gNetAllocator;
-    extern M2C_UNK data_020fafd0;
+    extern M2C_UNK gNetSocketConfig;
     extern M2C_UNK data_02138ac0;
     s32 result;
-    result = NetworkAllocTaskPool(M2C_FIELD(gNetAllocator, s32 *, 0x20));
+
+    result = NetworkAllocTaskPool(M2C_FIELD(gNetAllocator, s32 *, NET_ALLOC_TASKS));
     if (result >= 0) {
-        M2C_FIELD(&data_02138ac0, s32 *, 0xC) = SocketCreateFromConfig(&data_020fafd0);
+        M2C_FIELD(&data_02138ac0, s32 *, 0xC) = SocketCreateFromConfig(&gNetSocketConfig);
     }
     return result;
 }
 
-void func_0201eed4(void) {
+void NetworkInitStack(void) {
     void func_02007f8c(void *, s32, s32);
     void func_0201a4f8(s32);
-    void func_0201a550(s32);
+    void SetNetworkThreadPriority(s32);
     void func_0201f030(void);
     void func_0201f09c(void);
     void WFC_SetSendCallback(s32);
@@ -247,7 +255,7 @@ void func_0201eed4(void) {
     {
         s32 r0v = M2C_FIELD(ctx, s32 *, 0x2C);
         if (r0v == 0) r0v = 0xB;
-        func_0201a550(r0v);
+        SetNetworkThreadPriority(r0v);
     }
     WFC_SetSendCallback((s32)NetStackQueueAndWakeSender);
     func_0201a4f8((s32)ReapClosedSockets);
@@ -335,7 +343,7 @@ s32 NetworkFreeTaskPool(void) {
     return 0;
 }
 
-s32 func_0201f1a8(s32 arg0) {
+s32 ReceiveSocketTaskSlot(s32 arg0) {
     s32 OS_ReceiveMessage(M2C_UNK *, s32 *, s32);
     extern M2C_UNK gSocketTaskQueue;
     s32 result;
@@ -343,15 +351,19 @@ s32 func_0201f1a8(s32 arg0) {
     return 0;
 }
 
-s32 SocketAllocTask(M2C_UNK *arg0, s32 arg1, M2C_UNK arg2) {
-    s32 temp_r0 = func_0201f1a8(arg2);
-    if (temp_r0 == 0) return temp_r0;
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 4) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 8) = 0;
-    M2C_FIELD(temp_r0, s8 *, 0xC) = M2C_FIELD(arg1, s8 *, 0x73);
-    M2C_FIELD(temp_r0, s8 *, 0xD) = arg2;
-    return temp_r0;
+/* Take a free socket-task slot from the task pool and fill it in to run
+ * `taskFunc` on `socket`: record the function, socket and result queue, copy the
+ * socket's state and remember whether the caller waits for the task.  Returns 0
+ * when no slot could be taken. */
+s32 SocketAllocTask(M2C_UNK *taskFunc, s32 socket, M2C_UNK wait) {
+    s32 task = ReceiveSocketTaskSlot(wait);
+    if (task == 0) return task;
+    M2C_FIELD(task, M2C_UNK **, TASK_FUNC) = taskFunc;
+    M2C_FIELD(task, s32 *, TASK_SOCKET) = socket;
+    M2C_FIELD(task, s32 *, TASK_NOTIFY) = 0;
+    M2C_FIELD(task, s8 *, TASK_STATE) = M2C_FIELD(socket, s8 *, SOCK_STATE);
+    M2C_FIELD(task, s8 *, TASK_WAIT) = wait;
+    return task;
 }
 
 void SocketFreeTask(s32 arg0) {
@@ -363,7 +375,7 @@ void SocketFreeTask(s32 arg0) {
     OS_SendMessage(&gSocketTaskQueue, arg0, 0);
 }
 
-s32 func_0201f230(void *arg0) {
+s32 GetSocketConnection(void *arg0) {
     s32 var_r1;
 
     var_r1 = M2C_FIELD(arg0, s32 *, 0x64);
@@ -397,7 +409,7 @@ s32 SocketQueueTask(OSMessageQueue *queue, void *task) {
 }
 
 s32 SocketSubmitTask(void *arg0, void *arg1) {
-    return SocketQueueTask(func_0201f230(arg0), arg1);
+    return SocketQueueTask(GetSocketConnection(arg0), arg1);
 }
 
 /* Post a socket task to a connection's task queue and return its result.  When
@@ -434,9 +446,9 @@ void SocketSubmitSendTask(void *arg0) {
     SocketPostTask(M2C_FIELD(arg0, s32 *, 0x68));
 }
 
-s32 func_0201f338(s32 arg0, s32 arg1) {
+s32 SocketSubmitTaskAndWait(s32 arg0, s32 arg1) {
     s32 SocketPostTask();
-    return SocketPostTask(func_0201f230(arg0), arg1);
+    return SocketPostTask(GetSocketConnection(arg0), arg1);
 }
 
 void RunSocketWorker(s32 arg0) { s32 p,old,v; loop: OS_ReadMessage(arg0,&p,1); if(!p)goto done; v=M2C_FIELD(p,s32 (**)(s32),0)(p);
@@ -447,19 +459,22 @@ if(M2C_FIELD(p,s32*,4))M2C_FIELD(M2C_FIELD(p,s32*,4),s32*,0x6c)=v;
 if(M2C_FIELD(p,s32*,8))OS_SendMessage(M2C_FIELD(p,s32*,8),v,0);
 SocketFreeTask(p);OS_EnableScheduler();OS_RestoreInterrupts(old); goto loop; done: return; }
 
-s32 SocketCreateFromConfig(void) {
+/* Allocate a socket object for `config` and queue its initialisation task
+ * (SocketInitTask) on the new socket, waiting for the task to run.  Returns the
+ * socket object, or SOCK_NO_SOCKET when none could be allocated. */
+s32 SocketCreateFromConfig(SocketConfigTemplate *config) {
     s32 SocketAllocTask(M2C_UNK *, s32, M2C_UNK);
-    M2C_UNK func_0201f338(s32, s32);
-    s32 AllocSocketObject();
+    M2C_UNK SocketSubmitTaskAndWait(s32, s32);
+    s32 AllocSocketObject(void *);
     extern M2C_UNK SocketInitTask;
-    s32 temp_r0;
+    s32 socket;
 
-    temp_r0 = AllocSocketObject();
-    if (temp_r0 == 0) {
-        return -0x31;
+    socket = AllocSocketObject(config);
+    if (socket == 0) {
+        return SOCK_NO_SOCKET;
     }
-    func_0201f338(temp_r0, SocketAllocTask(&SocketInitTask, temp_r0, 1));
-    return temp_r0;
+    SocketSubmitTaskAndWait(socket, SocketAllocTask(&SocketInitTask, socket, 1));
+    return socket;
 }
 
 /* Socket task run when a socket is created: make the socket the network stack's

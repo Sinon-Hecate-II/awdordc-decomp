@@ -145,11 +145,11 @@ void func_020b0adc(void *arg0) {
 }
 
 void func_020b0af4(void *arg0) {
-    M2C_UNK func_0207749c();
+    M2C_UNK ResetMapViewRaiseTimer();
     if (M2C_FIELD(arg0, s16 *, 0x6C) == 0) {
         return;
     }
-    func_0207749c();
+    ResetMapViewRaiseTimer();
 }
 
 #pragma opt_strength_reduction off

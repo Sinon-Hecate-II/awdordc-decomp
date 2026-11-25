@@ -430,7 +430,7 @@ M2C_UNK **func_0208996c(M2C_UNK **arg0) {
 
 void RenderTextLayer(M2C_UNK, M2C_UNK, u32, s32);
 
-void func_0208999c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void RenderTextLayerMessageDefault(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 GetLocalizedText(M2C_UNK);
     RenderTextLayer(arg0, arg1, 0x4B80, GetLocalizedText(arg2));
 }
@@ -570,13 +570,16 @@ void TextLayer_SetText(void *layer, s32 text) {
     M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) = (u32)((panelState & ~TEXT_LAYER_PANEL_KIND_MASK) | ((panelState >> TEXT_LAYER_PANEL_SAVED_MODE_SHIFT) & TEXT_LAYER_PANEL_KIND_MASK));
 }
 #pragma peephole reset
-void func_02089c80(void *arg0) {
+/* Advance a text panel to its next page: if the layer's text still holds a line
+ * break, show the rest and restart the panel's animation, otherwise delete the
+ * panel. */
+void TextLayer_AdvancePageOrClose(void *layer) {
  s32 Text_FindLineBreakEnd(s32);
- M2C_UNK SetSpriteAnimation(void *,s32);
+ M2C_UNK GotoSpriteAnimationLabel(void *,s32);
  M2C_UNK DeleteSpriteObject(void *);
- s32 p=Text_FindLineBreakEnd(M2C_FIELD(arg0,s32 *,0x70));
- if(p){TextLayer_SetText(arg0,p);SetSpriteAnimation(arg0,0);return;}
- DeleteSpriteObject(arg0);
+ s32 nextPage=Text_FindLineBreakEnd(M2C_FIELD(layer,s32 *,TEXT_LAYER_TEXT_DATA));
+ if(nextPage){TextLayer_SetText(layer,nextPage);GotoSpriteAnimationLabel(layer,0);return;}
+ DeleteSpriteObject(layer);
 }
 
 s32 func_02089cb8(void *arg0) {

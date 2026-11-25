@@ -253,7 +253,7 @@ void HandleGt2ConnectAttempt(s32 unused, s32 connectionArg, s32 remoteAddressArg
     void *GetPlayerPeer(s32);
     s32 func_0205adb4(s32, s32);
     s32 strtoul(void *, s32, s32);
-    void func_0205b058(void *, s32);
+    void gt2SetConnectionData(void *, s32);
     void func_020411dc(s32);
 
     s32 connection = connectionArg;
@@ -357,7 +357,7 @@ accept_connection:
         *(u16 *)((u8 *)entry + 2) = 0;
         *(s32 *)((u8 *)entry + 4) = 0;
     }
-    func_0205b058((void *)connection, (s32)entry);
+    gt2SetConnectionData((void *)connection, (s32)entry);
     func_020411dc(2);
     return;
 }

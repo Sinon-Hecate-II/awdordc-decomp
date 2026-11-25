@@ -475,7 +475,7 @@ void func_ov003_021fd488(M2C_UNK arg0) {
     extern void **data_027e0058;
     extern M2C_UNK gMapPickSelectionIfaceVTable;
     extern M2C_UNK gSceneBaseIfaceVTable;
-    extern M2C_UNK data_ov003_0220ff2c;
+    extern M2C_UNK gOv003MapListMenuClass;
     extern M2C_UNK data_ov003_022100d4;
     extern M2C_UNK data_ov003_02210104;
     extern M2C_UNK data_ov003_02210130;
@@ -493,8 +493,8 @@ void func_ov003_021fd488(M2C_UNK arg0) {
     void *temp_r5_2;
     void *temp_r5_3;
 
-    SetOv003SceneClass(&data_ov003_0220ff2c);
-    temp_r0 = CreateSpriteFromClass(&data_ov003_0220ff2c, arg0);
+    SetOv003SceneClass(&gOv003MapListMenuClass);
+    temp_r0 = CreateSpriteFromClass(&gOv003MapListMenuClass, arg0);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gSceneBaseVTable;
         M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gSceneBaseIfaceVTable;

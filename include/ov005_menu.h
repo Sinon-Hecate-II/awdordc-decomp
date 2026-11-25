@@ -29,6 +29,12 @@
 #define OV005_CO_GRID_STEP_X 50 /* horizontal pitch between page-0 CO slots */
 #define OV005_CO_GRID_STEP_Y 18 /* vertical pitch between page-0 CO slots */
 
+/* Layout of the detail row's four entry slots (page 1), also where its sprites
+ * slide to. */
+#define OV005_DETAIL_ROW_X0   14 /* left edge of the first entry slot */
+#define OV005_DETAIL_ROW_Y    90 /* top edge of the entry slots */
+#define OV005_DETAIL_ROW_STEP 60 /* horizontal pitch between entry slots */
+
 enum {
     OV005_PAGE_LIST   = 0,
     OV005_PAGE_DETAIL = 1

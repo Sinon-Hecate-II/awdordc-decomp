@@ -152,11 +152,11 @@ CreateOnlinePlayerListNode(M2C_FIELD(&gMapOfferState,s32 *,4),p+0x38);
 }
 
 void func_ov006_02217588(void *arg0) {
-    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
     if (M2C_FIELD(arg0, s32 *, 0x44) == 0) {
         return;
     }
-    SetSpriteAnimation(arg0, 1);
+    GotoSpriteAnimationLabel(arg0, 1);
 }
 
 /* Finish the search for a player to exchange the offered map with: when the
@@ -184,7 +184,7 @@ void func_ov006_0221762c(void *arg0) {
     s32 GetOnlineLocalPlayerId(void);
     s32 IsValidMapRecord(M2C_UNK);
     void CreateOnlinePlayerListCountedNode(M2C_UNK, s32, M2C_UNK, M2C_UNK);
-    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
     extern const Ov006Date data_ov006_02218394;
 
     s32 dateTime[7];
@@ -235,7 +235,7 @@ void func_ov006_0221762c(void *arg0) {
     if (IsValidMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x48)) != 0) {
         CreateOnlinePlayerListCountedNode((M2C_UNK)M2C_FIELD(arg0, M2C_UNK *, 0x4C), 0x2AC, (M2C_UNK)((u8 *)arg0 + 0x38), (M2C_UNK)arg0);
     } else {
-        SetSpriteAnimation(arg0, 2);
+        GotoSpriteAnimationLabel(arg0, 2);
     }
 }
 
@@ -244,7 +244,7 @@ void func_ov006_02217794(void *arg0) {
         return;
     }
     DisableMapConfirm();
-    SetSpriteAnimation(arg0, 2);
+    GotoSpriteAnimationLabel(arg0, 2);
 }
 
 void func_ov006_022177c8(s32 arg0) {
@@ -347,7 +347,7 @@ void func_ov006_022179b4(void *arg0) {
     s32 IsLocalMacAddress(void *);
     s32 FindCampaignMapId(s32);
     s32 GetOnlineLocalPlayerId();
-    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
     s32 var_r6;   /* hit mask */
     s32 var_r5;   /* loop index */
     volatile s32 sp0;  /* match count on stack */
@@ -390,7 +390,7 @@ void func_ov006_022179b4(void *arg0) {
         } while (var_r5 < (u32) M2C_FIELD(arg0, u32 *, 0x3C));
     }
     if (sp0 == 0) {
-        SetSpriteAnimation(arg0, 3);
+        GotoSpriteAnimationLabel(arg0, 3);
         return;
     }
     temp_r1 = (s32)(RuntimeIntDivMod(NextRandomValue(), sp0) >> 32);
@@ -414,7 +414,7 @@ done:
     if (M2C_FIELD(arg0, s32 *, 0x54) != 0) {
         return;
     }
-    SetSpriteAnimation(arg0, 3);
+    GotoSpriteAnimationLabel(arg0, 3);
 }
 
 void func_ov006_02217b08(void *arg0) {
@@ -428,21 +428,21 @@ void func_ov006_02217b08(void *arg0) {
  * transfer status text, append the chosen record's name, reload the campaign map
  * headers and schedule the campaign scene's teardown. */
 void ShowMapTransferChosenName(void *transfer) {
-    M2C_UNK func_0208999c(s32, M2C_UNK, s32);
+    M2C_UNK RenderTextLayerMessageDefault(s32, M2C_UNK, s32);
     M2C_UNK TextLayer_AppendText(s32, M2C_UNK *);
     s32 CreateTextLayer();
     M2C_UNK CreateQueuedSpriteTask(M2C_UNK *, M2C_UNK);
     M2C_UNK func_020c8e40();
     extern M2C_UNK sMapTransferNameBreak;
-    extern M2C_UNK func_ov003_021fef18;
+    extern M2C_UNK Ov003_RedrawMapList;
     s32 layer;
 
     layer = CreateTextLayer();
-    func_0208999c(layer, 2, MAP_TRANSFER_MSG_CHOSEN_MAP);
+    RenderTextLayerMessageDefault(layer, 2, MAP_TRANSFER_MSG_CHOSEN_MAP);
     TextLayer_AppendText(layer, &sMapTransferNameBreak);
     TextLayer_AppendText(layer, M2C_FIELD(transfer, s32 *, MAP_TRANSFER_CHOSEN) + MAP_RECORD_NAME);
     func_020c8e40();
-    CreateQueuedSpriteTask(&func_ov003_021fef18, 6);
+    CreateQueuedSpriteTask(&Ov003_RedrawMapList, 6);
 }
 
 void func_ov006_02217b7c(M2C_UNK arg0) {
@@ -452,7 +452,7 @@ void func_ov006_02217b7c(M2C_UNK arg0) {
         return;
     }
     DisableMapConfirm();
-    SetSpriteAnimation(arg0, 4);
+    GotoSpriteAnimationLabel(arg0, 4);
 }
 
 /* Start the map-transfer screen's target-player id display: a nine-digit number

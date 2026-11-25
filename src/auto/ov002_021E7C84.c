@@ -1,6 +1,7 @@
 /* 18 functions from 0x021E7C84 to 0x021E8984 (ov002), found by ds-decomp. */
 #include "common.h"
 #include "ov002_panel.h"
+#include "battle_map.h"
 typedef struct { u8 kind:6; u8 side:2; u8 x,y,pad[3]; u16 health:7; u16 flags:9; u8 tail[6]; } Unit80;
 #pragma opt_common_subs off
 static inline s32 UnitIndex80(void *unit) { extern void **gCurrentMap; if(unit) return (s32)((u8 *)unit-((u8 *)*gCurrentMap+0x59a4))/14; return 0; }
@@ -403,10 +404,13 @@ func_ov002_021e7d34(p,0,(u32)(a[0]<<26)>>26,(u32)(b[0]<<26)>>26,func_020a7d38(a)
 func_ov002_021e7d34(p,1,(u32)(b[0]<<26)>>26,(u32)(a[0]<<26)>>26,func_020a7d38(b));
 }
 
-void SetupBattleAnimation(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+/* Set up the battle animation of a previewed fight: the attacking and defending
+ * map units become the attacker and defender sides, each with its battle-side
+ * record, in the two-side battle view buffer at gPlayerSettings. */
+void SetupBattleAnimation(BattleMapUnit *attacker, BattleMapUnit *defender, BattleUnit *attackerSide, BattleUnit *defenderSide) {
     void func_ov002_021e8470(u8 *, u8 *, u8 *, s32, s32);
     extern M2C_UNK gPlayerSettings;
-    func_ov002_021e8470(&gPlayerSettings, arg0, arg1, arg2, arg3);
+    func_ov002_021e8470(&gPlayerSettings, (u8 *)attacker, (u8 *)defender, (s32)attackerSide, (s32)defenderSide);
 }
 
 /* Initialise one side's battle unit view `view`: derive the side from whether it
@@ -436,7 +440,21 @@ void InitBattleUnitView(void *view) {
 
 #pragma opt_strength_reduction off
 #pragma opt_loop_invariants off
-s32 func_ov002_021e86f8(s32 arg0,s32 arg1) { s32 result=20; s32 i=0; do { if(i!=arg1) { if((u32)M2C_FIELD(arg0+i*8,u16 *,6)>(u32)M2C_FIELD(arg0+arg1*8,u16 *,6)) result+=20; } i++; }while(i<5); return result; }
+/* The z a unit model is drawn at: the base layer plus one step for every other
+ * model whose placement is drawn in front of this one. */
+s32 GetUnitPlacementZOffset(s32 placements, s32 index) {
+    s32 z = UNIT_PLACEMENT_Z_BASE;
+    s32 i = 0;
+    do {
+        if (i != index) {
+            if ((u32)M2C_FIELD(placements + i * UNIT_PLACEMENT_STRIDE, u16 *, UNIT_PLACEMENT_ORDER) >
+                (u32)M2C_FIELD(placements + index * UNIT_PLACEMENT_STRIDE, u16 *, UNIT_PLACEMENT_ORDER))
+                z += UNIT_PLACEMENT_Z_STEP;
+        }
+        i++;
+    } while (i < UNIT_VIEW_MODEL_COUNT);
+    return z;
+}
 #pragma opt_loop_invariants reset
 #pragma opt_strength_reduction reset
 void func_ov002_021e8738(void *view) {
@@ -481,7 +499,7 @@ void func_ov002_021e8738(void *view) {
             z = M2C_FIELD(positions + i * 8, s16 *, 4);
             order = M2C_FIELD(positions + i * 8, u16 *, 6);
             if (M2C_FIELD(view, u8 *, 0x2a)) z += 20;
-            else z += func_ov002_021e86f8((s32)positions, (u8)i);
+            else z += GetUnitPlacementZOffset((s32)positions, (u8)i);
             func_ov002_021e8ff0(M2C_FIELD((u8 *)view + i * 4, void **, 8), x, y, z);
             func_ov002_021e9000(M2C_FIELD((u8 *)view + i * 4, void **, 8), order);
             if (M2C_FIELD(view, u8 *, 0x2a)) break;

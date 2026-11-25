@@ -14,12 +14,12 @@ void func_ov011_02224aac(void *,int);
 void HandleIntroInput(void *);
 int PlaySoundEffect(int);
 int StopSlotSound(int,int);
-void func_01ffac9c(int,int,int,void *,int);
+void AddSpriteToMainEngine(int,int,int,void *,int);
 extern u16 gIntroAnimState[6];
 
 /* Handles an entry's per-frame update across both screen buffers for states 2 and 3. */
 void func_ov011_02223cb8(void *entry){
-void LoadOpeningScreenAssets(void *,s32,s32);void LoadIntroStage4Assets(void *);void func_0208f7d0(s32);
+void LoadOpeningScreenAssets(void *,s32,s32);void LoadIntroStage4Assets(void *);void ChangeMusicTrackWithFade(s32);
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
 u8 color[2]={0};
 s32 savedEngine,bufIndex,screenEngine;
@@ -43,7 +43,7 @@ p4=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0));*p4=*p4|0x100;
 bufIndex++;
 }while(bufIndex<2);
 gCur3DSpriteEngine=savedEngine;
-func_0208f7d0(0x1000E);
+ChangeMusicTrackWithFade(0x1000E);
 }
 break;
 case 2:
@@ -188,9 +188,9 @@ void func_ov011_022242dc(void *p) {
  case 8:
   if (GetLanguage() == 2) G3_UpdateIntroTiles(p, 130, 286, 0x8052, colors.bytes + 15);
   else if (M2C_FIELD(p, u16 *, 0x34) > 108 && M2C_FIELD(p, u16 *, 0x34) <= 168) {
-   func_01ffac9c(0, 82, 0, data_02101f5c, 0);
-   func_01ffac9c(128, 82, 32, data_02101f5c, 0);
-   if (GetLanguage() == 4) func_01ffac9c(0, 74, 128, data_02101f0c, 0);
+   AddSpriteToMainEngine(0, 82, 0, data_02101f5c, 0);
+   AddSpriteToMainEngine(128, 82, 32, data_02101f5c, 0);
+   if (GetLanguage() == 4) AddSpriteToMainEngine(0, 74, 128, data_02101f0c, 0);
   } else G3_UpdateIntroTiles(p, 2, 108, 0x8052, colors.bytes + 15);
   break;
  case 9:
@@ -219,18 +219,18 @@ case 2:
 M2C_FIELD(p,u16 *,INTRO_TIMER)++;
 if(M2C_FIELD(p,u8 *,INTRO_SUBSTATE)){
 if(++M2C_FIELD(p,u8 *,INTRO_SUBSTATE)>=1){
-M2C_FIELD(p,u8 *,INTRO_SUBSTATE)=0;SetSpriteAnimation(p,4);
+M2C_FIELD(p,u8 *,INTRO_SUBSTATE)=0;GotoSpriteAnimationLabel(p,4);
 }return;
 }
 if(M2C_FIELD(p,u16 *,INTRO_TIMER)>=0x528){
 M2C_FIELD(p,u8 *,INTRO_STATE)=3;
-M2C_FIELD(p,u8 *,INTRO_STAGE)=0;SetSpriteAnimation(p,3);
+M2C_FIELD(p,u8 *,INTRO_STAGE)=0;GotoSpriteAnimationLabel(p,3);
 }break;
 case 3:
 if(M2C_FIELD(p,u16 *,INTRO_TIMER)>gIntroStateDurations[M2C_FIELD(p,u8 *,INTRO_STAGE)]){
 if(M2C_FIELD(p,u8 *,INTRO_STAGE)>10){
-if(M2C_FIELD(p,s32 *,INTRO_MODE)==2)SetSpriteAnimation(p,4);
-else SetSpriteAnimation(p,2);
+if(M2C_FIELD(p,s32 *,INTRO_MODE)==2)GotoSpriteAnimationLabel(p,4);
+else GotoSpriteAnimationLabel(p,2);
 return;
 }
 Sprite_ResumeAnimation(p);return;
@@ -240,7 +240,7 @@ HandleIntroInput(p);
 }
 
 void HandleIntroInput(void *entry) {
-    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK StopSlotSound(M2C_UNK, M2C_UNK);
     M2C_UNK SetScreenMode(s32);
@@ -309,10 +309,10 @@ void HandleIntroInput(void *entry) {
             StopSlotSound(0, 3);
         }
         if (M2C_FIELD(entry, s32 *, 0x3C) == 2) {
-            SetSpriteAnimation(entry, 4);
+            GotoSpriteAnimationLabel(entry, 4);
             return;
         }
-        SetSpriteAnimation(entry, 2);
+        GotoSpriteAnimationLabel(entry, 2);
         return;
     }
 }

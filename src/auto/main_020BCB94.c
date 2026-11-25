@@ -109,10 +109,10 @@ void func_020bcde0(void) {
 }
 
 void func_020bcdec(void *arg0) {
-    M2C_UNK func_0208f7d0();
+    M2C_UNK ChangeMusicTrackWithFade();
     M2C_UNK GetCoPowerMusicTrack(u8);
     GetCoPowerMusicTrack((u8) M2C_FIELD(arg0, s32 *, 0x5C));
-    func_0208f7d0();
+    ChangeMusicTrackWithFade();
 }
 
 /* Play the special sound and spawn the "special" effect sprite at the tile of
@@ -227,9 +227,9 @@ void CreateTouchCursor(s16 a,s16 b){extern M2C_UNK data_021293d4;s32 FindObjectB
 void DeleteTouchCursor(void){extern M2C_UNK data_021293d4;s32 FindObjectByClass(M2C_UNK *);M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);if(!FindObjectByClass(&data_021293d4))return;DeleteSpriteObjectsOfClass(&data_021293d4);}
 
 void HideTouchCursor(void) {
-    M2C_UNK func_01ffa9bc(M2C_UNK *);
+    M2C_UNK ResumeAnimationOfSpriteClass(M2C_UNK *);
     extern M2C_UNK data_021293d4;
-    func_01ffa9bc(&data_021293d4);
+    ResumeAnimationOfSpriteClass(&data_021293d4);
 }
 
 u8 func_020bd118(void) {

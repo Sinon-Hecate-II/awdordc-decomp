@@ -458,7 +458,7 @@ void func_020dc608(void) {
 void MenuConfirmInput(void *menu) {
     void MenuSpriteUpdate(void *);
     void DisableMapConfirm(void);
-    void SetSpriteAnimation(void *, s32);
+    void GotoSpriteAnimationLabel(void *, s32);
     s32 PlaySoundEffect(s32);
     void Sprite_ResumeAnimation(void *);
     extern u16 *gKeyState;
@@ -498,7 +498,7 @@ void MenuConfirmInput(void *menu) {
     case 1: M2C_FIELD(menu,u8*,0x40)=0x1d; break;
     }
     M2C_FIELD(menu, u16 *, 0x48) |= 0x20;
-    SetSpriteAnimation(menu, 0x44);
+    GotoSpriteAnimationLabel(menu, 0x44);
     PlaySoundEffect(0x1000f);
     return;
 

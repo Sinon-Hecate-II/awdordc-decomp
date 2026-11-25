@@ -2,6 +2,7 @@
 #include "common.h"
 #include "ds3dsprite.h"
 #include "sprite_grid.h"
+#include "waypoint_panel.h"
 s32 IsSessionHost(void);
 s32 func_ov003_021e6d28(void);
 s32 GetLocalPlayerIdForOverlay(void);
@@ -40,7 +41,10 @@ u8 IsMapListCategory3(void) {
     return var_r0;
 }
 
-s32 func_ov003_021e6e5c(void) {
+/* True while the map-select scene's map-list category is one of the campaign
+ * groups (category 1, 3 or 5), i.e. the groups whose slots come from the cached
+ * campaign map headers. */
+s32 IsCampaignMapListCategory(void) {
     if ((GetMapListCategory() == 3) || (GetMapListCategory() == 1) || (GetMapListCategory() == 5)) {
         return 1;
     }
@@ -54,16 +58,19 @@ s32 GetWaypointOptionTextId(s32 arg0) {
     return data_ov003_0220f0c8[arg0][0];
 }
 
-s32 IsWaypointOptionValid(s32 arg0) {
+/* Whether the waypoint panel may offer CO option `option`: the Random option is
+ * always valid, a category-3 map list never offers the last per-CO option, and
+ * any other option needs the CO it picks to be unlocked. */
+s32 IsWaypointOptionValid(s32 option) {
     s32 IsCoUnlocked();
     M2C_UNK GetWaypointOptionCoId(s32);
-    if (arg0 == 0xC) {
+    if (option == WAYPOINT_OPTION_RANDOM) {
         return 1;
     }
-    if ((IsMapListCategory3() != 0) && (arg0 == 0xB)) {
+    if ((IsMapListCategory3() != 0) && (option == WAYPOINT_OPTION_LAST_CO)) {
         return 0;
     }
-    GetWaypointOptionCoId(arg0);
+    GetWaypointOptionCoId(option);
     return IsCoUnlocked();
 }
 

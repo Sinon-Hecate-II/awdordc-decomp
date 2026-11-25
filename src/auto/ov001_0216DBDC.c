@@ -1,6 +1,7 @@
 /* 27 functions from 0x0216DBDC to 0x0216EB84 (ov001), found by ds-decomp. */
 #include "common.h"
 #include "ov001_wh.h"
+#include "ghttp.h"
 typedef struct { volatile s32 count; s32 index; } ScanCounters;
 
 #pragma thumb on
@@ -38,50 +39,56 @@ s32 WhAdvanceConnectionState(void) {
     return 1;
 }
 
-s32 func_ov001_0216df50(s32 arg0, s32 arg1) {
+/* Lock the WFC player list and copy up to maxRecords of its 0xC0-byte
+ * connection records into dest, then unlock it.  Returns the total number of
+ * players in the list. */
+s32 WhCopyPlayerRecords(s32 dest, s32 maxRecords) {
     M2C_UNK MIi_CpuCopy32(s32, s32, M2C_UNK);
     s32 WFC_GetPlayerListCount();
     M2C_UNK WFC_SetDataLock(M2C_UNK);
     s32 WFC_GetPlayerRecordByIndex(u16);
-    s32 temp_r0;
-    s32 var_r4;
-    s32 var_r5;
+    s32 count;
+    s32 index;
+    s32 destPtr;
 
-    var_r5 = arg0;
+    destPtr = dest;
     WFC_SetDataLock(1);
-    temp_r0 = WFC_GetPlayerListCount();
-    if (temp_r0 > 0) {
-        var_r4 = 0;
-        if (temp_r0 > 0) {
+    count = WFC_GetPlayerListCount();
+    if (count > 0) {
+        index = 0;
+        if (count > 0) {
 loop_2:
-            if (var_r4 < arg1) {
-                MIi_CpuCopy32(WFC_GetPlayerRecordByIndex((u16) var_r4), var_r5, 0xC0);
-                var_r4 += 1;
-                var_r5 += 0xC0;
-                if (var_r4 < temp_r0) {
+            if (index < maxRecords) {
+                MIi_CpuCopy32(WFC_GetPlayerRecordByIndex((u16) index), destPtr, 0xC0);
+                index += 1;
+                destPtr += 0xC0;
+                if (index < count) {
                     goto loop_2;
                 }
             }
         }
     }
     WFC_SetDataLock(0);
-    return temp_r0;
+    return count;
 }
 
-s32 func_ov001_0216e07c(void) {
+/* Advance the WH connection's link step: with interrupts disabled, queue the
+ * WFC link step only while the connection is in its link phase; on success move
+ * the phase to "step queued" and return 1, else 0. */
+s32 WhProcessLinkStep(void) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     s32 WFC_ProcessLinkStep();
     extern M2C_UNK gWhState;
-    s32 temp_r4;
+    s32 interruptState;
 
-    temp_r4 = OS_DisableInterrupts();
-    if ((M2C_FIELD(&gWhState, s32 *, 0x2C) == 7) && (WFC_ProcessLinkStep() == 3)) {
-        M2C_FIELD(&gWhState, s32 *, 0x2C) = 4;
-        OS_RestoreInterrupts(temp_r4);
+    interruptState = OS_DisableInterrupts();
+    if ((M2C_FIELD(&gWhState, s32 *, WH_STATE_PHASE) == WH_PHASE_LINK) && (WFC_ProcessLinkStep() == WH_WFC_STEP_QUEUED)) {
+        M2C_FIELD(&gWhState, s32 *, WH_STATE_PHASE) = WH_PHASE_WFC_STEP_QUEUED;
+        OS_RestoreInterrupts(interruptState);
         return 1;
     }
-    OS_RestoreInterrupts(temp_r4);
+    OS_RestoreInterrupts(interruptState);
     return 0;
 }
 
@@ -356,7 +363,7 @@ s32 func_ov001_0216e79c(void) {
     M2C_UNK CancelTimer(void *);
     M2C_UNK MemCopy(void *, void *, s32);
     M2C_UNK StringCopy(void *, void *);
-    s32 func_ov001_0216df50(s32, s32);
+    s32 WhCopyPlayerRecords(s32, s32);
     s32 func_ov001_0216df94(s32, s32, s32, s32);
     s32 WhPopEvent(void);
     s32 func_ov001_0216e5d0(void *, void *, s32 *);
@@ -403,7 +410,7 @@ s32 func_ov001_0216e79c(void) {
                     again = 0;
                     break;
                 case 5:
-                    m = func_ov001_0216df50(M2C_FIELD(&gWhState, s32 *, 0x5c), M2C_FIELD(&gWhState, s32 *, 0x70));
+                    m = WhCopyPlayerRecords(M2C_FIELD(&gWhState, s32 *, 0x5c), M2C_FIELD(&gWhState, s32 *, 0x70));
                     if (m > result) { result = m;
                     CancelTimer(timer);
                     ScheduleTimer(timer, 0xffb10, 0, WhEventTimerCallback, 0x13); }
@@ -497,26 +504,34 @@ ret:
 #pragma opt_common_subs reset
 
 #pragma thumb on
-s32 func_ov001_0216ea30(s32 a,s32 b,s32 unused,s32 c,s32 d) {
+s32 WhSendPacketToAddress(s32 a,s32 b,s32 unused,s32 c,s32 d) {
 s32 func_020216cc(s32,s32,s32,s32,s32);
 s32 r=func_020216cc(a,c,d,0,b);if(r<0)r=-4;return r;
 }
 
 #pragma thumb on
-void func_ov001_0216ea48(s32 a,s32 b,s32 c) {
-s32 GetLocalIpAddress(void);
-void IpToBytes(s32,void *);
-s32 func_ov001_0216ea30(s32,s32,s32,s32,s32);
-u8 buf[12];
-buf[4]=8;buf[5]=2;*(s32 *)(buf+8)=-1;*(u16 *)(buf+6)=0x1e6;
-IpToBytes(GetLocalIpAddress(),buf);
-func_ov001_0216ea30(a,(s32)(buf+4),(s32)buf,b,c);
+/* Send the overlay's local-IP discovery packet on `socket`: the 4 bytes of
+ * payload before the address are this console's IPv4 address, and the packet
+ * goes to a GhiSocketAddress (length 8, AF_INET) on port 0x1E6 at the broadcast
+ * address 0xFFFFFFFF, so every player on the local link hears it. */
+void WhBroadcastLocalIp(s32 socket, s32 length, s32 flags) {
+    s32 GetLocalIpAddress(void);
+    void IpToBytes(s32, void *);
+    s32 WhSendPacketToAddress(s32, s32, s32, s32, s32);
+    u8 packet[12];
+
+    packet[4] = 8; /* GhiSocketAddress.len */
+    packet[5] = 2; /* GhiSocketAddress.family: AF_INET */
+    *(s32 *)(packet + 8) = -1; /* GhiSocketAddress.addr: broadcast */
+    *(u16 *)(packet + 6) = 0x1e6; /* GhiSocketAddress.port */
+    IpToBytes(GetLocalIpAddress(), packet);
+    WhSendPacketToAddress(socket, (s32)(packet + 4), (s32)packet, length, flags);
 }
 
 #pragma thumb on
 void func_ov001_0216ea84(s32 a,s32 unused,s32 b,s32 c) {
-void func_ov001_0216ea48(s32,s32,s32);
-func_ov001_0216ea48(a,b,c);
+void WhBroadcastLocalIp(s32,s32,s32);
+WhBroadcastLocalIp(a,b,c);
 }
 
 /* Verify a wrapped WH packet and return its payload: read the big-endian type and

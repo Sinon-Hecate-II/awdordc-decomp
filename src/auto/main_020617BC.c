@@ -122,11 +122,13 @@ void SBServerListSortServers(void *list, s32 descending, s32 field, u32 sortKind
     Vector_Sort(M2C_FIELD(list, s32 *, SB_SLIST_SERVERS), compare);
 }
 
-void SBServerListAddServer(void *arg0, s32 arg1) {
+/* Add `server` to the list's server vector and report it to the application
+ * through the list's callback (SB_LIST_EVENT_SERVER_ADDED). */
+void SBServerListAddServer(void *list, s32 server) {
     M2C_UNK Vector_Append(s32, s32 *);
 
-    Vector_Append(M2C_FIELD(arg0, s32 *, 4), &arg1);
-    M2C_FIELD(arg0, M2C_UNK (**)(void *, s32, s32, s32), 0x488)(arg0, 0, arg1, M2C_FIELD(arg0, s32 *, 0x494));
+    Vector_Append(M2C_FIELD(list, s32 *, SB_SLIST_SERVERS), &server);
+    M2C_FIELD(list, M2C_UNK (**)(void *, s32, s32, s32), SB_SLIST_CALLBACK)(list, SB_LIST_EVENT_SERVER_ADDED, server, M2C_FIELD(list, s32 *, SB_SLIST_INSTANCE));
 }
 
 /* Index in `list`'s server vector of the entry holding `server`, or -1 when the
@@ -544,17 +546,20 @@ s32 SBServerListDisconnect(void *list) {
     SBServerListFreeKeyNames(list);
 }
 
-void func_02062738(void *arg0) {
+/* GameSpy SBServerListClear: tear the list down for reuse - disconnect it,
+ * drop the servers retired from the vector, release the shared string-intern
+ * table once it is empty, then free the servers vector. */
+void SBServerListClear(void *list) {
     M2C_UNK Vector_Free();
-    M2C_UNK func_02060a20(void *);
+    M2C_UNK FreeStringInternTableIfEmpty(void *);
     M2C_UNK SBServerListClearRemovedServers(void *);
     M2C_UNK SBServerListDisconnect();
     SBServerListDisconnect();
-    SBServerListClearRemovedServers(arg0);
-    func_02060a20(arg0);
-    if (M2C_FIELD(arg0, s32 *, 4) != 0) {
+    SBServerListClearRemovedServers(list);
+    FreeStringInternTableIfEmpty(list);
+    if (M2C_FIELD(list, s32 *, SB_SLIST_SERVERS) != 0) {
         Vector_Free();
     }
-    M2C_FIELD(arg0, s32 *, 4) = 0;
+    M2C_FIELD(list, s32 *, SB_SLIST_SERVERS) = 0;
 }
 

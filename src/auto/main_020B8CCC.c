@@ -10,7 +10,7 @@ static inline u8 IsUiB8ccc(UiB8ccc *p){return p->state[11]==1 || (p->active && p
 
 #pragma optimization_level 2
 void func_020b8ccc(void *a){
-s32 func_020b846c(s32);void RedrawListRows(s32);s32 GetUiMode(void);s32 func_020ae0a8(void);s32 CanStartScreenTransition(void);void func_020ae164(s32);void SetUiMode(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void func_020b8778(void);void MenuSpriteUpdate(void *);void ScrollListUp(void *);void ScrollListDown(void *);s32 FX_Div(s32,s32);void DrawFrameBorder(s32,s16,s32,s16,u16,s32,s32);
+s32 func_020b846c(s32);void RedrawListRows(s32);s32 GetUiMode(void);s32 GetScreenTransitionType(void);s32 CanStartScreenTransition(void);void StartShortScreenTransition(s32);void SetUiMode(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void func_020b8778(void);void MenuSpriteUpdate(void *);void ScrollListUp(void *);void ScrollListDown(void *);s32 FX_Div(s32,s32);void DrawFrameBorder(s32,s16,s32,s16,u16,s32,s32);
 extern u16 *gKeyState;extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 s16 step; void *old;s32 size,h,pos,v,t,pal;UiB8ccc *p;
 if(M2C_FIELD(a,s16*,0x3c)==0){
@@ -20,7 +20,7 @@ if(v!=t){h=t-v;if(h<0)h=-h;step=h>>1;if(step==0)step=1;if(v>t)M2C_FIELD(a,s16*,0
 if(M2C_FIELD(a,s16*,0x46)==0){
 if(func_020b846c(M2C_FIELD(a,s16*,0x38))){
 if(GetUiMode()==2){
-if(M2C_FIELD(a,s16*,0x38)!=func_020ae0a8() && CanStartScreenTransition() && func_020b846c(M2C_FIELD(a,s16*,0x38)))func_020ae164(M2C_FIELD(a,s16*,0x38));
+if(M2C_FIELD(a,s16*,0x38)!=GetScreenTransitionType() && CanStartScreenTransition() && func_020b846c(M2C_FIELD(a,s16*,0x38)))StartShortScreenTransition(M2C_FIELD(a,s16*,0x38));
 }else SetUiMode(2,M2C_FIELD(a,s16*,0x38));
 }
 }else M2C_FIELD(a,s16*,0x46)--;
@@ -210,7 +210,7 @@ void ProductionMenu_ConfirmSelection(u8 *selection) {
     void func_02096b6c(u32);
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK HideAllSpriteSlots();
-    M2C_UNK func_01ffa9bc(M2C_UNK *);
+    M2C_UNK ResumeAnimationOfSpriteClass(M2C_UNK *);
     void CreateProductionMenuRow(s32, s32);
     extern void **gCurrentMap;
     extern u8 gProductionChoices[];
@@ -230,17 +230,17 @@ void ProductionMenu_ConfirmSelection(u8 *selection) {
         CreateProductionMenuRow(gProductionChoices[index * 2], (s32)screen);
     }
     HideAllSpriteSlots();
-    func_01ffa9bc(&gProductionMenuScreenClass);
+    ResumeAnimationOfSpriteClass(&gProductionMenuScreenClass);
 }
 
 void func_020b9778(void) {
-    M2C_UNK func_01ffa9bc(M2C_UNK *);
+    M2C_UNK ResumeAnimationOfSpriteClass(M2C_UNK *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK HideAllSpriteSlots();
     extern M2C_UNK gProductionMenuScreenClass;
     PlaySoundEffect(0x10018);
     HideAllSpriteSlots();
-    func_01ffa9bc(&gProductionMenuScreenClass);
+    ResumeAnimationOfSpriteClass(&gProductionMenuScreenClass);
 }
 
 void func_020b979c(u8 *a) {
@@ -328,7 +328,7 @@ void func_020b9978(void) {
 }
 
 #pragma opt_common_subs off
-void func_020b99ac(s32 arg0,s32 arg1,s32 arg2) {
+void DrawProductionMenuColumnEntries(s32 arg0,s32 arg1,s32 arg2) {
 M2C_UNK DrawLocalizedTextToTilemap(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
 void DrawTilemapNumber(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
 M2C_UNK WriteUnitKindTileQuad(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u8,u8);
@@ -374,7 +374,15 @@ i++;y+=16;
 }while(i<7);
 }
 #pragma opt_instruction_scheduling reset
-void DrawProductionMenuColumn(M2C_UNK a,M2C_UNK b,M2C_UNK c){void func_020b99ac(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK DrawWindowFrame(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);DrawWindowFrame(a,b,16,16,1);func_020b99ac(a,b,c);}
+/* Draw one column of the unit-production menu: the bordered window at (x, y)
+ * and then the column's rows, starting at entry `first`. */
+void DrawProductionMenuColumn(s32 x, s32 y, s32 first) {
+    void DrawProductionMenuColumnEntries(s32, s32, s32);
+    M2C_UNK DrawWindowFrame(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+
+    DrawWindowFrame(x, y, 16, 16, 1);
+    DrawProductionMenuColumnEntries(x, y, first);
+}
 
 /* Lay out the sprite slots for the unit-production menu's entries: one column of
    7 when the list fits on a single page, otherwise two columns split across the

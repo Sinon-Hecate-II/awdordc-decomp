@@ -372,20 +372,23 @@ void UnlockMutex(void *mutex) {
     OS_RestoreInterrupts(irq);
 }
 
-void ReleaseThreadMutexes(void *arg0) {
-    void *func_020057c8(void *);
+/* Release every mutex a terminating thread still holds: take each one off the
+ * thread's locked-mutex list, clear its owner and lock count, and wake the
+ * threads waiting on it. */
+void ReleaseThreadMutexes(Thread *thread) {
+    void *PopThreadMutex(void *);
     M2C_UNK OS_WakeupThread();
-    void *temp_r0;
+    void *mutex;
 
-    if (M2C_FIELD(arg0, s32 *, 0x88) == 0) {
+    if (M2C_FIELD(thread, s32 *, THREAD_MUTEX_LIST_HEAD) == 0) {
         return;
     }
     do {
-        temp_r0 = func_020057c8(arg0 + 0x88);
-        M2C_FIELD(temp_r0, s32 *, 0xC) = 0;
-        M2C_FIELD(temp_r0, s32 *, 8) = 0;
-        OS_WakeupThread();
-    } while (M2C_FIELD(arg0, s32 *, 0x88) != 0);
+        mutex = PopThreadMutex((u8 *)thread + THREAD_MUTEX_LIST_HEAD);
+        M2C_FIELD(mutex, s32 *, OSMUTEX_COUNT) = 0;
+        M2C_FIELD(mutex, void **, OSMUTEX_OWNER) = 0;
+        OS_WakeupThread(mutex);
+    } while (M2C_FIELD(thread, s32 *, THREAD_MUTEX_LIST_HEAD) != 0);
 }
 
 /* Try to take an OS mutex for the running thread without blocking: take it when

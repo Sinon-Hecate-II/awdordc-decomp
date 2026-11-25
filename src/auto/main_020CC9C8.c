@@ -121,15 +121,15 @@ void func_020ccdd8(s32 arg0) {
 void ShowBattleResultsScreen(s32 sprite) {
     void BattleResults_ComputeRatings(void);
     void func_0209c8d4(void);
-    void SetSpriteAnimation(s32, s32);
+    void GotoSpriteAnimationLabel(s32, s32);
     u8 IsCampaignBattleRules(void);
     u8 DidPlayerLose(void);
     BattleResults_ComputeRatings();
     func_0209c8d4();
     if (IsCampaignBattleRules() && DidPlayerLose()) {
-        SetSpriteAnimation(sprite, 1);
+        GotoSpriteAnimationLabel(sprite, 1);
     } else {
-        SetSpriteAnimation(sprite, 0);
+        GotoSpriteAnimationLabel(sprite, 0);
     }
 }
 
@@ -330,8 +330,8 @@ void func_020cd5ac(void) {
 
 /* True unless the options turn battle animations off. */
 s32 func_020cd5d8(void) {
-    extern M2C_UNK data_0215d9b8;
-    switch ((u32)(M2C_FIELD(&data_0215d9b8, u16 *, 6) << 20) >> 30) {
+    extern M2C_UNK gOptionBits;
+    switch ((u32)(M2C_FIELD(&gOptionBits, u16 *, 6) << 20) >> 30) {
     case 0: return 1;
     case 1: return 1;
     default: return 0;
@@ -341,10 +341,10 @@ s32 func_020cd5d8(void) {
 /* True while captures may start: always on in free battles, and in a campaign
  * battle only when the current player is human. */
 s32 func_020cd614(void) {
-    extern M2C_UNK data_0215d9b8;
+    extern M2C_UNK gOptionBits;
     extern s32 *gCurrentMap;
     s32 IsPlayerHuman(s32);
-    switch ((u32)(M2C_FIELD(&data_0215d9b8, u16 *, 6) << 18) >> 30) {
+    switch ((u32)(M2C_FIELD(&gOptionBits, u16 *, 6) << 18) >> 30) {
     case 0: return 1;
     case 1:
         if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4))) return 1;
@@ -352,20 +352,23 @@ s32 func_020cd614(void) {
     return 0;
 }
 
+/* True while the battle animations run at a fast speed: the two high codes of
+ * their 2-bit setting field in the game options count as fast. */
 s32 IsFastAnimation(void) {
-    extern M2C_UNK data_0215d9b8;
-    switch ((u32)(M2C_FIELD(&data_0215d9b8, u16 *, 6) << 20) >> 30) {
-    case 2: return 1;
-    case 1: return 1;
+    extern M2C_UNK gOptionBits;
+
+    switch ((u32)(M2C_FIELD(&gOptionBits, u16 *, GAME_OPTIONS_HALFWORD) << 20) >> 30) {
+    case GAME_OPTION_ANIMATION_FASTEST: return 1;
+    case GAME_OPTION_ANIMATION_FAST: return 1;
     }
     return 0;
 }
 
 u8 func_020cd6b0(void) {
-    extern M2C_UNK data_0215d9b8;
+    extern M2C_UNK gOptionBits;
     u8 var_r0;
 
-    if (((u32) (M2C_FIELD(&data_0215d9b8, u16 *, 6) << 0x11) >> 0x1F) == 0) {
+    if (((u32) (M2C_FIELD(&gOptionBits, u16 *, 6) << 0x11) >> 0x1F) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

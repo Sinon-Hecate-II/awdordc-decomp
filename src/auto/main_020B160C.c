@@ -53,15 +53,18 @@ void func_020b1770(void) {
     MI_CpuCopy32(&data_020f3ca0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC) + 0x2480, 0xA0);
 }
 
-void func_020b179c(void) {
+/* Copy the two 0x800-byte tile blocks of the lower 3D sprite layers from their
+ * RAM staging buffers to the layers' VRAM destinations, then load the UI
+ * graphics for the top layer. */
+void Upload3DSpriteLayerTiles(void) {
  M2C_UNK MI_CpuCopy32(M2C_UNK *,s32,M2C_UNK);
  M2C_UNK LoadUiGraphics();
  extern void *gCur3DSpriteEngine;
- void *p; s32 src; M2C_UNK *dst;
- p=gCur3DSpriteEngine; src=M2C_FIELD(p,volatile s32 *,0x10); dst=M2C_FIELD(p,M2C_UNK * volatile *,0x24);
- MI_CpuCopy32(dst,src,0x800);
- p=gCur3DSpriteEngine; src=M2C_FIELD(p,volatile s32 *,0x14); dst=M2C_FIELD(p,M2C_UNK * volatile *,0x28);
- MI_CpuCopy32(dst,src,0x800); LoadUiGraphics();
+ void *engine; s32 vram; M2C_UNK *tiles;
+ engine=gCur3DSpriteEngine; vram=M2C_FIELD(engine,volatile s32 *,DS3D_ENGINE_LAYER_VRAM+4); tiles=M2C_FIELD(engine,M2C_UNK * volatile *,DS3D_ENGINE_LAYER_TILES+4);
+ MI_CpuCopy32(tiles,vram,0x800);
+ engine=gCur3DSpriteEngine; vram=M2C_FIELD(engine,volatile s32 *,DS3D_ENGINE_LAYER_VRAM+8); tiles=M2C_FIELD(engine,M2C_UNK * volatile *,DS3D_ENGINE_LAYER_TILES+8);
+ MI_CpuCopy32(tiles,vram,0x800); LoadUiGraphics();
 }
 
 void func_020b17dc(void) {
@@ -121,7 +124,7 @@ void InitBattleMapView(void) {
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     ApplyScreenMode(3);
     Init3DSpriteLayers1D();
-    func_02077a7c();
+    InitBattleMapGraphics();
     Reset3DSpriteCorners();
     callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), MAPVIEW_SCROLL_DONE);
     if (callback != NULL) callback();
@@ -129,7 +132,7 @@ void InitBattleMapView(void) {
     callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), MAPVIEW_UPLOAD_GRAPHICS);
     if (callback != NULL) callback();
     ApplyMapViewTilesetWeather();
-    func_020b179c();
+    Upload3DSpriteLayerTiles();
     func_020b17dc();
     ClearAll3DSpriteLayers();
     gCur3DSpriteEngine = savedEngine;
@@ -149,7 +152,7 @@ Reset3DSpriteCorners();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x1c);if(callback)callback();
 Apply3DSpriteBanks();LoadScenePanelGraphicsOnBothEngines();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);if(callback)callback();
-func_020b1770();ApplyMapViewTilesetWeather();func_020b179c();func_020b17dc();
+func_020b1770();ApplyMapViewTilesetWeather();Upload3DSpriteLayerTiles();func_020b17dc();
 }
 
 void func_020b19a8(s32 arg0, s32 arg1) {
@@ -204,13 +207,15 @@ void func_020b1abc(void) {
     func_0207ad30(gFrameCounter);
 }
 
-void func_020b1ae0(void) {
+/* Point the current map at the default battle-map view controller, the one the
+ * game uses for a freshly loaded map, the map editor and a resumed save. */
+void SetDefaultMapView(void) {
 extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *gCurrentMap;
-extern u8 data_02128000[];
-void *saved=gCur3DSpriteEngine;
+extern u8 gDefaultMapView[];
+void *savedEngine=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-M2C_FIELD(gCurrentMap,void **,4)=data_02128000;
-gCur3DSpriteEngine=saved;
+M2C_FIELD(gCurrentMap,void **,MAP_VIEW_PTR)=gDefaultMapView;
+gCur3DSpriteEngine=savedEngine;
 }
 
 u8 SpriteSlotHasFlags(void *arg0, s32 arg1) {
@@ -437,10 +442,20 @@ void func_020b216c(void *arg0) {
 
 void HideAllSpriteSlots(void){extern u8 gSpriteSlots[];s32 i=0;u8 *p=gSpriteSlots;u8 zero=i;do{i++;p[1]=zero;p+=60;}while(i<85);}
 
-void func_020b21a0(void) {
-extern u8 gSpriteSlots[];
-s32 i=0; u8 *p=gSpriteSlots;
-do { if(SpriteSlotHasFlags(p,1)!=0) p[1]=0; i++;p+=0x3c; } while(i<0x55);
+/* Clear the active bit of every sprite slot that still has the enabled flag,
+ * hiding the list's slots before the active ones are closed. */
+void HideEnabledSpriteSlots(void) {
+    extern u8 gSpriteSlots[];
+    s32 slotIndex = 0;
+    u8 *slot = gSpriteSlots;
+
+    do {
+        if (SpriteSlotHasFlags(slot, SPRITE_SLOT_FLAG_ENABLED) != 0) {
+            slot[SPRITE_SLOT_VISIBLE] = 0;
+        }
+        slotIndex++;
+        slot += SPRITE_SLOT_STRIDE;
+    } while (slotIndex < SPRITE_SLOT_COUNT);
 }
 
 /* Disable touch-clicking on every sprite slot that is not enabled (won't take focus). */
@@ -468,20 +483,21 @@ void UnlockInactiveSpriteSlots(void) {
     } while (slotIndex < SPRITE_SLOT_COUNT);
 }
 
+/* Request the closing animation for every active sprite slot that has not started closing yet. */
 void CloseAllActiveSpriteSlots(void) {
     extern u8 gSpriteSlots[];
-    s32 i;
-    u8 *p;
+    s32 slotIndex;
+    u8 *slot;
 
-    p = gSpriteSlots;
-    i = 0;
+    slot = gSpriteSlots;
+    slotIndex = 0;
     do {
-        if ((p[1] != 0) && (p[4] < 3U)) {
-            p[4] = 3U;
+        if ((slot[SPRITE_SLOT_VISIBLE] != 0) && (slot[SPRITE_SLOT_ANIM] < SPRITE_SLOT_ANIM_CLOSING)) {
+            slot[SPRITE_SLOT_ANIM] = SPRITE_SLOT_ANIM_CLOSING;
         }
-        i += 1;
-        p += 0x3C;
-    } while (i < 0x55);
+        slotIndex += 1;
+        slot += SPRITE_SLOT_STRIDE;
+    } while (slotIndex < SPRITE_SLOT_COUNT);
 }
 
 /* Find the first free sprite slot and initialise it from `desc` at (x, y) with

@@ -1,5 +1,6 @@
 /* 53 functions from 0x02048B74 to 0x02049AB8 (main), found by ds-decomp. */
 #include "common.h"
+#include "md5.h"
 
 typedef struct { u8 bytes[8]; } UnkSocketAddress;
 
@@ -224,7 +225,18 @@ s32 TableMapSafe2(HashTable *table, s32 (*callback)(s32, s32), s32 userData) {
     return 0;
 }
 
-void FormatMD5Hex(u8 *a,char *b){extern char gMD5HexFormat[];unsigned int i=0;int off=0;do {StringFormat(b+off,gMD5HexFormat,a[i]);i++;off+=2;}while(i<16);}
+/* Write the MD5_DIGEST_SIZE-byte `digest` as 32 lowercase hex characters into
+ * `hex`. */
+void FormatMD5Hex(u8 *digest, char *hex) {
+    extern char gMD5HexFormat[];
+    unsigned int i = 0;
+    int offset = 0;
+    do {
+        StringFormat(hex + offset, gMD5HexFormat, digest[i]);
+        i++;
+        offset += 2;
+    } while (i < MD5_DIGEST_SIZE);
+}
 
 /* Fill `hex` with the hexadecimal MD5 digest of the `length` bytes at `data`. */
 void Md5Hex(void *data, u32 length, char *hex) {

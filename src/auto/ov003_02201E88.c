@@ -31,7 +31,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     void *Create3DSprite(void *);
     void func_02098e04(void *, s32, s32);
     void SetFaceSpriteFace(void *, s32);
-    void *func_02099088(void *);
+    void *CreateFaceChildSprite(void *);
     M2C_UNK GetPlayerCoId(s32);
     M2C_UNK GetPlayerArmyId(s32);
     M2C_UNK GetPlayerTeam(s32);
@@ -90,7 +90,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
             iconMode = 1;
         }
         team = (u8) GetPlayerArmyId(player + 1);
-        sprite = func_02099088(allocationGroup);
+        sprite = CreateFaceChildSprite(allocationGroup);
         ((void **) spriteSlots)[player + 1] = sprite;
         func_02098e04(sprite, (0x1D0 + (player << 4)) << 5, 7);
         sprite = ((void **) spriteSlots)[player + 1];
@@ -181,7 +181,7 @@ s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);
 s32 width,height;void *unit;
 unit=M2C_FIELD(M2C_FIELD(panel,void**,0x44),void**,SETUP_MENU_CURRENT);
 height=GetUnitSpriteHeight(unit);width=GetUnitSpriteWidth(unit);
-E9638Set(M2C_FIELD(panel,void**,0x4c),M2C_FIELD(unit,s16*,SPRITE_ACTOR_X),M2C_FIELD(unit,s16*,SPRITE_ACTOR_Y),width,height);
+ SetSpriteActorRect(M2C_FIELD(panel,void**,0x4c),M2C_FIELD(unit,s16*,SPRITE_ACTOR_X),M2C_FIELD(unit,s16*,SPRITE_ACTOR_Y),width,height);
 }
 
 /* Point the panel's value-text label at the message for the entry it has
@@ -380,7 +380,7 @@ void func_ov003_022024a8(void *arg0) {
 #pragma opt_strength_reduction on
 void func_ov003_0220277c(void *arg0) {
     void Ov003_UpdateSetupPanelSprites(void *);
-    M2C_UNK func_ov003_021e88a4(M2C_UNK);
+    M2C_UNK MenuSpriteIsClicked(M2C_UNK);
     M2C_UNK PressWaypointSprite(M2C_UNK);
     u8 func_ov003_022021d8(void *);
     void Ov003_CancelSetupPanel();
@@ -415,7 +415,7 @@ void func_ov003_0220277c(void *arg0) {
     u16 r9 = M2C_FIELD(gKeyState, u16 *, 2);
 
     Ov003_UpdateSetupPanelSprites(M2C_FIELD(arg0, void **, 0x40));
-    if (func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), void **, 0)) != 0) {
+    if (MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), void **, 0)) != 0) {
         PressWaypointSprite(M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), void **, 0));
         Ov003_CancelSetupPanel(arg0, func_ov003_022021d8(M2C_FIELD(arg0, void **, 0x44)));
         r7 = 0;
@@ -423,7 +423,7 @@ void func_ov003_0220277c(void *arg0) {
 
     for (r8 = 0; r8 < 8; r8++) {
         if (r7 != 0) {
-            if (func_ov003_021e88a4(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 8)) != 0) {
+            if (MenuSpriteIsClicked(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 8)) != 0) {
                 Ov003_IncreaseSelectedEntry(M2C_FIELD(arg0, void **, 0x44), r8);
                 PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 8));
                 if (func_ov003_02202e94((s32)arg0, r8) != 0) {
@@ -439,7 +439,7 @@ void func_ov003_0220277c(void *arg0) {
             }
         }
         if (r7 != 0) {
-            if (func_ov003_021e88a4(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 0x28)) != 0) {
+            if (MenuSpriteIsClicked(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 0x28)) != 0) {
                 Ov003_DecreaseSelectedEntry(M2C_FIELD(arg0, void **, 0x44), r8);
                 PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 0x28));
                 if (func_ov003_022021c0(arg0) != 0) {

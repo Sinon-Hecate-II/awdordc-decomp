@@ -5,7 +5,7 @@
 #pragma opt_propagation off
 #pragma opt_strength_reduction off
 void func_ov004_02215814(void *arg0) {
-    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
     s16 Divide(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK ResetBattleMap();
@@ -124,21 +124,21 @@ loop_1:
             copy_y=M2C_FIELD(var_r4,s16 *,2);copy_x=M2C_FIELD(var_r4,s16 *,0);
             M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
         }
-        SetSpriteAnimation(arg0, 5);
+        GotoSpriteAnimationLabel(arg0, 5);
         return;
     }
     if (temp_r0 & 2) {
         PlaySoundEffect(0x1000F);
-        SetSpriteAnimation(arg0, 6);
+        GotoSpriteAnimationLabel(arg0, 6);
         return;
     }
     if (temp_r0 & 0x100) {
-        SetSpriteAnimation(arg0, 0);
+        GotoSpriteAnimationLabel(arg0, 0);
         return;
     }
     if (temp_r0 & 8) {
         PlaySoundEffect(0x1000E);
-        SetSpriteAnimation(arg0, 4);
+        GotoSpriteAnimationLabel(arg0, 4);
         return;
     }
     if (M2C_FIELD(gKeyState, u16 *, 2) & 0x20) {
@@ -513,7 +513,7 @@ loop_195:
                     copy_y=M2C_FIELD(var_r4,s16 *,2);copy_x=M2C_FIELD(var_r4,s16 *,0);
                     M2C_FIELD(arg0,s16 *,0x48)=copy_x;M2C_FIELD(arg0,s16 *,0x4a)=copy_y;
                 }
-                SetSpriteAnimation(arg0, 5);
+                GotoSpriteAnimationLabel(arg0, 5);
                 return;
             }
             goto block_210;

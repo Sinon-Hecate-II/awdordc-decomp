@@ -4,6 +4,13 @@
 struct ScreenConfig1194 { u16 value[6]; };
 struct ScreenConfigFields1194 { u16 a,b,c,d,e,f; };
 
+/* The four stage battle themes, in campaign order: the map's stage number picks
+ * one (played when the battle scene starts). */
+#define MUSIC_STAGE_BATTLE_1 0x10013
+#define MUSIC_STAGE_BATTLE_2 0x10014
+#define MUSIC_STAGE_BATTLE_3 0x10015
+#define MUSIC_STAGE_BATTLE_4 0x10016
+
 void func_ov004_02211200(void) {
     M2C_UNK func_ov000_0216a7fc();
     func_ov000_0216a7fc();
@@ -27,8 +34,8 @@ void func_ov004_0221122c(M2C_UNK arg0) {
 }
 
 void func_ov004_02211260(void) {
-    M2C_UNK func_ov000_0216aabc();
-    func_ov000_0216aabc();
+    M2C_UNK RunEndingEvent();
+    RunEndingEvent();
 }
 
 /* Battle-end step on the final campaign map: with no dialog open and the player
@@ -104,7 +111,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
     void func_0209dabc(s32, void *);
     void *Create3DSprite(void);
     M2C_UNK func_02088f8c(void *, s32, s32, s32, s32, s32);
-    void func_0208f998(s32, s32);
+    void SpawnSoundEffectFullVolume(s32, s32);
     s32 NextRandomValue(void);
     void *CreateAnimatedSpriteObject(void *);
     void LoadCompressedSpriteAssetsFromNarc(void *, void *, s32, s32, s32);
@@ -180,7 +187,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
                 M2C_FIELD(spr, u8 **, 0x44) = (u8 *)data_ov004_02218cb0;
                 M2C_FIELD(spr, u16 *, 0x3C) = 0x800;
                 func_02088f8c(spr, 0x78, 0x60, 0x78, 0xC0, 0x1E);
-                func_0208f998(0xF8, 0x14);
+                SpawnSoundEffectFullVolume(0xF8, 0x14);
             }
         }
 
@@ -564,22 +571,25 @@ s32 func_ov004_0221205c(void) {
     return 1;
 }
 
-void func_ov004_02212088(void *arg0) {
+/* Play the battle theme of the map's stage: the battle record's stage number
+ * (+0x3A) picks one of the four stage battle themes, later stages getting a
+ * later theme. */
+void Ov004_PlayStageBattleMusic(void *battle) {
     M2C_UNK PlayMusicTrack(s32);
-    s32 var_r0;
-    u8 temp_r1;
+    s32 track;
+    u8 stage;
 
-    temp_r1 = M2C_FIELD(arg0, u8 *, 0x3A);
-    var_r0 = 0x10013;
-    if ((u32) temp_r1 >= 0xBU) {
-        var_r0 = 0x10014;
+    stage = M2C_FIELD(battle, u8 *, 0x3A);
+    track = MUSIC_STAGE_BATTLE_1;
+    if ((u32) stage >= 0xBU) {
+        track = MUSIC_STAGE_BATTLE_2;
     }
-    if ((u32) temp_r1 >= 0x11U) {
-        var_r0 = 0x10015;
+    if ((u32) stage >= 0x11U) {
+        track = MUSIC_STAGE_BATTLE_3;
     }
-    if ((u32) temp_r1 >= 0x16U) {
-        var_r0 = 0x10016;
+    if ((u32) stage >= 0x16U) {
+        track = MUSIC_STAGE_BATTLE_4;
     }
-    PlayMusicTrack(var_r0);
+    PlayMusicTrack(track);
 }
 

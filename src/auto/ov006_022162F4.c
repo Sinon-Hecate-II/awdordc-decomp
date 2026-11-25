@@ -234,16 +234,18 @@ void func_ov006_02216bb8(void) {
     func_ov006_0221679c();
 }
 
-void func_ov006_02216bc4(void *arg0) {
+/* Frame step of the map-code entry panel: advance its reveal tween and, once the
+ * tween has reached its end, resume the panel sprite's animation. */
+void UpdateMapCodeEntryPanel(void *panel) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK UpdateSpriteAnimation(void *);
-    void *ptr = M2C_FIELD(arg0, void **, 0x48);
-    u8 equal = M2C_FIELD(ptr, u16 *, 2) == M2C_FIELD(ptr, s16 *, 0xC);
-    if (equal) {
-        Sprite_ResumeAnimation(arg0);
+    SpriteTween *tween = M2C_FIELD(panel, SpriteTween **, MAP_CODE_PANEL_SPRITE);
+    u8 finished = M2C_FIELD(tween, u16 *, 2) == M2C_FIELD(tween, s16 *, 0xC);
+    if (finished) {
+        Sprite_ResumeAnimation(panel);
         return;
     }
-    UpdateSpriteAnimation(ptr);
+    UpdateSpriteAnimation(tween);
 }
 
 void func_ov006_02216bfc(void **arg0) {
@@ -388,7 +390,7 @@ u8 IsValueInRange(s32 arg0, s32 arg1, s32 arg2) {
  return result;
 }
 
-u8 func_ov006_02216e84(void) {
+u8 IsLinkSessionHost(void) {
     s32 IsLinkSessionActive();
     s32 IsLocalSessionHost();
     s32 result;
@@ -455,25 +457,32 @@ s32 Divide(s32,s32);
 s32 GetMapRecordBuffer();
 M2C_UNK LoadMapRecord(u16,s32);
 s32 GetSaveRecordBuffer();
-M2C_UNK func_0208547c(s32,s32,void *);
+M2C_UNK CreateLinkBlockSender(s32,s32,void *);
 M2C_UNK CreateLinkBlockReceiver(s32,s32,void *);
 u16 mapId=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
 u16 slot=Divide(mapId-0xe1,0x32);
 if(!IsValueInRange((s16)mapId,0xe1,0x1a9)) return;
 if(M2C_FIELD(setup,u8 *,0x4c)==slot) {
 LoadMapRecord((u16)(mapId-slot*0x32),GetMapRecordBuffer());
-func_0208547c(GetSaveRecordBuffer(),0x6f8,setup);
+CreateLinkBlockSender(GetSaveRecordBuffer(),0x6f8,setup);
 return;
 }
 CreateLinkBlockReceiver(GetSaveRecordBuffer(),0x6f8,setup);
 }
 
-void func_ov006_02217078(void *arg0) {
- void *GetMapSettings();
- M2C_UNK func_0208547c(s32,s32,void *);
- M2C_UNK CreateLinkBlockReceiver(s32,s32,void *);
- if(M2C_FIELD(arg0,u8 *,0x4c)==0) { func_0208547c((s32)GetMapSettings(),0x10,arg0); return; }
- CreateLinkBlockReceiver((s32)GetMapSettings(),0x10,arg0);
+/* Exchange the shared map settings with the other linked players when a battle
+ * starts: the session host (local player 0, at setup+0x4C) sends its 16 bytes of
+ * settings to them, while every other player receives the host's settings. */
+void SyncLinkMapSettings(void *setup) {
+    void *GetMapSettings();
+    M2C_UNK CreateLinkBlockSender(s32, s32, void *);
+    M2C_UNK CreateLinkBlockReceiver(s32, s32, void *);
+
+    if (M2C_FIELD(setup, u8 *, 0x4c) == 0) {
+        CreateLinkBlockSender((s32)GetMapSettings(), 0x10, setup);
+        return;
+    }
+    CreateLinkBlockReceiver((s32)GetMapSettings(), 0x10, setup);
 }
 
 void func_ov006_022170b4(void *arg0) {
@@ -487,23 +496,29 @@ void func_ov006_022170b4(void *arg0) {
     MapSettings_Apply(0);
 }
 
-void func_ov006_022170e8(void *arg0) {
-    M2C_UNK func_0208547c(s32, s32, void *);
+/* Start exchanging the transfer panel's five-map record list with the other linked
+ * players: the session host sends its own list, while the guests receive the
+ * others' lists into their downloaded-map list. */
+void StartMapRecordExchange(void *panel) {
+    M2C_UNK CreateLinkBlockSender(s32, s32, void *);
     M2C_UNK CreateLinkBlockReceiver(s32, s32, void *);
-    u8 func_ov006_02216e84();
-    if (func_ov006_02216e84() != 0) {
-        func_0208547c(M2C_FIELD(arg0, s32 *, 0x50), 0x22D8, arg0);
+    u8 IsLinkSessionHost();
+    if (IsLinkSessionHost() != 0) {
+        CreateLinkBlockSender(M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_RECORDS), MAP_RECORD_LIST_SIZE, panel);
         return;
     }
-    CreateLinkBlockReceiver(M2C_FIELD(arg0, s32 *, 0x54), 0x22D8, arg0);
+    CreateLinkBlockReceiver(M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_CHOSEN), MAP_RECORD_LIST_SIZE, panel);
 }
 
-void func_ov006_02217124(void *arg0) {
-    if (func_ov006_02216e84() != 0) {
-        CreateLinkBlockReceiver(M2C_FIELD(arg0, s32 *, 0x54), 0x22D8, arg0);
+/* Second half of the transfer panel's map-record exchange: the session host
+ * receives the other players' five-map record list into its downloaded-map list,
+ * while a guest sends its own list to the host. */
+void CompleteMapRecordExchange(void *panel) {
+    if (IsLinkSessionHost() != 0) {
+        CreateLinkBlockReceiver(M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_CHOSEN), MAP_RECORD_LIST_SIZE, panel);
         return;
     }
-    func_0208547c(M2C_FIELD(arg0, s32 *, 0x50), 0x22D8, arg0);
+    CreateLinkBlockSender(M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_RECORDS), MAP_RECORD_LIST_SIZE, panel);
 }
 
 void func_ov006_02217160(void) {

@@ -50,7 +50,7 @@
 #define DS3D_BANK_MODE3 0x0080
 #define DS3D_BANK_MODE4 0x0100
 /* The remaining three bits of the same one-hot field.  No code selects these
- * modes, but the full bank reset (func_02076244) clears all eight. */
+ * modes, but the full bank reset (HaltWithMessage) clears all eight. */
 #define DS3D_BANK_MODE5 0x0200
 #define DS3D_BANK_MODE6 0x0400
 #define DS3D_BANK_MODE7 0x0800
@@ -235,6 +235,7 @@ typedef struct DS3DSpriteLayoutConfig {
 #define DS3D_BANK(enginePtr) ((DS3DSpriteBank *)(*(void **)(enginePtr)))
 
 /* Engine fields code reaches through a void *gCur3DSpriteEngine. */
+#define DS3D_ENGINE_SPRITE_ARRAY 0x04 /* void *array of DS3D_ENTRY_SIZE-byte sprite slots */
 #define DS3D_ENGINE_LAYER_VRAM 0x0C /* u32[4] VRAM address each layer's texture is decompressed to */
 #define DS3D_ENGINE_LAYER_TILES 0x20 /* void *[4] RAM buffer holding each layer's tile data */
 #define DS3D_ENGINE_LAYER2_TILES 0x28 /* void *RAM buffer holding layer 2's tile data (LAYER_TILES[2]) */
@@ -279,6 +280,12 @@ typedef struct DS3DSpriteLayoutConfig {
 #define TEXT_GLYPH_TILES     0x700 /* bytes of one glyph tile set the text starts from */
 #define TEXT_GLYPH_OFFSET    16    /* tiles between the base tile and the glyph tiles */
 #define TEXT_FIRST_TILE      100   /* tiles between the base tile and the first string */
+/* The text renderer's glyph tables, one entry per byte value: gGlyphBitmapTable
+ * holds each glyph's 4bpp bitmap pointer, gGlyphWidthTable its pixel advance
+ * (DrawGlyph, main_02098BD4). */
+#define GLYPH_TABLE_COUNT    256
+extern s32 gGlyphBitmapTable[GLYPH_TABLE_COUNT];
+extern u8  gGlyphWidthTable[GLYPH_TABLE_COUNT];
 #define DS3D_PALETTE_SHIFT   5    /* log2 of the byte size of a 16-colour palette */
 #define DS3D_PALETTE_BYTES   (1 << DS3D_PALETTE_SHIFT)
 #define DS3D_OBJ_PALETTE_BASE 16  /* OBJ slots follow the 16 BG slots in the palette shadow */
@@ -498,11 +505,23 @@ typedef struct UiModeState {
 
 /* One entry of an object's animation state cursor (DS3D_SPRITE_ANIM).  The state
  * machine runs the handler g3DSpriteStateHandlers[id] of the current entry; a
- * handler advances the cursor by DS3D_STATE_SIZE to move on to the next entry. */
+ * handler advances the cursor by DS3D_STATE_SIZE to move on to the next entry.
+ * The handler's s32 result says whether the machine carries on in the same frame:
+ * 0 stops it until the next frame, nonzero runs the next entry's handler at once.
+ * A "wait" handler advances the cursor before calling its callback and rewinds it
+ * (stays on the entry) while the callback says to wait. */
 #define DS3D_STATE_SIZE  0x08 /* bytes per state entry */
 #define DS3D_STATE_ID    0x00 /* s16 index into g3DSpriteStateHandlers (data_01ffa068) */
 #define DS3D_STATE_PARAM 0x02 /* s16 parameter of the state's handler */
 #define DS3D_STATE_DATA  0x04 /* s32 handler data (a class, callback or script) */
+#define DS3D_STATE_LABEL 20 /* entry id of a named jump target: its parameter is the name the jump-to-label helper looks up */
+
+/* One 8-byte entry of an animation script (see DS3D_STATE_*). */
+typedef struct DS3DStateEntry {
+    s16 id;    /* +0x00 handler index, DS3D_STATE_ID */
+    s16 param; /* +0x02 handler parameter, or a label's name */
+    s32 data;  /* +0x04 handler data */
+} DS3DStateEntry;
 
 /* The 3D sprite pool and its allocator.  g3DSpriteObjects is the pool of
  * DS3D_SPRITE_COUNT objects of DS3D_SPRITE_SIZE bytes each; g3DSpriteOrder is the
@@ -682,6 +701,12 @@ typedef ScenePanelWidget ToggleWidget;
 #define FACE_EFFECT_DIM_HALF 0x08 /* blend half way towards black */
 #define FACE_EFFECT_DIM_MOST 0x10 /* blend down to a quarter brightness */
 #define FACE_EFFECT_BLACK 0x20 /* blend all the way to black */
+
+/* Palette style of a CO face (GetFacePaletteStyle, FACE_SPRITE_PALETTE): the
+ * normal palette, a warm sepia tint, or grayscale. */
+#define FACE_PALETTE_NORMAL 0
+#define FACE_PALETTE_SEPIA  1
+#define FACE_PALETTE_GRAY   2
 
 /* Face layout types, the index into the face graphics file table (see
  * GetFaceLayoutFile): info.cg, select.cg, the battle (btl), talk and body

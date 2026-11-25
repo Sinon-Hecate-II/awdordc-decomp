@@ -16,7 +16,7 @@ s32 Modulo(s32,s32);
 void *GetDisplayUnitKind(s32);
 s32 GetPlayerUnitKindCount(s32,void *);
 s32 GetPlayerUnitKindLossCount(s32,void *);
-s32 func_020a72b0(s32,void *);
+s32 GetPlayerUnitSpriteTile(s32,void *);
 void *saved,*saved2;
 s32 y,i,n,d,dx,x,tile,palette,count,oy,ox,ay,mode,score;
 s32 loop;
@@ -100,7 +100,7 @@ n=M2C_FIELD(arg0,s32 *,0x50);
 map=GetDisplayUnitKind(i);
 ay=mode|(oy&255);x=ox&511;
 py=(ay&0xff00)|(ay&255);
-tile=func_020a72b0(n+1,map)+0x3ac;
+tile=GetPlayerUnitSpriteTile(n+1,map)+0x3ac;
 AddSprite((u16)x,py,RESULT_ATTR(tile,0xe000),gSpriteDesc16x16,5);
 AddSprite((u16)((x+19)&511),(u16)(((ay|(ay&255))&0xff00)|(py&255)),RESULT_ATTR(0x3a8,0xc000),gSpriteDesc16x16,5);
 { s32 digit,number; number=score;dx=0;
@@ -126,8 +126,8 @@ void func_ov005_0221e1d0(void) {
 }
 
 void func_ov005_0221e1dc(void) {
-    M2C_UNK func_01ffaa8c();
-    func_01ffaa8c();
+    M2C_UNK DetachSpriteFromParent();
+    DetachSpriteFromParent();
 }
 
 void func_ov005_0221e1e8(void) {
@@ -145,11 +145,11 @@ void func_ov005_0221e1f4(M2C_UNK arg0) {
 }
 
 void func_ov005_0221e214(void) {
-    M2C_UNK func_02095fd4();
+    M2C_UNK ClearMessageBoxState();
     M2C_UNK func_02086370();
     func_020ab200();
     func_0209bf7c();
-    func_02095fd4();
+    ClearMessageBoxState();
     func_02086370();
 }
 

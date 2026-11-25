@@ -354,15 +354,56 @@ void BuildTransferHeader(void *arg0, s16 arg1, s32 arg2) {
     M2C_FIELD(arg0, s32 *, 0) = arg2;
 }
 
-u16 func_020446ac(void *a){void MI_CpuCopy8(void *,void *,s32);s32 ByteCompareN(void *,void *,s32);extern M2C_UNK gTransferMagic;u16 buf[4];MI_CpuCopy8(a,buf,8);if(ByteCompareN(&buf[3],&gTransferMagic,2)==0)return buf[2];return 0;}
+/* Decode an 8-byte transfer header: return its kind when the trailing magic tag
+ * matches gTransferMagic, or 0 when the header is not a transfer header. */
+u16 GetTransferPacketKind(void *header) {
+    void MI_CpuCopy8(void *, void *, s32);
+    s32 ByteCompareN(void *, void *, s32);
+    extern M2C_UNK gTransferMagic;
+    u16 buf[4];
+    MI_CpuCopy8(header, buf, 8);
+    if (ByteCompareN(&buf[3], &gTransferMagic, 2) == 0) return buf[2];
+    return 0;
+}
 
 s32 GetTransferStartSpace(s32 a){switch(a){case 2:case 3:case 4:return 12;default:return 8;}}
 
-void func_02044708(s32 a){extern s32 gTransferManager;void MI_CpuFill8(s32,s32,s32);gTransferManager=a;MI_CpuFill8(a,0,0x614);M2C_FIELD(gTransferManager,u16 *,0x610)=0x5b9;}
+/* Point gTransferManager at `manager`, clear every slot and callback and set the
+ * default number of bytes sent per frame. */
+void InitTransferManager(void *manager) {
+    extern s32 gTransferManager;
+    void MI_CpuFill8(s32, s32, s32);
+    gTransferManager = (s32) manager;
+    MI_CpuFill8((s32) manager, 0, 0x614);
+    M2C_FIELD(gTransferManager, u16 *, 0x610) = 0x5b9;
+}
 
-void func_02044744(s32 a,s32 b,s32 c,s32 d){extern s32 gTransferManager;void func_02044a68(s32,s32,s32);void TransferReceiveBuffer(s32,s32,s32);if(!gTransferManager)return;if(!b||!c)return;if(d)func_02044a68(a,b,c);else TransferReceiveBuffer(a,b,c);}
+/* A transfer packet arrived for peer connection `channel`: a reliable packet is
+   run through the transfer protocol (TransferReceivePacket), an unreliable one
+   is copied straight into the slot's preset receive buffer
+   (TransferReceiveBuffer).  Ignored with no transfer manager or an empty packet. */
+void HandleTransferReceive(s32 channel, s32 data, s32 size, s32 reliable) {
+    extern s32 gTransferManager;
+    void TransferReceivePacket(s32, s32, s32);
+    void TransferReceiveBuffer(s32, s32, s32);
+    if (!gTransferManager) return;
+    if (!data || !size) return;
+    if (reliable) TransferReceivePacket(channel, data, size);
+    else TransferReceiveBuffer(channel, data, size);
+}
 
-void func_02044780(s32 a,s32 b){extern s32 gTransferManager;s32 GetConnectionPlayerId(s32);s32 c;if(!M2C_FIELD(gTransferManager,s32 *,0x60c))return;c=GetConnectionPlayerId(a);M2C_FIELD(gTransferManager,void (**)(s32,s32),0x60c)(b,c);}
+/* Forward a connection error code to the transfer manager's onError callback,
+ * together with the player id of the connection it came from. */
+void ReportTransferError(s32 connection, s32 errorCode)
+{
+    extern s32 gTransferManager;
+    s32 GetConnectionPlayerId(s32);
+    s32 playerId;
+
+    if (!((TransferManager *)gTransferManager)->onError) return;
+    playerId = GetConnectionPlayerId(connection);
+    ((TransferManager *)gTransferManager)->onError(errorCode, playerId);
+}
 
 /* Per-frame poll of the transfer slots: time out idle connections and send the
  * next chunk of each outgoing buffer whose destination has room. */
@@ -435,12 +476,12 @@ void SendConnectionData(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) 
 }
 
 /* Handle an inbound transfer request for slot `a`: dispatch by the slot's state. */
-void func_02044a68(s32 a, s32 b, s32 c) {
+void TransferReceivePacket(s32 a, s32 b, s32 c) {
     extern s32 gTransferManager;
     s32 GetConnectionPlayerId(s32);
     s32 GetTransferState(s32);
-    u16 func_020446ac(void *);
-    void func_02044da4(M2C_UNK, M2C_UNK);
+    u16 GetTransferPacketKind(void *);
+    void DispatchConnectionNotice(M2C_UNK, M2C_UNK);
     void func_02044bf8(s32, s32, s32);
     void TransferReceiveData(s32, void *, s32);
     void SetNetError(s32, s32);
@@ -450,7 +491,7 @@ void func_02044a68(s32 a, s32 b, s32 c) {
 
     switch (GetTransferState(id)) {
     case 0:
-        kind = func_020446ac((void *)b);
+        kind = GetTransferPacketKind((void *)b);
         if (kind < 2) return;
         if (kind > 4) return;
         func_02044bf8(id, b, c);
@@ -462,7 +503,7 @@ void func_02044a68(s32 a, s32 b, s32 c) {
         TransferReceiveData(id, (void *)b, c);
         break;
     case 3:
-        ((void (*)(s32, s32, s32))func_02044da4)(id, b, c);
+        ((void (*)(s32, s32, s32))DispatchConnectionNotice)(id, b, c);
         break;
     case 4:
         M2C_FIELD(gTransferManager + id * 0x30, u8 *, 0x1d) = 1;
@@ -497,7 +538,7 @@ extern s32 gTransferManager;
 void *p; s32 v; u8 buf[8];
 p=(u8 *)gTransferManager+a*0x30;
 M2C_FIELD(p,u8 *,0x1e)=GetTransferState(a);
-v=func_020446ac(b);
+v=GetTransferPacketKind(b);
 switch(v){
 case 1:
 if(c!=8)return;
@@ -539,19 +580,22 @@ if(!M2C_FIELD(gTransferManager,s32 *,0x608)||!M2C_FIELD(p,s32 *,0x2c))return;
 M2C_FIELD(p,u64 *,0x24)=GetSystemTick();
 }
 
-void func_02044da4(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK ReceiveConnectionPacket(M2C_UNK, u16, M2C_UNK);
-    void *GetTransferSlot();
-    u16 temp_r1;
-    void *temp_r0;
+/* An inbound transfer turned out to be a connection notice (slot claim, sync
+ * status or sync done): restore the slot's state from before the transfer and
+ * hand the packet to the connection handshake handler ReceiveConnectionPacket. */
+void DispatchConnectionNotice(s32 playerId, s32 packet) {
+    M2C_UNK ReceiveConnectionPacket(s32, u16, s32);
+    void *GetTransferSlot(s32);
+    TransferSlot *slot;
+    u16 kind;
 
-    temp_r0 = GetTransferSlot();
-    M2C_FIELD(temp_r0, u8 *, 0x1D) = (u8) M2C_FIELD(temp_r0, u8 *, 0x1E);
-    temp_r1 = M2C_FIELD(temp_r0, u16 *, 0x22);
-    if ((temp_r1 != 2) && (temp_r1 != 3) && (temp_r1 != 4)) {
+    slot = GetTransferSlot(playerId);
+    slot->state = (u8) slot->prevState;
+    kind = slot->kind;
+    if ((kind != CONN_NOTICE_PLAYER_SLOT) && (kind != CONN_NOTICE_SYNC_STATUS) && (kind != CONN_NOTICE_SYNC_DONE)) {
         return;
     }
-    ReceiveConnectionPacket(arg0, temp_r1, arg1);
+    ReceiveConnectionPacket(playerId, kind, packet);
 }
 
 s32 GetSendSpace(void) {

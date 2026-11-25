@@ -184,7 +184,7 @@ typedef struct WfcProfileIds {
 enum {
     WFC_CONN_IDLE      = 1, /* created; WFC_Init has not run yet */
     WFC_CONN_RUNNING   = 2, /* WFC_Init done; Wfc_ProcessStep drives the session */
-    WFC_CONN_CONNECTING = 3, /* func_02037954 set the state before polling the link */
+    WFC_CONN_CONNECTING = 3, /* Wfc_PollConnecting set the state before polling the link */
     WFC_CONN_CONNECTED = 4, /* the session reports the link up */
     WFC_CONN_CLOSING   = 5, /* the session is shutting down and Wfc_EndSession is polled */
     WFC_CONN_READY     = 6, /* the link settled: the game may use the connection */
@@ -309,6 +309,12 @@ typedef struct WfcSendState {
 } WfcSendState;
 
 #define WFC_SEND_OK 0 /* WfcSendState::result after a successful send */
+
+/* The completion record a WFC command's callback receives after a send: the
+ * command id of the finished request, then its result. */
+#define WFC_COMPLETE_COMMAND 0x00 /* u16 command id of the finished request */
+#define WFC_COMPLETE_RESULT  0x02 /* u16 result code, WFC_SEND_OK when it went through */
+#define WFC_SEND_COMMAND     0x12 /* command id a send request is submitted with */
 
 /* The WFC command channel to the ARM7 firmware (main_02010C14): the library
  * keeps WFC_CMD_BLOCK_COUNT 0x100-byte command blocks in gWfcFreeBufferQueue,
@@ -553,6 +559,12 @@ enum {
 #define OV001_WFC_ERASE_LAYOUT   0x13 /* layout block its title/border objects come from */
 #define OV001_MSG_WFC_ERASE      0x3C /* the screen's message panel text */
 #define OV001_MSG_WFC_ERASE_INFO 0x1B /* the screen's one-shot info message box text */
+#define OV001_MSG_PROFILE_RETURN 0x20 /* message box text of the ov001 profile-return screen */
+#define OV001_MSG_MATCH_SETUP    0x2A /* message box text of the ov001 download-play match-setup screen */
+#define OV001_MSG_MATCH_SETUP_ADVANCE 0x26 /* message box text of the ov001 match-setup advance screen */
+#define OV001_MSG_CONNECTION     0x25 /* message box text shown while opening the ov001 connection screen */
+#define OV001_MSG_SAVE_SCREEN    0x23 /* message box text of the ov001 save screen */
+#define OV001_MSG_SAVE_SCREEN    0x23 /* message box text of the ov001 save screen */
 
 /* Layout of the RFC-1123 Date header the server sends:
  * "Www, DD Mmm YYYY hh:mm:ss GMT" (29 characters, field boundaries below). */

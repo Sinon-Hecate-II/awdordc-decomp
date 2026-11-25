@@ -175,7 +175,7 @@ void RunTransferTask(void *arg0) {
     void DC_InvalidateRange(void *, s32);
     void TaskWake(void *);
     void DC_FlushRange(void *, u32);
-    void func_02006804();
+    void DC_Sync();
     s32 OS_DisableInterrupts();
     void OS_RestoreInterrupts(s32);
     void MI_CpuCopy8(void *, void *, u32);
@@ -226,7 +226,7 @@ loop_3:
         case 2:
             MI_CpuCopy8(M2C_FIELD(arg0, void **, 0x1C), buffer, count);
             DC_FlushRange(buffer, count);
-            func_02006804();
+            DC_Sync();
             M2C_FIELD(M2C_FIELD(arg0, void *volatile *, 0), void **, 0xC) = buffer;
             M2C_FIELD(M2C_FIELD(arg0, void *volatile *, 0), void **, 0x10) = (void *) M2C_FIELD(arg0, void *volatile *, 0x20);
             break;
@@ -474,10 +474,10 @@ s32 func_020107ac(void *command) {
     extern void *data_020f553c, *gSaveDeviceState;
     void func_01ff8000(void);
     u32 func_02006c8c(void);
-    void func_0200681c(u32, u32);
+    void IC_InvalidateRange(u32, u32);
     void func_02006810(void);
-    void func_02006804(void);
-    void func_02006774(void);
+    void DC_Sync(void);
+    void DC_FlushAll(void);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void OS_SetIrqHandler(u32, void (*)(void));
@@ -517,7 +517,7 @@ s32 func_020107ac(void *command) {
 
     if (started) {
         irq = OS_DisableInterrupts();
-        if (length < M2C_FIELD(state, u32 *, 0x118)) func_0200681c(dest, length);
+        if (length < M2C_FIELD(state, u32 *, 0x118)) IC_InvalidateRange(dest, length);
         else func_02006810();
         if (length < M2C_FIELD(state, u32 *, 0x11c)) {
             if (misalignment != 0) {
@@ -527,9 +527,9 @@ s32 func_020107ac(void *command) {
                 length += 32;
             }
             DC_InvalidateRange((void *)dest, length);
-            func_02006804();
+            DC_Sync();
         } else {
-            func_02006774();
+            DC_FlushAll();
         }
         OS_SetIrqHandler(0x80000, func_020106dc);
         OS_SetIrqMask(0x80000);
@@ -656,7 +656,7 @@ void SaveDevice_FinishTransfer(void) {
     }
 }
 
-void func_02010b1c(u32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5, s32 arg6) {
+void StartCardArchiveRead(u32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, void *arg5, s32 arg6) {
     extern u32 data_02130420[];
     extern void *data_0212fde0;
     extern u32 data_02130400[];

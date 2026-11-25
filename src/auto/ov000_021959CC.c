@@ -6,7 +6,7 @@ typedef struct { u8 kind:6; u8 flags:2; } UnitKind959;
 
 #pragma opt_propagation off
 s32 func_ov000_021959cc(s32 x,s32 y,s32 data,s32 radius){
-s32 func_ov000_021a93b0(s32,s32,s32);s32 IsUnitOnCurrentTeam(s32);s32 GetAttackDamage(M2C_UNK,M2C_UNK,s32);
+s32 IsCellTerrainExcludedForPlayer(s32,s32,s32);s32 IsUnitOnCurrentTeam(s32);s32 GetAttackDamage(M2C_UNK,M2C_UNK,s32);
 extern void **gCurrentMap;
 s32 sy;
 s32 left;
@@ -25,7 +25,7 @@ d=0;if(x-i>0)d+=x-i;else d+=i-x;
 if(dy>0)d+=dy;else d+=ny;
 if(d>=0&&d<=radius){
 base=*gCurrentMap;
-if(func_ov000_021a93b0(M2C_FIELD(base,u16 *,0x52a4),(s16)i,(s16)sy)!=0)continue;
+if(IsCellTerrainExcludedForPlayer(M2C_FIELD(base,u16 *,0x52a4),(s16)i,(s16)sy)!=0)continue;
 base=*gCurrentMap;
 d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)top<<1),u16 *,0x3758));
 if(!d)continue;
@@ -114,7 +114,7 @@ void PlanAiStep4Destination(void) {
     s32 GetUnitAttackClass(u32);
     s32 func_ov000_02195b80(s16 *);
     s32 SelectPropertyDestination(s16 *);
-    s32 func_ov000_0217e6bc(s16,s16);
+    s32 IsMoveDestinationAllowed(s16,s16);
     void PlanMoveDestination(s16,s16);
     extern void **gCurrentMap;
     s16 destination[2];
@@ -123,7 +123,7 @@ void PlanAiStep4Destination(void) {
     } else {
         if (SelectPropertyDestination(destination)==0) return;
     }
-    if (func_ov000_0217e6bc(destination[0],destination[1])==0) return;
+    if (IsMoveDestinationAllowed(destination[0],destination[1])==0) return;
     PlanMoveDestination(destination[0],destination[1]);
 }
 
@@ -175,19 +175,21 @@ s32 SelectHqDestination(s16 *out) {
     return 1;
 }
 
+/* Plan the selected AI unit's return to its HQ: pick a reachable HQ tile and plan
+ * the move there. */
 void PlanHqDestination(void) {
     s32 SelectHqDestination(s16 *);
-    s32 func_ov000_0217e6bc(s16, s16);
+    s32 IsMoveDestinationAllowed(s16, s16);
     void PlanMoveDestination(s16, s16);
-    s16 sp0[2];
+    s16 target[2];
 
-    if (SelectHqDestination(sp0) == 0) {
+    if (SelectHqDestination(target) == 0) {
         return;
     }
-    if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
+    if (IsMoveDestinationAllowed(target[0], target[1]) == 0) {
         return;
     }
-    PlanMoveDestination(sp0[0], sp0[1]);
+    PlanMoveDestination(target[0], target[1]);
 }
 
 /* Resolve the selected AI unit's attack destination (AI steps 7 and 9): take the
@@ -250,19 +252,22 @@ s32 SelectAttackDestination(s16 *outPos) {
     return 1;
 }
 
+/* Plan the selected AI unit's attack-move destination: pick a firing tile for its
+ * assigned attack target (SelectAttackDestination), drop it when that tile is not a
+ * usable move target, otherwise plan the move to it. */
 void PlanReachableAttackDestination(void) {
     s32 SelectAttackDestination(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
     void PlanMoveDestination(s16, s16);
-    s16 sp0[2];
+    s16 target[2];
 
-    if (SelectAttackDestination(sp0) == 0) {
+    if (SelectAttackDestination(target) == 0) {
         return;
     }
-    if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
+    if (func_ov000_0217e6bc(target[0], target[1]) == 0) {
         return;
     }
-    PlanMoveDestination(sp0[0], sp0[1]);
+    PlanMoveDestination(target[0], target[1]);
 }
 
 /* For the selected AI unit (state 8): fill in its movement range, set its packed
@@ -321,19 +326,21 @@ s32 SelectAssignedMoveDestination(s16 *outPos) {
     return 1;
 }
 
+/* Plan the selected AI unit's capture move: take its assigned move target and,
+ * when the destination is not rejected, plan the move to it. */
 void PlanCaptureMoveDestination(void) {
     s32 SelectAssignedMoveDestination(s16 *);
-    s32 func_ov000_0217e6bc(s16, s16);
+    s32 IsMoveDestinationAllowed(s16, s16);
     void PlanMoveDestination(s16, s16);
-    s16 sp0[2];
+    s16 target[2];
 
-    if (SelectAssignedMoveDestination(sp0) == 0) {
+    if (SelectAssignedMoveDestination(target) == 0) {
         return;
     }
-    if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
+    if (IsMoveDestinationAllowed(target[0], target[1]) == 0) {
         return;
     }
-    PlanMoveDestination(sp0[0], sp0[1]);
+    PlanMoveDestination(target[0], target[1]);
 }
 
 /* Returns 1 when an active player on the opposing team has a unit selected. */
@@ -379,19 +386,21 @@ s32 FindEnemyHqAttackPosition(s16 *outPos) {
     return 1;
 }
 
+/* Plan the selected AI unit's attack on the enemy HQ: find an attack position
+ * beside the HQ and, when the destination is not rejected, plan the move to it. */
 void PlanEnemyHqAttackDestination(void) {
     s32 FindEnemyHqAttackPosition(s16 *);
-    s32 func_ov000_0217e6bc(s16, s16);
+    s32 IsMoveDestinationAllowed(s16, s16);
     void PlanMoveDestination(s16, s16);
-    s16 sp0[2];
+    s16 target[2];
 
-    if (FindEnemyHqAttackPosition(sp0) == 0) {
+    if (FindEnemyHqAttackPosition(target) == 0) {
         return;
     }
-    if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
+    if (IsMoveDestinationAllowed(target[0], target[1]) == 0) {
         return;
     }
-    PlanMoveDestination(sp0[0], sp0[1]);
+    PlanMoveDestination(target[0], target[1]);
 }
 
 #pragma opt_strength_reduction off
@@ -399,10 +408,10 @@ void PlanEnemyHqAttackDestination(void) {
    AI state (MAP_UNIT_AI_STATE low nibble); writes the target tile to outPos and
    returns 0 when no destination could be chosen. */
 s32 func_ov000_02196430(s16 *outPos) {
-    s32 func_ov000_02194ab8(s16 *);
+    s32 FindEnemyUnitAttackPosition(s16 *);
     s32 HasEnemyPlayer(void);
     s32 FindEnemyHqAttackPositionAlt(s16 *);
-    s32 func_ov000_02195574(s16 *);
+    s32 SelectCapturablePropertyDestination(s16 *);
     s32 SelectPropertyDestination(s16 *);
     s32 PlayerHasHq(u16);
     s32 SelectHqDestination(s16 *);
@@ -424,7 +433,7 @@ s32 func_ov000_02196430(s16 *outPos) {
     switch (aiState) {
     case 0:
     case 1:
-        if (func_ov000_02194ab8(outPos) == 0) {
+        if (FindEnemyUnitAttackPosition(outPos) == 0) {
             return 0;
         }
         break;
@@ -434,13 +443,13 @@ s32 func_ov000_02196430(s16 *outPos) {
                 return 0;
             }
         } else {
-            if (func_ov000_02194ab8(outPos) == 0) {
+            if (FindEnemyUnitAttackPosition(outPos) == 0) {
                 return 0;
             }
         }
         break;
     case 3:
-        if (func_ov000_02195574(outPos) == 0) {
+        if (SelectCapturablePropertyDestination(outPos) == 0) {
             return 0;
         }
         break;
@@ -483,7 +492,7 @@ s32 func_ov000_02196430(s16 *outPos) {
                 return 0;
             }
         } else {
-            if (func_ov000_02194ab8(outPos) == 0) {
+            if (FindEnemyUnitAttackPosition(outPos) == 0) {
                 return 0;
             }
         }
@@ -502,7 +511,7 @@ extern void **gCurrentMap; extern u8 **gAiCommandState;
 s32 GetUnitAttackClass(u32); s32 GetUnitAttackRangeMax(void *);
 void GetAiUnitRange(void); void BuildAiUnitThreatRange(void);
 s32 IsTerrainOnUnitTeam(s32,u8); s32 func_ov000_0217d000(u32,s32);
-s32 FindAttackPosition(s16 *); s32 func_ov000_0217e6bc(s16,s16); void PlanMoveDestination(s16,s16);
+s32 FindAttackPosition(s16 *); s32 IsMoveDestinationAllowed(s16,s16); void PlanMoveDestination(s16,s16);
 s32 attackLimit; s32 terrain; s32 bestCost=0x7fff; s32 y,x; s16 target[2];
 if(GetUnitAttackClass(((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))->kind)==1)
 attackLimit=GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))+M2C_FIELD(gAiCommandState,u8 *,5);
@@ -526,12 +535,12 @@ bestCost=M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,MAP_GRID)[x];
 }}
 if(bestCost==0x7fff)return;
 if(!FindAttackPosition(target))return;
-if(!func_ov000_0217e6bc(target[0],target[1]))return;
+if(!IsMoveDestinationAllowed(target[0],target[1]))return;
 PlanMoveDestination(target[0],target[1]);
 }
 #pragma opt_strength_reduction reset
 void SelectPortDestination(void) {
-s32 CanKindLoad(u32,u32); void GetAiUnitRange(void);void BuildAiUnitThreatRange(void);s32 func_ov000_0217e6bc(s16,s16);void PlanMoveDestination(s16,s16);
+s32 CanKindLoad(u32,u32); void GetAiUnitRange(void);void BuildAiUnitThreatRange(void);s32 IsMoveDestinationAllowed(s16,s16);void PlanMoveDestination(s16,s16);
 extern void **gCurrentMap;extern u8 **gAiCommandState;
 s32 best=0x7fff; s16 sx,sy; s32 cols,t,x,y; s16 row;u8 *base; s8 *grid,*p;
 if(!(((u32)(M2C_FIELD(gAiCommandState,u16 *,10)<<29)>>29)&4))return;
@@ -551,7 +560,7 @@ best=grid[x];sx=x;sy=row;
 next: x++;p++;
 }while(x<cols); rowend:y++; }while(y<(s32)M2C_FIELD(base,u16 *,0x5146));
 if(best==0x7fff)return;
-if(!func_ov000_0217e6bc(sx,sy))return;
+if(!IsMoveDestinationAllowed(sx,sy))return;
 PlanMoveDestination(sx,sy);
 }
 

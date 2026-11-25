@@ -134,7 +134,7 @@ void CenterMapViewAtBattleStart(void) {
     SetMapViewPositionToTileCentered(tileX, tileY);
 }
 
-void func_0207b744(M2C_UNK arg0, M2C_UNK arg1) {
+void SetMapViewToTile(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK SetMapViewPositionToTile(M2C_UNK, M2C_UNK, M2C_UNK);
     SetMapViewPositionToTile(arg0, arg1, 0);
 }

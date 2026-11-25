@@ -3,6 +3,7 @@
 
 /* Login fields of the WFC session object pointed to by gNetSession. */
 #define NET_SESSION_SOCKET         0x00 /* void * the GameSpy GT2 socket, 0 until OpenGameSpySocket opens it */
+#define NET_SESSION_LAST_SOCKET_ERROR 0x04 /* s32 on the gNetSession block itself: the last error the GHI socket layer reported, recorded by Gt2SocketErrorCallback */
 #define NET_SESSION_RX_BUFFER      0x14 /* s32 receive buffer size handed to the GT2 socket */
 #define NET_SESSION_TX_BUFFER      0x18 /* s32 send buffer size handed to the GT2 socket */
 #define NET_SESSION_STATE          0x24 /* s32 current NET_STATE_* */

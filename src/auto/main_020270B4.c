@@ -28,7 +28,7 @@ s32 WFC_InitSession(void *buffer, u32 size) {
     M2C_FIELD((void *)gWfcSession, u16 *, WFC_SESSION_RESULT) = 0;
     WFC_InitSessionStatus(); WFC_InitSendState();
     if (!IsSystemTickInitialized()) InitSystemTick();
-    if (!func_02007180()) func_02007140();
+    if (!func_02007180()) InitTimerQueue();
     InitTimer((void *)(gWfcSession + WFC_SESSION_TIMER));
     OS_RestoreInterrupts(irq); return 0;
 }
@@ -388,7 +388,7 @@ M2C_UNK DC_InvalidateRange();
 s32 WFC_ShutdownCommandChannel(void);
 s32 WFC_SendCommand4(void *);
 s32 WFC_StartWireless(M2C_UNK);
-s32 func_02012274(void *);
+s32 WFC_SendCommand1(void *);
 void WFC_OperationCallback(void);
 void func_02028ef4(void);
 s32 irq=OS_DisableInterrupts();
@@ -420,7 +420,7 @@ break;
 case 1:result=WFC_SendCommand4(WFC_OperationCallback);break;
 case 2:result=WFC_StartWireless((M2C_UNK)WFC_OperationCallback);break;
 default:M2C_FIELD((void *)gWfcSession,u8 *,WFC_SESSION_ABORT)=1;
-result=func_02012274(func_02028ef4);
+result=WFC_SendCommand1(func_02028ef4);
 break;
 }
 switch(result){

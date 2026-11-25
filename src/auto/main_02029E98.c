@@ -225,7 +225,7 @@ return AllocFromBlock(arg0+0x24,chosen,address,arg1,1);
  * merges the free block in front of it when they are adjacent, and puts the
  * resulting free block back on `freeList`.  Returns 0 when what is left is
  * too small to be a block (16 bytes), 1 when a free block was inserted. */
-s32 func_0202a334(void *freeList, HeapRange *range)
+s32 FreeBlockRange(void *freeList, HeapRange *range)
 {
     HeapRange merged;
     void *prev;
@@ -255,11 +255,14 @@ s32 func_0202a334(void *freeList, HeapRange *range)
     return 1;
 }
 
-void *CreateExpHeapInRange(u32 arg0, u32 arg1, s32 arg2) {
-    u32 end = (arg1 + arg0) & ~3;
-    u32 start = (arg0 + 3) & ~3;
+/* Create an expanded heap on the 4-byte-aligned range of `size` bytes starting
+ * at `base`: NULL when the range is empty or smaller than the 0x4C-byte heap
+ * header. */
+void *CreateExpHeapInRange(u32 base, u32 size, s32 attribute) {
+    u32 end = (size + base) & ~3;
+    u32 start = (base + 3) & ~3;
     if (start > end || end - start < 0x4C) return NULL;
-    return CreateExpHeap((void *)start, end, arg2);
+    return CreateExpHeap((void *)start, end, attribute);
 }
 
 void func_0202a45c(void) {
@@ -274,17 +277,19 @@ s32 AllocFromExpHeap(void *arg0, s32 arg1, s32 arg2) {
     return func_0202a284(arg0, arg1, -arg2);
 }
 
-void FreeExpHeapBlock(s32 arg0, s32 arg1) {
+/* Free the used block `block` of expanded heap `heap`: derive its range, unlink
+ * it from the used list and merge the range back into the free list. */
+void FreeExpHeapBlock(s32 heap, s32 block) {
     void GetBlockRange(void *, void *);
     void *UnlinkBlock(void *, void *);
     s32 func_0202a334(void *, HeapRange *);
-    s32 temp_r4;
-    s32 sp0[2];
+    s32 header;
+    HeapRange range;
 
-    temp_r4 = arg1 - 0x10;
-    GetBlockRange(sp0, (void *)temp_r4);
-    UnlinkBlock((void *)(arg0 + 0x2C), (void *)temp_r4);
-    func_0202a334((void *)(arg0 + 0x24), (HeapRange *)sp0);
+    header = block - HEAP_BLOCK_HEADER_SIZE;
+    GetBlockRange(&range, (void *)header);
+    UnlinkBlock((void *)(heap + HEAP_USED_LIST), (void *)header);
+    func_0202a334((void *)(heap + HEAP_FREE_LIST), &range);
 }
 
 #pragma opt_propagation off
@@ -572,7 +577,7 @@ void InitSoundDriver(void) {
     void func_0202ab60(void);
     M2C_UNK func_0202ba8c(void);
     M2C_UNK Sound_InitVoices(void);
-    void func_0202aa20(void);
+    void Sound_StopAllChannels(void);
     void func_0202aa58(void);
     extern M2C_UNK gSoundInitState;
     extern M2C_UNK data_02138eb0;
@@ -582,7 +587,7 @@ void InitSoundDriver(void) {
     }
     M2C_FIELD(&gSoundInitState, s32 *, SOUND_INIT_DONE) = 1;
     func_02008fcc((M2C_UNK)&gSoundInitState);
-    M2C_FIELD(&gSoundInitState, void **, SOUND_INIT_STOP) = (void *)func_0202aa20;
+    M2C_FIELD(&gSoundInitState, void **, SOUND_INIT_STOP) = (void *)Sound_StopAllChannels;
     M2C_FIELD(&gSoundInitState, s32 *, 0x14) = 0;
     M2C_FIELD(&gSoundInitState, void **, SOUND_INIT_SILENCE) = (void *)func_0202aa58;
     M2C_FIELD(&gSoundInitState, s32 *, 0x20) = 0;
@@ -610,18 +615,19 @@ void func_0202a9f0(void) {
     Sound_FlushCommands(0);
 }
 
-void func_0202aa20(void) {
+void Sound_StopAllChannels(void) {
     M2C_UNK Sound_StopChannels(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Sound_WaitForCommand(s32);
     s32 Sound_GetCommandCounter();
     M2C_UNK StopStreamChannels();
-    s32 temp_r4;
+    s32 commandMark;
 
+    /* Stop streamed playback and all remaining channels, then wait for the ARM7 to apply the stop. */
     StopStreamChannels();
     Sound_StopChannels(0, 0, 0, 0);
-    temp_r4 = Sound_GetCommandCounter();
+    commandMark = Sound_GetCommandCounter();
     Sound_FlushCommands(1);
-    Sound_WaitForCommand(temp_r4);
+    Sound_WaitForCommand(commandMark);
 }
 
 void func_0202aa58(void) {
@@ -744,20 +750,22 @@ void func_0202ac60(s32 *arg0) {
     Sound_FadeOutVoice(*arg0);
 }
 
-void func_0202ac70(M2C_UNK arg0) {
+/* Fade every active driver voice out over `fadeLength` frames; 0 releases the
+ * voices at once. */
+void Sound_FadeOutAllVoices(s32 fadeLength) {
     extern M2C_UNK gVoicePool;
-    s32 var_r4;
-    u8 *var_r5;
+    s32 i;
+    u8 *voice;
 
-    var_r5 = (u8 *)&gVoicePool;
-    var_r4 = 0;
+    voice = (u8 *)&gVoicePool;
+    i = 0;
     do {
-        if (M2C_FIELD(var_r5, u8 *, 0x2C) != 0) {
-            Sound_FadeOutVoice(var_r5, arg0);
+        if (M2C_FIELD(voice, u8 *, SOUND_VOICE_STATE) != 0) {
+            Sound_FadeOutVoice(voice, fadeLength);
         }
-        var_r4 += 1;
-        var_r5 += 0x44;
-    } while (0x10 > var_r4);
+        i += 1;
+        voice += SOUND_VOICE_SIZE;
+    } while (SOUND_VOICE_COUNT > i);
 }
 
 void func_0202acb0(s32 *arg0) {

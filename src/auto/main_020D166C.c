@@ -94,10 +94,13 @@ s32 GetDefenderBonus(s32 *arg0) {
     return 0;
 }
 
-void func_020d18fc(s32 a) {
+/* Credit `player` with one more enemy unit destroyed: bump the player record's
+ * saturating destroyed-enemy total (the battle code also passes the destroyed
+ * unit's kind, which this counter does not use). */
+void AddPlayerUnitDestroyed(s32 player) {
     extern void **gCurrentMap;
-    u8 *p = (u8 *)*gCurrentMap + 0x67a4 + a * 0x8c;
-    if ((u32)M2C_FIELD(p, u16 *, 0x20) < 0xffff) M2C_FIELD(p, u16 *, 0x20)++;
+    u8 *record = (u8 *)*gCurrentMap + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
+    if ((u32)M2C_FIELD(record, u16 *, PLAYER_REC_UNITS_DESTROYED) < 0xffff) M2C_FIELD(record, u16 *, PLAYER_REC_UNITS_DESTROYED)++;
 }
 
 /* Whether player `player` is still in the battle: their record must have control
@@ -165,18 +168,19 @@ s32 HasActiveHumanPlayer(void) {
     return found;
 }
 
-s32 func_020d1b40(void) {
+/* Whether any human player slot (1..MAX_PLAYERS-1) has given up the battle. */
+s32 HasHumanPlayerGivenUp(void) {
     s32 IsPlayerHuman(s32);
     s32 HasPlayerGivenUp(s32);
-    s32 var_r4;
+    s32 player;
 
-    var_r4 = 1;
+    player = 1;
 loop_1:
-    if ((IsPlayerHuman(var_r4) != 0) && (HasPlayerGivenUp(var_r4) != 0)) {
+    if ((IsPlayerHuman(player) != 0) && (HasPlayerGivenUp(player) != 0)) {
         return 1;
     }
-    var_r4 += 1;
-    if (var_r4 >= 5) {
+    player += 1;
+    if (player >= MAX_PLAYERS) {
         return 0;
     }
     goto loop_1;

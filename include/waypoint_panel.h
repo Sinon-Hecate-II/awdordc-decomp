@@ -36,6 +36,7 @@ enum {
 /* A waypoint-panel CO option: 0..11 pick the CO ids 1..12, 12 is the random
  * choice (CO id 0), and any other option has no CO. */
 #define WAYPOINT_OPTION_RANDOM 12
+#define WAYPOINT_OPTION_LAST_CO 11 /* option 11 picks the last CO (id 12) */
 #define WAYPOINT_CO_NONE       255
 /* Action 27 selects the current player slot rather than an option cell. */
 enum { WAYPOINT_ACTION_CURRENT_SLOT = 27 };

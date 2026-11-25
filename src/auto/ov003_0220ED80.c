@@ -8,15 +8,15 @@ void DeleteSpriteObject(void *arg0);
 void func_020af71c(void);
 typedef void (*VFn)(void *);
 static inline void RestoreByte(void *p,u8 v) { M2C_FIELD(p,u8 *,15)=v; }
-static inline void RestoreBits12(u16 x) { extern u8 data_0215d9b8[8]; M2C_FIELD(data_0215d9b8,u16 *,6)=(M2C_FIELD(data_0215d9b8,u16 *,6)&~0x3000)|((x&3)<<12); }
-static inline void RestoreBits10(u16 x) { extern u8 data_0215d9b8[8]; M2C_FIELD(data_0215d9b8,u16 *,6)=(M2C_FIELD(data_0215d9b8,u16 *,6)&~0xc00)|((x&3)<<10); }
-static inline void RestoreBit14(u16 x) { extern u8 data_0215d9b8[8]; M2C_FIELD(data_0215d9b8,u16 *,6)=(M2C_FIELD(data_0215d9b8,u16 *,6)&~0x4000)|((x&1)<<14); }
+static inline void RestoreBits12(u16 x) { extern u8 gOptionBits[8]; M2C_FIELD(gOptionBits,u16 *,6)=(M2C_FIELD(gOptionBits,u16 *,6)&~0x3000)|((x&3)<<12); }
+static inline void RestoreBits10(u16 x) { extern u8 gOptionBits[8]; M2C_FIELD(gOptionBits,u16 *,6)=(M2C_FIELD(gOptionBits,u16 *,6)&~0xc00)|((x&3)<<10); }
+static inline void RestoreBit14(u16 x) { extern u8 gOptionBits[8]; M2C_FIELD(gOptionBits,u16 *,6)=(M2C_FIELD(gOptionBits,u16 *,6)&~0x4000)|((x&1)<<14); }
 /* Non-deleting destructor of the ov003 map-select screen: restores the
  * palette entries it patched and releases every widget, animation and buffer
  * it owns, leaving the screen object itself to the caller. */
 void *MapSelectScreen_Destroy(void *arg0) {
     extern M2C_UNK gMapSelectVTable;
-    extern u8 data_0215d9b8[8];
+    extern u8 gOptionBits[8];
     void *self = arg0;
     u32 mode;
     u8 isMode1;
@@ -98,9 +98,9 @@ for(i=0;i<6;i++) {
 }
 
 void *func_ov003_0220f080(void *arg0) {
-    extern M2C_UNK data_ov003_02211028;
+    extern M2C_UNK gScrollBarVTable;
     void **temp_r0;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov003_02211028;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &gScrollBarVTable;
     temp_r0 = M2C_FIELD(arg0, void ***, 0x1C);
     if (temp_r0 != NULL) {
         M2C_FIELD(*temp_r0, void (**)(void *), 4)(temp_r0);

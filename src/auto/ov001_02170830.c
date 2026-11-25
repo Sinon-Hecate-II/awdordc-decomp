@@ -91,13 +91,16 @@ r=M2C_FIELD(gOv001AnimSprite,s32 **,4);*r=(*r&0xfe00ff00)|0xe6008b;
 M2C_FIELD(gOv001AnimSprite,s32 *,0)=Ov001_AddTask(1,Ov001_AnimSpriteTask,0,120);
 }
 #pragma merge_constants off
+/* Free the animated option-icon sprite: stop its task, release its sprite, then free
+ * the sprite's control block (the global word just before gOv001IconRow). */
 void Ov001_FreeOptionSprites(void) {
     M2C_UNK Ov001_FreeAlloc(void **);
     M2C_UNK Ov001_ReleaseSprite(s32);
-    M2C_UNK func_ov001_0218c94c(M2C_UNK, s32);
+    M2C_UNK Ov001_ReturnTaskNodeVeneer(M2C_UNK, s32);
     extern void *gOv001AnimSprite;
     extern void *gOv001IconRow;
-    func_ov001_0218c94c(1, M2C_FIELD(gOv001AnimSprite, s32 *, 0));
+
+    Ov001_ReturnTaskNodeVeneer(1, M2C_FIELD(gOv001AnimSprite, s32 *, 0));
     Ov001_ReleaseSprite(M2C_FIELD(gOv001AnimSprite, s32 *, 4));
     Ov001_FreeAlloc(&gOv001IconRow - 1);
 }
@@ -133,7 +136,7 @@ void Ov001_AnimSpriteTask(void) {
 /* Build the state for a render effect indexed by id: allocate the 28-byte
    control block, load its sprite list from gOv001IconRowLayout, and set up
    animation timer (120 units). */
-void func_ov001_0217159c(s32 id) {
+void Ov001_CreateIconRow(s32 id) {
     extern const u8 gOv001IconRowLayout[];
     void Ov001_IconRow_Layout(void *);
     void *Ov001_Alloc(s32, s32);

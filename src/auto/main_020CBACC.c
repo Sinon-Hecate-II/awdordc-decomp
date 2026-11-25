@@ -2,6 +2,7 @@
 #include "common.h"
 #include "ds3dsprite.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 static inline s32 visibleCB(void *p,s32 x,s32 y) {
 u32 n;
 if (M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*140,u8 *,0x67c3)&2)return 1;
@@ -197,10 +198,12 @@ void func_020cc028(void) {
     AwardVictoryToPlayer(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 8);
 }
 
-void func_020cc050(void) {
+/* Mark the current player as having given up, then queue battle command 17,
+ * which destroys the unit under the map cursor. */
+void GiveUpCurrentPlayerAndDestroyUnit(void) {
 extern void **gCurrentMap;
-SetPlayerGaveUp(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1);
-SetBattleCommand(17,0,0,0);
+SetPlayerGaveUp(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),1);
+SetBattleCommand(AI_COMMAND_DESTROY_UNIT,0,0,0);
 }
 
 void func_020cc08c(void) {
@@ -431,11 +434,13 @@ void CreateTargetSelectionSprite(void) {
     CreateSpriteFromClass(&data_0212b294, 7);
 }
 
-s32 func_020cc7f8(void) {
+/* Whether a battle preview is on screen: either the full battle animation or
+ * the quick map battle has a live sprite object. */
+s32 IsBattlePreviewActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_0211f8fc;
-    extern M2C_UNK data_0211f984;
-    if ((FindObjectByClass(&data_0211f984) != 0) || (FindObjectByClass(&data_0211f8fc) != 0)) {
+    extern M2C_UNK gBattlePreviewMapDef;
+    extern M2C_UNK gBattlePreviewFullDef;
+    if ((FindObjectByClass(&gBattlePreviewFullDef) != 0) || (FindObjectByClass(&gBattlePreviewMapDef) != 0)) {
         return 1;
     }
     return 0;

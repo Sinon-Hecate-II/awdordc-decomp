@@ -3,60 +3,71 @@
 #include "gx.h"
 #include "ov001_wh.h"
 
+/* Save-slot menu step: poll its two per-frame input hooks, then - once the message
+ * box has answered with its first choice - play the confirm sound, close the box
+ * and hand over to the step that fades the menu out towards the WFC connect
+ * screen. */
 void Ov001_CloseSaveSlotMenuStep(void) {
     void func_ov001_02182a88(void);
     void func_ov001_02182a8c(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_CloseRegionMenu();
     s32 Ov001_GetRegionMenuSelection();
-    void func_ov001_02182a90(void);
+    void Ov001_FadeOutSaveSlotMenu(void);
+
     func_ov001_02182a88();
     func_ov001_02182a8c();
     if (Ov001_GetRegionMenuSelection() != 0) return;
-    Ov001_PlaySound(6);
+    Ov001_PlaySound(OV001_SOUND_CONFIRM);
     Ov001_CloseRegionMenu();
-    Ov001_PlaySound(6);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182a90);
+    Ov001_PlaySound(OV001_SOUND_CONFIRM);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeOutSaveSlotMenu);
 }
 
 void func_ov001_02182a88(void) {}
 
 void func_ov001_02182a8c(void) {}
 
-void func_ov001_02182a90(void) {
+void Ov001_FadeOutSaveSlotMenu(void) {
     s32 Ov001_IsRegionMenuActive();
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_ov001_02182ac4(void);
+    void Ov001_WaitWfcConnectFadeOut(void);
     if (Ov001_IsRegionMenuActive() != 0) return;
     Ov001_StartFade(3, 0, 0x14, 8);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182ac4);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitWfcConnectFadeOut);
 }
 
-void func_ov001_02182ac4(void) {
+/* Wait for the fade-out of the closing region menu, hide the main engine's BG2 and
+ * OBJ planes, ask for the Wi-Fi menu layout with its icon row, then open the Wi-Fi
+ * connection screen. */
+void Ov001_WaitWfcConnectFadeOut(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     extern M2C_UNK Ov001_OpenWfcConnectScreen;
-    if (Ov001_IsFadeActive(0) != 0) return;
-    Ov001_DisableVisiblePlanes(0, 0x14);
-    Ov001_SetNextScreenMode(0, 1);
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) return;
+    Ov001_DisableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG2 | OV001_BLEND_OBJ);
+    Ov001_SetNextScreenMode(0, OV001_SCREEN_CREATE_ICON_ROW);
     Ov001_SetStepCallback(&Ov001_OpenWfcConnectScreen);
 }
 
-void func_ov001_02182b00(void) {
- void Ov001_LoadWfcConnectDoneBg(void);
- M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
- M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
- M2C_UNK Ov001_PlaySound(M2C_UNK);
- M2C_UNK Ov001_SetStepCallback();
- void func_ov001_02182bc0(void);
- extern u8 data_ov001_02193de4;
- data_ov001_02193de4 = 0;
- Ov001_LoadWfcConnectDoneBg();
- Ov001_LoadObjLayoutBlock(8);
- Ov001_ShowMessageBox(0x29);
- Ov001_PlaySound(0x10);
- Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182bc0);
+/* Open the Wi-Fi connection-complete screen: reset its frame counter, load the
+ * shared Multi background and the object layout block, show the connection
+ * message and play the success chime, then hand over to the fade-in step. */
+void Ov001_OpenWfcConnectDoneScreen(void) {
+    void Ov001_LoadWfcConnectDoneBg(void);
+    M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
+    M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
+    M2C_UNK Ov001_PlaySound(M2C_UNK);
+    M2C_UNK Ov001_SetStepCallback();
+    void Ov001_FadeInWfcConnectDoneScreen(void);
+    extern u8 gOv001WfcConnectDoneFrames;
+    gOv001WfcConnectDoneFrames = 0;
+    Ov001_LoadWfcConnectDoneBg();
+    Ov001_LoadObjLayoutBlock(8);
+    Ov001_ShowMessageBox(0x29);
+    Ov001_PlaySound(OV001_SOUND_SAVED);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInWfcConnectDoneScreen);
 }
 
 /* Load the Wi-Fi connect screen's shared Multi background ("char/xb4Multi.nsc.l")
@@ -74,25 +85,25 @@ void Ov001_LoadWfcConnectDoneBg(void) {
     REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_02182bc0(void) {
+void Ov001_FadeInWfcConnectDoneScreen(void) {
 M2C_UNK Ov001_StartFade(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
-M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK,M2C_UNK);void func_ov001_02182bf4(void);
-Ov001_StartFade(2,0,0x15,8);Ov001_EnableVisiblePlanes(0,0x15);Ov001_SetStepCallback((M2C_UNK*)&func_ov001_02182bf4);
+M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK,M2C_UNK);void Ov001_WaitWfcConnectDoneFadeIn(void);
+Ov001_StartFade(2,0,0x15,8);Ov001_EnableVisiblePlanes(0,0x15);Ov001_SetStepCallback((M2C_UNK*)&Ov001_WaitWfcConnectDoneFadeIn);
 }
 
-void func_ov001_02182bf4(void) {
+void Ov001_WaitWfcConnectDoneFadeIn(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
-    extern M2C_UNK func_ov001_02182c18;
+    extern M2C_UNK Ov001_UpdateWfcConnectDone;
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_02182c18);
+    Ov001_SetStepCallback(&Ov001_UpdateWfcConnectDone);
 }
 
-void func_ov001_02182c18(void) {
-    void func_ov001_02182cd8(void);
+void Ov001_UpdateWfcConnectDone(void) {
+    void Ov001_TickWfcConnectDoneDelay(void);
     void func_ov001_02182c28(void);
-    func_ov001_02182cd8();
+    Ov001_TickWfcConnectDoneDelay();
     func_ov001_02182c28();
 }
 
@@ -102,9 +113,14 @@ void func_ov001_02182c28(void) {
 
 #pragma push
 #pragma opt_common_subs off
-void func_ov001_02182c2c(void) {
-void Ov001_CloseSaveNameEntry(void);
-Ov001_StartFade(3,1,1,8);Ov001_StartFade(3,0,0x15,8);Ov001_SetStepCallback((M2C_UNK*)&Ov001_CloseSaveNameEntry);
+/* Close the Wi-Fi connection-complete screen: fade both engines out to white
+ * (the sub screen's BG0, the main screen's BG0/BG2 and sprites), then hand over
+ * to the step that closes the save-name entry. */
+void Ov001_CloseWfcConnectDoneScreen(void) {
+    void Ov001_CloseSaveNameEntry(void);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_CloseSaveNameEntry);
 }
 
 void Ov001_CloseSaveNameEntry(void) {
@@ -128,11 +144,11 @@ void Ov001_CloseSaveNameEntry(void) {
     Ov001_SetStepCallback(&Ov001_PrepareSaveSlotMenu);
 }
 #pragma pop
-void func_ov001_02182cd8(void) {
-    extern u8 data_ov001_02193de4;
-    data_ov001_02193de4 = data_ov001_02193de4 + 1;
-    if ((u32)data_ov001_02193de4 < 120U) return;
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182c2c);
+void Ov001_TickWfcConnectDoneDelay(void) {
+    extern u8 gOv001WfcConnectDoneFrames;
+    gOv001WfcConnectDoneFrames = gOv001WfcConnectDoneFrames + 1;
+    if ((u32)gOv001WfcConnectDoneFrames < 120U) return;
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_CloseWfcConnectDoneScreen);
 }
 
 /* Open the WFC connection screen's second step: clear the connection choice, load
@@ -187,42 +203,47 @@ void Ov001_FadeInWfcConnectStep2(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitWfcConnectStep2FadeIn);
 }
 
+/* Wait for the WFC connect screen's step-2 fade-in to finish on both engines,
+ * then bring in the screen's back/confirm icon row and hand over to the step
+ * that watches the row. */
 void Ov001_WaitWfcConnectStep2FadeIn(void) {
-    extern M2C_UNK func_ov001_02182e94;
-    if (Ov001_IsFadeActive(1) != 0) {
+    extern M2C_UNK Ov001_WaitWfcConnectIconRow;
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
-    func_ov001_02171e20(6);
-    Ov001_SetStepCallback(&func_ov001_02182e94);
+    Ov001_CreateMenuIconRow(OV001_ICON_ROW_WFC_CONNECT);
+    Ov001_SetStepCallback(&Ov001_WaitWfcConnectIconRow);
 }
 
 #pragma push
 #pragma opt_common_subs off
-void func_ov001_02182e94(void) {
+void Ov001_WaitWfcConnectIconRow(void) {
 s32 Ov001_GetIconRowSelection(); M2C_UNK Ov001_UnlockIconRow(); extern M2C_UNK func_ov001_02182ebc;
 if(Ov001_GetIconRowSelection()==-2)return;
 Ov001_UnlockIconRow();Ov001_SetStepCallback(&func_ov001_02182ebc);
 }
 void func_ov001_02182ebc(void) {
- void func_ov001_02182ed0(void);
+ void Ov001_HandleWfcConnectMenuInput(void);
  void func_ov001_02182f08(void);
  void Ov001_ApplyWfcMenuSelection(void);
- func_ov001_02182ed0();
+ Ov001_HandleWfcConnectMenuInput();
  func_ov001_02182f08();
  Ov001_ApplyWfcMenuSelection();
 }
 
-void func_ov001_02182ed0(void) {
-    if (KeyPressed(1) != 0) {
-        Ov001_LatchIconRowSelection(1);
+/* WFC connect menu input step: A latches the confirm choice, B the back
+ * choice, for the icon row the screen is showing. */
+void Ov001_HandleWfcConnectMenuInput(void) {
+    if (KeyPressed(KEY_A) != 0) {
+        Ov001_LatchIconRowSelection(OV001_CHOICE_CONFIRM);
     }
-    if (KeyPressed(2) == 0) {
+    if (KeyPressed(KEY_B) == 0) {
         return;
     }
-    Ov001_LatchIconRowSelection(0);
+    Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
 void func_ov001_02182f08(void) {
@@ -312,7 +333,7 @@ void Ov001_CloseWfcMenuScreen(void) {
     Ov001_SetStepCallback(&Ov001_OpenUsbConnectScreen);
 }
 
-s32 func_ov001_02183098(void) {
+s32 Ov001_IsLidClosedForConnectionWait(void) {
     if (((s32) (*(u16 *)0x027FFFA8 & 0x8000) >> 0xF) != 0) {
         return 1;
     }
@@ -384,12 +405,12 @@ void func_ov001_021831f4(void) {
 }
 
 void func_ov001_02183228(void) {
-    M2C_UNK func_ov001_02171e20(M2C_UNK);
+    M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
     extern M2C_UNK func_ov001_02183254;
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    func_ov001_02171e20(2);
+    Ov001_CreateMenuIconRow(2);
     Ov001_SetStepCallback(&func_ov001_02183254);
 }
 
@@ -404,25 +425,25 @@ void func_ov001_02183254(void) {
 }
 
 void Ov001_UpdateConnectionWait(void) {
-    void func_ov001_02183290(void);
+    void Ov001_HandleConnectionWaitInput(void);
     void func_ov001_021832c8(void);
     void Ov001_CancelConnectionWait(void);
-    func_ov001_02183290();
+    Ov001_HandleConnectionWaitInput();
     func_ov001_021832c8();
     Ov001_CancelConnectionWait();
 }
 
-void func_ov001_02183290(void) {
+/* Wi-Fi connection-wait screen input: B latches the icon row's only choice, the
+ * back icon, and so does closing the console's lid. */
+void Ov001_HandleConnectionWaitInput(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     s32 KeyPressed(M2C_UNK);
-    if (KeyPressed(2) != 0) {
-        Ov001_LatchIconRowSelection(0);
+    if (KeyPressed(KEY_B) != 0) {
+        Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
         return;
     }
-    if (func_ov001_02183098() == 0) {
-        return;
-    }
-    Ov001_LatchIconRowSelection(0);
+    if (Ov001_IsLidClosedForConnectionWait() == 0) return;
+    Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
 void func_ov001_021832c8(void) {
@@ -491,7 +512,7 @@ void Ov001_CloseConnectionScreen(void) {
     extern u8 gOv001WfcScreenState;
     extern void Ov001_OpenAccessPointMenu(void);
     extern void Ov001_OpenWfcConnectStep2Screen(void);
-    extern void func_ov001_02182b00(void);
+    extern void Ov001_OpenWfcConnectDoneScreen(void);
 
     if (Ov001_IsFadeActive(0) != 0) {
         return;
@@ -521,7 +542,7 @@ void Ov001_CloseConnectionScreen(void) {
         return;
     }
     Ov001_SetNextScreenMode(0, 0);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182b00);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenWfcConnectDoneScreen);
 }
 
 /* Connection-status callback of the Wi-Fi screen: while no screen has been
@@ -655,7 +676,7 @@ void InitMapPreview(void *tilemap) {
 }
 
 #pragma opt_propagation off
-void FreeMapPreview(void){extern void *gOv001MapPreview;extern void *gOv001Scrollbar;void func_ov001_0218c94c(s32,s32);void Ov001_FreeAlloc(void *);func_ov001_0218c94c(1,*(s32 *)*(s32 *)&gOv001MapPreview);Ov001_FreeAlloc(&gOv001Scrollbar-3);}
+void FreeMapPreview(void){extern void *gOv001MapPreview;extern void *gOv001Scrollbar;void Ov001_ReturnTaskNodeVeneer(s32,s32);void Ov001_FreeAlloc(void *);Ov001_ReturnTaskNodeVeneer(1,*(s32 *)*(s32 *)&gOv001MapPreview);Ov001_FreeAlloc(&gOv001Scrollbar-3);}
 #pragma opt_propagation reset
 void RequestMapPreviewUpdate(void) {
     extern void *gOv001MapPreview;
@@ -690,20 +711,24 @@ void FlushMapPreview(void) {
     ((Ov001MapPreview *)gOv001MapPreview)->dirty = 0;
 }
 
-void Ov001_LoadObjTile(s32 a,s32 b,s32 c){
-extern void *gOv001MapPreview;void func_ov001_02183820();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
-M2C_FIELD(&gOv001MapPreview,s32 *,4)=a+(b<<5);
-M2C_FIELD(&gOv001MapPreview,s32 *,8)=(c<<5)+0x5000000;
-Ov001_AddTask(1,func_ov001_02183820,0,0x78);
+/* Queue a 32-byte OBJ tile copy from `sourceAddress` to the selected OBJ VRAM tile. */
+void Ov001_LoadObjTile(s32 sourceAddress, s32 sourceTile, s32 destinationTile) {
+    extern void *gOv001MapPreview;
+    void Ov001_CopyObjTileTask(s32);
+    s32 Ov001_AddTask(s32, void (*)(), s32, s32);
+
+    M2C_FIELD(&gOv001MapPreview, s32 *, 4) = sourceAddress + (sourceTile << 5);
+    M2C_FIELD(&gOv001MapPreview, s32 *, 8) = (destinationTile << 5) + 0x5000000;
+    Ov001_AddTask(1, Ov001_CopyObjTileTask, 0, 0x78);
 }
 
-void func_ov001_02183820(s32 a){
+void Ov001_CopyObjTileTask(s32 a){
 extern void *gOv001MapPreview;
 CopyU16(M2C_FIELD(&gOv001MapPreview,s32 *,4),M2C_FIELD(&gOv001MapPreview,s32 *,8),32);
 Ov001_PostTaskMessage(1,a);
 }
 
-void func_ov001_0218384c(s32 a){
+void Ov001_LoadMainPalette(s32 a){
 extern void *gOv001MapPreview;void func_ov001_02183878();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
 M2C_FIELD(&gOv001MapPreview,s32 *,4)=a;
 Ov001_AddTask(1,func_ov001_02183878,0,0x78);
@@ -745,13 +770,18 @@ void Ov001_CreateScrollBar(s32 kind, s32 track, s32 x, s32 y, s32 handlePos) {
     *(M2C_UNK *)((char *)gOv001Scrollbar + OV001_SCROLLBAR_TASK) = Ov001_AddTask(0, func_ov001_02183a20, 0, 0x80);
 }
 
-void func_ov001_02183980(void) {
-extern void *gOv001Scrollbar; extern void *gWfcFriendRoster;
-void func_ov001_0218c94c(s32, s32);
-void Ov001_FreeAlloc(void *);
-func_ov001_0218c94c(0,M2C_FIELD(gOv001Scrollbar,s32*,12));
-Ov001_DestroySprite(M2C_FIELD(gOv001Scrollbar,s32*,0));
-Ov001_FreeAlloc(&gWfcFriendRoster-1);
+/* Tear down the friend-roster screen's scroll bar: give back its update task,
+ * destroy the bar sprite and free the bar object (and clear its pointer). */
+void Ov001_DestroyScrollBar(void) {
+    extern void *gOv001Scrollbar;
+    extern void *gWfcFriendRoster;
+    void Ov001_ReturnTaskNodeVeneer(s32, s32);
+    void Ov001_FreeAlloc(void *);
+    Ov001_ReturnTaskNodeVeneer(0, M2C_FIELD(gOv001Scrollbar, s32 *, OV001_SCROLLBAR_TASK));
+    Ov001_DestroySprite(M2C_FIELD(gOv001Scrollbar, s32 *, OV001_SCROLLBAR_SPRITE));
+    /* The bar object sits just before gWfcFriendRoster; spelled through it so the
+     * literal pool keeps two address words, as the original does. */
+    Ov001_FreeAlloc(&gWfcFriendRoster - 1);
 }
 
 u8 GetMenuRow(void) {

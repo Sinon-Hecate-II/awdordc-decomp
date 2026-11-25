@@ -55,9 +55,18 @@ typedef struct ExplosionEffect {
 } ExplosionEffect;
 
 /* A unit removal effect: an explosion plays on the unit's tile, then the unit is
- * destroyed or simply removed from the map.  Fields from +0x34 are per effect. */
+ * destroyed or simply removed from the map.  It is an animated sprite object (see
+ * ds3dsprite.h), so its control word and animation handle are the sprite's; its own
+ * fields start at +0x58. */
 typedef struct UnitRemoveEffect {
-    u8  pad00[0x58];
+    u8  pad00[0x38];
+    s32 tileX;      /* +0x38 map tile x */
+    s32 tileY;      /* +0x3C map tile y */
+    u8  pad40[0x04];
+    u32 flags;      /* +0x44 SpriteFlags control word */
+    u8  pad48[0x04];
+    void *anim;     /* +0x4C sprite-animation handle */
+    u8  pad50[0x08];
     u32 done;       /* +0x58 nonzero once the effect has finished */
     s32 type;       /* +0x5C explosion type (GetExplosionSpriteName) */
     s32 destroy;    /* +0x60 nonzero: destroy the unit, 0: only remove it */

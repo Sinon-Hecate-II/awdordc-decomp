@@ -75,7 +75,7 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     s32 func_ov003_021f400c(void);
     s32 func_ov003_021f4064(void);
     u16 func_ov003_021fbcd8(void *, s32);
-    s32 func_ov003_021f3f24(s32, s32, s32, s32);
+    s32 IsOv003BoxOnScreen(s32, s32, s32, s32);
     s16 WrapValueToRange(s32, s32, s32);
     s32 Divide(s32, s32);
     void func_ov003_021f9fe0(void *, s32, s32);
@@ -363,12 +363,12 @@ L698:
                 if (lim == 3) {
                     if (temp_r9 < -0xC0) {
                         temp_r5 = (temp_r9 + 0x1C0) & 0xFF;
-                        if (func_ov003_021f3f24(temp_r5, 4, 0x40, 0x20)) {
+                        if (IsOv003BoxOnScreen(temp_r5, 4, 0x40, 0x20)) {
                             AddSprite((u16) (temp_r5 & 0x1FF), (u16) cv, (u16) (0x7400 | (0x3FF & ((temp_v6 + 0x340) >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)))), data_ov003_0220fdf2, 0xB);
                         }
                     }
                 }
-                if (func_ov003_021f3f24(temp_r9, 4, 0x40, 0x20)) {
+                if (IsOv003BoxOnScreen(temp_r9, 4, 0x40, 0x20)) {
                     temp_v6 = temp_v6 + 0x340;
                     AddSprite((u16) (temp_r9 & 0x1FF), (u16) cv, (u16) (0x400 | (((u32) ((i == ((s16) M2C_FIELD(arg0->f60, s32 *, 0xC))) ? 6 : 7) << 0x1C) >> 0x10) | (0x3FF & (temp_v6 >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)))), data_ov003_0220fdf2, 0xB);
                 }
@@ -382,7 +382,7 @@ L7E0:
                 ctr = -1;
                 do {
                     temp_r4 = (s16) (temp_r9 + d);
-                    if (func_ov003_021f3f24(temp_r4, 4, 0x40, 0x20)) {
+                    if (IsOv003BoxOnScreen(temp_r4, 4, 0x40, 0x20)) {
                         AddSprite((u16) (temp_r4 & c1), cval, (u16) (0x400 | (((u32) ((i == ((s16) M2C_FIELD(arg0->f60, s32 *, 0xC))) ? 6 : 7) << 0x1C) >> 0x10) | (c3 & (r11r >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)))), data_ov003_0220fdf2, 0xB);
                     }
                     d = d + r7v;

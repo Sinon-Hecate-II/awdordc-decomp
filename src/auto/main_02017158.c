@@ -1,5 +1,6 @@
 /* 12 functions from 0x02017158 to 0x020180C8 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 /* Multiboot (DS Download Play) library state. */
 typedef struct MbState {
     u16 field00;  /* +0x00 */
@@ -403,17 +404,20 @@ s32 MultiBoot_Init(s32 reason) {
 
 void func_02017f90(s32 a){M2C_FIELD(M2C_FIELD(&gMbState,void **,12),s32 *,0x1320)=1;MultiBoot_Init(a);}
 
+/* Close the download-play link: post the stop command (WFC command 1) to the
+ * multiboot worker task's entry function and report its result; WFC_CMD_OK
+ * means the command was queued, so it becomes 0 = success. */
 s32 Mb_SendStopCommand(void) {
-    s32 func_02012274(s32);
+    s32 WFC_SendCommand1(s32);
     M2C_UNK Mb_ReportPacketResult(M2C_UNK, s32);
-        s32 var_r4;
+    s32 result;
 
-    var_r4 = func_02012274(M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), s32 *, 0x508));
-    Mb_ReportPacketResult(1, var_r4);
-    if (var_r4 == 2) {
-        var_r4 = 0;
+    result = WFC_SendCommand1(((MbContext *)gMbState.ctx)->handler);
+    Mb_ReportPacketResult(1, result);
+    if (result == WFC_CMD_OK) {
+        result = 0;
     }
-    return var_r4;
+    return result;
 }
 
 void Mb_StopCommandCallback(void) {
@@ -445,5 +449,17 @@ s32 Mb_CloseLink(void) {
     return result;
 }
 #pragma pop
-void func_0201808c(void){s32 t=OS_DisableInterrupts();if(!M2C_FIELD(M2C_FIELD(&gMbState,void **,12),s32 *,0x1320))SystemHalt();Mb_CloseLink();OS_RestoreInterrupts(t);}
+/* Close the download-play multiboot link for the link code: interrupts off, halt
+ * unless the multiboot library was started, close the link, restore interrupts. */
+void MultiBoot_CloseLink(void) {
+    s32 OS_DisableInterrupts(void);
+    s32 OS_RestoreInterrupts(s32);
+    M2C_UNK SystemHalt();
+    s32 Mb_CloseLink(void);
+    s32 state = OS_DisableInterrupts();
+
+    if (!M2C_FIELD(M2C_FIELD(&gMbState, void **, 12), s32 *, MB_WORK_STARTED)) SystemHalt();
+    Mb_CloseLink();
+    OS_RestoreInterrupts(state);
+}
 

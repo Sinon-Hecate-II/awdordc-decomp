@@ -330,4 +330,10 @@ typedef struct WebRequestNode {
 
 #define HTTP_REQUEST_NODE_SIZE 0x1c
 
+/* Fields of gHttpRequestList (main_02044E04), the game's open high-level web
+ * requests: the head of the WebRequestNode chain and the number of callers that
+ * have opened the list with BeginWebRequest. */
+#define HTTP_REQUEST_LIST_HEAD       0x00 /* WebRequestNode *: first node, 0 when the list is empty */
+#define HTTP_REQUEST_LIST_OPEN_COUNT 0x04 /* s32: callers that have opened the list */
+
 #endif

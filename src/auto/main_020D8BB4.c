@@ -11,13 +11,13 @@ s32 func_020bf054(s32,s32);
 M2C_UNK func_020ceec8();
 s32 func_020d8b84(s32);
 s32 func_020e4b28(s32);
-extern M2C_UNK data_0215d9b8;
+extern M2C_UNK gOptionBits;
 extern u16 data_02168f14;
 extern s8 data_02168f2c;
 s32 k,j,t,i; s8 *p;
 u16 flags; u32 mode;
 flags=data_02168f14;
-mode=M2C_FIELD(&data_0215d9b8,u16 *,6)&15;
+mode=M2C_FIELD(&gOptionBits,u16 *,6)&15;
 data_02168f14=(flags&~7)|3;
 SetTextMode(mode);
 func_020ceec8();
@@ -175,22 +175,34 @@ s32 SetUiMode(s32 a,s32 b){extern void *gUiMode;if(a==M2C_FIELD(gUiMode,s16 *,2)
 
 s32 GetUiMode(void){extern void *gUiMode;return M2C_FIELD(gUiMode,s16 *,2);}
 
-s32 IsUiCancelAvailable(void){s32 func_ov000_02174d50(void);s32 func_020adff4(void);extern void *gUiMode;switch(M2C_FIELD(gUiMode,s16 *,2)){case 1:return func_ov000_02174d50();case 2:return func_020adff4();default:return 0;}}
+/* Whether the X (cancel) key does anything in the current UI mode: mode 1 (the
+ * battle map) can toggle the map info window's panel and mode 2 can cancel its
+ * screen change. */
+s32 IsUiCancelAvailable(void){
+s32 Ov000_InfoWindow_CanCancel(void);
+s32 IsScreenTransitionEnabled(void);
+extern void *gUiMode;
+switch(((UiModeState *)gUiMode)->current){
+case 1:return Ov000_InfoWindow_CanCancel();
+case 2:return IsScreenTransitionEnabled();
+default:return 0;
+}
+}
 
 /* Handles the X (cancel) key for the current UI mode: when the mode can take a
  * cancel, runs its close handler - toggles the battle-info window's panel
  * (mode 1) or cancels the screen transition (mode 2) - plays the close sound
  * and reports the key as consumed. */
 s32 HandleUiCancel(void) {
-    void func_ov000_02174d78(void);
-    void func_020ae068(void);
+    void Ov000_InfoWindow_Cancel(void);
+    void CancelScreenTransition(void);
     void PlaySoundEffect(s32);
     extern void *gUiMode;
 
     if (!IsUiCancelAvailable()) return 0;
     switch (((UiModeState *)gUiMode)->current) {
-    case 1: func_ov000_02174d78(); break;
-    case 2: func_020ae068(); break;
+    case 1: Ov000_InfoWindow_Cancel(); break;
+    case 2: CancelScreenTransition(); break;
     }
     PlaySoundEffect(SOUND_MENU_CLOSE);
     return 1;
@@ -205,7 +217,7 @@ void func_020d900c(void) {
 
 }
 
-void func_020d9010(void *a){void SetSpriteAnimation(void *,s32);extern void *gUiMode;if(M2C_FIELD(gUiMode,s16 *,2)==M2C_FIELD(gUiMode,s16 *,4))return;SetSpriteAnimation(a,2);}
+void func_020d9010(void *a){void GotoSpriteAnimationLabel(void *,s32);extern void *gUiMode;if(M2C_FIELD(gUiMode,s16 *,2)==M2C_FIELD(gUiMode,s16 *,4))return;GotoSpriteAnimationLabel(a,2);}
 
 void func_020d903c(M2C_UNK arg0) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
@@ -285,8 +297,8 @@ void ClearUiScreenLayers(void) {
 }
 
 void func_020d9284(void) {
-    M2C_UNK func_ov000_02174c2c();
-    func_ov000_02174c2c();
+    M2C_UNK Ov000_InfoWindow_Create();
+    Ov000_InfoWindow_Create();
 }
 
 void func_020d9290(void) {
@@ -801,8 +813,8 @@ void func_020d9900(void) {
 }
 
 void func_020d990c(void) {
-    M2C_UNK func_020e0374();
-    func_020e0374();
+    M2C_UNK SlideOutOnlineMenu();
+    SlideOutOnlineMenu();
 }
 
 void func_020d9918(void) {

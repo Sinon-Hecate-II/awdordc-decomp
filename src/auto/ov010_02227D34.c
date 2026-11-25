@@ -263,7 +263,7 @@ void func_ov010_0222815c(s32 a,s32 b) {
  if(!cb)return; cb(a,b);
 }
 
-void func_ov010_0222817c(void) {
+void Ov010Online_MatchStartNoop(void) {
 
 }
 
@@ -436,9 +436,9 @@ void func_ov010_02228614(void) {
 }
 
 s32 func_ov010_02228640(void) {
-    s32 func_02037954();
+    s32 Wfc_PollConnecting();
     M2C_UNK Wfc_UpdateConnection();
-    if (func_02037954() != 0) {
+    if (Wfc_PollConnecting() != 0) {
         SetOnlineSessionFlag(1);
         return 0;
     }
@@ -529,7 +529,7 @@ void func_ov010_02228748(M2C_UNK arg0) {
 #pragma opt_common_subs off
 #pragma opt_propagation off
 #pragma opt_dead_assignments off
-extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s32 i, s32 j) {
+extern "C" void Ov010Online_InitSession(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 h, s32 i, s32 j) {
     extern M2C_UNK data_ov010_0222c3fc;
     extern M2C_UNK data_ov010_0222f1dc;
     extern M2C_UNK data_ov010_0222c3f0;
@@ -668,7 +668,7 @@ void Ov010Online_EndSession(void) {
     void func_ov010_0222791c(M2C_UNK);
     s32 func_ov010_02228b20(M2C_UNK);
     s32 func_ov010_02228b38(M2C_UNK);
-    s32 func_ov010_02228b50(M2C_UNK);
+    s32 Ov010_SetVoiceChatCallback(M2C_UNK);
     s32 func_ov010_02228b68(M2C_UNK);
     s32 func_ov010_02228b80(M2C_UNK);
     s32 func_ov010_02228b98(M2C_UNK);
@@ -691,7 +691,7 @@ void Ov010Online_EndSession(void) {
     func_ov010_0222791c(0);
     func_ov010_02228b20(0);
     func_ov010_02228b38(0);
-    func_ov010_02228b50(0);
+    Ov010_SetVoiceChatCallback(0);
     func_ov010_02228b68(0);
     func_ov010_02228b80(0);
     func_ov010_02228b98(0);
@@ -722,7 +722,7 @@ s32 func_ov010_02228b38(s32 arg0) {
     return temp_r2;
 }
 
-s32 func_ov010_02228b50(s32 arg0) {
+s32 Ov010_SetVoiceChatCallback(s32 arg0) {
     extern M2C_UNK gOv010OnlineSession;
     s32 old = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x2c);
     M2C_FIELD(&gOv010OnlineSession, s32 *, 0x2c) = arg0;
@@ -812,7 +812,7 @@ end:
     Sprite_ResumeAnimation(sprite);
 }
 
-void func_ov010_02228c88(M2C_UNK arg0) {
+void CreateOnlineDepartureObject(M2C_UNK arg0) {
     M2C_UNK QueueOnlineLinkPacket(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern M2C_UNK data_ov010_0222c140;
     QueueOnlineLinkPacket(9, 0, 0, 0xFFFF);

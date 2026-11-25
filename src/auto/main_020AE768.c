@@ -4,16 +4,20 @@
 #include "gx.h"
 static inline u16 SpriteTileSize(s32 n) { return n << 12; }
 
-void func_020ae768(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Apply the CO face palette style `style` in place to `palette` (`length` bytes):
+ * FACE_PALETTE_SEPIA tints it warm, FACE_PALETTE_GRAY converts it to grayscale,
+ * and FACE_PALETTE_NORMAL leaves it unchanged. */
+void ApplyFacePaletteStyle(u8 style, M2C_UNK palette, s32 length) {
     M2C_UNK ApplySepiaToPalette(M2C_UNK, M2C_UNK);
     M2C_UNK ApplyGrayscaleToPalette(M2C_UNK, M2C_UNK);
-    if (arg0 == 1) {
-        ApplySepiaToPalette(arg1, arg2);
+
+    if (style == FACE_PALETTE_SEPIA) {
+        ApplySepiaToPalette(palette, length);
     }
-    if (arg0 != 2) {
+    if (style != FACE_PALETTE_GRAY) {
         return;
     }
-    ApplyGrayscaleToPalette(arg1, arg2);
+    ApplyGrayscaleToPalette(palette, length);
 }
 
 #pragma opt_lifetimes off
@@ -330,20 +334,24 @@ void func_020af1e4(void) {
     DeleteSpriteObjectsOfClass(&gWallpaperSpriteClass);
 }
 
+/* Delete every wallpaper sprite drawn on the main screen's engine: make the
+ * main engine current, delete gWallpaperSpriteClass' objects there and restore
+ * the previously current engine. */
 void DeleteMainWallpaperSprites(void) {
-extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
-extern M2C_UNK gWallpaperSpriteClass;
-M2C_UNK func_01ffa9f8(M2C_UNK *);
-void *saved=gCur3DSpriteEngine;
-gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_01ffa9f8(&gWallpaperSpriteClass);
-gCur3DSpriteEngine=saved;
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain;
+    extern M2C_UNK gWallpaperSpriteClass;
+    M2C_UNK DeleteSpriteObjectsOfClassOnCurrentEngine(M2C_UNK *);
+    void *savedEngine = gCur3DSpriteEngine;
+
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    DeleteSpriteObjectsOfClassOnCurrentEngine(&gWallpaperSpriteClass);
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void DeleteWallpaperSprites(void) {
-    M2C_UNK func_01ffa9f8(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClassOnCurrentEngine(M2C_UNK *);
     extern M2C_UNK gWallpaperSpriteClass;
-    func_01ffa9f8(&gWallpaperSpriteClass);
+    DeleteSpriteObjectsOfClassOnCurrentEngine(&gWallpaperSpriteClass);
 }
 
 #pragma opt_common_subs off

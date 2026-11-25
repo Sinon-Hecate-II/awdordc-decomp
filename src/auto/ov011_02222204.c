@@ -6,7 +6,7 @@
 #pragma opt_propagation off
 void func_ov011_02222204(M2C_UNK arg0) {
     M2C_UNK ClearAll3DSpriteLayers();
-    M2C_UNK func_01ffac9c(M2C_UNK, M2C_UNK, s32, M2C_UNK *, s32);
+    M2C_UNK AddSpriteToMainEngine(M2C_UNK, M2C_UNK, s32, M2C_UNK *, s32);
     M2C_UNK func_ov011_022216d8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK LoadOpeningScreenAssets(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov011_02224e04(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -80,14 +80,14 @@ void func_ov011_02222204(M2C_UNK arg0) {
     LoadOpeningScreenAssets(arg0, 0, 0);
     LoadOpeningScreenAssets(arg0, 1, 0);
     LoadOpeningScreenAssets(arg0, 7, 1);
-    func_01ffac9c(0x40, 0x50, 0, &data_02101f2c, 0);
-    func_01ffac9c(0, 0xAA, 0x6040, &data_02101f5c, 0);
-    func_01ffac9c(0x80, 0xAA, 0x6060, &data_02101f5c, 0);
+    AddSpriteToMainEngine(0x40, 0x50, 0, &data_02101f2c, 0);
+    AddSpriteToMainEngine(0, 0xAA, 0x6040, &data_02101f5c, 0);
+    AddSpriteToMainEngine(0x80, 0xAA, 0x6060, &data_02101f5c, 0);
 }
 
 void func_ov011_022224a8(void *arg0) {
-    M2C_UNK func_01ffac9c(M2C_UNK, M2C_UNK, s32, M2C_UNK *, s32);
-    M2C_UNK func_01ffacd4(u16, u16, u16, M2C_UNK *, s32);
+    M2C_UNK AddSpriteToMainEngine(M2C_UNK, M2C_UNK, s32, M2C_UNK *, s32);
+    M2C_UNK AddSpriteToSubEngine(u16, u16, u16, M2C_UNK *, s32);
     extern M2C_UNK data_02101f2c;
     extern M2C_UNK data_02101f5c;
     extern M2C_UNK gSpriteDesc64x64;
@@ -194,13 +194,13 @@ void func_ov011_022224a8(void *arg0) {
     (*(u16 **volatile *)&gCur3DSpriteEngine) = temp_r2;
     temp_r1 = M2C_FIELD(arg0, u8 *, 0x37);
     if (temp_r1 == (temp_r1 & M2C_FIELD(arg0, u16 *, 0x34))) {
-        func_01ffac9c(0x40, 0x50, 0, &data_02101f2c, 0);
+        AddSpriteToMainEngine(0x40, 0x50, 0, &data_02101f2c, 0);
     }
-    func_01ffac9c(0, 0xAA, 0x6040, &data_02101f5c, 0);
-    func_01ffac9c(0x80, 0xAA, 0x6060, &data_02101f5c, 0);
+    AddSpriteToMainEngine(0, 0xAA, 0x6040, &data_02101f5c, 0);
+    AddSpriteToMainEngine(0x80, 0xAA, 0x6060, &data_02101f5c, 0);
     var_r7 = 0;
     do {
-        func_01ffacd4((u16) (0x1FF & ((var_r7 % 4) << 6)), (u16) ((u8) ((((u32)var_r7 >> 2) << 6) + 0x20) | 0x2000), (u16) (0x3FF & (var_r7 << 7)), &gSpriteDesc64x64, 0);
+        AddSpriteToSubEngine((u16) (0x1FF & ((var_r7 % 4) << 6)), (u16) ((u8) ((((u32)var_r7 >> 2) << 6) + 0x20) | 0x2000), (u16) (0x3FF & (var_r7 << 7)), &gSpriteDesc64x64, 0);
         var_r7 += 1;
     } while ((u32) var_r7 < 8U);
 }

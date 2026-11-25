@@ -739,8 +739,12 @@ void func_ov003_021f14d8(s8 arg0, s8 arg1, s8 arg2) {
     M2C_FIELD(&gOv003SceneState, s8 *, 3) = arg2;
 }
 
-s32 func_ov003_021f14f0(s32 arg0) {
-    switch (arg0) {                                 /* irregular */
+/* Horizontal offset the ov003 scene slides a page to for a slide direction code
+ * (a page can only be left through the side it has a neighbour on): -0x100 when
+ * moving on to the next page (1), +0x100 when going back to the previous one
+ * (2), and 0 when the scene does not slide. */
+s32 GetSlideDirectionOffset(s32 direction) {
+    switch (direction) {                            /* irregular */
     case 0:
         return 0;
     case 1:
@@ -777,7 +781,7 @@ return M2C_FIELD(&gOv003SceneState,u8 *,2);
 
 s32 func_ov003_021f1594(void) {
 extern M2C_UNK gOv003SceneState;
-return func_ov003_021f14f0(M2C_FIELD(&gOv003SceneState,u8 *,2));
+return GetSlideDirectionOffset(M2C_FIELD(&gOv003SceneState,u8 *,2));
 }
 
 u8 func_ov003_021f15ac(void) {
@@ -787,6 +791,6 @@ u8 func_ov003_021f15ac(void) {
 
 s32 func_ov003_021f15bc(void) {
 extern M2C_UNK gOv003SceneState;
-return func_ov003_021f14f0(M2C_FIELD(&gOv003SceneState,u8 *,3));
+return GetSlideDirectionOffset(M2C_FIELD(&gOv003SceneState,u8 *,3));
 }
 

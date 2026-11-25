@@ -212,7 +212,7 @@ void AddSpriteCell(void *list, s32 x, s32 y, s32 width, u16 height, u16 tile, u1
     }
 }
 #pragma opt_strength_reduction reset
-void func_02087d84(void *a,s32 b,s32 c,s32 d,u16 e,u16 f) {void *func_02087e68(void *,s32);u16 *p=func_02087e68(a,(s16)b);p[0]=c;p[1]=d;p[2]=e;p[3]=f;}
+void func_02087d84(void *a,s32 b,s32 c,s32 d,u16 e,u16 f) {void *SpriteCellListFindCell(void *,s32);u16 *p=SpriteCellListFindCell(a,(s16)b);p[0]=c;p[1]=d;p[2]=e;p[3]=f;}
 
 /* Take the cell showing tile `tile` out of a cell list: clear it, decrement the
  * list's used-cell count and, when the list was on that cell, forget it. */
@@ -251,10 +251,10 @@ loop_1:
 #pragma optimization_level 2
 void func_02087e34(void *arg0) { M2C_UNK MI_CpuFill8(s32,M2C_UNK,s32); M2C_FIELD(arg0,s32 *,0)=0; M2C_FIELD(arg0,s32 *,4)=0; MI_CpuFill8(M2C_FIELD(arg0,s32 *,0x14),0,M2C_FIELD(arg0,u16 *,0x10)*12); M2C_FIELD(arg0,u8 *,0x12)=0; }
 #pragma optimization_level reset
-void *func_02087e68(void *a,s32 b) {s32 i;u16 n;u8 *p;n=M2C_FIELD(a,u16 *,16);p=M2C_FIELD(a,u8 **,20);for(i=0;i<(s32)n;i++,p+=12)if(M2C_FIELD(p,u16 *,8)==b)return p;return 0;}
+void *SpriteCellListFindCell(void *a,s32 b) {s32 i;u16 n;u8 *p;n=M2C_FIELD(a,u16 *,16);p=M2C_FIELD(a,u8 **,20);for(i=0;i<(s32)n;i++,p+=12)if(M2C_FIELD(p,u16 *,8)==b)return p;return 0;}
 
 #pragma optimize_for_size off
-void func_02087ea0(void *arg0,void *arg1){
+void SpriteCellListSelectCell(void *arg0,void *arg1){
 if(M2C_FIELD(arg1,u16*,0xA)&4){
 u32 zero=0; void *old=M2C_FIELD(arg0,void**,0);
 M2C_FIELD(arg0,void**,0)=arg1;
@@ -263,13 +263,23 @@ M2C_FIELD(arg0,s8*,0xF)=zero;
 }}
 #pragma push
 #pragma opt_propagation off
-void func_02087ec0(void *a,s32 b){
-void *func_02087e68(void*,s32);void func_02087ea0(void*,void*);
-if(b==-1){M2C_FIELD(a,s32*,4)=0;M2C_FIELD(a,s32*,0)=0;M2C_FIELD(a,u8*,15)=255;return;}
-func_02087ea0(a,func_02087e68(a,b));
+/* Point a sprite cell list's current cell at the cell showing `tile`, provided
+ * that cell is selectable; tile -1 clears the current and previous cells and
+ * stops the selection sync. */
+void SpriteCellListSelectTile(void *list, s32 tile) {
+    void *SpriteCellListFindCell(void *, s32);
+    void SpriteCellListSelectCell(void *, void *);
+
+    if (tile == -1) {
+        M2C_FIELD(list, s32 *, SPRITE_CELL_LIST_PREVIOUS) = 0;
+        M2C_FIELD(list, s32 *, SPRITE_CELL_LIST_CURRENT) = 0;
+        M2C_FIELD(list, u8 *, SPRITE_CELL_LIST_SYNC) = SPRITE_CELL_LIST_SYNC_DONE;
+        return;
+    }
+    SpriteCellListSelectCell(list, SpriteCellListFindCell(list, tile));
 }
 #pragma pop
-void func_02087f00(void *p, s32 id) { void func_02087ec0(void *, s32); func_02087ec0(p, id); M2C_FIELD(p,s32 *,4)=M2C_FIELD(p,s32 *,0); M2C_FIELD(p,u8 *,15)=255; }
+void func_02087f00(void *p, s32 id) { void SpriteCellListSelectTile(void *, s32); SpriteCellListSelectTile(p, id); M2C_FIELD(p,s32 *,4)=M2C_FIELD(p,s32 *,0); M2C_FIELD(p,u8 *,15)=255; }
 
 /* Return whether the point (pointX, pointY) lies inside the widget's half-open rectangle. */
 s32 WidgetRectContainsPoint(s32 unused, void *rect, s32 pointX, s32 pointY) {

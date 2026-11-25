@@ -75,6 +75,8 @@ struct FSFileRequest {
 #define FS_REQ_DIRECTORY 0x00000020 /* the request names a directory rather than a file */
 
 /* File command ids (FSFileRequest::command, SubmitFileRequest). */
+#define FS_COMMAND_CLOSE      8 /* close the file the request holds open */
+#define FS_COMMAND_NONE      0xE /* request carries no command (also InitFileRequest's initial value) */
 #define FS_COMMAND_OPEN_BY_ID 6 /* read the FAT record of the request's file id and open its range */
 #define FS_COMMAND_OPEN_RANGE 7 /* install the request's archive range as an open file */
 

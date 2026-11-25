@@ -237,7 +237,7 @@ s32 IsTerrainExcludedForPlayer(s32 player, s32 terrain) {
 #pragma opt_common_subs off
 void MarkThreatCells(s32 a,s32 b,s32 c,u8 d,s32 e,s32 f) {
 s32 IsTerrainExcludedForPlayer(s32,s32);
-s32 func_020a8528(s32);
+s32 IsUnitKindClass3Or4(s32);
 extern void **gCurrentMap;
 extern s8 data_ov000_021b5680[];
 s32 offset;
@@ -284,7 +284,7 @@ if(!IsTerrainExcludedForPlayer(e,M2C_FIELD(row+(map+x),u8 *,0x1420)))goto mark;
 map=*gCurrentMap;
 unit=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x508);
 if(unit==0)continue;
-if(!func_020a8528((u32)(M2C_FIELD(map+unit*14,u8 *,0x59a4)<<26)>>26))continue;
+if(!IsUnitKindClass3Or4((u32)(M2C_FIELD(map+unit*14,u8 *,0x59a4)<<26)>>26))continue;
 map=*gCurrentMap;
 if(data_ov000_021b5680[M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420)&31])continue;
 }

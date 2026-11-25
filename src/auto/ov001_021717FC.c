@@ -182,15 +182,18 @@ void *Ov001_GetLocalizedFileName(u8 *pathTemplate) {
  return gOv001LocalizedPath;
 }
 
-void Ov001_LoadAsset(u8 *arg0,void (*arg1)(s32,s32,s32)) {
- void DC_FlushRange(s32,s32);
- s32 Ov001_LoadFile(void *,s32 *,s32);
- void Ov001_FreeFile(s32);
- s32 size;
- s32 p=Ov001_LoadFile(Ov001_GetLocalizedFileName(arg0),&size,4);
- DC_FlushRange(p,size);
- arg1(p,0,size);
- Ov001_FreeFile(p);
+/* Load the asset file named by `pathTemplate` with the language code filled in,
+ * flush its data cache and hand the buffer, offset 0 and size to `loadFunction`
+ * (a GX load routine), then free the buffer. */
+void Ov001_LoadAsset(u8 *pathTemplate, void (*loadFunction)(s32, s32, s32)) {
+    void DC_FlushRange(s32, s32);
+    s32 Ov001_LoadFile(void *, s32 *, s32);
+    void Ov001_FreeFile(s32);
+    s32 size;
+    s32 data = Ov001_LoadFile(Ov001_GetLocalizedFileName(pathTemplate), &size, OV001_ASSET_ALIGNMENT);
+    DC_FlushRange(data, size);
+    loadFunction(data, 0, size);
+    Ov001_FreeFile(data);
 }
 
 /* Open the shared ov001 menu for the next screen mode the previous screen set:
@@ -202,16 +205,19 @@ if(nextMode==1){Ov001_OpenMenu(variant);return;}
 if(nextMode==2)Ov001_LoadMenuRows(variant);
 }
 
-void func_ov001_02171e20(M2C_UNK arg0) {
-    M2C_UNK func_ov001_0217159c(M2C_UNK);
+/* Create the shared ov001 icon row for `variant`, but only when the screen that
+ * ran before asked for one: its next-screen argument (OV001_SCREEN_NEXT_ARG) is
+ * OV001_SCREEN_CREATE_ICON_ROW. */
+void Ov001_CreateMenuIconRow(M2C_UNK variant) {
+    M2C_UNK Ov001_CreateIconRow(M2C_UNK);
     M2C_UNK Ov001_GetNextScreenMode(M2C_UNK, s32 *);
-    s32 sp0;
+    s32 nextArg;
 
-    Ov001_GetNextScreenMode(0, &sp0);
-    if (sp0 != 1) {
+    Ov001_GetNextScreenMode(0, &nextArg);
+    if (nextArg != OV001_SCREEN_CREATE_ICON_ROW) {
         return;
     }
-    func_ov001_0217159c(arg0);
+    Ov001_CreateIconRow(variant);
 }
 
 /* Draws message `messageId` from the ov001 message archive into a fresh text
@@ -306,13 +312,14 @@ Ov001_MoveSpriteLayout(((s32 *)gOv001ChoiceFrameSprites)[2],-1,left,bottom);
 Ov001_MoveSpriteLayout(((s32 *)gOv001ChoiceFrameSprites)[3],-1,right,bottom);
 }
 
+/* Destroy the four sprites of the ov001 choice frame and clear their handles. */
 void Ov001_FreeSpriteObjects(void) {
  void Ov001_DestroySprite(s32);
  extern s32 gOv001ChoiceFrameSprites;
- s32 i,v;
- for(i=0;i<4;i++){
- v=((s32*)gOv001ChoiceFrameSprites)[i];
- if(v){Ov001_DestroySprite(v);((s32*)gOv001ChoiceFrameSprites)[i]=0;}
+ s32 i,sprite;
+ for(i=0;i<OV001_CHOICE_FRAME_SPRITE_COUNT;i++){
+ sprite=((s32*)gOv001ChoiceFrameSprites)[i];
+ if(sprite){Ov001_DestroySprite(sprite);((s32*)gOv001ChoiceFrameSprites)[i]=0;}
  }
 }
 
@@ -362,12 +369,14 @@ void func_ov001_021722c4(void) {
     Ov001_LoadObjLayoutBlock(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4) + 2);
 }
 
-void Ov001_UploadHighlightTilemap(s32 a) {
- void GX_LoadBG1Scr(s32,s32,s32);
- void Ov001_PostTaskMessage(s32,s32);
- DC_FlushRange(sOv001HighlightTilemapBuffer,192);
- GX_LoadBG1Scr(sOv001HighlightTilemapBuffer,0,192);
- Ov001_PostTaskMessage(1,a);
+/* One-shot upload task: flush the staged highlight tilemap to memory and load
+ * it into the BG1 tilemap, then hand the task node back for recycling. */
+void Ov001_UploadHighlightTilemap(s32 task) {
+    void GX_LoadBG1Scr(s32, s32, s32);
+    void Ov001_PostTaskMessage(s32, s32);
+    DC_FlushRange(sOv001HighlightTilemapBuffer, OV001_HIGHLIGHT_TILEMAP_BYTES);
+    GX_LoadBG1Scr(sOv001HighlightTilemapBuffer, 0, OV001_HIGHLIGHT_TILEMAP_BYTES);
+    Ov001_PostTaskMessage(1, task);
 }
 
 /* Creates the Wi-Fi connection indicator of the given style: one sprite set to
@@ -392,10 +401,10 @@ void Ov001_ShowWfcIcon(s8 style) {
 }
 
 void Ov001_HideWfcIcon(void) {
- void func_ov001_0218c94c(s32,s32);
+ void Ov001_ReturnTaskNodeVeneer(s32,s32);
  void Ov001_ReleaseSprite(s32);
  if(gOv001WfcIcon==NULL) return;
- func_ov001_0218c94c(0,M2C_FIELD(gOv001WfcIcon,s32 *,4));
+ Ov001_ReturnTaskNodeVeneer(0,M2C_FIELD(gOv001WfcIcon,s32 *,4));
  Ov001_ReleaseSprite(M2C_FIELD(gOv001WfcIcon,s32 *,0));
  Ov001_FreeAlloc((M2C_UNK *)&gOv001WfcIcon);
 }

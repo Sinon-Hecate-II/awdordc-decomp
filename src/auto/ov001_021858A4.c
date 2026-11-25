@@ -179,10 +179,10 @@ s32 Ov001_SendServerRequest(void) {
 #pragma opt_strength_reduction off
 s32 func_ov001_02185dac(void) {
     s32 WFC_GetConnectionData(void *);
-    s32 func_02012274(void (*)(void));
+    s32 WFC_SendCommand1(void (*)(void));
     s32 WFC_EndLink(void (*)(void));
     void Ov001_HandleServerReply(u16 *);
-    void func_ov001_0218c94c(s32,s32);
+    void Ov001_ReturnTaskNodeVeneer(s32,s32);
     M2C_UNK Ov001_FreeAlloc(M2C_UNK);
     extern void *gOv001ConnectionState;
 extern s32 gOv001MenuLayout;
@@ -191,7 +191,7 @@ u32 state;
     *(u8 *)((s8 *)gOv001ConnectionState + 0x1b94) = 1;
     WFC_GetConnectionData((s8 *)gOv001ConnectionState + 0x13b8);
     if (*(u16 *)((s8 *)gOv001ConnectionState + 0x13b8) != 2) {
-        if (func_02012274((void (*)(void))Ov001_HandleServerReply) != 2) {
+        if (WFC_SendCommand1((void (*)(void))Ov001_HandleServerReply) != 2) {
             return 0;
         }
         do {
@@ -202,7 +202,7 @@ u32 state;
         return 0;
     }
     if (M2C_FIELD((s8*)gOv001ConnectionState+0x1000,s32*,0xb90) != 0) {
-        func_ov001_0218c94c(0,M2C_FIELD((s8*)gOv001ConnectionState+0x1000,s32*,0xb90));
+        Ov001_ReturnTaskNodeVeneer(0,M2C_FIELD((s8*)gOv001ConnectionState+0x1000,s32*,0xb90));
     }
     state=M2C_FIELD((s8*)gOv001ConnectionState+0x1000,u8*,0xb94);
 if(state != 2) goto done;

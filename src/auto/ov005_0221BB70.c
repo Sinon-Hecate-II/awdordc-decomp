@@ -84,7 +84,7 @@ void func_ov005_0221bcb0(void *arg0) {
     extern M2C_UNK gBattleResults;
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void *FindObjectByClass(M2C_UNK *);
-void SetSpriteAnimation(void *,s32);
+void GotoSpriteAnimationLabel(void *,s32);
 void Clear3DSpriteLayer(s32);
 void DeleteSpriteObject(void *);
 extern M2C_UNK data_ov005_02220db8;void *object;
@@ -106,7 +106,7 @@ extern M2C_UNK data_ov005_02220db8;void *object;
     s32 n;
     s32 i;
 
-    if(M2C_FIELD(arg0,s32 *,0x34)==(MaxCount(MaxPairU8(M2C_FIELD(&gBattleResults,u8 *,12),M2C_FIELD(&gBattleResults,u8 *,13)),M2C_FIELD(&gBattleResults,u8 *,14))-1)*2){object=FindObjectByClass(&data_ov005_02220db8);if(object)SetSpriteAnimation(object,0);}
+    if(M2C_FIELD(arg0,s32 *,0x34)==(MaxCount(MaxPairU8(M2C_FIELD(&gBattleResults,u8 *,12),M2C_FIELD(&gBattleResults,u8 *,13)),M2C_FIELD(&gBattleResults,u8 *,14))-1)*2){object=FindObjectByClass(&data_ov005_02220db8);if(object)GotoSpriteAnimationLabel(object,0);}
 M2C_FIELD(arg0, s32 *, 0x34) += 1;
     if (M2C_FIELD(arg0, s32 *, 0x34) == 1) {
         sp38 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);

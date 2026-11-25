@@ -36,7 +36,7 @@ s32 func_ov007_02217ca8(void *arg0) {
  * entry cannot be picked, so confirming it does nothing. */
 void MapEditor_ConfirmPaletteEntry(void *editor) {
     s8 *MapEditor_GetPaletteEntries(u8);
-    void SetSpriteAnimation(void *, s32);
+    void GotoSpriteAnimationLabel(void *, s32);
     u8 entry;
     s8 *entries;
     u8 page;
@@ -51,7 +51,7 @@ void MapEditor_ConfirmPaletteEntry(void *editor) {
         break;
     }
     M2C_FIELD(editor, u8 *, MAP_EDITOR_PANEL_PENDING) = 1;
-    SetSpriteAnimation(editor, 2);
+    GotoSpriteAnimationLabel(editor, 2);
 }
 
 #pragma push
@@ -166,14 +166,14 @@ void func_ov007_02217f8c(void *arg0) {
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
     M2C_UNK CreateUnitSpriteButtonTask(void *, M2C_UNK);
-    void *func_020ab1c4(void *);
+    void *CreateUnitSprite(void *);
     s32 GetLocalizedFileName(M2C_UNK *);
     s8 GetMapEditorMode();
     s32 GetMapEditorUnitKind();
     M2C_UNK GetMapEditorUnitOwner();
     s32 GetMapEditorTerrainKind();
     M2C_UNK GetMapEditorTerrainOwner();
-    s8 func_ov007_02217b90(M2C_UNK, s32);
+    s8 MapEditor_FindPaletteEntryIndex(M2C_UNK, s32);
     s8 func_ov007_02217c1c();
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
@@ -232,8 +232,8 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x35) = 0;
     M2C_FIELD(arg0, s8 *, 0x36) = 0;
     M2C_FIELD(arg0, s8 *, 0x37) = GetMapEditorMode();
-    M2C_FIELD(arg0, s8 *, 0x3A) = func_ov007_02217b90(0, GetMapEditorTerrainKind());
-    M2C_FIELD(arg0, s8 *, 0x3B) = func_ov007_02217b90(1, GetMapEditorUnitKind());
+    M2C_FIELD(arg0, s8 *, 0x3A) = MapEditor_FindPaletteEntryIndex(0, GetMapEditorTerrainKind());
+    M2C_FIELD(arg0, s8 *, 0x3B) = MapEditor_FindPaletteEntryIndex(1, GetMapEditorUnitKind());
     GetMapEditorTerrainOwner();
     M2C_FIELD(arg0, s8 *, 0x38) = func_ov007_02217c1c();
     GetMapEditorUnitOwner();
@@ -246,7 +246,7 @@ void func_ov007_02217f8c(void *arg0) {
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     LoadSpriteResource(0, 2, 0x47, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x30) + 0x260);
-    M2C_FIELD(arg0, void **, 0x44) = func_020ab1c4(arg0);
+    M2C_FIELD(arg0, void **, 0x44) = CreateUnitSprite(arg0);
     InitUnitSprite(M2C_FIELD(arg0, void **, 0x44), 0, 0x35C, 3, 0);
     temp_r6 = M2C_FIELD(arg0, void **, 0x44);
     Set3DSpriteSlideTargetAndStart(temp_r6, 0xC0, 0xA0, 0x100, 0xA0);
@@ -263,7 +263,7 @@ void func_ov007_02217f8c(void *arg0) {
         func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
     }
     CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x44), 1);
-    M2C_FIELD(arg0, void **, 0x48) = func_020ab1c4(arg0);
+    M2C_FIELD(arg0, void **, 0x48) = CreateUnitSprite(arg0);
     InitUnitSprite(M2C_FIELD(arg0, void **, 0x48), 2, 0x36C, 3, 0);
     temp_r6 = M2C_FIELD(arg0, void **, 0x48);
     Set3DSpriteSlideTargetAndStart(temp_r6, 0xE0, 0xA0, 0x100, 0xA0);
@@ -280,7 +280,7 @@ void func_ov007_02217f8c(void *arg0) {
         func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
     }
     CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x48), 2);
-    M2C_FIELD(arg0, void **, 0x4C) = func_020ab1c4(arg0);
+    M2C_FIELD(arg0, void **, 0x4C) = CreateUnitSprite(arg0);
     InitUnitSprite(M2C_FIELD(arg0, void **, 0x4C), 0x14, 0x37C, 3, 0);
     temp_r6 = M2C_FIELD(arg0, void **, 0x4C);
     Set3DSpriteSlideTargetAndStart(temp_r6, 0xA0, 0xA0, 0x100, 0xA0);

@@ -126,6 +126,7 @@ typedef struct GxDisplayStatus {
 #define REG_GX_MTX_POP    (*(volatile u32 *)0x04000448)
 #define REG_GX_MTX_STORE  (*(volatile u32 *)0x0400044C)
 #define REG_GX_MTX_IDENTITY (*(volatile u32 *)0x04000454)
+#define REG_GX_MTX_MULT_3X3 (*(volatile u32 *)0x04000468) /* 9 writes: a 3x3 matrix in 20.12 */
 #define REG_GX_MTX_SCALE  (*(volatile u32 *)0x0400046C) /* 3 writes: sx, sy, sz in 20.12 */
 #define REG_GX_MTX_TRANS  (*(volatile u32 *)0x04000470) /* 3 writes: tx, ty, tz in 20.12 */
 #define REG_GX_SWAP_BUFFERS (*(volatile u32 *)0x04000540)

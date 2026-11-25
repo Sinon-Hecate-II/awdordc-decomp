@@ -22,7 +22,22 @@ s32 BeginWebRequest(void) {
     return 1;
 }
 
-s32 EndWebRequest(void){extern M2C_UNK gHttpRequestList;void ghttpCleanup(void);void HttpRequestFreeAll(void);s32 n;if(M2C_FIELD(&gHttpRequestList,s32 *,4)<=0)return 1;ghttpCleanup();n=M2C_FIELD(&gHttpRequestList,s32 *,4)-1;M2C_FIELD(&gHttpRequestList,s32 *,4)=n;if(n==0)HttpRequestFreeAll();return 1;}
+/* Close one web request: release the ghttp library user and drop the request
+ * list's open count, freeing every request node left once the last caller has
+ * closed the list. Returns 1 even when there was nothing to close. */
+s32 EndWebRequest(void) {
+    extern M2C_UNK gHttpRequestList;
+    void ghttpCleanup(void);
+    void HttpRequestFreeAll(void);
+    s32 remaining;
+
+    if (M2C_FIELD(&gHttpRequestList, s32 *, HTTP_REQUEST_LIST_OPEN_COUNT) <= 0) return 1;
+    ghttpCleanup();
+    remaining = M2C_FIELD(&gHttpRequestList, s32 *, HTTP_REQUEST_LIST_OPEN_COUNT) - 1;
+    M2C_FIELD(&gHttpRequestList, s32 *, HTTP_REQUEST_LIST_OPEN_COUNT) = remaining;
+    if (remaining == 0) HttpRequestFreeAll();
+    return 1;
+}
 
 s32 PumpWebRequest(void) {
     s32 HasNetError();

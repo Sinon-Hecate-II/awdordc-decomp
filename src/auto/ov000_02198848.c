@@ -18,7 +18,7 @@ void AddPlayerThreatInfluence(u8 player) {
 
     flag = 0;
     bonus = 0;
-    if (!func_ov000_021973f8(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind)) {
+    if (!IsCurrentPlayerAiControlled(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind)) {
         return;
     }
     if (GetUnitAttackClass(((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind) == 0) {
@@ -164,7 +164,7 @@ extern s32 *gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
 s32 i, damage; Unit98 *unit; s32 kind;
-if(!func_ov000_021973f8(14))return;
+if(!IsCurrentPlayerAiControlled(14))return;
 M2C_FIELD(*gCurrentMap,u16 *,MAP_ACTIVE_PLAYER)=player;
 for(i=gPlayerUnitIdBase[player]+1;i<gPlayerUnitIdBase[player]+51;i++){
 unit=(Unit98 *)(*gCurrentMap+MAP_UNIT_RECORDS+i*MAP_UNIT_STRIDE);
@@ -218,7 +218,7 @@ void BuildThreatMapAgainstKind14(void) {
 void AddMoveRangeThreatAgainstKind14(u8 player) {
 extern s32 *gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-s32 func_ov000_021973f8(s32);
+s32 IsCurrentPlayerAiControlled(s32);
 s32 GetModifiedDamagePercent(s32,s32);
 s32 ApplyAttackBonus(s32,s32,s32);
 s32 ApplyCoZoneBonus(s32,s32,void*);
@@ -235,7 +235,7 @@ s32 unitId,damage;
 Unit98 *unit;
 u8 *map,*cell;
 s32 owner,id,amount;
-if(!func_ov000_021973f8(14))return;
+if(!IsCurrentPlayerAiControlled(14))return;
 bonus=GetDamageBonus(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)&255);
 M2C_FIELD(*gCurrentMap,u16 *,MAP_ACTIVE_PLAYER)=player;
 for(unitId=gPlayerUnitIdBase[player]+1;unitId<gPlayerUnitIdBase[player]+MAP_UNIT_GROUP_SCAN;unitId++){
@@ -308,7 +308,7 @@ void AddThreatAgainstKind6(u8 player) {
     Unit98 *unit;
     s32 kind;
 
-    if (!func_ov000_021973f8(6)) {
+    if (!IsCurrentPlayerAiControlled(6)) {
         return;
     }
     bonus = GetDamageBonus((u8)M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));

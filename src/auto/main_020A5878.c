@@ -382,7 +382,7 @@ if(IsPlayerHuman(id)&&!func_020cd728())AddRecordFunds(12,income);
 s32 GetUnitMoveFuelCost(u8 *unit, s32 cost) {
     extern s32 *gCurrentMap;
     s32 func_020a85c0(u32);
-    s32 func_020a86f0(s32);
+    s32 GetPlayerFuelRate(s32);
     s32 player, fuel;
     if (unit) {
         if (!unit) player = 0;
@@ -390,7 +390,7 @@ s32 GetUnitMoveFuelCost(u8 *unit, s32 cost) {
         player = (player >> MAP_UNIT_OWNER_SHIFT) + 1;
     } else player = 0;
     if (func_020a85c0((u32)(unit[MAP_UNIT_KIND] << 26) >> 26)) return 0;
-    fuel = func_020a86f0(player) * cost;
+    fuel = GetPlayerFuelRate(player) * cost;
     player = (u32)(unit[MAP_UNIT_FUEL] << 25) >> 25;
     if (fuel > player) fuel = player;
     return fuel;

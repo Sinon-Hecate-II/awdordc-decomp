@@ -105,8 +105,8 @@ s32 MapScriptMoveCursor(void *state) {
 }
 
 s32 func_020930bc(void *arg0) {
-    s32 func_020cc7f8();
-    if (func_020cc7f8() == 0) {
+    s32 IsBattlePreviewActive();
+    if (IsBattlePreviewActive() == 0) {
         M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
     }
     return 0;
@@ -201,16 +201,17 @@ s32 MapScriptUpdateTeamRecordsSub(void *state) {
     return 1;
 }
 
-s32 func_02093250(void *arg0) {
+/* Map-script command: play the plain sound effect named by the command's wide
+ * operand, unless a message box is up.  Advances the script and keeps running. */
+s32 MapScriptPlaySoundEffect(void *state) {
     M2C_UNK PlaySoundEffect(s32);
-    s32 IsMessageBoxActive();
-    s32 temp_r4;
+    s32 soundId;
 
-    temp_r4 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC);
+    soundId = M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_OPERAND2);
     if (IsMessageBoxActive() == 0) {
-        PlaySoundEffect(temp_r4);
+        PlaySoundEffect(soundId);
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -228,16 +229,19 @@ s32 MapScriptPlaySlotSound(void *state) {
     return 1;
 }
 
-s32 func_020932c8(void *arg0) {
+/* Map-script command: stop the slot sound named by the command's wide operand on
+ * sound slot 0 (any slot-0 sound while a message box is up).  Advances the script
+ * and keeps running. */
+s32 MapScriptStopSlotSound(void *state) {
     M2C_UNK StopSlotSound(M2C_UNK, s32);
-    s32 var_r4;
+    s32 soundId;
 
-    var_r4 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC);
+    soundId = M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_OPERAND2);
     if (IsMessageBoxActive() != 0) {
-        var_r4 = 0;
+        soundId = 0;
     }
-    StopSlotSound(0, var_r4);
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    StopSlotSound(0, soundId);
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -297,11 +301,15 @@ s32 func_020933f8(void *arg0) {
     return 0;
 }
 
-s32 func_02093418(void *arg0) {
-extern void **gCurrentMap;
-s32 GetPlayerMusicTrack(s32);
-func_0208f7d0(GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255));
-M2C_FIELD(arg0,s32 *,4)+=16;return 0;
+/* Map-script command: fade the current music out and start the current player's
+ * track, then advance the script and keep running. */
+s32 MapScriptPlayPlayerMusic(void *state) {
+    extern void **gCurrentMap;
+    s32 GetPlayerMusicTrack(s32);
+    void ChangeMusicTrackWithFade(s32);
+    ChangeMusicTrackWithFade(GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) & 255));
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 0;
 }
 
 /* Map-script command: while no message box is up, duck the music to half volume
@@ -366,11 +374,11 @@ s32 func_02093590(void *arg0) {
 }
 
 s32 func_020935bc(void *arg0) {
-    M2C_UNK func_0209656c(s32, u8);
+    M2C_UNK LoadDeploymentFile(s32, u8);
     void *temp_r0;
 
     temp_r0 = M2C_FIELD(arg0, void **, 4);
-    func_0209656c(M2C_FIELD(temp_r0, s32 *, 4), (u8) M2C_FIELD(temp_r0, s32 *, 0xC));
+    LoadDeploymentFile(M2C_FIELD(temp_r0, s32 *, 4), (u8) M2C_FIELD(temp_r0, s32 *, 0xC));
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }
@@ -589,11 +597,15 @@ s32 func_02093b48(void *arg0) {
     return 1;
 }
 
-s32 func_02093c2c(void *arg0){
-extern void **gCurrentMap;
-void *p=M2C_FIELD(arg0,void **,4);
-M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(p,s16 *,8)*0x8c,u8 *,0x67bd)=M2C_FIELD(p,u32 *,12);
-M2C_FIELD(arg0,s32 *,4)+=16;return 1;
+/* Map-script command: set the turn-skip flag (PLAYER_REC_SKIP_TURN) of the
+ * player named by operand 0 to the command's wide operand, then advance the
+ * script and keep running. */
+s32 MapScriptSetPlayerSkipTurn(void *state) {
+    extern void **gCurrentMap;
+    void *command = M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP);
+    M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_SKIP_TURN) = M2C_FIELD(command, u32 *, MAP_SCRIPT_OPERAND2);
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 1;
 }
 
 s32 func_02093c6c(void *arg0) {

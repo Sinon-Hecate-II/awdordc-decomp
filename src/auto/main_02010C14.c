@@ -67,7 +67,7 @@ s32 func_02010d14(void *dev, s32 *packet, s32 retries) {
 void OS_SleepThread(s32);
 void DC_FlushRange(s32 *, s32);
 void DC_InvalidateRange(s32 *, s32);
-void func_02006804(void);
+void DC_Sync(void);
 void WaitCycles(s32);
 s32 IsFifoMessageReady(s32, s32);
 s32 SendFifoMessage(s32, s32, s32);
@@ -86,7 +86,7 @@ do { WaitCycles(100); } while (IsFifoMessageReady(11, 1) == 0);
 func_02010d14(dev, 0, 1);
 }
 DC_FlushRange(M2C_FIELD(dev, s32 **, 0), 96);
-func_02006804();
+DC_Sync();
 again:
 M2C_FIELD(dev, s32 **, 4) = packet;
 M2C_FIELD(dev, volatile s32 *, 0x114) = M2C_FIELD(dev, volatile s32 *, 0x114) | 32;

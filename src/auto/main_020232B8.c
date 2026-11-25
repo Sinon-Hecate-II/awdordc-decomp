@@ -93,16 +93,19 @@ M2C_UNK TlsInitRecordKeys(void *arg0) {
     RC4_Init((s32)arg0 + TLS_RC4_OUT, M2C_FIELD(arg0, s32 *, TLS_RC4_KEY_OUT), 0x10);
 }
 
-void TlsProcessClientKeyExchange(void *arg0, M2C_UNK arg1) {
+/* Server side of the TLS handshake: decrypt the peer's RSA-encrypted premaster
+ * secret with the context's private key, derive the master secret from it, store
+ * the session and set up the record-layer keys. */
+void TlsProcessClientKeyExchange(void *tls, M2C_UNK encryptedPremaster) {
     M2C_UNK TlsStoreSession(void *, M2C_UNK, M2C_UNK);
     M2C_UNK RsaCrtDecrypt(void *, M2C_UNK, s32);
     M2C_UNK TlsComputeMasterSecret(void *);
     M2C_UNK TlsInitRecordKeys(void *);
-    RsaCrtDecrypt(arg0, arg1, M2C_FIELD(arg0, s32 *, 0x81C));
-    TlsComputeMasterSecret(arg0);
-    TlsStoreSession(arg0, 0, 0);
-    TlsInitRecordKeys(arg0);
-    M2C_FIELD(arg0, s8 *, 0x455) = 5;
+    RsaCrtDecrypt(tls, encryptedPremaster, M2C_FIELD(tls, s32 *, TLS_RSA_KEY));
+    TlsComputeMasterSecret(tls);
+    TlsStoreSession(tls, 0, 0);
+    TlsInitRecordKeys(tls);
+    M2C_FIELD(tls, s8 *, TLS_STATE) = TLS_STATE_CLIENT_KEY_EXCHANGE;
 }
 
 /* Compute the MD5 half of an SSLv3-style Finished digest: continue the handshake

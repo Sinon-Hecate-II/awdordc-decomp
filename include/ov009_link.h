@@ -81,6 +81,11 @@ enum {
     LINK_PHASE_ABORTED = 9
 };
 
+/* A peer asks the host (player slot 0) how many players are connected; the
+ * host answers with the connected-player mask. */
+#define LINK_MSG_CONNECT_REQUEST 5
+#define LINK_MSG_CONNECT_REPLY   6
+
 /* A console's announce of its own player record (LINK_PLAYER_ANNOUNCE_SIZE bytes,
  * the record kept in gLinkLocalPlayerInfo) and the reply that carries the
  * answering console's record. */
@@ -100,6 +105,15 @@ enum {
 #define LINK_SENDER_LENGTH      0x40 /* s32 bytes of that transfer packet */
 #define LINK_SENDER_PEERS       0x44 /* u16 bit per player slot the transfer is addressed to */
 #define LINK_SENDER_OUTSTANDING 0x46 /* u16 bit per player slot whose transfer has not completed */
+
+/* The link's packet receiver object class, created with the live link actor and
+ * freed with it: at +0x34 it keeps one receive-assembly slot per link channel
+ * (LINK_RECEIVER_*), filled from the incoming packet fragments and drained by the
+ * object's class update (func_ov009_02221ae8). */
+#define LINK_RECEIVER_CHANNELS 0x34 /* first of 4 per-channel slots */
+#define LINK_RECEIVER_STRIDE   0x08 /* bytes per channel slot */
+#define LINK_RECEIVER_OFFSET   0x00 /* s32 bytes of the packet assembled so far */
+#define LINK_RECEIVER_PACKET   0x04 /* void *packet being assembled, NULL when idle */
 
 /* Fields of the send-completion record the WFC channel library hands the completion
  * callback registered through SendLinkChannelData. */
@@ -128,7 +142,9 @@ enum {
 #define LINK_PLAYER_NAME_SIZE   26
 
 /* A gLinkPlayers slot: one per player slot, 0x60 bytes. */
-#define LINK_PLAYER_FLAGS 0x16 /* u8: bit 0 set while the slot holds a connected player */
+#define LINK_PLAYER_SLOT_STRIDE 0x60 /* bytes between gLinkPlayers slots */
+#define LINK_PLAYER_FLAGS  0x16 /* u8: bit 0 set while the slot holds a connected player */
+#define LINK_PLAYER_CONNECTED 0x01 /* LINK_PLAYER_FLAGS bit: the slot's player is connected */
 #define LINK_PLAYER_ID    0x17 /* s8: the player id the slot plays as, -1 when unset */
 #define LINK_PLAYER_RANK       0x18 /* s8: rank index used to load the player's rank icon, -1 when unset */
 #define LINK_PLAYER_FAV_GROUP  0x19 /* s8: favourite CO/group index, -2 when unset */
@@ -229,5 +245,10 @@ typedef struct LinkRequestRecord {
 #define LINK_LAYER_STATUS   0x40 /* s32 link status/result code; 0 hides the layer */
 #define LINK_STATUS_TEXT       0x4400000A /* localized text key of the link status message */
 #define LINK_STATUS_TEXT_CODE8 0x4400000B /* localized text key shown instead when the status code is 8 */
+
+/* The ov009 object whose status labels CreateLinkStatusLabels creates (its generic
+ * text-layer fields at 0x34..0x36 are in ds3dsprite.h): it keeps the link status
+ * code its status label reports, 0 while there is nothing to show. */
+#define LINK_LABEL_HOST_STATUS 0x38 /* s32: link status code of the label host */
 
 #endif

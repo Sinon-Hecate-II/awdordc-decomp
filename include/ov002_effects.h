@@ -25,7 +25,7 @@ typedef struct EffectConfig {
  * EffectSet (its template); the sound ids at +0x08 and +0x14 are indexed by the
  * effect's variant. */
 typedef struct EffectSounds {
-    u8 pad00[4];
+    s32 group;           /* +0x00 sound group the effect's sounds are loaded from */
     s32 intensity;       /* +0x04 0 = nothing to play until the effect starts */
     s32 volumeSound[2];  /* +0x08 per variant: the sound the slot plays for that variant */
     s32 startSound;      /* +0x10 id played when the effect appears */

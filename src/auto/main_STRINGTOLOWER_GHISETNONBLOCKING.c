@@ -1,5 +1,6 @@
 /* 53 functions from 0x02048B74 to 0x02049AB8 (main), found by ds-decomp. */
 #include "common.h"
+#include "net_socket.h"
 
 typedef struct { u8 bytes[8]; } UnkSocketAddress;
 
@@ -16,18 +17,21 @@ typedef struct { u8 bytes[8]; } UnkSocketAddress;
 
 /* Polls a single fd for readability/priority/error; sets output flags accordingly. */
 
-s32 ghiSetNonBlocking(M2C_UNK arg0, s32 arg1) {
+/* ghi: switch a socket between blocking and non-blocking I/O; a nonzero
+ * `blocking` clears O_NONBLOCK, zero sets it, and 1 is returned when the new
+ * flags were applied. */
+s32 ghiSetNonBlocking(s32 socket, s32 blocking) {
     s32 SocketFcntl(M2C_UNK, M2C_UNK, s32);
-    s32 temp_r0;
-    s32 var_r2;
+    s32 flags;
+    s32 newFlags;
 
-    temp_r0 = SocketFcntl(arg0, 3, 0);
-    if (arg1 != 0) {
-        var_r2 = temp_r0 & ~4;
+    flags = SocketFcntl(socket, F_GETFL, 0);
+    if (blocking != 0) {
+        newFlags = flags & ~O_NONBLOCK;
     } else {
-        var_r2 = temp_r0 | 4;
+        newFlags = flags | O_NONBLOCK;
     }
-    if (SocketFcntl(arg0, 4, var_r2) == 0) {
+    if (SocketFcntl(socket, F_SETFL, newFlags) == 0) {
         return 1;
     }
     return 0;
@@ -41,10 +45,12 @@ void *optval = &size;
 return ((s32 (*)(s32,s32,s32,void *,s32))ghiSetSockOpt)(socket,GHI_SOL_SOCKET,GHI_SO_RCVBUF,optval,sizeof(s32))!=-1;
 }
 
-s32 ghiSetSendBufferSize(s32 a,s32 b,...) {
+/* GameSpy ghi: set `socket`'s send-buffer size to `size` (SO_SNDBUF) through
+ * the DS set-socket-option entry; returns 1 when that call does not fail. */
+s32 ghiSetSendBufferSize(s32 socket,s32 size,...) {
 void ghiSetSockOpt(void);
-void *ap = &b;
-return ((s32 (*)(s32,s32,s32,void *,s32))ghiSetSockOpt)(a,65535,4097,ap,4)!=-1;
+void *optval = &size;
+return ((s32 (*)(s32,s32,s32,void *,s32))ghiSetSockOpt)(socket,GHI_SOL_SOCKET,GHI_SO_SNDBUF,optval,sizeof(s32))!=-1;
 }
 
 /* GameSpy ghi: reads socket `socket`'s receive-buffer size and returns it, or -1

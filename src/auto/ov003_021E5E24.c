@@ -184,7 +184,7 @@ u8 func_ov003_021e647c(void *arg0) {
 void CreateOv003Scene(M2C_UNK arg0) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     M2C_UNK **MemAlloc(M2C_UNK);
-    M2C_UNK func_020e4c64();
+    M2C_UNK AcquireUsernameFont();
     M2C_UNK SetOv003SceneClass(M2C_UNK *);
     extern M2C_UNK gSceneBaseVTable;
     extern M2C_UNK gHeapObjectVTable;
@@ -234,7 +234,7 @@ void CreateOv003Scene(M2C_UNK arg0) {
     M2C_FIELD(scene, s32 *, 0x5C) = 0;
     M2C_FIELD(scene, s8 *, 0x60) = 0;
     M2C_FIELD(scene, M2C_UNK ***, 0x68) = NULL;
-    func_020e4c64();
+    AcquireUsernameFont();
     mapList = MemAlloc(0x40);
     if (mapList != NULL) {
         *mapList = &data_ov003_0220f710;
@@ -412,7 +412,7 @@ void *Ov003Scene_Destructor(void *scene) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK RemoveMapViewSprites();
     M2C_UNK func_020c8e40();
-    M2C_UNK func_020e4ca0();
+    M2C_UNK ReleaseUsernameFont();
     extern M2C_UNK gOv003SceneVTable;
     extern M2C_UNK gOv003SceneIfaceVTable;
     M2C_UNK SetOv003SceneState(s32);
@@ -426,7 +426,7 @@ void *Ov003Scene_Destructor(void *scene) {
 
     M2C_FIELD(scene, M2C_UNK **, 0) = &gOv003SceneVTable;
     M2C_FIELD(scene, M2C_UNK **, 0x34) = &gOv003SceneIfaceVTable;
-    func_020e4ca0();
+    ReleaseUsernameFont();
     child68 = M2C_FIELD(scene, void ***, 0x68);
     if (child68 != NULL) {
         M2C_FIELD(*child68, void (**)(void *), 4)(child68);
@@ -490,7 +490,7 @@ void *DestroyOv003Scene(void *scene) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK RemoveMapViewSprites();
     M2C_UNK func_020c8e40();
-    M2C_UNK func_020e4ca0();
+    M2C_UNK ReleaseUsernameFont();
     extern M2C_UNK gOv003SceneVTable;
     extern M2C_UNK gOv003SceneIfaceVTable;
     M2C_UNK SetOv003SceneState(s32);
@@ -504,7 +504,7 @@ void *DestroyOv003Scene(void *scene) {
 
     M2C_FIELD(scene, M2C_UNK **, 0) = &gOv003SceneVTable;
     M2C_FIELD(scene, M2C_UNK **, 0x34) = &gOv003SceneIfaceVTable;
-    func_020e4ca0();
+    ReleaseUsernameFont();
     child68 = M2C_FIELD(scene, void ***, 0x68);
     if (child68 != NULL) {
         M2C_FIELD(*child68, void (**)(void *), 4)(child68);
@@ -602,13 +602,11 @@ u8 InRange(s32 arg0, s32 arg1, s32 arg2) {
  return result;
 }
 
-s32 func_ov003_021e6cc4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    if (((s32) (arg0 + arg2) < 0) || (arg0 > 0x100)) {
-        return 0;
-    }
-    if (((s32) (arg1 + arg3) < 0) || (arg1 > 0xC0)) {
-        return 0;
-    }
+/* Whether the rectangle at (x, y) with the given width and height overlaps the
+ * 256x192 screen at all (a rectangle entirely off any side does not). */
+s32 IsRectOnScreen(s32 x, s32 y, s32 width, s32 height) {
+    if (x + width < 0 || x > SCREEN_WIDTH) return 0;
+    if (y + height < 0 || y > SCREEN_HEIGHT) return 0;
     return 1;
 }
 

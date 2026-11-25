@@ -169,7 +169,7 @@ s32 GetPowerRating(s32 player) {
     extern s32 *gCurrentMap;
     extern u16 gMapConfig;
     s32 IsPlayerActive(s32);
-    s32 func_0207c9c8(s32, s32);
+    s32 UnsignedDivide(s32, s32);
     s32 damageDealt, attacks, battles, i, result;
     void *p, *q;
 
@@ -197,7 +197,7 @@ s32 GetPowerRating(s32 player) {
         battles = M2C_FIELD(p, s32 *, PLAYER_REC_BATTLE_COUNT);
     }
     if (!attacks) return 0;
-    result = func_0207c9c8((battles * 100 + damageDealt) * 2, attacks) - 100;
+    result = UnsignedDivide((battles * 100 + damageDealt) * 2, attacks) - 100;
     if (result >= 100) result = ((result - 100) >> 1) + 100;
     if (result < 0) result = 0;
     if (result > 150) result = 150;
@@ -419,7 +419,7 @@ void ResetPlayerTurnBonuses(void) {
 s32 BuildUnitStatBlock(void *out, void *unit, s32 x, s32 y) {
     s32 GetUnitOwner(void *);
     u8 *GetPlayerSelectedUnit(s32);
-    s32 GetPlayerCommanderId(s32);
+    s32 GetPlayerCoZoneBonusIndex(s32);
     s32 GetMoveRangeCommanderId(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 GetUnitKindMaxAttackRange(s32);
     extern CommanderBonus gCommanderBonusTable[];
@@ -442,7 +442,7 @@ s32 BuildUnitStatBlock(void *out, void *unit, s32 x, s32 y) {
 
     owner = GetUnitOwner(unit);
     if (GetPlayerSelectedUnit(owner) == (u8 *)unit) {
-        commander = GetPlayerCommanderId(owner);
+        commander = GetPlayerCoZoneBonusIndex(owner);
     } else {
         commander = GetMoveRangeCommanderId(owner, x, y);
     }
@@ -519,7 +519,7 @@ s32 GetUnitMoveBonus(s32 arg0, s32 arg1, s32 arg2) {
  return M2C_FIELD(data, s8 *, 2);
 }
 
-s32 func_020a26c8(s32 arg0, s32 arg1, s32 arg2) {
+s32 GetUnitAttackRangeBonus(s32 arg0, s32 arg1, s32 arg2) {
  s32 BuildUnitStatBlock(void *, void *, s32, s32);
  u32 data[3];
  BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);

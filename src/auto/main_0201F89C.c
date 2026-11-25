@@ -373,8 +373,8 @@ s32 SocketRecvFromTask(void *arg0) {
     M2C_UNK SleepMilliseconds(s32);
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
     s32 SocketRecvFromWindow(void *, M2C_UNK, s32, u16 *, s32 *);
-    void func_0201d70c(s32);
-    s32 func_020201e4(s32);
+    void ConsumeConnectionReceivedData(s32);
+    s32 ConsumeSocketReceivedBytes(s32);
     u32 sp10;
     s32 spC;
     u16 *sp8;
@@ -421,7 +421,7 @@ loop_1:
             var_r10 = sp10;
         }
         MI_CpuCopy8(var_r0, spC, (s32) var_r10);
-        func_0201d70c((s32) var_r10);
+        ConsumeConnectionReceivedData((s32) var_r10);
         return (s32) var_r10;
     }
     if (var_r0 == 0) {
@@ -433,7 +433,7 @@ loop_1:
         return var_r4;
     }
     if ((s32) M2C_FIELD(temp_r8, s32 *, (int)0xF8) >= (s32) M2C_FIELD(temp_r8, u16 *, 0xFC)) {
-        func_020201e4(temp_r7);
+        ConsumeSocketReceivedBytes(temp_r7);
     }
     return var_r4;
 }
@@ -451,17 +451,28 @@ s32 SocketReleaseRecvWindow(void *sock) {
 }
 
 void SocketReleaseRecvWindowTask(void *arg0) {
-    M2C_UNK func_020201e4(s32);
-    func_020201e4(M2C_FIELD(arg0, s32 *, 4));
+    M2C_UNK ConsumeSocketReceivedBytes(s32);
+    ConsumeSocketReceivedBytes(M2C_FIELD(arg0, s32 *, 4));
 }
 
 #pragma dont_inline on
-s32 func_020201e4(s32 p) {
- s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);void func_0201d70c(s32);
- void *q=M2C_FIELD(p,void **,0x64);
- s32 irq=OS_DisableInterrupts();s32 value=M2C_FIELD(q,s32 *,0xF8);
- if(value){M2C_FIELD(q,s32 *,0xF8)=0;func_0201d70c(value);}
- OS_RestoreInterrupts(irq);return value;
+/* Take the bytes queued on a socket's raw connection: under an interrupt lock
+ * read the pending received count (CONN_RECV_PENDING), clear it and hand it to the
+ * active connection's receive-data consumer.  Returns the bytes that were
+ * waiting, 0 when none were. */
+s32 ConsumeSocketReceivedBytes(s32 sock) {
+    s32 OS_DisableInterrupts(void);
+    s32 OS_RestoreInterrupts(s32);
+    void ConsumeConnectionReceivedData(s32);
+    void *raw = M2C_FIELD(sock, void **, SOCK_RAW);
+    s32 irq = OS_DisableInterrupts();
+    s32 pending = M2C_FIELD(raw, s32 *, CONN_RECV_PENDING);
+    if (pending) {
+        M2C_FIELD(raw, s32 *, CONN_RECV_PENDING) = 0;
+        ConsumeConnectionReceivedData(pending);
+    }
+    OS_RestoreInterrupts(irq);
+    return pending;
 }
 
 /* Receive up to len bytes from a stream socket's queued receive records into

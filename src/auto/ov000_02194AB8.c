@@ -6,7 +6,7 @@ typedef struct { u8 kind:6; u8 flags:2; } UnitKind1955;
 #pragma opt_strength_reduction off
 #pragma opt_common_subs on
 #pragma opt_instruction_scheduling off
-int func_ov000_02194ab8(short *arg0) {
+int FindEnemyUnitAttackPosition(short *arg0) {
 void GetAiUnitRange(void);
 void BuildAiUnitThreatRange(void);
 s32 GetUnitAttackClass(s32);
@@ -20,7 +20,7 @@ s32 GetAttackDamage(s32,s32,s32);
 s32 IsFootUnitKind(s32);
 s32 IsTerrainOnUnitTeam(s32,s32);
 s32 func_ov000_0217d000(s32,s32);
-void func_01ffc2e8(void *);
+void BuildUnitMoveRangeBlockingUnits(void *);
 void MarkAdjacentCells(s32);
 s32 GetAiUnitMoveRange(void *);
 s32 FindAttackPosition(s16 *);
@@ -109,7 +109,7 @@ index=M2C_FIELD(map+(posHigh[1])*2,u16 *,0x3758)+posHigh[0];id=M2C_FIELD(map+ind
 if(id){
 unit=map+0x59a4+id*14;
 if(!((u32)(unit[11]<<25)>>31)&&((UnitKind1955 *)unit)->kind==22&&(M2C_FIELD(unit,u16 *,4)&32)&&!(M2C_FIELD(unit,u16 *,4)&64)){
-func_01ffc2e8(selected);MarkAdjacentCells(111);
+BuildUnitMoveRangeBlockingUnits(selected);MarkAdjacentCells(111);
 map=*gCurrentMap;x=posHigh[0];y=posHigh[1];
 high=M2C_FIELD(map+(y)*4,s8 **,0x52e8)[x];
 if(high>=0){
@@ -170,19 +170,21 @@ arg0[0]=posHigh[0];arg0[1]=posHigh[1];return 1;
 #pragma opt_instruction_scheduling reset
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
+/* Pick a destination from which the AI's current unit can attack an enemy unit
+ * and plan the move there. */
 void PlanEnemyUnitAttackDestination(void) {
-    s32 func_ov000_02194ab8(s16 *);
-    s32 func_ov000_0217e6bc(s16, s16);
+    s32 FindEnemyUnitAttackPosition(s16 *);
+    s32 IsMoveDestinationAllowed(s16, s16);
     void PlanMoveDestination(s16, s16);
-    s16 sp0[2];
+    s16 target[2];
 
-    if (func_ov000_02194ab8(sp0) == 0) {
+    if (FindEnemyUnitAttackPosition(target) == 0) {
         return;
     }
-    if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
+    if (IsMoveDestinationAllowed(target[0], target[1]) == 0) {
         return;
     }
-    PlanMoveDestination(sp0[0], sp0[1]);
+    PlanMoveDestination(target[0], target[1]);
 }
 
 /* Plan an attack on the enemy HQ: refresh the current unit's move range and
@@ -208,23 +210,26 @@ s32 FindEnemyHqAttackPositionAlt(s16 *outPos) {
     return 1;
 }
 
+/* Plan an attack on the enemy HQ by the alternative picker: find a position
+ * from which the enemy HQ can be attacked, drop it when the acting unit may not
+ * end its move there, and otherwise plan the unit's move to that position. */
 void PlanEnemyHqAttackDestinationAlt(void) {
     s32 FindEnemyHqAttackPositionAlt(s16 *);
-    s32 func_ov000_0217e6bc(s16, s16);
+    s32 IsMoveDestinationAllowed(s16, s16);
     void PlanMoveDestination(s16, s16);
     s16 sp0[2];
 
     if (FindEnemyHqAttackPositionAlt(sp0) == 0) {
         return;
     }
-    if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
+    if (IsMoveDestinationAllowed(sp0[0], sp0[1]) == 0) {
         return;
     }
     PlanMoveDestination(sp0[0], sp0[1]);
 }
 
 #pragma opt_strength_reduction off
-s32 func_ov000_02195574(s16 *out) {
+s32 SelectCapturablePropertyDestination(s16 *out) {
 s32 GetUnitAttackClass(s32);
 void GetAiUnitRange(void);
 void BuildAiUnitThreatRange(void);
@@ -259,19 +264,21 @@ if(!FindAttackPosition(cand))return 0;
 out[0]=cand[0];out[1]=cand[1];return 1;
 }
 #pragma opt_strength_reduction reset
-void func_ov000_02195750(void) {
-    s32 func_ov000_02195574(s16 *);
-    s32 func_ov000_0217e6bc(s16, s16);
+/* Plan the AI's current unit move to a capturable property: pick the destination
+ * and, when the unit may not end its move there, plan the move to it. */
+void PlanCapturablePropertyDestination(void) {
+    s32 SelectCapturablePropertyDestination(s16 *);
+    s32 IsMoveDestinationAllowed(s16, s16);
     void PlanMoveDestination(s16, s16);
-    s16 sp0[2];
+    s16 target[2];
 
-    if (func_ov000_02195574(sp0) == 0) {
+    if (SelectCapturablePropertyDestination(target) == 0) {
         return;
     }
-    if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
+    if (IsMoveDestinationAllowed(target[0], target[1]) == 0) {
         return;
     }
-    PlanMoveDestination(sp0[0], sp0[1]);
+    PlanMoveDestination(target[0], target[1]);
 }
 
 #pragma opt_strength_reduction off

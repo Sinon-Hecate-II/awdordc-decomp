@@ -292,7 +292,7 @@ s32 gti2SocketSend(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
     s32 ghiSendTo(s32, s32, s32, s32, void *, s32);
     s32 ghiGetLastSocketError(s32);
     s32 func_0205c244(void *, s32, s32);
-    void func_0205d49c(void *);
+    void gti2SocketError(void *);
     s32 func_0205cca0(void *, s32, s32);
     s32 gti2DumpCallback(void *, void *, s32, s32, s32, s32, s32, s32);
 
@@ -327,7 +327,7 @@ s32 gti2SocketSend(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
         if (r == -35) {
             goto success;
         }
-        func_0205d49c(p);
+        gti2SocketError(p);
         return 0;
     }
 
@@ -364,42 +364,53 @@ s32 gti2ThinkAndReapConnection(void **connectionArg, void **nowArg) {
     return 1;
 }
 
-s32 func_0205d428(void *arg0) {
+/* Advance every connection the socket owns: walk its connection table with the
+ * current tick, letting gti2ThinkAndReapConnection run each one's timers and
+ * retries and reap the connections that closed.  Returns 1 on success, 0 when
+ * the table walk was interrupted. */
+s32 gti2ThinkSocketConnections(void *socket) {
     s32 TableMapSafe2(s32, s32 (*)(void **,void **), s32 *);
     s32 GetSystemTickMilliseconds();
     s32 gti2ThinkAndReapConnection(void **,void **);
-    s32 sp0;
+    s32 now;
 
-    sp0 = GetSystemTickMilliseconds();
-    if (TableMapSafe2(M2C_FIELD(arg0, s32 *, 0xC), &gti2ThinkAndReapConnection, &sp0) == 0) {
+    now = GetSystemTickMilliseconds();
+    if (TableMapSafe2(M2C_FIELD(socket, s32 *, GT2_SOCKET_CONNECTION_TABLE), &gti2ThinkAndReapConnection, &now) == 0) {
         return 1;
     }
     return 0;
 }
 
-void func_0205d464(void *arg0) {
+/* Remove every connection of the socket that has been closed: walk the socket's
+ * closed-connection vector from the end and remove each connection from it. */
+void gti2RemoveClosedConnections(void *socket) {
     s32 Vector_GetCount(s32);
     s32 *Vector_GetItem(s32, s32);
-    s32 var_r4;
+    s32 index;
 
-    var_r4 = Vector_GetCount(M2C_FIELD(arg0, s32 *, 0x10)) - 1;
-    if (var_r4 < 0) {
+    index = Vector_GetCount(M2C_FIELD(socket, s32 *, GT2_SOCKET_CONNECTIONS)) - 1;
+    if (index < 0) {
         return;
     }
     do {
-        gti2RemoveConnection(*Vector_GetItem(M2C_FIELD(arg0, s32 *, 0x10), var_r4));
-        var_r4 -= 1;
-    } while (var_r4 >= 0);
+        gti2RemoveConnection(*Vector_GetItem(M2C_FIELD(socket, s32 *, GT2_SOCKET_CONNECTIONS), index));
+        index -= 1;
+    } while (index >= 0);
 }
 
-void func_0205d49c(void *a) {
+/* Fail a GT2 socket once, when a raw send or receive hit an unrecoverable
+ * error: fail every connection the socket owns through the closed notification,
+ * run the socket's error callback (which may free it) and free the socket if the
+ * callback left it in place. */
+void gti2SocketError(void *socket) {
     void GT2NotifyConnectionClosed(void *);
     s32 gti2SocketErrorCallback(void *);
-    if (M2C_FIELD(a, s32 *, 0x18)) return;
-    M2C_FIELD(a, s32 *, 0x18) = 1;
-    GT2NotifyConnectionClosed(a);
-    if (!gti2SocketErrorCallback(a)) return;
-    gti2FreeSocket(a);
+
+    if (M2C_FIELD(socket, s32 *, GT2_SOCKET_ERROR)) return;
+    M2C_FIELD(socket, s32 *, GT2_SOCKET_ERROR) = 1;
+    GT2NotifyConnectionClosed(socket);
+    if (!gti2SocketErrorCallback(socket)) return;
+    gti2FreeSocket(socket);
 }
 
 /* GameSpy GT2 gt2AddressToString: format an IPv4 address and/or a port as

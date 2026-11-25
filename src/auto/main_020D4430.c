@@ -28,7 +28,7 @@ state=*gCurrentMap;
 if(M2C_FIELD((u8 *)state+M2C_FIELD(state,u16 *,0x52a4)*0x8c,u8 *,0x67bd)){
 M2C_FIELD(state,u16 *,0x52b0)=1;return;
 }
-func_020994e0(0);
+ResetTextTiles(0);
 if(IsPlayerCursorOwner(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){
 state=(u8 *)*gCurrentMap+0x67a4+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c;
 StepMapViewToTile(M2C_FIELD(state,u8 *,0x2d),M2C_FIELD(state,u8 *,0x2e));
@@ -45,7 +45,14 @@ M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=7;
  * then, TURN_INTRO1 on later turns. */
 void TurnBannerStep(void){extern void **gCurrentMap;if(IsMusicFadingOut())return;BuildArmyInfoWindow();if(M2C_FIELD(*gCurrentMap,u16*,MAP_TURN)==1){if(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)==1)M2C_FIELD(*gCurrentMap,u16*,MAP_STATE)=MAP_STATE_TURN_INTRO3;else M2C_FIELD(*gCurrentMap,u16*,MAP_STATE)=MAP_STATE_TURN_INTRO2;}else M2C_FIELD(*gCurrentMap,u16*,MAP_STATE)=MAP_STATE_TURN_INTRO1;}
 
-void func_020d45d8(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b0)=M2C_FIELD(*gCurrentMap,u16*,0x52b2);M2C_FIELD(*gCurrentMap,u16*,0x52b2)=0;func_020ca4c0();}
+/* MAP_STATE_RETURN step: go back to the state saved in MAP_RETURN_STATE, clear
+ * that slot, then check whether the battle has ended. */
+void MapStateReturnStep(void) {
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = M2C_FIELD(*gCurrentMap, u16 *, MAP_RETURN_STATE);
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_RETURN_STATE) = 0;
+    CheckBattleEnd();
+}
 
 void func_020d4614(void){extern void **gCurrentMap;if(IsDialogActive())return;func_020d33ec();func_020cce4c();M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;}
 
@@ -119,8 +126,8 @@ void func_020d4928(void) {
     M2C_UNK InitPlayerCursorPositions();
     M2C_UNK LoadCurrentMap();
     M2C_UNK SetupBattleMapView();
-    M2C_UNK func_020b1ae0();
-    func_020b1ae0();
+    M2C_UNK SetDefaultMapView();
+    SetDefaultMapView();
     SetupBattleMapView();
     LoadCurrentMap();
     InitPlayerCursorPositions();
@@ -134,7 +141,7 @@ void func_020d4948(void) {
     CreateSpriteFromClass(&data_0212be74, 7);
 }
 
-void func_020d4960(void *arg0){extern M2C_UNK gBattleEndState; void *func_02084cc0(void *); void DeleteVoiceChatWidgets(void *); if(M2C_FIELD(&gBattleEndState,u8*,0)==0)return;DeleteVoiceChatWidgets(func_02084cc0(arg0));}
+void func_020d4960(void *arg0){extern M2C_UNK gBattleEndState; void *CreateSessionDepartureObject(void *); void DeleteVoiceChatWidgets(void *); if(M2C_FIELD(&gBattleEndState,u8*,0)==0)return;DeleteVoiceChatWidgets(CreateSessionDepartureObject(arg0));}
 
 /* Hand the finished battle over to its ending: in team mode (config mode 0) pick
  * the special ending when the player won on map BA with the clear counter at 1,
@@ -196,7 +203,7 @@ void (*callback)(void);
 ResetBattleMap();
 ResumeSavedBattle(M2C_FIELD(sprite,s16*,0x34));
 func_020d1c38();
-func_020b1ae0();
+SetDefaultMapView();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x50);
 if(callback)callback();
 InitBattleMapPresentation();
@@ -371,7 +378,7 @@ case 2:UpdateAimingCursor();break;
 case 3:UpdateUnitSelectCursor();break;
 case 4:OpenMapActionMenuAtCursor();break;
 case 5:UpdateMapTargetCursor();break;
-case 6:func_020d6310();break;
+case 6:UpdateMapCommandReplay();break;
 case 7:UpdateMapCursorReturn();break;
 case 8:UpdateMapSelectionCursor();break;
 case 9:func_020d54b4();break;
@@ -420,7 +427,7 @@ case 0: case 0x20: case 0x1000:
 if(func_020bc910()) return;
 if(HandleMapTouchRelease()) return;
 break;
-case 0x10: func_020c752c(); return;
+case 0x10: OpenBattleMenu(); return;
 case 0x100: CreateMapMenu(); return;
 case 0x40: HandleUiCancel(); break;
 case 0x80: break;

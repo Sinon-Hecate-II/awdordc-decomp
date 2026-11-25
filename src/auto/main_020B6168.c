@@ -4,6 +4,12 @@
 #include "ds3dsprite.h"
 typedef struct { u8 pad[0x48]; u32 distance:10; u32 flags:22; } RangeEffect;
 
+/* Fields of the Aurora order strike's staging object (class gAuroraEffectClass
+ * in main_020B6168.c): where the strike lands and which queued target starts it. */
+#define AURORA_EFFECT_X            0x38 /* s32: strike cell x, biased by 1 */
+#define AURORA_EFFECT_Y            0x3C /* s32: strike cell y, biased by 1 */
+#define AURORA_EFFECT_FIRST_TARGET 0x6C /* s16: selection-queue index of the first target */
+
 void func_020b6168(void *arg0) {
     extern void **gCurrentMap;
     M2C_UNK PlaySoundAtTile(M2C_UNK, s32, s32);
@@ -305,12 +311,12 @@ void func_020b67e0(s16 arg0, s16 arg1, M2C_UNK arg2) {
 
 #pragma opt_propagation off
 void func_020b6814(void *p){
-s32 CreateExplosionEffect(s32,s32,s32);s32 func_020b5e00(s32,s32,void*,...);s32 func_020b5964(s32,void*);s32 func_020b5d94(s32,void*);
+s32 CreateExplosionEffect(s32,s32,s32);s32 func_020b5e00(s32,s32,void*,...);s32 CreateMapOrderEffectSprite(s32,void*);s32 func_020b5d94(s32,void*);
 s32 a=M2C_FIELD(p,s32*,0x34);
 if(M2C_FIELD(p,s16*,0x6e)>0){CreateExplosionEffect(M2C_FIELD(p,s32*,0x38),M2C_FIELD(p,s32*,0x3c),0);return;}
 switch(M2C_FIELD(p,s16*,0x6c)){
 case 0:break;case 1:func_020b5e00(M2C_FIELD(p,s32*,0x38),M2C_FIELD(p,s32*,0x3c),p);return;
-case 2:break;case 3:break;case 4:func_020b5964(a,p);return;case 5:break;case 6:case 7:func_020b5d94(a,p);return;default:break;
+case 2:break;case 3:break;case 4:CreateMapOrderEffectSprite(a,p);return;case 5:break;case 6:case 7:func_020b5d94(a,p);return;default:break;
 }}
 #pragma opt_propagation reset
 /* Create the battle-preview sprite for the destructible feature `feature` under
@@ -386,14 +392,16 @@ s32 PanMapViewToTargetCenter(s16 start) {
     if (count > 0) PanMapViewToTile(RuntimeIntDivMod(sumX, count), RuntimeIntDivMod(sumY, count));
 }
 
-void UpdateAuroraAimMarker(void *arg0) {
-s32 GetObjectTileX(void *); s32 GetObjectTileY(void *);
-s32 a; s32 t; u32 bits=M2C_FIELD(arg0,u32 *,0x48);
-u16 count=(u16)(bits>>21);
-if(count) return;
-a=GetObjectTileX(arg0);
-t=GetObjectTileY(arg0);
-PlaySoundAtTile(0xfc,a,t);
+/* Play the strike sound under an Aurora aim marker on its first update, once the
+ * marker's start delay has run out and its elapsed-frame count is still 0. */
+void UpdateAuroraAimMarker(void *marker) {
+    s32 GetObjectTileX(void *); s32 GetObjectTileY(void *);
+    s32 tileX; s32 tileY; u32 bits = M2C_FIELD(marker, u32 *, SPRITE_OBJ_TIMER);
+    u16 elapsed = (u16)(bits >> 21);
+    if (elapsed) return;
+    tileX = GetObjectTileX(marker);
+    tileY = GetObjectTileY(marker);
+    PlaySoundAtTile(0xfc, tileX, tileY);
 }
 
 s32 ApplyPendingDamage(void *p) {
@@ -526,17 +534,19 @@ void StageAuroraEffect(void *effect) {
     }
 }
 
-void func_020b6f98(s32 arg0, s32 arg1, s16 arg2, M2C_UNK arg3) {
+/* Spawn the Aurora order's strike effect at the order's cell: record the cell and
+ * the first queued target to bombard, then pan the map view onto the targets. */
+void CreateAuroraStrikeEffect(s32 x, s32 y, s16 firstTarget, M2C_UNK parent) {
     M2C_UNK PanMapViewToTargetCenter(s16);
-    extern M2C_UNK data_02128cac;
-    void *temp_r0;
+    extern M2C_UNK gAuroraEffectClass;
+    void *effect;
 
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
-temp_r0 = CreateSpriteObject(&data_02128cac, arg3);
-    M2C_FIELD(temp_r0, s32 *, 0x38) = (s32) (arg0 + 1);
-    M2C_FIELD(temp_r0, s32 *, 0x3C) = (s32) (arg1 + 1);
-    M2C_FIELD(temp_r0, s16 *, 0x6C) = arg2;
-    PanMapViewToTargetCenter(arg2);
+    effect = CreateSpriteObject(&gAuroraEffectClass, parent);
+    M2C_FIELD(effect, s32 *, AURORA_EFFECT_X) = (s32) (x + 1);
+    M2C_FIELD(effect, s32 *, AURORA_EFFECT_Y) = (s32) (y + 1);
+    M2C_FIELD(effect, s16 *, AURORA_EFFECT_FIRST_TARGET) = firstTarget;
+    PanMapViewToTargetCenter(firstTarget);
 }
 
 void func_020b6fd8(void *arg0) {

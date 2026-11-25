@@ -10,12 +10,12 @@ typedef struct MenuDisplayConfig { u16 fields[6]; } MenuDisplayConfig;
 void func_ov000_0216e178(void *arg0) {
 extern s32 gArmyInfoState; extern void **gCurrentMap; extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain; extern void *g3DSpriteEngineSub; extern u16 data_ov000_021adcfc[];
 s32 HeapAllocBlock(s32); s32 func_020cfb94(void); s32 func_020a8c10(s32);
-void ArmyInfo_ApplySelection(void);void ArmyInfo_RedrawContents(void);void func_ov000_0216e09c(s32); void *GetLocalizedFileName(void *); void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);s32 func_020a7290(void);void *func_020a7278(void);void *func_020a72e8(s32);s32 GetUiColor(s32);
+void ArmyInfo_ApplySelection(void);void ArmyInfo_RedrawContents(void);void ArmyInfo_SelectPlayer(s32); void *GetLocalizedFileName(void *); void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);s32 func_020a7290(void);void *func_020a7278(void);void *func_020a72e8(s32);s32 GetUiColor(s32);
 extern u8 data_ov000_021b88e8[];extern u8 data_ov000_021b88fc[];extern u8 data_ov000_021b890c[];extern u8 data_ov000_021b8924[];extern u8 data_ov000_021b8934[];extern u8 data_ov000_021b8948[];extern u8 data_ov000_021b8958[];extern u8 data_ov000_021b896c[];extern u8 data_ov000_021b897c[];extern u8 data_ov000_021b898c[];extern u8 data_ov000_021b89a0[];s32 i,n,t; void *p,*dest,*old; volatile MenuDisplayConfig a,b;
 a=*(MenuDisplayConfig*)&data_ov000_021adcfc[9];b=*(MenuDisplayConfig*)&data_ov000_021adcfc[3];gArmyInfoState=HeapAllocBlock(36);GX_ReleaseBankGrants();GX_SetBankForBG(1);GX_SetBankForOBJ(2);GX_SetBankForSubBG(4);GX_SetBankForSubOBJ(8);GX_SetBankForBGExtPalette(16);GX_SetBankForObjExtPalette(32);GX_SetBankForBGExtPlttSub(128);GX_SetBankForOBJExtPlttSub(256);
 M2C_FIELD(gArmyInfoState,u8*,16)=0;M2C_FIELD(gArmyInfoState,u8*,17)=0;M2C_FIELD(gArmyInfoState,u16*,18)=12;M2C_FIELD(gArmyInfoState,u16*,20)=0;M2C_FIELD(gArmyInfoState,u8*,12)=0;
 n=0;for(i=0;i<func_020cfb94();i++){p=(u8*)*gCurrentMap+0x67a4+(i+1)*140;if(M2C_FIELD(p,u8*,30)&&!M2C_FIELD(p,u8*,25)){M2C_FIELD(gArmyInfoState,u8*,n)=i+1;M2C_FIELD(gArmyInfoState,u8*,n+8)=M2C_FIELD(*gCurrentMap,u8*,0x67c1+(i+1)*140);M2C_FIELD(gArmyInfoState,u8*,n+4)=func_020a8c10(i+1);n++;M2C_FIELD(gArmyInfoState,u8*,12)++;}}
-for(i=0;i<M2C_FIELD(gArmyInfoState,u8*,12);i++)if(M2C_FIELD(arg0,s16*,108)==M2C_FIELD(gArmyInfoState,u8*,i))func_ov000_0216e09c(i);
+for(i=0;i<M2C_FIELD(gArmyInfoState,u8*,12);i++)if(M2C_FIELD(arg0,s16*,108)==M2C_FIELD(gArmyInfoState,u8*,i))ArmyInfo_SelectPlayer(i);
 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;Apply3DSpriteLayout(&a);
 {u16 *volatile q00; q00=*(u16**)gCur3DSpriteEngine;*q00=*q00|16;}
 {u16 *volatile q01; q01=*(u16**)gCur3DSpriteEngine;*q01=*q01|32;}
@@ -53,7 +53,7 @@ void func_ov000_0216ea1c(void) {
     extern u16 *gKeyState;
     extern s32 gArmyInfoState;
     M2C_UNK PlaySoundEffect(s32);
-    void func_ov000_0216e09c(s32);
+    void ArmyInfo_SelectPlayer(s32);
     void ArmyInfo_ApplySelection(void);
     void ArmyInfo_RedrawContents(void);
     void func_ov000_0216ebac(void);
@@ -61,13 +61,13 @@ void func_ov000_0216ea1c(void) {
     if (keys & 2) { func_ov000_0216ebac(); return; }
     if (gKeyState[1] & 0x10) {
         if (M2C_FIELD(gArmyInfoState, u8 *, 0xd) == M2C_FIELD(gArmyInfoState, u8 *, 0xc) - 1) {
-            if (keys & 0x10) { PlaySoundEffect(0x10019); func_ov000_0216e09c(0); ArmyInfo_ApplySelection(); }
-        } else { PlaySoundEffect(0x10019); func_ov000_0216e09c(M2C_FIELD(gArmyInfoState, u8 *, 0xd) + 1); ArmyInfo_ApplySelection(); }
+            if (keys & 0x10) { PlaySoundEffect(0x10019); ArmyInfo_SelectPlayer(0); ArmyInfo_ApplySelection(); }
+        } else { PlaySoundEffect(0x10019); ArmyInfo_SelectPlayer(M2C_FIELD(gArmyInfoState, u8 *, 0xd) + 1); ArmyInfo_ApplySelection(); }
     }
     if (gKeyState[1] & 0x20) {
         if (M2C_FIELD(gArmyInfoState, u8 *, 0xd) == 0) {
-            if (gKeyState[0] & 0x20) { PlaySoundEffect(0x10019); func_ov000_0216e09c(M2C_FIELD(gArmyInfoState, u8 *, 0xc) - 1); ArmyInfo_ApplySelection(); }
-        } else { PlaySoundEffect(0x10019); func_ov000_0216e09c(M2C_FIELD(gArmyInfoState, u8 *, 0xd) - 1); ArmyInfo_ApplySelection(); }
+            if (gKeyState[0] & 0x20) { PlaySoundEffect(0x10019); ArmyInfo_SelectPlayer(M2C_FIELD(gArmyInfoState, u8 *, 0xc) - 1); ArmyInfo_ApplySelection(); }
+        } else { PlaySoundEffect(0x10019); ArmyInfo_SelectPlayer(M2C_FIELD(gArmyInfoState, u8 *, 0xd) - 1); ArmyInfo_ApplySelection(); }
     }
     if ((gKeyState[0] & 0x100) || (gKeyState[0] & 0x200)) {
         PlaySoundEffect(0x10020);
@@ -78,14 +78,14 @@ void func_ov000_0216ea1c(void) {
 }
 
 void func_ov000_0216eb7c(void) {
-    M2C_UNK func_0209bfa8();
+    M2C_UNK DeleteTextSprites();
     M2C_UNK HeapFreeBlock();
     extern s32 gArmyInfoState;
     if (gArmyInfoState != 0) {
         HeapFreeBlock();
         gArmyInfoState = 0;
     }
-    func_0209bfa8();
+    DeleteTextSprites();
 }
 
 void func_ov000_0216ebac(void) {

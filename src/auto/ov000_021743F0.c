@@ -124,14 +124,14 @@ void Ov000_InfoWindow_ClearUnitFlags(void *arg0) {
 void Ov000_InfoWindow_OpenCell(void *menuPtr, s32 unit, s32 terrainId) {
     void Ov000_InfoWindow_ShowTerrain(void *, s32);
     void FillUnitInfo(void *, void *);
-    extern Ov000Flags data_0215d9b8;
+    extern Ov000Flags gOptionBits;
     extern Ov000InfoMenu *gOv000InfoWindow;
     Ov000InfoMenu *menu = (Ov000InfoMenu *)menuPtr;
     if (unit == 0) {
         Ov000_InfoWindow_ShowTerrain(gOv000InfoWindow, terrainId);
         return;
     }
-    if (((u32)(M2C_FIELD(&data_0215d9b8, u16 *, 6) << 16) >> 31) == 1) {
+    if (((u32)(M2C_FIELD(&gOptionBits, u16 *, 6) << 16) >> 31) == 1) {
         Ov000_InfoWindow_ShowTerrain(gOv000InfoWindow, terrainId);
         return;
     }
@@ -139,10 +139,10 @@ void Ov000_InfoWindow_OpenCell(void *menuPtr, s32 unit, s32 terrainId) {
     menu->pendingState = OV000_INFO_UNIT_STATS;
 }
 
-void func_ov000_02174a68(void *arg0) {
-    M2C_UNK func_ov000_021755b4(s32);
-    func_ov000_021755b4(M2C_FIELD(arg0, s32 *, 0));
-    M2C_FIELD(arg0, s32 *, 0xC) = 4;
+void Ov000_InfoWindow_ShowUnitStats(void *window, s32 player, s32 unitKind) {
+    M2C_UNK func_ov000_021755b4(s32, s32, s32);
+    func_ov000_021755b4(M2C_FIELD(window, s32 *, 0), player, unitKind);
+    M2C_FIELD(window, s32 *, 0xC) = 4;
 }
 
 void Ov000_InfoWindow_ShowTerrain(void *arg0, s32 arg1) {
@@ -160,7 +160,7 @@ void Ov000_InfoWindow_ShowTerrain(void *arg0, s32 arg1) {
  * the cell (bit 0x8000 of the global flags forces the terrain panel). */
 void Ov000_InfoWindow_TogglePanel(void *menu) {
 extern void **gCurrentMap;
-extern Ov000Flags data_0215d9b8;
+extern Ov000Flags gOptionBits;
 extern Ov000MenuState *gOv000InfoWindow;
 s32 GetCellTerrainId(s32,s32);
 void *unit;
@@ -180,15 +180,15 @@ if(unit && ((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)==0)unit=0;
 cell=GetCellTerrainId(cellX,cellY);
 switch(M2C_FIELD(menu,s32 *,8)){
 case 2: case 3: {
-u16 flags=M2C_FIELD(&data_0215d9b8,u16 *,6);
+u16 flags=M2C_FIELD(&gOptionBits,u16 *,6);
 void *window=gOv000InfoWindow;
-M2C_FIELD(&data_0215d9b8,u16 *,6)=flags & ~0x8000;
+M2C_FIELD(&gOptionBits,u16 *,6)=flags & ~0x8000;
 Ov000_InfoWindow_OpenCell(window,(s32)unit,cell);
 break; }
 case 4: {
-u16 flags=M2C_FIELD(&data_0215d9b8,u16 *,6);
+u16 flags=M2C_FIELD(&gOptionBits,u16 *,6);
 void *window=gOv000InfoWindow;
-M2C_FIELD(&data_0215d9b8,u16 *,6)=flags | 0x8000;
+M2C_FIELD(&gOptionBits,u16 *,6)=flags | 0x8000;
 Ov000_InfoWindow_ShowTerrain(window,cell);
 break; }
 }
@@ -216,19 +216,21 @@ u8 Ov000_InfoWindow_Exists(void) {
     return var_r0;
 }
 
-void func_ov000_02174c2c(void) {
+/* Create the ov000 map info window: allocate its Ov000InfoMenu, initialize its
+ * panels and language, store it in gOv000InfoWindow and create its sprite. */
+void Ov000_InfoWindow_Create(void) {
     s32 *MemAlloc(M2C_UNK);
     void *Ov000_InfoWindow_Init(void *);
     M2C_UNK CreateSpriteFromClass(void *, s32);
     extern M2C_UNK gOv000InfoWindowSpriteClass;
-    extern Ov000MenuState *gOv000InfoWindow;
-    void *var_r0;
-    var_r0 = MemAlloc(0x20);
-    if (var_r0 != 0) {
-        var_r0 = Ov000_InfoWindow_Init(var_r0);
+    extern Ov000InfoMenu *gOv000InfoWindow;
+    void *menu;
+    menu = MemAlloc(0x20);
+    if (menu != 0) {
+        menu = Ov000_InfoWindow_Init(menu);
     }
-    gOv000InfoWindow = var_r0;
-    CreateSpriteFromClass(&gOv000InfoWindowSpriteClass, 8);
+    gOv000InfoWindow = menu;
+    CreateSpriteFromClass(&gOv000InfoWindowSpriteClass, OV000_INFO_SPRITE_LAYER);
 }
 
 void func_ov000_02174c64(void) {
@@ -268,14 +270,17 @@ void func_ov000_02174ce8(void) {
     M2C_FIELD(gOv000InfoWindow, u8 *, 0x11) = 1;
 }
 
-void Ov000_InfoWindow_ShowProductionUnit(s32 arg0, s32 arg1) {
+/* Show a production preview in the map info window: ask the window to re-read
+ * the cell under the cursor and fill its stats panel with the given player's
+ * unit kind. */
+void Ov000_InfoWindow_ShowProductionUnit(s32 player, s32 unitKind) {
     extern Ov000MenuState *gOv000InfoWindow;
     if (Ov000_InfoWindow_Exists() == 0) return;
-    M2C_FIELD(gOv000InfoWindow, u8 *, 0x11) = 1;
-    ((void (*)())func_ov000_02174a68)(gOv000InfoWindow, arg0, arg1);
+    gOv000InfoWindow->trigger = 1;
+    Ov000_InfoWindow_ShowUnitStats(gOv000InfoWindow, player, unitKind);
 }
 
-s32 func_ov000_02174d50(void) {
+s32 Ov000_InfoWindow_CanCancel(void) {
     extern Ov000MenuState *gOv000InfoWindow;
     s32 result;
     if (Ov000_InfoWindow_Exists() != 0) {
@@ -286,7 +291,7 @@ s32 func_ov000_02174d50(void) {
     return result;
 }
 
-s32 func_ov000_02174d78(void) {
+s32 Ov000_InfoWindow_Cancel(void) {
     void Ov000_InfoWindow_TogglePanel(void *);
     extern Ov000MenuState *gOv000InfoWindow;
     if (Ov000_InfoWindow_Exists() == 0) return 0;

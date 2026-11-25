@@ -29,6 +29,7 @@ typedef struct SpriteBaseBits {
  * mask and plays the sprite's press animation.  Its per-frame update is
  * UpdateUnitSpriteAnimation. */
 #define UNIT_SPRITE_BUTTON_TASK 0x60 /* void *the sprite's button task, 0 when none */
+#define UNIT_SPRITE_CELLS       0x64 /* SpriteCellList *the sprite's cell list, freed with the sprite */
 #define UNIT_SPRITE_TASK_SPRITE 0x34 /* void *unit sprite the task drives */
 #define UNIT_SPRITE_TASK_BUTTONS 0x38 /* u16 key mask that presses the sprite */
 

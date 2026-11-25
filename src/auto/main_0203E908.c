@@ -143,7 +143,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
     s32 func_020617b4(void *);
     s32 func_02060c90(void *);
     u16 func_02060c98(void *);
-    s32 func_020218bc(void);
+    s32 GetLocalIpAddressNetworkOrder(void);
     u16 SBServerGetPort(void *);
     u32 RandomBelow(u32);
     u16 GT2SocketPort(void *);
@@ -179,7 +179,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
                 deferred = result;
             }
         } else {
-            u32 key = (u16)func_020218bc();
+            u32 key = (u16)GetLocalIpAddressNetworkOrder();
             if ((u16)key == 0xa8c0 || ((key & 255) == 0xac && (key & 0xff00) >= 0x1000 && (key & 0xff00) <= 0x1f00) || (key & 255) == 10) {
                 deferred = 1;
             } else {
@@ -197,7 +197,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
         } else {
             s32 first;
             u16 second;
-            tempData[0] = func_020218bc();
+            tempData[0] = GetLocalIpAddressNetworkOrder();
             tempData[1] = GT2SocketPort(*(void **)M2C_FIELD(GetConnection(), void **, 4));
             s = GetConnection();
             first = SBServerGetIp((s32 *)data);

@@ -154,10 +154,10 @@ dst++;count++;
 
 #pragma optimization_level reset
 void func_020c9040(void *a) {
-void SetSpriteAnimation(void *,s32);
+void GotoSpriteAnimationLabel(void *,s32);
 M2C_FIELD(a,volatile u8 *,0x35)=0;
 if(M2C_FIELD(a,volatile u8 *,0x34)) return;
-SetSpriteAnimation(a,0);
+GotoSpriteAnimationLabel(a,0);
 }
 
 /* Per-frame step of the campaign map list loader: expands the next queued map
@@ -468,8 +468,8 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     M2C_UNK FindObjectByClass(M2C_UNK *);
     void SetFileDirectory(M2C_UNK *);
     M2C_UNK GetLocalizedFileName(M2C_UNK *);
-    M2C_UNK func_020813c4(M2C_UNK, M2C_UNK);
-    M2C_UNK func_0208143c(M2C_UNK *, M2C_UNK, s32);
+    M2C_UNK QueueFileToTextureBank(M2C_UNK, M2C_UNK);
+    M2C_UNK QueueFileToObjExtPalette(M2C_UNK *, M2C_UNK, s32);
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, s32);
     s32 StepMapViewToTile(s32, s32);
     M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, s32);
@@ -518,8 +518,8 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
 
     if (FindObjectByClass(&data_0212b3e4) == 0) {
         SetFileDirectory(&data_0212b77c);
-        func_020813c4(GetLocalizedFileName(&data_0212b788), 0x329a0);
-        func_0208143c(&data_0212b794, 0x1560, 0x20);
+        QueueFileToTextureBank(GetLocalizedFileName(&data_0212b788), 0x329a0);
+        QueueFileToObjExtPalette(&data_0212b794, 0x1560, 0x20);
     }
     obj = (void *)CreateSpriteFromClass(&data_0212b3e4, 7);
     M2C_FIELD(obj, s32 *, 0x34) = px;
@@ -546,10 +546,10 @@ second_path:
 
 void EnterBattleEnd(void) {
     M2C_UNK RestorePlayersOfActiveArmies();
-    M2C_UNK func_ov000_0216aa84();
+    M2C_UNK RunBattleEndEvent();
     extern void **gCurrentMap;
     RestorePlayersOfActiveArmies();
-    func_ov000_0216aa84();
+    RunBattleEndEvent();
     M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 0x12;
 }
 

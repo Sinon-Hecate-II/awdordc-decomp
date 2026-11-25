@@ -284,20 +284,22 @@ void Ov001_GetScrollbarPartRect(s32 part, M2C_UNK *rect) {
     }
 }
 
-void Ov001_SetScrollbarHandlePos(s32 arg0) {
+/* Move the scrollbar's handle sprite to `handlePos` pixels down the track and
+ * remember the new handle offset. */
+void Ov001_SetScrollbarHandlePos(s32 handlePos) {
     s32 Ov001_MoveSpriteLayout(M2C_UNK, s32, u16, s32);
     extern void *gOv001Scrollbar;
-    u16 f10;
-    u16 f12;
-    void *nested;
-    void *base;
+    u16 trackX;
+    u16 trackY;
+    void *handle;
+    void *bar;
 
-    base = gOv001Scrollbar;
-    f12 = M2C_FIELD(base, u16 *, 0x12);
-    f10 = M2C_FIELD(base, u16 *, 0x10);
-    nested = M2C_FIELD(base, void **, 0x0);
-    Ov001_MoveSpriteLayout(nested, -1, f10, arg0 + (s32)f12);
-    M2C_FIELD(gOv001Scrollbar, s8 *, 0x1A) = (s8)arg0;
+    bar = gOv001Scrollbar;
+    trackY = M2C_FIELD(bar, u16 *, OV001_SCROLLBAR_Y);
+    trackX = M2C_FIELD(bar, u16 *, OV001_SCROLLBAR_X);
+    handle = M2C_FIELD(bar, void **, OV001_SCROLLBAR_SPRITE);
+    Ov001_MoveSpriteLayout(handle, -1, trackX, handlePos + (s32)trackY);
+    M2C_FIELD(gOv001Scrollbar, s8 *, OV001_SCROLLBAR_HANDLE_POS) = (s8)handlePos;
 }
 
 void Ov001_AllocFriendRoster(void) {
@@ -363,7 +365,7 @@ s32 Ov001_SendFriendRosterRequest(void) {
  * reply to arrive), then end the WFC link. */
 s32 Ov001_CloseFriendRoster(void) {
     s32 WFC_GetConnectionData(void *);
-    s32 func_02012274(void (*)(void));
+    s32 WFC_SendCommand1(void (*)(void));
     s32 WFC_EndLink(void (*)(void));
     void Ov001_HandleFriendRosterReply();
     extern s32 gWfcFriendRoster;
@@ -371,7 +373,7 @@ s32 Ov001_CloseFriendRoster(void) {
     *(u8 *)((s8 *)gWfcFriendRoster + WFC_FRIEND_CLOSING) = 1;
     WFC_GetConnectionData((void *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY));
     if (*(u16 *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY) != WFC_REPLY_DONE) {
-        if (func_02012274(Ov001_HandleFriendRosterReply) != WFC_CMD_OK) {
+        if (WFC_SendCommand1(Ov001_HandleFriendRosterReply) != WFC_CMD_OK) {
             return 0;
         }
         do {
@@ -690,24 +692,29 @@ void func_ov001_021846f8(u8 *arg0) {
     MI_CpuCopy8((void *)((u8 *)gSaveData + 0x440), arg0, 0x20);
 }
 
-void func_ov001_0218471c(s32 arg0) {
+/* Format the first saved player-code value (SAVE_PLAYER_CODES) as four decimal
+ * groups for the UI. */
+void Ov001_FormatSavePlayerCode1(s32 output) {
     void func_0200563c(s32, s32, ...);
     extern s32 gSaveData;
     extern char gOv001CodeFormat[];
-    u8 *p = (u8 *)gSaveData;
-    u8 t0 = p[0x4c2];
-    u8 t1 = p[0x4c3];
-    func_0200563c(arg0, (s32)gOv001CodeFormat, p[0x4c0], p[0x4c1], t0, t1);
+    u8 *saveData = (u8 *)gSaveData;
+    u8 *playerCode = saveData + SAVE_PLAYER_CODES;
+    u8 group2 = playerCode[2];
+    u8 group3 = playerCode[3];
+    func_0200563c(output, (s32)gOv001CodeFormat, saveData[SAVE_PLAYER_CODES], playerCode[1], group2, group3);
 }
 
-void func_ov001_0218475c(s32 arg0) {
+/* Format the working save copy's 4-byte verification code (SAVE_CODE) as four
+ * decimal groups for the UI. */
+void Ov001_FormatSaveCode(s32 output) {
     void func_0200563c(s32, s32, ...);
     extern s32 gSaveData;
     extern char gOv001CodeFormat[];
-    u8 *p = (u8 *)gSaveData;
-    u8 t0 = p[0x4f2];
-    u8 t1 = p[0x4f3];
-    func_0200563c(arg0, (s32)gOv001CodeFormat, p[0x4f0], p[0x4f1], t0, t1);
+    u8 *saveData = (u8 *)gSaveData;
+    u8 group2 = saveData[SAVE_CODE + 2];
+    u8 group3 = saveData[SAVE_CODE + 3];
+    func_0200563c(output, (s32)gOv001CodeFormat, saveData[SAVE_CODE], saveData[SAVE_CODE + 1], group2, group3);
 }
 
 #pragma opt_peephole off

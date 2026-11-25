@@ -35,7 +35,7 @@ void SetMapCursor(s16,s16,int,int,int);
 void func_ov000_021906a0(int);
 extern u8 *gAiCommandState;
 extern u16 gPlayerUnitIdBase[];
-void func_01ffc2e8(void *);
+void BuildUnitMoveRangeBlockingUnits(void *);
 s32 GetAiUnitRange(void);
 void func_ov000_0217a59c(s32,s32,s32,s32);
 s32 IsPropertyCell(s32,s32);
@@ -71,7 +71,7 @@ void func_ov000_02190094(void)
     new_var[0] = *((u8 **) (((u8 *) (*gCurrentMap)) + 0x52d0));
     if (((UnkStruct_ov000_021A860C *) new_var[0])->unkB_4 == 1)
     {
-      func_01ffc2e8(new_var[0]);
+      BuildUnitMoveRangeBlockingUnits(new_var[0]);
       new_var[1] = *gCurrentMap;
       scan = gPlayerUnitIdBase[*((u16 *) (new_var[1] + 0x52a4))] + 1;
       if (scan < (gPlayerUnitIdBase[*((u16 *) (new_var[1] + 0x52a4))] + 51))

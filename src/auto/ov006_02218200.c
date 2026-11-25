@@ -16,7 +16,7 @@ void func_ov006_02218200(void *entity) {
     s32 value;
 
     if (!M2C_FIELD(entity, s32 *, 0x34)) {
-        SetSpriteAnimation(entity, 2);
+        GotoSpriteAnimationLabel(entity, 2);
         return;
     }
     if (!M2C_FIELD(sub, s32 *, 0x30C)) {
@@ -27,7 +27,7 @@ void func_ov006_02218200(void *entity) {
         hasSub = 1;
     }
     if (!hasSub) {
-        SetSpriteAnimation(entity, 2);
+        GotoSpriteAnimationLabel(entity, 2);
         return;
     }
     value = M2C_FIELD(sub, s32 *, 4);
@@ -39,12 +39,12 @@ void func_ov006_02218200(void *entity) {
         ok = 0;
     }
     if (!ok) {
-        SetSpriteAnimation(entity, 2);
+        GotoSpriteAnimationLabel(entity, 2);
         return;
     }
     ExpandMapRecord(sub + 0x10, curId);
     if (!IsValidMapRecord(curId)) {
-        SetSpriteAnimation(entity, 3);
+        GotoSpriteAnimationLabel(entity, 3);
         return;
     }
     func_ov006_02217cfc(M2C_FIELD(sub, s32 *, 8));
@@ -53,14 +53,14 @@ void func_ov006_02218200(void *entity) {
 }
 
 void func_ov006_02218300(M2C_UNK arg0) {
-    M2C_UNK SetSpriteAnimation(M2C_UNK, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(M2C_UNK, M2C_UNK);
     s32 IsSessionInError();
     M2C_UNK DisableMapConfirm();
     if (IsSessionInError() == 0) {
         return;
     }
     DisableMapConfirm();
-    SetSpriteAnimation(arg0, 3);
+    GotoSpriteAnimationLabel(arg0, 3);
 }
 
 void func_ov006_02218328(M2C_UNK arg0) {

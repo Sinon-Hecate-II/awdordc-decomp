@@ -176,7 +176,7 @@ s32 GetPlayerPanelFlagTile(u32 playerId) {
 void Ov003_LoadPlayerSelectBg(s32 layer, s32 palette, u32 playerCount) {
     M2C_UNK LoadDecompressedFileTo(s32, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
-    M2C_UNK func_020814ac(s32, s32, M2C_UNK, s32);
+    M2C_UNK LoadDecompressedFileAndDrawTilemapBlock(s32, s32, M2C_UNK, s32);
     s32 GetPlayerIdForSlot(s32);
     s32 func_020ae7a4(s32, s32, s32);
     s32 GetLocalizedFileName(M2C_UNK *);
@@ -186,7 +186,7 @@ void Ov003_LoadPlayerSelectBg(s32 layer, s32 palette, u32 playerCount) {
     u8 i;
 
     LoadDecompressedFileTo(GetLocalizedFileName(&sShogunSelectCgName), M2C_FIELD((void *)((u8 *)gCur3DSpriteEngine + (layer * 4)), s32 *, 0xC));
-    func_020814ac(GetShogunBgFileName(playerCount), M2C_FIELD((void *)((u8 *)gCur3DSpriteEngine + (layer * 4)), s32 *, 0x20), 0, palette);
+    LoadDecompressedFileAndDrawTilemapBlock(GetShogunBgFileName(playerCount), M2C_FIELD((void *)((u8 *)gCur3DSpriteEngine + (layer * 4)), s32 *, 0x20), 0, palette);
     LoadFileToSpriteBuffer(&sSelectCommonBgPaletteName, palette << 5, 0x40);
     if (playerCount <= 1U) {
         return;

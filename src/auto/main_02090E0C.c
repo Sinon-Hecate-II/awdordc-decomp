@@ -3,6 +3,7 @@
 #include "sprite.h"
 #include "battle_map.h"
 #include "sprite_script.h"
+#include "ds3dsprite.h"
 
 extern u8 gSpritePaletteCycle[];
 static inline s32 spriteValid02091110(void *p) { if (p != 0 && *(s32 *)p != 0) return 1; return 0; }
@@ -187,11 +188,14 @@ s32 GetSpriteScriptFrameData(void *,s32,s32);s32 DrawSprite3DGeometry(s32,s32,s3
 s32 frameData=GetSpriteScriptFrameData(scripts,tag,frame);if(frameData) {DrawSprite3DGeometry(frameData,(s32)pos,gfxAddr,tileDataSize,gfxSize,extra,geometryParam);return 1;}return 0;
 }
 #pragma optimization_level reset
-M2C_UNK DrawSprite3D(void *arg0) {
+/* One frame of an animated 3D sprite: draw its current frame, tick its animation
+ * timer and advance its script.  A sprite with no type is dead and is skipped,
+ * reported as 0. */
+M2C_UNK DrawSprite3D(void *sprite) {
 void DrawSprite3DFrame(); void Sprite_TickTimer(void *); M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
-s32 ok=(arg0!=0 && *(s32 *)arg0!=0);
+s32 ok=(sprite!=0 && M2C_FIELD(sprite,s32 *,SPRITE_TYPE)!=0);
 if(ok==0) return 0;
-((void (*)())DrawSprite3DFrame)(arg0); Sprite_TickTimer(arg0); return Sprite_UpdateAnimationScript((M2C_UNK)arg0);
+((void (*)())DrawSprite3DFrame)(sprite); Sprite_TickTimer(sprite); return Sprite_UpdateAnimationScript((M2C_UNK)sprite);
 }
 
 extern void DrawSprite3DFrame();
@@ -204,10 +208,10 @@ void SetSpritePaletteIndex(s32 a) {s32 v=a==31?0:63;*(s32 *)0x040004a4=(v<<24)|0
 #pragma optimization_level reset
 s32 CreateSpriteAnim(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
             void Sprite_InitAnimation(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_020919b4(M2C_UNK);
+    s32 FindSpriteScriptRecordById(M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_020919b4(0);
+    temp_r0 = FindSpriteScriptRecordById(0);
     Sprite_InitAnimation(temp_r0, arg0, arg1, arg2);
     return temp_r0;
 }
@@ -608,7 +612,20 @@ Sprite_UpdateAnimationScript((M2C_UNK)sprite);
 }
 
 #pragma optimization_level 2
-s32 func_020919b4(M2C_UNK a) {extern s32 data_02157918;s32 i=0; s32 *p=&data_02157918;do {if(*p==a)return i*52+(s32)&data_02157918;i++;p=(s32*)((u8*)p+52);}while(i<32);return 0;}
+/* Look up a sprite-script record by the id stored in its first word: the table
+ * holds 32 records of 0x34 bytes; returns a record's address, or 0 if no record
+ * has the id. */
+s32 FindSpriteScriptRecordById(s32 id) {
+    extern s32 gSpriteScriptRecords;
+    s32 i = 0;
+    s32 *record = &gSpriteScriptRecords;
+    do {
+        if (*record == id) return i * 52 + (s32)&gSpriteScriptRecords;
+        i++;
+        record = (s32 *)((u8 *)record + 52);
+    } while (i < 32);
+    return 0;
+}
 #pragma optimization_level reset
 /* One frame of a child-sprite wrapper's 2D draw: draw the child at the wrapper's
  * screen position and delete the wrapper once the child sprite has stopped. */
@@ -645,7 +662,7 @@ void func_02091a50(void) {
     DeleteSpriteObjectsOfClass(&data_021029f0);
 }
 
-u16 func_02091a70(void *arg0) {
+u16 Sprite_TakeCommand(void *arg0) {
     u16 temp_r2;
 
     temp_r2 = M2C_FIELD(arg0, u16 *, 0x24);
@@ -735,10 +752,10 @@ void func_02091bcc(void) {
 
 void func_02091bf4(void) {
     M2C_UNK IncrementCounter(s32 *);
-    extern M2C_UNK data_0215d9b8;
+    extern M2C_UNK gOptionBits;
     s32 sp0;
 
-    sp0 = M2C_FIELD(&data_0215d9b8, s32 *, 0x74);
+    sp0 = M2C_FIELD(&gOptionBits, s32 *, 0x74);
     IncrementCounter(&sp0);
     func_02091c88(0, sp0);
 }
@@ -796,11 +813,15 @@ void LoadScenePanelPalette(s32 arg0) {
     CopyToObjPaletteShadow(&data_0211e088, arg0 << 5, 0x20);
 }
 
-void func_02091d6c(s32 a,s32 b) {
-extern void *gCur3DSpriteEngine;
-LoadScenePanelPalette(a);
-if(b!=0)return;
-DimPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+((a<<5)&~1));
+/* Load the scene-panel palette `palette` into the 3D engine's OBJ palette shadow
+ * and dim it there unless the panel is highlighted. */
+void ApplyScenePanelPalette(s32 palette, s32 highlighted) {
+    extern void *gCur3DSpriteEngine;
+    void DimPalette(M2C_UNK);
+
+    LoadScenePanelPalette(palette);
+    if (highlighted != 0) return;
+    DimPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_PALETTES) + ((palette << 5) & ~1));
 }
 
 M2C_UNK *Get3DSpriteManager(void) {

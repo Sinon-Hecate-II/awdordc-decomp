@@ -178,7 +178,7 @@ s32 Ov001_GetPlayerStage(s32 player) {
     return OV001_STAGE_JOINED;
 }
 #pragma scheduling reset
-s32 func_ov001_021879fc(s32 arg0) {
+s32 Ov001_GetLinkPlayerRecord(s32 arg0) {
 extern s16 *gOv001LinkWork;
 if(((u16)gOv001LinkWork[1] & (1<<arg0)) !=0) {
 return (arg0-1)*30+(s32)((u8 *)gOv001LinkWork+14);
@@ -186,7 +186,7 @@ return (arg0-1)*30+(s32)((u8 *)gOv001LinkWork+14);
 return 0;
 }
 
-u16 func_ov001_02187a30(u8 *arg0) {
+u16 Ov001_FindLinkPlayerByAddress(u8 *arg0) {
     extern s16 *gOv001LinkWork;
     u8 *base;
     u16 i;
@@ -207,13 +207,16 @@ u16 func_ov001_02187a30(u8 *arg0) {
     return 0;
 }
 
-void func_ov001_02187ad8(void *arg0) {
+/* Bind a WH connection object to the overlay's work block and reset its link
+ * status and its callback slots (the user-info callback among them), so a reused
+ * connection starts empty. */
+void Ov001_SetWhConnection(void *connection) {
     extern M2C_UNK gWhWork;
-    M2C_FIELD(&gWhWork, void **, 4) = arg0;
-    M2C_FIELD(arg0, s32 *, 0x40) = 0;
-    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x13A8) = 0;
-    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x13AC) = 0;
-    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x13B0) = 0;
+    M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION) = connection;
+    M2C_FIELD(connection, s32 *, WH_LINK_STATUS) = 0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION), s32 *, 0x13A8) = 0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION), s32 *, WH_CONN_USER_INFO_CB) = 0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION), s32 *, 0x13B0) = 0;
 }
 
 /* SetWhStatus: record the connection's new WH status, logging the change as
@@ -294,17 +297,21 @@ if(WFC_SubmitUserInfo((void *)Ov001_HandleUserInfoResult,userType,(u8 *)M2C_FIEL
 SetWhError(); SetWhStatus(WH_STATUS_PARENT_START); return 0;
 }
 
-void Ov001_HandleUserInfoResult(void *arg0) {
+/* Completion callback of WFC_SubmitUserInfo for the ov001 Download Play link:
+ * on a reported step error, record it and put the connection back to the
+ * parent-start state; otherwise queue the child-indication task, failing the
+ * connection the same way if that step does not start. */
+void Ov001_HandleUserInfoResult(void *event) {
     s32 Ov001_StartChildIndicate();
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
+    if (M2C_FIELD(event, u16 *, WH_EVENT_STATUS) != 0) {
         SetWhError();
-        SetWhStatus(9);
+        SetWhStatus(WH_STATUS_PARENT_START);
         return;
     }
     if (Ov001_StartChildIndicate() != 0) {
         return;
     }
-    SetWhStatus(9);
+    SetWhStatus(WH_STATUS_PARENT_START);
 }
 
 /* Queue the DWC child-indication task that delivers child connect/disconnect
@@ -399,7 +406,7 @@ s32 Ov001_StartParent(void) {
 void HandleParentStartResult(void *event) {
     s32 SetWhError();
     void SetWhStatus(s32);
-    s32 func_ov001_02188094(void);
+    s32 Ov001_StartKeySharing(void);
     s32 func_02012fac(void *, s32, s32, s32, s32);
     extern M2C_UNK gWhWork;
     extern M2C_UNK data_ov001_02191614;
@@ -419,7 +426,7 @@ void HandleParentStartResult(void *event) {
         connection = M2C_FIELD(&gWhWork, void **, 4);
         if (M2C_FIELD(connection, s32 *, 0x44) == 2) {
             if (M2C_FIELD(connection, s32 *, 0x40) == WH_STATUS_CONNECTED) {
-                if (func_ov001_02188094() != 0) return;
+                if (Ov001_StartKeySharing() != 0) return;
                 if (M2C_FIELD(&gWhWork, void (**)(s32, void *), 0) != 0) {
                     M2C_FIELD(&gWhWork, void (**)(s32, void *), 0)(0x08000000, &data_ov001_02191614);
                 }
@@ -451,7 +458,17 @@ void HandleParentStartResult(void *event) {
     }
 }
 
-s32 func_ov001_02188094(void){extern M2C_UNK gWhWork;s32 func_02013b2c(void *,s32);SetWhStatus(6);if(func_02013b2c((u8 *)M2C_FIELD(&gWhWork,void **,4)+0x1e00,13)==2)return 1;SetWhError();return 0;}
+/* Start the WH key-sharing step: mark the connection as key-sharing and open the
+   key-sharing channel to every peer.  Returns 1 when the open was queued, 0 when
+   it failed (the error code is recorded for the status machine). */
+s32 Ov001_StartKeySharing(void){
+    extern M2C_UNK gWhWork;
+    s32 WFC_StartChannel(void *, s32);
+    SetWhStatus(WH_STATUS_KEYSHARING);
+    if (WFC_StartChannel((u8 *)M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION) + WH_KEY_CHANNEL, WH_KEY_CHANNEL_INDEX) == 2) return 1;
+    SetWhError();
+    return 0;
+}
 
 s32 func_ov001_021880d0(void){extern M2C_UNK gWhWork;s32 func_02013b48(void *);if(func_02013b48((u8 *)M2C_FIELD(&gWhWork,void **,4)+0x1e00)==2)return 1;SetWhError();return 0;}
 
@@ -527,31 +544,35 @@ s32 func_ov001_02188220(void) {
 }
 
 void func_ov001_02188250(void *arg0) {
-    s32 func_ov001_02188284();
+    s32 QueueWhSetupCommand();
     M2C_UNK func_ov001_02188b20();
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
         SetWhError();
         func_ov001_02188b20();
         return;
     }
-    if (func_ov001_02188284() != 0) {
+    if (QueueWhSetupCommand() != 0) {
         return;
     }
     SetWhStatus(9);
 }
 
-s32 func_ov001_02188284(void) {
+/* Queue the WH connection's next setup command, a WFC command whose completion
+ * callback FinishWhSetupCommand continues the state machine: the connection is
+ * marked busy; when the command cannot be queued the WH error is raised and the
+ * next step runs.  Returns 1 once the command is queued, 0 on failure. */
+s32 QueueWhSetupCommand(void) {
     s32 func_0201280c(void (*)(void *), s32);
-    void func_ov001_021882bc(void *);
+    void FinishWhSetupCommand(void *);
     M2C_UNK func_ov001_02188b04();
-    SetWhStatus(3);
-    if (func_0201280c(func_ov001_021882bc, 0) == 2) return 1;
+    SetWhStatus(WH_STATUS_BUSY);
+    if (func_0201280c(FinishWhSetupCommand, 0) == 2) return 1;
     SetWhError();
     func_ov001_02188b04();
     return 0;
 }
 
-void func_ov001_021882bc(void *arg0) {
+void FinishWhSetupCommand(void *arg0) {
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
         SetWhError();
         return;
@@ -560,10 +581,10 @@ void func_ov001_021882bc(void *arg0) {
 }
 
 s32 func_ov001_021882e0(void) {
-    s32 func_02012274(M2C_UNK *);
+    s32 WFC_SendCommand1(M2C_UNK *);
     extern M2C_UNK func_ov001_02188310;
     SetWhStatus(3);
-    if (func_02012274(&func_ov001_02188310) == 2) {
+    if (WFC_SendCommand1(&func_ov001_02188310) == 2) {
         return 1;
     }
     SetWhError();

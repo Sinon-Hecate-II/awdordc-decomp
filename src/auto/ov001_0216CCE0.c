@@ -201,25 +201,25 @@ void func_ov001_0216d050(s32 *arg0, M2C_UNK arg1, s32 arg2) {
 
 void func_ov001_0216d060(s32 arg0) {
  void OS_SendMessage(void *, s32, s32);
- extern s32 data_ov001_02192600;
- OS_SendMessage(&data_ov001_02192600, arg0, 0);
+ extern s32 gWhConnTaskQueue;
+ OS_SendMessage(&gWhConnTaskQueue, arg0, 0);
 }
 
 void func_ov001_0216d074(s32 arg0) {
  void OS_SendMessage(void *, s32, s32);
- extern s32 data_ov001_02192600;
- OS_SendMessage(&data_ov001_02192600, arg0, 0);
+ extern s32 gWhConnTaskQueue;
+ OS_SendMessage(&gWhConnTaskQueue, arg0, 0);
 }
 
 s32 func_ov001_0216d1e4(void) {
     s32 OS_ReceiveMessage(void *, s32 *, s32);
-    extern s32 data_ov001_02192600;
+    extern s32 gWhConnTaskQueue;
     s32 msg;
     s32 result = -1;
     s32 again;
-    if (func_ov001_0216da10()) {
+    if (WhConnTaskProcessLinkStep()) {
         do {
-            OS_ReceiveMessage(&data_ov001_02192600, &msg, 1);
+            OS_ReceiveMessage(&gWhConnTaskQueue, &msg, 1);
             if (msg == 14) {
                 again = 0;
                 result = again;
@@ -239,7 +239,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  s32 OS_ReceiveMessage(void *,s32 *,s32);void InitTimer(void *);void ScheduleTimer(void *,s32,s32,void *,s32);void CancelTimer(void *);
  void MI_CpuFill8(s32,u8);void WFC_ClearPlayerList(void);
  s32 func_ov001_0216d8e4(s32,void *,s32,s32);
- extern s32 data_ov001_02192600,data_ov001_02192620,data_ov001_021926e0;
+ extern s32 gWhConnTaskQueue,data_ov001_02192620,data_ov001_021926e0;
  u32 timer[11];s32 msg;s32 result,tries,bound,i,active,flags,ready;u8 *packet;s32 offset;u16 *rx; void *p;
  active=1;p=arg0;result=active-2;ready=0;
  if(M2C_FIELD(p,s32 *,0x24)==0)flags=0x80000;
@@ -258,7 +258,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  tries=0;InitTimer(timer);ScheduleTimer(timer,0x3fec42,0,(void *)func_ov001_0216d074,18);
  goto test;
  do {
- OS_ReceiveMessage(&data_ov001_02192600,&msg,1);
+ OS_ReceiveMessage(&gWhConnTaskQueue,&msg,1);
  switch(msg){
  case 19:goto bottom;
  case 18:if(ready)goto test;
@@ -266,7 +266,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  bottom:continue;
  case 5:if(ready)break;
  CancelTimer(timer);
- if(func_ov001_0216d8a0((s32)&data_ov001_02192620,1)!=1){active=0;break;}
+ if(Ov001_CopyPlayerRecords((s32)&data_ov001_02192620,1)!=1){active=0;break;}
  func_ov001_0216d02c(p,&data_ov001_02192620);
  i=0;bound=*(u16 *)((s32)&data_ov001_02192620 + 10);for(;i<bound;i++){}
  if(!WhConnTaskStartConnection((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags)){active=0;break;}
@@ -283,7 +283,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  default:active=0;break;
  } next:; test:; }while(active);
  CancelTimer(timer);
- while(OS_ReceiveMessage(&data_ov001_02192600,&msg,0)==1){}
+ while(OS_ReceiveMessage(&gWhConnTaskQueue,&msg,0)==1){}
  }
  func_ov001_0216d050(arg1,(s32)&data_ov001_02192620,result==0);
  return result;
@@ -296,52 +296,66 @@ void func_ov001_0216d564(void) {
 
 s32 func_ov001_0216d56c(s32 a){extern s32 (*data_ov001_021925e0)(s32);void (*f)(s32)=M2C_FIELD(&data_ov001_021925e0,void (**)(s32),4);if(f)f(a);return 0;}
 
-s32 func_ov001_0216d8a0(s32 arg0, s32 arg1) {
+/* Lock the WFC player list and copy up to maxRecords of its 0xC0-byte
+ * connection records into dest, then unlock it.  Returns the total number of
+ * players in the list. */
+s32 Ov001_CopyPlayerRecords(s32 dest, s32 maxRecords) {
     M2C_UNK MIi_CpuCopy32(s32, s32, M2C_UNK);
     s32 WFC_GetPlayerListCount();
     M2C_UNK WFC_SetDataLock(M2C_UNK);
     s32 WFC_GetPlayerRecordByIndex(u16);
-    s32 temp_r0;
-    s32 var_r4;
-    s32 var_r5;
+    s32 count;
+    s32 index;
+    s32 destPtr;
 
-    var_r5 = arg0;
+    destPtr = dest;
     WFC_SetDataLock(1);
-    temp_r0 = WFC_GetPlayerListCount();
-    if (temp_r0 > 0) {
-        var_r4 = 0;
-        if (temp_r0 > 0) {
+    count = WFC_GetPlayerListCount();
+    if (count > 0) {
+        index = 0;
+        if (count > 0) {
 loop_2:
-            if (var_r4 < arg1) {
-                MIi_CpuCopy32(WFC_GetPlayerRecordByIndex((u16) var_r4), var_r5, 0xC0);
-                var_r4 += 1;
-                var_r5 += 0xC0;
-                if (var_r4 < temp_r0) {
+            if (index < maxRecords) {
+                MIi_CpuCopy32(WFC_GetPlayerRecordByIndex((u16) index), destPtr, 0xC0);
+                index += 1;
+                destPtr += 0xC0;
+                if (index < count) {
                     goto loop_2;
                 }
             }
         }
     }
     WFC_SetDataLock(0);
-    return temp_r0;
+    return count;
 }
 
-s32 func_ov001_0216d9d4(void){s32 t=OS_DisableInterrupts();if(M2C_FIELD(&gWhConnTaskState,s32 *,0x18)==5 && WFC_ProcessConnectOrMatch(0,0,0)==3){M2C_FIELD(&gWhConnTaskState,s32 *,0x18)=4;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
-
-s32 func_ov001_0216da10(void) {
-    s32 OS_DisableInterrupts();
-    M2C_UNK OS_RestoreInterrupts(s32);
-    s32 WFC_ProcessLinkStep();
-    extern M2C_UNK gWhConnTaskState;
-    s32 temp_r4;
-
-    temp_r4 = OS_DisableInterrupts();
-    if ((M2C_FIELD(&gWhConnTaskState, s32 *, 0x18) == 7) && (WFC_ProcessLinkStep() == 3)) {
-        M2C_FIELD(&gWhConnTaskState, s32 *, 0x18) = 4;
-        OS_RestoreInterrupts(temp_r4);
+/* If the WH connection task is waiting on the WFC connect/match process, poll it
+ * under an interrupt lock; once it queues a step, move the task to the next phase
+ * and report that a step was started. */
+s32 WhConnTaskProcessConnectStep(void) {
+    s32 interruptState = OS_DisableInterrupts();
+    if (M2C_FIELD(&gWhConnTaskState, s32 *, WH_TASK_PHASE) == 5 && WFC_ProcessConnectOrMatch(0, 0, 0) == 3) {
+        M2C_FIELD(&gWhConnTaskState, s32 *, WH_TASK_PHASE) = 4;
+        OS_RestoreInterrupts(interruptState);
         return 1;
     }
-    OS_RestoreInterrupts(temp_r4);
+    OS_RestoreInterrupts(interruptState);
+    return 0;
+}
+
+/* If the WH connection task is in the link phase and its WFC link step was
+ * queued, move the task on to the queued-step phase and report that a step was
+ * started.  Runs under an interrupt lock. */
+s32 WhConnTaskProcessLinkStep(void) {
+    s32 interruptState = OS_DisableInterrupts();
+
+    if (M2C_FIELD(&gWhConnTaskState, s32 *, WH_TASK_PHASE) == WH_PHASE_LINK &&
+        WFC_ProcessLinkStep() == WH_WFC_STEP_QUEUED) {
+        M2C_FIELD(&gWhConnTaskState, s32 *, WH_TASK_PHASE) = WH_PHASE_WFC_STEP_QUEUED;
+        OS_RestoreInterrupts(interruptState);
+        return 1;
+    }
+    OS_RestoreInterrupts(interruptState);
     return 0;
 }
 

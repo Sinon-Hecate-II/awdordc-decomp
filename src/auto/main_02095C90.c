@@ -133,7 +133,7 @@ void func_02095fc0(void) {
     DeleteSpriteObjectsOfClass(&data_02102b18);
 }
 
-void func_02095fd4(void) {
+void ClearMessageBoxState(void) {
 void *Get3DSpriteManager(void);
 M2C_FIELD(Get3DSpriteManager(),s8 *,0x46)=0;
 }
@@ -391,17 +391,20 @@ if(unit!=GetPlayerSelectedUnit())unit->owner=0;
 RefreshMapView();
 }
 
-void func_0209656c(M2C_UNK arg0, M2C_UNK arg1) {
+/* Load the deployment file at `path` from the "/dispos" directory, place its
+ * units (displacing units already on a taken tile when `displace` is set), and
+ * free the loaded file. */
+void LoadDeploymentFile(s32 path, s32 displace) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    s32 LoadFileToBuffer(M2C_UNK, M2C_UNK);
-    M2C_UNK PlaceMapDeployment(s32, M2C_UNK);
+    s32 LoadFileToBuffer(s32, s32);
+    M2C_UNK PlaceMapDeployment(s32, s32);
     M2C_UNK HeapFreeBlock(s32);
-    extern M2C_UNK data_02102eec;
-    s32 temp_r0;
+    extern u8 sDisposDirectory[];
+    s32 data;
 
-    SetFileDirectory(&data_02102eec);
-    temp_r0 = LoadFileToBuffer(arg0, 1);
-    PlaceMapDeployment(temp_r0, arg1);
-    HeapFreeBlock(temp_r0);
+    SetFileDirectory((M2C_UNK *)sDisposDirectory);
+    data = LoadFileToBuffer(path, 1);
+    PlaceMapDeployment(data, displace);
+    HeapFreeBlock(data);
 }
 

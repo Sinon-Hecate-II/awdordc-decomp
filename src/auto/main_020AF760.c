@@ -3,6 +3,7 @@
 #include "battle_map.h"
 #include "ds3dsprite.h"
 #include "ov002_effects.h"
+#include "sound.h"
 typedef struct { s32 x,y,z; } VecAff;
 typedef struct { u8 pad[4]; s32 unk4; } Unk020af860_Sub;
 typedef struct { u8 pad[0x34]; Unk020af860_Sub *unk34; } Unk020af860_Unit;
@@ -10,13 +11,24 @@ typedef struct { Unk020af860_Unit *unk0; u8 pad[0x14]; } Unk020af860_Rec;
 extern u8 gMapCellSpriteScriptsLarge[],gMapCellSpriteScriptsSmall[];
 extern s32 gFrameCounter;
 
-void func_020af760(void) {
-M2C_UNK func_02090448(s32); extern M2C_UNK gPlayerSettings;
-s32 i=0; u8 *p=(u8*)&gPlayerSettings;
-do { s32 v=*M2C_FIELD(M2C_FIELD(p,void **,4),s32 **,0x34); if(v)func_02090448(v); i++; p+=0x18; }while(i<2);
+/* Load the sound group each of the two players' effect sets plays its effects from. */
+void LoadEffectSoundGroups(void) {
+    M2C_UNK Sound_LoadGroup(s32);
+    extern M2C_UNK gPlayerSettings;
+    s32 side = 0;
+    u8 *settings = (u8 *)&gPlayerSettings;
+    do {
+        EffectSounds *sounds = M2C_FIELD(M2C_FIELD(settings, EffectSet **, 4), EffectSounds **, 0x34);
+        s32 group = sounds->group;
+        if (group != 0) {
+            Sound_LoadGroup(group);
+        }
+        side++;
+        settings += 0x18;
+    } while (side < 2);
 }
 
-void func_020af79c(void) {
+void StopSoundPlayer(void) {
     M2C_UNK RewindMusicPlayerHeapByFrames(M2C_UNK);
     RewindMusicPlayerHeapByFrames(0);
 }
@@ -60,18 +72,21 @@ void TickSlotSoundDelays(void) {
     } while (slot < 2);
 }
 
-void PlaySlotSound(s32 arg0, s32 arg1) {
-    M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK SetSoundEffectPan(M2C_UNK);
-    if (arg1 == 0) {
+/* Plays `soundId` for battle effect `slot`: slot 0's sounds are panned hard left,
+ * slot 1's hard right.  Nothing is played when the slot has no sound. */
+void PlaySlotSound(s32 slot, s32 soundId) {
+    s32 PlaySoundEffect(s32);
+    s32 SetSoundEffectPan(s32);
+
+    if (soundId == 0) {
         return;
     }
-    PlaySoundEffect(arg1);
-    if (arg0 == 0) {
-        SetSoundEffectPan(-0x80);
+    PlaySoundEffect(soundId);
+    if (slot == 0) {
+        SetSoundEffectPan(SOUND_PAN_LEFT);
         return;
     }
-    SetSoundEffectPan(0x7F);
+    SetSoundEffectPan(SOUND_PAN_RIGHT);
 }
 
 /* Replaces effect `slot`'s sound with the effect's intensity sound, panned left

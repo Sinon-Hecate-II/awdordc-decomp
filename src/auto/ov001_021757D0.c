@@ -48,8 +48,8 @@ void Ov001_AllocWirelessWork(M2C_UNK arg0) {
 }
 
 void Ov001_FreeWirelessWork(void) {
-    M2C_UNK func_ov001_0218b760();
-    func_ov001_0218b760();
+    M2C_UNK Ov001_FreeHeapBlock();
+    Ov001_FreeHeapBlock();
 }
 
 /* Run the ov001 front end (title and menu screens) on the caller's work buffer
@@ -112,12 +112,12 @@ return 1;
  * save-block initialiser on a temporary 0x700-byte scratch buffer. */
 void Ov001_InitCore(void) {
 extern u8 gOv001ScreenState;
-M2C_UNK GX_TurnOffDisplay(); M2C_UNK IsSystemTickInitialized(); M2C_UNK func_02007180(); M2C_UNK SystemHalt(); void GX_SetVBlankIrq(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK TP_Init(); M2C_UNK RTC_Init(); M2C_UNK GxReleaseAllBankGrants(); M2C_UNK func_ov001_0218b648(); M2C_UNK Ov001_InstallVBlankHandler(); M2C_UNK Ov001_InitTasks(); M2C_UNK func_ov001_02189ad0(); M2C_UNK Ov001_StartInput(); M2C_UNK Ov001_InitFades(); M2C_UNK Ov001_Alloc(M2C_UNK,M2C_UNK); M2C_UNK VerifySaveBlock();
+M2C_UNK GX_TurnOffDisplay(); M2C_UNK IsSystemTickInitialized(); M2C_UNK func_02007180(); M2C_UNK SystemHalt(); void GX_SetVBlankIrq(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK TP_Init(); M2C_UNK RTC_Init(); M2C_UNK GxReleaseAllBankGrants(); M2C_UNK Ov001_InitExpHeap(); M2C_UNK Ov001_InstallVBlankHandler(); M2C_UNK Ov001_InitTasks(); M2C_UNK func_ov001_02189ad0(); M2C_UNK Ov001_StartInput(); M2C_UNK Ov001_InitFades(); M2C_UNK Ov001_Alloc(M2C_UNK,M2C_UNK); M2C_UNK VerifySaveBlock();
 M2C_UNK scratch;
 *(volatile u16 *)0x4000208; *(volatile u16 *)0x4000208=0;
 GX_TurnOffDisplay(0);*(volatile u32 *)0x4001000&=~0x10000;
 if(!IsSystemTickInitialized())SystemHalt();if(!func_02007180())SystemHalt();GX_SetVBlankIrq(0);func_020022d8();func_0200b74c(-1);TP_Init();GX_TurnOffDisplay(RTC_Init());*(volatile u32 *)0x4001000&=~0x10000;
-GxReleaseAllBankGrants();func_ov001_0218b648(M2C_FIELD(&gOv001ScreenState,M2C_UNK *,4));Ov001_InstallVBlankHandler();Ov001_InitTasks();func_ov001_02189ad0();Ov001_StartInput();Ov001_InitFades();scratch=Ov001_Alloc(0x700,0x20);VerifySaveBlock();Ov001_FreeAlloc(&scratch);
+GxReleaseAllBankGrants();Ov001_InitExpHeap(M2C_FIELD(&gOv001ScreenState,M2C_UNK *,4));Ov001_InstallVBlankHandler();Ov001_InitTasks();func_ov001_02189ad0();Ov001_StartInput();Ov001_InitFades();scratch=Ov001_Alloc(0x700,0x20);VerifySaveBlock();Ov001_FreeAlloc(&scratch);
 }
 
 /* Initialise the display for overlay 001: allocate VRAM banks for the
@@ -305,30 +305,36 @@ void Ov001_RequestScreenExit(void) {
     M2C_FIELD(&gOv001ScreenState, u8 *, 1) = 1;
 }
 
-s32 func_ov001_02175e34(void) {
+/* The id this console advertises in its download-play data-sharing connect
+ * entry: '1' plus the console language, except English without screen option 1
+ * ('7') and Korean ('8'). */
+s32 Ov001_GetConnectEntryId(void) {
     extern u8 gOv001ScreenState;
-    u8 r1 = gOv001ScreenState;
-    if (r1 == 6) {
+    u8 language = gOv001ScreenState;
+    if (language == LANGUAGE_KOREAN) {
         return 0x38;
     }
-    if (r1 == 1) {
-        if (!(( ((u32)M2C_FIELD(&gOv001ScreenState, s32 *, 8)) >> 4) & 2)) {
+    if (language == LANGUAGE_ENGLISH) {
+        if (!(( ((u32)M2C_FIELD(&gOv001ScreenState, s32 *, OV001_SCREEN_OPTIONS)) >> 4) & 2)) {
             return 0x37;
         }
     }
-    return (r1 + 0x31) & 0xFF;
+    return (language + 0x31) & 0xFF;
 }
 
+/* Allocate the message archive pool and fill its free queue with the pool's eight
+ * 12-byte archive records, keeping the queue at the end of the pool. */
 void Ov001_InitMessageArchiveQueue(void) {
     M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_QueueCreateFromBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_QueueCreateFromRange(M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK gOv001MessageArchiveFreeList;
-    M2C_UNK val;
-    M2C_UNK res;
-    val = Ov001_Alloc(0x64, 0x4);
-    gOv001MessageArchiveFreeList = val;
-    res = Ov001_QueueCreateFromBuffer(0x8, val, 0xc);
-    M2C_FIELD((void *)gOv001MessageArchiveFreeList, M2C_UNK *, 0x60) = res;
+    M2C_UNK pool;
+    M2C_UNK queue;
+
+    pool = Ov001_Alloc(MESSAGE_ARCHIVE_POOL_SIZE, 0x4);
+    gOv001MessageArchiveFreeList = pool;
+    queue = Ov001_QueueCreateFromRange(MESSAGE_ARCHIVE_COUNT, pool, MESSAGE_ARCHIVE_SIZE);
+    M2C_FIELD((void *)gOv001MessageArchiveFreeList, M2C_UNK *, MESSAGE_POOL_QUEUE) = queue;
 }
 
 void Ov001_FreeMessageArchiveQueue(void) {

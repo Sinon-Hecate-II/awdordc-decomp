@@ -314,20 +314,24 @@ len--;
     return total;
 }
 
-s32 func_0206ccb8(void *arg0, M2C_UNK arg1, s32 arg2) {
-    s32 func_0206adc0(s32, M2C_UNK, s32);
-    s32 temp_r3;
-    s32 var_r5;
-    u32 temp_r2;
+/* Writer callback for the bounded wide string formatter: append `count`
+ * characters of `text` to the WideFormatBuffer, clamped to the space left after
+ * the characters already written, and return the copy's result. */
+s32 StringFormatWideWrite(WideFormatBuffer *state, const u16 *text, s32 count) {
+    s32 func_0206adc0(s32, const u16 *, s32);
+    s32 position;
+    s32 writeCount;
+    u32 size;
     s32 result;
-    temp_r3 = M2C_FIELD(arg0, s32 *, 8);
-    var_r5 = arg2;
-    temp_r2 = M2C_FIELD(arg0, u32 *, 4);
-    if ((u32)(temp_r3 + var_r5) > temp_r2) {
-        var_r5 = temp_r2 - temp_r3;
+
+    position = state->count;
+    writeCount = count;
+    size = state->size;
+    if ((u32)(position + writeCount) > size) {
+        writeCount = size - position;
     }
-    result = func_0206adc0(M2C_FIELD(arg0, s32 *, 0) + (temp_r3 * 2), arg1, var_r5);
-    M2C_FIELD(arg0, s32 *, 8) = M2C_FIELD(arg0, s32 *, 8) + var_r5;
+    result = func_0206adc0((s32)(state->buffer + position), text, writeCount);
+    state->count = state->count + writeCount;
     return result;
 }
 

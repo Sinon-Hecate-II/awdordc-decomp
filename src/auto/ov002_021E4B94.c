@@ -12,7 +12,7 @@ s32 RandomIntRange(s32,s32);
 void func_ov002_021e497c(s32,s32,s32,s32);
 
 extern u8 data_ov002_021f30fd[],gVersusGaugeHp[],data_ov002_021f3107[],gVersusPlayerCoIndex[],data_ov002_021f3106[];
-extern u8 data_ov002_021f303e[],data_ov002_021f3040[],data_ov002_021f3042[],data_ov002_021f3044[],data_ov002_021f3018[];
+extern u8 data_ov002_021f303e[],data_ov002_021f3040[],data_ov002_021f3042[],data_ov002_021f3044[],gOv002EffectResources[];
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 void ResetGxTextureParams(void);
 void DrawSolidQuad(s32,s32,s32,s32,s32,u16);
@@ -66,9 +66,9 @@ else DrawVersusPanelArt(184,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*
 }
 }
 offset=(((u32)(p[3]<<28)>>28)==0?100:28);y=170-(s8)p[2];
-SetGxTextureParams(3,128,16,M2C_FIELD(data_ov002_021f3018,u16 *,200),data_ov002_021f3018[202]);
+SetGxTextureParams(3,128,16,M2C_FIELD(gOv002EffectResources,u16 *,200),gOv002EffectResources[202]);
 x=(s16)offset;DrawTexturedQuadUV(x,y,1,128,16,0,0,128,16);
-SetGxTextureParams(3,128,16,M2C_FIELD(data_ov002_021f3018,u16 *,200),data_ov002_021f3042[((u32)(p[3]<<28)>>28)*100]);
+SetGxTextureParams(3,128,16,M2C_FIELD(gOv002EffectResources,u16 *,200),data_ov002_021f3042[((u32)(p[3]<<28)>>28)*100]);
 if(width){if(((u32)(p[3]<<28)>>28)==0)DrawGaugeFillAnchoredRight(x,y,0,width);else DrawGaugeFillAnchoredLeft(x,y,0,width);}
 x=((u32)(p[3]<<28)>>28)==0?221:3;y=150-(s8)p[2];width=(width+9)/10;
 if(y<192){AddSprite((u16)((x)&511),(u16)((y)&255),(u16)((0x3ff&((64+(width<<4))>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((((u32)(p[3]<<28)>>28)==0?1:2)<<12)),gSpriteDesc32x32,0);

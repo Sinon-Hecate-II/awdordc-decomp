@@ -12,12 +12,18 @@ enum {
     OV001_HIGHLIGHT_TILEMAP_ALIGNMENT = 4
 };
 
+/* Alignment of the raw asset buffers Ov001_LoadAsset loads and uploads. */
+#define OV001_ASSET_ALIGNMENT 4
+
 #define OV001_MENU_ROWS       5    /* option rows the menu shows */
 #define OV001_MENU_HANDLES    7    /* s32 handles: the rows, then the slide task and a flag */
 #define OV001_MENU_TASK_SLOT  5    /* index of the slide task handle */
 #define OV001_MENU_FILE       0x00 /* void *: loaded menu layout resource */
 #define OV001_MENU_LAYOUT_SIZE 0x600 /* bytes of the loaded layout resource */
 #define OV001_MENU_SPRITES    0x04 /* s32 *: OV001_MENU_HANDLES sprite handles */
+#define OV001_MENU_TASK       0x14 /* s32 id of the task sliding or closing the menu (OV001_MENU_SPRITES[OV001_MENU_TASK_SLOT]), 0 when idle */
+#define OV001_MENU_CLOSING    0x18 /* u8 nonzero while the menu slides out; Ov001_IsMenuLayoutReady waits for it to clear */
+#define OV001_MENU_TASK_FRAMES 120 /* frames a menu slide task stays alive */
 
 /* The menu layout screens loaded by Ov001_LoadMenuResource: one localised file
  * each, uploaded to the sub screen's BG1 map. */
@@ -41,7 +47,7 @@ enum {
 #define OV001_REGION_BLEND         0x1A /* s8 blend level the fade step animates */
 #define OV001_REGION_SELECTED      0x1B /* s8 selected item: -1 none, -2 before input starts */
 #define OV001_REGION_INDEX         0x1C /* u8 region the menu shows, index into the region tables */
-#define OV001_REGION_FADE_STEP     0x1D /* u8 fade step counter */
+#define OV001_REGION_CLOSE_DELAY   0x1D /* u8 frames the region menu's close delay has waited */
 #define OV001_REGION_FADE_OUT      0x1E /* u8 nonzero: fade the menu out before closing it */
 
 /* The region with no items just waits before closing instead of taking input. */
@@ -52,6 +58,9 @@ enum {
 
 /* Pixels a frame the column slides up when its menu opens. */
 #define OV001_REGION_OPEN_STEP 12
+
+/* Frames the region menu waits before its column slides out again. */
+#define OV001_REGION_CLOSE_DELAY_FRAMES 8
 
 /* Blend level (OV001_REGION_BLEND) the region menu's open fade steps down to and
  * its close fade steps back up from; a negative BLDY fades through the backdrop. */
@@ -68,6 +77,10 @@ enum {
 /* gOv001RegionYs holds two u16 per region; the first is the y the region's open
  * column rests at, read at region * OV001_REGION_Y_STRIDE. */
 #define OV001_REGION_Y_STRIDE 2
+
+/* The choice frame (Ov001_LayoutChoiceFrame) owns four corner sprites: top-left,
+ * top-right, bottom-left and bottom-right, freed by Ov001_FreeSpriteObjects. */
+#define OV001_CHOICE_FRAME_SPRITE_COUNT 4
 
 /* The shared icon row starts off the bottom edge of the screen, rises four
  * pixels a frame, and stops at its resting y once it has slid in. */

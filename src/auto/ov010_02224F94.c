@@ -310,7 +310,7 @@ s32 func_ov010_02225640(void *arg) {
     return 0;
 }
 
-void func_ov010_02225778(void) {
+void VoiceChat_ResetSession(void) {
     M2C_UNK func_ov010_022225b0();
     M2C_UNK func_ov010_02224270();
     M2C_UNK func_ov010_02224ea0();
@@ -547,10 +547,10 @@ Sound_StartPlayerChannels(&gStreamSoundPlayer);
 for(i=0;i<4;i++){func_0202a9f0();func_02004e60(1,1);}
 }
 
-void func_ov010_02225d38(void) {
-    M2C_UNK func_0200df70();
+void VoiceChat_StopStreamSound(void) {
+    M2C_UNK Arm7TransferEndWait();
     extern M2C_UNK gStreamSoundPlayer;
-    func_0200df70();
+    Arm7TransferEndWait();
     Sound_StopIfPlaying(&gStreamSoundPlayer);
 }
 
@@ -594,15 +594,18 @@ void StopStreamedVoice(void) {
     Arm7SetAmpParam2(0);
 }
 
-void VoiceChat_DetachContext(s32 a) {
-extern s32 gVoiceChatLink;
-void VoiceChat_RemoveChannel(s32);
-void VoiceLink_ReleaseContext(s32);
-if(a==M2C_FIELD(&gVoiceChatLink,s32 *,4)){
-VoiceChat_RemoveChannel(a);
-VoiceLink_ReleaseContext(a);
-M2C_FIELD(&gVoiceChatLink,s32 *,4)=0;
-}else VoiceLink_ReleaseContext(a);
+/* Detach a voice exchange's context from the voice-chat link: when it is the one
+ * currently attached, close its channel first; then release it either way. */
+void VoiceChat_DetachContext(s32 context) {
+    extern s32 gVoiceChatLink;
+    void VoiceChat_RemoveChannel(s32);
+    void VoiceLink_ReleaseContext(s32);
+
+    if (context == M2C_FIELD(&gVoiceChatLink, s32 *, VOICE_CHAT_LINK_CONTEXT)) {
+        VoiceChat_RemoveChannel(context);
+        VoiceLink_ReleaseContext(context);
+        M2C_FIELD(&gVoiceChatLink, s32 *, VOICE_CHAT_LINK_CONTEXT) = 0;
+    } else VoiceLink_ReleaseContext(context);
 }
 
 /* Voice link event callback: event 1 is a peer asking to open an exchange

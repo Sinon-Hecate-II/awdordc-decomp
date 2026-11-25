@@ -13,7 +13,7 @@ void func_02089d30(void *arg0) {
     void *Text_GetLineStart(void *,s32);
     s32 RenderTextToTiles(s32,void *);
     s32 GetTextLineAlignment(void *);
-    void *func_020ab1c4(s32);
+    void *CreateUnitSprite(s32);
     void InitUnitSprite(void *,s32,s32,s32,s32);
     void Set3DSpriteSlideTargetAndStart(void *,s16,s32,s16,s32);
     void func_02087d84(void *,s32,s16,s16,u16,u16);
@@ -94,7 +94,7 @@ void func_02089d30(void *arg0) {
         flags=M2C_FIELD(arg0,u32 *,0x58);
         switch((u32)((s32)flags<<29)>>29){
 case 1:
-            sprite1=func_020ab1c4(6);
+            sprite1=CreateUnitSprite(6);
             InitUnitSprite(sprite1,31,256,3,0);
             y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
             x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-64)/2+0;
@@ -118,7 +118,7 @@ case 1:
             func_020aad18(sprite1);
 M2C_FIELD(arg0,u32 *,0x58)=(M2C_FIELD(arg0,u32 *,0x58)&~0x38000)|0x8000;break;
 case 2:
-            sprite1=func_020ab1c4(6);
+            sprite1=CreateUnitSprite(6);
             InitUnitSprite(sprite1,32,256,3,0);
             y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
             x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+0;
@@ -142,7 +142,7 @@ case 2:
             func_020aad18(sprite1);
 M2C_FIELD(arg0,u32 *,0x58)=(M2C_FIELD(arg0,u32 *,0x58)&~0x38000)|0x8000;break;
 case 3:
-            sprite1=func_020ab1c4(6);
+            sprite1=CreateUnitSprite(6);
             InitUnitSprite(sprite1,33,256,3,0);
             y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
             x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+-32;
@@ -165,7 +165,7 @@ case 3:
             M2C_FIELD(sprite1,s8 *,0x5a)=0;
             func_020aad18(sprite1);
 
-            sprite4=func_020ab1c4(6);
+            sprite4=CreateUnitSprite(6);
             InitUnitSprite(sprite4,34,268,3,0);
             y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
             x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+32;
@@ -207,7 +207,7 @@ UpdatePanelLinkedIcons(arg0);func_02089784(arg0);StartWindowOpen(arg0);
 /* Text-layer window-open notification: play the window's open sound (unless one
  * just played), and, when the panel is a plain one inside an active link session,
  * queue the link-session sound on sound slot 0 and flag the panel so the close
- * step (func_0208a714) stops that slot again.  Returns the panel kind when set. */
+ * step (NotifyWindowClosed) stops that slot again.  Returns the panel kind when set. */
 u32 NotifyWindowOpened(void *window) {
     u32 IsLinkSessionActive(void);
     u32 PlaySoundEffect(M2C_UNK);
@@ -234,23 +234,26 @@ u32 NotifyWindowOpened(void *window) {
     return flags;
 }
 
-u32 func_0208a714(void *arg0) {
+/* Text-layer window-close notification: when the panel queued its link-session
+ * sound (TEXT_LAYER_PANEL_LINK_SOUND), stop sound slot 0 and play the window
+ * close sound unless one just played.  Returns the sound/session result. */
+u32 NotifyWindowClosed(void *window) {
     u32 PlaySoundEffect(M2C_UNK);
     u32 Sound_WasPlayedWithin(M2C_UNK);
     M2C_UNK StopSlotSound(M2C_UNK, M2C_UNK);
-    u32 temp_r0;
-    u32 temp_r0_2;
+    u32 result;
+    u32 linkSound;
 
-    temp_r0_2 = (u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x11) >> 0x1F;
-    if (temp_r0_2 == 0) {
-        return temp_r0_2;
+    linkSound = (u32) (M2C_FIELD(window, s32 *, TEXT_LAYER_PANEL_STATE) << 0x11) >> 0x1F;
+    if (linkSound == 0) {
+        return linkSound;
     }
     StopSlotSound(0, 0);
-    temp_r0 = Sound_WasPlayedWithin(4);
-    if (temp_r0 != 0) {
-        return temp_r0;
+    result = Sound_WasPlayedWithin(4);
+    if (result != 0) {
+        return result;
     }
-    return PlaySoundEffect(0x124);
+    return PlaySoundEffect(SOUND_WINDOW_CLOSE);
 }
 
 #pragma push
@@ -423,6 +426,6 @@ void ReleaseWindowResources(void *window) {
         ReleaseMapViewHold();
         func_020b26dc();
     }
-    func_0208a714(window);
+    NotifyWindowClosed(window);
 }
 

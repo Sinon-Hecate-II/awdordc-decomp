@@ -14,7 +14,7 @@ s32 GetTerrainInfoContext(void *);
 s32 GetTerrainNameGraphicIndex(s32,s32);
 s32 GetTerrainKindFromInfoId(s32);
 void AddSprite(u16,u16,u16,void *,s32);
-u8 func_ov000_02173e6c(void *);
+u8 Ov000_InfoPanel_ShouldShowHints(void *);
 s32 IsOnlinePlayerVoiceChatEnabled(u8);
 s32 Divide(s32,s32);
 s32 func_020a88e8(s32);
@@ -58,7 +58,7 @@ digit=M2C_FIELD(data_ov000_021b56e0+order.values[i]*32,s8 *,a);if(digit<0)digit=
 AddSprite(147,(u16)line,(u16)(((digit+128)&1023)|0x8000),gSpriteDesc8x8,1);
 }
 }
-if(func_ov000_02173e6c(arg0)){
+if(Ov000_InfoPanel_ShouldShowHints(arg0)){
 AddSprite(128,176,0x6100,data_02101f0c,1);
 AddSprite(192,176,0x6108,data_02101f0c,1);
 AddSprite(128,184,0x6110,data_02101f0c,1);
@@ -113,23 +113,25 @@ M2C_FIELD(arg0,s32 *,8)++;
 if(M2C_FIELD(arg0,s32 *,8)>90)M2C_FIELD(arg0,s32 *,8)=0;
 }
 #pragma pop
-u8 func_ov000_02173e6c(void *arg0) {
+/* Whether the info panel draws its button-hint tiles: a unit's info must be
+ * shown, the map view must not be held and no map input mode may be active. */
+u8 Ov000_InfoPanel_ShouldShowHints(void *panel) {
     s32 GetMapViewHoldCount();
     s32 GetMapInputState();
-    u8 var_r0;
+    u8 showHints;
 
-    if (M2C_FIELD(arg0, u8 *, 0x14) == 0) {
+    if (M2C_FIELD(panel, u8 *, OV000_INFO_PANEL_HAS_UNIT) == 0) {
         return 0U;
     }
     if (GetMapViewHoldCount() != 0) {
         return 0U;
     }
     if (GetMapInputState() == 0) {
-        var_r0 = 1;
+        showHints = 1;
     } else {
-        var_r0 = 0;
+        showHints = 0;
     }
-    return var_r0;
+    return showHints;
 }
 
 /* Allocate the ov000 map info window's two panels (the unit-statistics window

@@ -151,16 +151,19 @@ s32 StartRtcDateRead(s32 dateOut, s32 callback, s32 callbackArg) {
     return 3;
 }
 
-s32 GetRtcDate(s32 arg0) {
+/* Read the current date from the RTC into `dateOut`: start the read with the
+ * internal completion callback and, once it is queued, wait for the request to
+ * finish; returns the result of the request. */
+s32 GetRtcDate(s32 dateOut) {
     s32 StartRtcDateRead(s32, s32, s32);
-    void func_0200f6a4(s32);
-    s32 func_0200f6b4(void);
+    void RtcResultCallback(s32);
+    s32 RtcWaitCompletion(void);
     extern M2C_UNK gRtcState;
     s32 result;
-    result = StartRtcDateRead(arg0, (s32)func_0200f6a4, 0);
-    M2C_FIELD(&gRtcState, s32 *, 0x24) = result;
-    if (result == 0) func_0200f6b4();
-    return M2C_FIELD(&gRtcState, s32 *, 0x24);
+    result = StartRtcDateRead(dateOut, (s32)RtcResultCallback, 0);
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_RESULT) = result;
+    if (result == 0) RtcWaitCompletion();
+    return M2C_FIELD(&gRtcState, s32 *, RTC_STATE_RESULT);
 }
 
 /* Starts an RTC read of the current time (request kind 1): refuses while another
@@ -189,16 +192,20 @@ s32 StartRtcTimeRead(s32 timeOut, s32 callback, s32 callbackArg) {
     return 3;
 }
 #pragma opt_common_subs reset
-s32 GetRtcTime(s32 arg0) {
+/* Read the current time from the RTC into `timeOut`: start the read with the
+ * internal completion callback and, once it is queued, wait for the request to
+ * finish; returns the result of the request. */
+s32 GetRtcTime(s32 timeOut) {
     s32 StartRtcTimeRead(s32, s32, s32);
-    void func_0200f6a4(s32);
-    s32 func_0200f6b4(void);
+    void RtcResultCallback(s32);
+    s32 RtcWaitCompletion(void);
     extern M2C_UNK gRtcState;
     s32 result;
-    result = StartRtcTimeRead(arg0, (s32)func_0200f6a4, 0);
-    M2C_FIELD(&gRtcState, s32 *, 0x24) = result;
-    if (result == 0) func_0200f6b4();
-    return M2C_FIELD(&gRtcState, s32 *, 0x24);
+
+    result = StartRtcTimeRead(timeOut, (s32)RtcResultCallback, 0);
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_RESULT) = result;
+    if (result == 0) RtcWaitCompletion();
+    return M2C_FIELD(&gRtcState, s32 *, RTC_STATE_RESULT);
 }
 
 /* Start an RTC read of the current date and time.  The reply fills dateOut and
@@ -228,10 +235,10 @@ s32 GetRtcDateTime(s32 dateOut, s32 timeOut, s32 callback, s32 callbackArg) {
 }
 #pragma opt_common_subs reset
 s32 GetLocalTime(s32 arg0, s32 arg1) {
-void func_0200f6a4(s32); s32 func_0200f6b4(void); extern M2C_UNK gRtcState;
-s32 result = GetRtcDateTime(arg0,arg1,(s32)func_0200f6a4,0);
+void RtcResultCallback(s32); s32 RtcWaitCompletion(void); extern M2C_UNK gRtcState;
+s32 result = GetRtcDateTime(arg0,arg1,(s32)RtcResultCallback,0);
 M2C_FIELD(&gRtcState,s32 *,0x24)=result;
-if(result==0) func_0200f6b4();
+if(result==0) RtcWaitCompletion();
 return M2C_FIELD(&gRtcState,s32 *,0x24);
 }
 
@@ -389,13 +396,13 @@ loop_1:
     goto loop_1;
 }
 
-void func_0200f6a4(s32 arg0) {
+void RtcResultCallback(s32 arg0) {
     extern M2C_UNK gRtcState;
     M2C_FIELD(&gRtcState, s32 *, 0x24) = arg0;
 }
 
 #pragma opt_common_subs off
-s32 func_0200f6b4(void) {
+s32 RtcWaitCompletion(void) {
 volatile s32 *p = &data_0212fd38;
 s32 v;
 while ((v = *p) == 1) {}

@@ -1,12 +1,63 @@
 /* 52 functions from 0x02098BD4 to 0x02099B18 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+
+/* The text-object fields this file touches (TextState in main_0209ACC4.c). */
+typedef struct TextStateCells {
+    u8 filler_00[0x40];
+    u16 *cells;             /* +0x40 glyph cell buffer base */
+    u8 filler_44[4];
+    u8 lineX;               /* +0x48 first cell x of the text area */
+    u8 lineY;               /* +0x49 first cell y of the text area */
+    u8 filler_4A[6];
+    void (*callback)(void); /* +0x50 redraw callback */
+    u8 filler_54[4];
+    u8 width;               /* +0x58 widest line, in cells */
+    u8 height;              /* +0x59 number of lines */
+} TextStateCells;
+
 /* Four glyph pixels expanded to 8 bits each: `word` shifts them by one pixel
  * per 4 bits, `half` is the two tilemap entries one row writes. */
 typedef union { u32 word; u16 half[2]; u8 byte[4]; } GlyphPixelWord;
 
 typedef struct { s32 values[12]; } Unk02098BD4Table;
 extern Unk02098BD4Table data_020f36bc;
+
+/* The fields of a text object (TextState, main_0209ACC4.c) that RedrawTextObject
+ * uses: its glyph cell buffer and the line rectangle it redraws. */
+typedef struct TextObjectRect {
+    u8  filler_00[0x40];
+    u16 *cells;           /* +0x40 glyph cell buffer the line is drawn into */
+    u8  filler_44[4];
+    u8  lineX;            /* +0x48 first cell column of the line */
+    u8  lineY;            /* +0x49 first cell row of the line */
+    u8  filler_4A[6];
+    void (*redraw)(void); /* +0x50 redraw callback */
+    u8  filler_54[4];
+    u8  width;            /* +0x58 cell columns to clear */
+    u8  height;           /* +0x59 cell rows to clear */
+} TextObjectRect;
+
+/* The fields of a text object (TextState, main_0209ACC4.c) that this file uses. */
+typedef struct TextState0209 {
+    u8 filler_00[0x40];
+    u16 *cells;             /* +0x40 glyph cell buffer base */
+    u16 baseAttr;           /* +0x44 attribute OR-ed into every cell */
+    u16 attr16;             /* +0x46 attribute handed to the glyph draw call */
+    u8  lineX;              /* +0x48 first cell x of the line */
+    u8  lineY;              /* +0x49 first cell y of the line */
+    u8  cellX;              /* +0x4A current cell x offset in the line */
+    u8  cellY;              /* +0x4B current cell y offset in the line */
+    u16 linePixel;          /* +0x4C pixel offset of the current line */
+    u16 lineStart;          /* +0x4E pixel offset the line starts at */
+    void (*callback)(void); /* +0x50 redraw callback */
+    s8  delay;              /* +0x54 frames left before the next step */
+    s8  speed;              /* +0x55 frames per step */
+    u8  column;             /* +0x56 pixel offset inside the current cell (0..7) */
+    s8  palette;            /* +0x57 glyph palette */
+    u8  width;              /* +0x58 tile width of the line */
+    u8  height;             /* +0x59 tile height of the line */
+} TextState0209;
 
 /* Indexes the CO face layout table by expression (0..11, in three-step groups)
  * and by the face's variant flag, and returns the face tile record chosen. */
@@ -42,37 +93,43 @@ x &= DS3D_OBJ_X_MASK;
 AddSprite((u16)x,y,tile,faceTemplate,priority);
 }
 
-M2C_UNK func_02098d08(M2C_UNK arg0, s32 arg1) {
+/* Load CO face `faceId`'s texture graphics from the face archive into `dest`:
+ * skip unknown face ids, then open sFaceNarcName and decompress the localized
+ * sFaceTextureName file to the destination. */
+M2C_UNK LoadFaceTextureGfx(M2C_UNK faceId, s32 dest) {
     M2C_UNK SetFileDirectory();
     M2C_UNK OpenNarcArchive(M2C_UNK *);
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
     s32 GetFaceTexturePath(M2C_UNK);
     s32 GetLocalizedFileName(M2C_UNK *);
-    extern M2C_UNK data_02103274, data_02103280;
-    if (GetFaceTexturePath(arg0) == 0) return;
+    extern M2C_UNK sFaceNarcName, sFaceTextureName;
+    if (GetFaceTexturePath(faceId) == 0) return;
     SetFileDirectory();
-    OpenNarcArchive(&data_02103274);
-    LoadNarcFileDecompressed(GetLocalizedFileName(&data_02103280), arg1);
+    OpenNarcArchive(&sFaceNarcName);
+    LoadNarcFileDecompressed(GetLocalizedFileName(&sFaceTextureName), dest);
     CloseNarcArchive();
 }
 
-M2C_UNK func_02098d48(M2C_UNK arg0, u16 arg1) {
+M2C_UNK LoadFacePaletteToSpriteBuffer(M2C_UNK arg0, u16 arg1) {
     M2C_UNK SetFileDirectory();
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
     s32 GetFaceTexturePath(M2C_UNK);
-    extern M2C_UNK data_02103288;
+    extern M2C_UNK sFacePaletteName;
     if (GetFaceTexturePath(arg0) == 0) return;
     SetFileDirectory();
-    LoadFileToSpriteBuffer(&data_02103288, arg1 << 5, 0x20);
+    LoadFileToSpriteBuffer(&sFacePaletteName, arg1 << 5, 0x20);
 }
 
-void LoadFaceTextureAndPalette(M2C_UNK arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_02098d08(M2C_UNK, s32);
-    M2C_UNK func_02098d48(M2C_UNK, u16);
+/* Load CO face `faceId`'s texture graphics into the current 3D sprite engine's
+ * texture area at byte offset `textureOffset`, and its palette into engine OBJ
+ * palette slot `paletteSlot`. */
+void LoadFaceTextureAndPalette(s32 faceId, s32 textureOffset, s32 paletteSlot) {
+    M2C_UNK LoadFaceTextureGfx(s32, s32);
+    M2C_UNK LoadFacePaletteToSpriteBuffer(s32, u16);
     extern void *gCur3DSpriteEngine;
-    func_02098d08(arg0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg1);
-    func_02098d48(arg0, (u16) (arg2 + 0x10));
+    LoadFaceTextureGfx(faceId, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXTURE) + textureOffset);
+    LoadFacePaletteToSpriteBuffer(faceId, (u16) (paletteSlot + DS3D_OBJ_PALETTE_BASE));
 }
 
 M2C_UNK *GetFaceSpriteTemplate(void) {
@@ -200,24 +257,27 @@ void func_0209907c(void) {
     func_02099040();
 }
 
-void **func_02099088(s32 arg0) {
+/* Create the linked face-child object (the sprite FACE_SPRITE_CHILD points at,
+ * refreshed with its parent face) from gFaceChildSpriteClass, defaulting the layer
+ * to 7, and install its vtable.  Returns the new sprite, or NULL. */
+void **CreateFaceChildSprite(s32 layer) {
     void **CreateSpriteFromClass(M2C_UNK *, s32);
     M2C_UNK Init3DSpriteActor();
-    extern M2C_UNK data_02102fd4, data_02102f8c;
+    extern M2C_UNK gFaceChildSpriteClass, gFaceChildSpriteVtbl;
     void **result;
-    if (arg0 == 0) arg0 = 7;
-    result = CreateSpriteFromClass(&data_02102fd4, arg0);
+    if (layer == 0) layer = 7;
+    result = CreateSpriteFromClass(&gFaceChildSpriteClass, layer);
     if (result != 0) {
         Init3DSpriteActor();
-        *result = &data_02102f8c;
+        *result = &gFaceChildSpriteVtbl;
     }
     return result;
 }
 
 void DeleteAllFaceChildren(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02102fd4;
-    DeleteSpriteObjectsOfClass(&data_02102fd4);
+    extern M2C_UNK gFaceChildSpriteClass;
+    DeleteSpriteObjectsOfClass(&gFaceChildSpriteClass);
 }
 
 void func_020990d4(void *arg0, u32 arg1, s32 arg2) {
@@ -321,7 +381,7 @@ M2C_UNK func_02099338(void *arg0) {
     p[0x5B] = 0;
     p[0x5C] = 1;
     p[0x5D] = 0;
-    M2C_FIELD(arg0, void ***, 0x60) = func_02099088((s32)arg0);
+    M2C_FIELD(arg0, void ***, 0x60) = CreateFaceChildSprite((s32)arg0);
 }
 
 /* Draw a CO face sprite: pick its face tile row from its expression and variant,
@@ -346,24 +406,27 @@ void func_020993c8(void) {
     DrawFaceSprite();
 }
 
-void **CreateFaceSprite(s32 arg0) {
+/* Create a CO face sprite owned by `owner` (a parent sprite or a layer index; 7
+ * when none is given): build it from the face sprite class, then initialise its
+ * 3D sprite actor and install the face-sprite vtable. */
+void **CreateFaceSprite(s32 owner) {
     void **CreateSpriteFromClass(M2C_UNK *, s32);
     M2C_UNK Init3DSpriteActor();
-    extern M2C_UNK data_02102fac, data_02102fa0;
+    extern M2C_UNK gFaceSpriteClass, gFaceSpriteVtbl;
     void **result;
-    if (arg0 == 0) arg0 = 7;
-    result = CreateSpriteFromClass(&data_02102fac, arg0);
+    if (owner == 0) owner = 7;
+    result = CreateSpriteFromClass(&gFaceSpriteClass, owner);
     if (result != 0) {
         Init3DSpriteActor();
-        *result = &data_02102fa0;
+        *result = &gFaceSpriteVtbl;
     }
     return result;
 }
 
 void DeleteAllFaceSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02102fac;
-    DeleteSpriteObjectsOfClass(&data_02102fac);
+    extern M2C_UNK gFaceSpriteClass;
+    DeleteSpriteObjectsOfClass(&gFaceSpriteClass);
 }
 
 void func_02099420(void) {
@@ -407,7 +470,7 @@ M2C_UNK InitTextTiles(s32 layer, s32 baseTile, s32 tileSet) {
     }
 }
 
-void func_020994e0(M2C_UNK arg0) {
+void ResetTextTiles(M2C_UNK arg0) {
     M2C_UNK InitTextTiles(M2C_UNK, M2C_UNK, M2C_UNK);
     InitTextTiles(1, arg0, 0);
 }
@@ -536,12 +599,14 @@ dst+=2;
 return width;
 }
 #pragma scheduling on
-u8 func_02099818(s32 arg0,M2C_UNK arg1,M2C_UNK arg2,s32 arg3) {
- M2C_UNK DrawGlyphTiles(s32,u8,M2C_UNK,M2C_UNK,s32);
- extern u8 gGlyphWidthTable[];
- extern s32 data_ov000_021b7f7c[];
- DrawGlyphTiles(data_ov000_021b7f7c[arg0],gGlyphWidthTable[arg0],arg1,arg2,arg3);
- return gGlyphWidthTable[arg0];
+/* Draw the glyph for byte value `glyph` into the 4bpp tilemap `tilemap`, shifted
+ * right by `shift` pixels and using palette number `palette`, and return the
+ * glyph's pixel advance.  The bitmap and advance come from the shared glyph
+ * tables indexed by the byte value. */
+u8 DrawGlyph(s32 glyph, s32 tilemap, s32 shift, s32 palette) {
+    M2C_UNK DrawGlyphTiles(s32, u8, M2C_UNK, M2C_UNK, s32);
+    DrawGlyphTiles(gGlyphBitmapTable[glyph], gGlyphWidthTable[glyph], tilemap, shift, palette);
+    return gGlyphWidthTable[glyph];
 }
 
 #pragma opt_common_subs off
@@ -602,12 +667,14 @@ u16 *func_02099a0c(void *arg0) {
  return base + M2C_FIELD(arg0,u8 *,0x48) + (M2C_FIELD(arg0,u8 *,0x49)<<5);
 }
 
-void func_02099a30(void *arg0) {
+/* Erase the text object's drawn cell area in its glyph cell buffer and invoke
+ * its redraw callback. */
+void RedrawTextObject(TextStateCells *text) {
  M2C_UNK ClearTileRect(s32,u8,u8);
- u16 *base=M2C_FIELD(arg0,u16 **,0x40);
- if(base==0) return;
- ClearTileRect((s32)(base+M2C_FIELD(arg0,u8 *,0x48)+(M2C_FIELD(arg0,u8 *,0x49)<<5)),M2C_FIELD(arg0,u8 *,0x58),M2C_FIELD(arg0,u8 *,0x59));
- M2C_FIELD(arg0,M2C_UNK (**)(),0x50)();
+ u16 *cells=text->cells;
+ if(cells==0) return;
+ ClearTileRect((s32)(cells+text->lineX+(text->lineY<<5)),text->width,text->height);
+ text->callback();
 }
 
 M2C_UNK func_02099a6c(void *arg0) {

@@ -11,7 +11,7 @@ typedef struct { u8 pad0[0x508]; u8 cells[0x3250]; u16 rows[0x40]; u8 pad37d8[0x
  * (menu_seisan) from its archive into the sprite engine's texture, tile-buffer
  * and palette areas, lay out the unit list and refresh the screen object. */
 void LoadProductionMenuScreen(u8 *screen) {
- void func_020994e0(s32); void LoadScenePanelGraphicsOnBothEngines(void); void LoadUiGraphics(void);
+ void ResetTextTiles(s32); void LoadScenePanelGraphicsOnBothEngines(void); void LoadUiGraphics(void);
  void RefreshMapView(void); void SetFileDirectory(void *);
  M2C_UNK GetLocalizedFileName(void *); void OpenNarcArchive(void);
  void LoadNarcFileDecompressed(M2C_UNK,M2C_UNK); void LoadNarcFileToSpriteBuffer(M2C_UNK,s32,s32); void CloseNarcArchive(void);
@@ -22,7 +22,7 @@ void LoadProductionMenuScreen(u8 *screen) {
  extern M2C_UNK sProductionMenuCgName; extern M2C_UNK sProductionMenuScName; extern M2C_UNK sProductionMenuClName;
  extern u8 gProductionMenuState[];
  void (*mapCallback)(void);
- func_020994e0(0);
+ ResetTextTiles(0);
  LoadScenePanelGraphicsOnBothEngines();
  LoadUiGraphics();
  mapCallback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);

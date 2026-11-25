@@ -218,7 +218,7 @@ u32 StringFormatBounded(char *buffer, u32 size, s32 format, void *args) {
     return result;
 }
 
-void func_020675bc(s32 arg0, s32 arg1, s32 arg2, ...) {
+void StringFormatBuffer(s32 arg0, s32 arg1, s32 arg2, ...) {
     char *args;
     args = (char *)(((u32)&arg2 & ~3U) + 4);
     StringFormatBounded(arg0, arg1, arg2, args);

@@ -1,10 +1,12 @@
 /* 30 functions from 0x02213E88 to 0x02214E24 (ov007), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
+#include "ds3dsprite.h"
 typedef struct { u8 pad[11]; u8 kind : 4; u8 flags : 4; } MapEntry14718;
 
 void func_ov007_02213e88(void *cursor) {
-    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
     extern void *gKeyState;
     s32 new_dir;
@@ -35,12 +37,12 @@ void func_ov007_02213e88(void *cursor) {
     prev_dir = M2C_FIELD(cursor, s32 *, 0x3C);
     if (state_flags & 1) {
         PlaySoundEffect(0x1000D);
-        SetSpriteAnimation(cursor, 1);
+        GotoSpriteAnimationLabel(cursor, 1);
         return;
     }
     if (state_flags & 2) {
         PlaySoundEffect(0x1000F);
-        SetSpriteAnimation(cursor, 2);
+        GotoSpriteAnimationLabel(cursor, 2);
         return;
     }
     right_obj = M2C_FIELD(cursor, void **, 0x40);
@@ -164,13 +166,16 @@ void func_ov007_022142bc(void *arg0) {
     func_ov007_0221352c(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
 }
 
-void func_ov007_022142d4(void) {
+void MapEditor_CreateTileCursor(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_0221f890;
-    CreateSpriteFromClass(&data_ov007_0221f890, 7);
+    extern M2C_UNK gMapEditCursorClass;
+    CreateSpriteFromClass(&gMapEditCursorClass, 7);
 }
 
-void func_ov007_022142ec(void) {
+/* Leave the map editor's menu and show its tile cursor: save the carried-unit
+ * menu state, delete the menu sprites, clear the editor's sprite layer and
+ * refresh the map view, then create the tile cursor object. */
+void MapEditor_OpenTileCursor(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK PushCarriedUnitMenuState();
     M2C_UNK RefreshMapView();
@@ -178,9 +183,9 @@ void func_ov007_022142ec(void) {
     PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
     Clear3DSpriteLayer(1);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER1;
     RefreshMapView();
-    func_ov007_022142d4();
+    MapEditor_CreateTileCursor();
 }
 
 void func_ov007_02214324(M2C_UNK arg0) {
@@ -190,17 +195,21 @@ void func_ov007_02214324(M2C_UNK arg0) {
     MapEditor_SetMapModified(1);
 }
 
-void func_ov007_02214354(void) {
+/* Open the map editor's edit-list menu: delete the previous menu sprites, clear
+ * the editor's sprite layer and refresh the map view, then create
+ * gMapEditListMenuClass (whose open callback builds the edit list). */
+void OpenMapEditListMenu(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK RefreshMapView();
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern void *gCur3DSpriteEngine;
-    extern M2C_UNK data_ov007_0221f820;
+    extern M2C_UNK gMapEditListMenuClass;
+
     DeleteMapMenuSprites();
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     RefreshMapView();
-    CreateSpriteFromClass(&data_ov007_0221f820, 7);
+    CreateSpriteFromClass(&gMapEditListMenuClass, 7);
 }
 
 void func_ov007_02214394(void) {
@@ -309,29 +318,44 @@ void func_ov007_0221450c(void) {
     DeleteMapMenuSprites();
 }
 
-void func_ov007_02214544(void) {
+/* Map-editor AI-order command: give the unit under the cursor the first AI action
+ * step (AI_STEP_FIRST), flag the map as modified and refresh the editor's menu
+ * sprites. */
+void MapEditor_SetCursorUnitAiStepFirst(void) {
     M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     M2C_UNK DeleteMapMenuSprites();
     extern s32 *gCurrentMap;
-    M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) = (u8) ((M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) & ~0xF) | 0x1);
+
+    M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) =
+        (u8) ((M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) & ~MAP_UNIT_AI_STATE_MASK) | AI_STEP_FIRST);
     MapEditor_SetMapModified(1);
     DeleteMapMenuSprites();
 }
 
-void func_ov007_02214580(void) {
+/* Map-editor AI-order command: give the unit under the cursor the capture AI
+ * action step (AI_STEP_CAPTURE), flag the map as modified and refresh the
+ * editor's menu sprites. */
+void MapEditor_SetCursorUnitAiStepCapture(void) {
     M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     M2C_UNK DeleteMapMenuSprites();
     extern s32 *gCurrentMap;
-    M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) = (u8) ((M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) & ~0xF) | 0x8);
+
+    M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) =
+        (u8) ((M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) & ~MAP_UNIT_AI_STATE_MASK) | AI_STEP_CAPTURE);
     MapEditor_SetMapModified(1);
     DeleteMapMenuSprites();
 }
 
-void func_ov007_022145bc(void) {
+/* Map-editor AI-order command: give the unit under the cursor the attack AI
+ * action step (AI_STEP_ATTACK), flag the map as modified and refresh the
+ * editor's menu sprites. */
+void MapEditor_SetCursorUnitAiStepAttack(void) {
     M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     M2C_UNK DeleteMapMenuSprites();
     extern s32 *gCurrentMap;
-    M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) = (u8) ((M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) & ~0xF) | 0x6);
+
+    M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) =
+        (u8) ((M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) & ~MAP_UNIT_AI_STATE_MASK) | AI_STEP_ATTACK);
     MapEditor_SetMapModified(1);
     DeleteMapMenuSprites();
 }

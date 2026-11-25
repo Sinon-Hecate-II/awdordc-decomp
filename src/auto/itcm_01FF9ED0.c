@@ -62,7 +62,7 @@ s32 GetSpriteLayerHead(s32 arg0) {
     return g3DSpriteLayerLists[arg0];
 }
 
-u8 func_01ffa14c(u32 arg0) {
+u8 IsLayerParent(u32 arg0) {
     u8 var_r0;
 
     if (arg0 < 0xBU) {
@@ -133,22 +133,25 @@ void *AllocSpriteObject(void) {
     return sprite;
 }
 
-void Free3DSpriteObject(s32 arg0) {
+/* Frees `sprite` from the ordered sprite array: drops the array's last slot and,
+ * when `sprite` is not the one dropped, moves that slot's object into `sprite`'s
+ * place, leaving `sprite` just past the shortened array. */
+void Free3DSpriteObject(void *sprite) {
     extern void **g3DSpriteOrderCursor;
-    void **var_r2;
-    s32 temp_r3;
+    void **scan;
+    void *last;
 
     g3DSpriteOrderCursor -= 1;
-    var_r2 = g3DSpriteOrderCursor;
-    temp_r3 = (s32) *var_r2;
-    if (temp_r3 == arg0) {
+    scan = g3DSpriteOrderCursor;
+    last = *scan;
+    if (last == sprite) {
         return;
     }
     do {
-        var_r2 -= 1;
-    } while ((s32) *var_r2 != arg0);
-    *var_r2 = (void *) temp_r3;
-    *g3DSpriteOrderCursor = (void *) arg0;
+        scan -= 1;
+    } while (*scan != sprite);
+    *scan = last;
+    *g3DSpriteOrderCursor = sprite;
 }
 
 void InsertSpriteInLayer(void *arg0, u32 arg1) {
@@ -234,7 +237,7 @@ void CreateSpriteFromClass(M2C_UNK arg0, M2C_UNK arg1) {
     CreateSpriteObjectInLayer(arg0, arg1, gCur3DSpriteEngine);
 }
 
-s32 func_01ffa3f4(s32 a,s32 b,s32 c) {
+s32 CreateChildSpriteObject(s32 a,s32 b,s32 c) {
  void *p=(void *)CreateSpriteObjectInLayer(a,b,c);
  void *parent;
  if(M2C_FIELD(p,s32 *,4)==0)return 0;
@@ -245,9 +248,9 @@ s32 func_01ffa3f4(s32 a,s32 b,s32 c) {
 }
 
 void CreateSpriteObject(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_01ffa3f4(M2C_UNK, M2C_UNK, s32);
+    M2C_UNK CreateChildSpriteObject(M2C_UNK, M2C_UNK, s32);
     extern s32 gCur3DSpriteEngine;
-    func_01ffa3f4(arg0, arg1, gCur3DSpriteEngine);
+    CreateChildSpriteObject(arg0, arg1, gCur3DSpriteEngine);
 }
 
 void CreateSpriteForOwner(s32 a,s32 b) {
@@ -381,18 +384,21 @@ void Sprite_ResumeAnimation(void *arg0) {
     }
 }
 
-void Sprite_ResumeAnimationRepeat(void *arg0) {
-    register s16 *temp_r2;
+/* Resume a paused 3D sprite's animation: clear the update-callback override that
+ * paused it, or step past the animation's wait state (state 2) when that is where
+ * it stopped, then ask the update to run again this frame. */
+void Sprite_ResumeAnimationRepeat(void *sprite) {
+    register s16 *animState;
 
-    if (M2C_FIELD(arg0, s32 *, 0x10) != 0) {
-        M2C_FIELD(arg0, s32 *, 0x10) = 0;
+    if (M2C_FIELD(sprite, s32 *, DS3D_SPRITE_UPDATE_CB) != 0) {
+        M2C_FIELD(sprite, s32 *, DS3D_SPRITE_UPDATE_CB) = 0;
     } else {
-        temp_r2 = M2C_FIELD(arg0, s16 **, 8);
-        if ((temp_r2 != NULL) && (*temp_r2 == 2)) {
-            M2C_FIELD(arg0, s16 **, 8) = (s16 *) ((s32)temp_r2 + 8);
+        animState = M2C_FIELD(sprite, s16 **, DS3D_SPRITE_ANIM);
+        if ((animState != NULL) && (*animState == 2)) {
+            M2C_FIELD(sprite, s16 **, DS3D_SPRITE_ANIM) = (s16 *) ((s32)animState + DS3D_STATE_SIZE);
         }
     }
-    M2C_FIELD(arg0, u8 *, 0x30) = (u8) (M2C_FIELD(arg0, u8 *, 0x30) | 0x40);
+    M2C_FIELD(sprite, u8 *, DS3D_SPRITE_FLAGS) = (u8) (M2C_FIELD(sprite, u8 *, DS3D_SPRITE_FLAGS) | DS3D_SPRITE_FLAG_REPEAT);
 }
 
 /* Return the first live 3D sprite object of class `spriteClass` in the depth sort
@@ -459,16 +465,24 @@ void SetSpriteZ(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, s16 *, 0x2E) = arg1;
 }
 
-void SetSpriteAnimation(void *p,s32 value) {
- s16 *q=M2C_FIELD(p,s16 **,4);
- s16 v=*q;
- if(v==0)return;
- do {
- if(v==20 && q[1]==value) {
- M2C_FIELD(p,s16 **,8)=q;M2C_FIELD(p,s32 *,0x10)=0;return;
- }
- q+=4;v=*q;
- }while(v!=0);
+/* Jump a 3D sprite's animation to the state labelled `label`: scan the object's
+ * animation script for the label entry (DS3D_STATE_LABEL) whose parameter names
+ * it, point the state cursor there and clear the update-callback override so the
+ * default state machine runs on from the label. */
+void GotoSpriteAnimationLabel(void *sprite, s32 label) {
+    DS3DStateEntry *state = M2C_FIELD(sprite, DS3DStateEntry **, DS3D_SPRITE_ALIVE);
+    s16 id = state->id;
+
+    if (id == 0) return;
+    do {
+        if (id == DS3D_STATE_LABEL && state->param == label) {
+            M2C_FIELD(sprite, DS3DStateEntry **, DS3D_SPRITE_ANIM) = state;
+            M2C_FIELD(sprite, s32 *, DS3D_SPRITE_UPDATE_CB) = 0;
+            return;
+        }
+        state += 1;
+        id = state->id;
+    } while (id != 0);
 }
 
 void func_01ffa904(void *arg0, s32 arg1) {
@@ -485,19 +499,21 @@ void func_01ffa920(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x14) = arg1;
 }
 
-void func_01ffa928(M2C_UNK arg0, M2C_UNK *arg1) {
+/* Run `callback` on every live 3D sprite object in the pool that is of class
+   `spriteClass`, whichever engine the object belongs to. */
+void ApplyToSpriteClass(M2C_UNK spriteClass, M2C_UNK *callback) {
     extern u8 g3DSpriteObjectPool[];
-    u8 *p = g3DSpriteObjectPool;
+    u8 *object = g3DSpriteObjectPool;
     s32 i;
 
     i = 0;
     do {
-        if (M2C_FIELD(p, s32 *, 4) == arg0) {
-            ((void (*)(void *)) arg1)(p);
+        if (M2C_FIELD(object, s32 *, DS3D_SPRITE_ALIVE) == spriteClass) {
+            ((void (*)(void *)) callback)(object);
         }
         i++;
-        p += 0x74;
-    } while (i < 0x80);
+        object += DS3D_SPRITE_SIZE;
+    } while (i < DS3D_SPRITE_COUNT);
 }
 
 /* Run `callback` on every 3D sprite object in the pool that is of class
@@ -518,22 +534,22 @@ void ApplyToSpriteClassOnCurrentEngine(M2C_UNK spriteClass, M2C_UNK *callback) {
     } while (i < DS3D_SPRITE_COUNT);
 }
 
-void func_01ffa9bc(M2C_UNK arg0) {
+void ResumeAnimationOfSpriteClass(M2C_UNK arg0) {
     void Sprite_ResumeAnimation(void *);
-    func_01ffa928(arg0, (M2C_UNK *) &Sprite_ResumeAnimation);
+    ApplyToSpriteClass(arg0, (M2C_UNK *) &Sprite_ResumeAnimation);
 }
 
-void func_01ffa9d0(M2C_UNK arg0) {
+void ResumeAnimationOfSpriteClassOnCurrentEngine(M2C_UNK arg0) {
     void Sprite_ResumeAnimation(void *);
     ApplyToSpriteClassOnCurrentEngine(arg0, (M2C_UNK *)&Sprite_ResumeAnimation);
 }
 
 void DeleteSpriteObjectsOfClass(M2C_UNK arg0) {
     void DeleteSpriteObject(void *);
-    func_01ffa928(arg0, (M2C_UNK *) &DeleteSpriteObject);
+    ApplyToSpriteClass(arg0, (M2C_UNK *) &DeleteSpriteObject);
 }
 
-void func_01ffa9f8(M2C_UNK arg0) {
+void DeleteSpriteObjectsOfClassOnCurrentEngine(M2C_UNK arg0) {
     void DeleteSpriteObject(void *);
     ApplyToSpriteClassOnCurrentEngine(arg0, (M2C_UNK *)&DeleteSpriteObject);
 }
@@ -576,20 +592,23 @@ u32 GetSpriteParent(void *arg0) {
     return var_r0;
 }
 
-void func_01ffaa8c(void *arg0) {
-    u8 temp_r0;
-    void *temp_r1;
+/* Stop counting `sprite` as a child object of its parent: when it is attached to
+ * a parent sprite (rather than a layer) and was created as a child object, clear
+ * its HAS_PARENT flag and drop its parent's child count. */
+void DetachSpriteFromParent(void *sprite) {
+    u8 flags;
+    void *parent;
 
-    if (func_01ffa14c(M2C_FIELD(arg0, void **, 0x18)) != 0) {
+    if (IsLayerParent(M2C_FIELD(sprite, void **, DS3D_SPRITE_PARENT)) != 0) {
         return;
     }
-    temp_r0 = M2C_FIELD(arg0, u8 *, 0x30);
-    if (!(temp_r0 & 4)) {
+    flags = M2C_FIELD(sprite, u8 *, DS3D_SPRITE_FLAGS);
+    if (!(flags & DS3D_SPRITE_FLAG_HAS_PARENT)) {
         return;
     }
-    M2C_FIELD(arg0, u8 *, 0x30) = (u8) (temp_r0 & ~4);
-    temp_r1 = M2C_FIELD(arg0, void **, 0x18);
-    M2C_FIELD(temp_r1, u8 *, 0x31) = (u8) (M2C_FIELD(temp_r1, u8 *, 0x31) - 1);
+    M2C_FIELD(sprite, u8 *, DS3D_SPRITE_FLAGS) = (u8) (flags & ~DS3D_SPRITE_FLAG_HAS_PARENT);
+    parent = M2C_FIELD(sprite, void **, DS3D_SPRITE_PARENT);
+    M2C_FIELD(parent, u8 *, DS3D_SPRITE_CHILD_COUNT) = (u8) (M2C_FIELD(parent, u8 *, DS3D_SPRITE_CHILD_COUNT) - 1);
 }
 
 /* Adds one 3D sprite to the active engine's list: claims the next of its 128
@@ -687,37 +706,45 @@ void AddSpriteEntry(s32 a, s32 b, s32 c, s32 d, u16 e, s32 f, s32 priority) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x49)++;
 }
 
-void func_01ffac9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Add a 3D sprite to the main screen's engine: make the main engine current,
+ * add the sprite there and restore the previously current engine. */
+void AddSpriteToMainEngine(s32 x, s32 y, s32 tile, s32 template_, s32 priority) {
     void AddSprite(s32, s32, s32, s32, s32);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
-    s32 temp_r5;
+    s32 savedEngine;
 
-    temp_r5 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    AddSprite(arg0, arg1, arg2, arg3, arg4);
-    gCur3DSpriteEngine = temp_r5;
+    AddSprite(x, y, tile, template_, priority);
+    gCur3DSpriteEngine = savedEngine;
 }
 
-void func_01ffacd4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Add a 3D sprite to the sub (lower) screen engine's list, restoring the
+ * previously active engine afterwards. */
+void AddSpriteToSubEngine(s32 x, s32 y, s32 tile, s32 template_, s32 priority) {
     void AddSprite(s32, s32, s32, s32, s32);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
-    s32 temp_r5;
+    s32 savedEngine;
 
-    temp_r5 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    AddSprite(arg0, arg1, arg2, arg3, arg4);
-    gCur3DSpriteEngine = temp_r5;
+    AddSprite(x, y, tile, template_, priority);
+    gCur3DSpriteEngine = savedEngine;
 }
 
-void func_01ffad0c(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
-void AddSprite(s32,s32,s32,s32,s32);
-extern s32 gCur3DSpriteEngine;
-void *p=(void *)gCur3DSpriteEngine;
-u8 *q=(u8 *)M2C_FIELD(p,volatile s32 *,4)+M2C_FIELD(p,volatile u8 *,0x49)*0x14;
-AddSprite(arg0,arg1,arg2,arg3,arg4);
-q[0x12]=(q[0x12]&~15)|1;
+/* Add a sprite to the current 3D sprite engine's list, then mark the slot it
+ * took as an affine (3D) sprite. */
+void AddAffineSprite(s32 x, s32 y, s32 tile, s32 template_, s32 priority) {
+    void AddSprite(s32, s32, s32, s32, s32);
+    extern s32 gCur3DSpriteEngine;
+    void *engine = (void *)gCur3DSpriteEngine;
+    u8 *entry = (u8 *)M2C_FIELD(engine, volatile s32 *, DS3D_ENGINE_SPRITE_ARRAY) +
+                M2C_FIELD(engine, volatile u8 *, DS3D_ENGINE_SPRITE_COUNT) * DS3D_ENTRY_SIZE;
+
+    AddSprite(x, y, tile, template_, priority);
+    entry[DS3D_ENTRY_FLAGS] = (entry[DS3D_ENTRY_FLAGS] & ~15) | DS3D_ENTRY_FLAG_AFFINE;
 }
 
 /* Add a sprite to the current 3D sprite engine's list, taking its position as the

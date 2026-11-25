@@ -51,6 +51,7 @@
 #define BATTLE_SCENE_END_DELAY 0x04 /* s32 frames the scene has been ending for */
 #define BATTLE_SCENE_PHASE     0x08 /* u8 BATTLE_SCENE_PHASE_* */
 #define BATTLE_SCENE_READY     0x09 /* u8 nonzero once the scene may be ended */
+#define BATTLE_SCENE_END_FRAMES 0x4B /* frames the scene stays endable before it ends itself */
 enum {
     BATTLE_SCENE_PHASE_SETUP    = 0,
     BATTLE_SCENE_PHASE_SLIDE_IN = 1, /* panels and sprites slide in over 32 frames */
@@ -63,6 +64,19 @@ enum {
  * player * VERSUS_DATA_STRIDE; gVersusPlayerHp is the HP the gauge animates to. */
 #define VERSUS_DATA_STRIDE 0x18
 #define VERSUS_DATA_COUNTRY 0x01 /* u8 country/army id that picks the player's screen assets */
+#define VERSUS_DATA_PLACEMENTS 0x28 /* void *[UNIT_VIEW_MODEL_COUNT] where the side's unit models stand */
+
+/* One unit's placement in the versus screen's scene, UNIT_PLACEMENT_STRIDE bytes:
+ * where its model stands and the order it is drawn in.  A model's z is its
+ * placement z plus a step per model drawn in front of it, so the deeper models
+ * stack behind the nearer ones. */
+#define UNIT_PLACEMENT_STRIDE 8
+#define UNIT_PLACEMENT_X      0x00 /* s16 x of the model */
+#define UNIT_PLACEMENT_Y      0x02 /* s16 y of the model */
+#define UNIT_PLACEMENT_Z      0x04 /* s16 z of the model */
+#define UNIT_PLACEMENT_ORDER  0x06 /* u16 draw order: a higher order is drawn in front */
+#define UNIT_PLACEMENT_Z_BASE 20   /* z of the model drawn furthest back */
+#define UNIT_PLACEMENT_Z_STEP 20   /* z distance between two models' layers */
 
 /* Effect node (ov002 effect system), 0x88 bytes; built by Ov002_AddEffectNode
  * and animated by UpdateEffectNode. */

@@ -84,14 +84,14 @@ void RunLinkAiCommand(void) {
     void UpdateLocalPlayerInput(void);
     u8 IsMapCursorIdle(void);
     s32 ProcessAiCommandStep(void);
-    u8 func_ov000_0219c7b0(void);
+    u8 GetAiCommandPhase(void);
 
     UpdateLocalPlayerInput();
     if (!IsMapCursorIdle()) {
         return;
     }
     ProcessAiCommandStep();
-    if (func_ov000_0219c7b0() == AI_COMMAND_PHASE_PICK_ACTION) {
+    if (GetAiCommandPhase() == AI_COMMAND_PHASE_PICK_ACTION) {
         gLinkAiCommandStage = AI_COMMAND_STAGE_IDLE;
     }
 }
@@ -112,7 +112,17 @@ void UpdateLocalPlayerInput(void) {
     func_0207a7a4(1, 4);
 }
 
-void UnpackCursorPath(u8 *a,u8 *b){s32 i=0,j=0;do{b[i]=((u32)(a[j]<<28)>>24)|(a[j+1]&15);j+=2;i++;}while(i<6);}
+/* Pack a cursor path's twelve step bytes (MAP_CURSOR_PATH, one MOVE_DIR code per
+ * byte) into the 6-byte command path gCommandPath, two 4-bit codes per byte.  The
+ * inverse of UnpackCommandPath. */
+void PackCommandPath(u8 *steps, u8 *packed) {
+    s32 i = 0, j = 0;
+    do {
+        packed[i] = ((u32) (steps[j] << 28) >> 24) | (steps[j + 1] & 0xF);
+        j += 2;
+        i++;
+    } while (i < 6);
+}
 
 /* Unpack the 6-byte compact command path (two 4-bit MOVE_DIR codes per byte, a
  * 0xF nibble for a missing step) into the map's 12-byte cursor path `dest`. */
@@ -131,7 +141,7 @@ void UnpackCommandPath(u8 *packed, u8 *dest) {
 }
 
 #pragma opt_common_subs off
-void func_020844f8(void) {
+void SendTurnEndPacket(void) {
 void SendLinkCommand(void *, s32);
 void **p; u8 *dst; u32 i;
 u8 *packet=(u8 *)&gLinkAiCommandStage;
@@ -142,7 +152,7 @@ do{dst[12]=M2C_FIELD((u8 *)*p+i,u8 *,0x515c);i++;dst++;}while((s32)i<4);
 SendLinkCommand(gBattleCommand,20);
 }
 #pragma opt_common_subs reset
-void SendBattleCommandPacket(s32 a,s32 b,s32 c,s32 d){void SendLinkCommand(void *,s32);u8 *q=(u8 *)&gLinkAiCommandStage;void **p=gCurrentMap;u32 v; u32 x;q[4]=a;x=M2C_FIELD(*p,s16 *,0x52dc);v=M2C_FIELD(gAiCommand,s32 *,8);q[6]=x;q[7]=M2C_FIELD(*p,s16 *,0x52de);q[8]=M2C_FIELD(*p,s16 *,0x52d8);q[9]=M2C_FIELD(*p,s16 *,0x52da);q[5]=b;*(s32 *)(q+12)=v;q[10]=c;q[11]=d;q[22]=gAiCommand[18];UnpackCursorPath((u8 *)*p+0x5388,data_02156e5c);SendLinkCommand(gBattleCommand,20);}
+void SendBattleCommandPacket(s32 a,s32 b,s32 c,s32 d){void SendLinkCommand(void *,s32);u8 *q=(u8 *)&gLinkAiCommandStage;void **p=gCurrentMap;u32 v; u32 x;q[4]=a;x=M2C_FIELD(*p,s16 *,0x52dc);v=M2C_FIELD(gAiCommand,s32 *,8);q[6]=x;q[7]=M2C_FIELD(*p,s16 *,0x52de);q[8]=M2C_FIELD(*p,s16 *,0x52d8);q[9]=M2C_FIELD(*p,s16 *,0x52da);q[5]=b;*(s32 *)(q+12)=v;q[10]=c;q[11]=d;q[22]=gAiCommand[18];PackCommandPath((u8 *)*p+0x5388,data_02156e5c);SendLinkCommand(gBattleCommand,20);}
 
 s32 GetLinkMode(void) {
     s32 IsResourceLoaded(M2C_UNK);
@@ -227,17 +237,19 @@ s32 IsSessionInError(void) {
     }
 }
 
+/* True when the active network session's result has already been dealt with: the
+ * link has marked its result flag, or the online session's error has been shown. */
 s32 IsSessionResultHandled(void) {
     s32 IsLinkResultFlagSet(M2C_UNK);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
-    s32 temp_r0;
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
         return IsLinkResultFlagSet(1);
-    case 2:
-        return IsOnlineSessionFlagSet(6);
+    case NET_OVERLAY_ONLINE:
+        return IsOnlineSessionFlagSet(OV010_FLAG_ERROR);
     default:
         return 0;
     }
@@ -286,14 +298,14 @@ s32 IsLocalSessionHost(void) {
 }
 
 s32 func_02084890(void) {
-    s32 func_ov009_022254d8();
+    s32 IsLinkGuest();
     s32 func_ov010_02229bf4();
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        return func_ov009_022254d8();
+        return IsLinkGuest();
     case 2:
         return func_ov010_02229bf4();
     default:
@@ -578,18 +590,21 @@ s32 Link_SendMessage(M2C_UNK message, M2C_UNK payload, M2C_UNK payloadSize, M2C_
     }
 }
 
-void func_02084cc0(M2C_UNK arg0) {
-    M2C_UNK func_ov009_02225348(M2C_UNK);
-    M2C_UNK func_ov010_02228c88(M2C_UNK);
-    s32 temp_r0;
+/* Create the departure object of the network overlay currently running: the
+ * single-card link's or the online session's sprite that tears the session down
+ * when a match is left. */
+void CreateSessionDepartureObject(M2C_UNK owner) {
+    M2C_UNK CreateLinkDepartureObject(M2C_UNK);
+    M2C_UNK CreateOnlineDepartureObject(M2C_UNK);
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        func_ov009_02225348(arg0);
+    overlay = GetActiveOverlay();
+    switch (overlay) {
+    case NET_OVERLAY_LINK:
+        CreateLinkDepartureObject(owner);
         return;
-    case 2:
-        func_ov010_02228c88(arg0);
+    case NET_OVERLAY_ONLINE:
+        CreateOnlineDepartureObject(owner);
         return;
     }
 }
@@ -627,14 +642,14 @@ s32 Link_ReceivePacket(M2C_UNK buffer, M2C_UNK length) {
 /* Hand a buffer of `size` bytes (`src`) to the active network overlay, which
  * stages it as this console's local-player record to be sent to the others. */
 void Link_SendPacket(M2C_UNK src, M2C_UNK size) {
-    M2C_UNK func_ov009_02223f7c(M2C_UNK, M2C_UNK);
+    M2C_UNK StageLinkLocalPlayerRecord(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov010_02229a74(M2C_UNK, M2C_UNK);
     s32 overlay;
 
     overlay = GetActiveOverlay();
     switch (overlay) {                              /* irregular */
     case NET_OVERLAY_LINK:
-        func_ov009_02223f7c(src, size);
+        StageLinkLocalPlayerRecord(src, size);
         return;
     case NET_OVERLAY_ONLINE:
         func_ov010_02229a74(src, size);
@@ -817,18 +832,21 @@ void CreateMatchNameLabel(M2C_UNK x, M2C_UNK y, M2C_UNK owner) {
     }
 }
 
-void func_020850a4(M2C_UNK arg0) {
-    M2C_UNK func_ov009_02226268(M2C_UNK);
-    M2C_UNK func_ov010_0222bb64(M2C_UNK);
-    s32 temp_r0;
+/* Spawn the player-announce refresher sprite under `owner` through whichever
+ * network overlay is running (single-card link or online): the sprite's per-frame
+ * update re-announces the local player when its published record changed. */
+void SpawnPlayerAnnounceRefresher(M2C_UNK owner) {
+    M2C_UNK SpawnLinkPlayerAnnounceRefresher(M2C_UNK);
+    M2C_UNK SpawnOnlinePlayerAnnounceRefresher(M2C_UNK);
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        func_ov009_02226268(arg0);
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
+        SpawnLinkPlayerAnnounceRefresher(owner);
         return;
-    case 2:
-        func_ov010_0222bb64(arg0);
+    case NET_OVERLAY_ONLINE:
+        SpawnOnlinePlayerAnnounceRefresher(owner);
         return;
     }
 }
@@ -920,20 +938,23 @@ s32 CreateLinkStatusSprite(s32 x, s32 y, s32 tile, s32 palette) {
     return linkMode;
 }
 
-void func_02085294(M2C_UNK arg0, M2C_UNK arg1) {
+void CreateLinkStatusSpriteAt(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK CreateLinkStatusSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     return (void)CreateLinkStatusSprite(arg0, arg1, 0, 0);
 }
 
+/* Put the small session-status indicator on the sub (top) screen: make the sub
+ * 3D sprite engine current, spawn the indicator sprite at the top-right corner
+ * and restore the engine that was current. */
 void CreateSubScreenLinkIndicator(void) {
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
-    s32 temp_r4;
+    s32 savedEngine;
 
-    temp_r4 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_02085294(0xEF, 1);
-    gCur3DSpriteEngine = temp_r4;
+    CreateLinkStatusSpriteAt(0xEF, 1);
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_020852e0(void) {

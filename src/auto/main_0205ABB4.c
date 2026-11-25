@@ -90,15 +90,15 @@ void func_0205ad60(M2C_UNK arg0) {
 
 void func_0205ad78(M2C_UNK arg0) {
     s32 func_0205c344();
-    s32 func_0205d428(M2C_UNK);
-    M2C_UNK func_0205d464(M2C_UNK);
+    s32 gti2ThinkSocketConnections(M2C_UNK);
+    M2C_UNK gti2RemoveClosedConnections(M2C_UNK);
     if (func_0205c344() == 0) {
         return;
     }
-    if (func_0205d428(arg0) == 0) {
+    if (gti2ThinkSocketConnections(arg0) == 0) {
         return;
     }
-    func_0205d464(arg0);
+    gti2RemoveClosedConnections(arg0);
 }
 
 void Gt2SocketSetConnectAttempt(void) {
@@ -188,22 +188,27 @@ void Gt2SocketSetUnrecognizedCallback(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x30) = arg1;
 }
 
-void func_0205b058(void *a,s32 b) {
-M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
-extern M2C_UNK data_020ff7ec,data_020ff7e0,data_020ff7b0;
-if(!a)AssertFailed(&data_020ff7ec,&data_020ff7e0,&data_020ff7b0,0x1a3);
-M2C_FIELD(a,s32 *,0x40)=b;
+/* GameSpy GT2: attach the caller's data word to a connection (the connection
+   must not be NULL). */
+void gt2SetConnectionData(void *connection, s32 data) {
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
+    extern M2C_UNK sGt2AssertConnection, gGt2MainFileName, sGt2SetConnectionDataName;
+    if (!connection) AssertFailed(&sGt2AssertConnection, &gGt2MainFileName, &sGt2SetConnectionDataName, 0x1a3);
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_USER_DATA) = data;
 }
 
-s32 GetConnectionPeer(void *arg0) {
+/* Return the caller's user data attached to GT2 `connection` (the network layer
+ * keeps its peer record there); a NULL connection is a bug. */
+s32 gt2GetConnectionData(void *connection) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
-    extern M2C_UNK data_020ff7c8;
-    extern M2C_UNK data_020ff7e0;
-    extern M2C_UNK data_020ff7ec;
-    if (arg0 == NULL) {
-        AssertFailed(&data_020ff7ec, &data_020ff7e0, &data_020ff7c8, 0x1AA);
+    extern M2C_UNK sGt2GetConnectionDataName;
+    extern M2C_UNK gGt2MainFileName;
+    extern M2C_UNK sGt2AssertConnection;
+
+    if (connection == NULL) {
+        AssertFailed(&sGt2AssertConnection, &gGt2MainFileName, &sGt2GetConnectionDataName, 0x1AA);
     }
-    return M2C_FIELD(arg0, s32 *, 0x40);
+    return M2C_FIELD(connection, s32 *, GT2_CONNECTION_USER_DATA);
 }
 
 s32 Gt2ReadShort(u8 *a,s32 b) {u16 n=(a[b]<<8)&0xff00;return (u16)n|a[b+1];}

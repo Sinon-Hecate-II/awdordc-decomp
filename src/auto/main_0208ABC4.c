@@ -142,9 +142,9 @@ void StartWindowOpen(void *window) {
 
 /* Start closing a window sprite: a sprite with no animation state is deleted
  * outright; otherwise it enters its closing mode, hides its two child sprites
- * and starts an eight-frame close, which func_0208a714 then plays out. */
+ * and starts an eight-frame close, which NotifyWindowClosed then plays out. */
 void StartWindowClose(void *window) {
-    M2C_UNK func_0208a714(void *);
+    M2C_UNK NotifyWindowClosed(void *);
     s32 flags;
     u32 state;
 
@@ -164,11 +164,11 @@ void StartWindowClose(void *window) {
             Hide3DSprite();
         }
     }
-    func_0208a714(window);
+    NotifyWindowClosed(window);
 }
 
 void func_0208af98(void *p) {
- s32 EaseInterpolate(s32,s32,s32,s32,s32); void Show3DSprite(void*);void func_02089c80(void*);s32 Is3DSpriteAnimating();void DrawTileRow(u16,u16,u16,u16,s32);void func_0208e18c(s16,s16,s16,s16,u16,s32);
+ s32 EaseInterpolate(s32,s32,s32,s32,s32); void Show3DSprite(void*);void TextLayer_AdvancePageOrClose(void*);s32 Is3DSpriteAnimating();void DrawTileRow(u16,u16,u16,u16,s32);void func_0208e18c(s16,s16,s16,s16,u16,s32);
  s32 bottom,right,tx,ty,j,maxw,i,depth,y,x,height,width; u8 alpha;u32 tile,mode,count;u16 frame;void *old,*engine; WindowControl0208 *volatile control;u8 *widths,*aligns;s32 w; u16 kind;
  frame=(u16)(0x1000|(0x3ff&(0xa0>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0)<<17)>>30))));
  tile=M2C_FIELD(p,u16*,0x3e)<<5;
@@ -190,7 +190,7 @@ void func_0208af98(void *p) {
   break;
  case 2:
   M2C_FIELD(p,u8*,0x4b)++;
-  if(M2C_FIELD(p,u8*,0x4b)>=M2C_FIELD(p,u8*,0x4a))func_02089c80(p);
+  if(M2C_FIELD(p,u8*,0x4b)>=M2C_FIELD(p,u8*,0x4a))TextLayer_AdvancePageOrClose(p);
   width=(EaseInterpolate(4,width,0,M2C_FIELD(p,u8*,0x4b),M2C_FIELD(p,u8*,0x4a))+4)&~7;
   x+=((s32)(((WindowSize0208*)((u8*)p+0x40))->width)-width)/2;
   alpha=(u8)EaseInterpolate(0,4,0,M2C_FIELD(p,u8*,0x4b),M2C_FIELD(p,u8*,0x4a));

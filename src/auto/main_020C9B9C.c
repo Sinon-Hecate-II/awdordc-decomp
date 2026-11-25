@@ -272,7 +272,7 @@ s32 FindPlayerReachedPropertyLimit(void) {
     return 0;
 }
 
-s32 func_020ca1ec(void) {
+s32 AllRemainingPlayersShareTeam(void) {
 extern void **gCurrentMap;
 s32 i,j,mism; u8 buf[5]; u8 *cur; s32 offset; void **maps; s32 inner;
 for(i=1;i<5;i++){buf[i]=0;if(IsPlayerActive(i)&&!HasActivePlayerGivenUp(i)&&IsHumanPlayerStillFighting(i)&&IsPlayerStillFighting(i)&&IsPlayerHqIntact(i))buf[i]=1;}
@@ -286,37 +286,42 @@ maps=gCurrentMap; cur=buf+1; i=1; offset=140; do {if(*cur){mism=0;for(j=1,inner=
 return 0;
 }
 
+/* Switch the battle state machine to MAP_STATE_RETURN, remembering the state it
+ * interrupted (MAP_RETURN_STATE) so that step can resume it afterwards. */
 void ScheduleBattleEndCheck(void) {
     extern void **gCurrentMap;
-    u16 temp_r2;
-    void *temp_r0;
+    u16 state;
+    void *map;
 
-    temp_r0 = *gCurrentMap;
-    temp_r2 = M2C_FIELD(temp_r0, u16 *, 0x52B0);
-    if (temp_r2 == 0x10) {
+    map = *gCurrentMap;
+    state = M2C_FIELD(map, u16 *, MAP_STATE);
+    if (state == MAP_STATE_RETURN) {
         return;
     }
-    M2C_FIELD(temp_r0, u16 *, 0x52B2) = temp_r2;
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 0x10;
+    M2C_FIELD(map, u16 *, MAP_RETURN_STATE) = state;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = MAP_STATE_RETURN;
 }
 
-void func_020ca4c0(void) {
+/* Battle-end check: when only one team is left, record every defeat and end the
+ * battle; when a player has reached the property-count limit, award them the
+ * victory; otherwise start the players' defeat presentations. */
+void CheckBattleEnd(void) {
     M2C_UNK AwardVictoryToPlayer(s32, M2C_UNK);
     M2C_UNK EnterBattleEnd();
     void StartPlayerDefeatSequences();
     void RecordDefeatedPlayers();
     s32 FindPlayerReachedPropertyLimit();
-    s32 func_020ca1ec();
-    s32 temp_r0;
+    s32 AllRemainingPlayersShareTeam();
+    s32 winner;
 
-    if (func_020ca1ec() != 0) {
+    if (AllRemainingPlayersShareTeam() != 0) {
         RecordDefeatedPlayers();
         EnterBattleEnd();
         return;
     }
-    temp_r0 = FindPlayerReachedPropertyLimit();
-    if (temp_r0 != 0) {
-        AwardVictoryToPlayer(temp_r0, 0x20);
+    winner = FindPlayerReachedPropertyLimit();
+    if (winner != 0) {
+        AwardVictoryToPlayer(winner, PLAYER_DEFEAT_PROPERTIES);
         return;
     }
     StartPlayerDefeatSequences();

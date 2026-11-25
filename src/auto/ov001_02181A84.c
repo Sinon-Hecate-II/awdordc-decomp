@@ -101,29 +101,31 @@ void func_ov001_02181ba8(void) {
 /* Fades in the ov001 icon menu: start the sub and main fades from white with the
  * menu's planes, show them, then run the step that opens the menu. */
 void Ov001_FadeInIconMenu(void) {
-    extern M2C_UNK func_ov001_02181ce8;
+    extern M2C_UNK Ov001_ShowIconMenuAfterFade;
     Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
     Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
     Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
     Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
-    Ov001_SetStepCallback(&func_ov001_02181ce8);
+    Ov001_SetStepCallback(&Ov001_ShowIconMenuAfterFade);
 }
 
-void func_ov001_02181ce8(void) {
-    M2C_UNK func_ov001_02171e20(M2C_UNK);
+/* Wait for the icon menu's sub and main fade-ins to finish, then create the
+ * menu's icon row and advance to its selection step. */
+void Ov001_ShowIconMenuAfterFade(void) {
+    M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
-    extern M2C_UNK func_ov001_02181d24;
-    if (Ov001_IsFadeActive(1) != 0) {
+    extern M2C_UNK Ov001_WaitIconRowSelection;
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
-    func_ov001_02171e20(0);
-    Ov001_SetStepCallback(&func_ov001_02181d24);
+    Ov001_CreateMenuIconRow(0);
+    Ov001_SetStepCallback(&Ov001_WaitIconRowSelection);
 }
 
-void func_ov001_02181d24(void) {
+void Ov001_WaitIconRowSelection(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK func_ov001_02181d4c;
@@ -547,8 +549,8 @@ void func_ov001_02182614(s32 arg0, s32 arg1) {
 }
 
 void func_ov001_02182628(s32 arg0, s32 arg1) {
-    M2C_UNK func_ov001_0218b760(M2C_UNK);
-    func_ov001_0218b760(arg1);
+    M2C_UNK Ov001_FreeHeapBlock(M2C_UNK);
+    Ov001_FreeHeapBlock(arg1);
 }
 
 void Ov001_ShowWfcSuccessScreen(void) {
@@ -608,13 +610,13 @@ void func_ov001_0218273c(void) {
  * Ov001_FinishWfcScreen. */
 void Ov001_LeaveWfcSuccessScreen(void) {
     M2C_UNK Ov001_GetNameEntryMode(M2C_UNK, s32 *);
-    M2C_UNK func_ov001_0218560c();
+    M2C_UNK Ov001_CloseMenu();
     extern M2C_UNK Ov001_FinishWfcScreen;
     s32 nameEntryMode;
 
     Ov001_GetNameEntryMode(0, &nameEntryMode);
     if (nameEntryMode != 0) {
-        func_ov001_0218560c();
+        Ov001_CloseMenu();
     }
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);

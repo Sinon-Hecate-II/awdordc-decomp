@@ -5,6 +5,12 @@
 /* Base of the current map data: the global map pointer holds it at offset 0. */
 #define MAPBASE ((u8 *)M2C_FIELD(gCurrentMap, u8 **, 0))
 
+/* Effect sprites' sheets are appended in the sprite engine's texture bank from
+ * this byte offset on (the pool cursor is the next free byte), and their palettes
+ * go to the OBJ extended palette slots from EFFECT_SPRITE_PALETTE_BASE. */
+#define EFFECT_SPRITE_TEXTURE_BASE 0x329a0
+#define EFFECT_SPRITE_PALETTE_BASE 0xab
+
 /* Four consecutive words, copied as one 16-byte block. */
 typedef struct { u32 w0; u32 w1; u32 w2; u32 w3; } MapQuad;
 
@@ -25,7 +31,7 @@ s32 func_020b4264(u8 *arg0) {
     void func_020a44fc(u8 *, s32);
     void DecodeTerrainHitPoints(u8 *);
     extern void *gCurrentMap;
-    extern M2C_UNK data_0215d9b8;
+    extern M2C_UNK gOptionBits;
     extern M2C_UNK gMapConfig;
     extern M2C_UNK gMapData;
     u8 *src;
@@ -46,7 +52,7 @@ s32 func_020b4264(u8 *arg0) {
     M2C_FIELD(MAPBASE, u16 *, 0x52B0) = 0xC;
     M2C_FIELD(MAPBASE, u16 *, 0x52A2) = M2C_FIELD(arg0, u16 *, 0x16);
     M2C_FIELD(MAPBASE, u16 *, 0x52A4) = M2C_FIELD(arg0, u16 *, 0x14);
-    M2C_FIELD(&data_0215d9b8, u16 *, 6) = (u16)((M2C_FIELD(&data_0215d9b8, u16 *, 6) & ~0x380) | ((u32)(M2C_FIELD(arg0, u8 *, 0x125B) & 7) << 7));
+    M2C_FIELD(&gOptionBits, u16 *, 6) = (u16)((M2C_FIELD(&gOptionBits, u16 *, 6) & ~0x380) | ((u32)(M2C_FIELD(arg0, u8 *, 0x125B) & 7) << 7));
     map = MAPBASE;
     M2C_FIELD(map, u16 *, 0x52C2) = M2C_FIELD(arg0, s16 *, 0x18);
     M2C_FIELD(map + 0xC2, u16 *, 0x5202) = M2C_FIELD(arg0, s16 *, 0x1A);
@@ -368,7 +374,15 @@ void func_020b4b98(void *arg0) {
     SetUiMessageText(0);
 }
 
-void func_020b4bcc(s32 arg0, M2C_UNK arg1){extern u8 gBattleEndState;extern M2C_UNK data_0212882c;func_020b3c44();if(gBattleEndState)return;M2C_FIELD(CreateSpriteForOwner(&data_0212882c,arg1),s32 *,0x5c)=arg0;}
+/* Create the saved-battle panel for save type `saveType`, owned by `owner`, and
+ * record that type in its +0x5C field; nothing is created once the battle ended. */
+void CreateSaveBattlePanel(s32 saveType, M2C_UNK owner) {
+    extern u8 gBattleEndState;
+    extern M2C_UNK gSaveBattlePanelClass;
+    func_020b3c44();
+    if (gBattleEndState) return;
+    M2C_FIELD(CreateSpriteForOwner(&gSaveBattlePanelClass, owner), s32 *, 0x5c) = saveType;
+}
 
 /* Resume a saved battle: load the newest save record of `saveType`, restore the
  * map and the battle state (random seed, saved settings and view) from it,
@@ -377,14 +391,14 @@ void func_020b4bcc(s32 arg0, M2C_UNK arg1){extern u8 gBattleEndState;extern M2C_
 void ResumeSavedBattle(u8 saveType) {
     s32 SaveTypeHasNoSlot(u8);
     s32 GetSaveSlot(s32, u8);
-    extern M2C_UNK data_0215d9b8;
+    extern M2C_UNK gOptionBits;
     extern void *gCurrentMap;
     void (*callback)(void);
 
     LoadNewestSaveRecord(saveType, GetSaveRecordBuffer());
     RestoreBattleFromRecord(GetSaveRecordBuffer());
     if (!SaveTypeHasNoSlot(saveType)) {
-        M2C_FIELD(&data_0215d9b8, u16 *, 6) = (M2C_FIELD(&data_0215d9b8, u16 *, 6) & ~0x70) | ((u32) ((u16) GetSaveSlot(0, saveType) << 29) >> 25);
+        M2C_FIELD(&gOptionBits, u16 *, 6) = (M2C_FIELD(&gOptionBits, u16 *, 6) & ~0x70) | ((u32) ((u16) GetSaveSlot(0, saveType) << 29) >> 25);
     }
     func_020cfd14();
     callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 0x50);
@@ -412,7 +426,7 @@ void func_020b4cd4(M2C_UNK arg0) {
     if (temp_r0 == 0) {
         return;
     }
-    func_020b4bcc(temp_r0, arg0);
+    CreateSaveBattlePanel(temp_r0, arg0);
 }
 
 void func_020b4cf4(void) {
@@ -501,7 +515,7 @@ void Init3DSpriteDisplay(void) {
     void Set3DSpriteVramBanks(void);
     void Apply3DSpriteDisplayConfig(void);
     void func_020d4d78(void);
-    void func_020994e0(s32);
+    void ResetTextTiles(s32);
     void LoadUiGraphics(void);
     void CopyToObjPaletteShadow(void *, s32, s32);
     void func_020af1c0(s32, s32);
@@ -535,7 +549,7 @@ void Init3DSpriteDisplay(void) {
     gCur3DSpriteEngine = saved;
     func_020d4d78();
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~1) | 1;
-    func_020994e0(0);
+    ResetTextTiles(0);
     LoadUiGraphics();
     CopyToObjPaletteShadow(gMapSpritePalette, 32, 32);
     func_020af1c0(3, 15);
@@ -589,16 +603,27 @@ s32 CreateEffectMapSprite(M2C_UNK name, M2C_UNK tileX, M2C_UNK tileY, s32 rawFla
 }
 
 void ResetEffectSpritePool(void) {
-    extern s32 gEffectSpritePoolUsed;
-    gEffectSpritePoolUsed = 0;
+    extern s32 gEffectSpritePoolOffset;
+    gEffectSpritePoolOffset = 0;
 }
 
 s32 GetEffectSpritePoolOffset(void) {
-    extern s32 gEffectSpritePoolUsed;
-    return gEffectSpritePoolUsed;
+    extern s32 gEffectSpritePoolOffset;
+    return gEffectSpritePoolOffset;
 }
 
-s32 LoadEffectSpriteSheet(s32 arg0,s32 arg1){s32 LoadSpriteGraphics(s32,s32,u16);extern s32 gEffectSpritePoolUsed;s32 old=gEffectSpritePoolUsed;gEffectSpritePoolUsed+=LoadSpriteGraphics(arg0,old+0x329a0,(u16)(arg1+0xab));return old;}
+/* Load an effect sprite sheet's graphics at the next free byte of the effect
+ * texture pool and its palette into the effect palette slot `paletteSlot`;
+ * returns the texture offset the sheet was loaded at and advances the pool
+ * past the sheet's graphics. */
+s32 LoadEffectSpriteSheet(s32 assetName, s32 paletteSlot) {
+    s32 LoadSpriteGraphics(s32, s32, u16);
+    extern s32 gEffectSpritePoolOffset;
+    s32 offset = gEffectSpritePoolOffset;
+
+    gEffectSpritePoolOffset += LoadSpriteGraphics(assetName, offset + EFFECT_SPRITE_TEXTURE_BASE, (u16)(paletteSlot + EFFECT_SPRITE_PALETTE_BASE));
+    return offset;
+}
 
 void func_020b5240(void) {
     M2C_UNK OpenEffectNarcArchive();

@@ -39,7 +39,7 @@ int IsLeadByte(void*); int MeasureStringWidth(s32*);
 void func_020b269c(void);
 void *CreateTextLayer(void*);
 void RenderTextLayerMessage(void*,s32,s32,u32);
-void SetSpriteAnimation(void*,s32);
+void GotoSpriteAnimationLabel(void*,s32);
 M2C_UNK PlaySoundEffect(s32);
 void *editor; s32 oldIndex; u32 glyph,line[17],*glyphPtr; s32 found; u32 width; void *savedEngine,*dialog;
 editor=M2C_FIELD(arg0,void **,0x10);
@@ -65,7 +65,7 @@ SetTextIndex(editor,oldIndex);func_020b269c();
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 dialog=CreateTextLayer(editor);RenderTextLayerMessage(dialog,2,0x2800,0x46000012);
 M2C_FIELD(dialog,u32 *,0x58)|=0x1000;
-gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(editor,5);return PlaySoundEffect(0x1001d);
+gCur3DSpriteEngine=savedEngine;GotoSpriteAnimationLabel(editor,5);return PlaySoundEffect(0x1001d);
 }
 MI_CpuCopy32(&gMapEditObjectList,line,0x44);
 line[M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)]=0;
@@ -77,7 +77,7 @@ SetTextIndex(editor,oldIndex);func_020b269c();
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 dialog=CreateTextLayer(editor);RenderTextLayerMessage(dialog,2,0x2800,0x46000013);
 M2C_FIELD(dialog,u32 *,0x58)|=0x1000;
-gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(editor,5);return PlaySoundEffect(0x1001d);
+gCur3DSpriteEngine=savedEngine;GotoSpriteAnimationLabel(editor,5);return PlaySoundEffect(0x1001d);
 }
 MI_CpuCopy32(line,&gMapEditObjectList,0x44);
 SetTextIndex(editor,M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)+1);

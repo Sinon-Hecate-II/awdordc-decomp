@@ -114,7 +114,23 @@ void InitArchive(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x14) = 0;
 }
 
-s32 FindArchive(s32 a,s32 b){s32 PackArchiveName(s32,s32);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);s32 id=PackArchiveName(a,b),key;void *p;key=OS_DisableInterrupts();p=M2C_FIELD(&gArchiveList,void **,0);while(p&&M2C_FIELD(p,s32 *,0)!=id)p=M2C_FIELD(p,void **,4);OS_RestoreInterrupts(key);return (s32)p;}
+/* Find the open archive registered under the packed form of `name`/`length`,
+ * returning it or NULL when no open archive has that name. */
+s32 FindArchive(s32 name, s32 length) {
+    s32 PackArchiveName(s32, s32);
+    s32 OS_DisableInterrupts(void);
+    M2C_UNK OS_RestoreInterrupts(s32);
+    s32 id, key;
+    FSArchive *archive;
+
+    id = PackArchiveName(name, length);
+    key = OS_DisableInterrupts();
+    archive = gArchiveList.first;
+    while (archive && archive->id != id)
+        archive = archive->next;
+    OS_RestoreInterrupts(key);
+    return (s32)archive;
+}
 
 /* Add an archive to the open-archive list under its packed name, unless an
  * archive with that name is already open. Returns 1 if the archive was added. */
@@ -440,11 +456,13 @@ M2C_UNK func_0200b8e0(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d) {
     return n;
 }
 
-s32 ResolveFileRangeFromPath(s32 a,s32 b) {
- s32 SubmitPathRequest(void *,s32,s32,s32);
- u8 v[0x48];
- InitFileRequest(v);
- return SubmitPathRequest(v,b,a,0)!=0;
+/* Resolve `path` to the archive and file-id pair `range` with a temporary
+ * path-resolution request; returns 1 when the path was resolved. */
+s32 ResolveFileRangeFromPath(Unk02BDFileRange *range, const char *path) {
+    s32 SubmitPathRequest(void *, s32, s32, s32);
+    FSFileRequest request;
+    InitFileRequest(&request);
+    return SubmitPathRequest(&request, (s32)path, (s32)range, 0) != 0;
 }
 
 /* Open the archive range [start, end) of file id `fileId` directly on `request`
@@ -477,14 +495,17 @@ if(ResolveFileRangeFromPath(&range,path)&&OpenFileRange(request,range))return 1;
 return 0;
 }
 
-s32 CloseFileRequest(void *arg0) {
+/* Close the file the request holds open: submit the close command, then clear the
+ * request's file and command and drop its open/directory state.  Returns 1 when
+ * the command was submitted, 0 otherwise. */
+s32 CloseFileRequest(void *request) {
     s32 SubmitFileRequest(void *, M2C_UNK);
-    if (SubmitFileRequest(arg0, 8) == 0) {
+    if (SubmitFileRequest(request, FS_COMMAND_CLOSE) == 0) {
         return 0;
     }
-    M2C_FIELD(arg0, s32 *, 8) = 0;
-    M2C_FIELD(arg0, s32 *, 0x10) = 0xE;
-    M2C_FIELD(arg0, s32 *, 0xC) = (s32) (M2C_FIELD(arg0, s32 *, 0xC) & ~0x30);
+    M2C_FIELD(request, s32 *, FS_REQ_FILE) = 0;
+    M2C_FIELD(request, s32 *, FS_REQ_COMMAND) = FS_COMMAND_NONE;
+    M2C_FIELD(request, s32 *, FS_REQ_FLAGS) = (s32) (M2C_FIELD(request, s32 *, FS_REQ_FLAGS) & ~(FS_REQ_OPEN | FS_REQ_DIRECTORY));
     return 1;
 }
 
@@ -581,7 +602,7 @@ void CardArchiveReadDone(M2C_UNK arg0) {
 /* The card archive's read procedure: start an asynchronous card transfer of
  * `length` bytes at `offset` into `buffer` for the request `file`, and report the
  * read as still in progress (6) so the caller waits for its completion callback. */
-s32 ReadCardArchiveBlock(void *file,void *buffer,s32 offset,s32 length){void func_02010b1c(s32,s32,s32,s32,s32,void *,s32);extern FSCardArchiveWork gCardArchiveWork;func_02010b1c(gCardArchiveWork.device,offset,buffer,length,(s32)CardArchiveReadDone,file,1);return 6;}
+s32 ReadCardArchiveBlock(void *file,void *buffer,s32 offset,s32 length){void StartCardArchiveRead(s32,s32,s32,s32,s32,void *,s32);extern FSCardArchiveWork gCardArchiveWork;StartCardArchiveRead(gCardArchiveWork.device,offset,buffer,length,(s32)CardArchiveReadDone,file,1);return 6;}
 
 s32 func_0200bd20(void) {
     return 1;

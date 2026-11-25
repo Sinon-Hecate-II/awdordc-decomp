@@ -81,10 +81,17 @@ block_6:
     return 0;
 }
 
-s32 func_02054520(void **a) {
- void *p=M2C_FIELD(*a,void **,0x424);
- while(p) {if(M2C_FIELD(p,s32 *,8)!=0 && M2C_FIELD(p,s32 *,0)!=3) return 1; p=M2C_FIELD(p,void **,32);}
- return 0;
+/* True while the connection has a pending operation that is blocking and is not
+ * a profile search: its caller keeps pumping the connection, sleeping between
+ * passes, until such an operation has completed. */
+s32 gpiHasPendingBlockingOperation(void **connectionRef) {
+    GPIOperation *operation = M2C_FIELD(*connectionRef, GPIOperation **, GPI_CONN_OPERATIONS);
+
+    while (operation) {
+        if (operation->blocking != 0 && operation->type != GPI_OP_SEARCH) return 1;
+        operation = operation->next;
+    }
+    return 0;
 }
 
 /* Dispatch one queued gpi request to the handler for its operation kind and

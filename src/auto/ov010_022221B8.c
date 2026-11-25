@@ -428,7 +428,7 @@ return (s32)packet;
 }
 #pragma pop
 s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
-    void *func_ov010_02224eb8(void);
+    void *Link_AllocPacket(void);
     void Link_FreeChannelQueuedPackets(u32);
     void Link_FreeChannelPendingPackets(u32);
     void Link_FreeAllQueuedPackets(void);
@@ -500,15 +500,15 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
           (a0 ? (1u << a0) : 1u)))
         return 0;
 
-    item = func_ov010_02224eb8();
+    item = Link_AllocPacket();
     if (!item) {
         Link_FreeChannelQueuedPackets((u32)M2C_FIELD(slot, s32 *, 0x34));
         Link_FreeChannelPendingPackets((u32)M2C_FIELD(slot, s32 *, 0x34));
-        item = func_ov010_02224eb8();
+        item = Link_AllocPacket();
         if (!item) {
             Link_FreeAllQueuedPackets();
             Link_FreeAllPendingPackets();
-            item = func_ov010_02224eb8();
+            item = Link_AllocPacket();
         }
     }
     if (!item)

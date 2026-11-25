@@ -107,13 +107,16 @@ void BigNumAddCarry(u16 *dst, u16 *src, u32 carry, s32 len) {
     }
 }
 
-void BigNumNeg(u16 *arr, s32 n) {
+/* Negate a big number of `count` 16-bit limbs in place: two's complement, i.e.
+ * invert every limb and then add one with carry propagation. */
+void BigNumNeg(u16 *limbs, s32 count) {
     void BigNumAddCarry(u16 *, u16 *, u32, s32);
     s32 i;
-    for (i = 0; i < n; i++) {
-        arr[i] = ~arr[i];
+
+    for (i = 0; i < count; i++) {
+        limbs[i] = ~limbs[i];
     }
-    BigNumAddCarry(arr, arr, 1, n);
+    BigNumAddCarry(limbs, limbs, 1, count);
 }
 
 /* dst = src1 - src2 over `len` 16-bit limbs: subtract the significant limbs of

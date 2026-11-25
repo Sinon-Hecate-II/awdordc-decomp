@@ -46,7 +46,7 @@ func_ov007_02212da0 kind:function(arm,size=0x18) addr:0x02212da0
 func_ov007_02212db8 kind:function(arm,size=0x14) addr:0x02212db8
 func_ov007_02212dcc kind:function(arm,size=0x384) addr:0x02212dcc
 func_ov007_02213150 kind:function(arm,size=0x12c) addr:0x02213150
-func_ov007_0221327c kind:function(arm,size=0x40) addr:0x0221327c
+MapEditor_SlideOutButtonSprites kind:function(arm,size=0x40) addr:0x0221327c
 MapEditor_TogglePage kind:function(arm,size=0x50) addr:0x022132bc
 func_ov007_0221330c kind:function(arm,size=0x18) addr:0x0221330c
 func_ov007_02213324 kind:function(arm,size=0x34) addr:0x02213324
@@ -69,10 +69,10 @@ func_ov007_02213cf4 kind:function(arm,size=0x28) addr:0x02213cf4
 func_ov007_02213d1c kind:function(arm,size=0x16c) addr:0x02213d1c
 func_ov007_02213e88 kind:function(arm,size=0x434) addr:0x02213e88
 func_ov007_022142bc kind:function(arm,size=0x18) addr:0x022142bc
-func_ov007_022142d4 kind:function(arm,size=0x18) addr:0x022142d4
-func_ov007_022142ec kind:function(arm,size=0x38) addr:0x022142ec
+MapEditor_CreateTileCursor kind:function(arm,size=0x18) addr:0x022142d4
+MapEditor_OpenTileCursor kind:function(arm,size=0x38) addr:0x022142ec
 func_ov007_02214324 kind:function(arm,size=0x30) addr:0x02214324
-func_ov007_02214354 kind:function(arm,size=0x40) addr:0x02214354
+OpenMapEditListMenu kind:function(arm,size=0x40) addr:0x02214354
 func_ov007_02214394 kind:function(arm,size=0x14) addr:0x02214394
 func_ov007_022143a8 kind:function(arm,size=0x14) addr:0x022143a8
 func_ov007_022143bc kind:function(arm,size=0x34) addr:0x022143bc
@@ -85,9 +85,9 @@ func_ov007_022144d4 kind:function(arm,size=0xc) addr:0x022144d4
 func_ov007_022144e0 kind:function(arm,size=0xc) addr:0x022144e0
 func_ov007_022144ec kind:function(arm,size=0x20) addr:0x022144ec
 func_ov007_0221450c kind:function(arm,size=0x38) addr:0x0221450c
-func_ov007_02214544 kind:function(arm,size=0x3c) addr:0x02214544
-func_ov007_02214580 kind:function(arm,size=0x3c) addr:0x02214580
-func_ov007_022145bc kind:function(arm,size=0x3c) addr:0x022145bc
+MapEditor_SetCursorUnitAiStepFirst kind:function(arm,size=0x3c) addr:0x02214544
+MapEditor_SetCursorUnitAiStepCapture kind:function(arm,size=0x3c) addr:0x02214580
+MapEditor_SetCursorUnitAiStepAttack kind:function(arm,size=0x3c) addr:0x022145bc
 MapEditor_MarkCursorUnit kind:function(arm,size=0x114) addr:0x022145f8
 func_ov007_0221470c kind:function(arm,size=0xc) addr:0x0221470c
 func_ov007_02214718 kind:function(arm,size=0xfc) addr:0x02214718
@@ -131,7 +131,7 @@ func_ov007_0221796c kind:function(arm,size=0x78) addr:0x0221796c
 Map_ScatterWastelandDebris kind:function(arm,size=0x78) addr:0x022179e4
 func_ov007_02217a5c kind:function(arm,size=0x108) addr:0x02217a5c
 MapEditor_GetPaletteEntries kind:function(arm,size=0x2c) addr:0x02217b64
-func_ov007_02217b90 kind:function(arm,size=0x40) addr:0x02217b90
+MapEditor_FindPaletteEntryIndex kind:function(arm,size=0x40) addr:0x02217b90
 MapEditor_GetPaletteKind kind:function(arm,size=0x18) addr:0x02217bd0
 MapEditor_GetPaletteOwner kind:function(arm,size=0x34) addr:0x02217be8
 func_ov007_02217c1c kind:function(arm,size=0x34) addr:0x02217c1c
@@ -154,7 +154,7 @@ func_ov007_022193b0 kind:function(arm,size=0xc) addr:0x022193b0
 func_ov007_022193bc kind:function(arm,size=0xc) addr:0x022193bc
 func_ov007_022193c8 kind:function(arm,size=0xc) addr:0x022193c8
 func_ov007_022193d4 kind:function(arm,size=0xc) addr:0x022193d4
-func_ov007_022193e0 kind:function(arm,size=0x38) addr:0x022193e0
+MapEditor_SwitchPalettePage kind:function(arm,size=0x38) addr:0x022193e0
 func_ov007_02219418 kind:function(arm,size=0x18) addr:0x02219418
 GetPanelObject kind:function(arm,size=0x14) addr:0x02219430
 BeginPanelOpen kind:function(arm,size=0xc8) addr:0x02219444
@@ -267,8 +267,8 @@ data_ov007_0221f6e8 kind:data(any) addr:0x0221f6e8
 data_ov007_0221f740 kind:data(any) addr:0x0221f740
 gMapEditorMenuClass kind:data(any) addr:0x0221f780
 data_ov007_0221f7c0 kind:data(any) addr:0x0221f7c0
-data_ov007_0221f820 kind:data(any) addr:0x0221f820
-data_ov007_0221f890 kind:data(any) addr:0x0221f890
+gMapEditListMenuClass kind:data(any) addr:0x0221f820
+gMapEditCursorClass kind:data(any) addr:0x0221f890
 data_ov007_0221f918 kind:data(any) addr:0x0221f918
 data_ov007_0221f9a8 kind:data(any) addr:0x0221f9a8
 data_ov007_0221fa00 kind:data(any) addr:0x0221fa00 ambiguous
@@ -1025,7 +1025,7 @@ gMapEditSoftKeyClName kind:data(any) addr:0x022219d8
 gMapEditorState kind:bss addr:0x02221a00
 gEditorUnitCounts kind:bss addr:0x02221a0a
 gPlayerUnitCounts kind:bss addr:0x02221a48
-data_ov007_02221a50 kind:bss addr:0x02221a50
+gMapEditorButtonSprites kind:bss addr:0x02221a50
 gMapMarkerGrid kind:bss addr:0x02221a84
 data_ov007_02221da4 kind:bss addr:0x02221da4 ambiguous
 gMapEditorMapNameTileWidth kind:bss addr:0x02221e08

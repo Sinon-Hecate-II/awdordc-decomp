@@ -20,13 +20,13 @@ M2C_FIELD(p,s32 *,8)=0;M2C_FIELD(p,s32 *,12)=0;return p;
  * effect whose first resource is 0 leaves the node untouched. */
 void InitUnitEffectNode(void *node) {
 void SetEffectNodeResourceCore(void *,s32,u16,u8,s32);
-extern u8 data_ov002_021f3018[];
+extern u8 gOv002EffectResources[];
 extern u8 data_ov002_021f3030[];
 extern u8 data_ov002_021f3045[];
 extern u8 gEffectTable[];
 u8 effectId = M2C_FIELD(node,u8 *,0x8C);
 s32 recordOfs = effectId*0x64;
-s32 resource = M2C_FIELD(data_ov002_021f3018,s32 *,recordOfs);
+s32 resource = M2C_FIELD(gOv002EffectResources,s32 *,recordOfs);
 if (!resource) return;
 SetEffectNodeResourceCore(node,resource,M2C_FIELD(data_ov002_021f3030,u16 *,recordOfs),M2C_FIELD(data_ov002_021f3045+recordOfs,u8 *,M2C_FIELD(node,u8 *,0x8D)*8),M2C_FIELD(M2C_FIELD(gEffectTable,void **,effectId*0x18),u8 *,0x38));
 }

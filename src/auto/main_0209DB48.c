@@ -549,30 +549,32 @@ void func_0209e998(void) {
     ((void (*)())UpdateScenePanel)();
 }
 
-void **Alloc3DSprite(s32 arg0) {
+/* Create a scene-panel 3D sprite from gScenePanelSpriteClass, defaulting the layer
+ * to 7, and install its vtable.  Returns the new sprite, or NULL. */
+void **Alloc3DSprite(s32 layer) {
     void **CreateSpriteFromClass(M2C_UNK *, s32);
     M2C_UNK Init3DSpriteActor();
-    extern M2C_UNK data_0211f810, data_0211f804;
+    extern M2C_UNK gScenePanelSpriteClass, gScenePanelSpriteVtbl;
     void **result;
-    if (arg0 == 0) arg0 = 7;
-    result = CreateSpriteFromClass(&data_0211f810, arg0);
+    if (layer == 0) layer = 7;
+    result = CreateSpriteFromClass(&gScenePanelSpriteClass, layer);
     if (result != 0) {
         Init3DSpriteActor();
-        *result = &data_0211f804;
+        *result = &gScenePanelSpriteVtbl;
     }
     return result;
 }
 
 void FindScenePanel(M2C_UNK arg0) {
     M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0211f810;
-    Find3DSpriteByClassAndZ(&data_0211f810, arg0);
+    extern M2C_UNK gScenePanelSpriteClass;
+    Find3DSpriteByClassAndZ(&gScenePanelSpriteClass, arg0);
 }
 
 void func_0209e9f4(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_0211f810;
-    DeleteSpriteObjectsOfClass(&data_0211f810);
+    extern M2C_UNK gScenePanelSpriteClass;
+    DeleteSpriteObjectsOfClass(&gScenePanelSpriteClass);
 }
 
 void func_0209ea08(void) {

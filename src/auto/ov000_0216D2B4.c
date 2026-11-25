@@ -48,7 +48,7 @@ if(M2C_FIELD(gArmyInfoState,u8 *,16)==1){
 s32 mx1=511,mt1=1023,mx2=511,mt2=1023,mx3=511,mt3=1023,mx4=511,mt4=1023,mx5=511,mt5=1023,mx6=511,mt6=1023,mx7=511,mt7=1023;
 for(i=0;i<27;i++){
 x=i%4*64;y=i/4*20;v=GetDisplayUnitKind(i);if(!v)continue;
-tile=func_020a72b0(0,v)+437;
+tile=GetPlayerUnitSpriteTile(0,v)+437;
 AddSprite((u16)((x+2)&mx1),(u8)(y+18),(u16)(((tile)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt1)|((u32)((palette+11)<<28)>>16)),gSpriteDesc16x16,0);
 
 if((s8)GetCoZoneAttackBonus(v,unit,owner)>0){AddSprite((u16)((x+28)&mx2),(u8)(y+19),(u16)(((432)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt2)|0x6000),gSpriteDesc8x8,0);
@@ -102,7 +102,7 @@ void ArmyInfo_RedrawContents(void) {
  extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
  extern u8 data_ov000_021b8860[],data_ov000_021b8874[],data_ov000_021b888c[],data_ov000_021b88a4[],data_ov000_021b88b8[],data_ov000_021b88d0[];
  M2C_UNK SetArmyInfoFileDirectory(void);
- void func_0209bfa8(void);
+ void DeleteTextSprites(void);
  void *GetLocalizedFileName(void *);
  void OpenNarcArchive(void *);void CloseNarcArchive(void);
  void LoadNarcFileDecompressed(void *,void *);
@@ -112,7 +112,7 @@ void ArmyInfo_RedrawContents(void) {
  u8 *state=gArmyInfoState;
  void *record=gMovementCostTable+M2C_FIELD(state+state[13],u8 *,4)*0x9c;
  void *saved,*engine;
- SetArmyInfoFileDirectory();func_0209bfa8();
+ SetArmyInfoFileDirectory();DeleteTextSprites();
  if(M2C_FIELD(gArmyInfoState,u8 *,16)==0) {
  OpenNarcArchive(GetLocalizedFileName(data_ov000_021b8860));
  saved=gCur3DSpriteEngine;engine=g3DSpriteEngineMain;gCur3DSpriteEngine=engine;
@@ -172,20 +172,24 @@ void ArmyInfo_ApplySelection(void) {
     ArmyInfo_RedrawContents();
 }
 
-void func_ov000_0216e09c(u8 arg0) {
+void ArmyInfo_SelectPlayer(u8 arg0) {
     extern void *gArmyInfoState;
     M2C_FIELD(gArmyInfoState, u8 *, 0xD) = arg0;
     M2C_FIELD(gArmyInfoState, u8 *, 0xE) = (u8) M2C_FIELD((gArmyInfoState + M2C_FIELD(gArmyInfoState, u8 *, 0xD)), u8 *, 4);
     M2C_FIELD(gArmyInfoState, u8 *, 0xF) = (u8) M2C_FIELD(gArmyInfoState, u8 *, 0xE);
 }
 
-void func_ov000_0216e0d0(u8 *arg0) {
+/* Switch the army-info window to the player index pointed at (a menu callback
+ * argument): when it differs from the current selection, play the cursor sound,
+ * select that player and re-apply the window contents. */
+void ArmyInfo_SelectPlayerIfChanged(u8 *playerIndex) {
     extern void *gArmyInfoState;
     M2C_UNK PlaySoundEffect(s32);
     void ArmyInfo_ApplySelection(void);
-    if (M2C_FIELD(gArmyInfoState, u8 *, 0xD) == *arg0) return;
+
+    if (M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_SELECTED) == *playerIndex) return;
     PlaySoundEffect(0x10019);
-    func_ov000_0216e09c(*arg0);
+    ArmyInfo_SelectPlayer(*playerIndex);
     ArmyInfo_ApplySelection();
 }
 

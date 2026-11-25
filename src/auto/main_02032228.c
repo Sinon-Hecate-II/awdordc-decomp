@@ -175,11 +175,13 @@ if(x)r=BuildPlayerCode(x,M2C_FIELD(a,s32 *,0x24));
 return r;
 }
 
-void func_02032634(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02031e04(M2C_UNK, M2C_UNK, M2C_UNK);
-    MI_CpuFill8(arg0, 0, 0xC);
-    func_02031e04(arg0, arg1, arg2);
-    SetPlayerRecordKind(arg0, 2);
+/* Initialise a player record that holds the given 64-bit player code (its low
+ * and high words) and mark it as a code record. */
+void InitPlayerCodeRecord(void *record, s32 codeLow, s32 codeHigh) {
+    M2C_UNK SetPlayerCodeValue(void *, M2C_UNK, M2C_UNK);
+    MI_CpuFill8(record, 0, 0xC);
+    SetPlayerCodeValue(record, codeLow, codeHigh);
+    SetPlayerRecordKind(record, PLAYER_RECORD_KIND_CODE);
 }
 
 /* Copy the local player's 12-byte identity record out of the profile-id block

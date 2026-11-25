@@ -251,14 +251,18 @@ void *Sound_DequeueRequest(void *list) {
 }
 
 #pragma opt_common_subs off
+/* Take a free segment-request node from the sound request pool with interrupts
+ * held off; returns NULL when every node is in use. */
 M2C_UNK Sound_AllocRequest(void) {
-extern M2C_UNK gSoundFreeRequests[];
-s32 saved; M2C_UNK node;
-saved=OS_DisableInterrupts();
-node=(M2C_UNK)ListNext((M2C_UNK)gSoundFreeRequests,0);
-if(node!=0) ListRemove((M2C_UNK)&gSoundFreeRequests,(void *)node);
-OS_RestoreInterrupts(saved);
-return node;
+    extern M2C_UNK gSoundFreeRequests[];
+    s32 savedInterrupts;
+    M2C_UNK request;
+
+    savedInterrupts = OS_DisableInterrupts();
+    request = (M2C_UNK)ListNext((M2C_UNK)gSoundFreeRequests, 0);
+    if (request != 0) ListRemove((M2C_UNK)&gSoundFreeRequests, (void *)request);
+    OS_RestoreInterrupts(savedInterrupts);
+    return request;
 }
 #pragma opt_common_subs reset
 void Sound_FreeRequest(M2C_UNK arg0) {

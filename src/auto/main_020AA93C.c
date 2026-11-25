@@ -342,7 +342,7 @@ M2C_UNK *func_020aaf74(void) {
  * state, advances the idle frame on its timer and plays the press animation when
  * the sprite's button is held. */
 void UpdateUnitSpriteAnimation(void *task) {
-    s32 func_01ffa14c(void *);s32 Is3DSpriteAnimating(void *);s32 func_02089080(void *);
+    s32 IsLayerParent(void *);s32 Is3DSpriteAnimating(void *);s32 func_02089080(void *);
     s32 IsScreenFadeActive(void);u8 func_020ab2a4(void);
     void MenuSpriteUpdate(void *);void UpdateUnitSpriteFrame(void *);
     u16 GetSpriteButtonMask(void *);void InjectKeyPress(u16);
@@ -352,7 +352,7 @@ void UpdateUnitSpriteAnimation(void *task) {
     void *owner;
     u32 cond,frame,bits;
     u16 keys;
-    if(func_01ffa14c(M2C_FIELD(sprite,void **,0x18))==0) {
+    if(IsLayerParent(M2C_FIELD(sprite,void **,0x18))==0) {
         cond=M2C_FIELD(M2C_FIELD(sprite,void **,0x18),u8 *,0x31)!=0?1:0;
         if(cond&255)goto fail;
     }
@@ -433,24 +433,27 @@ void func_020ab1b8(void) {
     func_020892f0();
 }
 
-void *func_020ab1c4(s32 arg0) {
- extern M2C_UNK data_02126b94, data_02126be4;
- void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
- void Init3DSpriteActor(void *);
- void *result = CreateSpriteFromClass(&data_02126b94,arg0);
- if (result != NULL) {
- Init3DSpriteActor(result);
- M2C_FIELD(result,M2C_UNK **,0)=&data_02126be4;
- M2C_FIELD(result,s32 *,0x64)=0;
- }
- return result;
+/* Create a unit sprite on `layer`: allocate it from the unit sprite class, run the
+ * 3D sprite actor init, install the unit sprite's vtable and clear its cell list.
+ * Returns NULL when the sprite pool is full. */
+void *CreateUnitSprite(s32 layer) {
+    extern M2C_UNK gUnitSpriteClass, gUnitSpriteVtbl;
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    void Init3DSpriteActor(void *);
+    void *sprite = CreateSpriteFromClass(&gUnitSpriteClass, layer);
+    if (sprite != NULL) {
+        Init3DSpriteActor(sprite);
+        M2C_FIELD(sprite, M2C_UNK **, 0) = &gUnitSpriteVtbl;
+        M2C_FIELD(sprite, s32 *, UNIT_SPRITE_CELLS) = 0;
+    }
+    return sprite;
 }
 
 void func_020ab200(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02126b94;
+    extern M2C_UNK gUnitSpriteClass;
     M2C_UNK (*fp)(M2C_UNK *) = (M2C_UNK (*)(M2C_UNK *))DeleteSpriteObjectsOfClass;
-    M2C_UNK *p = &data_02126b94;
+    M2C_UNK *p = &gUnitSpriteClass;
     fp(p);
 }
 
@@ -462,10 +465,10 @@ void func_020ab214(void *arg0) {
 
 u32 func_020ab240(void) {
     extern u8 data_0215c3a0;
-    extern M2C_UNK data_02126b94;
-    void func_01ffa928(M2C_UNK *, void (*)(void *));
+    extern M2C_UNK gUnitSpriteClass;
+    void ApplyToSpriteClass(M2C_UNK *, void (*)(void *));
     *(volatile u8 *)(&data_0215c3a0 + 1) = 0;
-    func_01ffa928(&data_02126b94, func_020ab214);
+    ApplyToSpriteClass(&gUnitSpriteClass, func_020ab214);
     return *(volatile u8 *)(&data_0215c3a0 + 1);
 }
 

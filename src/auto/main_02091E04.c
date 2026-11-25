@@ -136,16 +136,20 @@ s32 func_02092018(void *arg0) {
     return 0;
 }
 
-s32 func_02092048(void *arg0) {
-    s16 var_r0;
-    M2C_FIELD(M2C_FIELD(arg0, void **, 4), void (**)(void *), 4)(arg0);
-    M2C_FIELD(arg0, void **, 4) = (void *)(M2C_FIELD(arg0, void **, 4) + 0x10);
-    if (M2C_FIELD(arg0, s32 *, 0) != 0) {
-        var_r0 = 1;
+/* Script command: call the function the command carries at MAP_SCRIPT_PARAM,
+ * passing the script state itself as its argument, then advance to the next
+ * command.  Returns 1 while a script block is still loaded, 0 once it is
+ * cleared. */
+s32 MapScriptCallFunctionWithState(void *script) {
+    s16 running;
+    M2C_FIELD(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP), void (**)(void *), MAP_SCRIPT_PARAM)(script);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *)(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
+    if (M2C_FIELD(script, s32 *, MAP_SCRIPT_STATE_BLOCK) != 0) {
+        running = 1;
     } else {
-        var_r0 = 0;
+        running = 0;
     }
-    return var_r0;
+    return running;
 }
 
 /* Map-script opcode: run the callback the command carries at MAP_SCRIPT_PARAM
@@ -203,9 +207,9 @@ s32 func_02092160(void *arg0) {
 }
 
 s32 func_02092180(void *arg0) {
-    s32 func_02092048(void *);
+    s32 MapScriptCallFunctionWithState(void *);
     if (IsMessageBoxActive() == 0) {
-        return func_02092048(arg0);
+        return MapScriptCallFunctionWithState(arg0);
     }
     M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
     return 1;
@@ -304,18 +308,21 @@ s32 MapScriptMoveViewToTile(void *script) {
     return 0;
 }
 
-s32 func_02092324(void *arg0) {
-    M2C_UNK func_0207b744(s16, s16);
+/* Map-script command: set the map view to the tile the command's two operands
+ * name, centring on the tile when the wide operand is nonzero, then go straight
+ * on to the next command. */
+s32 MapScriptSetViewToTile(void *script) {
+    M2C_UNK SetMapViewToTile(s16, s16);
     M2C_UNK SetMapViewPositionToTileCentered(s16, s16);
-    void *temp_r1;
+    void *command;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 4);
-    if (M2C_FIELD(temp_r1, s32 *, 0xC) != 0) {
-        SetMapViewPositionToTileCentered(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s16 *, 0xA));
+    command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    if (M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2) != 0) {
+        SetMapViewPositionToTileCentered(M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0), M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1));
     } else {
-        func_0207b744(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s16 *, 0xA));
+        SetMapViewToTile(M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0), M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1));
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *)(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -462,8 +469,8 @@ s32 MapScriptCreateOwnedUnit(void *state) {
 }
 
 s32 func_02092654(void *arg0) {
-    M2C_UNK func_020947ac();
-    func_020947ac();
+    M2C_UNK EnableTouchInput();
+    EnableTouchInput();
     M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
     return 1;
 }
@@ -548,12 +555,23 @@ void func_02092908(M2C_UNK arg0) {
     func_020928bc(arg0, -1);
 }
 
-s32 func_02092918(void *arg0) {
-s32 IsMessageBoxActive();M2C_UNK ClearScenePanelRows(M2C_UNK);M2C_UNK MarkSpriteLayer1Dirty();
-s32 v;
-if(IsMessageBoxActive()!=0)v=1;
-else {ClearScenePanelRows(3);MarkSpriteLayer1Dirty();v=0;}
-M2C_FIELD(arg0,s32 *,4)+=16;return (s16)v;
+/* Map-script command: once no message box is up, clear the message panel's
+ * rows (scene panel 3) and flag the first sprite layer for redraw.  Advances
+ * the script; returns 1 while a message box is still up, otherwise 0. */
+s32 MapScriptClearMessagePanel(void *state) {
+    s32 IsMessageBoxActive();
+    M2C_UNK ClearScenePanelRows(M2C_UNK);
+    M2C_UNK MarkSpriteLayer1Dirty();
+    s32 result;
+    if (IsMessageBoxActive() != 0) {
+        result = 1;
+    } else {
+        ClearScenePanelRows(3);
+        MarkSpriteLayer1Dirty();
+        result = 0;
+    }
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return (s16)result;
 }
 
 s32 func_02092958(void *arg0) {

@@ -75,7 +75,7 @@ void SetAiActingUnit(s32 fromUnitId, s32 unitId) {
 #pragma opt_strength_reduction off
 void func_ov000_0217f96c(void *arg0) {
 extern void **gCurrentMap;
-void SelectMapLayer(void*); void func_01ffc2e8(void*); void MarkAdjacentCells(s32);
+void SelectMapLayer(void*); void BuildUnitMoveRangeBlockingUnits(void*); void MarkAdjacentCells(s32);
 s32 func_020d27a4(s32,s32); s32 IsCellVisibleToCurrentTeam(s16,s16); s32 FindBestAdjacentTile(s32,s32,s16*);
 s32 func_ov000_02176e28(s32,s16*); s32 HasBetterAttackerNearby(void*);
 void SetMapCursor(s32,s32,s32,s32,s32); void ChooseAiUnitMoveDestination(s32);
@@ -83,9 +83,9 @@ s32 bestX=-1,bestY=-1,best=0,score,id=0;
 s32 x,y; s16 pos[2]; u8 *map,*unit,*other;
 s32 minX,maxY,n,ux,uy,minY,maxX,xx,yy,index;
 SelectMapLayer((u8*)*gCurrentMap+0x2338);
-func_01ffc2e8(arg0);
+BuildUnitMoveRangeBlockingUnits(arg0);
 SelectMapLayer((u8*)*gCurrentMap+0x1e30);
-func_01ffc2e8(M2C_FIELD(*gCurrentMap,void**,0x52d0));
+BuildUnitMoveRangeBlockingUnits(M2C_FIELD(*gCurrentMap,void**,0x52d0));
 {
 s32 ax,ay;
 for(ay=0;ay<M2C_FIELD(*gCurrentMap,u16*,0x5146);ay++)
@@ -135,7 +135,7 @@ map=*gCurrentMap;id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 }
 if(best)SetMapCursor((s16)bestX,(s16)bestY,4,(u8)id,0);
 SelectMapLayer((u8*)*gCurrentMap+0x2338);
-func_01ffc2e8(arg0);
+BuildUnitMoveRangeBlockingUnits(arg0);
 SelectMapLayer((u8*)*gCurrentMap+0x1e30);
 ChooseAiUnitMoveDestination(1);
 }
@@ -143,7 +143,7 @@ ChooseAiUnitMoveDestination(1);
 void func_ov000_0217fe68(void *arg0) {
 extern void **gCurrentMap;extern u8 gUnitKindStats[];
 s32 GetUnitAttackRangeMax(void*); s32 func_020d27a4(s32,s32);s32 IsCellVisibleToCurrentTeam(s16,s16);s32 func_ov000_02176e28(s32,s16*);
-void SetMapCursor(s32,s32,s32,s32,s32);void SelectMapLayer(void*);void func_01ffc2e8(void*);void ChooseAiUnitMoveDestination(s32);
+void SetMapCursor(s32,s32,s32,s32,s32);void SelectMapLayer(void*);void BuildUnitMoveRangeBlockingUnits(void*);void ChooseAiUnitMoveDestination(s32);
 s32 best=0,id=0; s16 pos[2];s32 minX,minY,maxX,maxY,x,y,distance,score,index;u8 *unit,*map;
 pos[0]=M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1];pos[1]=M2C_FIELD(*gCurrentMap,u8**,0x52d0)[2];
 minX=(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1]-GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)))<0?0:(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1]-GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)));
@@ -166,7 +166,7 @@ if(!score||score<best)continue;
 best=score;map=*gCurrentMap;id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 }
 if(best)SetMapCursor(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1],M2C_FIELD(*gCurrentMap,u8**,0x52d0)[2],4,(u8)id,0);
-SelectMapLayer((u8*)*gCurrentMap+0x2338);func_01ffc2e8(arg0);SelectMapLayer((u8*)*gCurrentMap+0x1e30);ChooseAiUnitMoveDestination(1);
+SelectMapLayer((u8*)*gCurrentMap+0x2338);BuildUnitMoveRangeBlockingUnits(arg0);SelectMapLayer((u8*)*gCurrentMap+0x1e30);ChooseAiUnitMoveDestination(1);
 }
 #pragma opt_strength_reduction reset
 void func_ov000_02180268(s32 x,s32 y){
@@ -352,7 +352,7 @@ void RunAiUnitActionStep3(void) {
     M2C_UNK SelectAiActionTarget();
     M2C_UNK RunAiAttackAction();
     M2C_UNK FindBestMoveTarget();
-    M2C_UNK func_ov000_02195750();
+    M2C_UNK PlanCapturablePropertyDestination();
     M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPropertyAttackDestination();
@@ -371,7 +371,7 @@ void RunAiUnitActionStep3(void) {
     if (M2C_FIELD((u8 *)map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE) != 0) {
         func_ov000_02186a18();
     }
-    func_ov000_02195750();
+    PlanCapturablePropertyDestination();
     PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPropertyAttackDestination();

@@ -308,22 +308,25 @@ void func_0201d244(void *arg0) {
     M2C_FIELD(arg0, void **, 0xA4) = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
 }
 
-void func_0201d25c(void *arg0) {
+/* Prepare a socket connection to wait for its peer: hand it a fresh random initial
+ * sequence number (used as the send position too), mark it listening, then wake
+ * its socket task and block until the task has taken the connection. */
+void SocketStartListen(void *conn) {
     M2C_UNK OS_SleepThread(M2C_UNK);
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     s32 NetStackRandom();
-    s32 temp_r0;
-    s32 temp_r4;
+    s32 sequence;
+    s32 irqState;
 
-    temp_r0 = NetStackRandom();
-    M2C_FIELD(arg0, s32 *, 0x28) = temp_r0;
-    M2C_FIELD(arg0, s32 *, 0x30) = temp_r0;
-    M2C_FIELD(arg0, s8 *, 8) = 1;
-    temp_r4 = OS_DisableInterrupts();
-    M2C_FIELD(arg0, s32 *, 4) = 1;
+    sequence = NetStackRandom();
+    M2C_FIELD(conn, s32 *, TCP_CONN_SEND_SEQ) = sequence;
+    M2C_FIELD(conn, s32 *, TCP_SOCK_SENTPOS) = sequence;
+    M2C_FIELD(conn, s8 *, SOCKET_STATE) = CONN_STATE_LISTEN;
+    irqState = OS_DisableInterrupts();
+    M2C_FIELD(conn, s32 *, SOCKET_TASK_STATE) = 1;
     OS_SleepThread(0);
-    OS_RestoreInterrupts(temp_r4);
+    OS_RestoreInterrupts(irqState);
 }
 
 void SocketSetReceiveCallback(s32 arg0) {
@@ -337,7 +340,7 @@ void SocketSetReceiveCallback(s32 arg0) {
 
 void func_0201d2b8(void) {
     void func_02024b24(void);
-    void func_0201d25c(void *);
+    void SocketStartListen(void *);
     extern M2C_UNK gSocketManager;
     void *p = (void *) M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
     if (p == 0) {
@@ -346,7 +349,7 @@ void func_0201d2b8(void) {
     if (*((u8 *) p + 9) != 0) {
         func_02024b24();
     } else {
-        func_0201d25c(p);
+        SocketStartListen(p);
     }
 }
 
@@ -385,7 +388,20 @@ loop_1:
     goto loop_1;
 }
 
-s32 ConnectTransport(void){extern M2C_UNK gSocketManager;s32 TlsClientConnect(void*);void *p;p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);if(p){if(M2C_FIELD(p,u8*,9))return TlsClientConnect(p);return TcpConnect(p);}return 1;}
+/* Connect the running socket object's socket on its own transport: TLS when the
+ * socket wraps its payload in TLS records, a plain TCP connect otherwise.
+ * Returns 1 when the socket object has no socket. */
+s32 ConnectTransport(void){
+extern M2C_UNK gSocketManager;
+s32 TlsClientConnect(void*);
+void *socket;
+socket=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,SOCKMGR_RUNNING_THREAD),void**,SOCK_OBJECT_RAW);
+if(socket){
+if(M2C_FIELD(socket,u8*,SOCK_TLS_ACTIVE))return TlsClientConnect(socket);
+return TcpConnect(socket);
+}
+return 1;
+}
 
 /* Report the endpoint of the socket's connection once its transport is up (a TCP
  * stream established or a raw connection listening): *portOut gets the peer port,
@@ -425,13 +441,19 @@ void TcpCloseConnection(void *conn) {
 }
 
 void CloseTransport(void) {
-void TlsSendCloseNotify(void *);
-void TcpCloseConnection(void *);
-extern M2C_UNK gSocketManager;
-void *p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);
-if(p==0)return;
-if(M2C_FIELD(p,u8*,9)!=0)TlsSendCloseNotify(p);
-TcpCloseConnection(p);
+    void TlsSendCloseNotify(void *);
+    void TcpCloseConnection(void *);
+    extern M2C_UNK gSocketManager;
+    void *transportSocket = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, SOCKMGR_RUNNING_THREAD), void **, SOCK_OBJECT_RAW);
+
+    /* Send TLS shutdown notification when needed, then close the active TCP transport. */
+    if (transportSocket == 0) {
+        return;
+    }
+    if (M2C_FIELD(transportSocket, u8 *, SOCK_TLS_ACTIVE) != 0) {
+        TlsSendCloseNotify(transportSocket);
+    }
+    TcpCloseConnection(transportSocket);
 }
 
 void WaitForTlsCloseNotify(void) {
@@ -563,7 +585,7 @@ TcpSendAck(arg1,0x1b);
 }
 }
 
-void func_0201d70c(u32 arg0) {
+void ConsumeConnectionReceivedData(u32 arg0) {
 void TlsConsumeReceivedData(u32,void *);
 void ConsumeReceivedData(u32,void *);
 extern M2C_UNK gSocketManager;
@@ -573,7 +595,7 @@ if(M2C_FIELD(p,u8*,9)!=0)TlsConsumeReceivedData(arg0,p);
 else ConsumeReceivedData(arg0,p);
 }
 
-s32 func_0201d744(M2C_UNK data, s32 length, M2C_UNK socket, s32 probe) {
+s32 TcpSendBuffer(M2C_UNK data, s32 length, M2C_UNK socket, s32 probe) {
     extern M2C_UNK gNetStack;
     M2C_UNK TcpSendSegment(M2C_UNK, s32, M2C_UNK, s32, s32);
     M2C_UNK TaskYield(void);
@@ -637,10 +659,12 @@ s32 func_0201d744(M2C_UNK data, s32 length, M2C_UNK socket, s32 probe) {
     return segmentLength;
 }
 
-void func_0201d808(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5) {
-    s32 func_0201d744(M2C_UNK, s32, s32, s32);
-    if ((func_0201d744(arg0, arg1, arg4, arg5) != 0) && (arg3 != 0)) {
-        func_0201d744(arg2, arg3, arg4, 0);
+/* Send the first buffer through the TCP socket; when that made progress and a
+ * second buffer is given, send that one too (in normal, non-probe mode). */
+void TcpSendBuffers(M2C_UNK src1, s32 len1, M2C_UNK src2, s32 len2, s32 sock, s32 probe) {
+    s32 TcpSendBuffer(M2C_UNK, s32, M2C_UNK, s32);
+    if ((TcpSendBuffer(src1, len1, sock, probe) != 0) && (len2 != 0)) {
+        TcpSendBuffer(src2, len2, sock, 0);
     }
 }
 
@@ -680,7 +704,7 @@ s32 TcpSendData(s32 src1, s32 len1, s32 src2, s32 len2, void *sock) {
     goto gate;
 body:
     sendStart = M2C_FIELD(sock, s32 *, TCP_SOCK_SENDPOS);
-    func_0201d808(ptr1, left1, ptr2, left2, sock, waited);
+    TcpSendBuffers(ptr1, left1, ptr2, left2, sock, waited);
     pollStart = (u32)(GetSystemTick() >> 16);
 loop_2:
     func_0201a238();

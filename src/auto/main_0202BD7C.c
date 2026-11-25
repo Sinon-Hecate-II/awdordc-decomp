@@ -340,7 +340,7 @@ void Sound_DestroyHeap(s32 *arg0) {
  * release callback, unlinks the group from the player's list, resets the
  * player's heap and flushes the sound commands, then adds a fresh block. */
 s32 Sound_FreeAllBlocks(void *player){
-s32 ListPrev(void *,M2C_UNK);void ListRemove(void *,void *);void func_0202a6b0(s32,s32);void Sound_FlushAndWait(void);s32 Sound_AppendHeapSection(void *);
+s32 ListPrev(void *,M2C_UNK);void ListRemove(void *,void *);void func_0202a6b0(s32,s32);void Sound_FlushAndWait(void);s32 Sound_CreateHeapSection(void *);
 void *group;s32 changed=0;void *block;
 group=(void *)ListPrev(player+4,0);
 while(group){
@@ -353,7 +353,7 @@ block=(void *)ListPrev(group,(s32)block);
 }
 ListRemove(player+4,group);group=(void *)ListPrev(player+4,0);
 }
-func_0202a6b0(M2C_FIELD(player,s32 *,0),3);if(changed)Sound_FlushAndWait();return Sound_AppendHeapSection(player);
+func_0202a6b0(M2C_FIELD(player,s32 *,0),3);if(changed)Sound_FlushAndWait();return Sound_CreateHeapSection(player);
 }
 
 /* Take a `size`-byte data block from the sound heap in `pool` (32-byte aligned,
@@ -372,11 +372,11 @@ blockList=ListPrev(pool+1,0);M2C_FIELD(block,s32 *,SOUND_BLOCK_SIZE)=size;M2C_FI
 s32 Sound_PushHeapSection(void *player) {
     s32 RecordFrameHeapState(s32, u16);
     M2C_UNK UnrecordFrameHeapState(s32, M2C_UNK);
-    s32 Sound_AppendHeapSection(void *);
+    s32 Sound_CreateHeapSection(void *);
     if (RecordFrameHeapState(M2C_FIELD(player, s32 *, SOUND_HEAP_FRAME), M2C_FIELD(player, u16 *, SOUND_HEAP_SECTION_COUNT)) == 0) {
         return -1;
     }
-    if (Sound_AppendHeapSection(player) != 0) {
+    if (Sound_CreateHeapSection(player) != 0) {
         return M2C_FIELD(player, u16 *, SOUND_HEAP_SECTION_COUNT) - 1;
     }
     UnrecordFrameHeapState(M2C_FIELD(player, s32 *, SOUND_HEAP_FRAME), 0);
@@ -389,7 +389,7 @@ void func_0202c6a4(void *p, s32 count) {
     s32 UnrecordFrameHeapState(s32, s32);
     s32 RecordFrameHeapState(s32, u16);
     void Sound_FlushAndWait(void);
-    s32 Sound_AppendHeapSection(void *);
+    s32 Sound_CreateHeapSection(void *);
     s32 Sound_FreeAllBlocks(void *);
     void *a;
     s32 changed;
@@ -418,7 +418,7 @@ void func_0202c6a4(void *p, s32 count) {
         Sound_FlushAndWait();
     }
     RecordFrameHeapState(M2C_FIELD(p, s32 *, 0), M2C_FIELD(p, u16 *, 12));
-    Sound_AppendHeapSection(p);
+    Sound_CreateHeapSection(p);
 }
 
 s32 func_0202c778(void *arg0) {
@@ -436,16 +436,23 @@ s32 func_0202c784(s32 *arg0) {
     return (temp_r0 - 0x20) & ~0x1F;
 }
 
-void func_0202c7a8(M2C_UNK arg0) {
+void Sound_InitHeapSectionList(M2C_UNK arg0) {
     M2C_UNK ListInit(M2C_UNK, M2C_UNK);
     ListInit(arg0, 0);
 }
 
-s32 Sound_InitHeap(u32 p,s32 a){s32 Sound_AppendHeapSection(void *);ListInit(p+4,12);M2C_FIELD(p,s32 *,0)=a;return Sound_AppendHeapSection(p)!=0;}
+s32 Sound_InitHeap(u32 p,s32 a){s32 Sound_CreateHeapSection(void *);ListInit(p+4,12);M2C_FIELD(p,s32 *,0)=a;return Sound_CreateHeapSection(p)!=0;}
 
-s32 Sound_AppendHeapSection(void *p){
-void *Sound_HeapAlloc(s32,s32,M2C_UNK);void func_0202c7a8(s32);M2C_UNK ListAppend(s32,void *);
-void *q=Sound_HeapAlloc(M2C_FIELD(p,s32 *,0),20,4);if(!q)return 0;func_0202c7a8((s32)q);ListAppend((s32)(p+4),q);return 1;
+/* Allocate an empty heap section, initialize its list header, and append it to the heap's section list. */
+s32 Sound_CreateHeapSection(void *heap) {
+    void *Sound_HeapAlloc(s32, s32, M2C_UNK);
+    void Sound_InitHeapSectionList(s32);
+    M2C_UNK ListAppend(s32, void *);
+    void *section = Sound_HeapAlloc(M2C_FIELD(heap, s32 *, SOUND_HEAP_FRAME), 20, SOUND_HEAP_ALIGNMENT);
+    if (!section) return 0;
+    Sound_InitHeapSectionList((s32)section);
+    ListAppend((s32)(heap + SOUND_HEAP_SECTIONS), section);
+    return 1;
 }
 
 void Sound_FlushAndWait(void) {

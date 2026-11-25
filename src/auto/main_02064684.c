@@ -344,17 +344,18 @@ M2C_UNK func_02065020(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
  return (*(M2C_UNK (**)(M2C_UNK,M2C_UNK,M2C_UNK))data_0210040c[2])(a,b,c);
 }
 
-s32 func_0206503c(s16 *arg0, u8 *arg1, s32 arg2) {
-    if (arg1 == NULL) {
+s32 MultibyteToWideChar(s16 *wideChar, u8 *multibyteChar, s32 remainingBytes) {
+    /* Convert one multibyte character, storing it when requested; return 0 for a null input or terminator, -1 for no available input, and 1 for a character. */
+    if (multibyteChar == NULL) {
         return 0;
     }
-    if (arg2 == 0) {
+    if (remainingBytes == 0) {
         return -1;
     }
-    if (arg0 != NULL) {
-        *arg0 = (s16) *arg1;
+    if (wideChar != NULL) {
+        *wideChar = (s16) *multibyteChar;
     }
-    if ((s8) *arg1 == 0) {
+    if ((s8) *multibyteChar == 0) {
         return 0;
     }
     return 1;
@@ -461,12 +462,17 @@ u8 *FindLastByte(u8 *p,s32 value,u32 n) {
  return NULL;
 }
 
-s32 ByteCompareN(u8 *a,u8 *b,u32 n) {
- if(n) { do {
- u32 x=*a++; u32 y=*b++;
- if(x!=y) return a[-1]<b[-1]?-1:1;
- } while(--n); }
- return 0;
+/* Compare the first n bytes of two buffers like memcmp: return -1, 0 or 1
+ * according to which buffer's first differing byte is the smaller one. */
+s32 ByteCompareN(u8 *left, u8 *right, u32 n) {
+    if (n) {
+        do {
+            u32 x = *left++;
+            u32 y = *right++;
+            if (x != y) return left[-1] < right[-1] ? -1 : 1;
+        } while (--n);
+    }
+    return 0;
 }
 
 /* Fill n bytes at p with the byte value and return the address one past them:

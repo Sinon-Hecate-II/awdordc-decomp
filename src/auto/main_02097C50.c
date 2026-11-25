@@ -267,7 +267,22 @@ s32 GetFaceLayoutSize(s32 arg0) {
     return var_r0;
 }
 
-void LoadFaceTexture(s32 unused,s32 a,s32 b){s32 GetFaceTexturePath();s32 GetFaceLayoutFile(s32);M2C_UNK SetFileDirectory(s32);void LoadDecompressedFileTo(s32,s32);s32 x,y;x=GetFaceTexturePath();y=GetFaceLayoutFile(a);if(!x)return;SetFileDirectory(x);LoadDecompressedFileTo(y,b);}
+/* Load the graphics file for a face in the given layout into `dst`: look up the
+ * character's face directory and the layout's file, and when the character has a
+ * face, load that file decompressed into the destination. */
+void LoadFaceTexture(s32 faceId, s32 layout, s32 dst) {
+    s32 GetFaceTexturePath(u32);
+    s32 GetFaceLayoutFile(s32);
+    M2C_UNK SetFileDirectory(s32);
+    void LoadDecompressedFileTo(s32, s32);
+    s32 faceDir, faceFile;
+
+    faceDir = GetFaceTexturePath(faceId);
+    faceFile = GetFaceLayoutFile(layout);
+    if (!faceDir) return;
+    SetFileDirectory(faceDir);
+    LoadDecompressedFileTo(faceFile, dst);
+}
 
 #pragma opt_strength_reduction off
 void CopyFaceTiles(s32 src,s32 dst,u32 w,u32 h,u8 half){

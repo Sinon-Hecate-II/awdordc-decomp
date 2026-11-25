@@ -188,7 +188,7 @@ void Ov001_ProfileFadeDoneStep(void) {
 void Ov001_CloseProfileScreen(void) {
 s32 Ov001_IsProfileScreenDone(void);
 extern s8 gOv001ProfileChoice;
-extern M2C_UNK func_ov001_02178bc0, Ov001_InitOptionMenu, func_ov001_02177fd8;
+extern M2C_UNK Ov001_OpenProfileReturnScreen, Ov001_InitOptionMenu, Ov001_OpenProfileSetupScreen;
 if(M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_CONFIRMED) || !M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_OPTION))
 if(!Ov001_IsProfileScreenDone())return;
 Ov001_FreePageBackground(0);
@@ -198,13 +198,13 @@ Ov001_FreeOptionBackground();Ov001_DisableVisiblePlanes(1,1);
 }
 Ov001_SetNextScreenMode(0,1);
 if(M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_CONFIRMED)) {
-Ov001_SetStepCallback(&func_ov001_02178bc0);return;
+Ov001_SetStepCallback(&Ov001_OpenProfileReturnScreen);return;
 }
 if(!M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_OPTION)) {
 Ov001_DisableVisiblePlanes(1,1);
 Ov001_SetStepCallback(&Ov001_InitOptionMenu);return;
 }
-Ov001_SetStepCallback(&func_ov001_02177fd8);
+Ov001_SetStepCallback(&Ov001_OpenProfileSetupScreen);
 }
 
 void func_ov001_021792ec(void) {
@@ -212,7 +212,7 @@ void func_ov001_021792ec(void) {
     gOv001ProfileChoice = 1;
 }
 
-s32 func_ov001_02179300(void) {
+s32 Ov001_IsLidClosed(void) {
     if (((s32) (*(u16 *)0x027FFFA8 & 0x8000) >> 0xF) != 0) {
         return 1;
     }
@@ -265,39 +265,42 @@ void Ov001_FadeInWfcEraseResultScreen(void) {
 void func_ov001_02179420(void) {
     void func_ov001_0217944c(void);
     if (Ov001_IsFadeActive(0) != 0) return;
-    func_ov001_02171e20(1);
+    Ov001_CreateMenuIconRow(1);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217944c);
 }
 
 void func_ov001_0217944c(void) {
     s32 Ov001_GetIconRowSelection();
-    extern M2C_UNK func_ov001_02179470;
+    extern M2C_UNK Ov001_UpdateWfcEraseResultMenu;
     if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_02179470);
+    Ov001_SetStepCallback(&Ov001_UpdateWfcEraseResultMenu);
 }
 
-void func_ov001_02179470(void) {
- void func_ov001_02179484(void);
+void Ov001_UpdateWfcEraseResultMenu(void) {
+ void Ov001_HandleWfcEraseResultMenuInput(void);
  void func_ov001_021794bc(void);
  void func_ov001_021794c0(void);
- func_ov001_02179484();
+ Ov001_HandleWfcEraseResultMenuInput();
  func_ov001_021794bc();
  func_ov001_021794c0();
 }
 
-void func_ov001_02179484(void) {
+/* Wi-Fi data-erase result popup input: B latches the popup's only choice, the
+ * back icon, and so does closing the console's lid. */
+void Ov001_HandleWfcEraseResultMenuInput(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     s32 KeyPressed(M2C_UNK);
-    if (KeyPressed(2) != 0) {
-        Ov001_LatchIconRowSelection(0);
+    s32 Ov001_IsLidClosed(void);
+    if (KeyPressed(KEY_B) != 0) {
+        Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
         return;
     }
-    if (func_ov001_02179300() == 0) {
+    if (Ov001_IsLidClosed() == 0) {
         return;
     }
-    Ov001_LatchIconRowSelection(0);
+    Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
 void func_ov001_021794bc(void) {
@@ -316,13 +319,16 @@ void func_ov001_021794c0(void) {
     Ov001_SetStepCallback(&Ov001_LeaveWfcEraseScreen);
 }
 
+/* Step that leaves the Wi-Fi data-erase result screen once the player dismissed its
+ * popup: when the erase left the profile unchanged it first starts the profile exit
+ * task, then locks the icon row, waits 8 frames and slides the icon row away. */
 void Ov001_LeaveWfcEraseScreen(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_StartProfileExitTask();
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern u8 gOv001WfcEraseResult;
     extern M2C_UNK Ov001_SlideOutProfileIconRow;
-    if (gOv001WfcEraseResult == 0) {
+    if (gOv001WfcEraseResult == OV001_PROFILE_NO_CHANGE) {
         Ov001_StartProfileExitTask();
     }
     Ov001_LockIconRow();
@@ -353,7 +359,7 @@ void func_ov001_021795a4(void) {
     s32 Ov001_IsProfileScreenDone(void);
     extern u8 gOv001WfcEraseResult;
     void Ov001_InitOptionMenu(void);
-    void func_ov001_02178bc0(void);
+    void Ov001_OpenProfileReturnScreen(void);
     if (Ov001_IsFadeActive(0) != 0) return;
     if (gOv001WfcEraseResult == 0 && Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsIconRowIdle() == 0) return;
@@ -372,7 +378,7 @@ void func_ov001_021795a4(void) {
     }
     if (gOv001WfcEraseResult == 2) {
         Ov001_SetNextScreenMode(0, 1);
-        Ov001_SetStepCallback(func_ov001_02178bc0);
+        Ov001_SetStepCallback(Ov001_OpenProfileReturnScreen);
         return;
     }
     Ov001_SetNextScreenMode(0, 1);
@@ -398,7 +404,7 @@ void Ov001_WfcEraseResultCallback(s32 event) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_LeaveWfcEraseScreen);
 }
 
-s32 func_ov001_021796f8(void) {
+s32 Ov001_IsLidClosedForWireless(void) {
     if (((s32) (*(u16 *)0x027FFFA8 & 0x8000) >> 0xF) != 0) {
         return 1;
     }
@@ -458,16 +464,18 @@ void Ov001_FadeInWirelessScreen(void) {
     Ov001_SetStepCallback(&Ov001_WirelessScreenFadeDone);
 }
 
+/* Once the local wireless screen's fade-in has finished on both engines, put up
+ * its single-button icon row and move on to starting the wireless setup task. */
 void Ov001_WirelessScreenFadeDone(void) {
-    M2C_UNK func_ov001_02171e20(M2C_UNK);
+    M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
     void Ov001_StartWirelessSetupTask(void);
-    if (Ov001_IsFadeActive(1) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
-    func_ov001_02171e20(1);
+    Ov001_CreateMenuIconRow(1);
     Ov001_SetStepCallback(&Ov001_StartWirelessSetupTask);
 }
 
@@ -485,20 +493,20 @@ void Ov001_StartWirelessSetupTask(void) {
 
 /* Poll a pending online battle connection and, on success, hand off to the appropriate follow-up handler. */
 void Ov001_PollWirelessSetup(void) {
-    void func_ov001_021799cc(void);
+    void Ov001_HandleWirelessSetupInput(void);
     void func_ov001_02179a04(void);
     void Ov001_CancelWirelessSetupTask(void);
     s32 Ov001_UpdateWirelessSetup(void);
     void Ov001_WaitForWirelessConnection(void);
     void func_ov001_02179bec(void);
-    M2C_UNK func_ov001_0218c94c(s32, s32);
+    M2C_UNK Ov001_ReturnTaskNodeVeneer(s32, s32);
     M2C_UNK Ov001_StopSound(void);
     M2C_UNK Ov001_ShowMessage(s32, s32, s32, s32, s32);
     M2C_UNK Ov001_PlaySound(s32);
     M2C_UNK Ov001_LockIconRow(void);
     extern u8 gOv001WirelessState;
     s32 pending;
-    func_ov001_021799cc();
+    Ov001_HandleWirelessSetupInput();
     func_ov001_02179a04();
     Ov001_CancelWirelessSetupTask();
     switch (Ov001_UpdateWirelessSetup()) {
@@ -508,7 +516,7 @@ void Ov001_PollWirelessSetup(void) {
         pending = M2C_FIELD(&gOv001WirelessState, s32 *, 4);
         if (!pending) return;
         M2C_FIELD(&gOv001WirelessState, u8 *, 0) = 1;
-        func_ov001_0218c94c(1, pending);
+        Ov001_ReturnTaskNodeVeneer(1, pending);
         M2C_FIELD(&gOv001WirelessState, s32 *, 4) = 0;
         Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitForWirelessConnection);
         return;
@@ -519,22 +527,24 @@ void Ov001_PollWirelessSetup(void) {
         Ov001_ShowMessage(12, 1, 1, -1, 0);
         Ov001_PlaySound(9);
         Ov001_LockIconRow();
-        func_ov001_0218c94c(1, M2C_FIELD(&gOv001WirelessState, s32 *, 4));
+        Ov001_ReturnTaskNodeVeneer(1, M2C_FIELD(&gOv001WirelessState, s32 *, 4));
         M2C_FIELD(&gOv001WirelessState, s32 *, 4) = 0;
         Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179bec);
         return;
     }
 }
 
-void func_ov001_021799cc(void) {
+/* Local wireless (multi-card) setup popup input: B latches the popup's only
+ * choice, the back icon, and so does closing the console's lid. */
+void Ov001_HandleWirelessSetupInput(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     s32 KeyPressed(M2C_UNK);
-    if (KeyPressed(2) != 0) {
-        Ov001_LatchIconRowSelection(0);
+    if (KeyPressed(KEY_B) != 0) {
+        Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
         return;
     }
-    if (func_ov001_021796f8() == 0) return;
-    Ov001_LatchIconRowSelection(0);
+    if (Ov001_IsLidClosedForWireless() == 0) return;
+    Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
 void func_ov001_02179a04(void) {
@@ -555,12 +565,15 @@ void Ov001_CancelWirelessSetupTask(void) {
     Ov001_SetStepCallback(&Ov001_BeginWirelessCancel);
 }
 
+/* Abandon the wireless connection setup: lock the icon row, hand the pending
+ * connection task back to its task group and move on to fade the screen out. */
 void Ov001_AbandonWirelessConnection(void) {
     extern u8 gOv001WirelessState;
     void Ov001_FadeOutWirelessScreen(void);
+    M2C_UNK Ov001_ReturnTaskNodeVeneer(s32, s32);
     Ov001_LockIconRow();
-    if (M2C_FIELD(&gOv001WirelessState, s32 *, 4) != 0) {
-        func_ov001_0218c94c(1, M2C_FIELD(&gOv001WirelessState, s32 *, 4));
+    if (M2C_FIELD(&gOv001WirelessState, s32 *, OV001_WIRELESS_TASK) != 0) {
+        Ov001_ReturnTaskNodeVeneer(1, M2C_FIELD(&gOv001WirelessState, s32 *, OV001_WIRELESS_TASK));
     }
     Ov001_StartDelay(8);
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeOutWirelessScreen);
@@ -588,7 +601,7 @@ void Ov001_FadeOutWirelessScreen(void) {
 void Ov001_CloseWirelessScreen(void) {
     extern u8 gOv001WirelessState;
     extern void func_ov001_02181a84(void);
-    extern void func_ov001_02179cb4(void);
+    extern void Ov001_OpenSaveScreen(void);
 
     if (Ov001_IsFadeActive(0) != 0) {
         return;
@@ -615,18 +628,18 @@ void Ov001_CloseWirelessScreen(void) {
         Ov001_SetStepCallback(func_ov001_02181a84);
     } else {
         Ov001_SetNextScreenMode(0, 0);
-        Ov001_SetStepCallback(func_ov001_02179cb4);
+        Ov001_SetStepCallback(Ov001_OpenSaveScreen);
     }
 }
 
 void Ov001_WirelessSetupFrameTask(void) {
-    void func_ov001_021799cc(void);
+    void Ov001_HandleWirelessSetupInput(void);
     void Ov001_CancelWirelessSetupTask(void);
     M2C_UNK Ov001_UpdateInput();
     M2C_UNK func_ov001_0218c7d4(M2C_UNK);
     Ov001_UpdateInput();
     func_ov001_0218c7d4(0);
-    func_ov001_021799cc();
+    Ov001_HandleWirelessSetupInput();
     Ov001_CancelWirelessSetupTask();
 }
 
@@ -660,7 +673,7 @@ void Ov001_WaitForWirelessConnection(void) {
     extern u8 gOv001WirelessState;
     u8 *state;
 
-    func_ov001_021799cc();
+    Ov001_HandleWirelessSetupInput();
     func_ov001_02179a04();
     Ov001_CancelWirelessSetupTask();
     state = &gOv001WirelessState;
@@ -678,16 +691,19 @@ gOv001WirelessState=0;
 Ov001_SetStepCallback((M2C_UNK *)&Ov001_AbandonWirelessConnection);
 }
 
-void func_ov001_02179cb4(void) {
-extern u8 data_ov001_02193d94;
-void Ov001_LoadSaveScreenBg(void);
-void func_ov001_02179d5c(void);
-data_ov001_02193d94=0;
-Ov001_LoadSaveScreenBg();
-Ov001_LoadSaveSlotObjLayout();
-Ov001_ShowMessageBox(0x23);
-Ov001_PlaySound(0x10);
-Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179d5c);
+/* Step that opens the ov001 save screen once the wireless flow is done: reset the
+ * save screen timer, load its background and save-slot layout, show the message
+ * box and a sound, and hand the step to the fade-in. */
+void Ov001_OpenSaveScreen(void) {
+    extern u8 gOv001SaveScreenTimer;
+    void Ov001_LoadSaveScreenBg(void);
+    void Ov001_FadeInSaveScreen(void);
+    gOv001SaveScreenTimer = 0;
+    Ov001_LoadSaveScreenBg();
+    Ov001_LoadSaveSlotObjLayout();
+    Ov001_ShowMessageBox(0x23);
+    Ov001_PlaySound(0x10);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInSaveScreen);
 }
 
 /* Load the ov001 save screen's background map and lower the priority of the sub
@@ -704,7 +720,7 @@ void Ov001_LoadSaveScreenBg(void) {
     REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_02179d5c(void) {
+void Ov001_FadeInSaveScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_02179d90;
@@ -732,7 +748,9 @@ void func_ov001_02179dc4(void) {
 
 }
 
-void func_ov001_02179dc8(void) {
+/* Start the fade-out of both screens for the ov001 save screen, then install the
+ * step that finishes closing it once the fades have run. */
+void Ov001_FadeOutSaveScreen(void) {
     extern M2C_UNK Ov001_CloseSaveScreen;
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);

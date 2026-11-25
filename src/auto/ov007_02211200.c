@@ -20,7 +20,7 @@ void MapEditor_StartMap(void *editor) {
  ResetBattleMap();func_020d8cfc();
  M2C_FIELD(*gCurrentMap,u8*,MAP_PLAYER_COUNT)=4;
  MapSettings_CopyToGameSettings(0);ResetPlayerSetupTables();MapSettings_SetDefaults(0);
- if(!func_020c8020(M2C_FIELD(*gCurrentMap,u16*,MAP_ID))){
+ if(!GetCampaignMapPlayerCount(M2C_FIELD(*gCurrentMap,u16*,MAP_ID))){
  map=*gCurrentMap;
  text=GetLocalizedText(0xc00002eb);
  StringFormat((u8*)map+MAP_NAME,gMapNameFormat,text,GetCampaignMapIndex(M2C_FIELD(map,u16*,MAP_ID))+1);
@@ -34,10 +34,10 @@ void MapEditor_StartMap(void *editor) {
  M2C_FIELD(*gCurrentMap,u8*,0x5155)=0;
  M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;
  LoadMapTileset();LoadUiGraphicsBank(4);RefreshMapCursorCellCache();ResetMapUnits();func_020a45cc();ResetPlayerTurnBonuses();BeginPlayerPhase();InitPlayerTurnState();
- MapEditor_LoadMapData(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));func_020b1ae0();
+ MapEditor_LoadMapData(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));SetDefaultMapView();
  callback=M2C_FIELD(gCurrentMap[1],void(**)(void),0x50);
  if(callback)callback();
- func_0207ce28((u8*)*gCurrentMap+0x6ef8);InitBattleMapPresentation();
+ ResetMapViewCamera((u8*)*gCurrentMap+0x6ef8);InitBattleMapPresentation();
  map=*gCurrentMap;
  centerX=(u32)M2C_FIELD(map,u16*,MAP_WIDTH)>>1;
  centerY=(u32)M2C_FIELD(map,u16*,MAP_HEIGHT)>>1;
@@ -54,7 +54,7 @@ func_ov007_022121e4();
 void MapEditor_ShowIntroMessage(M2C_UNK owner) {
     M2C_UNK SetEventFlagMid(M2C_UNK, M2C_UNK);
     s32 IsEventFlagMidSet(M2C_UNK);
-    M2C_UNK func_0208999c(void *, M2C_UNK, s32);
+    M2C_UNK RenderTextLayerMessageDefault(void *, M2C_UNK, s32);
     void *CreateTextLayer(M2C_UNK);
     void *layer;
 
@@ -63,7 +63,7 @@ void MapEditor_ShowIntroMessage(M2C_UNK owner) {
     }
     SetEventFlagMid(0x20, 1);
     layer = CreateTextLayer(owner);
-    func_0208999c(layer, 2, 0x46000025);
+    RenderTextLayerMessageDefault(layer, 2, 0x46000025);
     M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) = (s32) ((M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) & ~TEXT_LAYER_PANEL_REFRESH_TIMER) | 0x01000000);
 }
 

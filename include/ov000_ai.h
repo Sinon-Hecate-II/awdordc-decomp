@@ -103,7 +103,9 @@
 #define AI_COMMAND_ATTACK_TARGET 4 /* attack the unit AI_COMMAND_UNIT names on the command tile */
 #define AI_COMMAND_ATTACK_TILE   5 /* attack the tile AI_COMMAND_CURSOR_X/Y names */
 #define AI_COMMAND_PRODUCE_UNIT 3 /* build the unit kind in AI_COMMAND_ACTOR at the command tile */
+#define AI_COMMAND_PRODUCE_CARGO 22 /* make the cursor unit produce its kind-17 cargo unit (AiProduceCargoUnit) */
 #define AI_COMMAND_SET_AI_MODE  24 /* set player AI_COMMAND_UNIT's AI behaviour mode to AI_COMMAND_ARG_Y */
+#define AI_COMMAND_DESTROY_UNIT 17 /* destroy the unit under the map cursor */
 
 enum AiCargoDropDirection {
     AI_CARGO_DROP_NONE = 0,
@@ -136,9 +138,17 @@ enum AiCargoDropDirection {
 #define UNIT_KIND_STATS_MAX_RANGE 0x0D /* u8 base maximum attack range: 0 cannot attack, 1 direct, above 1 indirect */
 #define UNIT_KIND_STATS_MIN_RANGE 0x0C /* u8 minimum attack range (1 = direct unit) */
 #define UNIT_KIND_STATS_FUEL   0x0E /* u8 maximum fuel */
+/* u8 unit-kind class (gUnitKindClass): a category byte the battle rules group
+ * the kinds by.  Class 3 or 4 (IsUnitKindClass3Or4 -> IsUnitKindClass3 / 4) is
+ * what the indirect-threat cell marker counts; class 6 (IsUnitKindClass6) is
+ * exempt from the attack/damage bonuses and is skipped by scripted damage
+ * (DamageUnitAtTile).  Kinds of any of the three classes gain no terrain
+ * defense (UnitKindTakesNoTerrainDefense). */
+#define UNIT_KIND_STATS_CLASS  0x10 /* u8 unit-kind class */
 #define UNIT_KIND_STATS_FLAGS  0x13 /* u8 unit-kind capability flags (used by the AI targeting/movement checks) */
 #define UNIT_KIND_STATS_MOVETYPE 0x12 /* u8 movement type: first index of the terrain movement-cost row (gMovementTypeTable) */
 #define UNIT_KIND_STATS_AI_ROLE  0x14 /* u8 AI role category (1..6) the per-role turn phases select units by */
+#define UNIT_KIND_STATS_DAMAGE   0x17 /* u8[2][32]: per weapon (0 primary, 1 secondary) and damage-table row (target kind or GetDamageTargetIndex), the weapon's damage percent */
 #define UNIT_KIND_STATS_CAN_SUPPLY 0x69 /* u8 nonzero when the kind can resupply/repair adjacent units */
 #define UNIT_KIND_STATS_SUPPLY_FLAG 0x6A /* u8 nonzero when the kind can be resupplied */
 #define UNIT_KIND_STATS_CAPTURE_MASK 0x54 /* s8 *per terrain: nonzero when the kind may capture/enter that property */

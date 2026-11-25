@@ -72,7 +72,7 @@ extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     s8 func_0203bf80(u32, s32, s32);
     s8 func_0203be54(s8, s32, s32);
     M2C_UNK StartHostingMatch(s32, s32, s32, s32, s32, s32);
-    M2C_UNK func_020675bc(M2C_UNK, s32, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK StringFormatBuffer(M2C_UNK, s32, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov010_02228050(void);
     void Ov010Online_OnHostJoinEvent(void);
 
@@ -138,7 +138,7 @@ volatile Ov010CallbackFn d;
 
     s32 x = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x30); s32 y = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x5c);
     buf[0x7f] = 0;
-    func_020675bc((M2C_UNK)buf, 0x7f, (M2C_UNK)&data_ov010_0222c44c, (M2C_UNK)&data_ov010_0222c488,
+    StringFormatBuffer((M2C_UNK)buf, 0x7f, (M2C_UNK)&data_ov010_0222c44c, (M2C_UNK)&data_ov010_0222c488,
                    x,
                    y);
 
@@ -167,7 +167,7 @@ extern "C" void func_ov010_02228f80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     s8 func_0203bf80(u32, s32, s32);
     s8 func_0203be54(s8, s32, s32);
     M2C_UNK func_020388d8(s32,s32,s32,s32,...);
-    M2C_UNK func_020675bc(M2C_UNK, s32, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK StringFormatBuffer(M2C_UNK, s32, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_ov010_02228050(void);
     void Ov010Online_OnHostJoinEvent(void);
 
@@ -393,31 +393,39 @@ s32 SetOnlineMessageHandler(s32 arg0) {
     return temp_r2;
 }
 
-s32 func_ov010_022294e0(void) {
+s32 Ov010Online_CanLeaveSession(void) {
     s32 CanLeaveOnlineSession();
     return CanLeaveOnlineSession();
 }
 
-s32 func_ov010_022294ec(void) {
+/* Leave the running online match: clear the session's match flag, publish the
+ * local player's record to the peers and close the match connection. */
+s32 Ov010Online_LeaveMatch(void) {
     M2C_UNK PublishPlayerStatusLocation(M2C_UNK *, s32);
-    s32 func_0203bd34();
+    s32 LeaveOnlineSession();
     extern u16 gOv010OnlineSession;
     extern M2C_UNK gLocalPlayerStatus;
-    if (func_ov010_022294e0() == 0) return 0;
-    M2C_FIELD(&gOv010OnlineSession, u8 *, 0xFA) = M2C_FIELD(&gOv010OnlineSession, u8 *, 0xFA) & ~2;
-    PublishPlayerStatusLocation(&gLocalPlayerStatus, 0x6C);
-    return func_0203bd34();
+
+    if (Ov010Online_CanLeaveSession() == 0) return 0;
+    M2C_FIELD(&gOv010OnlineSession, u8 *, OV010_SESSION_FLAGS) =
+        M2C_FIELD(&gOv010OnlineSession, u8 *, OV010_SESSION_FLAGS) & ~OV010_SESSION_FLAG_MATCH;
+    PublishPlayerStatusLocation(&gLocalPlayerStatus, ONLINE_PLAYER_RECORD_SIZE);
+    return LeaveOnlineSession();
 }
 
-void func_ov010_0222952c(void) {
+/* Ask the network layer to start the online match from the ready screen: drop
+ * the previous match's running flag, publish the local player's record to the
+ * peers and request the start (the empty callback acknowledges nothing). */
+void Ov010Online_RequestMatchStart(void) {
     M2C_UNK PublishPlayerStatusLocation(M2C_UNK *, s32);
     void RequestMatchStart(void *, s32);
     extern u16 gOv010OnlineSession;
     extern M2C_UNK gLocalPlayerStatus;
-    void func_ov010_0222817c(void);
-    M2C_FIELD(&gOv010OnlineSession, u8 *, 0xFA) = M2C_FIELD(&gOv010OnlineSession, u8 *, 0xFA) & ~2;
-    PublishPlayerStatusLocation(&gLocalPlayerStatus, 0x6C);
-    RequestMatchStart(&func_ov010_0222817c, 0);
+    void Ov010Online_MatchStartNoop(void);
+    M2C_FIELD(&gOv010OnlineSession, u8 *, OV010_SESSION_FLAGS) =
+        M2C_FIELD(&gOv010OnlineSession, u8 *, OV010_SESSION_FLAGS) & ~OV010_SESSION_FLAG_MATCH;
+    PublishPlayerStatusLocation(&gLocalPlayerStatus, ONLINE_PLAYER_RECORD_SIZE);
+    RequestMatchStart(&Ov010Online_MatchStartNoop, 0);
 }
 
 void func_ov010_02229568(M2C_UNK arg0) {
@@ -664,13 +672,15 @@ M2C_UNK *GetLocalPlayerStatus(void) {
     return &gLocalPlayerStatus;
 }
 
-s32 GetOnlinePlayerRecord(s32 a) {
+/* Online player record of `playerId`: NULL when that player is not a connected
+ * peer or its record is not marked connected. */
+s32 GetOnlinePlayerRecord(s32 playerId) {
 extern M2C_UNK gOv010PlayerRecords;
-s32 p;
-if(!(GetOnlinePeerMask()&(1<<a)))return 0;
-p=(s32)&gOv010PlayerRecords+a*0x6c;
-if(!(M2C_FIELD(p,u8 *,0x1a)&1))p=0;
-return p;
+s32 record;
+if(!(GetOnlinePeerMask()&(1<<playerId)))return 0;
+record=(s32)&gOv010PlayerRecords+playerId*ONLINE_PLAYER_RECORD_SIZE;
+if(!(M2C_FIELD(record,u8 *,ONLINE_PLAYER_FLAGS)&ONLINE_PLAYER_FLAG_CONNECTED))record=0;
+return record;
 }
 
 s32 GetOnlinePlayerSlot(s32 arg0) {

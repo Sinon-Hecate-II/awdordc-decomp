@@ -35,7 +35,7 @@ void *GetMapName(u16);
 void DrawTextLineCore(s16,s16,s32,void *,s32,u8,u16);
 extern u8 gSpriteDesc16x16[];
 s32 GetListScrollY(void *);
-void func_0208e0b8(s16,s16,s16,u16,s32);
+void DrawScrollBarThumb(s16,s16,s16,u16,s32);
 s16 CountMapPicks(void *,void *);
 void Set3DSpriteSlideTargetAndStart(void *,s16,s16,s16,s16);
 s32 GetUnitSpriteWidth(void *);
@@ -139,7 +139,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  pos=(s16)(M2C_FIELD(p,u8 *,10)*Divide((s16)M2C_FIELD(p,s32 *,0x18),M2C_FIELD(p,s16 *,8)));
  off=(s16)Divide((113-h)*-GetSpriteAnimValue((u8*)M2C_FIELD(arg0,void **,0x4c)+0x30),pos-total+16);
  if(h>113)h=113;else if(h<1)h=1;
- func_0208e0b8((s16)(arg1+242),(s16)(arg2+1+off),h,(u16)(((0x47c>>M2C_FIELD(gCur3DSpriteEngine[0],Ov003DrawDisplay *,0).mode)&0x3ff)|0xa000),17);
+ DrawScrollBarThumb((s16)(arg1+242),(s16)(arg2+1+off),h,(u16)(((0x47c>>M2C_FIELD(gCur3DSpriteEngine[0],Ov003DrawDisplay *,0).mode)&0x3ff)|0xa000),17);
  }
  mode=M2C_FIELD(arg0,Ov003DrawNibble *,0x3b).low;
  if((u8)(mode==0)||(u8)(mode==2)||(u8)(mode==3)||(u8)(mode==6)||(u8)(mode==7)||(u8)(mode==8)){

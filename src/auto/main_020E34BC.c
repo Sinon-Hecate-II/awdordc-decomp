@@ -210,12 +210,12 @@ void func_020e36f4(void) {
 }
 
 void func_020e370c(void *arg0) {
-   M2C_UNK SetSpriteAnimation(void *, s32);
+   M2C_UNK GotoSpriteAnimationLabel(void *, s32);
    s32 func_ov010_02226738(void);
    if (func_ov010_02226738() == 5) {
      *M2C_FIELD(arg0, s32 **, 0x40) = 1;
    } else {
-     SetSpriteAnimation(arg0, 1);
+     GotoSpriteAnimationLabel(arg0, 1);
    }
 }
 
@@ -223,13 +223,13 @@ void func_020e370c(void *arg0) {
  * list's collected records in a web PUT request and, when the request cannot be
  * queued, start the list's waiting animation instead. */
 void UploadOnlinePlayerRecords(void *list) {
-    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
     s32 SubmitWebPutRequestAndCreateSprite(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, void *);
     *M2C_FIELD(list, s32 **, LIST_CAPACITY) = 0;
     if (SubmitWebPutRequestAndCreateSprite(0, 2, 0, M2C_FIELD(list, s32 *, LIST_FIRST), M2C_FIELD(list, s32 *, LIST_COUNT), list) != 0) {
         return;
     }
-    SetSpriteAnimation(list, 1);
+    GotoSpriteAnimationLabel(list, 1);
 }
 
 /* Creates an online-player-list node over a caller-owned array of player records:
@@ -258,14 +258,14 @@ void CreateOnlinePlayerListCountedNode(void *records, s32 count, s32 *countOut, 
  * filled to the owner's count; otherwise start the list's waiting animation. */
 void FillOnlinePlayerListFirstEntry(void *list) {
     s32 func_ov010_02226738(void);
-    M2C_UNK SetSpriteAnimation(void *, s32);
+    M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     s32 Ov010_GetWebPlayerEntry(s32, s32 *);
     void MI_CpuCopy8(s32, void *, s32);
     s32 entry[7];
     u8 *record;
 
     if (func_ov010_02226738() != WEB_TXN_COMPLETE) {
-        SetSpriteAnimation(list, 1);
+        GotoSpriteAnimationLabel(list, 1);
         return;
     }
 
@@ -292,7 +292,7 @@ void FillOnlinePlayerListFirstEntry(void *list) {
 void RequestOnlinePlayerListIds(void *list) {
     void MIi_CpuCopy32(s32, void *, s32);
     s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
-    M2C_UNK SetSpriteAnimation(void *, s32);
+    M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     s32 request[68];
     s32 count;
 
@@ -306,7 +306,7 @@ void RequestOnlinePlayerListIds(void *list) {
     if (SubmitWebGetRequest(3, 0, 0xFF, request, list) != 0) {
         return;
     }
-    SetSpriteAnimation(list, 1);
+    GotoSpriteAnimationLabel(list, 1);
 }
 
 /* Build a list node for `capacity` online players: install its type table, keep
@@ -352,7 +352,7 @@ void *CreateOnlinePlayerListNode(void *records, s32 unk34, s32 capacity) {
 /* Populates the list's node array from the ov010 source (mode 5 only), skipping entries whose id matches a sentinel value. */
 void func_020e39d8(void *list) {
     s32 func_ov010_02226738(void);
-    M2C_UNK SetSpriteAnimation(void *, s32);
+    M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     s32 GetOnlinePlayerCount(void);
     s32 GetOnlinePlayerTotal(void);
     s32 Ov010_GetWebPlayerEntry(s32, s32 *);
@@ -366,7 +366,7 @@ void func_020e39d8(void *list) {
     u8 *node;
 
     if (func_ov010_02226738() != 5) {
-        SetSpriteAnimation(list, 1);
+        GotoSpriteAnimationLabel(list, 1);
         return;
     }
 
@@ -401,7 +401,7 @@ void func_020e39d8(void *list) {
 void RequestOnlinePlayersUpToLimit(void *list) {
     s32 RandomIntRange(s32, s32);
     s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
-    M2C_UNK SetSpriteAnimation(void *, s32);
+    M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     extern s32 gOnlinePlayerCount;
     s32 request[68];
     u32 limit;
@@ -426,7 +426,7 @@ void RequestOnlinePlayersUpToLimit(void *list) {
     if (SubmitWebGetRequest(6, 0, 0xFF, request, list) != 0) {
         return;
     }
-    SetSpriteAnimation(list, 1);
+    GotoSpriteAnimationLabel(list, 1);
 }
 
 /* Creates an online-player list node over a caller-owned array of player
@@ -463,7 +463,7 @@ void CreateOnlinePlayerListUpToLimitNode(void *records, s32 limit, s32 *countPtr
 /* Builds the filtered list of entries from the overlay's state, skipping the excluded one. */
 void func_020e3bf0(void *list) {
     s32 func_ov010_02226738(void);
-    M2C_UNK SetSpriteAnimation(void *, s32);
+    M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     s32 GetOnlinePlayerCount(void);
     s32 GetOnlinePlayerTotal(void);
     s32 Ov010_GetWebPlayerEntry(s32, s32 *);
@@ -477,7 +477,7 @@ void func_020e3bf0(void *list) {
     u8 *node;
 
     if (func_ov010_02226738() != 5) {
-        SetSpriteAnimation(list, 1);
+        GotoSpriteAnimationLabel(list, 1);
         return;
     }
 
@@ -512,7 +512,7 @@ void RequestRandomOnlinePlayers(void *list) {
     s32 NextRandomValue(void);
     s32 RandomIntRange(s32, s32);
     s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
-    M2C_UNK SetSpriteAnimation(void *, s32);
+    M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     extern s32 gOnlinePlayerCount;
     s32 request[68];
     s32 count;
@@ -532,7 +532,7 @@ void RequestRandomOnlinePlayers(void *list) {
     if (SubmitWebGetRequest(6, 0, 0xFF, request, list) != 0) {
         return;
     }
-    SetSpriteAnimation(list, 1);
+    GotoSpriteAnimationLabel(list, 1);
 }
 
 /* Creates an online-player list node over a caller-owned array of player
@@ -568,7 +568,7 @@ void CreateOnlinePlayerListNoLimitNode(void *records, s32 *countPtr, s32 owner) 
 
 void func_020e3e04(void *arg0) {
     s32 func_ov010_02226738(void);
-    M2C_UNK SetSpriteAnimation(void *, s32);
+    M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     s32 GetOnlinePlayerTotal(void);
     s32 Ov010_GetWebPlayerEntry(s32, s32 *);
     void MI_CpuCopy8(s32, void *, s32);
@@ -579,7 +579,7 @@ void func_020e3e04(void *arg0) {
     u8 *node_ptr;
 
     if (func_ov010_02226738() != 5) {
-        SetSpriteAnimation(arg0, 1);
+        GotoSpriteAnimationLabel(arg0, 1);
         return;
     }
 
@@ -611,7 +611,7 @@ void func_020e3e04(void *arg0) {
 void RequestOnlinePlayersByIds(void *list) {
     void MIi_CpuCopy32(s32, void *, s32);
     s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
-    M2C_UNK SetSpriteAnimation(void *, s32);
+    M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     s32 request[68];
     s32 count;
 
@@ -625,7 +625,7 @@ void RequestOnlinePlayersByIds(void *list) {
     if (SubmitWebGetRequest(3, 0, 0xFF, request, list) != 0) {
         return;
     }
-    SetSpriteAnimation(list, 1);
+    GotoSpriteAnimationLabel(list, 1);
 }
 
 /* Builds an online-player list node over a caller-owned array of `*countPtr`
@@ -667,12 +667,12 @@ void *CreateOnlinePlayerListWithIdsNode(s32 ids, void *records, s32 *countPtr, s
 }
 
 void func_020e4064(void *arg0) {
- M2C_UNK SetSpriteAnimation(void *, s32);
+ M2C_UNK GotoSpriteAnimationLabel(void *, s32);
  s32 func_ov010_02226738(void);
  if (func_ov010_02226738() == 5) {
   *M2C_FIELD(arg0, s32 **, 0x40) = 1;
  } else {
-  SetSpriteAnimation(arg0, 1);
+  GotoSpriteAnimationLabel(arg0, 1);
  }
 }
 
@@ -685,7 +685,7 @@ void SyncOnlinePlayerRecord(void *list) {
     if (SubmitWebSyncRequestAndCreateSprite(8, *M2C_FIELD(list, s32 **, LIST_IDS), 0, M2C_FIELD(list, s32 *, LIST_UNK48), list) != 0) {
         return;
     }
-    SetSpriteAnimation(list, 1);
+    GotoSpriteAnimationLabel(list, 1);
 }
 
 /* Twin of CreateOnlinePlayerIdListNode over the other id-list sprite bank (the one
@@ -754,14 +754,17 @@ void *CreateOnlinePlayerIdListNode(s32 id, s32 flags, s32 result, s32 owner) {
     return node;
 }
 
-void func_020e4208(void *arg0) {
+/* Update step of the online-player-count list: once the count request has
+ * completed (WEB_TXN_COMPLETE), store the server's online player total;
+ * otherwise keep the list's waiting animation running. */
+void FinishOnlinePlayerCountRequest(void *list) {
     s32 func_ov010_02226738(void);
     s32 GetOnlinePlayerCount(void);
-    M2C_UNK SetSpriteAnimation(void *, s32);
+    M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     extern s32 gOnlinePlayerCount;
 
-    if (func_ov010_02226738() != 5) {
-        SetSpriteAnimation(arg0, 1);
+    if (func_ov010_02226738() != WEB_TXN_COMPLETE) {
+        GotoSpriteAnimationLabel(list, 1);
         return;
     }
     gOnlinePlayerCount = GetOnlinePlayerCount();
@@ -774,12 +777,12 @@ void func_020e4208(void *arg0) {
  * the request cannot be queued.  A queued request leaves the list waiting. */
 void RequestOnlinePlayerCount(void *list) {
     s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
-    M2C_UNK SetSpriteAnimation(void *, s32);
+    M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     extern s32 gOnlinePlayerCount;
     s32 request[68];
 
     if (gOnlinePlayerCount >= 0) {
-        SetSpriteAnimation(list, 1);
+        GotoSpriteAnimationLabel(list, 1);
         return;
     }
 
@@ -792,7 +795,7 @@ void RequestOnlinePlayerCount(void *list) {
         return;
     }
 
-    SetSpriteAnimation(list, 1);
+    GotoSpriteAnimationLabel(list, 1);
 }
 
 /* Create an online-player list node with no player records yet: install the
@@ -857,7 +860,7 @@ void func_020e4378(void) {
     M2C_UNK func_02006c6c();
     M2C_UNK func_02006c7c();
     M2C_UNK InitSystemTick();
-    M2C_UNK func_02007140();
+    M2C_UNK InitTimerQueue();
     M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
     M2C_UNK Arm7CommandInit();
     extern s32 gGxDmaChannel;
@@ -866,7 +869,7 @@ void func_020e4378(void) {
     func_02006c58();
     InitSystemServices();
     InitSystemTick();
-    func_02007140();
+    InitTimerQueue();
     func_020022d8();
     gGxDmaChannel = -1;
     GX_InitDisplay();
@@ -888,17 +891,20 @@ void func_020e4378(void) {
     func_02006c7c();
 }
 #pragma opt_propagation reset
-void func_020e4458(void) {
+/* Install the game's VBlank interrupt: route IRQ 1 (VBlank) to VBlankHandler,
+ * unmask it, then enable the display's VBlank interrupt with the interrupt
+ * master (IME) turned on. */
+void InstallVBlankHandler(void) {
     M2C_UNK GX_SetVBlankIrq(M2C_UNK, u16);
     M2C_UNK OS_SetIrqHandler(M2C_UNK, M2C_UNK *);
     M2C_UNK OS_EnableIrqMask(M2C_UNK);
     extern M2C_UNK VBlankHandler;
-    u16 temp_r1;
+    u16 oldIme;
 
-    OS_SetIrqHandler(1, &VBlankHandler);
-    OS_EnableIrqMask(1);
-    temp_r1 = *(u16 *)0x04000208;
+    OS_SetIrqHandler(IRQ_VBLANK, &VBlankHandler);
+    OS_EnableIrqMask(IRQ_VBLANK);
+    oldIme = *(u16 *)0x04000208;
     *(u16 *)0x04000208 = 1;
-    GX_SetVBlankIrq(1, temp_r1);
+    GX_SetVBlankIrq(1, oldIme);
 }
 

@@ -110,7 +110,7 @@ void SpawnBeamEffect(s32 tileX, s32 tileY, u32 facing, s32 order, void *parent) 
 #pragma push
 #pragma opt_common_subs off
 void func_020b7464(void *a) {
-s32 GetArmyStateLabel(s32);s32 RenderTextToTiles(s32,s32);void LoadScenePanelPalette(s32);void *GetArmyStateTiles(s32);void MI_CpuCopy32(void *,s32,s32);void *GetArmyIconPalette(s32);void CopyToObjPaletteShadow(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(s32,u16,s32);void *func_020ab1c4(void *);void InitUnitSprite(void *,s32,s32,s32,s32);void Set3DSpriteSlideTargetAndStart(void *,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void CreateUnitSpriteButtonTask(void *,s32);void func_020aad18(void *);void Show3DSpriteSlide(void *);void *CreateAnimatedSpriteObject(s32);void LoadCompressedSpriteGraphics(void *,s32,s32);void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
+s32 GetArmyStateLabel(s32);s32 RenderTextToTiles(s32,s32);void LoadScenePanelPalette(s32);void *GetArmyStateTiles(s32);void MI_CpuCopy32(void *,s32,s32);void *GetArmyIconPalette(s32);void CopyToObjPaletteShadow(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(s32,u16,s32);void *CreateUnitSprite(void *);void InitUnitSprite(void *,s32,s32,s32,s32);void Set3DSpriteSlideTargetAndStart(void *,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void CreateUnitSpriteButtonTask(void *,s32);void func_020aad18(void *);void Show3DSpriteSlide(void *);void *CreateAnimatedSpriteObject(s32);void LoadCompressedSpriteGraphics(void *,s32,s32);void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
 extern void **gCurrentMap;extern void *gCur3DSpriteEngine;extern u8 data_02128fb8[],data_02128fc0[],data_02128fcc[],data_02128fd4[],data_02128fdc[],data_02128fe4[],data_02128ff0[];
 void *map,*unit,*p,*q; s32 icon,kind,base,t,n; s16 y,x;u8 flag;u16 palette;
 map=*gCurrentMap;unit=(u8 *)map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;icon=M2C_FIELD(unit,u8 *,0x27);kind=M2C_FIELD(unit,u8 *,0x1d);
@@ -124,7 +124,7 @@ LoadNarcFileToSpriteBuffer(GetLocalizedFileName(data_02128fdc),192,32);CloseNarc
 palette=Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),2);{void *engine=gCur3DSpriteEngine;u32 value=palette;AddToU16Array(M2C_FIELD(engine,s32 *,0x28),value,0x6124);}
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3c)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x44)=0;
-M2C_FIELD(a,void **,0x38)=func_020ab1c4(a);InitUnitSprite(M2C_FIELD(a,void **,0x38),1,0x120,3,1);
+M2C_FIELD(a,void **,0x38)=CreateUnitSprite(a);InitUnitSprite(M2C_FIELD(a,void **,0x38),1,0x120,3,1);
 p=M2C_FIELD(a,void **,0x38);Set3DSpriteSlideTargetAndStart(p,0xe0,0xa0,0x100,0xa0);
 flag=M2C_FIELD(M2C_FIELD(p,void **,0x64),u8 *,0x12)!=0;
 if(flag){y=M2C_FIELD(p,s16 *,0x52);x=M2C_FIELD(p,s16 *,0x50);t=GetUnitSpriteWidth(p);n=GetUnitSpriteHeight(p);func_02087d84(M2C_FIELD(p,void **,0x64),1,x,y,(u16)t,(u16)n);}
@@ -145,14 +145,18 @@ AddSprite(0x38,0x58,(u16)(0xb000|((0x35c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpr
 AddSprite(0x10b8,0x58,(u16)(0xb000|((0x35c >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&0x3ff)),gSpriteDesc16x16,11);
 }
 
-void func_020b7824(void *arg0) {
+/* Tear down the army-state panel: delete its unit sprite and its animated gauge
+ * sprite, then wipe sprite layer 2 and mark it for redraw. */
+void DestroyArmyStatePanel(void *panel) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK DeleteSpriteObject(s32);
     extern void *gCur3DSpriteEngine;
-    DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x38));
-    DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x3C));
+
+    DeleteSpriteObject(M2C_FIELD(panel, s32 *, 0x38));
+    DeleteSpriteObject(M2C_FIELD(panel, s32 *, 0x3c));
     Clear3DSpriteLayer(2);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) =
+        (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER2);
 }
 
 /* Resume the task's sprite animation as soon as the player presses one of the
@@ -300,7 +304,7 @@ void func_020b7c4c(void) {
    eleventh of the task and restores them in the first twelfth, playing the fade
    sound effects, then updates the bank's OAM attribute and row split. */
 void func_020b7c5c(void *arg0) {
- s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 func_0208c1dc(void*);s32 PlaySoundEffect(s32);
+ s32 EaseInterpolate(s32,s32,s32,s32,s32);s32 TakeSpriteAnimCommand(void*);s32 PlaySoundEffect(s32);
  extern void *gCur3DSpriteEngine;
  s32 duration=(u16)((FadeTask*)arg0)->duration;
  s32 frame=(u16)((FadeTask*)arg0)->frame;
@@ -319,7 +323,7 @@ void func_020b7c5c(void *arg0) {
     u16 *volatile attrSetSplit;
 
 
- if(func_0208c1dc(arg0))PlaySoundEffect(0xe6);
+ if(TakeSpriteAnimCommand(arg0))PlaySoundEffect(0xe6);
  if(frame==(duration*9)/12)PlaySoundEffect(0xe7);
  step=duration/12;
  if(frame<step)rows=EaseInterpolate(0,0,16,frame,step);

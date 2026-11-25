@@ -180,32 +180,40 @@ void PlanAiUnitMove(void) {
     PlanMoveDestination(bestX, bestY);
 }
 
-u8 func_ov000_021973f8(void) {
+/* Whether the map's current player is AI-controlled: nonzero when that player's
+ * PLAYER_REC_AI_MODE byte is set.  (Callers pass a unit kind to it; the function
+ * itself takes no argument.) */
+u8 IsCurrentPlayerAiControlled(void) {
     extern void **gCurrentMap;
-    void *temp_r3;
-    u32 index;
+    void *map;
+    u32 player;
     u8 result;
-    temp_r3 = *gCurrentMap;
-    index = M2C_FIELD(temp_r3, u16 *, 0x52A4);
-    result = M2C_FIELD((s32)temp_r3 + index * 0x8C, u8 *, 0x67CE) != 0;
+
+    map = *gCurrentMap;
+    player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
+    result = M2C_FIELD((s32) map + player * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE) != 0;
     return result;
 }
 
-s32 GetModifiedDamagePercent(s32 arg0, s32 arg1) {
+/* Return the percent damage attacker kind `attackerKind` deals to defender kind
+ * `defenderKind`, with the AI's extra matchup multipliers on top of the weapon
+ * damage table: the counter unit kind (0xE) against itself (x1.5) and against
+ * kind 6 (x2), and kind 15 against kind 6 (x0.5). */
+s32 GetModifiedDamagePercent(s32 attackerKind, s32 defenderKind) {
     s32 GetUnitDamagePercent();
-    s32 var_r0;
+    s32 damage;
 
-    var_r0 = GetUnitDamagePercent();
-    if ((arg1 == 0xE) && (arg0 == 0xE)) {
-        var_r0 = (s32) (var_r0 * 3) >> 1;
+    damage = GetUnitDamagePercent();
+    if ((defenderKind == 0xE) && (attackerKind == 0xE)) {
+        damage = (s32) (damage * 3) >> 1;
     }
-    if ((arg1 == 0xE) && (arg0 == 6)) {
-        var_r0 *= 2;
+    if ((defenderKind == 0xE) && (attackerKind == 6)) {
+        damage *= 2;
     }
-    if ((arg1 == 6) && (arg0 == 0xF)) {
-        var_r0 = var_r0 >> 1;
+    if ((defenderKind == 6) && (attackerKind == 0xF)) {
+        damage = damage >> 1;
     }
-    return var_r0;
+    return damage;
 }
 
 /* Scale attack damage by (100 + the attacker's owner-group attack bonus) over

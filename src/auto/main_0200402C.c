@@ -22,16 +22,18 @@ void G3X_SetCamera(s32 *eye, s32 *up, s32 *target, s32 loadToGx, s32 *mtx) {
     GX_LoadMatrix4x3(matrix);
 }
 
-void func_02004078(s32 arg0,s32 arg1) {
- *(volatile s32 *)0x04000468=arg1;
- *(volatile s32 *)0x04000468=arg0;
- *(volatile s32 *)0x04000468=0;
- *(volatile s32 *)0x04000468=-arg0;
- *(volatile s32 *)0x04000468=arg1;
- *(volatile s32 *)0x04000468=0;
- *(volatile s32 *)0x04000468=0;
- *(volatile s32 *)0x04000468=0;
- *(volatile s32 *)0x04000468=0x1000;
+/* Queue a Z-axis rotation onto the geometry engine's current matrix: the
+ * caller passes the fixed-point (20.12) sine and cosine of the angle. */
+void GX_MatrixRotateZ(s32 sine, s32 cosine) {
+    REG_GX_MTX_MULT_3X3 = cosine;
+    REG_GX_MTX_MULT_3X3 = sine;
+    REG_GX_MTX_MULT_3X3 = 0;
+    REG_GX_MTX_MULT_3X3 = -sine;
+    REG_GX_MTX_MULT_3X3 = cosine;
+    REG_GX_MTX_MULT_3X3 = 0;
+    REG_GX_MTX_MULT_3X3 = 0;
+    REG_GX_MTX_MULT_3X3 = 0;
+    REG_GX_MTX_MULT_3X3 = GX_FX_ONE;
 }
 
 /* Copy `size` bytes of palette data to the main engine's BG palette RAM at
@@ -480,16 +482,18 @@ void GX_LoadBGExtPlttSub(M2C_UNK src, M2C_UNK offset, M2C_UNK size) {
     MIi_CpuCopy32(src, (s32)offset + GX_SUB_BG_EXTPLTT_VRAM_BASE, (u32)size);
 }
 
+/* End a sub-engine BG extended-palette load: wait for the DMA copy to finish,
+ * hand the palette's bank grant back to the VRAM allocator and clear it. */
 void GX_EndLoadBGExtPlttSub(void) {
     M2C_UNK DmaWaitChannel(s32);
     M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
     extern s32 gGxDmaChannel;
-    extern M2C_UNK gGxExtPlttLoad;
+    extern s32 gGxExtPlttLoad;
     if (gGxDmaChannel != -1) {
         DmaWaitChannel(gGxDmaChannel);
     }
-    GX_SetBankForBGExtPlttSub(gGxExtPlttLoad);
-    gGxExtPlttLoad = 0;
+    GX_SetBankForBGExtPlttSub(M2C_FIELD(&gGxExtPlttLoad, s32 *, GX_EXTPLTT_LOAD_SUB_BG_GRANT));
+    M2C_FIELD(&gGxExtPlttLoad, s32 *, GX_EXTPLTT_LOAD_SUB_BG_GRANT) = 0;
 }
 
 void GX_BeginLoadOBJExtPlttSub(void) {
@@ -512,16 +516,18 @@ void GX_LoadOBJExtPlttSub(M2C_UNK src, M2C_UNK offset, M2C_UNK size) {
     MIi_CpuCopy32(src, (s32)offset + GX_SUB_OBJ_EXTPLTT_VRAM_BASE, (u32)size);
 }
 
+/* End a sub-engine OBJ extended-palette load: wait for the DMA copy to finish,
+ * hand the palette's bank grant back to the VRAM allocator and clear it. */
 void GX_EndLoadOBJExtPlttSub(void) {
     M2C_UNK DmaWaitChannel(s32);
     M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
     extern s32 gGxDmaChannel;
-    extern M2C_UNK gGxExtPlttLoad;
+    extern s32 gGxExtPlttLoad;
     if (gGxDmaChannel != -1) {
         DmaWaitChannel(gGxDmaChannel);
     }
-    GX_SetBankForOBJExtPlttSub(M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x18));
-    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x18) = 0;
+    GX_SetBankForOBJExtPlttSub(M2C_FIELD(&gGxExtPlttLoad, s32 *, GX_EXTPLTT_LOAD_SUB_OBJ_GRANT));
+    M2C_FIELD(&gGxExtPlttLoad, s32 *, GX_EXTPLTT_LOAD_SUB_OBJ_GRANT) = 0;
 }
 
 void GX_BeginLoadTex(void) {

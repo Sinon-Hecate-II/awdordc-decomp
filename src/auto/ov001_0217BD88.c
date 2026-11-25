@@ -453,10 +453,10 @@ void Ov001_OpenKeypadAfterRegionMenu(void) {
 void Ov001_ShowWfcErrorScreen(void) {
     void Ov001_LoadWfcErrorBackground(void);
     M2C_UNK DrawWfcErrorPanel();
-    extern M2C_UNK func_ov001_0217d044;
+    extern M2C_UNK Ov001_FadeInWfcErrorScreen;
     Ov001_LoadWfcErrorBackground();
     DrawWfcErrorPanel();
-    Ov001_SetStepCallback(&func_ov001_0217d044);
+    Ov001_SetStepCallback(&Ov001_FadeInWfcErrorScreen);
 }
 
 /* Load the Wi-Fi error background map (char/jb4Error.nsc.l) into BG2 and put

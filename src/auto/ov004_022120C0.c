@@ -39,10 +39,10 @@ void func_ov004_022120c0(void *arg0) {
     M2C_UNK ApplyScreenMode(s32);
     M2C_UNK func_0208ca14();
     M2C_UNK func_0208c79c();
-    M2C_UNK func_0208c75c();
+    M2C_UNK CapturePaletteFadeTarget();
     M2C_UNK StartPaletteFadeIn();
     M2C_UNK func_020a8a84();
-    M2C_UNK func_ov004_02212088();
+    M2C_UNK Ov004_PlayStageBattleMusic();
 
     extern const Overlay004TileTable data_ov004_02218bb8;
     extern M2C_UNK data_ov004_02218df8;
@@ -142,13 +142,13 @@ void func_ov004_022120c0(void *arg0) {
             M2C_FIELD(arg0, void **, 0x40) = (void *)func_0208ca14(arg0);
             M2C_FIELD((void *)M2C_FIELD(arg0, void **, 0x40), u8 *, 0x34) = 0;
             func_0208c79c(M2C_FIELD(arg0, void **, 0x40), 0);
-            func_0208c75c(M2C_FIELD(arg0, void **, 0x40), 0);
+            CapturePaletteFadeTarget(M2C_FIELD(arg0, void **, 0x40), 0);
             StartPaletteFadeIn(M2C_FIELD(arg0, void **, 0x40), 0);
 
             M2C_FIELD(arg0, void **, 0x44) = (void *)func_0208ca14(arg0);
             M2C_FIELD((void *)M2C_FIELD(arg0, void **, 0x44), u8 *, 0x34) = 1;
             func_0208c79c(M2C_FIELD(arg0, void **, 0x44), 0);
-            func_0208c75c(M2C_FIELD(arg0, void **, 0x44), 1);
+            CapturePaletteFadeTarget(M2C_FIELD(arg0, void **, 0x44), 1);
             StartPaletteFadeIn(M2C_FIELD(arg0, void **, 0x44), 0);
         }
         ++i;
@@ -163,7 +163,7 @@ void func_ov004_022120c0(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x3d) = 0;
     M2C_FIELD(arg0, u16 *, 0x38) = 0;
 
-    func_ov004_02212088(arg0);
+    Ov004_PlayStageBattleMusic(arg0);
 }
 #pragma opt_propagation reset
 /* Draws the two-digit day counter at (x, y): two 32x16 icon tiles from

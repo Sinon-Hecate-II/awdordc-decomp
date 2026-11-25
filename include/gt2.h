@@ -36,6 +36,7 @@ typedef struct Gt2PendingCommand {
 #define GT2_ACK_DELAY              100  /* ms of silence before the delayed acknowledgement */
 #define GT2_CONNECTION_DATA        0x38 /* void *data to send with our handshake message */
 #define GT2_CONNECTION_DATA_LEN    0x3C /* s32 length of GT2_CONNECTION_DATA */
+#define GT2_CONNECTION_USER_DATA   0x40 /* s32 caller's data attached to the connection: gt2SetConnectionData writes it and the getter reads it (the network layer keeps its peer record there) */
 #define GT2_CONNECTION_SEND_FILTERS 0x98 /* Vector of send filters (gti2SendFilterCallback) */
 #define GT2_CONNECTION_MESSAGE_CALLBACKS GT2_CONNECTION_SEND_FILTERS
 #define GT2_CONNECTION_FILTERS     0x9C /* Vector of receive filters (gti2ReceiveFilterCallback) */
@@ -50,6 +51,7 @@ typedef struct Gt2PendingCommand {
 #define GT2_CONNECTION_CALLBACKS   0x24 /* s32 connection callbacks running */
 #define GT2_SOCKET_CALLBACKS       0x1C /* s32 callbacks running on the socket */
 #define GT2_SOCKET_DIRTY           0x14 /* s32 set when the socket was asked to be freed */
+#define GT2_SOCKET_ERROR           0x18 /* s32 set once the socket failed; its error path fails the connections it owns and may free it */
 #define GT2_SOCKET_CONNECT_ATTEMPT 0x20 /* callback for incoming connections */
 #define GT2_SOCKET_CONNECTION_TABLE 0x0C /* HashTable *of the connections keyed by remote address/port */
 #define GT2_SOCKET_CONNECTIONS      0x10 /* Vector *of the connections the socket owns */

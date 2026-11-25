@@ -318,12 +318,12 @@ s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     void ConstructArray(s32, s32, s32, M2C_UNK (*)(s32), s32);
     void MI_CpuCopy8(s32, void *, s32);
     M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02006804(void);
+    M2C_UNK DC_Sync(void);
     M2C_UNK StartDownloadPlayLinkConnection(void);
     void func_ov009_0222496c(void *);
     void *func_ov009_0222497c(void *);
     s32 GetGameGroupId(void);
-    s32 func_ov009_02222ac4(void);
+    s32 StartLinkDownloadPlay(void);
     extern M2C_UNK gLinkDownloadHeader;
     extern M2C_UNK gLinkLocalPlayerInfo;
     extern M2C_UNK gLinkState;
@@ -334,7 +334,7 @@ s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     extern M2C_UNK data_ov009_022266b0;
     extern M2C_UNK gLinkSenderClass;
     extern M2C_UNK data_ov009_02226688;
-    extern M2C_UNK data_ov009_022264e0;
+    extern M2C_UNK gLinkReceiverClass;
     extern M2C_UNK data_ov009_02226714;
     extern M2C_UNK gLinkConnectionData;
 
@@ -431,7 +431,7 @@ test:
         M2C_FIELD(ptr, u16 *, 0x44) = 0;
         M2C_FIELD(ptr, u16 *, 0x46) = 0;
     }
-    ptr = CreateSpriteFromClass((s32)&data_ov009_022264e0, 3);
+    ptr = CreateSpriteFromClass((s32)&gLinkReceiverClass, 3);
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_02226714;
         ptr = (u8 *)ptr + 0x34;
@@ -439,7 +439,7 @@ test:
     }
 
     result = 0;
-    if (arg0 == 0) result = func_ov009_02222ac4();
+    if (arg0 == 0) result = StartLinkDownloadPlay();
     return result;
 }
 #pragma pop
@@ -467,7 +467,7 @@ s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     void ConstructArray(s32, s32, s32, M2C_UNK (*)(s32), s32);
     void MI_CpuCopy8(s32, void *, s32);
     M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02006804(void);
+    M2C_UNK DC_Sync(void);
     M2C_UNK StartDownloadPlayLinkConnection(void);
     void func_ov009_0222496c(void *);
     void *func_ov009_0222497c(void *);
@@ -479,7 +479,7 @@ s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK data_ov009_022266b0;
     extern M2C_UNK gLinkSenderClass;
     extern M2C_UNK data_ov009_02226688;
-    extern M2C_UNK data_ov009_022264e0;
+    extern M2C_UNK gLinkReceiverClass;
     extern M2C_UNK data_ov009_02226714;
     extern M2C_UNK gLinkConnectionData;
 
@@ -560,7 +560,7 @@ test:
         M2C_FIELD(ptr, u16 *, 0x44) = 0;
         M2C_FIELD(ptr, u16 *, 0x46) = 0;
     }
-    ptr = CreateSpriteFromClass((s32)&data_ov009_022264e0, 3);
+    ptr = CreateSpriteFromClass((s32)&gLinkReceiverClass, 3);
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_02226714;
         ptr = (u8 *)ptr + 0x34;
@@ -570,7 +570,7 @@ test:
     if (arg0 == 1) {
         MI_CpuCopy8(arg2, &gLinkConnectionData, 0xc0);
         DC_FlushRange((s32)&gLinkConnectionData, 0xc0);
-        func_02006804();
+        DC_Sync();
         return StartDownloadPlayLinkConnection();
     }
     return 0;
@@ -629,15 +629,19 @@ s32 SetLinkMessageHandler(s32 arg0) {
  return old;
 }
 
-s32 func_ov009_02224c34(M2C_UNK arg0) {
+/* Ask the link layer to switch the session being set up into download play
+ * (`download` != 0) or normal play.  Returns 0 when a link request has already
+ * arrived or the WFC command could not be queued (which puts the link in
+ * LINK_PHASE_ERROR), 1 once it is queued. */
+s32 RequestLinkDownloadMode(s32 download) {
     s32 SetLinkDownloadMode(M2C_UNK);
     if (GetLinkRequestKind() != 0) {
         return 0;
     }
-    if (SetLinkDownloadMode(arg0) != 0) {
+    if (SetLinkDownloadMode(download) != 0) {
         return 1;
     }
-    SetLinkPhase(8);
+    SetLinkPhase(LINK_PHASE_ERROR);
     return 0;
 }
 

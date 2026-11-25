@@ -40,7 +40,7 @@ static inline void func_020dcc00(void *q) {
 void MatchingMenuConfirmInput(void *menu) {
     void MenuSpriteUpdate(void *);
     void DisableMapConfirm(void);
-    void SetSpriteAnimation(void *, s32);
+    void GotoSpriteAnimationLabel(void *, s32);
     void PlaySoundEffect(s32);
     void Sprite_ResumeAnimation(void *);
     extern u16 *gKeyState;
@@ -80,7 +80,7 @@ void MatchingMenuConfirmInput(void *menu) {
     case 1: M2C_FIELD(menu,u8*,0x40)=0x1f; break;
     }
     M2C_FIELD(menu, u16 *, 0x48) |= 0x20;
-    SetSpriteAnimation(menu, 0x44);
+    GotoSpriteAnimationLabel(menu, 0x44);
     PlaySoundEffect(0x1000f);
     return;
 

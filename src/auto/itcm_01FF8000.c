@@ -46,7 +46,7 @@ s32 LoadCardImage(void) {
     s32 ReadCardRange(u32, void *, s32);
     void func_0200673c(void);
     void func_02006748(void);
-    void func_02006804(void);
+    void DC_Sync(void);
     void func_02006810(void);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
@@ -71,7 +71,7 @@ s32 LoadCardImage(void) {
     func_0200673c();
     OS_RestoreInterrupts(irqState);
     func_02006810();
-    func_02006804();
+    DC_Sync();
     block0Src += cardBase;
     if (block0Src < CARD_SECURE_AREA_END) {
         skip = CARD_SECURE_AREA_END - block0Src;
@@ -150,11 +150,16 @@ int ReadCardRange(unsigned int addr, void *dst, int size)
     return addr;
 }
 #pragma opt_strength_reduction reset
-void DmaStartTransferLocked(s32 a,s32 b,s32 c,s32 d) {
- s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
- s32 state=OS_DisableInterrupts();
- volatile u32 *p=(volatile u32 *)(0x40000b0+a*12);
- p[0]=b;p[1]=c;p[2]=d;
+/* Start a DMA transfer on `channel` with interrupts held off: store the source,
+ * destination and control words in the channel's three registers. */
+void DmaStartTransferLocked(s32 channel, s32 src, s32 dst, s32 control) {
+ s32 OS_DisableInterrupts(void);
+ void OS_RestoreInterrupts(s32);
+ s32 state = OS_DisableInterrupts();
+ volatile u32 *regs = (volatile u32 *)DMA_CHANNEL_BASE(channel);
+ regs[0] = src;
+ regs[1] = dst;
+ regs[2] = control;
  OS_RestoreInterrupts(state);
 }
 
@@ -205,12 +210,14 @@ void DmaStartTransferFlushed(s32 channel, s32 src, s32 dst, s32 control) {
 }
 void AddToU16Array(u16 *p,s32 size,s32 add){u16 n=size>>1;u16 *q;u16 v;if(!n)return;do{q=p;v=*p++;*q=v+add;n--;}while(n);}
 
+/* Reset the current 3D sprite engine's OAM shadow: no entries are in use and no
+ * quads are queued, and the whole OAM is filled with disabled entries. */
 void Reset3DSpriteOam(void) {
-    M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK MI_CpuFill32(u32, void *, u32);
     extern void *gCur3DSpriteEngine;
-    M2C_FIELD(gCur3DSpriteEngine, s8 *, 0x48) = 0;
-    M2C_FIELD(gCur3DSpriteEngine, s8 *, 0x4A) = 0;
-    MI_CpuFill32(0xC0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x34), 0x400);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_COUNT) = 0;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_INDEX) = 0;
+    MI_CpuFill32(DS3D_OAM_DISABLED, M2C_FIELD(gCur3DSpriteEngine, void **, DS3D_ENGINE_OAM), DS3D_OAM_BYTES);
 }
 
 void Write3DSpriteOamEntries(s32 start, s32 end) {

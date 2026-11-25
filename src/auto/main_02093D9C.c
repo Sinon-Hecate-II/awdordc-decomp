@@ -241,17 +241,23 @@ s32 ScriptCmd_ShowMessage(void *script) {
     return 0;
 }
 
-s32 func_0209419c(void *arg0) {
+/* Map-script command: forbid building the unit kind named by the command's +0x0C
+ * operand by setting that kind's MAPCONFIG_UNBUILDABLE_KINDS bit, then advance
+ * the script. */
+s32 ScriptCmd_AddUnbuildableKind(void *script) {
     extern M2C_UNK gMapConfig;
-    M2C_FIELD(&gMapConfig, s32 *, 0xC) = (s32) (M2C_FIELD(&gMapConfig, s32 *, 0xC) | (1 << (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC)));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(&gMapConfig, s32 *, MAPCONFIG_UNBUILDABLE_KINDS) = (s32) (M2C_FIELD(&gMapConfig, s32 *, MAPCONFIG_UNBUILDABLE_KINDS) | (1 << (u8) M2C_FIELD(M2C_FIELD(script, void **, 4), s32 *, 0xC)));
+    M2C_FIELD(script, void **, 4) = (void *) (M2C_FIELD(script, void **, 4) + 0x10);
     return 1;
 }
 
-s32 func_020941d4(void *arg0) {
+/* Map-script command: allow building the unit kind named by the command's +0x0C
+ * again by clearing that kind's MAPCONFIG_UNBUILDABLE_KINDS bit, then advance the
+ * script. */
+s32 ScriptCmd_RemoveUnbuildableKind(void *script) {
     extern M2C_UNK gMapConfig;
-    M2C_FIELD(&gMapConfig, s32 *, 0xC) = (s32) (M2C_FIELD(&gMapConfig, s32 *, 0xC) & (-1 ^ (1 << (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC))));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(&gMapConfig, s32 *, MAPCONFIG_UNBUILDABLE_KINDS) = (s32) (M2C_FIELD(&gMapConfig, s32 *, MAPCONFIG_UNBUILDABLE_KINDS) & (-1 ^ (1 << (u8) M2C_FIELD(M2C_FIELD(script, void **, 4), s32 *, 0xC))));
+    M2C_FIELD(script, void **, 4) = (void *) (M2C_FIELD(script, void **, 4) + 0x10);
     return 1;
 }
 
@@ -425,7 +431,7 @@ void Reset3DSpriteEngines(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_020947ac(void);
+void EnableTouchInput(void);
 /* Resets the message/dialog overlay, e.g. when a message box or the map setup is
  * finished: clears every dialog sequence (gDialogSequences), empties the 3D sprite
  * manager's pending-message queue, resets the three scene panels and the menu
@@ -438,7 +444,7 @@ void ResetDialogUI(void) {
  ptr=(u8*)&gDialogSequences;
  for(i=0;i<8;i++,ptr+=0x18)*(s32*)ptr=0;
  for(i=0;i<8;) { ptr=Get3DSpriteManager(); ptr+=(u32)i*4; i++; M2C_FIELD(ptr,s32*,0x24)=0; }
- ClearEventFlagsLow();func_020947ac();func_02095fd4();
+ ClearEventFlagsLow();EnableTouchInput();ClearMessageBoxState();
  for(i=0;i<3;i++)M2C_FIELD(GetScenePanelState(i),s16*,8)=0;
  for(i=0;i<2;i++)func_020943f4(i,2);
  SetMenuCursor(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);Reset3DSpriteEngines();
@@ -501,7 +507,7 @@ void DisableTouchInput(void) {
     M2C_FIELD(Get3DSpriteManager(), s8 *, 0x47) = 1;
 }
 
-void func_020947ac(void) {
+void EnableTouchInput(void) {
     M2C_FIELD(Get3DSpriteManager(), s8 *, 0x47) = 0;
 }
 
@@ -509,18 +515,22 @@ u8 IsTouchInputDisabled(void) {
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x47);
 }
 
-void EndDialogSequence(s32 *arg0) {
+/* End a dialog sequence: free its gDialogSequences slot and, once no other
+ * dialog sequence is running, re-enable touch input, clear the message box, start
+ * the next queued dialog, and drop this sequence's hold on the map view. */
+void EndDialogSequence(DialogSequence *sequence) {
     s32 IsDialogActive();
     void StartNextQueuedDialog(void);
-    M2C_UNK func_02095fd4();
+    M2C_UNK ClearMessageBoxState();
     M2C_UNK ReleaseMapViewHold();
-    if (*arg0 == 0) {
+
+    if (sequence->script == 0) {
         return;
     }
-    *arg0 = 0;
+    sequence->script = 0;
     if (IsDialogActive() == 0) {
-        func_020947ac();
-        func_02095fd4();
+        EnableTouchInput();
+        ClearMessageBoxState();
         StartNextQueuedDialog();
     }
     ReleaseMapViewHold();
@@ -565,13 +575,13 @@ void StartNextQueuedDialog(void) {
 void *StartDialogSequence(s32 arg0) {
 s32 FindDialogSequence(s32);
 void SetMenuCursor(s8); void func_020943bc(s8);void func_020943e0(s8);void func_02094410(s8);
-M2C_UNK func_02095fd4(void);void DisableTouchInput(void);void AcquireMapViewHold(void);
+M2C_UNK ClearMessageBoxState(void);void DisableTouchInput(void);void AcquireMapViewHold(void);
 extern M2C_UNK gDialogSequences,data_02157fec,data_02157ff0,data_02157ff4;
 s16 index; s32 offset; u8 *base;
 index=FindDialogSequence(0);
 if(index==-1)return NULL;
 SetMenuCursor(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);
-func_02095fd4();DisableTouchInput();AcquireMapViewHold();
+ClearMessageBoxState();DisableTouchInput();AcquireMapViewHold();
 offset=index*24;
 base=(u8 *)&gDialogSequences;
 *(void **)(base+offset)=(void *)arg0;
@@ -732,12 +742,15 @@ void func_02094be0(M2C_UNK arg0) {
     HidePanelFace(arg0);
 }
 
-void func_02094c00(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+/* Dialog-script guard: while no message box is up, forward the script's four
+ * operands to the scene-panel face operation func_02097410 (a no-op stub in
+ * this build, so this command does nothing). */
+void CallScenePanelFaceOp(M2C_UNK faceIndex, M2C_UNK value1, M2C_UNK value2, M2C_UNK value3) {
     M2C_UNK func_02097410(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    func_02097410(arg0, arg1, arg2, arg3);
+    func_02097410(faceIndex, value1, value2, value3);
 }
 
 void func_02094c38(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

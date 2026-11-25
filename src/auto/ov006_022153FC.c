@@ -9,7 +9,7 @@ void FriendCodeEntry_Create(M2C_UNK parent) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     void *MemAlloc(M2C_UNK);
     void *CreateSpriteGrid(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
-    M2C_UNK func_020e4c64();
+    M2C_UNK AcquireUsernameFont();
     extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK gFriendCodeEntryDef;
     extern M2C_UNK gFriendCodeEntryVTable;
@@ -97,14 +97,14 @@ void FriendCodeEntry_Create(M2C_UNK parent) {
         }
         entry->grid = grid;
         M2C_FIELD(grid, s16 *, 0xA) = 0x3C;
-        func_020e4c64();
+        AcquireUsernameFont();
     }
     gCur3DSpriteEngine = (u16 **)savedEngine;
 }
 
 void *func_ov006_02215620(void *p){
 extern M2C_UNK gFriendCodeEntryVTable;
-M2C_UNK DeleteSpriteObject(M2C_UNK);M2C_UNK MemFree(M2C_UNK);M2C_UNK func_020e4ca0();
+M2C_UNK DeleteSpriteObject(M2C_UNK);M2C_UNK MemFree(M2C_UNK);M2C_UNK ReleaseUsernameFont();
 s32 *arr;void *q=0;
 M2C_FIELD(p,void **,0)=&gFriendCodeEntryVTable;
 arr=M2C_FIELD(p,s32 **,0x3c);
@@ -113,14 +113,14 @@ q=M2C_FIELD(p,void **,0x40);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void
 q=M2C_FIELD(p,void **,0x44);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
 q=M2C_FIELD(p,void **,0x48);if(q)MemFree((s32)q);
 q=M2C_FIELD(p,void **,0x4c);if(q)M2C_FIELD(M2C_FIELD(q,void **,0),void (**)(void *),4)(q);
-func_020e4ca0();MemFree((s32)p);return (void*)p;
+ReleaseUsernameFont();MemFree((s32)p);return (void*)p;
 }
 
 #pragma scheduling off
 void *func_ov006_022156e4(void *arg0) {
     M2C_UNK DeleteSpriteObject(M2C_UNK);
     M2C_UNK MemFree(M2C_UNK);
-    M2C_UNK func_020e4ca0();
+    M2C_UNK ReleaseUsernameFont();
     extern M2C_UNK gFriendCodeEntryVTable;
     register void **sprites;
     void *child;
@@ -153,7 +153,7 @@ children:;
     if (child != 0) {
         M2C_FIELD(M2C_FIELD(child, void **, 0), void (**)(void *), 4)(child);
     }
-    func_020e4ca0();
+    ReleaseUsernameFont();
     return arg0;
 }
 #pragma scheduling reset
@@ -576,24 +576,24 @@ done:
  * unreadable code picks the matching error state; then updates the panel sprite
  * and plays the result sound. */
 M2C_UNK ConfirmFriendCode(void *entry){
-void SetSpriteAnimation(void *,s32);void MI_CpuCopy8(void *,s32,s32);void Hide3DSpriteSlide(s32);void DisableMapConfirm(void);void EnableMapConfirm(void);s32 PlaySoundEffect(s32);u64 GetOwnFriendCode(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 BattleSaveSlotInUse(void *);void func_020b269c(void);void *CreateTextLayer(void *);void RenderTextLayerMessage(void *,s32,s32,s32);
+void GotoSpriteAnimationLabel(void *,s32);void MI_CpuCopy8(void *,s32,s32);void Hide3DSpriteSlide(s32);void DisableMapConfirm(void);void EnableMapConfirm(void);s32 PlaySoundEffect(s32);u64 GetOwnFriendCode(s32);u64 func_020c54ac(void *);s32 func_020c5474(u64);void func_020c5424(void *,u64);s32 BattleSaveSlotInUse(void *);void func_020b269c(void);void *CreateTextLayer(void *);void RenderTextLayerMessage(void *,s32,s32,s32);
 extern u16 **gCur3DSpriteEngine;extern u16 **g3DSpriteEngineMain;
 u32 codeWords[3];u64 enteredCode,ownCode;void *panel=M2C_FIELD(entry,void **,0x10);void *part;u16 **savedEngine;
 if(M2C_FIELD(entry,u8 *,0)==12){
 part=M2C_FIELD(panel,void **,0x48);M2C_FIELD(part,s16 *,14)=0;M2C_FIELD(part,s16 *,16)=256;M2C_FIELD(part,s16 *,12)=12;M2C_FIELD(part,u16 *,2)=M2C_FIELD(part,u16 *,4);
-Hide3DSpriteSlide(M2C_FIELD(panel,s32 *,0x4c));DisableMapConfirm();SetSpriteAnimation(panel,3);PlaySoundEffect(0x1000f);return;}
+Hide3DSpriteSlide(M2C_FIELD(panel,s32 *,0x4c));DisableMapConfirm();GotoSpriteAnimationLabel(panel,3);PlaySoundEffect(0x1000f);return;}
 ownCode=GetOwnFriendCode(0);enteredCode=func_020c54ac(gFriendCodeInput);
 if((ownCode==0||enteredCode==0||ownCode!=enteredCode)&&func_020c5474(enteredCode)){
 func_020c5424(codeWords,enteredCode);if(!BattleSaveSlotInUse(codeWords)){
 MI_CpuCopy8(gFriendCodeInput,M2C_FIELD(panel,s32 *,0x34),13);
 part=M2C_FIELD(panel,void **,0x48);M2C_FIELD(part,s16 *,14)=0;M2C_FIELD(part,s16 *,16)=256;M2C_FIELD(part,s16 *,12)=12;M2C_FIELD(part,u16 *,2)=M2C_FIELD(part,u16 *,4);
-Hide3DSpriteSlide(M2C_FIELD(panel,s32 *,0x4c));EnableMapConfirm();SetSpriteAnimation(panel,3);PlaySoundEffect(0x1000e);return;}
-func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=CreateTextLayer(panel);RenderTextLayerMessage(part,2,0x4480,0x42000003);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(panel,5);PlaySoundEffect(0x1001d);return;
+Hide3DSpriteSlide(M2C_FIELD(panel,s32 *,0x4c));EnableMapConfirm();GotoSpriteAnimationLabel(panel,3);PlaySoundEffect(0x1000e);return;}
+func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=CreateTextLayer(panel);RenderTextLayerMessage(part,2,0x4480,0x42000003);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;GotoSpriteAnimationLabel(panel,5);PlaySoundEffect(0x1001d);return;
 }
 if(ownCode!=0&&enteredCode!=0&&ownCode==enteredCode){
-func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=CreateTextLayer(panel);RenderTextLayerMessage(part,2,0x4480,0x42000002);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(panel,4);
+func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=CreateTextLayer(panel);RenderTextLayerMessage(part,2,0x4480,0x42000002);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;GotoSpriteAnimationLabel(panel,4);
 }else{
-func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=CreateTextLayer(panel);RenderTextLayerMessage(part,2,0x4480,0x42000004);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;SetSpriteAnimation(panel,6);}
+func_020b269c();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;part=CreateTextLayer(panel);RenderTextLayerMessage(part,2,0x4480,0x42000004);M2C_FIELD(part,u32 *,0x58)|=0x1000;gCur3DSpriteEngine=savedEngine;GotoSpriteAnimationLabel(panel,6);}
 PlaySoundEffect(0x1001d);
 }
 

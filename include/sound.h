@@ -199,6 +199,20 @@ typedef struct SoundSequenceArchiveRecord {
     s32 fileId;   /* +0x00 file id of the sequence archive in the archive */
 } SoundSequenceArchiveRecord;
 
+/* A loaded sequence-archive file ('SSAR'): a 0x10-byte file header, then the
+ * data block whose entry count sits at +0x1C and whose 12-byte entries start at
+ * +0x20.  An entry whose sound id is SOUND_FILE_ENTRY_NONE is unused. */
+#define SOUND_FILE_ENTRY_COUNT 0x1C /* u32 number of entries in the table */
+#define SOUND_FILE_ENTRIES     0x20 /* the SoundArchiveEntry[count] table */
+#define SOUND_FILE_ENTRY_SIZE  12   /* bytes of one table entry */
+#define SOUND_FILE_ENTRY_NONE  (-1) /* SoundArchiveEntry.soundId of an unused entry */
+
+typedef struct SoundSequenceArchiveFile {
+    u8 pad00[SOUND_FILE_ENTRY_COUNT];
+    u32 entryCount;                /* +0x1C number of entries */
+    SoundArchiveEntry entries[1];  /* +0x20 the entries, SOUND_FILE_ENTRY_SIZE bytes each */
+} SoundSequenceArchiveFile;
+
 /* One record of the sound archive's sound table (SOUND_DATA_SOUND, GetSoundRecord):
  * the playback parameters of one sound, read when it is started on a player. */
 #define SOUND_RECORD_SOUND_ID 0x00 /* s32 value handed to the player's start/segment callbacks */
@@ -247,6 +261,7 @@ enum {
  * word, or the file size for the last entry, is where they end). */
 #define WAVE_ARCHIVE_COUNT     0x38 /* s32 number of entries */
 #define WAVE_ARCHIVE_ENTRIES   0x3C /* s32[count] per-entry data pointers (then the offsets) */
+#define WAVE_ARCHIVE_POINTER_BASE 0x02000000 /* packed-table values at or above this are main-RAM pointers; below it they are offsets into the archive */
 #define WAVE_ARCHIVE_FILE_SIZE 0x08 /* s32 total size of the archive file */
 
 /* One record of the packed entry table a sound bank shares with the animation
@@ -353,6 +368,11 @@ typedef struct SoundChannelRecord {
 #define SOUND_VOLUME_MAX 0x7F /* full volume, in the 0..0x7F range */
 #define SOUND_VOLUME_LEVELS 3  /* volume levels (master, user setting, fade) multiplied into a channel's effective volume */
 
+/* Effect volume map sounds play at (GetSoundEffectVolume): reduced in the
+ * zoomed-out view, full in the zoomed-in one. */
+#define SOUND_EFFECT_VOLUME_FAR  0x5F
+#define SOUND_EFFECT_VOLUME_NEAR SOUND_VOLUME_MAX
+
 /* Per-hardware-channel state (gSoundChannelSampleState), two s32 words per channel,
  * indexed by the note id the player lists at SOUND_PLAYER_NOTES: the sample
  * address the channel's current segment starts at and the timer period it is
@@ -416,14 +436,16 @@ typedef struct SoundChannelRecord {
 
 /* Menu sounds handed to PlaySoundEffect. */
 #define SOUND_MENU_MOVE    0x10010 /* the cursor moved to the other option */
+#define SOUND_MENU_OPEN    0x10017 /* a menu screen was opened */
 #define SOUND_MENU_CONFIRM 0x1000D /* the highlighted option was accepted */
 #define SOUND_MENU_CANCEL  0x1000F /* the choice was cancelled */
+#define SOUND_MENU_BACK    0x10018 /* a menu screen was left (cancel/back on the keypad) */
 #define SOUND_MENU_SELECT  0x10019 /* the highlighted list entry changed or was chosen */
 #define SOUND_MENU_TAB     0x10020 /* the active tab changed */
 #define SOUND_MENU_CLOSE   0x10022 /* the screen's close/back action was taken */
 
 /* The text window's sounds: the open one plays from NotifyWindowOpened, the
- * close one from func_0208a714; a window opened during a link session plays
+ * close one from NotifyWindowClosed; a window opened during a link session plays
  * SOUND_WINDOW_LINK on sound slot 0 instead of the open sound. */
 #define SOUND_WINDOW_OPEN  0x125
 #define SOUND_WINDOW_CLOSE 0x124
@@ -443,7 +465,7 @@ typedef struct SoundChannelRecord {
 #define SOUND_CO_POWER_THEME_2 0x10003
 
 /* The delayed one-shot sound-effect sprite (class gDelayedSoundEffectClass,
- * spawned by SpawnSoundEffectAtTile / func_0208f998 and updated by
+ * spawned by SpawnSoundEffectAtTile / SpawnSoundEffectFullVolume and updated by
  * UpdateDelayedSoundEffect): it waits SOUND_EFFECT_DELAY frames, plays
  * SOUND_EFFECT_ID at SOUND_EFFECT_VOLUME with SOUND_EFFECT_PAN, then deletes
  * itself. */
@@ -452,6 +474,11 @@ typedef struct SoundChannelRecord {
 #define SOUND_EFFECT_ID      0x5C /* s32 sound effect to play */
 #define SOUND_EFFECT_VOLUME  0x60 /* s32 volume it is played at */
 #define SOUND_EFFECT_PAN     0x64 /* s32 stereo pan */
+
+/* Hard stereo pan positions: the two battle effect slots are panned to opposite
+ * sides so their sounds can be told apart. */
+#define SOUND_PAN_LEFT  (-0x80) /* leftmost pan */
+#define SOUND_PAN_RIGHT 0x7F    /* rightmost pan */
 
 /* The running music track (gCurrentMusicTrack) and the object that fades it out
  * (class gMusicFadeOutClass, spawned by FadeOutMusicOverFrames). */

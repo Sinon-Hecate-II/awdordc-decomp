@@ -204,11 +204,11 @@ void func_ov011_022273c8(void *arg0) {
 }
 #pragma opt_instruction_scheduling reset
 void func_ov011_02227e88(void *arg0) {
-    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
     if ((u32) M2C_FIELD(arg0, u16 *, 0x3A) <= 0x2A80U) {
         return;
     }
-    SetSpriteAnimation(arg0, 1);
+    GotoSpriteAnimationLabel(arg0, 1);
 }
 
 void func_ov011_02227ea4(M2C_UNK arg0) {

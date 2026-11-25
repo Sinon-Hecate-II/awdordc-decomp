@@ -266,7 +266,7 @@ s32 func_0205c344(void *conn) {
     s32 ghiRecvFrom(s32, void *, s32, s32, void *, s32 *);
     s32 ghiGetLastSocketError(s32);
     s32 func_0205c244(void *, M2C_UNK, M2C_UNK);
-    void func_0205d49c(void *);
+    void gti2SocketError(void *);
     s32 gti2HandleMessage(void *, void *, s32, M2C_UNK, M2C_UNK);
     u8 buffer[0x5dc];
     struct {
@@ -292,7 +292,7 @@ s32 func_0205c344(void *conn) {
                         return 0;
                     }
                 } else if (error != -35) {
-                    func_0205d49c(conn);
+                    gti2SocketError(conn);
                     return 0;
                 }
                 break;
@@ -579,7 +579,7 @@ s32 gti2SendUnreliable(void *connection, M2C_UNK *message, s32 len) {
     return 1;
 }
 
-s32 func_0205ca48(void *p){
+s32 gti2SendDelayedAck(void *p){
     extern M2C_UNK gGt2Magic;
     void *q=p;
     u8 *g=(u8*)&gGt2Magic;

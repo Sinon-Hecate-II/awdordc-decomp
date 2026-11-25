@@ -276,13 +276,13 @@ M2C_UNK func_020b8740(void) {
     void *GetMenuList(void);
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020b21a0();
+    M2C_UNK HideEnabledSpriteSlots();
     M2C_UNK CloseAllActiveSpriteSlots();
     void *temp_r4;
     temp_r4 = GetMenuList();
     PlaySoundEffect(0x10018);
     Sprite_ResumeAnimation(temp_r4);
-    func_020b21a0();
+    HideEnabledSpriteSlots();
     CloseAllActiveSpriteSlots();
 }
 
@@ -293,8 +293,8 @@ void func_020b876c(void) {
 
 void func_020b8778(void) {
     M2C_UNK func_020b8740();
-    M2C_UNK func_020ae068();
-    func_020ae068();
+    M2C_UNK CancelScreenTransition();
+    CancelScreenTransition();
     func_020b8740();
 }
 
@@ -354,7 +354,7 @@ void func_020b8970(void *arg0) {
     void Set3DSpriteSlideTargetAndStart(void *, s32, s32, s32, s32);
     void Show3DSpriteSlide(void *);
     void Load3DSpritePattern(void *, s32, s32, s32);
-    void func_020994e0(s32);
+    void ResetTextTiles(s32);
     void DrawTextToTilemap(s32, s32, void *, s32, s32, s32);
     void DrawTilemapNumber(s32, s32, void *, s32, s32, s32);
     s32 func_020a8b78(void);
@@ -378,7 +378,7 @@ void func_020b8970(void *arg0) {
 
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_020994e0(0);
+    ResetTextTiles(0);
     M2C_FIELD(arg0, u8 *, 0x34) = 0;
     M2C_FIELD(arg0, s16 *, 0x38) = 0;
     M2C_FIELD(arg0, s16 *, 0x36) = 0;

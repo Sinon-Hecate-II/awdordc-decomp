@@ -27,6 +27,7 @@
 /* Multiboot buffers inside the work block. */
 #define OV001_LINK_TRANSFER      0x1b140 /* void *: buffer handed to MultiBoot_StartParent */
 #define OV001_LINK_PROGRAM       0x1b144 /* void *: program image loaded at work +0x2c */
+#define OV001_LINK_WH_CONNECTION 0x1b160 /* the WH connection object (ov001_wh.h) embedded after the buffers */
 
 /* The stage Ov001_GetPlayerStage reports for a player: 0 when its bit is in no
  * header word at all, otherwise the index of the first stage word (offset / 2)

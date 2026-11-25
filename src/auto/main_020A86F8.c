@@ -2,6 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 
+/* Six encoded localized text ids, one per army state; see sArmyStateMessageIds. */
 typedef struct { s32 values[6]; } Table020a8b3c;
 typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 extern const Table020a8b3c sArmyStateMessageIds;
@@ -32,12 +33,18 @@ s32 GetUnitAttackPower(void *arg0) {
     return GetUnitAttackPowerBonus(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 0x64;
 }
 
-s32 GetOwnerGroupAttackBonus(u32 arg0) {
- switch(arg0) { case 1: return 5; case 2: return 10; case 3: return 20; default: return 0; }
+/* Attack bonus, in damage percent, that a unit gets from its campaign owner
+ * group: groups 1, 2 and 3 are progressively stronger armies (+5, +10, +20),
+ * every other group gets none. */
+s32 GetOwnerGroupAttackBonus(u32 ownerGroup) {
+ switch(ownerGroup) { case 1: return 5; case 2: return 10; case 3: return 20; default: return 0; }
 }
 
-s32 GetOwnerGroupDefenseBonus(u32 arg0) {
- switch(arg0) { case 1: return 0; case 2: return 0; case 3: return 20; default: return 0; }
+/* Defense bonus, in damage percent, that a unit gets from its campaign owner
+ * group: only the strongest army, group 3, defends better (+20); every other
+ * group gets none. */
+s32 GetOwnerGroupDefenseBonus(u32 ownerGroup) {
+ switch(ownerGroup) { case 1: return 0; case 2: return 0; case 3: return 20; default: return 0; }
 }
 
 void func_020a87ec(u8 *arg0) {
@@ -177,7 +184,13 @@ s32 func_020a8b2c(void) {
     return M2C_FIELD(MapData_GetRecord(), s32 *, 0x4C);
 }
 
-s32 GetArmyStateLabel(s32 a){s32 GetLocalizedText(s32);Table020a8b3c t=sArmyStateMessageIds;return GetLocalizedText(t.values[a]);}
+/* Return the localized label of army state `armyState` (an index into the six
+ * army-state message ids). */
+s32 GetArmyStateLabel(s32 armyState) {
+    s32 GetLocalizedText(s32);
+    Table020a8b3c t = sArmyStateMessageIds;
+    return GetLocalizedText(t.values[armyState]);
+}
 
 M2C_UNK *func_020a8b78(void) {
     extern M2C_UNK data_02126148;
@@ -230,11 +243,13 @@ u8 IsIndexInRange(s32 arg0, s32 arg1, s32 arg2) {
  return result;
 }
 
-s32 func_020a8c54(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    if (((s32) (arg0 + arg2) < 0) || (arg0 > 0x100)) {
+/* Whether a box at (x, y) of size width x height overlaps the 256x192 screen,
+ * so a text glyph that hangs off an edge is still drawn. */
+s32 IsBoxOnScreen(s32 x, s32 y, s32 width, s32 height) {
+    if (((s32) (x + width) < 0) || (x > SCREEN_WIDTH)) {
         return 0;
     }
-    if (((s32) (arg1 + arg3) < 0) || (arg1 > 0xC0)) {
+    if (((s32) (y + height) < 0) || (y > SCREEN_HEIGHT)) {
         return 0;
     }
     return 1;

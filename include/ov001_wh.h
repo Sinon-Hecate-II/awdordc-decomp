@@ -56,6 +56,11 @@ enum {
 #define WH_PHASE_STEP_QUEUED     2 /* a WFC step was queued; wait for it before starting the next */
 #define WH_PHASE_READY_TO_CONNECT 3
 #define WH_PHASE_CONNECT_PENDING  8
+/* Phases of the WH connection task while its WFC step runs; the connect and link
+ * steps share the values the gWhState machine uses. */
+#define WH_PHASE_WFC_STEP_QUEUED 4 /* a WFC connect or link step was queued; wait for its callback */
+#define WH_PHASE_CONNECTING 5 /* connecting: advance the WFC connect/match step */
+#define WH_PHASE_LINK       7 /* link: advance the WFC link step */
 #define WH_CONNECT_SETTINGS_BYTES 0x60
 #define WH_BSS_DESC_BYTES         0xC0
 #define WH_WFC_STEP_QUEUED        3
@@ -88,6 +93,7 @@ enum {
 #define WH_DS_CHANNEL   0x13e0 /* channel state object the data-sharing exchange runs on (see wfc_channel.h) */
 #define WH_DS_PLAYERS   0x1c00 /* u16 player mask, u16 known mask, then the players' 0x200-byte data blocks */
 #define WH_KEY_CHANNEL  0x1e00 /* channel state object the key-sharing step runs on (see wfc_channel.h) */
+#define WH_KEY_CHANNEL_INDEX 13 /* WFC channel index the key-sharing channel is opened on */
 /* Fields of the WH_DS_PLAYERS block, relative to its base. */
 #define WH_DS_PLAYER_MASK 0x00 /* u16: bit per player taking part in the exchange */
 #define WH_DS_KNOWN_MASK  0x02 /* u16: bit per player whose data block has been received */
@@ -191,9 +197,15 @@ enum {
     OV001_SOUND_MOVE    = 8, /* the cursor moved to another row */
     OV001_SOUND_ERROR   = 9, /* the action is not possible */
     OV001_SOUND_OPEN    = 0xB, /* a screen was entered */
-    OV001_SOUND_SAVED   = 0x10, /* a profile or save operation completed */
+    OV001_SOUND_SAVED   = 0x10, /* an operation completed successfully (a profile, a save or the WFC connection) */
     OV001_SOUND_FAILED  = 0x12  /* a profile action failed or was cancelled */
 };
+
+/* The ov001 WFC profile screen's heap work block (gOv001ProfileBlock), 0x1E2A4 bytes. */
+#define OV001_PROFILE_BLOCK_CALLBACK  0x1E298 /* s32 completion callback (event code), 0 once fired */
+#define OV001_PROFILE_BLOCK_TASK      0x1E29C /* s32 id of the profile update task */
+#define OV001_PROFILE_BLOCK_DONE      0x1E2A0 /* u8 set once the profile action finished; the update task then fires the callback */
+#define OV001_PROFILE_BLOCK_EXIT_DONE 0x1E2A1 /* u8 set by the screen's exit task once the profile subsystem has left, letting the update task reach its teardown state */
 
 /* Outcome of the ov001 WFC profile screen, kept in gOv001ProfileScreenResult for
  * the screen that follows it to show. */
@@ -211,6 +223,9 @@ enum {
 #define MESSAGE_ARCHIVE_FILE     0x08 /* void *: loaded (decompressed) file image, freed on release */
 /* The archive pool keeps its free records in a queue at this offset. */
 #define MESSAGE_POOL_QUEUE       0x60
+#define MESSAGE_ARCHIVE_COUNT    8    /* archive records in the pool */
+#define MESSAGE_ARCHIVE_SIZE     0x0C /* bytes per archive record */
+#define MESSAGE_ARCHIVE_POOL_SIZE 0x64 /* pool allocation: the records then the queue pointer */
 
 /* Layout of a loaded message file: a header in front of the message bank, whose
  * per-message offset table sits MESSAGE_BANK_OFFSETS_OFF bytes into the bank and

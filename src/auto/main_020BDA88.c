@@ -2,7 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ds3dsprite.h"
-extern M2C_UNK gGameSettings,data_0215d990,data_0215d9b8;
+extern M2C_UNK gGameSettings,data_0215d990,gOptionBits;
 typedef struct { s16 a,b,c,d; } EntryBE;
 
 static inline s32 IsNewerValue(u32 b, u32 a) {
@@ -236,28 +236,31 @@ void func_020be12c(void) {
 
 }
 
-void func_020be130(void *arg0) {
-    s32 func_02076208();
-    M2C_UNK func_02076244();
+/* Free the save block a save-progress indicator sprite owns
+ * (SAVE_INDICATOR_BLOCK), halting first with the load-failure message when the
+ * save archive has become unusable. */
+void FreeSaveIndicatorBlock(void *sprite) {
+    s32 IsSaveArchiveUnusable();
+    M2C_UNK HaltWithMessage();
     M2C_UNK GetLocalizedText(s32);
     M2C_UNK HeapFreeBlock(s32);
-    s32 temp_r4;
+    s32 block;
 
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0x54);
-    if (func_02076208() != 0) {
+    block = M2C_FIELD(sprite, s32 *, SAVE_INDICATOR_BLOCK);
+    if (IsSaveArchiveUnusable() != 0) {
         GetLocalizedText(0xC000034C);
-        func_02076244();
+        HaltWithMessage();
     }
-    if (temp_r4 == 0) {
+    if (block == 0) {
         return;
     }
-    HeapFreeBlock(temp_r4);
+    HeapFreeBlock(block);
 }
 
 void func_020be168(M2C_UNK arg0) {
-    s32 func_020761f8();
+    s32 IsSaveTaskRunning();
     M2C_UNK DeleteSpriteObject(M2C_UNK);
-    if (func_020761f8() != 0) {
+    if (IsSaveTaskRunning() != 0) {
         return;
     }
     DeleteSpriteObject(arg0);
@@ -265,16 +268,16 @@ void func_020be168(M2C_UNK arg0) {
 
 void func_020be188(s32 arg0) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212948c;
-    M2C_FIELD(CreateSpriteFromClass(&data_0212948c, 6), s32 *, 0x54) = arg0;
+    extern M2C_UNK gSaveIndicatorClass;
+    M2C_FIELD(CreateSpriteFromClass(&gSaveIndicatorClass, 6), s32 *, 0x54) = arg0;
 }
 
 u8 func_020be1a8(void) {
  s32 FindObjectByClass(M2C_UNK *);
- extern M2C_UNK data_0212948c;
+ extern M2C_UNK gSaveIndicatorClass;
  u8 result;
- if (FindObjectByClass(&data_0212948c)) return 1;
- if (func_020761f8()) result=1; else result=0;
+ if (FindObjectByClass(&gSaveIndicatorClass)) return 1;
+ if (IsSaveTaskRunning()) result=1; else result=0;
  return result;
 }
 
@@ -293,8 +296,8 @@ func_02076180((u16)id);
 }
 
 void QueueSaveRecord(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02075fd8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_02075fd8(arg0, 0, arg1, arg2);
+    M2C_UNK SaveList_QueueUpdate(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    SaveList_QueueUpdate(arg0, 0, arg1, arg2);
 }
 
 void QueueSettingsRecord(M2C_UNK arg0) {
@@ -308,7 +311,7 @@ void QueueSettingsRecord(M2C_UNK arg0) {
  * keep the record of that type with the largest timestamp, load it, and show the
  * load-failure message when the load reports a problem. */
 u8 LoadNewestSaveRecord(s32 type,M2C_UNK arg1){
-void *GetSaveRecordList(void);s32 GetSaveRecordCount(void);s32 LoadSaveRecord(u16,M2C_UNK);s32 func_02076208(void);M2C_UNK GetLocalizedText(s32);M2C_UNK func_02076244();
+void *GetSaveRecordList(void);s32 GetSaveRecordCount(void);s32 LoadSaveRecord(u16,M2C_UNK);s32 IsSaveArchiveUnusable(void);M2C_UNK GetLocalizedText(s32);M2C_UNK HaltWithMessage();
 u8 *record,*best;s32 n,i,id; s32 isNewer;u8 result;
 record=GetSaveRecordList();best=0;n=GetSaveRecordCount();i=0;
 if(n>0)do{if(type==record[SAVE_RECORD_TYPE]){if(best){isNewer=IsNewerValue(M2C_FIELD(best,u32 *,SAVE_RECORD_TIME),M2C_FIELD(record,u32 *,SAVE_RECORD_TIME));
@@ -317,7 +320,7 @@ if(!isNewer)goto next;
 if(best)id=*(u16 *)best;else id=-1;
 if(id==-1)return 0;
 result=LoadSaveRecord(id,arg1);
-if(func_02076208()){GetLocalizedText(0xc000034d);func_02076244();}
+if(IsSaveArchiveUnusable()){GetLocalizedText(0xc000034d);HaltWithMessage();}
 return result;
 }
 
@@ -334,7 +337,7 @@ void WriteSaveRecord(s32 saveType, void *buffer, s32 size) {
         block = HeapAllocBlock(0x6000);
         QueueSettingsRecord(block);
     }
-    func_02076198();
+    SaveList_StartFlush();
     func_020be188(block);
 }
 
@@ -346,7 +349,7 @@ void func_020be488(s32 a) {
         v=HeapAllocBlock(0x6000);
         QueueSettingsRecord(v);
     }
-    func_02076198();
+    SaveList_StartFlush();
     func_020be188(v);
 }
 
@@ -362,7 +365,7 @@ if(best)id=*(u16 *)best;else id=-1;return id!=-1; }
 
 void func_020be59c(void) {
     M2C_UNK PruneSaveRecords(s32, M2C_UNK);
-    M2C_UNK func_02076198();
+    M2C_UNK SaveList_StartFlush();
     s32 var_r5;
 
     var_r5 = 4;
@@ -370,7 +373,7 @@ void func_020be59c(void) {
         PruneSaveRecords(var_r5, 0);
         var_r5 += 1;
     } while (var_r5 < 0x3B);
-    func_02076198();
+    SaveList_StartFlush();
     func_020be188(0);
 }
 
@@ -402,8 +405,8 @@ M2C_FIELD(&gGameSettings,s32 *,0x14c)=6;
 M2C_FIELD(&gGameSettings,s32 *,0x150)=0;
 M2C_FIELD(&gGameSettings,s32 *,0x154)=0;
 M2C_FIELD(&gGameSettings,s32 *,0x158)=0;
-do{M2C_FIELD((u8 *)&data_0215d9b8+(u32)slot*8,s16 *,0x36)=0;++slot;}while(slot<4);
+do{M2C_FIELD((u8 *)&gOptionBits+(u32)slot*8,s16 *,0x36)=0;++slot;}while(slot<4);
 entry=0;
-do{M2C_FIELD((u8 *)&data_0215d9b8+(u32)entry*2,s16 *,8)=0;++entry;}while(entry<4);
+do{M2C_FIELD((u8 *)&gOptionBits+(u32)entry*2,s16 *,8)=0;++entry;}while(entry<4);
 }
 

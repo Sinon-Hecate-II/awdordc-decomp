@@ -410,7 +410,7 @@ s32 func_0201e404(s32 arg0, s32 arg1) {
     void func_0201a238(void);
     s32 PeekSocketReceivedData(s32 *);
     s32 MacAddressesDiffer(u16 *, u16 *);
-    void func_0201d70c(s32);
+    void ConsumeConnectionReceivedData(s32);
     extern M2C_UNK gNetStack;
     extern M2C_UNK gLocalMacAddress;
 
@@ -508,7 +508,7 @@ top_loop:
             if (tag == 0xFF) goto fail;
         }
         fail:
-        func_0201d70c(slots[1]);
+        ConsumeConnectionReceivedData(slots[1]);
     }
 
 timer_check:

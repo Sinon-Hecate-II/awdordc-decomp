@@ -22,7 +22,7 @@ s32 IsUnitVisibleAtCell(s32 player, s32 unitKind, s32 x, s32 y) {
     extern s8 data_ov000_021b5680[];
     s32 GetPlayerArmyVariant(s32);
     u8 IsCellUnitOnSameArmy(u8, s32, s32);
-    s32 func_ov000_021a93b0(s32, s32, s32);
+    s32 IsCellTerrainExcludedForPlayer(s32, s32, s32);
 
     s32 cellY = y;
     s32 cellX = x;
@@ -35,7 +35,7 @@ s32 IsUnitVisibleAtCell(s32 player, s32 unitKind, s32 x, s32 y) {
             return 1;
         }
     }
-        if (!func_ov000_021a93b0(side, cellX, cellY)) {
+        if (!IsCellTerrainExcludedForPlayer(side, cellX, cellY)) {
             return 1;
         }
     if (unit_blocks_action(side)) return 1;
@@ -120,18 +120,24 @@ void GetUnitDamagePercent(M2C_UNK arg0, M2C_UNK arg1) {
     GetBestWeaponDamagePercent(arg0, arg1, 0);
 }
 
-void GetUnitMoveRange(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK ComputeUnitMoveRange(M2C_UNK, u8, u16, s32, s32);
-    extern void **data_027e0058;
+/* Movement range of a unit of `unitKind` for the player the map view belongs
+ * to, using the weather the AI plans movement with; no CO-zone bonus. */
+s32 GetUnitMoveRange(u16 player, s32 unitKind) {
+    s32 ComputeUnitMoveRange(s32, u8, u16, s32, s32);
+    extern void **gCurrentMap;
     extern void *gAiCommandState;
-    ComputeUnitMoveRange(arg1, M2C_FIELD(gAiCommandState, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
+    (void)player;
+    return ComputeUnitMoveRange(unitKind, M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_PLAN_WEATHER), M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), 0, 0);
 }
 
-void GetUnitMaxAttackRange(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK ComputeUnitMaxAttackRange(M2C_UNK, u8, u16, s32, s32);
-    extern void **data_027e0058;
+/* Highest attack range of a unit of `unitKind` for the player the map view
+ * belongs to, using the weather the AI plans with; no CO-zone bonus. */
+s32 GetUnitMaxAttackRange(u16 player, s32 unitKind) {
+    s32 ComputeUnitMaxAttackRange(s32, s32, s32, s32, u8);
+    extern void **gCurrentMap;
     extern void *gAiCommandState;
-    ComputeUnitMaxAttackRange(arg1, M2C_FIELD(gAiCommandState, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
+    (void)player;
+    return ComputeUnitMaxAttackRange(unitKind, M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_PLAN_WEATHER), M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), 0, 0);
 }
 
 /* Whether the map cell at (x, y) is a capturable property: its terrain kind is a
@@ -242,12 +248,20 @@ u8 CanUnitKindStandAt(s32 unitKind, s32 mapX, s32 mapY) {
     }
 }
 
-u8 func_ov000_021a9b84(void) {
- extern void **gCurrentMap;
- s32 GetMapPlayerFlags(u16,u16);
- u8 result;
- if(!(GetMapPlayerFlags(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&1)) result=1; else result=0;
- return result;
+/* Whether the AI may treat destructible map features (properties and terrain) as
+   attack targets: true while bit 0 of the current player's per-map player flags is
+   clear.  The AI turn start stores the result in its action flags bit 0x04, which
+   lets the attack-target scan accept destructible features. */
+u8 AiMayAttackMapFeatures(void) {
+    extern void **gCurrentMap;
+    s32 GetMapPlayerFlags(u16, u16);
+    u8 result;
+    if (!(GetMapPlayerFlags(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) & 1)) {
+        result = 1;
+    } else {
+        result = 0;
+    }
+    return result;
 }
 
 /* Whether a map order belongs to a player on the enemy team: it must be in effect
@@ -351,15 +365,15 @@ u32 CellMoveScore(s32 x, s32 y, s32 directWeight, s32 indirectWeight) {
  * Returns 0 when there is none. */
 s32 FindBestSelectableUnit(void) {
  extern void **gCurrentMap; extern u16 gMapConfig; extern u16 gPlayerUnitIdBase[]; extern s32 (**gAiSettings)(s32,s32);
- s32 GetPlayerCommanderId(u16); s32 func_020a3150(u16); void *GetPlayerSelectedUnit(u16); s32 IsUnitSelected(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 GetUnitActionCost(s32,s32); s32 GetUnitKindBuildCost(s32); s32 AiSettings_DefaultUnitFilter(s32,s32);
+ s32 GetPlayerCoZoneBonusIndex(u16); s32 func_020a3150(u16); void *GetPlayerSelectedUnit(u16); s32 IsUnitSelected(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 GetUnitActionCost(s32,s32); s32 GetUnitKindBuildCost(s32); s32 AiSettings_DefaultUnitFilter(s32,s32);
  s32 commander; u8 *best; s32 id; u8 *unit; s32 offset;
- GetPlayerCommanderId(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
+ GetPlayerCoZoneBonusIndex(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
  best=0;
  if(((u32)(gMapConfig<<18)>>31)==0)return 0;
  if(((u32)(M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)*140,s32 *,0x6810)<<24)>>24)==0)return 0;
  if(!func_020a3150(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))return 0;
  if(GetPlayerSelectedUnit(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))return 0;
- commander=GetPlayerCommanderId(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
+ commander=GetPlayerCoZoneBonusIndex(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
  id=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+1;
  if(id<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+51){
  offset=id*14; do {
@@ -428,16 +442,18 @@ s32 func_ov000_021aa398(s32 arg0, s32 arg1) {
  return 1;
 }
 
+/* Whether the unit under the cursor is hurt: its health (the low seven bits of
+ * MAP_UNIT_HEALTH) is below 50. */
 u8 AiCoPowerUnitIsHurt(void) {
     extern void **gCurrentMap;
-    u8 var_r0;
+    u8 result;
 
-    if ((u32) ((u32) (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u16 *, 6) << 0x19) >> 0x19) < 0x32U) {
-        var_r0 = 1;
+    if ((u32) ((u32) (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u16 *, MAP_UNIT_HEALTH) << 0x19) >> 0x19) < 0x32U) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 s32 func_ov000_021aa3f4(void) {

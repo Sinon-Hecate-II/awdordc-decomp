@@ -19,6 +19,8 @@
 /* A whole data block carried by one link message (payload at message +0xC). */
 #define LINK_MSG_BLOCK           0x85
 #define LINK_BLOCK_RECEIVED      0x38 /* u8: set once the block has been copied */
+#define LINK_BLOCK_SENDER_DATA   0x34 /* void *: the whole block the sender broadcasts */
+#define LINK_BLOCK_SENDER_SIZE   0x38 /* s32: bytes in the block */
 
 static inline u16 StatusX(void *p) { return M2C_FIELD(p,s16 *,0x34)&511; }
 static inline u8 StatusY(void *p) { return M2C_FIELD(p,s16 *,0x36); }
@@ -137,19 +139,21 @@ void func_02085464(M2C_UNK arg0) {
     Link_CreateStartRequest(0x50524453, arg0);
 }
 
-void func_0208547c(s32 arg0, s32 arg1, M2C_UNK arg2) {
+/* Create the link task that sends one whole data block to the other players: it
+ * remembers the block (`blockData`, `blockSize`) and broadcasts it as a
+ * LINK_MSG_BLOCK message on its first update. */
+void CreateLinkBlockSender(s32 blockData, s32 blockSize, M2C_UNK owner) {
     void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_021020bc;
-    extern M2C_UNK data_02102188;
-    void *temp_r0;
+    extern M2C_UNK gLinkBlockSenderClass, gLinkBlockSenderVtbl;
+    void *sender;
 
-    temp_r0 = CreateSpriteForOwner(&data_021020bc, arg2);
-    if (temp_r0 == NULL) {
+    sender = CreateSpriteForOwner(&gLinkBlockSenderClass, owner);
+    if (sender == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02102188;
-    M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
+    M2C_FIELD(sender, M2C_UNK **, 0) = &gLinkBlockSenderVtbl;
+    M2C_FIELD(sender, s32 *, LINK_BLOCK_SENDER_DATA) = blockData;
+    M2C_FIELD(sender, s32 *, LINK_BLOCK_SENDER_SIZE) = blockSize;
 }
 
 void func_020854b8(M2C_UNK arg0) {
@@ -223,16 +227,19 @@ void func_020855f0(M2C_UNK arg0) {
     Link_CreateStartRequest(0x50544353, arg0);
 }
 
-u8 func_02085608(void *a) {
+/* True while a connected player's data block has not arrived yet; false once every
+ * ready player's block is in, or once the session reports an error. */
+u8 IsPlayerDataIncomplete(void *listener) {
     s32 GetReadyPlayerMask(void);
     s32 IsSessionInError(void);
-    s32 first, second;
-    s32 result;
-    first=GetReadyPlayerMask();
-    second=GetReadyPlayerMask();
-    result=first!=(M2C_FIELD(a,u16 *,0x44)&second);
-    if(IsSessionInError()) result=0;
-    return (u8)result;
+    s32 readyMask, receivedMask;
+    s32 incomplete;
+
+    readyMask = GetReadyPlayerMask();
+    receivedMask = GetReadyPlayerMask();
+    incomplete = readyMask != (M2C_FIELD(listener, u16 *, LINK_PLAYER_DATA_RECEIVED) & receivedMask);
+    if (IsSessionInError()) incomplete = 0;
+    return (u8)incomplete;
 }
 
 void func_02085644(void *arg0) {
@@ -559,13 +566,13 @@ s32 GetGetRequestServerTime(void) {
 }
 
 void ClearLinkCommandQueues(void) {
-    void func_02085e50(void *);
+    void ClearLinkCommandQueue(void *);
     extern M2C_UNK gLinkCommandQueues;
     s32 i;
     u8 *p;
     p=(u8 *)&gLinkCommandQueues;
     i=0;
-    do { func_02085e50(p); ++i; p+=12; } while(i<4);
+    do { ClearLinkCommandQueue(p); ++i; p+=12; } while(i<4);
 }
 
 s32 QueueReceivedLinkCommand(u8 a,void *b,s32 c) {
@@ -680,31 +687,35 @@ s32 PopLinkQueueEntry(s32 queue, s32 destination, s32 extraValue) {
     return entryLength;
 }
 
-void func_02085e50(void *a) {
+/* Empty one link command queue: free every queued entry and reset its head and
+ * tail to empty. */
+void ClearLinkCommandQueue(void *queue) {
     void HeapFreeBlock(void *);
-    void *p;
-    while((p=M2C_FIELD(a,void **,0))!=NULL) {
-        M2C_FIELD(a,void **,0)=M2C_FIELD(p,void **,0x24);
-        HeapFreeBlock(p);
+    LinkCommandQueue *q = queue;
+    LinkCommandEntry *entry;
+
+    while ((entry = q->head) != NULL) {
+        q->head = entry->next;
+        HeapFreeBlock(entry);
     }
-    M2C_FIELD(a,s32 *,4)=0;
-    M2C_FIELD(a,void **,0)=NULL;
+    q->tail = NULL;
+    q->head = NULL;
 }
 
 void func_02085e8c(void *arg0) {
-    M2C_UNK func_ov010_02225f60();
+    M2C_UNK Ov010_InitVoiceChat();
     if (M2C_FIELD(arg0, s32 *, 0x38) == 0) {
         return;
     }
-    func_ov010_02225f60();
+    Ov010_InitVoiceChat();
 }
 
 void func_02085ea4(void *arg0) {
-    M2C_UNK func_ov010_022260b8();
+    M2C_UNK Ov010_ShutdownVoiceChat();
     if (M2C_FIELD(arg0, s32 *, 0x38) == 0) {
         return;
     }
-    func_ov010_022260b8();
+    Ov010_ShutdownVoiceChat();
 }
 
 #pragma optimization_level 3

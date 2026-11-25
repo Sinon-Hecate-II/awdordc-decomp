@@ -67,27 +67,27 @@ p24=*(u16**)gCur3DSpriteEngine; *p24 = *p24 & ~0x80;
 SetFileDirectory(&data_02102d0c);
 BuildMapBackgroundNarcName(arg2);OpenNarcArchive();
 if(arg2==0x4a){
-func_020ad4a0(arg2);LoadNarcFileDecompressed(GetLocalizedFileName(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0xc));
-func_020ad4e0(arg2);LoadNarcFileDecompressed(GetLocalizedFileName(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20));
+BuildMapBackgroundCgName(arg2);LoadNarcFileDecompressed(GetLocalizedFileName(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0xc));
+BuildMapBackgroundScName(arg2);LoadNarcFileDecompressed(GetLocalizedFileName(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20));
 }else {
-LoadNarcFileDecompressed(func_020ad4a0(arg2),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0xc));
-LoadNarcFileDecompressed(func_020ad4e0(arg2),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20));
+LoadNarcFileDecompressed(BuildMapBackgroundCgName(arg2),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0xc));
+LoadNarcFileDecompressed(BuildMapBackgroundScName(arg2),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20));
 }
 if(arg1==2)bank=0;
 if(arg1==3)bank=1;
-func_020ad520(arg2);
+BuildMapBackgroundClName(arg2);
 switch(func_02081568()){
 case 0x100:
 amount=(u8)(bank*6+4); bank=amount<<5;
 M2C_FIELD((s32)(*(u16**)gCur3DSpriteEngine+3+arg1),u16*,0)&=~0x80;
-LoadNarcFileToSpriteBuffer(func_020ad520(arg2),bank,0xc0);
-func_020ae768((u8)GetFacePaletteStyle(),M2C_FIELD(gCur3DSpriteEngine,s32*,0x30)+(bank&~1),0xc0);
+LoadNarcFileToSpriteBuffer(BuildMapBackgroundClName(arg2),bank,0xc0);
+ApplyFacePaletteStyle((u8)GetFacePaletteStyle(),M2C_FIELD(gCur3DSpriteEngine,s32*,0x30)+(bank&~1),0xc0);
 AddToU16Array(M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20),(u16)Get3DSpriteLayerSize((u8)((*(SpriteControl094df0**)gCur3DSpriteEngine)->mode),(u8)arg1),(u16)((amount&15)<<12));
 break;
 case 0x200:
 M2C_FIELD((s32)(*(u16**)gCur3DSpriteEngine+3+(u32)arg1),u16*,0)|=0x80;
-buffer=func_020815bc(func_020ad520(arg2),0x200);
-func_020ae768((u8)GetFacePaletteStyle(),buffer,0x200);
+buffer=func_020815bc(BuildMapBackgroundClName(arg2),0x200);
+ApplyFacePaletteStyle((u8)GetFacePaletteStyle(),buffer,0x200);
 QueueBGExtPaletteUpload(buffer,arg1,bank<<9,0x200,1);
 AddToU16Array(M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20),(u16)Get3DSpriteLayerSize((u8)((*(SpriteControl094df0**)gCur3DSpriteEngine)->mode),(u8)arg1),(u16)((bank&15)<<12));
 break;
@@ -440,16 +440,19 @@ next:
     DeleteSpriteObject(split);
 }
 
-void func_02095c58(s32 arg0, s32 arg1, M2C_UNK arg2) {
+/* Creates the 3D sprite that splits the 3D-sprite screen `screen` (0 main, 1 sub,
+ * 3 the active one) in two over `length` frames; the sprite is owned by `owner`
+ * (a parent sprite or a layer index).  Nothing is created while a message box is up. */
+void CreateScreenSplitSprite(s32 screen, s32 length, M2C_UNK owner) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02102ae8;
-    void *temp_r0;
+    extern M2C_UNK gScreenSplitClass;
+    DS3DSpriteSplit *split;
 
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    temp_r0 = CreateSpriteObject(&data_02102ae8, arg2);
-    M2C_FIELD(temp_r0, s32 *, 0x5C) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x60) = arg1;
+    split = CreateSpriteObject(&gScreenSplitClass, owner);
+    split->screen = screen;
+    split->length = length;
 }
 

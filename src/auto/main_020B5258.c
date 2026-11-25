@@ -102,10 +102,13 @@ void ExplosionSprite_Trigger(void *effect) {
     ((ExplosionEffect *) effect)->triggered = 1;
 }
 
+/* Per-frame update of an explosion sprite: play the explosion when the sprite has
+ * no animation frames yet, and again when its animation reports a script command
+ * (the explosion has finished). ExplosionSprite_Trigger runs only once. */
 void ExplosionSprite_Update(void *arg0) {
-    s32 func_0208c1dc(void *);
-    if ((u16)(M2C_FIELD(arg0, u32 *, 0x44) >> 26) == 0) ExplosionSprite_Trigger(arg0);
-    if (func_0208c1dc(arg0) == 0) return;
+    s32 TakeSpriteAnimCommand(void *);
+    if ((u16) (((ExplosionEffect *) arg0)->flags >> 26) == 0) ExplosionSprite_Trigger(arg0);
+    if (TakeSpriteAnimCommand(arg0) == 0) return;
     ExplosionSprite_Trigger(arg0);
 }
 
@@ -142,14 +145,14 @@ M2C_FIELD(p,s32 *,0x38)=a; M2C_FIELD(p,s32 *,0x3c)=b; M2C_FIELD(p,s32 *,0x5c)=c;
 /* Finishing step of a unit removal effect: play the explosion on the unit's tile,
  * then destroy the unit (or only remove it), refresh the map, mark the effect done
  * and schedule the battle-end check and the map event. */
-void func_020b55c4(UnitRemoveEffect *effect) {
+void UnitRemoveEffect_Trigger(UnitRemoveEffect *effect) {
     s32 GetObjectTileX(void *);
     s32 GetObjectTileY(void *);
     void RemoveUnit(u8);
     void DestroyUnit(u8);
     void ExplosionEffect_Play(u8, s32, s32);
     void ScheduleBattleEndCheck(void);
-    void func_ov000_0216ab2c(void);
+    void RunUnitGoneEvent(void);
     s32 x;
     u8 type, destroy, unitIndex;
 
@@ -163,14 +166,17 @@ void func_020b55c4(UnitRemoveEffect *effect) {
     RefreshMapView();
     effect->done = 1;
     ScheduleBattleEndCheck();
-    func_ov000_0216ab2c();
+    RunUnitGoneEvent();
 }
 
-void func_020b5640(void *arg0) {
+/* Per-frame update of a unit-removal effect sprite: run its trigger on the first
+ * frame (while the sprite control word's high bits are clear), step the sprite's
+ * animation, and run the trigger again once that step reports the animation done. */
+void UnitRemoveEffect_Update(void *effect) {
     s32 func_0208c1dc(void *);
-    if ((u16)(M2C_FIELD(arg0, u32 *, 0x44) >> 26) == 0) func_020b55c4(arg0);
-    if (func_0208c1dc(arg0) == 0) return;
-    func_020b55c4(arg0);
+    if ((u16)(((UnitRemoveEffect *)effect)->flags >> 26) == 0) UnitRemoveEffect_Trigger(effect);
+    if (func_0208c1dc(effect) == 0) return;
+    UnitRemoveEffect_Trigger(effect);
 }
 
 M2C_UNK func_020b567c(M2C_UNK a, s32 arg1) {
@@ -188,8 +194,8 @@ M2C_FIELD(p,s32 *,0x58)=0;
 M2C_FIELD(p,s32 *,0x5c)=kind;
 M2C_FIELD(p,s32 *,0x60)=arg1;
 M2C_FIELD(p,s32 *,0x64)=index;
-M2C_FIELD(p,void (**)(void *),0x6c)=func_020b5640;
-M2C_FIELD(p,void (**)(void *),0x70)=(void (*)(void *))func_020b55c4;
+M2C_FIELD(p,void (**)(void *),0x6c)=UnitRemoveEffect_Update;
+M2C_FIELD(p,void (**)(void *),0x70)=(void (*)(void *))UnitRemoveEffect_Trigger;
 M2C_FIELD(p,u32 *,0x44)=(M2C_FIELD(p,u32 *,0x44)&~0x3000000)|0x2000000;
 }
 
@@ -246,11 +252,19 @@ void func_020b57ac(void *obj) {
     RefreshMapView();
 }
 #pragma scheduling reset
-void func_020b5964(s32 a,s32 b) {
-void GetMapOrderEffectPosition(s32,s16 *); void *CreateSpriteObject(M2C_UNK *,s32); extern M2C_UNK data_02128c34;
-s16 xy[2]; void *p;
-GetMapOrderEffectPosition(a,xy); p=CreateSpriteObject(&data_02128c34,b);
-M2C_FIELD(p,s32 *,0x38)=xy[0]; M2C_FIELD(p,s32 *,0x3c)=xy[1];
+/* Spawn the map-order effect sprite for `order` under `parent`, positioned at the
+ * order's effect tile (GetMapOrderEffectPosition). */
+void CreateMapOrderEffectSprite(MapOrder *order, s32 parent) {
+    void GetMapOrderEffectPosition(MapOrder *, s16 *);
+    void *CreateSpriteObject(M2C_UNK *, s32);
+    extern M2C_UNK gMapOrderEffectSpriteClass;
+    s16 pos[2];
+    void *effect;
+
+    GetMapOrderEffectPosition(order, pos);
+    effect = CreateSpriteObject(&gMapOrderEffectSpriteClass, parent);
+    M2C_FIELD(effect, s32 *, 0x38) = pos[0];
+    M2C_FIELD(effect, s32 *, 0x3c) = pos[1];
 }
 
 void func_020b59a0(void *arg0) {
@@ -443,16 +457,18 @@ void StepMissileLaunch(MissileEffect *effect) {
     Sprite_ResumeAnimation(effect);
 }
 
-void func_020b5f3c(s16 arg0, s16 arg1, M2C_UNK arg2) {
+/* Create a missile effect task at tile (x, y) under `parent`, using the
+ * "missile_n" sprite sheet. */
+void CreateMissileEffect(s16 tileX, s16 tileY, M2C_UNK parent) {
     M2C_UNK StringCopy(void *, M2C_UNK *);
-    extern M2C_UNK data_02128b04;
-    extern M2C_UNK data_02128e8c;
-    void *temp_r0;
+    extern M2C_UNK gMissileEffectClass;
+    extern M2C_UNK gMissileSheetName;
+    void *effect;
 
-    temp_r0 = CreateSpriteObject(&data_02128b04, arg2);
-    M2C_FIELD(temp_r0, s16 *, 0x44) = arg0;
-    M2C_FIELD(temp_r0, s16 *, 0x46) = arg1;
-    StringCopy(temp_r0 + 0x34, &data_02128e8c);
+    effect = CreateSpriteObject(&gMissileEffectClass, parent);
+    M2C_FIELD(effect, s16 *, 0x44) = tileX;
+    M2C_FIELD(effect, s16 *, 0x46) = tileY;
+    StringCopy(effect + 0x34, &gMissileSheetName);
 }
 
 /* Switch the map cell at (x, y) to its other tile: a cell showing tile 0x180

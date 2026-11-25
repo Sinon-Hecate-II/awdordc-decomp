@@ -134,7 +134,7 @@ s32 base,tile,visible,v1,v2;
 u16 a,b;
 u32 index;
 mode=M2C_FIELD(*gCurrentMap,u16*,0x52b4)==10?1:0;
-UpdateToonTableBlend();func_02077a4c();DrawMapBackground();
+UpdateToonTableBlend();SetMapViewDefaultLight();DrawMapBackground();
 *(volatile u32*)0x4000444=0;
 *(volatile u32*)0x4000440=3;
 *(volatile u32*)0x4000454=0;
@@ -180,13 +180,13 @@ SetAmbienceSoundVolume(1,0x108,counts[26]);SetAmbienceSoundVolume(2,0x109,counts
 }
 #pragma pop
 void func_02078c60(s32 x,s32 y,s32 angle,s32 kind){
-void func_02004078(s32,s32); void Map_SubmitCellQuads(s32,s32,s32,s32,s32,s32);
+void GX_MatrixRotateZ(s32,s32); void Map_SubmitCellQuads(s32,s32,s32,s32,s32,s32);
 s32 a,b,c,d,sn,cs; a=(gMapCellCodes+x*40)[y];b=(gMapCellShades+x*40)[y];
 *(volatile u32 *)0x4000444=0;
 if(angle){d=(y<<4)*48+0x180;c=(x<<4)*48+0x180;
 cs=gSinCosTable[(angle>>4)*2+1];sn=gSinCosTable[(angle>>4)*2];
 *(volatile u32 *)0x4000470=c;*(volatile u32 *)0x4000470=d;*(volatile u32 *)0x4000470=0;
-func_02004078(sn,cs);
+GX_MatrixRotateZ(sn,cs);
 *(volatile u32 *)0x4000470=-c;*(volatile u32 *)0x4000470=-d;*(volatile u32 *)0x4000470=0;}
 *(volatile u32 *)0x4000470=0;*(volatile u32 *)0x4000470=0x300;*(volatile u32 *)0x4000470=0;
 Map_SubmitCellQuads(x,y,kind,0,a,b);*(volatile u32 *)0x4000448=1;

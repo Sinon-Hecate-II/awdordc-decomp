@@ -15,7 +15,7 @@ extern s16 gSinCosTable[];
 #pragma peephole off
 void func_ov000_0216b898(void *arg0){
 s32 GetSpriteAnimValue(void*);s32 GetLanguage(void);
-s32 func_ov000_0216b15c(s32,s32,s32,s32);s32 GetTextSpriteGlyphX(void*,u8);
+s32 IsOv000BoxOnScreen(s32,s32,s32,s32);s32 GetTextSpriteGlyphX(void*,u8);
 s32 Divide(s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);
 void AddSprite(u16,u16,u16,void*,s32);void DrawTileRow(u16,s32,s32,u16,s32);
 s32 x1,x2,y1,y2,anchor,xa,ya,i,tile;u16 *volatile control;
@@ -33,9 +33,9 @@ anchor=GET(0x44);i=GET(0x44);
 control=(u16*)(ENGINE+0x12);*control=(*control&~0xc0)|0x40;
 M2C_FIELD(ENGINE,u8*,0x51)=i;M2C_FIELD(ENGINE,u8*,0x52)=16-anchor;
 anchor=GET(0x5c);
-if(func_ov000_0216b15c(anchor,134,128,32))AddSprite((u16)(anchor&511),134,ATTR(0x43e,0xb000),data_ov000_021b8384,11);
+if(IsOv000BoxOnScreen(anchor,134,128,32))AddSprite((u16)(anchor&511),134,ATTR(0x43e,0xb000),data_ov000_021b8384,11);
 tile=M2C_FIELD(arg0,u8*,0x3d)?0x368:0x35c;
-if(func_ov000_0216b15c(x1,y1,48,16)){u16 x=x1&511;u16 attr=ATTR(tile,0xb000);AddSprite(x,(u16)(y1&255),attr,data_ov000_021b83a0,11);}
+if(IsOv000BoxOnScreen(x1,y1,48,16)){u16 x=x1&511;u16 attr=ATTR(tile,0xb000);AddSprite(x,(u16)(y1&255),attr,data_ov000_021b83a0,11);}
 {
 void *p=M2C_FIELD(arg0,void**,0x40);
 if(M2C_FIELD(p,u8*,10)==3)M2C_FIELD(p,u8*,0x17)=28;
@@ -45,7 +45,7 @@ else M2C_FIELD(p,u8*,0x17)=26;
 M2C_FIELD(M2C_FIELD(arg0,void**,0x40),s16*,6)=x2;
 for(i=0;i<M2C_FIELD(M2C_FIELD(arg0,void**,0x40),u8*,10);i++){
 s32 x=GetTextSpriteGlyphX(M2C_FIELD(arg0,void**,0x40),(u8)i);
-if(func_ov000_0216b15c(x,y2,32,32)){
+if(IsOv000BoxOnScreen(x,y2,32,32)){
 void *p=M2C_FIELD(arg0,void**,0x40);
 s32 offset=(u16)(M2C_FIELD(p,u16*,0x12)+M2C_FIELD(p,u8*,0x16)*M2C_FIELD(p+(i&255),u8*,11));
 AddSprite((u16)(x&511),(u16)(y2&255),ATTR(offset+0x374,0xb000),data_ov000_021b837c,11);
@@ -65,7 +65,7 @@ x1=GET(0x54);
 AddSprite((u16)(x1&511),104,ATTR(0x414,0xb000),data_ov000_021b83d8,11);
 if(GET(0x58)>20){x1=GET(0x54);DrawTileRow((u16)((M2C_FIELD(arg0,s16*,0x3e)+x1)&511),360,96,ATTR(0x47e,0x2000),10);}
 }
-if(M2C_FIELD(arg0,u8*,0x3d)&&func_ov000_0216b15c(xa,ya,48,16))
+if(M2C_FIELD(arg0,u8*,0x3d)&&IsOv000BoxOnScreen(xa,ya,48,16))
 {u16 x=xa&511;u16 attr=ATTR(0x432,0xb000);AddSprite(x,(u16)(ya&255),attr,data_ov000_021b8392,11);}
 }
 #pragma scheduling reset

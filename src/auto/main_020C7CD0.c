@@ -103,26 +103,30 @@ s32 a; {
     return GetCampaignMapIndex() + 9;
 }
 
-u8 IsCampaignMapRecordValid(s32 arg0) {
-    u8 var_r0;
+/* Whether `mapId` is a campaign map id and its saved record is in use (it has a
+ * name and a player count). */
+u8 IsCampaignMapRecordValid(s32 mapId) {
+    u8 valid;
 
-    if ((arg0 < 0xE1) || (arg0 >= 0x1A9)) {
+    if ((mapId < MAP_ID_CAMPAIGN_FIRST) || (mapId >= MAP_ID_CAMPAIGN_END)) {
         return 0U;
     }
-    if (func_020c8020() != 0) {
-        var_r0 = 1;
+    if (GetCampaignMapPlayerCount(mapId) != 0) {
+        valid = 1;
     } else {
-        var_r0 = 0;
+        valid = 0;
     }
-    return var_r0;
+    return valid;
 }
 
-s32 IsCampaignMapRecordPlayable(s32 a) {
- s32 x;
- if(a<0xE1||a>=0x1A9)return 0;
- x=func_020c8020(a);
- if(x==0||x==255)return 0;
- return 1;
+/* Whether a campaign map record can be played: it must be a campaign slot whose
+ * record holds a real player count (0 = empty slot, 0xFF = count not set). */
+s32 IsCampaignMapRecordPlayable(s32 mapId) {
+    s32 playerCount;
+    if (mapId < MAP_ID_CAMPAIGN_FIRST || mapId >= MAP_ID_CAMPAIGN_END) return 0;
+    playerCount = GetCampaignMapPlayerCount(mapId);
+    if (playerCount == 0 || playerCount == 0xFF) return 0;
+    return 1;
 }
 
 /* Whether a campaign map record may be shared: it must be a valid, playable,
@@ -160,11 +164,11 @@ u8 IsCampaignMapAvailable(s32 mapId) {
 
 s32 func_020c7fe4(M2C_UNK arg0) {
     s32 GetLocalizedText(s32);
-    s32 func_020c8020(M2C_UNK);
+    s32 GetCampaignMapPlayerCount(M2C_UNK);
     s32 temp_r4;
 
     temp_r4 = GetMapRecord();
-    if (func_020c8020(arg0) != 0) {
+    if (GetCampaignMapPlayerCount(arg0) != 0) {
         return temp_r4 + 6;
     }
     return GetLocalizedText(0xC00002EC);
@@ -174,7 +178,7 @@ s32 GetCampaignMapIndex(s32 arg0) {
     return arg0 - 0xE1;
 }
 
-s32 func_020c8020(s32 a) {
+s32 GetCampaignMapPlayerCount(s32 a) {
  s32 p=GetMapRecord(a); s32 r;
  if(M2C_FIELD(p,u32 *,0)!=0x20070731)return 0;
  if(M2C_FIELD(p,u8 *,6)==0)r=0;
@@ -414,11 +418,17 @@ s32 LoadMapRecord(s32 mapId, s32 buffer) {
     return match;
 }
 
-s32 StoreCampaignMapRecord(s32 a,s32 b) {
- s32 IsValidMapRecord(s32); void WriteSaveRecord(s32,s32,s32);
- s32 p=GetCampaignMapSaveType(a);
- if(!IsValidMapRecord(b))return 0;
- WriteSaveRecord(p,b,0x6f8);return 1;
+/* Store a campaign map's record: take the map's save slot and, when `record` is
+ * a valid map record, write the full-size runtime record into it. Returns 1 when
+ * it was written. */
+s32 StoreCampaignMapRecord(s32 mapId, s32 record) {
+    s32 IsValidMapRecord(s32);
+    void WriteSaveRecord(s32, s32, s32);
+    s32 saveType = GetCampaignMapSaveType(mapId);
+
+    if (!IsValidMapRecord(record)) return 0;
+    WriteSaveRecord(saveType, record, MAP_RECORD_SIZE);
+    return 1;
 }
 
 /* Whether `buffer` holds a valid map record that matches campaign map `mapId`'s

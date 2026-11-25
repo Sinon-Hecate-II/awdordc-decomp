@@ -1,18 +1,24 @@
 /* 42 functions from 0x020C6CF8 to 0x020C7CD0 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 
+/* Close the map action menu (dropping its sprites) and queue battle command 10
+ * for the unit under the cursor; the command carries no extra arguments. */
 void func_020c6cf8(void) {
     M2C_UNK func_020d468c();
     M2C_UNK DeleteMapMenuSprites();
     M2C_UNK SetBattleCommand(s32, u8, s32, s32);
     extern void **gCurrentMap;
+
     func_020d468c();
     DeleteMapMenuSprites();
-    SetBattleCommand(0xA, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
+    SetBattleCommand(0xA, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
 }
 
+/* Map-menu action: refresh the battle menu state, drop the menu sprites and post
+ * battle command 0xB for the unit under the cursor. */
 void func_020c6d30(void) {
     M2C_UNK func_020d468c();
     M2C_UNK DeleteMapMenuSprites();
@@ -20,7 +26,7 @@ void func_020c6d30(void) {
     extern void **gCurrentMap;
     func_020d468c();
     DeleteMapMenuSprites();
-    SetBattleCommand(0xB, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
+    SetBattleCommand(0xB, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
 }
 
 /* Attack command: clear the map layer, mark the cursor unit's cell and attack
@@ -57,7 +63,7 @@ s32 CanSelectCursorUnit(void) {
 extern void **gCurrentMap; extern u16 gMapConfig;
 s32 IsUnitSelected(void *);s32 func_020cf908(s32,s32,s32,s32);
 s32 GetMapPlayerFlags(s32,s32);s32 GetPlayerSelectedUnit(s32);s32 func_020a3150(s32);
-s32 func_020a88e8(s32);s32 GetPlayerCommanderId(s32);s32 func_020a735c(void *);
+s32 func_020a88e8(s32);s32 GetPlayerCoZoneBonusIndex(s32);s32 func_020a735c(void *);
 s32 func_020a2788(s32,s32);s32 GetUnitActionCost(s32,s32);
 u8 *map; s32 value; s32 unitKind; s32 player;
 if(((u32)(gMapConfig<<18)>>31)==0)return 2;
@@ -73,7 +79,7 @@ if(M2C_FIELD(map+player*MAP_PLAYER_STRIDE,Bits020a8c10 *,MAP_PLAYER_STATES+PLAYE
 if(GetPlayerSelectedUnit(player))return 2;
 if(!func_020a3150(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))return 2;
 if(func_020a88e8(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)))return 2;
-value=GetPlayerCommanderId(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
+value=GetPlayerCoZoneBonusIndex(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
 unitKind=func_020a735c(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT));
 if(!func_020a2788(value,unitKind))return 2;
 map=*gCurrentMap;player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
@@ -81,14 +87,18 @@ value=GetUnitActionCost(player,(u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_
 return value>M2C_FIELD(map+player*MAP_PLAYER_STRIDE,s32 *,MAP_PLAYER_STATES)?2:0;
 }
 
-void func_020c6ffc(void) {
+/* Map action menu: refresh the battle state, drop the menu sprites and queue the
+ * "produce cargo unit" battle command (AI_COMMAND_PRODUCE_CARGO) for the unit
+ * under the cursor; the command carries no extra arguments. */
+void ProduceCargoUnitCommand(void) {
     M2C_UNK func_020d468c();
     M2C_UNK DeleteMapMenuSprites();
     M2C_UNK SetBattleCommand(s32, u8, s32, s32);
     extern void **gCurrentMap;
+
     func_020d468c();
     DeleteMapMenuSprites();
-    SetBattleCommand(0x16, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
+    SetBattleCommand(AI_COMMAND_PRODUCE_CARGO, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
 }
 
 /* Availability check for activating the current player's CO power: returns 0 when
@@ -112,6 +122,8 @@ s32 CanActivateCoPower(void) {
     return 2;
 }
 
+/* Map-menu action: refresh the battle menu state, drop the menu sprites and post
+ * battle command 0xE for the unit under the cursor. */
 void func_020c70b4(void) {
     M2C_UNK func_020d468c();
     M2C_UNK DeleteMapMenuSprites();
@@ -119,7 +131,7 @@ void func_020c70b4(void) {
     extern void **gCurrentMap;
     func_020d468c();
     DeleteMapMenuSprites();
-    SetBattleCommand(0xE, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
+    SetBattleCommand(0xE, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
 }
 
 /* Availability check for the kind-13 unit (the Rig) command that builds a
@@ -254,22 +266,24 @@ void GetMapCursorScreenPosition(s32 tileX, s32 tileY, s32 *screenPos) {
     screenPos[1] -= cellSize / 2;
 }
 
-void func_020c752c(void) {
+/* Open the battle command menu: reset the text tiles and load the menu panel
+ * graphics, then lay the command list out centred at the top of the screen. */
+void OpenBattleMenu(void) {
     M2C_UNK CreateMenuAt(M2C_UNK *, s32, s32, M2C_UNK);
     M2C_UNK LoadUiGraphics();
-    extern M2C_UNK data_0212a8b4;
-    s32 temp_r4;
+    extern M2C_UNK gBattleMenuEntries;
+    s32 x;
 
-    func_020994e0(0);
+    ResetTextTiles(0);
     LoadUiGraphics();
-    temp_r4 = GetMenuCenteredX(0xC);
-    CreateMenuAt(&data_0212a8b4, temp_r4, GetMenuTopY(), 0x50);
+    x = GetMenuCenteredX(0xC);
+    CreateMenuAt(&gBattleMenuEntries, x, GetMenuTopY(), 0x50);
 }
 
 void func_020c7568(void) {
-    M2C_UNK func_020994e0(M2C_UNK);
+    M2C_UNK ResetTextTiles(M2C_UNK);
     M2C_UNK PopCarriedUnitMenuState();
-    func_020994e0(0);
+    ResetTextTiles(0);
     PopCarriedUnitMenuState();
 }
 
@@ -279,7 +293,7 @@ void func_020c7568(void) {
 void OpenCarriedUnitMenu(void) {
  M2C_UNK func_020c0634(M2C_UNK *,s32,s32,u16,s32); s32 GetCarriedUnitMenuSelection(); extern M2C_UNK data_0212a774;
  s32 x,y;
- func_020994e0(0); LoadUiGraphics(); x=GetMenuCenteredX(8); y=GetMenuTopY();
+ ResetTextTiles(0); LoadUiGraphics(); x=GetMenuCenteredX(8); y=GetMenuTopY();
  func_020c0634(&data_0212a774,x,y,(u16)GetCarriedUnitMenuSelection(),0x50);
 }
 
@@ -293,7 +307,7 @@ void OpenMapActionMenu(void) {
     s32 screenPos[3];
     void *map;
 
-    func_020994e0(0);
+    ResetTextTiles(0);
     map = *gCurrentMap;
     GetMapCursorScreenPosition(M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_X), M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_Y), screenPos);
     CreateMenuAt(&gMapActionMenuEntries, screenPos[0], screenPos[1], 0x30);
@@ -337,7 +351,7 @@ if(flags&32){
 M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_X);
 M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_Y);
 StepMapViewToTile(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
-SetSpriteAnimation(a,0);Sprite_ResumeAnimation(a);return;}
+GotoSpriteAnimationLabel(a,0);Sprite_ResumeAnimation(a);return;}
 if(flags&256){CreateMapMenu();return;}
 if(flags&64){HandleUiCancel();return;}
 }
@@ -355,9 +369,9 @@ void func_020c77ec(void *arg0) {
 }
 
 void func_020c7804(void *arg0) {
-    M2C_UNK func_020b5f3c(s16, s16, void *);
+    M2C_UNK CreateMissileEffect(s16, s16, void *);
     M2C_UNK func_020b5f74(s16, s16);
-    func_020b5f3c(M2C_FIELD(arg0, s16 *, 0x6C), M2C_FIELD(arg0, s16 *, 0x6E), arg0);
+    CreateMissileEffect(M2C_FIELD(arg0, s16 *, 0x6C), M2C_FIELD(arg0, s16 *, 0x6E), arg0);
     func_020b5f74(M2C_FIELD(arg0, s16 *, 0x6C), M2C_FIELD(arg0, s16 *, 0x6E));
 }
 
@@ -371,15 +385,18 @@ void func_020c7850(void *arg0) {
     CreateMissileEMarker(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x64), M2C_FIELD(arg0, u16 *, 0x52), arg0);
 }
 
-void func_020c7874(s32 arg0, s32 arg1, s32 arg2, s16 arg3, s32 arg4) {
+/* Create a marker sprite owned by `parent` at tile (x, y): it shows image tile
+ * `tileIndex` (+0x52) and stores the range value (`range` +0x64). */
+void CreateTileMarkerSprite(s32 x, s32 y, s32 range, s16 tileIndex, s32 parent) {
     void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212ae54;
-    void *temp_r0;
-    temp_r0 = CreateSpriteForOwner(&data_0212ae54, arg4);
-    M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x64) = arg2;
-    M2C_FIELD(temp_r0, s16 *, 0x52) = arg3;
+    void *sprite;
+
+    sprite = CreateSpriteForOwner(&data_0212ae54, parent);
+    M2C_FIELD(sprite, s32 *, 0x34) = x;
+    M2C_FIELD(sprite, s32 *, 0x38) = y;
+    M2C_FIELD(sprite, s32 *, 0x64) = range;
+    M2C_FIELD(sprite, s16 *, 0x52) = tileIndex;
 }
 
 void func_020c78ac(void *arg0) {
@@ -391,15 +408,17 @@ void func_020c78c4(void *arg0) {
     CreateMissileBMarker(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x64), M2C_FIELD(arg0, u16 *, 0x52), arg0);
 }
 
-void CreateScriptMarkerSprite(s32 arg0, s32 arg1, s32 arg2, s16 arg3, s32 arg4) {
+/* Create the script's marker sprite owned by `owner` at tile (x, y), showing an
+ * area effect of the given range and power. */
+void CreateScriptMarkerSprite(s32 x, s32 y, s32 range, s16 power, s32 owner) {
     void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212aeec;
-    void *temp_r0;
-    temp_r0 = CreateSpriteForOwner(&data_0212aeec, arg4);
-    M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x64) = arg2;
-    M2C_FIELD(temp_r0, s16 *, 0x52) = arg3;
+    extern M2C_UNK gScriptMarkerClass;
+    void *sprite;
+    sprite = CreateSpriteForOwner(&gScriptMarkerClass, owner);
+    M2C_FIELD(sprite, s32 *, 0x34) = x;
+    M2C_FIELD(sprite, s32 *, 0x38) = y;
+    M2C_FIELD(sprite, s32 *, 0x64) = range;
+    M2C_FIELD(sprite, s16 *, 0x52) = power;
 }
 
 /* State step of the flare-shot sprite: when the unit under the cursor is visible

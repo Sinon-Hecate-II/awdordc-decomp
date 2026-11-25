@@ -44,7 +44,7 @@ void SpawnResultSpark(s32 x, s32 y, s32 variant) {
 void DrawAwardedMedals(void *award) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
 extern M2C_UNK data_ov005_02221008,data_ov005_02220fec,data_02101f78;
-void AddSprite(u16,u16,u16,void *,s32);void func_01ffad0c(u16,u16,u16,void *,s32);
+void AddSprite(u16,u16,u16,void *,s32);void AddAffineSprite(u16,u16,u16,void *,s32);
 s32 saved;u16 spriteX,spriteY;u32 spriteX2; s32 saved2;u32 ycoord;u16 spriteY2;
 if(M2C_FIELD(award,u8 *,0x44)){
 spriteY=M2C_FIELD(award,u16 *,0x4a);spriteX=M2C_FIELD(award,u16 *,0x48);
@@ -57,7 +57,7 @@ spriteY2=M2C_FIELD(award,u16 *,0x4e);spriteX2=M2C_FIELD(award,u16 *,0x4c);
 saved2=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 ycoord=(spriteY2&0xff00)|((spriteY2+96)&255);
 AddSprite((spriteX2&0xfe00)|((spriteX2+64)&511),ycoord,(((0x488>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xc000),&data_ov005_02220fec,6);
-func_01ffad0c((spriteX2&0xfe00)|((192-spriteX2)&511),ycoord,(((0x488>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xc000),&data_ov005_02220fec,6);
+AddAffineSprite((spriteX2&0xfe00)|((192-spriteX2)&511),ycoord,(((0x488>>((u32)(**(u16 **)gCur3DSpriteEngine<<17)>>30))&1023)|0xc000),&data_ov005_02220fec,6);
 gCur3DSpriteEngine=saved2;
 }
 if(M2C_FIELD(award,u8 *,0x46)){
@@ -353,8 +353,8 @@ void func_ov005_0221ab74(void) {
 }
 
 void func_ov005_0221ab80(void) {
-    M2C_UNK func_01ffaa8c();
-    func_01ffaa8c();
+    M2C_UNK DetachSpriteFromParent();
+    DetachSpriteFromParent();
 }
 
 void func_ov005_0221ab8c(void) {

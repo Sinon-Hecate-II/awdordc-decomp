@@ -24,7 +24,7 @@ void RefreshLinkPlayerAnnounce(M2C_UNK owner) {
     SpawnLinkPlayerAnnounce(owner);
 }
 
-void func_ov009_02226268(M2C_UNK arg0) {
+void SpawnLinkPlayerAnnounceRefresher(M2C_UNK arg0) {
     extern M2C_UNK data_ov009_02226728;
     extern M2C_UNK data_ov009_0222675c;
     M2C_UNK **temp_r0;

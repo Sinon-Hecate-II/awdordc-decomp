@@ -8,7 +8,7 @@ extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;
 void AddSprite(u16,u16,u16,void *,s32);
 s32 Divide(s32,s32);
 extern u8 data_ov000_021deb7c[],data_ov000_021deb20[],gSpriteDesc8x8[],data_ov000_021deb10[],data_ov000_021deb18[],gSpriteDesc16x16[],data_02101f0c[];extern s32 data_ov000_021df600;extern s16 gSinCosTable[];
-s32 func_020a72b0(s32,s32);u8 func_ov000_02176dcc(void *);
+s32 GetPlayerUnitSpriteTile(s32,s32);u8 Ov000_StatsWindow_ShouldShowHints(void *);
 void SetSpriteQuad(s32,s16,s16,s16,s16);
 s32 level,n,d,i,ratio,den,sn,cs,aa,bb,cc,dd,x; void *old=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineSub;
 AddSprite(4,1,0xc144,data_ov000_021deb7c,0);AddSprite(135,20,0xe16b,data_ov000_021deb20,0);AddSprite(196,20,0xe179,data_ov000_021deb20,0);
@@ -74,14 +74,14 @@ for(index1=0,position1=39;index1<6;index1++,position1+=13){AddSprite(240,(u16)po
 }
 }
 {s32 index2,position2;
-for(index2=0,position2=145;index2<M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,252);index2++,position2+=15){n=M2C_FIELD(M2C_FIELD(a,void **,16)+index2*4,s32 *,124);if(n){n=func_020a72b0(0,n);AddSprite((u16)position2,121,(u16)(((n+391)&1023)|0xf000),gSpriteDesc16x16,index2);
+for(index2=0,position2=145;index2<M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,252);index2++,position2+=15){n=M2C_FIELD(M2C_FIELD(a,void **,16)+index2*4,s32 *,124);if(n){n=GetPlayerUnitSpriteTile(0,n);AddSprite((u16)position2,121,(u16)(((n+391)&1023)|0xf000),gSpriteDesc16x16,index2);
 }}
 }
 {s32 index3,position3;
-for(index3=0,position3=145;index3<M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,256);index3++,position3+=15){if(index3>=7)break;n=M2C_FIELD(M2C_FIELD(a,void **,16)+index3*4,s32 *,156);if(n){n=func_020a72b0(0,n);AddSprite((u16)position3,140,(u16)(((n+391)&1023)|0xf000),gSpriteDesc16x16,index3);
+for(index3=0,position3=145;index3<M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,256);index3++,position3+=15){if(index3>=7)break;n=M2C_FIELD(M2C_FIELD(a,void **,16)+index3*4,s32 *,156);if(n){n=GetPlayerUnitSpriteTile(0,n);AddSprite((u16)position3,140,(u16)(((n+391)&1023)|0xf000),gSpriteDesc16x16,index3);
 }}}
 
-if(func_ov000_02176dcc(a)){
+if(Ov000_StatsWindow_ShouldShowHints(a)){
 AddSprite(128,176,0x6120,data_02101f0c,1);
 AddSprite(192,176,0x6128,data_02101f0c,1);
 AddSprite(128,184,0x6130,data_02101f0c,1);
@@ -181,23 +181,26 @@ for(otherKind=0;otherKind<M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0xfc)-1;ot
 for(otherKind=0;otherKind<M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x100)-1;otherKind++)for(compare=otherKind+1;compare<M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x100);compare++){void *left=(u8 *)M2C_FIELD(entry,void **,16)+otherKind*4;void *right=(u8 *)M2C_FIELD(entry,void **,16)+compare*4;if(M2C_FIELD(left,s32 *,0xdc)<M2C_FIELD(right,s32 *,0xdc)){temp=M2C_FIELD(left,s32 *,0x9c);M2C_FIELD(left,s32 *,0x9c)=M2C_FIELD(right,s32 *,0x9c);M2C_FIELD((u8 *)M2C_FIELD(entry,void **,16)+compare*4,s32 *,0x9c)=temp;temp=M2C_FIELD((u8 *)M2C_FIELD(entry,void **,16)+otherKind*4,s32 *,0xdc);M2C_FIELD((u8 *)M2C_FIELD(entry,void **,16)+otherKind*4,s32 *,0xdc)=M2C_FIELD((u8 *)M2C_FIELD(entry,void **,16)+compare*4,s32 *,0xdc);M2C_FIELD((u8 *)M2C_FIELD(entry,void **,16)+compare*4,s32 *,0xdc)=temp;}}
 {s32 offset=unitKind*12; s32 a,b; a=*(volatile s32 *)(data_ov000_021ae2c8+offset);b=*(volatile s32 *)(data_ov000_021ae2cc+offset);M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x58)=a;M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x5c)=b;}
 }
-u8 func_ov000_02176dcc(void *arg0) {
+/* Whether the ov000 unit-statistics panel should draw its button hints: a unit
+ * is shown, nothing holds the map view, and the map is in cursor mode. */
+u8 Ov000_StatsWindow_ShouldShowHints(void *arg0) {
+    Ov000StatsWindow *entry = (Ov000StatsWindow *)arg0;
     s32 GetMapViewHoldCount();
     s32 GetMapInputState();
-    u8 var_r0;
+    u8 show;
 
-    if (M2C_FIELD(arg0, u8 *, 0xC) == 0) {
+    if (entry->hasUnit == 0) {
         return 0U;
     }
     if (GetMapViewHoldCount() != 0) {
         return 0U;
     }
     if (GetMapInputState() == 0) {
-        var_r0 = 1;
+        show = 1;
     } else {
-        var_r0 = 0;
+        show = 0;
     }
-    return var_r0;
+    return show;
 }
 
 s32 func_ov000_02176e08(s32 arg0) {

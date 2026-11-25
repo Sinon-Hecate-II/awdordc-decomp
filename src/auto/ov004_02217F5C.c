@@ -18,7 +18,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     s32 Divide(s32, M2C_UNK);
     M2C_UNK LoadFileToTextureBank(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_02081400(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadFileToObjExtPalette(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK OpenNarcArchive(M2C_UNK *);
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
@@ -30,7 +30,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK Show3DSpriteSlide(void *);
-    M2C_UNK func_020994e0();
+    M2C_UNK ResetTextTiles();
     M2C_UNK CreateFrameCallbackTask(M2C_UNK *, M2C_UNK);
     M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -38,7 +38,7 @@ void func_ov004_02217f5c(void *arg0) {
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
     M2C_UNK CreateUnitSpriteButtonTask(void *, M2C_UNK);
-    void *func_020ab1c4(void *);
+    void *CreateUnitSprite(void *);
     M2C_UNK ResetBattleMap();
     M2C_UNK LoadBattleMap(s32);
     M2C_UNK PreloadMapTileset(s32);
@@ -143,7 +143,7 @@ void func_ov004_02217f5c(void *arg0) {
     *sp1C = *sp1C | 0x100;
     Reset3DSpriteBankState();
     M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x44) = 0;
-    func_020994e0();
+    ResetTextTiles();
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     Apply3DSpriteLayout((u16 *)&sp3C);
     temp_r1_5 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
@@ -163,23 +163,23 @@ void func_ov004_02217f5c(void *arg0) {
     *sp8 = *sp8 | 0x100;
     Reset3DSpriteBankState();
     M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x44) = 0;
-    func_020994e0();
+    ResetTextTiles();
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     SetFileDirectory(&data_ov004_0223c5a8);
     LoadFileToTextureBank(&data_ov004_0223c5f4, 0);
-    func_02081400(&data_ov004_0223c5b8, 0, 0x200);
+    LoadFileToObjExtPalette(&data_ov004_0223c5b8, 0, 0x200);
     LoadFileToTextureBank(&data_ov004_0223c5d0, 0x28000);
-    func_02081400(&data_ov004_0223c5c0, 0x200, 0x20);
+    LoadFileToObjExtPalette(&data_ov004_0223c5c0, 0x200, 0x20);
     LoadFileToTextureBank(&data_ov004_0223c660, 0x30000);
-    func_02081400(&data_ov004_0223c630, 0x220, 0x20);
+    LoadFileToObjExtPalette(&data_ov004_0223c630, 0x220, 0x20);
     OpenNarcArchive(&data_ov004_0223c624);
     func_0208168c(GetLocalizedFileName(&data_ov004_0223c5e8), 0x38000);
     func_0208168c(GetLocalizedFileName(&data_ov004_0223c5dc), 0x39000);
     CloseNarcArchive();
-    func_02081400(&data_ov004_0223c5c8, 0x240, 0xA0);
-    func_02081400(&data_ov004_0223c5b0, 0x2E0, 0x20);
+    LoadFileToObjExtPalette(&data_ov004_0223c5c8, 0x240, 0xA0);
+    LoadFileToObjExtPalette(&data_ov004_0223c5b0, 0x2E0, 0x20);
     LoadFileToTextureBank(&data_ov004_0223c60c, 0x3A000);
-    func_02081400(&data_ov004_0223c600, 0x300, 0x20);
+    LoadFileToObjExtPalette(&data_ov004_0223c600, 0x300, 0x20);
     OpenNarcArchive(&data_ov004_0223c66c);
     LoadNarcFileDecompressed(&data_ov004_0223c654, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18) + 0x20);
     LoadNarcFileDecompressed(&data_ov004_0223c648, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
@@ -188,7 +188,7 @@ void func_ov004_02217f5c(void *arg0) {
     AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), (u16) Get3DSpriteLayerSize((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 1), 0xF001);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     LoadSpriteResource(0, 2, 0x47, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x260);
-    temp_r0_3 = func_020ab1c4(arg0);
+    temp_r0_3 = CreateUnitSprite(arg0);
     InitUnitSprite(temp_r0_3, 2, 0x140, 3, 0);
     CreateUnitSpriteButtonTask(temp_r0_3, 2);
     M2C_FIELD(temp_r0_3, s16 *, 0x3C) = 0x800;
@@ -206,7 +206,7 @@ void func_ov004_02217f5c(void *arg0) {
     }
     Show3DSpriteSlide(temp_r0_3);
     func_020aad18(temp_r0_3);
-    temp_r0_4 = func_020ab1c4(arg0);
+    temp_r0_4 = CreateUnitSprite(arg0);
     InitUnitSprite(temp_r0_4, 6, 0x150, 3, 0);
     CreateUnitSpriteButtonTask(temp_r0_4, 0x100);
     M2C_FIELD(temp_r0_4, s16 *, 0x3C) = 0x800;
@@ -224,7 +224,7 @@ void func_ov004_02217f5c(void *arg0) {
     }
     Show3DSpriteSlide(temp_r0_4);
     func_020aad18(temp_r0_4);
-    temp_r0_5 = func_020ab1c4(arg0);
+    temp_r0_5 = CreateUnitSprite(arg0);
     InitUnitSprite(temp_r0_5, 0x12, 0x160, 3, 0);
     M2C_FIELD(temp_r0_5, s16 *, 0x3C) = 0x800;
     CreateUnitSpriteButtonTask(temp_r0_5, 8);
@@ -333,7 +333,7 @@ void func_ov004_022188b8(void *arg0) {
 /* Called when the battle map view is entered: play the mission sound, save the
  * map's story index in the progress word, switch to the non-story animation
  * when the map is not a story mission, and restart the fade transition. */
-void MapView_StartBattle(void *view){extern void **gCurrentMap;extern u32 gSaveSlotSummary[2];PlaySoundEffect(0x10014);gSaveSlotSummary[1]=(gSaveSlotSummary[1]&~0xffff)|(u16)(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)-MAP_ID_STORY_FIRST);if(MapData_GetCategory(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)))SetSpriteAnimation(view,7);M2C_FIELD(view,u8 *,0x38)=2;M2C_FIELD(view,u8 *,0x36)=0;}
+void MapView_StartBattle(void *view){extern void **gCurrentMap;extern u32 gSaveSlotSummary[2];PlaySoundEffect(0x10014);gSaveSlotSummary[1]=(gSaveSlotSummary[1]&~0xffff)|(u16)(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)-MAP_ID_STORY_FIRST);if(MapData_GetCategory(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)))GotoSpriteAnimationLabel(view,7);M2C_FIELD(view,u8 *,0x38)=2;M2C_FIELD(view,u8 *,0x36)=0;}
 
 /* Advance a 16-frame transition, linearly raising the 3D sprite engine's visibility and setting its display flags. */
 void func_ov004_02218950(void *transition) {

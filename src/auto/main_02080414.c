@@ -16,14 +16,16 @@ void StepScreenFlashFadeIn(void *sprite) {
  Sprite_ResumeAnimation(sprite);
 }
 
-void StepScreenFlashHold(void *arg0) {
+/* Screen-flash callback: hold the white screen for the flash's hold frames,
+ * then continue the sprite's animation once the last frame is reached. */
+void StepScreenFlashHold(void *sprite) {
  M2C_UNK Sprite_ResumeAnimation(void *);
- s32 temp_r2;
- if(M2C_FIELD(arg0,s16 *,0x6E)==0) {Sprite_ResumeAnimation(arg0);return;}
- temp_r2=M2C_FIELD(arg0,s32 *,0x60)+1;
- M2C_FIELD(arg0,s32 *,0x60)=temp_r2;
- if(temp_r2!=M2C_FIELD(arg0,s16 *,0x6E)) return;
- Sprite_ResumeAnimation(arg0);
+ s32 elapsed;
+ if(M2C_FIELD(sprite,s16 *,DS3D_SPRITE_FLASH_HOLD_FRAMES)==0) {Sprite_ResumeAnimation(sprite);return;}
+ elapsed=M2C_FIELD(sprite,s32 *,DS3D_SPRITE_FLASH_HOLD_ELAPSED)+1;
+ M2C_FIELD(sprite,s32 *,DS3D_SPRITE_FLASH_HOLD_ELAPSED)=elapsed;
+ if(elapsed!=M2C_FIELD(sprite,s16 *,DS3D_SPRITE_FLASH_HOLD_FRAMES)) return;
+ Sprite_ResumeAnimation(sprite);
 }
 
 /* Screen-flash callback: ease the screen brightness back from white (16) to
@@ -571,15 +573,18 @@ s32 LoadFileToTextureBank(M2C_UNK path, M2C_UNK destOffset) {
     return size;
 }
 
-s32 func_020813c4(M2C_UNK arg0, M2C_UNK arg1) {
+/* Decompress the file at `path` into a buffer and queue a copy of it into the
+ * texture bank at byte `destOffset`; the queued copy frees the buffer once it has
+ * been uploaded.  Returns the number of bytes loaded. */
+s32 QueueFileToTextureBank(M2C_UNK path, M2C_UNK destOffset) {
     M2C_UNK DC_FlushRange(s32, s32);
     M2C_UNK QueueTextureBankCopy(s32, M2C_UNK, s32, M2C_UNK);
-    s32 sp0;
-    s32 temp_r0;
+    s32 size;
+    s32 buffer;
 
-    temp_r0 = LoadDecompressedFileBuffer(arg0, 0, &sp0);
-    DC_FlushRange(temp_r0, sp0);
-    QueueTextureBankCopy(temp_r0, arg1, sp0, 1);
-    return sp0;
+    buffer = LoadDecompressedFileBuffer(path, 0, &size);
+    DC_FlushRange(buffer, size);
+    QueueTextureBankCopy(buffer, destOffset, size, 1);
+    return size;
 }
 

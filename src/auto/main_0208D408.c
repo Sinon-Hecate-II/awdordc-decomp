@@ -299,9 +299,12 @@ void Load3DSpritePatternColor(s32 textureOffset, s32 paletteSlot, s16 color) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_PALETTE);
 }
 
-void func_0208e0b8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Draw a list's scrollbar thumb as a vertical bar of `length` pixels at (x, y),
+ * shifted a pixel left and up and made two pixels longer so it covers the
+ * scrollbar track's edge. */
+void DrawScrollBarThumb(s32 x, s32 y, s32 length, s32 tile, s32 priority) {
     M2C_UNK DrawVerticalBar(s16, s16, s16, s32, s32);
-    DrawVerticalBar((s16)(arg0 - 1), (s16)(arg1 - 1), (s16)(arg2 + 2), arg3, arg4);
+    DrawVerticalBar((s16)(x - 1), (s16)(y - 1), (s16)(length + 2), tile, priority);
 }
 
 /* Draws the UI bar gradient: decompresses the gradient strip into the engine's

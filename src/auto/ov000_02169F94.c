@@ -256,59 +256,70 @@ if(a==-1)return 0xc0000025;
 return M2C_FIELD(GetRecordDefinition(1,a),s32 *,0x14);
 }
 
+/* Run the map's first event-script list (script slot +0x00) with no arguments;
+ * returns nonzero when a condition of the event matched.  Nothing yet says which
+ * map event that slot is. */
 s32 func_ov000_0216a7fc(void) {
     s32 EvalScriptConditions(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 *GetMapEventScript();
-    s32 *temp_r0_2;
-    s32 temp_r0;
+    s32 *eventScript;
+    s32 script;
 
-    temp_r0_2 = GetMapEventScript();
-    if (temp_r0_2 != NULL) {
-        temp_r0 = *temp_r0_2;
-        if (temp_r0 != 0) {
-            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
+    eventScript = GetMapEventScript();
+    if (eventScript != NULL) {
+        script = *eventScript;
+        if (script != 0) {
+            return EvalScriptConditions(script, 0, 0, 0, 1);
         }
     }
     return 0;
 }
 
+/* Run the map's second event-script list (script slot +0x04) with no arguments;
+ * returns nonzero when a condition of the event matched.  Nothing yet says which
+ * map event that slot is. */
 s32 func_ov000_0216a834(void) {
-    s32 temp_r0;
-    void *temp_r0_2;
+    s32 script;
+    void *eventScript;
 
-    temp_r0_2 = GetMapEventScript();
-    if (temp_r0_2 != NULL) {
-        temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 4);
-        if (temp_r0 != 0) {
-            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
+    eventScript = GetMapEventScript();
+    if (eventScript != NULL) {
+        script = M2C_FIELD(eventScript, s32 *, 4);
+        if (script != 0) {
+            return EvalScriptConditions(script, 0, 0, 0, 1);
         }
     }
     return 0;
 }
 
+/* Run the map's turn-start event (script slot MAP_EVENT_TURN_START) when a
+ * player's turn begins; returns nonzero when a condition of the event matched. */
 s32 RunTurnStartEvent(void) {
-    s32 temp_r0;
-    void *temp_r0_2;
+    s32 script;
+    void *eventScript;
 
-    temp_r0_2 = GetMapEventScript();
-    if (temp_r0_2 != NULL) {
-        temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 8);
-        if (temp_r0 != 0) {
-            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
+    eventScript = GetMapEventScript();
+    if (eventScript != NULL) {
+        script = M2C_FIELD(eventScript, s32 *, MAP_EVENT_TURN_START);
+        if (script != 0) {
+            return EvalScriptConditions(script, 0, 0, 0, 1);
         }
     }
     return 0;
 }
 
-s32 func_ov000_0216a8a4(void) {
-    s32 temp_r0;
-    void *temp_r0_2;
+/* Run the map's turn-intro event (script slot MAP_EVENT_TURN_INTRO, +0x0C) once
+ * the player's turn-intro banner has played (func_020d42d0, MAP_STATE_TURN_INTRO3);
+ * returns nonzero when a condition of the event matched. */
+s32 RunTurnIntroEvent(void) {
+    s32 script;
+    void *eventScript;
 
-    temp_r0_2 = GetMapEventScript();
-    if (temp_r0_2 != NULL) {
-        temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0xC);
-        if (temp_r0 != 0) {
-            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
+    eventScript = GetMapEventScript();
+    if (eventScript != NULL) {
+        script = M2C_FIELD(eventScript, s32 *, MAP_EVENT_TURN_INTRO);
+        if (script != 0) {
+            return EvalScriptConditions(script, 0, 0, 0, 1);
         }
     }
     return 0;
@@ -391,57 +402,71 @@ s32 RunUnitEvent(s32 eventCode, s32 unit) {
     return 0;
 }
 
-s32 func_ov000_0216aa84(void) {
-    s32 temp_r0;
-    void *temp_r0_2;
+/* Run the map's battle-end event (script slot MAP_EVENT_BATTLE_END, +0x20) once a
+ * battle is over (EnterBattleEnd, main_020C8CBC); returns nonzero when a condition
+ * of the event matched. */
+s32 RunBattleEndEvent(void) {
+    s32 script;
+    void *eventScript;
 
-    temp_r0_2 = GetMapEventScript();
-    if (temp_r0_2 != NULL) {
-        temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x20);
-        if (temp_r0 != 0) {
-            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
+    eventScript = GetMapEventScript();
+    if (eventScript != NULL) {
+        script = M2C_FIELD(eventScript, s32 *, MAP_EVENT_BATTLE_END);
+        if (script != 0) {
+            return EvalScriptConditions(script, 0, 0, 0, 1);
         }
     }
     return 0;
 }
 
-s32 func_ov000_0216aabc(void) {
-    s32 temp_r0;
-    void *temp_r0_2;
+/* Run the map's ending event (script slot MAP_EVENT_ENDING, +0x24), the one the
+ * final campaign map's ending sprite runs while the ending scene plays (state 7,
+ * func_ov004_02211260); returns nonzero when a condition of the event matched. */
+s32 RunEndingEvent(void) {
+    s32 script;
+    void *eventScript;
 
-    temp_r0_2 = GetMapEventScript();
-    if (temp_r0_2 != NULL) {
-        temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x24);
-        if (temp_r0 != 0) {
-            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
+    eventScript = GetMapEventScript();
+    if (eventScript != NULL) {
+        script = M2C_FIELD(eventScript, s32 *, MAP_EVENT_ENDING);
+        if (script != 0) {
+            return EvalScriptConditions(script, 0, 0, 0, 1);
         }
     }
     return 0;
 }
 
-s32 func_ov000_0216aaf4(void) {
-    s32 temp_r0;
-    void *temp_r0_2;
+/* Run the map's menu event (script slot MAP_EVENT_MAP_MENU, +0x28): the map-menu
+ * action func_020c5da4 runs it after closing the menu, and IsMapEventConditionMet
+ * tests the same list to decide whether that action is available; returns nonzero
+ * when a condition of the event matched. */
+s32 RunMapMenuEvent(void) {
+    s32 script;
+    void *eventScript;
 
-    temp_r0_2 = GetMapEventScript();
-    if (temp_r0_2 != NULL) {
-        temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x28);
-        if (temp_r0 != 0) {
-            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
+    eventScript = GetMapEventScript();
+    if (eventScript != NULL) {
+        script = M2C_FIELD(eventScript, s32 *, MAP_EVENT_MAP_MENU);
+        if (script != 0) {
+            return EvalScriptConditions(script, 0, 0, 0, 1);
         }
     }
     return 0;
 }
 
-s32 func_ov000_0216ab2c(void) {
-    s32 temp_r0;
-    void *temp_r0_2;
+/* Run the map's unit-gone event (script slot MAP_EVENT_UNIT_GONE, +0x2C) once a
+ * unit has left the map: UnitRemoveEffect_Trigger calls it after the explosion,
+ * whether the unit was destroyed or only removed; returns nonzero when a
+ * condition of the event matched. */
+s32 RunUnitGoneEvent(void) {
+    s32 script;
+    void *eventScript;
 
-    temp_r0_2 = GetMapEventScript();
-    if (temp_r0_2 != NULL) {
-        temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x2C);
-        if (temp_r0 != 0) {
-            return EvalScriptConditions(temp_r0, 0, 0, 0, 1);
+    eventScript = GetMapEventScript();
+    if (eventScript != NULL) {
+        script = M2C_FIELD(eventScript, s32 *, MAP_EVENT_UNIT_GONE);
+        if (script != 0) {
+            return EvalScriptConditions(script, 0, 0, 0, 1);
         }
     }
     return 0;

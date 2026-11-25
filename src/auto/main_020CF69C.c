@@ -173,9 +173,9 @@ u8 func_020cfb94(void) {
 
 void GetMapPlayerCount(u32 arg0) {
     M2C_UNK func_020a8948();
-    M2C_UNK func_020c8020();
+    M2C_UNK GetCampaignMapPlayerCount();
     if ((arg0 >= 0xE1U) && (arg0 < 0x1A9U)) {
-        func_020c8020();
+        GetCampaignMapPlayerCount();
         return;
     }
     func_020a8948();
@@ -349,7 +349,7 @@ void func_020d0164(M2C_UNK arg0, M2C_UNK arg1) {
 
 /* For each active player, flood-fill and mark the tiles reachable by its current unit's movement range. */
 M2C_UNK func_020d0178(void) {
-void InitAreaScan(void *,s32,s32,s32,s32,s32); void func_020d0428(s32,s32,s32,s32); s32 func_020d03c4(s32);
+void InitAreaScan(void *,s32,s32,s32,s32,s32); void SetPlayerMoveRangeCell(s32,s32,s32,s32); s32 func_020d03c4(s32);
 s32 IsPlayerActive(s32); void *GetPlayerSelectedUnit(s32); s32 func_020a7d20(void); s32 func_020d2cf0(s32); s32 GetPlayerArmyVariantIfSet(s32); s32 NextAreaTile(void *); void BuildMoveRangeFlags(void);
 s32 player; s32 pathState[8]; void *unit; s32 moveRange;
 for(player=1;player<5;player++){
@@ -359,7 +359,7 @@ unit=GetPlayerSelectedUnit(player); if(!unit)continue;
 if(func_020a7d20() && !(M2C_FIELD(unit,u16 *,4)&4))continue;
 moveRange=func_020d2cf0(player); if(GetPlayerArmyVariantIfSet(player))moveRange=6;
 InitAreaScan(pathState,moveRange,M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),M2C_FIELD((void *)*gCurrentMap,u16 *,0x5144),M2C_FIELD((void *)*gCurrentMap,u16 *,0x5146));
-for(;;){if(!NextAreaTile(pathState))break;func_020d0428(player,pathState[4],pathState[5],1);}
+for(;;){if(!NextAreaTile(pathState))break;SetPlayerMoveRangeCell(player,pathState[4],pathState[5],1);}
 }
 BuildMoveRangeFlags();
 }
@@ -406,17 +406,30 @@ s32 func_020d03c4(s32 arg0) {
     return arg0 * 0x508 + temp;
 }
 
-s32 IsCellInPlayerMoveRange(s32 arg0,s32 arg1,s32 arg2) {extern s32 *gCurrentMap; s32 temp=*gCurrentMap; return M2C_FIELD((temp+arg0*0x508)+(arg1+M2C_FIELD(temp+arg2*2,u16 *,0x3758)),u8 *,0x37F8);}
+/* Return the move-range flag for map cell (x, y) in player `player`'s grid, which
+ * marks the cells that player's selected unit can reach. */
+s32 IsCellInPlayerMoveRange(s32 player, s32 x, s32 y) {
+    extern s32 *gCurrentMap;
+    s32 map = *gCurrentMap;
+    return M2C_FIELD((map + player * MAP_PLAYER_MOVE_RANGE_STRIDE) + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_PLAYER_MOVE_RANGE);
+}
 
-void func_020d0428(s32 a,s32 b,s32 c,s32 d){extern s32 *gCurrentMap;s32 p=*gCurrentMap;s32 off=M2C_FIELD(p+c*2,u16 *,0x3758);s32 row=p+a*0x508;M2C_FIELD(row+(b+off),u8 *,0x37f8)=d;}
+/* Mark the cell (x, y) in `player`'s movement-range grid with `value`, used by the reachability flood fill. */
+void SetPlayerMoveRangeCell(s32 player, s32 x, s32 y, s32 value) {
+    extern s32 *gCurrentMap;
+    s32 map = *gCurrentMap;
+    s32 rowOffset = M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+    s32 range = map + player * MAP_PLAYER_MOVE_RANGE_STRIDE;
+    M2C_FIELD(range + (x + rowOffset), u8 *, MAP_PLAYER_MOVE_RANGE) = value;
+}
 
 s32 GetMoveRangeCommanderId(M2C_UNK arg0) {
     s32 IsCellInPlayerMoveRange();
-    s32 GetPlayerCommanderId(M2C_UNK);
+    s32 GetPlayerCoZoneBonusIndex(M2C_UNK);
     if (IsCellInPlayerMoveRange() == 0) {
         return -1;
     }
-    return GetPlayerCommanderId(arg0);
+    return GetPlayerCoZoneBonusIndex(arg0);
 }
 
 /* Whether `terrain` is a production property (base, airport or port) whose owner
@@ -446,9 +459,10 @@ u8 IsTerrainKind(s32 arg0, s32 arg1) {
     return var_r0;
 }
 
-u8 func_020d04ec(s32 arg0,s32 arg1,s32 arg2) {
- void *p=(void *)*gCurrentMap;
- return IsTerrainKind(M2C_FIELD(p+(arg0+M2C_FIELD(p+arg1*2,u16 *,0x3758)),u8 *,0x1420),arg2);
+/* Whether the terrain of the map cell at (x, y) is of kind `terrainKind`. */
+u8 IsTerrainKindAtTile(s32 x, s32 y, s32 terrainKind) {
+ void *map=(void *)*gCurrentMap;
+ return IsTerrainKind(M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN),terrainKind);
 }
 
 s32 func_020d0528(s32 arg0) {
@@ -491,20 +505,20 @@ u8 IsPlayerCursorOwner(s32 player) {
 
 /* Terrain defense a unit gains from standing on `terrain`: the terrain's defense
  * stars times ten plus the owning player's per-turn defense bonus, floored at zero.
- * Kinds that take no terrain defense (func_020a857c) score zero. */
+ * Kinds that take no terrain defense (UnitKindTakesNoTerrainDefense) score zero. */
 s32 GetTerrainDefenseScore(s32 player, s32 kind, s32 terrain) {
-    s32 func_020a857c(s32);
+    s32 UnitKindTakesNoTerrainDefense(s32);
     s32 score;
-    if (func_020a857c(kind)) return 0;
+    if (UnitKindTakesNoTerrainDefense(kind)) return 0;
     score = (s16)gTerrainDefenseStars[terrain] * (s16)10 + M2C_FIELD((void *)*gCurrentMap + player * MAP_PLAYER_STRIDE, s8 *, PLAYER_DEFENSE_BONUS_OFF);
     if (score < 0) score = 0;
     return score;
 }
 
 s32 GetTerrainMoveCost(s32 arg0,s32 arg1,s32 arg2) {
- s32 func_020a857c(s32);
+ s32 UnitKindTakesNoTerrainDefense(s32);
  s32 value;
- if(func_020a857c(arg1)!=0) return 0;
+ if(UnitKindTakesNoTerrainDefense(arg1)!=0) return 0;
  value=gTerrainDefenseStars[arg2]*10;
  if(value<0) value=0;
  return value;

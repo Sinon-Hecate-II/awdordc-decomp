@@ -196,9 +196,12 @@ void *CreateUnitMove(s32 x,s32 y,s32 owner,s32 kind,s32 direction) {
  return p;
 }
 
-void *CreateUnitMoveAt(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    void *CreateUnitMove(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    return CreateUnitMove(arg0, arg1, arg2, arg3, GetPlayerUnitFacing(arg2));
+/* Create a unit-move controller at tile (tileX, tileY) for a unit of `owner` and
+ * unit `kind`, starting in the direction the owner's units face. */
+void *CreateUnitMoveAt(s32 tileX, s32 tileY, s32 owner, s32 kind) {
+    void *CreateUnitMove(s32, s32, s32, s32, s32);
+
+    return CreateUnitMove(tileX, tileY, owner, kind, GetPlayerUnitFacing(owner));
 }
 
 s32 GetPlayerUnitFacing(s32 arg0) {

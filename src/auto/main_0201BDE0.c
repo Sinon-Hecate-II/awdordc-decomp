@@ -361,23 +361,26 @@ void TcpProcessFin(s32 ipHeader, s32 seg, s32 length) {
     }
 }
 
-void TcpProcessReset(s32 a,s32 b) {
+/* Handle a received RST segment: close the connection it names, and wake the
+ * task waiting on it when that task was waiting for the connection to come up
+ * or down (task state 1 or 2). */
+void TcpProcessReset(s32 ipHeader, s32 seg) {
     M2C_UNK TaskWake(s32);
     M2C_UNK TaskYield();
-    void *TcpFindConnection();
-    void *temp_r0;
+    void *TcpFindConnection(s32, s32);
+    void *conn;
 
-    temp_r0 = TcpFindConnection();
-    if (temp_r0 == NULL) {
+    conn = TcpFindConnection(ipHeader, seg);
+    if (conn == NULL) {
         return;
     }
     TaskYield();
-    M2C_FIELD(temp_r0, s8 *, 8) = 0;
-    if ((u32) (M2C_FIELD(temp_r0, s32 *, 4) - 1) > 1U) {
+    M2C_FIELD(conn, s8 *, SOCKET_STATE) = TCP_STATE_CLOSED;
+    if ((u32) (M2C_FIELD(conn, s32 *, SOCKET_TASK_STATE) - 1) > 1U) {
         return;
     }
-    M2C_FIELD(temp_r0, s32 *, 4) = 0;
-    TaskWake(M2C_FIELD(temp_r0, s32 *, 0));
+    M2C_FIELD(conn, s32 *, SOCKET_TASK_STATE) = 0;
+    TaskWake(M2C_FIELD(conn, s32 *, SOCKET_OWNER));
 }
 
 /* Dispatch one received TCP segment: verify its checksum, subtract the header

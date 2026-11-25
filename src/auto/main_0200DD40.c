@@ -78,16 +78,18 @@ s32 Arm7TransferStart(M2C_UNK a, void (*cb)(s32), s32 user) {
     return 3;
 }
 
-s32 func_0200dedc(M2C_UNK arg0) {
-    s32 Arm7TransferStart(M2C_UNK, void (*)(s32), s32);
-    void func_0200e20c(s32);
-    s32 func_0200e21c(void);
+/* Start an ARM7 transfer and wait for it to finish (synchronous form): the
+ * start result is kept, and when the transfer did start, wait for its
+ * completion reply; returns the result of the completed transfer. */
+s32 Arm7TransferStartWait(Arm7TransferDesc *desc) {
+    void Arm7TransferResultCallback(s32);
+    s32 Arm7TransferWaitCompletion(void);
     extern M2C_UNK gArm7TransferState;
     s32 result;
-    result = Arm7TransferStart(arg0, func_0200e20c, 0);
-    M2C_FIELD(&gArm7TransferState, s32 *, 0x10) = result;
-    if (result == 0) func_0200e21c();
-    return M2C_FIELD(&gArm7TransferState, s32 *, 0x10);
+    result = Arm7TransferStart((M2C_UNK)desc, Arm7TransferResultCallback, 0);
+    M2C_FIELD(&gArm7TransferState, s32 *, ARM7_XFER_STATE_RESULT) = result;
+    if (result == 0) Arm7TransferWaitCompletion();
+    return M2C_FIELD(&gArm7TransferState, s32 *, ARM7_XFER_STATE_RESULT);
 }
 
 /* End the ARM7 transfer service's current operation: take the busy flag, remember
@@ -113,15 +115,20 @@ s32 Arm7TransferEnd(s32 callback, s32 user) {
     return 3;
 }
 
-s32 func_0200df70(void) {
-    void func_0200e20c(s32);
-    s32 func_0200e21c(void);
+/* End the ARM7 transfer service's current operation and wait for it to finish:
+ * the completion callback stores the end result in the transfer state, and when
+ * the end was accepted the wait polls until the operation is done.  Returns the
+ * recorded result (ARM7_XFER_STATE_RESULT). */
+s32 Arm7TransferEndWait(void) {
+    void Arm7TransferResultCallback(s32);
+    s32 Arm7TransferWaitCompletion(void);
     extern M2C_UNK gArm7TransferState;
     s32 result;
-    result = Arm7TransferEnd((s32)func_0200e20c, 0);
-    M2C_FIELD(&gArm7TransferState, s32 *, 0x10) = result;
-    if (result == 0) func_0200e21c();
-    return M2C_FIELD(&gArm7TransferState, s32 *, 0x10);
+
+    result = Arm7TransferEnd((s32)Arm7TransferResultCallback, 0);
+    M2C_FIELD(&gArm7TransferState, s32 *, ARM7_XFER_STATE_RESULT) = result;
+    if (result == 0) Arm7TransferWaitCompletion();
+    return M2C_FIELD(&gArm7TransferState, s32 *, ARM7_XFER_STATE_RESULT);
 }
 
 s32 func_0200dfa8(void) {
@@ -187,12 +194,12 @@ s32 Arm7TransferSendStopCommand(void) {
     return 0;
 }
 
-void func_0200e20c(s32 arg0) {
+void Arm7TransferResultCallback(s32 arg0) {
     extern M2C_UNK gArm7TransferState;
     M2C_FIELD(&gArm7TransferState, s32 *, 0x10) = arg0;
 }
 
-s32 func_0200e21c(void) {
+s32 Arm7TransferWaitCompletion(void) {
     extern s32 data_0212fcb0;
     s32 status;
     do {
@@ -201,48 +208,57 @@ s32 func_0200e21c(void) {
     return status;
 }
 
+/* Take the ARM7 command service for one command: with interrupts disabled,
+ * succeed only when no command is outstanding, and mark the service busy. */
 s32 Arm7CommandAcquire(void) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern M2C_UNK gArm7CommandState;
-    s32 state = OS_DisableInterrupts();
-    if (M2C_FIELD(&gArm7CommandState, s32 *, 0x18) != 0) {
-        OS_RestoreInterrupts(state);
+    s32 irq = OS_DisableInterrupts();
+    if (M2C_FIELD(&gArm7CommandState, s32 *, ARM7_CMD_BUSY) != 0) {
+        OS_RestoreInterrupts(irq);
         return 0;
     }
-    M2C_FIELD(&gArm7CommandState, s32 *, 0x18) = 1;
-    OS_RestoreInterrupts(state);
+    M2C_FIELD(&gArm7CommandState, s32 *, ARM7_CMD_BUSY) = 1;
+    OS_RestoreInterrupts(irq);
     return 1;
 }
 
-void func_0200e270(void) {
-    s32 func_02007574();
+/* Wait for the outstanding ARM7 command to finish, polling while the command
+ * service's busy word stays set.  The IPC FIFO is serviced by hand whenever the
+ * wait runs with interrupts disabled (the IRQ that normally services it cannot
+ * fire then). */
+void Arm7CommandWait(void) {
+    s32 AreInterruptsDisabled();
     M2C_UNK FifoReceiveHandler();
     extern M2C_UNK gArm7CommandState;
-    extern s32 data_0212fce4;
-    s32 *status=&data_0212fce4;
-    if(M2C_FIELD(&gArm7CommandState,s32 *,0x18)==0) return;
+    extern s32 gArm7CommandBusy; /* alias of gArm7CommandState + ARM7_CMD_BUSY */
+    s32 *busy = &gArm7CommandBusy;
+    if (M2C_FIELD(&gArm7CommandState, s32 *, ARM7_CMD_BUSY) == 0) return;
     do {
-        if(func_02007574()==0x80) FifoReceiveHandler();
-    } while(*status!=0);
+        if (AreInterruptsDisabled() == 0x80) FifoReceiveHandler();
+    } while (*busy != 0);
 }
 
 void func_0200e2b0(s32 arg0, s32 *arg1) {
     *arg1 = arg0;
 }
 
-void Arm7FinishCommand(s32 arg0) {
+/* Finish the outstanding ARM7 command: clear the busy flag, then hand the result
+ * and the command's user value to its completion callback, if one is registered
+ * (clearing it so it runs only once). */
+void Arm7FinishCommand(s32 result) {
     extern M2C_UNK gArm7CommandState;
     s32 busy;
     void (*callback)(s32,s32);
     s32 value;
-    busy=M2C_FIELD(&gArm7CommandState,s32 *,0x18);
-    callback=M2C_FIELD(&gArm7CommandState,void (**)(s32,s32),0x1C);
-    value=M2C_FIELD(&gArm7CommandState,s32 *,0x20);
-    if(busy!=0) M2C_FIELD(&gArm7CommandState,s32 *,0x18)=0;
+    busy=M2C_FIELD(&gArm7CommandState,s32 *,ARM7_CMD_BUSY);
+    callback=M2C_FIELD(&gArm7CommandState,void (**)(s32,s32),ARM7_CMD_CALLBACK);
+    value=M2C_FIELD(&gArm7CommandState,s32 *,ARM7_CMD_USER);
+    if(busy!=0) M2C_FIELD(&gArm7CommandState,s32 *,ARM7_CMD_BUSY)=0;
     if(callback==NULL) return;
-    M2C_FIELD(&gArm7CommandState,void (**)(s32,s32),0x1C)=NULL;
-    callback(arg0,value);
+    M2C_FIELD(&gArm7CommandState,void (**)(s32,s32),ARM7_CMD_CALLBACK)=NULL;
+    callback(result,value);
 }
 
 /* Bring the ARM7 command service up once: start the ARM7 link, wait for the
@@ -354,13 +370,13 @@ s32 func_0200e558(s32 arg0, s32 arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
 }
 #pragma scheduling reset
 s32 Arm7GetValueWait(M2C_UNK arg0, M2C_UNK arg1) {
-    void func_0200e270(void);
+    void Arm7CommandWait(void);
     s32 func_0200e558(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);
     s32 sp0;
     s32 result;
     result = func_0200e558(arg0, arg1, func_0200e2b0, &sp0);
     if (result != 0) return result;
-    func_0200e270();
+    Arm7CommandWait();
     return sp0;
 }
 
@@ -380,13 +396,13 @@ s32 Arm7SetAmpParam(s32 param, M2C_UNK value, void (*callback)(s32, s32 *), s32 
 }
 
 s32 func_0200e64c(M2C_UNK arg0, M2C_UNK arg1) {
-    void func_0200e270(void);
+    void Arm7CommandWait(void);
     s32 Arm7SetAmpParam(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);
     s32 sp0;
     s32 result;
     result = Arm7SetAmpParam(arg0, arg1, func_0200e2b0, &sp0);
     if (result != 0) return result;
-    func_0200e270();
+    Arm7CommandWait();
     return sp0;
 }
 
@@ -418,12 +434,12 @@ s32 SendPowerCommand(s32 command, void (*callback)(s32, s32 *), s32 *user) {
 }
 
 s32 SendPowerCommandWait(s32 arg0) {
-    void func_0200e270(void);
+    void Arm7CommandWait(void);
     s32 sp0;
     s32 result;
     result = SendPowerCommand(arg0, func_0200e2b0, &sp0);
     if (result != 0) return result;
-    func_0200e270();
+    Arm7CommandWait();
     return sp0;
 }
 
@@ -451,13 +467,13 @@ s32 Arm7SetBacklight(M2C_UNK screen, M2C_UNK enabled, void (*callback)(s32, s32 
 }
 
 s32 Arm7SetBacklightWait(M2C_UNK arg0, M2C_UNK arg1) {
-    void func_0200e270(void);
+    void Arm7CommandWait(void);
     s32 Arm7SetBacklight(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);
     s32 sp0;
     s32 result;
     result = Arm7SetBacklight(arg0, arg1, func_0200e2b0, &sp0);
     if (result != 0) return result;
-    func_0200e270();
+    Arm7CommandWait();
     return sp0;
 }
 
@@ -496,7 +512,7 @@ s32 WakeDisplayWait(void) {
 s32 sp0,result;
 result=((s32 (*)(s32,s32))WakeDisplay)((s32)func_0200e2b0,(s32)&sp0);
 if(result)return result;
-func_0200e270();return sp0;
+Arm7CommandWait();return sp0;
 }
 
 void Arm7SetAmpParam2(s32 a) {
@@ -706,12 +722,12 @@ s32 Arm7SetValue(s32 value, void (*callback)(s32, s32 *), s32 *user) {
 }
 
 s32 func_0200eca8(s32 arg0) {
-    void func_0200e270(void);
+    void Arm7CommandWait(void);
     s32 sp0;
     s32 result;
     result = Arm7SetValue(arg0, func_0200e2b0, &sp0);
     if (result != 0) return result;
-    func_0200e270();
+    Arm7CommandWait();
     return sp0;
 }
 
@@ -737,7 +753,7 @@ s32 Arm7ReadValueWait(s32 arg0) {
     s32 result;
     result = Arm7ReadValue(arg0, (s32)func_0200e2b0, (s32)&sp0);
     if (result != 0) return result;
-    func_0200e270();
+    Arm7CommandWait();
     return sp0;
 }
 

@@ -28,7 +28,7 @@ void func_ov003_021f35d8(void *arg0) {
  * state is set to enabled and the step returns; otherwise it is set to disabled
  * and, if the link session is in error, the object plays its back animation. */
 void Ov003_UpdateMapConfirmState(Ov003BattleSetup *setup) {
-    M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
+    M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
     s32 IsSessionInError();
     s32 IsSessionResultHandled();
     s32 IsMapConfirmEnabled();
@@ -42,7 +42,7 @@ void Ov003_UpdateMapConfirmState(Ov003BattleSetup *setup) {
     if ((IsSessionInError() == 0) && (IsSessionResultHandled() == 0)) {
         return;
     }
-    SetSpriteAnimation(setup, 5);
+    GotoSpriteAnimationLabel(setup, 5);
 }
 
 /* Enter the match scene for the setup: disable map confirming, close the
@@ -454,11 +454,13 @@ u8 func_ov003_021f3f0c(s32 arg0, s32 arg1, s32 arg2) {
  return result;
 }
 
-s32 func_ov003_021f3f24(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    if (((s32) (arg0 + arg2) < 0) || (arg0 > 0x100)) {
+/* Whether a box at (x, y) of size width x height overlaps the 256x192 screen;
+ * the inlined copy of IsBoxOnScreen used to clip the battle-scene text sprites. */
+s32 IsOv003BoxOnScreen(s32 x, s32 y, s32 width, s32 height) {
+    if (((s32) (x + width) < 0) || (x > SCREEN_WIDTH)) {
         return 0;
     }
-    if (((s32) (arg1 + arg3) < 0) || (arg1 > 0xC0)) {
+    if (((s32) (y + height) < 0) || (y > SCREEN_HEIGHT)) {
         return 0;
     }
     return 1;

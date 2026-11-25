@@ -14,6 +14,8 @@
 #define HEAP_BLOCK_ATTR_OFFSET    0x7f00 /* bits 8..14: alignment bytes absorbed in front of the block */
 #define HEAP_BLOCK_ATTR_FROM_TAIL 0x8000 /* bit 15: block was allocated from the tail */
 
+#define HEAP_BLOCK_HEADER_SIZE 0x10 /* bytes of header in front of a block's payload */
+
 /* Heap signature (u32 at heap+0x00). */
 #define HEAP_SIGNATURE_EXP 0x45585048 /* 'EXPH' */
 #define HEAP_SIGNATURE_FRM 0x46524D48 /* 'FRMH': frame heap, see InitFrameHeapArea */

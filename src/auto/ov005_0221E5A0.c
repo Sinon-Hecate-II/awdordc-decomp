@@ -3,7 +3,7 @@
 #include "battle_map.h"
 #include "ds3dsprite.h"
 extern u8 data_ov005_02220b70[];
-extern u8 data_ov005_02220f54[];
+extern u8 gResultsMapVtbl[];
 extern u8 data_ov005_02220a34[];
 extern u8 data_ov005_02220f3c[];
 extern u8 data_ov005_02220eac[];
@@ -135,7 +135,7 @@ void *p, *q; void **saved, **saved2;
 u8 *dst; s32 n; u8 *b; s32 i,j,k,v,t;
 p=CreateSpriteObject(data_ov005_02220b70,arg0);
 if (!p) return;
-M2C_FIELD(p,void **,0)=data_ov005_02220f54;
+M2C_FIELD(p,void **,0)=gResultsMapVtbl;
 SetFileDirectory(data_ov005_02220a34);
 OpenNarcArchive(GetLocalizedFileName(data_ov005_02220f3c));
 saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -324,7 +324,7 @@ void func_ov005_0221f084(void *arg0) {
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
     M2C_UNK CreateUnitSpriteButtonTask(void *, M2C_UNK);
-    void *func_020ab1c4(void *);
+    void *CreateUnitSprite(void *);
     s32 GetLocalizedFileName(M2C_UNK *);
     extern void **g3DSpriteEngineSub;
     extern void **g3DSpriteEngineMain;
@@ -408,7 +408,7 @@ void func_ov005_0221f084(void *arg0) {
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
     CloseNarcArchive();
     data_027e01d8 = (void*)g3DSpriteEngineMain;
-    M2C_FIELD(arg0, void **, 0x34) = func_020ab1c4(arg0);
+    M2C_FIELD(arg0, void **, 0x34) = CreateUnitSprite(arg0);
     InitUnitSprite(M2C_FIELD(arg0, void **, 0x34), 1, 0x120, 3, 1);
     {
     void *temp_r4 = M2C_FIELD(arg0, void **, 0x34);

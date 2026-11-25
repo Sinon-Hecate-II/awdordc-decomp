@@ -96,7 +96,7 @@ if(IsUnitInSight((u16)id))M2C_FIELD(unit,u16*,MAP_UNIT_FLAGS)|=UNIT_FLAG_VISIBLE
 void ResetBattleMap(void) {
     extern void **gCurrentMap;
     void RefreshMapCursorCellCache(void);
-    void func_0207ce28(void *);
+    void ResetMapViewCamera(void *);
     void ResetMapViewHold(void);
     void func_020d47b0(void);
     void ResetMapUnits(void);
@@ -123,7 +123,7 @@ void ResetBattleMap(void) {
         *(u8 *)((u8 *)*gCurrentMap + 0x515c + i) = 0;
     }
 
-    func_0207ce28((u8 *)*gCurrentMap + MAP_VIEW_ZOOM);
+    ResetMapViewCamera((u8 *)*gCurrentMap + MAP_VIEW_ZOOM);
 
     *(u8 *)((u8 *)*gCurrentMap + 0x52ae) = 0;
     *(u8 *)((u8 *)*gCurrentMap + 0x52af) = 0;

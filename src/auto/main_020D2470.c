@@ -94,17 +94,19 @@ void func_020d2470(void) {
     } while (y < (s32)M2C_FIELD(p, u16 *, 0x5146));
 }
 #pragma optimization_level reset
+/* Whether the player records of a and b share an army, i.e. are on the same team. */
 u8 IsSameTeam(s32 a, s32 b) {
     extern s32 *gCurrentMap;
     s32 base;
     s32 work;
     u8 *p1;
     u8 *p2;
+
     base = *gCurrentMap + 0x3A4;
     work = base + 0x6400;
-    p1 = (u8 *)(work + a * 0x8C);
-    p2 = (u8 *)(work + b * 0x8C);
-    return p1[0x26] == p2[0x26];
+    p1 = (u8 *)(work + a * MAP_PLAYER_STRIDE);
+    p2 = (u8 *)(work + b * MAP_PLAYER_STRIDE);
+    return p1[PLAYER_REC_ARMY] == p2[PLAYER_REC_ARMY];
 }
 
 u8 func_020d277c(s32 arg0, s32 arg1) {
@@ -318,13 +320,16 @@ void AddPlayerFunds(s32 player, s32 amount) {
 
 #pragma push
 #pragma opt_propagation off
-s32 GetPlayerCommanderId(s32 arg0) {
+/* Index of `player`'s CO-zone bonus record in the power state it is in now: the
+ * player's army id and whether its CO power is active, as GetCoZoneBonusIndex
+ * takes them. */
+s32 GetPlayerCoZoneBonusIndex(s32 player) {
     extern s32 *gCurrentMap;
     s32 GetCoZoneBonusIndex(s32, s32);
-    struct PlayerRec { u8 pad[0x6c]; u32 id:8; u32 unk:2; u32 flag:2; } *rec;
+    PlayerRecordSprite *rec;
 
-    rec = (struct PlayerRec *)(*gCurrentMap + 0x3a4 + 0x6400 + arg0 * 0x8c);
-    return GetCoZoneBonusIndex(rec->id, rec->flag);
+    rec = (PlayerRecordSprite *)(*gCurrentMap + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE);
+    return GetCoZoneBonusIndex(rec->sprite.armyId, rec->sprite.powerActive);
 }
 #pragma pop
 /* Returns how many of a player's CO power meters are fully charged: 0 when CO
@@ -350,11 +355,11 @@ s32 GetCoPowerMeterLevel(s32 player) {
 
 void func_020d2cf0(M2C_UNK arg0) {
     M2C_UNK func_020a25bc(s32, s32);
-    s32 GetPlayerCommanderId();
+    s32 GetPlayerCoZoneBonusIndex();
     s32 GetCoPowerMeterLevel(M2C_UNK);
     s32 temp_r4;
 
-    temp_r4 = GetPlayerCommanderId();
+    temp_r4 = GetPlayerCoZoneBonusIndex();
     func_020a25bc(temp_r4, GetCoPowerMeterLevel(arg0));
 }
 
@@ -393,16 +398,17 @@ void func_020d2d80(M2C_UNK arg0) {
     func_020a33f0(arg0, 0);
 }
 
-void PayPlayerIncome(s32 arg0) {
+/* Pay `player` its per-turn property income, once the battle has started. */
+void PayPlayerIncome(s32 player) {
     extern s32 *gCurrentMap;
     void AddPlayerFunds(s32, s32);
     s32 base = *gCurrentMap;
-    s32 v = M2C_FIELD(base, u16 *, 0x52A2);
+    s32 turn = M2C_FIELD(base, u16 *, MAP_TURN);
 
-    if (v <= 0) {
+    if (turn <= 0) {
         return;
     }
-    AddPlayerFunds(arg0, M2C_FIELD(base + arg0 * 0x8C, s32 *, 0x6000 + 0x7AC));
+    AddPlayerFunds(player, M2C_FIELD(base + player * MAP_PLAYER_STRIDE, s32 *, PLAYER_INCOME_OFF));
 }
 
 /* Find the first free unit record in `player`'s group of the battle map: the
@@ -625,11 +631,15 @@ u8 IsPlayerHqIntact(s32 player) {
     return result;
 }
 
-u8 IsPlayerStillFighting(s32 a){
-extern s32 *gCurrentMap;u8 result;
-if(!(((u8 *)*gCurrentMap)[0x5155]&1))return 1;
-if(IsPlayerRouted(a)==0)result=1;else result=0;
-return result;
+/* Return whether the player is still fighting under the map's unit-loss
+ * (rout) rule; without that rule, every player always is. */
+u8 IsPlayerStillFighting(s32 player) {
+    extern s32 *gCurrentMap;
+    u8 result;
+
+    if (!(((u8 *)*gCurrentMap)[MAP_BATTLE_RULES] & MAP_RULE_DEFEAT_BY_ROUT)) return 1;
+    if (IsPlayerRouted(player) == 0) result = 1; else result = 0;
+    return result;
 }
 
 /* Whether a human player `player` is still fighting: a non-human player always

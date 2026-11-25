@@ -95,12 +95,12 @@ s32 func_020282a8(u32 arg0) {
 void WFC_Finish(void){
  extern void *gWfcSession;
  void func_02028ef4(void);
- s32 func_02012274(void (*)(void));
+ s32 WFC_SendCommand1(void (*)(void));
  u8 *p=(u8 *)gWfcSession;
  p += WFC_SESSION_PLAYER_BLOCK;
  if(p[WFC_SESSION_BLOCK_ABORT])return;
  p[WFC_SESSION_BLOCK_ABORT]=1;
- if(func_02012274(func_02028ef4)==2)return;
+ if(WFC_SendCommand1(func_02028ef4)==2)return;
  WFC_SetState(WFC_SESSION_STATE_ERROR);
  WFC_DispatchEvent(7,0,0,0x610);
 }

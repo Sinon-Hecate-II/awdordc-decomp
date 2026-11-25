@@ -161,7 +161,7 @@ extern M2C_UNK data_ov005_02221304,data_ov005_02220658,data_ov005_02220670,data_
 extern s16 data_ov005_02220572[];
 void func_020814e4(void *);void func_02081590(void *,s32);void func_020816a4(void *,s32,s32,s32);void func_0208161c(void *,s32,s32,s32);
 void func_02081528(void);void func_0200bc5c(void *);void func_ov005_022140e4(void);
-void *func_020ad460(s32);void *func_020ad4a0(s32);void *func_020ad4e0(s32);void *func_020ad520(s32);
+void *func_020ad460(s32);void *BuildMapBackgroundCgName(s32);void *BuildMapBackgroundScName(s32);void *BuildMapBackgroundClName(s32);
 void *saved=(unsigned short)gCur3DSpriteEngine; void *engine=*(void *volatile *)&data_027e00c8; void *p=M2C_FIELD(&data_ov005_02221304,void **,8);s32 id;
 gCur3DSpriteEngine=engine;
 if(M2C_FIELD(p,s16 *,2)==-1 || (id=data_ov005_02220572[M2C_FIELD((u8 *)p+M2C_FIELD(p,s16 *,2)*2,s16 *,6)*2])==-1) {
@@ -172,9 +172,9 @@ func_0208161c(&data_ov005_022206a0,3,0,0x200);func_02081528();
 } else {
 func_0200bc5c(&data_ov005_022206b8);
 func_020814e4(func_020ad460(id));
-func_02081590(func_020ad4a0(id),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x18));
-func_02081590(func_020ad4e0(id),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c));
-func_0208161c(func_020ad520(id),3,0,0x200);func_02081528();
+func_02081590(BuildMapBackgroundCgName(id),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x18));
+func_02081590(BuildMapBackgroundScName(id),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c));
+func_0208161c(BuildMapBackgroundClName(id),3,0,0x200);func_02081528();
 func_ov005_022140e4();
 }
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;
@@ -193,9 +193,9 @@ void func_ov005_02214cdc(void) {
     void func_0208161c(void *, s32, s32, s32);
     void SetFileDirectory(void *);
     void *BuildMapBackgroundNarcName(s32);
-    void *func_020ad4a0(s32);
-    void *func_020ad4e0(s32);
-    void *func_020ad520(s32);
+    void *BuildMapBackgroundCgName(s32);
+    void *BuildMapBackgroundScName(s32);
+    void *BuildMapBackgroundClName(s32);
     void *saved = gCur3DSpriteEngine;
     void *engine = *(void *volatile *)&g3DSpriteEngineSub;
     void *p;
@@ -215,9 +215,9 @@ void func_ov005_02214cdc(void) {
         s32 id = gRecordSubBgId[M2C_FIELD(p + selected * 2, s16 *, 6) * 2];
         SetFileDirectory(&data_ov005_02220714);
         OpenNarcArchive(BuildMapBackgroundNarcName(id));
-        LoadNarcFileDecompressed(func_020ad4a0(id), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
-        LoadNarcFileDecompressed(func_020ad4e0(id), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
-        func_0208161c(func_020ad520(id), 3, 0, 512);
+        LoadNarcFileDecompressed(BuildMapBackgroundCgName(id), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
+        LoadNarcFileDecompressed(BuildMapBackgroundScName(id), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
+        func_0208161c(BuildMapBackgroundClName(id), 3, 0, 512);
         CloseNarcArchive();
         func_ov005_022140e4();
     }

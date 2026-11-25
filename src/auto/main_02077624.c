@@ -142,10 +142,30 @@ void GX_DisableFog(void) {
     GX_SetFog(0, 0, 0, 0);
 }
 
-void func_02077a4c(void) {extern M2C_UNK gMapHighlightState;M2C_FIELD(&gMapHighlightState,s32 *,4)=0;*(volatile u32 *)0x40004c8=0x20000000;*(volatile u32 *)0x40004cc=0x7fff;}
+void SetMapViewDefaultLight(void) {extern M2C_UNK gMapHighlightState;M2C_FIELD(&gMapHighlightState,s32 *,4)=0;*(volatile u32 *)0x40004c8=0x20000000;*(volatile u32 *)0x40004cc=0x7fff;}
 
-void func_02077a7c(void) {void Map_BeginFrame();void func_02077eb8(void);void func_02077ebc(void);void func_0207ce28();void func_0207cbb0();void func_0207749c();extern s32 *gCurrentMap;
-Map_BeginFrame();func_02077a4c();func_02077eb8();func_02077ebc();func_0207ce28(*gCurrentMap+0x6ef8);func_0207cbb0();func_0207749c();}
+/* Bring the battle map's presentation back up: begin the frame, reset the map's
+ * default light and the raised-cells timer, load the map's texture and animation
+ * data, then reset the view camera (inside the map, at *gCurrentMap +
+ * MAP_VIEW_ZOOM) and the standalone default camera. */
+void InitBattleMapGraphics(void) {
+    void Map_BeginFrame(void);
+    void SetMapViewDefaultLight(void);
+    void func_02077eb8(void);
+    void func_02077ebc(void);
+    void ResetMapViewCamera(void *);
+    void InitDefaultMapCamera(void);
+    void ResetMapViewRaiseTimer(void);
+    extern s32 *gCurrentMap;
+
+    Map_BeginFrame();
+    SetMapViewDefaultLight();
+    func_02077eb8();
+    func_02077ebc();
+    ResetMapViewCamera((void *)(*gCurrentMap + MAP_VIEW_ZOOM));
+    InitDefaultMapCamera();
+    ResetMapViewRaiseTimer();
+}
 
 /* Interpolate two constant backdrop colors by blend factor t and store the resulting RGB plus engine viewport dimensions into gMapViewProjection. */
 M2C_UNK func_02077ab8(s32 arg0) {
@@ -298,7 +318,7 @@ void func_02077ebc(void) {
     M2C_UNK GX_EndLoadTex();
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK LoadFileToTextureBank(M2C_UNK *, s32);
-    M2C_UNK func_02081400(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadFileToObjExtPalette(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK OpenNarcArchive(M2C_UNK *);
     M2C_UNK CloseNarcArchive();
     M2C_UNK func_0208166c(M2C_UNK *, s32, M2C_UNK);
@@ -338,9 +358,9 @@ void func_02077ebc(void) {
     GX_EndLoadTex();
     SetFileDirectory(&data_02100ad8);
     LoadFileToTextureBank(&data_02100ae4, 0x24D20);
-    func_02081400(&data_02100af0, 0x1200, 0x200);
+    LoadFileToObjExtPalette(&data_02100af0, 0x1200, 0x200);
     LoadFileToTextureBank(GetLocalizedFileName(&data_02100afc), 0x20000);
-    func_02081400(&data_02100b0c, 0x1400, 0x40);
+    LoadFileToObjExtPalette(&data_02100b0c, 0x1400, 0x40);
     OpenNarcArchive(&data_02100b1c);
     func_0208168c(&data_02100b28, 0x22F20);
     func_0208166c(&data_02100b3c, 0x1460, 0x40);
@@ -407,7 +427,7 @@ void BuildMoveRangeFlags(void)
  * highlighted cell (a bridge/pipe terrain kind or the cursor) and 0 elsewhere. */
 void BuildMapCellCodes(s32 x0, s32 y0, s32 x1, s32 y1) {
     u8 func_020bd118(void);
-    s32 func_020774cc(void);
+    s32 IsOrderEffectHighlightActive(void);
     u8 IsCellInOrderEffectArea(s32, s32);
     extern s32 *gCurrentMap;
     extern u8 gMapCellCodes[];
@@ -428,7 +448,7 @@ void BuildMapCellCodes(s32 x0, s32 y0, s32 x1, s32 y1) {
     if (x1 > mapWidth - 1) x1 = mapWidth - 1;
     if (y1 > mapHeight - 1) y1 = mapHeight - 1;
 
-    if (func_020774cc()) {
+    if (IsOrderEffectHighlightActive()) {
     for (y = y0; y <= y1; y++) {
         for (x = x0; x <= x1; x++) {
             u16 rowVal;

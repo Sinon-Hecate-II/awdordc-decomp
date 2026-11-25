@@ -247,7 +247,19 @@ void ProcessAiCommandPhase(void) {
     }
 }
 
-s32 IsAiCommandPlanningPhase(void){switch(*gAiCommandState){case 0:case 1:case 2:case 4:return 1;default:return 0;}}
+/* True while the AI's turn is in one of the phases its planning task sprite
+ * steps: begin the turn, run the turn plan, pick an action, or plan the orders. */
+s32 IsAiCommandPlanningPhase(void) {
+    switch (*gAiCommandState) {
+    case AI_COMMAND_PHASE_START_TURN:
+    case AI_COMMAND_PHASE_PLAN_UNITS:
+    case AI_COMMAND_PHASE_PICK_ACTION:
+    case AI_COMMAND_PHASE_PLAN_TURN:
+        return 1;
+    default:
+        return 0;
+    }
+}
 
 u8 IsAiCommandTaskRunning(void) {
     s32 IsTaskSpriteRunning(M2C_UNK);
@@ -287,16 +299,19 @@ void UpdateAiTurn(void) {
     }
 }
 
+/* Ends the AI's turn: reveals the enemies it has spotted, hands the turn over
+ * to the next player and resets the AI command phase, and in a link battle
+ * broadcasts the turn handoff packet (weather and all) to the other consoles. */
 void EndAiTurn(void) {
     MarkKnownEnemyUnits();
     EndPlayerTurn();
-    gAiCommandState[0] = 0;
-    if (gBattleEndState[0] != 0) {
-        func_020844f8();
+    gAiCommandState[AI_COMMAND_STATE_PHASE] = AI_COMMAND_PHASE_START_TURN;
+    if (gBattleEndState[BATTLE_END_ENDED] != 0) {
+        SendTurnEndPacket();
     }
 }
 
-u8 func_ov000_0219c7b0(void) {
+u8 GetAiCommandPhase(void) {
     extern u8 *gAiCommandState;
     return *gAiCommandState;
 }

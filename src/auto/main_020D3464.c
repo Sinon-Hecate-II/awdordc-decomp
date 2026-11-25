@@ -97,14 +97,14 @@ void StartEndTurn(void) {
 }
 
 void func_020d3628(void) {
-    M2C_UNK func_020844f8();
+    M2C_UNK SendTurnEndPacket();
     M2C_UNK EndPlayerTurn();
     extern M2C_UNK gMapData;
     EndPlayerTurn();
     if (M2C_FIELD(&gMapData, u8 *, 4) == 0) {
         return;
     }
-    func_020844f8();
+    SendTurnEndPacket();
 }
 
 s32 HandleOverlayResult(void) {
@@ -224,18 +224,23 @@ void func_020d39a4(void) {
     data_ov004_0222866c(0);
 }
 
-s32 func_020d39b4(void) {
-    M2C_UNK GetActiveOverlay();
-    M2C_UNK Ov010Online_PollMatchmaking(M2C_UNK *);
+/* Per-frame update of the online match view-hold sprite (its class update slot):
+ * for the online overlay, poll the matchmaking request; while it runs return 1 so
+ * the hold keeps the map, and once it finishes store the outcome (1 = opponent
+ * found) in the map data and let the hold end. */
+s32 UpdateOnlineMatchViewHold(void) {
+    s32 GetActiveOverlay();
+    s32 Ov010Online_PollMatchmaking(s32 *);
     extern M2C_UNK gMapData;
-    s32 local;
+    s32 matched;
+
     if (GetActiveOverlay() != 2) {
         return 0;
     }
-    if (Ov010Online_PollMatchmaking(&local) != 0) {
+    if (Ov010Online_PollMatchmaking(&matched) != 0) {
         return 1;
     }
-    M2C_FIELD(&gMapData, u8 *, 7) = local;
+    M2C_FIELD(&gMapData, u8 *, MAPDATA_MATCH_RESULT) = matched;
     return 0;
 }
 
@@ -282,13 +287,15 @@ void AdvanceAfterOverlayEvent(void) {
 }
 
 #pragma optimization_level 2
-void func_020d3aa4(void *arg0) {
+/* Once the link/online session has ended or matchmaking found no opponent,
+ * drop the voice-chat widgets and put the match name label on the battle map. */
+void ShowMatchNameLabel(void *owner) {
  M2C_UNK DeleteVoiceChatWidgets();
  M2C_UNK CreateMatchNameLabel(M2C_UNK, M2C_UNK, M2C_UNK);
  extern M2C_UNK gMapData;
- if (M2C_FIELD(&gMapData,u8 *,5) != 0 || M2C_FIELD(&gMapData,u8 *,7) == 0) {
+ if (M2C_FIELD(&gMapData,u8 *,MAPDATA_OVERLAY_RESULT) != 0 || M2C_FIELD(&gMapData,u8 *,MAPDATA_MATCH_RESULT) == 0) {
  DeleteVoiceChatWidgets();
- CreateMatchNameLabel(0,0x25c,arg0);
+ CreateMatchNameLabel(0,MAP_MATCH_LABEL_Y,owner);
  }
 }
 #pragma optimization_level reset
@@ -331,7 +338,7 @@ void StepBattleMap(void) {
     M2C_UNK IsPlayerLocallyControlled(M2C_UNK);
     M2C_UNK UpdateAiTurn();
     void UpdateLinkAiCommand();
-    void func_020d45d8();
+    void MapStateReturnStep();
     M2C_UNK func_020d4614();
     M2C_UNK func_020d466c();
     void StartEndTurn();
@@ -405,7 +412,7 @@ void StepBattleMap(void) {
             if (IsPlayerLocallyControlled(M2C_FIELD(map[0], u16 *, MAP_CURRENT_PLAYER))) { UpdateAiTurn(); return; }
             UpdateLinkAiCommand(); return;
         case MAP_STATE_LINK_TURN: UpdateLinkAiCommand(); return;
-        case MAP_STATE_RETURN: func_020d45d8(); return;
+        case MAP_STATE_RETURN: MapStateReturnStep(); return;
         case MAP_STATE_BATTLE_FINISH: func_020d4614(); return;
         case MAP_STATE_RESUME_INPUT: func_020d466c(); return;
         case MAP_STATE_END_TURN: StartEndTurn(); return;
@@ -419,15 +426,19 @@ void StepBattleMap(void) {
     }
 }
 
-void func_020d3cec(void) {
+/* Point the shared target list and the selection queue back at the default entry
+ * buffer, then reload the map's tileset and the unit-name graphics. Called when
+ * the game state is reset, before the map config is reset. */
+void ResetMapListsAndGraphics(void) {
     M2C_UNK LoadMapTileset();
     M2C_UNK ClearNameGraphicFiles();
     M2C_UNK LoadNameGraphicFiles();
-    extern s32 data_0211fb58;
+    extern void *gDefaultMapListBuffer;
     extern s32 gTargetList;
     extern s32 gSelectionQueue;
-    gSelectionQueue = data_0211fb58;
-    gTargetList = data_0211fb58;
+
+    gSelectionQueue = (s32)gDefaultMapListBuffer;
+    gTargetList = (s32)gDefaultMapListBuffer;
     LoadMapTileset();
     ClearNameGraphicFiles();
     LoadNameGraphicFiles();
@@ -725,9 +736,9 @@ void func_020d42a8(void) {
 }
 
 void func_020d42d0(void) {
-    M2C_UNK func_ov000_0216a8a4();
+    M2C_UNK RunTurnIntroEvent();
     extern void **gCurrentMap;
-    func_ov000_0216a8a4();
+    RunTurnIntroEvent();
     M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 11;
 }
 

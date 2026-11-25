@@ -437,18 +437,20 @@ loop_7:
     }
 }
 
+/* Set up the asynchronous WFC send path once: mark it initialized, clear the
+ * state left by the last send and create the mutex that serialises sends. */
 void WFC_InitSendState(void) {
     void InitMutex(void *);
     extern M2C_UNK gWfcSendState;
     extern M2C_UNK gWfcSendLock;
 
-    if (M2C_FIELD(&gWfcSendState, u8 *, 0) != 0) {
+    if (((WfcSendState *)&gWfcSendState)->initialized != 0) {
         return;
     }
-    M2C_FIELD(&gWfcSendState, u8 *, 0) = 1;
-    M2C_FIELD(&gWfcSendState, u32 *, 0x24) = 0;
-    M2C_FIELD(&gWfcSendState, u32 *, 0x8) = 0;
-    M2C_FIELD(&gWfcSendState, u32 *, 0x4) = 0;
+    ((WfcSendState *)&gWfcSendState)->initialized = 1;
+    ((WfcSendState *)&gWfcSendState)->result = WFC_SEND_OK;
+    ((WfcSendState *)&gWfcSendState)->flags = 0;
+    ((WfcSendState *)&gWfcSendState)->request = 0;
     InitMutex(&gWfcSendLock);
 }
 
@@ -627,13 +629,19 @@ s32 WFC_SendPacket(void *destAddr, void *data, s32 dataLen, s32 extra, s32 extra
     return work;
 }
 #pragma opt_if-conversion reset
-void WFC_OnSendComplete(void *arg0) {
-void WFC_RearmStateTimer(void); void OS_WakeupThread(void *);
-extern M2C_UNK gWfcSendState; extern M2C_UNK gWfcSendThread;
-if(M2C_FIELD(arg0,u16 *,0)!=0x12) return;
-M2C_FIELD(&gWfcSendState,u32 *,0x24)=M2C_FIELD(arg0,u16 *,2);
-if(M2C_FIELD(arg0,u16 *,2)==0) WFC_RearmStateTimer();
-OS_WakeupThread(&gWfcSendThread);
+/* Completion callback of a WFC send: store the transfer's result in the send
+ * state, rearm the state timer on success and wake the thread waiting for the
+ * send.  Records of any other command are ignored. */
+void WFC_OnSendComplete(void *event) {
+    void WFC_RearmStateTimer(void);
+    void OS_WakeupThread(void *);
+    extern M2C_UNK gWfcSendState;
+    extern M2C_UNK gWfcSendThread;
+
+    if (M2C_FIELD(event, u16 *, WFC_COMPLETE_COMMAND) != WFC_SEND_COMMAND) return;
+    M2C_FIELD(&gWfcSendState, u32 *, 0x24) = M2C_FIELD(event, u16 *, WFC_COMPLETE_RESULT);
+    if (M2C_FIELD(event, u16 *, WFC_COMPLETE_RESULT) == 0) WFC_RearmStateTimer();
+    OS_WakeupThread(&gWfcSendThread);
 }
 
 void WFC_OnSendRequestComplete(void) {

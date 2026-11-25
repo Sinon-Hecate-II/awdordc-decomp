@@ -192,11 +192,15 @@ if(func_02086a20(0)==((u32)(p[0]<<26)>>26)) M2C_FIELD(p,u16 *,MAP_UNIT_FLAGS)|=U
 }
 }
 
-u8 func_ov004_02213e94(void) {
- extern void **gCurrentMap;
- s32 n=M2C_FIELD(*gCurrentMap,u16 *,0x52A2); u8 r;
- if(n<=0)return 0;
- if(((n+1)&3)==0)r=1;else r=0; return r;
+/* Battle-script condition: true on the third turn of every four-turn cycle
+ * (turn % 4 == 3, i.e. (turn + 1) divisible by 4). */
+u8 IsTurnThirdOfFour(void) {
+    extern void **gCurrentMap;
+    s32 turn = M2C_FIELD(*gCurrentMap, u16 *, MAP_TURN);
+    u8 r;
+    if (turn <= 0) return 0;
+    if (((turn + 1) & 3) == 0) r = 1; else r = 0;
+    return r;
 }
 
 u8 func_ov004_02213ed0(void) {

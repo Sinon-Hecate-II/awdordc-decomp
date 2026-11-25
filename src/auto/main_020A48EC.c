@@ -287,9 +287,9 @@ void func_020a54d0(void *a) {void DeleteSpriteObject();extern s32 gSelectionQueu
  * order's attack visual (area burst, beam or point strike) on the order's tile,
  * then advance to the next queue entry and restart the sprite animation. */
 void PlayOrderEffectStep(void *sprite) {
-    M2C_UNK SetSpriteAnimation(void *, s32);
+    M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     void *FindMapOrderAtTile(s16, s16);
-    M2C_UNK func_020b6f98(s16, s16, s32, void *);
+    M2C_UNK CreateAuroraStrikeEffect(s16, s16, s32, void *);
     M2C_UNK CreateGasStormEffect(s16, s16, s16, s16, s32, void *);
     M2C_UNK SpawnBeamEffect(s16, s16, u32, s32, void *);
     extern Unk020APosition *gSelectionQueue;
@@ -303,7 +303,7 @@ void PlayOrderEffectStep(void *sprite) {
     order = &queue[slot];
     switch (order->b) {
     default: break;
-    case 4: func_020b6f98((s16)order->c, (s16)order->d, slot + 1, sprite); break;
+    case 4: CreateAuroraStrikeEffect((s16)order->c, (s16)order->d, slot + 1, sprite); break;
     case 6: case 7:
         orderTile = FindMapOrderAtTile((s16)order->c, (s16)order->d);
         nextSlot = M2C_FIELD(sprite, s16 *, ORDER_SPRITE_QUEUE_CURSOR);
@@ -315,7 +315,7 @@ void PlayOrderEffectStep(void *sprite) {
         M2C_FIELD(sprite, s16 *, ORDER_SPRITE_QUEUE_CURSOR)++; break;
     }
     M2C_FIELD(sprite, s16 *, ORDER_SPRITE_QUEUE_CURSOR)++;
-    SetSpriteAnimation(sprite, 0);
+    GotoSpriteAnimationLabel(sprite, 0);
 }
 
 void func_020a561c(void *arg0) {
@@ -347,7 +347,7 @@ void TickMapOrderTimers(void) {
    order is left it starts the sprite animation. */
 void SelectNextOrderTargets(void *anim) {
 extern s32 *gCurrentMap;
-void ClearSelectionQueue(void);s32 SetSpriteAnimation(void *,s32);
+void ClearSelectionQueue(void);s32 GotoSpriteAnimationLabel(void *,s32);
 ClearSelectionQueue();
 while(M2C_FIELD(anim,Unk020AEntry **,0x34)->type) {
 if(IsMapOrderActive(M2C_FIELD(anim,Unk020AEntry **,0x34))) {
@@ -376,6 +376,6 @@ return;
 }}
 M2C_FIELD(anim,Unk020AEntry **,0x34)++;
 }
-SetSpriteAnimation(anim,1);
+GotoSpriteAnimationLabel(anim,1);
 }
 
