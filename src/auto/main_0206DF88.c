@@ -1,9 +1,15 @@
 /* 16 functions from 0x0206DF88 to 0x0206EEB4 (main), found by ds-decomp. */
 #include "common.h"
 
-double func_0206df88(double x,double y) { ((u32 *)&x)[1] = (((u32 *)&x)[1] & 0x7fffffff) | (((u32 *)&y)[1] & 0x80000000); return x; }
+/* copysign: return |x| with the sign of y (the soft-float code uses it to
+ * put a sign on a magnitude, e.g. Copysign(1.0e300, x) for 1e300 with x's sign). */
+double Copysign(double x, double y) {
+    ((u32 *)&x)[1] = (((u32 *)&x)[1] & 0x7fffffff) | (((u32 *)&y)[1] & 0x80000000);
+    return x;
+}
 
-double fabs(double x) { ((u32 *)&x)[1] &= 0x7fffffff; return x; }
+/* Return the magnitude of `x`: same double with its sign bit cleared. */
+double Fabs(double x) { ((u32 *)&x)[1] &= 0x7fffffff; return x; }
 
 /* frexp: split `value` into a mantissa in [0.5, 1) and the exponent `exponent`
  * it is scaled by, so value == mantissa * 2^exponent.  Zero, infinity and NaN
@@ -44,14 +50,14 @@ double ScaleDoubleByExp(double x, s32 scale) {
     }
     if (exponent == 0x7ff) return func_02070134(x, x);
     exponent = exponent + scale;
-    if (exponent > 0x7fe) return func_02070658(1.0e300, func_0206df88(1.0e300, x));
+    if (exponent > 0x7fe) return func_02070658(1.0e300, Copysign(1.0e300, x));
     if (exponent > 0) {
         ((s32 *)&x)[1] = (hiWord & 0x800fffff) | (exponent << 20);
         return x;
     }
     if (exponent <= -54) {
-        if (scale > 50000) return func_02070658(1.0e300, func_0206df88(1.0e300, x));
-        return func_02070658(1.0e-300, func_0206df88(1.0e-300, x));
+        if (scale > 50000) return func_02070658(1.0e300, Copysign(1.0e300, x));
+        return func_02070658(1.0e-300, Copysign(1.0e-300, x));
     }
     ((s32 *)&x)[1] = (hiWord & 0x800fffff) | ((exponent + 54) << 20);
     return func_02070658(5.551115123125783e-17, x);

@@ -8,16 +8,19 @@ static inline void CallNodeMethod(void *node) {
 
 void UpdateStreamedMusicVolume(void);
 
-s32 Sound_PlayEffectAtVolume(s32 arg0, s32 arg1) {
+/* Play sound effect `soundId` at `volume`: when the effect actually started, set
+ * the sound-effect player's volume to that value. Returns 1 (success) even when
+ * the effect did not play. */
+s32 Sound_PlayEffectAtVolume(s32 soundId, s32 volume) {
     s32 PlaySoundEffect(s32);
 
-    if (PlaySoundEffect(arg0) != 0) {
-        func_0208fea0(arg1);
+    if (PlaySoundEffect(soundId) != 0) {
+        SetSoundEffectVolume(volume);
     }
     return 1;
 }
 
-s32 func_0208fea0(M2C_UNK arg0) {
+s32 SetSoundEffectVolume(M2C_UNK arg0) {
     M2C_UNK Sound_FadeEffectVolume(M2C_UNK, M2C_UNK, M2C_UNK);
     Sound_FadeEffectVolume(-1, arg0, 0);
     return 1;
@@ -45,16 +48,17 @@ s32 Sound_FadeEffectVolume(s32 snapVolume, s32 targetVolume, s32 frames) {
     return 1;
 }
 
+/* True once the sound driver reports its player ready to take commands. */
 u8 IsSoundPlayerReady(void) {
     extern M2C_UNK gSoundDriverState;
-    u8 var_r0;
+    u8 ready;
 
-    if (M2C_FIELD(&gSoundDriverState, s32 *, 4) != 0) {
-        var_r0 = 1;
+    if (M2C_FIELD(&gSoundDriverState, s32 *, SOUND_STATE_READY) != 0) {
+        ready = 1;
     } else {
-        var_r0 = 0;
+        ready = 0;
     }
-    return var_r0;
+    return ready;
 }
 
 /* Returns 1 when the sound driver counted a sound within the last `frames` frames
@@ -151,7 +155,7 @@ s32 SetSlotSoundPending(s32 slot, s32 volume, s32 frames) {
     extern M2C_UNK gSoundDriverState;
     extern M2C_UNK gSoundEffectSlotHandles;
     u8 IsSlotSoundActive(s32);
-    M2C_UNK func_0202ad50(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Sound_SetPlayerChannelLevel(M2C_UNK, M2C_UNK, M2C_UNK);
 
     if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return 0;
@@ -159,7 +163,7 @@ s32 SetSlotSoundPending(s32 slot, s32 volume, s32 frames) {
     if (IsSlotSoundActive(slot) == 0) {
         return 0;
     }
-    func_0202ad50(&gSoundEffectSlotHandles + slot, (M2C_UNK)(u16)volume, frames);
+    Sound_SetPlayerChannelLevel(&gSoundEffectSlotHandles + slot, (M2C_UNK)(u16)volume, frames);
     return 1;
 }
 
@@ -323,14 +327,16 @@ void func_02090390(void) {
     Sound_UpdateDriver();
 }
 
-void func_020903b0(void) {
+/* Push a new heap section on the sound player, so the allocations made from here
+ * on can be rolled back; nothing happens while the sound system is off. */
+void Sound_PushPlayerHeapSection(void) {
     extern M2C_UNK gSoundDriverState;
     s32 Sound_PushHeapSection(void *);
 
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return;
     }
-    Sound_PushHeapSection(M2C_FIELD(&gSoundDriverState, void **, 0x10));
+    Sound_PushHeapSection(M2C_FIELD(&gSoundDriverState, void **, SOUND_STATE_PLAYER));
 }
 
 void func_020903d4(void) {

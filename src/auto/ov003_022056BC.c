@@ -607,14 +607,18 @@ s32 func_ov003_02206160(s32 arg0) {
     return arg0;
 }
 
-void func_ov003_02206174(M2C_UNK arg0,s32 arg1){
-extern M2C_UNK gMapConfig;u16 v;
-v=M2C_FIELD(&gMapConfig,u16 *,0);
-v=(u16)((v&~0x100)|(((u32)(u16)arg1<<31)>>23));
-M2C_FIELD(&gMapConfig,u16 *,0)=v;
+/* Turn the battle config's value flag on or off from option value `enabled`
+ * (gMapConfig flags bit 8, the bit saved as MAP_SETTINGS_VALUE_FLAG).  The
+ * options row itself is the unused first argument. */
+void SetMapConfigValueFlag(M2C_UNK unused, s32 enabled) {
+    extern M2C_UNK gMapConfig;
+    u16 flags;
+    flags = M2C_FIELD(&gMapConfig, u16 *, 0);
+    flags = (u16)((flags & ~MAPCONFIG_VALUE_FLAG) | (((u32)(u16)enabled << 31) >> 23));
+    M2C_FIELD(&gMapConfig, u16 *, 0) = flags;
 }
 
-s32 func_ov003_0220619c(void) {
+s32 GetMapConfigValueFlag(void) {
     extern M2C_UNK gMapConfig;
     return (s32) ((u32) (M2C_FIELD(&gMapConfig, u16 *, 0) << 23) >> 31);
 }
@@ -645,12 +649,17 @@ s32 func_ov003_022061d8(s32 arg0) {
     return arg0;
 }
 
-void SetMapConfigFlags(M2C_UNK arg0, s32 arg1) {
+/* Set the map config's config flags from the low three bits of option value
+ * `flags`: the four-choice setup setting that MapSettings saves in its rules
+ * word (bits 28..30, MAP_SETTINGS_FLAGS).  The options row is the unused first
+ * argument. */
+void SetMapConfigFlags(M2C_UNK unused, s32 flags) {
     extern M2C_UNK gMapConfig;
     u16 v;
-    v = M2C_FIELD(&gMapConfig, u16 *, 0);
-    v = (u16)((v & ~0x38) | (((u32)(u16)arg1 << 29) >> 26));
-    M2C_FIELD(&gMapConfig, u16 *, 0) = v;
+
+    v = M2C_FIELD(&gMapConfig, u16 *, MAPCONFIG_FLAGS);
+    v = (u16)((v & ~MAPCONFIG_CONFIG_FLAGS) | (((u32)(u16)flags << 29) >> 26));
+    M2C_FIELD(&gMapConfig, u16 *, MAPCONFIG_FLAGS) = v;
 }
 
 /* Read back the battle config's three flag bits (gMapConfig flags bits 3..5,

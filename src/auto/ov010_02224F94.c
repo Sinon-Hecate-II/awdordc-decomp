@@ -9,14 +9,14 @@ extern s32 data_ov010_0222d914;
 
 #pragma opt_strength_reduction off
 s32 func_ov010_02224f94(s32 a, u32 b, u8 *c) {
- extern s32 data_ov010_0222c02c;
+ extern s32 gVoiceActivityState;
  volatile u16 *ctl=(volatile u16 *)0x40002b0;
  volatile u32 *result=(volatile u32 *)0x40002b4;
  volatile u32 *in=(volatile u32 *)0x40002b8;
  u32 sum,h; s32 cur,i,next; u32 j; s32 ret; s32 k;
- M2C_FIELD(&data_ov010_0222c02c,s32 *,4)=b>>8;
+ M2C_FIELD(&gVoiceActivityState,s32 *,4)=b>>8;
  if(c) *c=b>>8;
- if(M2C_FIELD(&data_ov010_0222c02c,s32 *,0)==0) {
+ if(M2C_FIELD(&gVoiceActivityState,s32 *,0)==0) {
  sum=0; for(i=0;i<4;i++) sum+=M2C_FIELD(&data_ov010_0222d920,u32 *,i*4);
  *ctl=0; *in=sum>>2; while(*ctl&0x8000){}
  h=*result;
@@ -26,7 +26,7 @@ s32 func_ov010_02224f94(s32 a, u32 b, u8 *c) {
  h=*result;
  M2C_FIELD(&data_ov010_0222d914,s32 *,0)=h*3/2;
  M2C_FIELD(&data_ov010_0222d914,s32 *,4)=0;
- ret=1; M2C_FIELD(&data_ov010_0222c02c,s32 *,0)=ret;
+ ret=1; M2C_FIELD(&gVoiceActivityState,s32 *,0)=ret;
  } else ret=0;
  cur=M2C_FIELD(&data_ov010_0222d914,s32 *,4);
  next=(cur+1)&3;
@@ -43,8 +43,8 @@ s32 func_ov010_02224f94(s32 a, u32 b, u8 *c) {
  h=*result;
  if(h<=(u32)M2C_FIELD(&data_ov010_0222d914,s32 *,0)) {
  M2C_FIELD(&data_ov010_0222d914,s32 *,8)++;
- if(M2C_FIELD(&data_ov010_0222d914,s32 *,8)>M2C_FIELD(&data_ov010_0222c02c,s32 *,8)){
- M2C_FIELD(&data_ov010_0222c02c,s32 *,0)=0;
+ if(M2C_FIELD(&data_ov010_0222d914,s32 *,8)>M2C_FIELD(&gVoiceActivityState,s32 *,8)){
+ M2C_FIELD(&gVoiceActivityState,s32 *,0)=0;
  M2C_FIELD(&data_ov010_0222d914,s32 *,8)=0;
  M2C_FIELD(&data_ov010_0222d914,s32 *,4)=0;
  return 3;
@@ -55,14 +55,17 @@ s32 func_ov010_02224f94(s32 a, u32 b, u8 *c) {
  return ret;
 }
 #pragma opt_strength_reduction reset
-void func_ov010_02225174(void) {
- void func_ov010_02224f28(void);
- extern s32 data_ov010_0222c02c;
- s16 n;
- M2C_FIELD(&data_ov010_0222c02c,s32 *,8)=15;
- n=M2C_FIELD(&data_ov010_0222c02c,s32 *,8);
- M2C_FIELD(&data_ov010_0222c02c,s32 *,12)=n*(s16)0x44;
- func_ov010_02224f28();
+/* Size the voice-activity detector's silence window: a voice packet carries 16
+ * payload units of VOICE_CODEC_PAYLOAD_UNIT_BYTES bytes each, so a burst ends
+ * after 15 silent units (one unit short of a packet).  Then reset the detector. */
+void VoiceActivity_InitWindow(void) {
+ void VoiceActivity_Reset(void);
+ extern s32 gVoiceActivityState;
+ s16 silenceLimit;
+ M2C_FIELD(&gVoiceActivityState,s32 *,VOICE_ACTIVITY_SILENCE_LIMIT)=VOICE_ACTIVITY_SILENCE_UNITS;
+ silenceLimit=M2C_FIELD(&gVoiceActivityState,s32 *,VOICE_ACTIVITY_SILENCE_LIMIT);
+ M2C_FIELD(&gVoiceActivityState,s32 *,VOICE_ACTIVITY_WINDOW_BYTES)=silenceLimit*(s16)VOICE_CODEC_PAYLOAD_UNIT_BYTES;
+ VoiceActivity_Reset();
 }
 
 #pragma opt_instruction_scheduling off
@@ -387,9 +390,9 @@ void func_ov010_02225934(void) {
 }
 
 void func_ov010_02225948(void) {
-void func_ov010_02224f28(void);
+void VoiceActivity_Reset(void);
 extern s32 gStreamVoiceState;
-func_ov010_02224f28();
+VoiceActivity_Reset();
 M2C_FIELD(&gStreamVoiceState,s32 *,16)=0;
 }
 
@@ -567,11 +570,13 @@ extern s32 gStreamVoiceState;
 M2C_FIELD(&gStreamVoiceState,s32 *,4)=1;
 }
 
+/* Turn the streaming voice off: finish the ARM7 audio transfer with the callback
+ * that clears the voice's pause flag, and mark the voice inactive. */
 void DisableVoiceStream(void) {
-extern s32 gStreamVoiceState;
-void Arm7TransferEnd(void (*)(void),s32);
-Arm7TransferEnd(func_ov010_02225948,0);
-M2C_FIELD(&gStreamVoiceState,s32 *,4)=0;
+    extern s32 gStreamVoiceState;
+    void Arm7TransferEnd(void (*)(void), s32);
+    Arm7TransferEnd(func_ov010_02225948, 0);
+    M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_ACTIVE) = 0;
 }
 
 s32 func_ov010_02225d8c(void) {
@@ -580,8 +585,8 @@ s32 func_ov010_02225d8c(void) {
 }
 
 s32 func_ov010_02225d9c(void) {
-void func_ov010_02224f74(s32 *);
-s32 out[4];func_ov010_02224f74(out);return out[0];
+void VoiceActivity_CopyState(s32 *);
+s32 out[4];VoiceActivity_CopyState(out);return out[0];
 }
 
 /* Stop the streaming voice, free its two sample buffers and switch the sound

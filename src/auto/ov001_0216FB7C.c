@@ -179,13 +179,16 @@ next_rounds:
     M2C_FIELD(out, u8 *, 0xF) = o3;
 }
 #pragma opt_common_subs reset
-void func_ov001_0217073c(void *arg0) {
-    *(s32 *)((u8 *)arg0 + 0x14) = 0;
-    *(s32 *)((u8 *)arg0 + 0x10) = 0;
-    *(s32 *)(arg0) = 0x67452301;
-    *(s32 *)((u8 *)arg0 + 0x4) = 0xEFCDAB89;
-    *(s32 *)((u8 *)arg0 + 0x8) = 0x98BADCFE;
-    *(s32 *)((u8 *)arg0 + 0xC) = 0x10325476;
+/* Start an MD5 digest: clear the message bit count and load the four initial
+ * chaining words (RFC 1321: a = 0x67452301, b = 0xEFCDAB89, c = 0x98BADCFE,
+ * d = 0x10325476). */
+void Ov001_MD5_Init(MD5Context *context) {
+    context->count[1] = 0;
+    context->count[0] = 0;
+    context->state[0] = 0x67452301;
+    context->state[1] = 0xEFCDAB89;
+    context->state[2] = 0x98BADCFE;
+    context->state[3] = 0x10325476;
 }
 
 #pragma thumb on

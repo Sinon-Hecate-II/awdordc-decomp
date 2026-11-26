@@ -7,14 +7,17 @@ extern u8 gGlyphAdvance[];
 void AddSprite(u16,u16,u16,void *,s32);
 
 typedef struct { u16 unused:13; u16 mode:2; u16 last:1; } DrawControl;
-typedef struct { u8 pad[15]; u8 low:4; u8 high:4; } Unk0208349c;
+
 typedef struct { u8 pad[0x44]; s8 values[16]; } Unk0208352c;
 
 /* The soft-keyboard text-entry line gTextInput points at: the typed characters,
- * then a mode byte and a line-state byte set while the line holds text. */
+ * a mode nibble and a line-state byte set while the line holds text. */
 typedef struct TextInputLine {
     u8 chars[14];  /* +0x00 typed characters */
-    u8 pad0E[3];   /* +0x0E */
+    u8 pad0E;      /* +0x0E */
+    u8 low:4;      /* +0x0F low nibble */
+    u8 mode:4;     /* +0x0F high nibble: soft-keyboard text-input mode */
+    u8 pad10;      /* +0x10 */
     u8 flags;      /* +0x11 bit 0: the line holds pending text */
 } TextInputLine;
 
@@ -97,9 +100,11 @@ void ClearTextChars(void) {
     for (i = 0; i < 14; i++) ((TextInputLine *)gTextInput)->chars[i] = 0;
 }
 
-void SetTextMode(s32 arg0) {
- extern void *gTextInput;
- ((Unk0208349c *)gTextInput)->high=(u8)arg0;
+/* Select the soft keyboard's text-input mode: the low four bits of `textMode`
+ * land in the high nibble of the input line's mode byte (+0x0F). */
+void SetTextMode(s32 textMode) {
+    extern void *gTextInput;
+    ((TextInputLine *)gTextInput)->mode = (u8)textMode;
 }
 
 /* Reset the two text states: the first loses its text, its mode and its flag
@@ -289,6 +294,8 @@ if(M2C_FIELD(p,s8 *,0x34)==255)x+=14;
 else x+=gGlyphAdvance[M2C_FIELD(p,s8 *,0x34)]-2;
 }}
 
+/* Delete every live sprite object of the sprite-text label classes: the labels
+ * themselves and the glyph runs they draw. */
 void DeleteSpriteTextClasses(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gSpriteTextClass;

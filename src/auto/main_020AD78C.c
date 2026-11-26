@@ -16,7 +16,7 @@ static inline void DisplayClearBits(u16 *reg,u16 bits) { *reg &= ~bits; }
 void DrawScreenTransition(void) {
     void SetScreenTransitionDirectory(void);
     s32 GetScreenTransitionSide(void);
-    s32 GetScreenTransitionCgTarget(void);
+    s32 GetScreenTransitionCharacterTarget(void);
     s32 GetScreenTransitionScTarget(void);
     void Clear3DSpriteLayer(u8);
     void StringCopy(void *, void *);
@@ -69,7 +69,7 @@ void DrawScreenTransition(void) {
     StringAppend((void *)pathBuffer, sTransitionCgExt);
 
     resolvedPath = GetLocalizedFileName((M2C_UNK)pathBuffer);
-    LoadNarcFileDecompressed(resolvedPath, (void *)((char *)0 + GetScreenTransitionCgTarget() + 0x20));
+    LoadNarcFileDecompressed(resolvedPath, (void *)((char *)0 + GetScreenTransitionCharacterTarget() + 0x20));
 
     variant = ((s16 *)gScreenTransition)[1];
     StringCopy((void *)pathBuffer, gScreenTransitionNames[variant].p);
@@ -302,12 +302,19 @@ void UpdateScreenTransition(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 #pragma opt_common_subs reset
+/* Whether the screen-change transition object (gScreenChangeClass) is currently
+ * on screen. */
 s32 HasScreenTransitionSprite(void) {
- s32 FindObjectByClass(M2C_UNK *);
- extern M2C_UNK data_02127bc8;
- u8 var_r0;
- if(FindObjectByClass(&data_02127bc8)!=0) var_r0=1; else var_r0=0;
- return var_r0;
+    s32 FindObjectByClass(M2C_UNK *);
+    extern M2C_UNK gScreenChangeClass;
+    u8 present;
+
+    if (FindObjectByClass(&gScreenChangeClass) != 0) {
+        present = 1;
+    } else {
+        present = 0;
+    }
+    return present;
 }
 
 /* Whether the screen-change split transition is enabled: it has a sprite and a
@@ -413,21 +420,24 @@ u8 CanStartScreenTransition(void) {
     return canStart;
 }
 
-void func_020ae1e8(s32 arg0) {
-void *CreateSpriteFromClass(void *,s32);
-extern M2C_UNK data_02127bc8;
-void *p=CreateSpriteFromClass(&data_02127bc8,7);
-if(p)M2C_FIELD(p,s32 *,0x5c)=arg0;
+/* Create the screen-change (split transition) sprite and store its variant,
+ * which InitScreenTransition later animates. */
+void CreateScreenChangeSprite(s32 variant) {
+    void *CreateSpriteFromClass(void *,s32);
+    extern M2C_UNK gScreenChangeClass;
+    void *sprite = CreateSpriteFromClass(&gScreenChangeClass, 7);
+    if (sprite) M2C_FIELD(sprite, s32 *, 0x5C) = variant;
 }
 
-void func_020ae20c(void) {
+/* Delete the screen-change transition sprite, if it is currently on screen. */
+void DeleteScreenChangeSprite(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    s32 HasScreenTransitionSprite();
-    extern M2C_UNK data_02127bc8;
+    s32 HasScreenTransitionSprite(void);
+    extern M2C_UNK gScreenChangeClass;
     if (HasScreenTransitionSprite() == 0) {
         return;
     }
-    DeleteSpriteObjectsOfClass(&data_02127bc8);
+    DeleteSpriteObjectsOfClass(&gScreenChangeClass);
 }
 
 /* Look up a UI colour id in the game's fixed 15-bit BGR555 theme palette:
@@ -522,9 +532,11 @@ if(r>31)r=31;if(g>31)g=31;if(bl>31)bl=31;
 }while(i<16);
 }
 
-void DimPalette(M2C_UNK arg0) {
-    void BlendPalette(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    BlendPalette(arg0, 0, 8, 8, 0x20);
+/* Halve the brightness of a 16-colour (32-byte) palette in place: blend every
+ * entry with black using equal weights (8/8 out of 16). */
+void DimPalette(void *palette) {
+    void BlendPalette(s32, s32, s32, s32, s32);
+    BlendPalette((s32)palette, 0, 8, 8, 0x20);
 }
 
 /* Blend every RGB555 entry of the `length`-byte palette at `palette` towards

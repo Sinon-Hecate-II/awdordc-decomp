@@ -260,12 +260,16 @@ s32 SBServerListProcessState(void *list) {
     }
 }
 
-M2C_UNK func_02063df8(void) {
+/* Force the deferred socket work through: run the pending id-1 socket callback,
+ * mark the network link armed (so the flush skips the exit handlers), then flush
+ * the queued callbacks. */
+M2C_UNK ForceFlushSocketEvents(void) {
     M2C_UNK InvokeSocketCallback(M2C_UNK);
     void FlushSocketEvents(M2C_UNK);
     extern M2C_UNK gSocketEventState;
+
     InvokeSocketCallback(1);
-    M2C_FIELD(&gSocketEventState, s32 *, 0xC) = 1;
+    M2C_FIELD(&gSocketEventState, s32 *, SOCK_EVENT_ARMED) = 1;
     FlushSocketEvents(1);
 }
 
@@ -395,11 +399,11 @@ s32 Abs(s32 arg0) {
 /* Report a failed assertion - its expression text, source file, function name and
  * line - on stdout, then flush the buffered output. */
 void AssertFailed(M2C_UNK expression, M2C_UNK file, M2C_UNK function, s32 line) {
-    M2C_UNK func_02063df8();
+    M2C_UNK ForceFlushSocketEvents();
     M2C_UNK StdoutPrintf(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern M2C_UNK sAssertFailedFormat;
     StdoutPrintf(&sAssertFailedFormat, expression, file, function, line);
-    func_02063df8();
+    ForceFlushSocketEvents();
 }
 
 void func_020640e4(M2C_UNK a, M2C_UNK *b) {

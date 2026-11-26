@@ -70,11 +70,13 @@ void Ov001_LoadCharBank(s32 bank, M2C_UNK path) {
  (&gOv001CharBanks)[bank]=Ov001_LoadFile(path,&fileSize,4);
 }
 
-void Ov001_FreeCharBank(u8 arg0) {
- void Ov001_FreeFile(s32);
- extern M2C_UNK gOv001CharBanks;
- Ov001_FreeFile(((s32 *)&gOv001CharBanks)[arg0]);
- ((s32 *)&gOv001CharBanks)[arg0] = 0;
+/* Free the character-bank file of `bank` (1 = top screen, 0 = bottom screen) and
+ * clear its slot. */
+void Ov001_FreeCharBank(u8 bank) {
+    void Ov001_FreeFile(s32);
+    extern M2C_UNK gOv001CharBanks;
+    Ov001_FreeFile(((s32 *)&gOv001CharBanks)[bank]);
+    ((s32 *)&gOv001CharBanks)[bank] = 0;
 }
 
 void Ov001_LoadSpriteObjLayout(s32 arg0, s32 arg1, s32 arg2) {
@@ -223,15 +225,17 @@ void Ov001_FreeFades(void) {
     Ov001_FreeAlloc(&gOv001FadeStates);
 }
 
-u8 Ov001_IsFadeActive(s32 arg0) {
+/* Whether the fade of the given engine (OV001_FADE_SUB or OV001_FADE_MAIN) is
+ * still running. */
+u8 Ov001_IsFadeActive(s32 engine) {
     extern M2C_UNK gOv001FadeStates;
-    void *p;
-    if (arg0 == 1) {
-        p = (void *)gOv001FadeStates;
+    Ov001Fade *fade;
+    if (engine == OV001_FADE_SUB) {
+        fade = (Ov001Fade *)gOv001FadeStates;
     } else {
-        p = (u8 *)gOv001FadeStates + 0xc;
+        fade = (Ov001Fade *)((u8 *)gOv001FadeStates + 0xc);
     }
-    return ((u8 *)p)[9];
+    return fade->active;
 }
 
 /* Starts one ov001 screen fade: sets the engine's blend control to the mode's
@@ -467,7 +471,7 @@ void Ov001_ReleaseTextPanel(M2C_UNK panel) {
 #pragma optimization_level 3
 void *CreateTextPanel(s32 arg0,s32 arg1) {
 void *Ov001_Alloc(s32,s32); void SetTextPanelSurface(void*,void*,s32,s32,s32);
-s32 func_020036b8(void); s32 GX_GetBG0ScrPtr(void);
+s32 GX_GetBG0ScrPtrSub(void); s32 GX_GetBG0ScrPtr(void);
 void func_ov001_0216a230(s32,s32,s32,s32,s32,s32,s32,u32);
 void TextPanel_ClearText(void*,s32); void *Ov001_AddTask(s32,M2C_UNK,void*,s32); void Ov001_UploadTextPanelTiles(M2C_UNK,void*);
 extern M2C_UNK gOv001TextContext; extern u8 data_ov001_0218fd18[],data_ov001_0218fd1a[],data_ov001_0218fd14[];
@@ -483,7 +487,7 @@ base=(void*)gOv001TextContext;
 *(void**)((u8*)p+0x18)=p;
 *(void**)((u8*)p+0x1c)=(u8*)base+arg1*8;
 *(s32*)((u8*)p+0x20)=1; *(s32*)((u8*)p+0x24)=1;
-if(arg0==1) v=func_020036b8(); else v=GX_GetBG0ScrPtr();
+if(arg0==1) v=GX_GetBG0ScrPtrSub(); else v=GX_GetBG0ScrPtr();
 zero=0;
 c=*(volatile u16*)(data_ov001_0218fd14+arg0*2);
 stride=32;
@@ -528,10 +532,13 @@ M2C_UNK Ov001_FreePanelBackground(s32 panel) {
     return Ov001_FreeAlloc((u8 *)panel + 0x28);
 }
 
-void Ov001_FreePageBackground(s32 arg0) {
+/* Free the page background of the fixed full-screen text panel for `screen`
+ * (0 = main screen, 1 = sub screen). */
+void Ov001_FreePageBackground(s32 screen) {
     M2C_UNK Ov001_FreePanelBackground(s32);
     extern s32 gOv001TextContext;
-    Ov001_FreePanelBackground((0x30 * arg0) + (gOv001TextContext + 0x610));
+
+    Ov001_FreePanelBackground((0x30 * screen) + (gOv001TextContext + OV001_CTX_SCREEN_PANELS));
 }
 
 /* Draw an anchored text block on a text panel: choose the run direction from the
@@ -636,13 +643,17 @@ void Ov001_DrawTextPanelToSprite(Ov001TextPanel *panel, s32 x, s32 y, void *spri
     Ov001_FillTileRect(entry, panel->width, panel->height, x, y, 0, (s32)panel->tileCount, 2);
 }
 
-void CloseTextPanel(s32 arg0) {
+/* Mark the fixed full-screen text panel `panel` for a tile upload: raise its
+ * screen's pending-upload flag (the main screen's panel uses the first byte of
+ * OV001_CTX_PANEL_UPLOAD_FLAGS, the sub screen's panel the next one). */
+void CloseTextPanel(s32 panel) {
     extern M2C_UNK gOv001TextContext;
-    void *p = M2C_FIELD(&gOv001TextContext, void **, 0);
-    if (arg0 == (s32)p + 0x610) {
-        M2C_FIELD(p, u8 *, 0x67c) = 1;
+    void *context = M2C_FIELD(&gOv001TextContext, void **, 0);
+
+    if (panel == (s32)context + OV001_CTX_SCREEN_PANELS) {
+        M2C_FIELD(context, u8 *, OV001_CTX_PANEL_UPLOAD_FLAGS) = 1;
     } else {
-        M2C_FIELD(p, u8 *, 0x67d) = 1;
+        M2C_FIELD(context, u8 *, OV001_CTX_PANEL_UPLOAD_FLAGS + 1) = 1;
     }
 }
 

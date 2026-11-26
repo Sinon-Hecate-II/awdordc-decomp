@@ -228,15 +228,28 @@ void Ov001_InitSound(void) {
 
 void func_ov001_02184ff8(void){extern s32 gOv001SoundState;M2C_UNK Ov001_PostTaskMessage(s32,s32);M2C_UNK Ov001_FreeAlloc(void *);Ov001_PostTaskMessage(0,M2C_FIELD(gOv001SoundState,s32 *,0x98));Ov001_FreeAlloc((void *)0x02193e08);}
 
-void Ov001_PlaySound(s32 a){extern s32 gOv001SoundState;M2C_UNK Sound_PlaySequenceArchiveEntry(s32,s32,s32);Sound_PlaySequenceArchiveEntry(gOv001SoundState+0x90,0,a);}
-
-void Ov001_SetScrollDragSoundLevel(M2C_UNK arg0) {
-    M2C_UNK func_0202acdc(s32, M2C_UNK);
+/* Play sound effect `soundId` on the ov001 sound player (archive 0). */
+void Ov001_PlaySound(s32 soundId) {
     extern s32 gOv001SoundState;
-    func_0202acdc(gOv001SoundState + 0x90, arg0);
+    M2C_UNK Sound_PlaySequenceArchiveEntry(s32, s32, s32);
+    Sound_PlaySequenceArchiveEntry(gOv001SoundState + OV001_SOUND_PLAYER, 0, soundId);
 }
 
-void Ov001_SetScrollDragSoundPitch(s32 a,s32 b){extern s32 gOv001SoundState;M2C_UNK func_0202ad70(s32,s32,s32);func_0202ad70(gOv001SoundState+0x90,a,b);}
+/* Set the expression (second volume) level of the ov001 sound player's voice:
+ * the scrollbar drag tick uses it to sound louder the faster the handle moves. */
+void Ov001_SetScrollDragSoundLevel(s32 level) {
+    M2C_UNK Sound_SetVoiceExpression(s32, M2C_UNK);
+    extern s32 gOv001SoundState;
+    Sound_SetVoiceExpression(gOv001SoundState + OV001_SOUND_PLAYER, level);
+}
+
+/* Set the scroll-drag tick's pitch parameter (player parameter 0xC) on the ov001
+ * sound player, faded in over `duration` frames. */
+void Ov001_SetScrollDragSoundPitch(s32 value, s32 duration) {
+    extern s32 gOv001SoundState;
+    M2C_UNK Sound_SetPlayerPitch(s32, s32, s32);
+    Sound_SetPlayerPitch(gOv001SoundState + OV001_SOUND_PLAYER, value, duration);
+}
 
 void Ov001_StopSound(void) {M2C_UNK func_0202ac60(s32,s32);extern s32 gOv001SoundState;func_0202ac60(gOv001SoundState+0x90,0);}
 
@@ -353,17 +366,21 @@ Ov001_SetSlideStep(task,Ov001_SlideMenuStep4);
 
 #pragma scheduling off
 void Ov001_SlideMenuStep4(s32 a){
-void Ov001_GetSpritePosition();void Ov001_MoveSpriteLayout();void Ov001_SetSlideStep();void func_ov001_021855e4(s32);extern M2C_UNK gOv001MenuLayout;s32 pos[2];void *p;s32 handle;
+void Ov001_GetSpritePosition();void Ov001_MoveSpriteLayout();void Ov001_SetSlideStep();void Ov001_EndMenuSlide(s32);extern M2C_UNK gOv001MenuLayout;s32 pos[2];void *p;s32 handle;
 Ov001_GetSpritePosition(M2C_FIELD(M2C_FIELD(&gOv001MenuLayout,void **,4),s32 *,16),0,&pos[1],&pos[0]);pos[1]+=8;
 if(pos[1]<176 || pos[1]>256){Ov001_MoveSpriteLayout(M2C_FIELD(M2C_FIELD(&gOv001MenuLayout,void **,4),s32 *,16),-1,pos[1],33);return;}
-p=M2C_FIELD(&gOv001MenuLayout,void **,4);pos[1]=176;handle=M2C_FIELD(p,s32 *,16);Ov001_MoveSpriteLayout(handle,~0u,176,33);Ov001_SetSlideStep(a,func_ov001_021855e4);
+p=M2C_FIELD(&gOv001MenuLayout,void **,4);pos[1]=176;handle=M2C_FIELD(p,s32 *,16);Ov001_MoveSpriteLayout(handle,~0u,176,33);Ov001_SetSlideStep(a,Ov001_EndMenuSlide);
 }
 #pragma scheduling reset
-void func_ov001_021855e4(s32 a) {
+/* Last step of the option menu slide-in: end the task that drove the slide (task
+ * message 0) and clear the menu's task handle, so the menu counts as idle
+ * again. */
+void Ov001_EndMenuSlide(s32 task) {
     s32 Ov001_PostTaskMessage(s32, s32);
     extern M2C_UNK gOv001MenuLayout;
-    Ov001_PostTaskMessage(0, a);
-    *(s32 *)((u8 *)*(void **)((u8 *)&gOv001MenuLayout + 4) + 0x14) = 0;
+
+    Ov001_PostTaskMessage(0, task);
+    M2C_FIELD(M2C_FIELD(&gOv001MenuLayout, void **, OV001_MENU_SPRITES), s32 *, OV001_MENU_TASK) = 0;
 }
 #pragma opt_instruction_scheduling reset
 /* Start closing the ov001 option menu: flag it as closing and give the menu a
@@ -397,9 +414,10 @@ Ov001_SetSpriteAttrs(((s32*)M2C_FIELD(&gOv001MenuLayout,void**,4))[i],-1,0,*attr
 i+=2;}while(i<5);Ov001_LoadMenuResource(variant);
 }
 
+/* Nonzero while the ov001 option menu's slide (or close) task is running. */
 s32 Ov001_IsMenuAnimating(void) {
     extern M2C_UNK gOv001MenuLayout;
-    if (M2C_FIELD(M2C_FIELD(&gOv001MenuLayout, void **, 4), s32 *, 0x14) != 0) {
+    if (M2C_FIELD(M2C_FIELD(&gOv001MenuLayout, void **, OV001_MENU_SPRITES), s32 *, OV001_MENU_TASK) != 0) {
         return 1;
     }
     return 0;

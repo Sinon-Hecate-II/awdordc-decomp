@@ -4,7 +4,7 @@
 
 #pragma push
 #pragma opt_propagation off
-void func_ov011_02222204(M2C_UNK arg0) {
+void InitIntroOpeningScene(M2C_UNK arg0) {
     M2C_UNK ClearAll3DSpriteLayers();
     M2C_UNK AddSpriteToMainEngine(M2C_UNK, M2C_UNK, s32, M2C_UNK *, s32);
     M2C_UNK LoadOpeningAssetSet(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);

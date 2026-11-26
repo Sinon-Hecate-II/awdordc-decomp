@@ -216,17 +216,19 @@ void func_020bd078(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x4C) = 0;
 }
 
-void func_020bd084(void *arg0) {
+/* Per-frame touch-cursor update: once the cursor has been shown for 8 frames,
+ * resume its animation; until then, keep counting the delay up. */
+void TouchCursor_Update(void *cursor) {
     M2C_UNK Sprite_ResumeAnimation();
-    s16 temp_r1;
+    s16 delay;
 
-    temp_r1 = M2C_FIELD(arg0, s16 *, 0x4C);
-    if ((s32) temp_r1 >= 8) {
+    delay = M2C_FIELD(cursor, s16 *, 0x4C);
+    if ((s32) delay >= 8) {
         Sprite_ResumeAnimation();
         return;
     }
-    if ((s32) temp_r1 < 8) {
-        M2C_FIELD(arg0, s16 *, 0x4C) = (s16) (temp_r1 + 1);
+    if ((s32) delay < 8) {
+        M2C_FIELD(cursor, s16 *, 0x4C) = (s16) (delay + 1);
     }
 }
 
@@ -244,7 +246,15 @@ void CreateTouchCursor(s16 x, s16 y) {
     M2C_FIELD(cursor, s32 *, 0x38) = y;
 }
 
-void DeleteTouchCursor(void){extern M2C_UNK gTouchCursorClass;s32 FindObjectByClass(M2C_UNK *);M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);if(!FindObjectByClass(&gTouchCursorClass))return;DeleteSpriteObjectsOfClass(&gTouchCursorClass);}
+/* Remove the touch cursor's sprite, if one exists. */
+void DeleteTouchCursor(void) {
+    extern M2C_UNK gTouchCursorClass;
+    s32 FindObjectByClass(M2C_UNK *);
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
+
+    if (!FindObjectByClass(&gTouchCursorClass)) return;
+    DeleteSpriteObjectsOfClass(&gTouchCursorClass);
+}
 
 void HideTouchCursor(void) {
     M2C_UNK ResumeAnimationOfSpriteClass(M2C_UNK *);
@@ -252,17 +262,18 @@ void HideTouchCursor(void) {
     ResumeAnimationOfSpriteClass(&gTouchCursorClass);
 }
 
-u8 func_020bd118(void) {
+/* TRUE while the touch cursor sprite exists (CreateTouchCursor makes it). */
+u8 IsTouchCursorActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gTouchCursorClass;
-    u8 var_r0;
+    u8 active;
 
     if (FindObjectByClass(&gTouchCursorClass) != 0) {
-        var_r0 = 1;
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 /* Key action of a stylus touch on the battle map for the cursor mode: the

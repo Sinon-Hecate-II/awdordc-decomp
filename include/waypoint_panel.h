@@ -1,14 +1,17 @@
 #ifndef WAYPOINT_PANEL_H
 #define WAYPOINT_PANEL_H
 
-/* Waypoint panel state is packed in the high nibble of panel byte 0x39. */
-enum { WAYPOINT_PANEL_IDLE = 0, WAYPOINT_PANEL_MENU_OFFSET = 0x6c };
+/* Waypoint panel state is packed in the high nibble of panel byte 0x39:
+ * WAYPOINT_PANEL_IDLE when no menu is open, WAYPOINT_PANEL_OPTIONS while the
+ * slot option menu is open (marker shown, each slot's option editable). */
+enum { WAYPOINT_PANEL_IDLE = 0, WAYPOINT_PANEL_OPTIONS = 2, WAYPOINT_PANEL_MENU_OFFSET = 0x6c };
 
 /* Fields of the waypoint panel object, the setup screen's player and waypoint
  * selector.  Its flag byte packs the panel state in the high nibble
  * (WAYPOINT_PANEL_IDLE and the animation states), the layout in bits 2-3 and
- * the link flag in bit 0. */
+ * the two-player-map flag in bit 0. */
 #define WAYPOINT_PANEL_FLAGS        0x39 /* u8: packed panel flags */
+#define WAYPOINT_PANEL_TWO_PLAYER   0x01 /* bit 0: the map has two players (GetMapPlayerCount == 2) */
 #define WAYPOINT_PANEL_TEXT_ENABLED 0x3A /* u8 bit 0: the description text is shown */
 #define WAYPOINT_PANEL_LAYOUT_MASK  0x0C /* bits 2-3 hold a WAYPOINT_PANEL_LAYOUT_* value */
 #define WAYPOINT_PANEL_TEXT         0x54 /* void *: description text sprite */
@@ -24,6 +27,11 @@ enum {
     WAYPOINT_PANEL_LAYOUT_COMPACT = 1  /* player columns hidden, strips slid left */
 };
 
+/* Animation state in the high nibble of WAYPOINT_PANEL_FLAGS: 0 idle, 1..3 the
+ * panel's selection animations; state 3 adjusts a waypoint counter (group 21-24). */
+#define WAYPOINT_PANEL_STATE_MASK    0xF0 /* bits 4-7 hold the state */
+#define WAYPOINT_PANEL_STATE_COUNTER 3    /* a waypoint counter is being adjusted */
+
 /* Description text keys chosen for the group the selected slot belongs to by
  * the waypoint panel's mode update (the slot index is the unit sprite's +0x2E). */
 #define WAYPOINT_TEXT_SLOTS_0_TO_3    0x47000011
@@ -37,6 +45,7 @@ enum {
  * choice (CO id 0), and any other option has no CO. */
 #define WAYPOINT_OPTION_RANDOM 12
 #define WAYPOINT_OPTION_LAST_CO 11 /* option 11 picks the last CO (id 12) */
+#define WAYPOINT_OPTION_COUNT  13  /* options 0..12: twelve COs and the random choice */
 #define WAYPOINT_CO_NONE       255
 /* Action 27 selects the current player slot rather than an option cell. */
 enum { WAYPOINT_ACTION_CURRENT_SLOT = 27 };

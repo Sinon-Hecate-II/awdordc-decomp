@@ -14,11 +14,13 @@ typedef struct WebResponsePlayer {
 #include "ghttp.h"
 typedef struct { u32 words[4]; } CallbackRecord;
 
+/* Open the web request module: start the ghttp library and count this caller as
+ * one of the request list's openers (EndWebRequest closes it again). */
 s32 BeginWebRequest(void) {
     M2C_UNK ghttpInit();
     extern M2C_UNK gHttpRequestList;
     ghttpInit();
-    M2C_FIELD(&gHttpRequestList, s32 *, 4) = (s32) (M2C_FIELD(&gHttpRequestList, s32 *, 4) + 1);
+    M2C_FIELD(&gHttpRequestList, s32 *, HTTP_REQUEST_LIST_OPEN_COUNT) = (s32) (M2C_FIELD(&gHttpRequestList, s32 *, HTTP_REQUEST_LIST_OPEN_COUNT) + 1);
     return 1;
 }
 
@@ -39,13 +41,15 @@ s32 EndWebRequest(void) {
     return 1;
 }
 
+/* Advance the ghttp web-request connections one step: refuse when the network
+ * has an error, otherwise pump every live connection and report success. */
 s32 PumpWebRequest(void) {
     s32 HasNetError();
-    M2C_UNK func_0204b674();
+    void ghiPumpConnections();
     if (HasNetError() != 0) {
         return 0;
     }
-    func_0204b674();
+    ghiPumpConnections();
     return 1;
 }
 

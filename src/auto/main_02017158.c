@@ -329,9 +329,9 @@ s32 MultiBoot_Init(s32 reason) {
     s32 OS_DisableInterrupts(void);
     s32 OS_RestoreInterrupts(s32);
     void FillU16(s32, void *, s32);
-    void func_02013e70(s32);
+    void Mb_SetMatchEventCallback(s32);
     void Mb_InitRecordReassembly(s32);
-    void func_02018940(void *);
+    void Mb_SetRecordBuffer(void *);
     void DownloadResetSender(void);
     s32 func_02017cd8(void);
     s32 IsFifoMessageReady(s32, s32);
@@ -354,7 +354,7 @@ s32 MultiBoot_Init(s32 reason) {
     {
         s32 r6 = M2C_FIELD(base + 0x1000, s32 *, 0x4E4);
         FillU16(0, base + 0x1340, 0x69C0);
-        func_02013e70(r6);
+        Mb_SetMatchEventCallback(r6);
     }
 
     M2C_FIELD(gMbState.work + 0x1000, s32 *, 0x318) =
@@ -362,7 +362,7 @@ s32 MultiBoot_Init(s32 reason) {
 
     Mb_InitRecordReassembly(((MbContext *)gMbState.ctx)->field502);
 
-    func_02018940(gMbState.work + 0x1538);
+    Mb_SetRecordBuffer(gMbState.work + 0x1538);
 
     i = 0;
     do {
@@ -402,7 +402,12 @@ s32 MultiBoot_Init(s32 reason) {
     return res;
 }
 
-void func_02017f90(s32 a){M2C_FIELD(M2C_FIELD(&gMbState,void **,12),s32 *,0x1320)=1;MultiBoot_Init(a);}
+/* Start the multiboot (DS Download Play) library: mark it started so the link can
+ * be closed later, then reset the parent state with `reason` and return its result. */
+s32 MultiBoot_Start(s32 reason) {
+    M2C_FIELD(gMbState.work, s32 *, MB_WORK_STARTED) = 1;
+    return MultiBoot_Init(reason);
+}
 
 /* Close the download-play link: post the stop command (WFC command 1) to the
  * multiboot worker task's entry function and report its result; WFC_CMD_OK

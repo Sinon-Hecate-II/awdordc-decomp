@@ -616,9 +616,11 @@ void func_020ac7a0(void *arg0) {
     DecrementSpriteChildCount();
 }
 
-void func_020ac7b8(void *arg0) {
+/* Restart handler of the screen-transition sprite: zero its elapsed-frame
+ * counter and re-arm its screen's engine for the sprite's current mode. */
+void ScreenTransitionSprite_Restart(void *transition) {
     void ConfigureScreenEngine(u8, M2C_UNK, u8);
-    M2C_FIELD(arg0, s16 *, 0x38) = 0;
-    ConfigureScreenEngine(M2C_FIELD(arg0, u8 *, 0x3C), 1, (u8) M2C_FIELD(arg0, s32 *, 0x34));
+    M2C_FIELD(transition, u16 *, TRANSITION_SPRITE_ELAPSED) = 0;
+    ConfigureScreenEngine(M2C_FIELD(transition, u8 *, TRANSITION_SPRITE_SCREEN), 1, (u8) M2C_FIELD(transition, s32 *, TRANSITION_SPRITE_MODE));
 }
 

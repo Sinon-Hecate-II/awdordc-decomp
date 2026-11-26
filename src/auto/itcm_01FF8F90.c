@@ -345,7 +345,21 @@ void Clear3DSpriteLayerSub(u8 layer) {
 }
 
 #pragma opt_propagation off
-void Clear3DSpriteLayerVram(u8 arg0) { M2C_UNK MI_CpuFill32(M2C_UNK,s32,s32); extern u16 **gCur3DSpriteEngine; s32 dest; dest=M2C_FIELD((char *)gCur3DSpriteEngine + arg0*4,s32 *,0xC); { s32 zero=0; s32 size=0x40; MI_CpuFill32(zero,dest,size); } }
+/* Wipe layer `layer`'s decompressed texture block in VRAM: fill the current
+ * 3D-sprite engine's DS3D_ENGINE_LAYER_VRAM slot of that layer with zero
+ * (0x40 bytes). */
+void Clear3DSpriteLayerVram(u8 layer) {
+    M2C_UNK MI_CpuFill32(M2C_UNK, s32, s32);
+    extern u16 **gCur3DSpriteEngine;
+    s32 vram;
+
+    vram = M2C_FIELD((char *)gCur3DSpriteEngine + layer * 4, s32 *, DS3D_ENGINE_LAYER_VRAM);
+    {
+        s32 fill = 0;
+        s32 size = 0x40;
+        MI_CpuFill32(fill, vram, size);
+    }
+}
 #pragma opt_propagation reset
 /* Clear every 3D-sprite layer of the current engine: wipe layer `layer`'s VRAM
  * region and its tile buffer, then mark it dirty (bit `layer` of the engine's

@@ -1,5 +1,6 @@
 /* 21 functions from 0x020B8CCC to 0x020B9C8C (main), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 #include "battle_map.h"
 #include "ds3dsprite.h"
 typedef struct { u8 value; u8 flag; } Unk020BChoice;
@@ -236,21 +237,26 @@ void ProductionMenu_ConfirmSelection(u8 *selection) {
     ResumeAnimationOfSpriteClass(&gProductionMenuScreenClass);
 }
 
-void func_020b9778(void) {
+/* Cancel out of the unit-production menu: play the back sound, hide the menu's
+ * sprite slots and resume the production menu screen's animation. */
+void ProductionMenu_Cancel(void) {
     M2C_UNK ResumeAnimationOfSpriteClass(M2C_UNK *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK HideAllSpriteSlots();
     extern M2C_UNK gProductionMenuScreenClass;
-    PlaySoundEffect(0x10018);
+    PlaySoundEffect(SOUND_MENU_BACK);
     HideAllSpriteSlots();
     ResumeAnimationOfSpriteClass(&gProductionMenuScreenClass);
 }
 
-void func_020b979c(u8 *a) {
+/* The production menu's row-change handler: draw the preview of the selected
+ * entry's unit kind and play the menu's cursor-move sound. */
+void ProductionMenu_PreviewSelection(u8 *selection) {
     void DrawProductionUnitPreview(u8);
     M2C_UNK PlaySoundEffect(s32);
     extern u8 gProductionChoices[];
-    DrawProductionUnitPreview(gProductionChoices[*a * 2]);
+
+    DrawProductionUnitPreview(gProductionChoices[*selection * 2]);
     PlaySoundEffect(0x10019);
 }
 

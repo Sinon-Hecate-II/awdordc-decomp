@@ -9,6 +9,14 @@ s32 *p=M2C_FIELD(a,s32 **,0x4c);
 typedef struct { u8 pad[0x35]; u8 count:4; u8 other:4; } MenuCount011;
 typedef struct { s32 words[5]; } ContextTemplate;
 extern ContextTemplate data_ov011_02227f3c;
+
+/* Stages of the overlay 011 intro presentation object (stored at +0x3C by
+ * InitIntroObject): the opening presentation, the title, then the sequence. */
+enum {
+    INTRO_PRESENTATION_OPENING  = 0,
+    INTRO_PRESENTATION_TITLE    = 1,
+    INTRO_PRESENTATION_SEQUENCE = 2
+};
 extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain, *data_027e01d8;
 
 /* An entry of the intro menu built by func_ov011_0222588c: a 3D sprite object
@@ -140,12 +148,15 @@ void LoadOpeningLogos(M2C_UNK unused) {
     LoadOpeningAssetSet(unused, 0, 0, 0);
 }
 
-void func_ov011_02225010(M2C_UNK arg0) {
+/* Start the intro's opening stage: reset the logo object's animation, rebuild the
+ * opening scene's sprites and switch the music to the intro theme. */
+void Ov011_StartIntroOpening(void *intro) {
     M2C_UNK PlayMusicTrack(s32);
     M2C_UNK InitIntroLogo();
-    M2C_UNK func_ov011_02222204(M2C_UNK);
+    M2C_UNK InitIntroOpeningScene(M2C_UNK);
+
     InitIntroLogo();
-    func_ov011_02222204(arg0);
+    InitIntroOpeningScene(intro);
     PlayMusicTrack(0x1001D);
 }
 
@@ -197,8 +208,23 @@ void func_ov011_022250ac(M2C_UNK arg0) {
 }
 
 /* Create the intro's opening presentation object as a child of `parent`: a sprite
- * of the intro class data_ov011_02227fa4 initialised with INTRO_MODE 0. */
+ * of the intro class gIntroSpriteClass initialised with INTRO_MODE 0. */
 void CreateIntroOpening(M2C_UNK parent) {
+    s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
+    M2C_UNK InitIntroObject(s32, M2C_UNK);
+    extern M2C_UNK gIntroSpriteClass;
+    s32 sprite;
+
+    sprite = CreateSpriteObject(&gIntroSpriteClass, parent);
+    if (sprite == 0) {
+        return;
+    }
+    InitIntroObject(sprite, 0);
+}
+
+/* Create the intro's title presentation object as a child of `parent`: a sprite
+ * of the intro class data_ov011_02227fa4 initialised with INTRO_MODE 1. */
+void CreateIntroTitle(M2C_UNK parent) {
     s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK InitIntroObject(s32, M2C_UNK);
     extern M2C_UNK data_ov011_02227fa4;
@@ -208,16 +234,25 @@ void CreateIntroOpening(M2C_UNK parent) {
     if (sprite == 0) {
         return;
     }
-    InitIntroObject(sprite, 0);
+    InitIntroObject(sprite, 1);
 }
 
-void CreateIntroTitle(M2C_UNK arg0) { s32 CreateSpriteObject(M2C_UNK *,M2C_UNK); M2C_UNK InitIntroObject(s32,M2C_UNK); extern M2C_UNK data_ov011_02227fa4; s32 t=CreateSpriteObject(&data_ov011_02227fa4,arg0); if(t==0)return; InitIntroObject(t,1); }
+/* Create the intro's sequence presentation object as a child of `parent`: a
+ * sprite of the intro class initialised in the sequence stage. */
+void CreateIntroSequence(M2C_UNK parent) {
+    s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
+    M2C_UNK InitIntroObject(s32, M2C_UNK);
+    extern M2C_UNK gIntroSpriteClass;
+    s32 sprite;
 
-void CreateIntroSequence(M2C_UNK arg0) { s32 CreateSpriteObject(M2C_UNK *,M2C_UNK); M2C_UNK InitIntroObject(s32,M2C_UNK); extern M2C_UNK data_ov011_02227fa4; s32 t=CreateSpriteObject(&data_ov011_02227fa4,arg0); if(t==0)return; InitIntroObject(t,2); }
+    sprite = CreateSpriteObject(&gIntroSpriteClass, parent);
+    if (sprite == 0) return;
+    InitIntroObject(sprite, INTRO_PRESENTATION_SEQUENCE);
+}
 
 /* Initialize the DS 3D graphics hardware: reset the geometry engine, configure the LCD display control mode,
    program the viewport/projection matrix blocks, and set up the 3D command and capture registers. */
-void func_ov011_0222513c(void) {
+void Ov011_Init3DRendering(void) {
     M2C_UNK G3X_Reset();
     M2C_UNK GX_SetClearColor(M2C_UNK, M2C_UNK, s32, M2C_UNK, s32);
     M2C_UNK GX_SetOrthoProjection(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
@@ -239,7 +274,7 @@ void func_ov011_0222513c(void) {
     M2C_FIELD((void *)0x04000440, s32 *, 0xC) = 0;
 }
 
-void func_ov011_02225224(void) {
+void Ov011_Swap3DBuffers(void) {
     *(s32 *)0x04000540 = 1;
 }
 
@@ -377,9 +412,11 @@ void func_ov011_02225600(void) {
 
 }
 
-void func_ov011_02225604(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0x44) = (s32) (M2C_FIELD(arg0, s32 *, 0x44) + 1);
-    M2C_FIELD(arg0, s32 *, 0x48) = (s32) (M2C_FIELD(arg0, s32 *, 0x48) + M2C_FIELD(arg0, u8 *, 0x36));
+/* Per-frame step of one intro-menu entry: count one more update of the entry's
+ * age and advance its slide timer by its slide speed. */
+void IntroMenu_AdvanceEntryTimers(MenuEntry011 *entry) {
+    entry->age = (s32) (entry->age + 1);
+    entry->slideTimer = (s32) (entry->slideTimer + entry->slideSpeed);
 }
 
 /* Per-frame update of one intro-menu entry: draw its label's highlight if it has

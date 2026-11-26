@@ -77,7 +77,7 @@ void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
         CreateMatchNameLabel(0,0x6e0,entry);
         return;
     case 18: func_ov003_021fe3b4(entry); return;
-    case 19: func_ov003_021fe780(entry); return;
+    case 19: Ov003_CreateMapPick7Scene(entry); return;
     case 20: func_ov003_021feb4c(entry); return;
     case 21: CreateOv003Scene(entry); return;
     default: return;
@@ -148,8 +148,8 @@ void func_ov003_021f18a4(void) {
  * sprite when the descriptor enables it, the sub-screen one likewise, or both. */
 void ApplySceneLayers(u8 *layers) {
     void CreateMapModeWallpaperSprites(u8, u8, u8, u8);
-    void func_020af178(u8, u8);
-    void func_020af19c(u8, u8);
+    void CreateMapModeMainWallpaperSprite(u8, u8);
+    void CreateMapModeSubWallpaperSprite(u8, u8);
     extern M2C_UNK gSceneConfig;
     u8 mainOn;
     u8 subOn;
@@ -159,9 +159,9 @@ void ApplySceneLayers(u8 *layers) {
     if (mainOn & subOn) {
         CreateMapModeWallpaperSprites(layers[SCENE_LAYER_MAIN_LAYER], layers[SCENE_LAYER_MAIN_PALETTE], layers[SCENE_LAYER_SUB_LAYER], layers[SCENE_LAYER_SUB_PALETTE]);
     } else if (mainOn != 0) {
-        func_020af178(layers[SCENE_LAYER_MAIN_LAYER], layers[SCENE_LAYER_MAIN_PALETTE]);
+        CreateMapModeMainWallpaperSprite(layers[SCENE_LAYER_MAIN_LAYER], layers[SCENE_LAYER_MAIN_PALETTE]);
     } else if (subOn != 0) {
-        func_020af19c(layers[SCENE_LAYER_SUB_LAYER], layers[SCENE_LAYER_SUB_PALETTE]);
+        CreateMapModeSubWallpaperSprite(layers[SCENE_LAYER_SUB_LAYER], layers[SCENE_LAYER_SUB_PALETTE]);
     }
     M2C_FIELD(&gSceneConfig, u8 **, 4) = layers;
 }

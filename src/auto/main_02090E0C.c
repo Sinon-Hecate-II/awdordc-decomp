@@ -204,7 +204,14 @@ void SetSpritePaletteBase(void) {
     *(s32 *)0x040004A4 = 0x081E4080;
 }
 
-void SetSpritePaletteIndex(s32 a) {s32 v=a==31?0:63;*(s32 *)0x040004a4=(v<<24)|0x80|(a<<16);}
+/* Give the 3D sprite palette row `paletteIndex` (the GX polygon attribute
+ * register): its index goes into the attribute's alpha field together with
+ * polygon id 63; palette 31 asks for the default attribute instead (id 0,
+ * alpha 31). */
+void SetSpritePaletteIndex(s32 paletteIndex) {
+    s32 polygonId = paletteIndex == 31 ? 0 : 63;
+    *(s32 *)0x040004A4 = (polygonId << 24) | 0x80 | (paletteIndex << 16);
+}
 #pragma optimization_level reset
 /* Take a free sprite out of the sprite pool and start it on `script` as an
  * animation player with the given OAM priority and animation flags. */
@@ -664,12 +671,14 @@ void func_02091a40(void *arg0) {
     Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x58));
 }
 #pragma scheduling reset
-void func_02091a50(void) {
+/* Delete every child-sprite wrapper, both the 2D and the 3D kind. */
+void DeleteAllSpriteWrappers(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02102a28;
-    extern M2C_UNK data_021029f0;
-    DeleteSpriteObjectsOfClass(&data_02102a28);
-    DeleteSpriteObjectsOfClass(&data_021029f0);
+    extern M2C_UNK gChildSprite2DClass;
+    extern M2C_UNK gChildSprite3DClass;
+
+    DeleteSpriteObjectsOfClass(&gChildSprite2DClass);
+    DeleteSpriteObjectsOfClass(&gChildSprite3DClass);
 }
 
 u16 Sprite_TakeCommand(void *arg0) {
@@ -839,10 +848,12 @@ void LoadScenePanelIconTiles(void) {
     CopyU16(&gScenePanelIconTiles, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXTURE) + 0x800, 0x800);
 }
 #pragma scheduling reset
-void LoadScenePanelPalette(s32 arg0) {
+/* Copy the scene panel's palette into OBJ palette slot `palette` of the engine's
+ * palette shadow. */
+void LoadScenePanelPalette(s32 palette) {
     M2C_UNK CopyToObjPaletteShadow(M2C_UNK *, s32, M2C_UNK);
-    extern M2C_UNK data_0211e088;
-    CopyToObjPaletteShadow(&data_0211e088, arg0 << 5, 0x20);
+    extern M2C_UNK data_0211e088; /* scene-panel palette (32 bytes) */
+    CopyToObjPaletteShadow(&data_0211e088, palette << DS3D_PALETTE_SHIFT, DS3D_PALETTE_BYTES);
 }
 
 /* Load the scene-panel palette `palette` into the 3D engine's OBJ palette shadow
@@ -865,18 +876,21 @@ u8 Get3DSpriteCount(void) {
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x48);
 }
 
-u8 Get3DSpriteScreenMode(s32 arg0) {
+u8 Get3DSpriteScreenMode(s32 engine) {
     M2C_UNK *Get3DSpriteManager(void);
     M2C_UNK *base = Get3DSpriteManager();
-    return M2C_FIELD((char *)base + arg0, u8 *, 0x44);
+    return M2C_FIELD((char *)base + engine, u8 *, 0x44);
 }
 
-s32 GetOther3DSpriteScreenMode(M2C_UNK arg0) {
+/* Return the other of the two 3D-sprite screen modes used by the map background
+ * layers: mode 2 becomes 3 and every other mode becomes 2.  The repeated getter
+ * call is the original's. */
+s32 GetOther3DSpriteScreenMode(M2C_UNK engine) {
     u8 Get3DSpriteScreenMode(M2C_UNK);
-    if (Get3DSpriteScreenMode(arg0) == 0x2) {
-        return 0x3;
+    if (Get3DSpriteScreenMode(engine) == DS3D_SCREEN_MODE_2) {
+        return DS3D_SCREEN_MODE_3;
     }
-    Get3DSpriteScreenMode(arg0);
-    return 0x2;
+    Get3DSpriteScreenMode(engine);
+    return DS3D_SCREEN_MODE_2;
 }
 

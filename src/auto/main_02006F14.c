@@ -337,7 +337,7 @@ void WaitCycles(unsigned int value)
         return func_00000678(value - 4);
 }
 
-void func_02007598(void) {
+void WaitForVBlank(void) {
     M2C_UNK WaitByLoop(M2C_UNK);
     M2C_UNK OS_WaitIrq(M2C_UNK, M2C_UNK);
     WaitByLoop(1);

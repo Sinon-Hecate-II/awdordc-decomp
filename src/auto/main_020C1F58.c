@@ -123,7 +123,7 @@ void UpdateSpriteAnimation(void *); s32 GetSpriteAnimValue(void *); void CopyToO
 s32 GetArmyColor(s32); s32 BlendRgb555_16(s32,s32,u8,u8);
 void BlendPalette(void *,s32,u8,u8,s32); s32 Divide(s32,s32);
 void SetSpriteQuad(s32,s16,s16,s16,s16); void SetTextSpriteValue(void *,s32); void DrawTextSprite(void *);
-void AddSprite(s32,u16,u16,void *,s32); s32 GetOccupationPaletteOffset(s32); s32 GetCOPortraitOffset(s32);
+void AddSprite(s32,u16,u16,void *,s32); s32 GetOccupationBackgroundTileOffset(s32); s32 GetCOPortraitOffset(s32);
 s32 scratch,scaleB,scaleC,scaleD,sine,cosine,q0,q1,q2,q3; u8 fade,row; s16 spriteY;
 if(!panel[0x35])return;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x3c)=0xffb4;
@@ -145,7 +145,7 @@ SetSpriteQuad(0,q0,q1,q2,q3);
 if(((FlagsC253c *)(panel+80))->flag0){SetTextSpriteValue(*(void **)(panel+60),(*(u8 **)(panel+64))[5]);{u16 *q=*(u16 **)(panel+60);q[3]=102;q[4]=59;}DrawTextSprite(*(void **)(panel+60));}
 if(((FlagsC253c *)(panel+80))->flag1)AddSprite(104,857,((0x3fc>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,gSpriteDesc32x16,11);
 if(((FlagsC253c *)(panel+80))->flags)AddSprite(54,821,((0x404>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,gSpriteDesc64x32,11);
-scratch=GetOccupationPaletteOffset((*(u8 **)(panel+64))[1]);
+scratch=GetOccupationBackgroundTileOffset((*(u8 **)(panel+64))[1]);
 AddSprite(76,117,((scratch>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_02129780,11);
 for(row=0;row<20;row++){spriteY=row*-4+130;
 if(row<panel[57])scratch=GetCOPortraitOffset((*(u8 **)(panel+64))[3]);else scratch=GetCOPortraitOffset((*(u8 **)(panel+64))[2]);
@@ -158,7 +158,7 @@ if(scratch!=65535)AddSprite(156,(spriteY&255)|1024,((scratch>>((*(ModeC253c **)g
  * portrait starts, plays the closing voice and bumps the frame counter. */
 void UpdateOccupationScreen(OccupationEffect *effect){
 void Sprite_ResumeAnimation(void *);
-void func_020c32bc(s32,s32);
+void PlayCaptureSoundForPlayer(s32,s32);
 void PlaySoundEffect(s32);
 u32 Modulo(u32,u32);
 s32 IsPlayerHuman(s32);
@@ -169,7 +169,7 @@ u16 *sprite;
 if(effect->frame==effect->endFrame){Sprite_ResumeAnimation(effect);return;}
 if((*gKeyState&(KEY_A|KEY_START))||gTouchState[TOUCH_STARTED]){
 co=effect->co;
-if(co[5]==20 && effect->frame<effect->startFrame+7)func_020c32bc(co[0],0);
+if(co[5]==20 && effect->frame<effect->startFrame+7)PlayCaptureSoundForPlayer(co[0],0);
 Sprite_ResumeAnimation(effect);return;
 }
 if(effect->frame==6){
@@ -188,7 +188,7 @@ sprite=effect->spriteB;sprite[7]=0x1c0;sprite[8]=0x100;sprite[6]=5;sprite[1]=spr
 }
 co=effect->co;
 if(co[5]==20){
-if(effect->frame==effect->startFrame+8)func_020c32bc(co[0],0);
+if(effect->frame==effect->startFrame+8)PlayCaptureSoundForPlayer(co[0],0);
 }else if(effect->frame==effect->startFrame+5){
 if(IsPlayerHuman(co[0]))PlaySoundEffect(0xe0);else PlaySoundEffect(0xe2);
 }

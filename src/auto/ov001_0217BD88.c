@@ -1,6 +1,7 @@
 /* 26 functions from 0x0217BD88 to 0x0217CCE8 (ov001), found by ds-decomp. */
 #include "common.h"
 #include "gx.h"
+#include "ov001_keypad.h"
 
 typedef struct { void (*handlers[5])(void *); } CodeHandlers;
 extern const CodeHandlers gCodeEntrySaveHandlers;
@@ -155,16 +156,19 @@ void Ov001_OpenCodeEntryKeypad(void) {
     Ov001_SetStepCallback(&Ov001_WaitKeypadFirstKey);
 }
 
+/* Code-entry step run once the keypad has opened: wait until a key produces a
+ * code (KEYPAD_CODE stays at KEYPAD_CODE_NONE until the first key is pressed),
+ * then hand over to the step that applies entered keys. */
 void Ov001_WaitKeypadFirstKey(void) {
-    s32 func_ov001_021744dc();
-    extern M2C_UNK func_ov001_0217c2b4;
-    if (func_ov001_021744dc() == 0x1F) {
+    s32 Ov001_GetKeypadCode();
+    extern M2C_UNK Ov001_CodeEntryKeyStep;
+    if (Ov001_GetKeypadCode() == KEYPAD_CODE_NONE) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_0217c2b4);
+    Ov001_SetStepCallback(&Ov001_CodeEntryKeyStep);
 }
 
-void func_ov001_0217c2b4(void) {
+void Ov001_CodeEntryKeyStep(void) {
     M2C_UNK func_ov001_0217c2c4();
     void func_ov001_0217c668(void);
     func_ov001_0217c2c4();
@@ -174,10 +178,10 @@ void func_ov001_0217c2b4(void) {
 s32 func_ov001_0217c2c4(void){
 void func_ov001_0217c8ac(void);
 void TrimCodeEntryDigits(void);
-s32 func_ov001_021744dc(void);
+s32 Ov001_GetKeypadCode(void);
 s32 IsCodeGroupComplete(s32);
 void func_ov001_0217c66c(void);
-s32 code=func_ov001_021744dc();u8 *p; s32 i,a,b;
+s32 code=Ov001_GetKeypadCode();u8 *p; s32 i,a,b;
 if(code==0)return;
 switch(code){
 case 16:

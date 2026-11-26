@@ -1,6 +1,7 @@
 /* 30 functions from 0x022222D0 to 0x02223290 (ov009), found by ds-decomp. */
 #include "common.h"
 #include "ov009_link.h"
+#include "wfc.h"
 
 typedef struct LinkPlayerRemoval {
     s32 status;
@@ -100,15 +101,17 @@ s32 func_ov009_02222428(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0xC4);
 }
 
-void func_ov009_02222430(s32 arg0) {
+void LinkRngSeed(s32 arg0) {
     extern M2C_UNK gLinkState;
     M2C_FIELD(&gLinkState, s32 *, 0x5C) = arg0;
 }
 
-u32 func_ov009_02222440(void) {
+/* Advance the link overlay's pseudo-random generator one step and return the new
+ * state: state = ((4*state + 2) * (4*state + 3)) >> 2. */
+u32 LinkRngNext(void) {
     extern M2C_UNK gLinkState;
-    s32 temp=M2C_FIELD(&gLinkState,s32 *,0x5C)*4+2;
-    return M2C_FIELD(&gLinkState,u32 *,0x5C)=(u32)(temp*(temp+1))>>2;
+    s32 temp = M2C_FIELD(&gLinkState, s32 *, LINK_STATE_RANDOM) * 4 + 2;
+    return M2C_FIELD(&gLinkState, u32 *, LINK_STATE_RANDOM) = (u32)(temp * (temp + 1)) >> 2;
 }
 
 /* Empty a pending-send queue with interrupts held off: unlink and free every
@@ -366,9 +369,11 @@ void HandleLinkAnnounceEvent(void *event) {
     SetLinkPhase(LINK_PHASE_ERROR);
 }
 
-void RequestLinkPlayerAnnounce(M2C_UNK arg0, M2C_UNK arg1) {
+/* Ask the ARM7 to measure `channel` so the player on it announces itself to the
+ * link; the scan's answer goes to `callback` (HandleLinkAnnounceEvent). */
+void RequestLinkPlayerAnnounce(M2C_UNK callback, M2C_UNK channel) {
     M2C_UNK WFC_MeasureChannel(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    WFC_MeasureChannel(arg0, 3, 0x11, arg1, 0x1E);
+    WFC_MeasureChannel(callback, WFC_SCAN_CCA_MODE, WFC_SCAN_ED_THRESHOLD, channel, WFC_SCAN_MEASURE_TIME);
 }
 
 s32 __clz(u32);
@@ -377,11 +382,11 @@ s32 _CountLeadingZeros(u32);
 s32 __builtin_clz(u32);
 #pragma intrinsic(__builtin_clz)
 s16 PickRandomSetBit(s32 arg0) {
-u32 CountBits();u32 func_ov009_02222440();s32 __builtin_clz(u32);
+u32 CountBits();u32 LinkRngNext();s32 __builtin_clz(u32);
 s16 result=0;u32 temp=CountBits();s32 n;u16 count;s32 i;
 if(temp==1){n=0x20-__builtin_clz(~arg0&(arg0-1));result=n+1;}
 else if(temp>1U){
-count=(temp*(func_ov009_02222440()&255))>>8;
+count=(temp*(LinkRngNext()&255))>>8;
 i=result;goto test;
 loop: {if((arg0&(1<<i))!=0 && count--==0){result=i+1;goto done;}i++;}
 test:if(i<16)goto loop;
@@ -588,10 +593,12 @@ func_ov009_022227d4(result);
 return 0;
 }
 #pragma scheduling reset
-void func_ov009_0222304c(void *arg0) {
-    M2C_FIELD(arg0, s16 *, 0xC0) = (s16) (M2C_FIELD(arg0, s16 *, 0xC0) - 1);
-    if ((s32) M2C_FIELD(arg0, s16 *, 0xC0) <= 0) {
-        M2C_FIELD(arg0, s32 *, 0xC4) = 0;
+/* Per-frame per-peer-slot callback: count the slot's frames-left timer down and
+ * release the slot when it runs out. */
+void UpdateLinkPeerSlotTimer(void *slot) {
+    M2C_FIELD(slot, s16 *, LINK_PEER_SLOT_TIMER) = (s16) (M2C_FIELD(slot, s16 *, LINK_PEER_SLOT_TIMER) - 1);
+    if ((s32) M2C_FIELD(slot, s16 *, LINK_PEER_SLOT_TIMER) <= 0) {
+        M2C_FIELD(slot, s32 *, LINK_PEER_SLOT_IN_USE) = 0;
     }
 }
 
@@ -724,13 +731,19 @@ s32 SendLinkStepCommand(void) {
     return 0;
 }
 
-void HandleLinkStepResult(void *arg0) {
+/* Completion handler of the link step command: a nonzero task state is passed on
+ * as the link event, otherwise the link moves on to the READY phase so the next
+ * setup step can start. */
+void HandleLinkStepResult(void *event) {
     M2C_UNK SetLinkPhase(M2C_UNK);
-    void SignalLinkEvent();
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
-        SignalLinkEvent();
+    void SignalLinkEvent(s32);
+    u16 state;
+
+    state = M2C_FIELD(event, u16 *, LINK_EVENT_STATE);
+    if (state != 0) {
+        SignalLinkEvent(state);
         return;
     }
-    SetLinkPhase(1);
+    SetLinkPhase(LINK_PHASE_READY);
 }
 

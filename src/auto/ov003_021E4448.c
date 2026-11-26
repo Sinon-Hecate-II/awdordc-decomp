@@ -236,12 +236,15 @@ void func_ov003_021e48dc(void) {
     func_ov003_021f14a0();
 }
 
-void func_ov003_021e48e8(void *arg0) {
+/* Reset the map-select state after leaving the screen: keep map confirmation
+ * enabled, put the scene phase back to map select (2) and clear the view's
+ * state byte. */
+void Ov003_ResetMapSelectState(void *view) {
     M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK Ov003_SetMapConfirmEnabled();
     Ov003_SetMapConfirmEnabled();
     SetOv003SceneState(2);
-    M2C_FIELD(arg0, s8 *, 0x38) = 0;
+    ((Ov003SceneView *)view)->state38 = 0;
 }
 
 /* Create the ov003 scene view (class gOv003SceneViewClass): make the scene
@@ -448,7 +451,7 @@ void *Ov003SceneView_Destructor(void *obj) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK MemFree();
     M2C_UNK RemoveMapViewSprites();
-    M2C_UNK func_020c8e40();
+    M2C_UNK LoadCampaignMapHeaders();
     void HeapFreeBlock(void *);
     extern M2C_UNK gOv003SceneViewVTable;
     extern M2C_UNK gOv003SceneViewIfaceVTable;
@@ -461,7 +464,7 @@ void *Ov003SceneView_Destructor(void *obj) {
 
     M2C_FIELD(obj, M2C_UNK **, 0) = &gOv003SceneViewVTable;
     M2C_FIELD(obj, M2C_UNK **, 0x34) = &gOv003SceneViewIfaceVTable;
-    func_020c8e40();
+    LoadCampaignMapHeaders();
     child5C = M2C_FIELD(obj, void ***, 0x5C);
     if (child5C != NULL) {
         M2C_FIELD(*child5C, void (**)(void *), 4)(child5C);
@@ -544,7 +547,7 @@ void *DestroyOv003SceneView(void *obj) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK MemFree();
     M2C_UNK RemoveMapViewSprites();
-    M2C_UNK func_020c8e40();
+    M2C_UNK LoadCampaignMapHeaders();
     void HeapFreeBlock(void *);
     extern M2C_UNK gOv003SceneViewVTable;
     extern M2C_UNK gOv003SceneViewIfaceVTable;
@@ -557,7 +560,7 @@ void *DestroyOv003SceneView(void *obj) {
 
     M2C_FIELD(obj, M2C_UNK **, 0) = &gOv003SceneViewVTable;
     M2C_FIELD(obj, M2C_UNK **, 0x34) = &gOv003SceneViewIfaceVTable;
-    func_020c8e40();
+    LoadCampaignMapHeaders();
     child5C = M2C_FIELD(obj, void ***, 0x5C);
     if (child5C != NULL) {
         M2C_FIELD(*child5C, void (**)(void *), 4)(child5C);
@@ -655,15 +658,11 @@ void func_ov003_021e5060(s32 arg0) {
 }
 #pragma interworking reset
 #pragma peephole reset
-/* Whether the box at (x, y) of `width` x `height` overlaps the DS screen: its
- * right/bottom edge must not be off the top/left, its x/y not past the far edge. */
-s32 Ov003_IsBoxOnScreen(s32 x, s32 y, s32 width, s32 height) {
-    if (((s32) (x + width) < 0) || (x > SCREEN_WIDTH)) {
-        return 0;
-    }
-    if (((s32) (y + height) < 0) || (y > SCREEN_HEIGHT)) {
-        return 0;
-    }
+/* Whether the rectangle at (x, y) with the given width and height overlaps the
+ * 256x192 screen at all (a rectangle entirely off any side does not). */
+s32 Ov003_IsRectOnScreen(s32 x, s32 y, s32 width, s32 height) {
+    if (x + width < 0 || x > SCREEN_WIDTH) return 0;
+    if (y + height < 0 || y > SCREEN_HEIGHT) return 0;
     return 1;
 }
 

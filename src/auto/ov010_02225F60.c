@@ -636,7 +636,7 @@ void func_ov010_022269dc(M2C_UNK arg0, M2C_UNK arg1) {
     CopyU16(arg1, arg0, 0x18);
 }
 
-void func_ov010_022269f8(s32 a,s32 b,s32 c){MI_CpuCopy8(b,a+44,c);}
+void CopyLocalPlayerPanel(s32 a,s32 b,s32 c){MI_CpuCopy8(b,a+44,c);}
 
 /* Free every queued packet node of the outbound queue `queue`, then reset its
  * head, tail and count, with interrupts disabled so a producer cannot enqueue

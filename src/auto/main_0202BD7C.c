@@ -263,9 +263,23 @@ void *GetSoundGroupRecord(s32 index) {
     return offset == 0 ? 0 : dataBlock + offset;
 }
 
-s32 Sound_GetArchiveFileOffset(u32 a){extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,12);}
+/* Return the offset in the current sound archive's file of object `index`'s
+ * data, or 0 when the archive has no such object. */
+s32 Sound_GetArchiveFileOffset(u32 index) {
+    extern s32 gCurrentArchive;
+    SoundArchiveFileTable *table = (SoundArchiveFileTable *)M2C_FIELD(gCurrentArchive, void **, SOUND_ARCHIVE_TABLE);
+    if (index >= table->count) return 0;
+    return table->files[index].offset;
+}
 
-s32 Sound_GetArchiveFileSize(u32 a){extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,16);}
+/* Return the byte size of file `index` in the current sound archive's file
+ * table, or 0 when the archive has no such file. */
+s32 Sound_GetArchiveFileSize(u32 index) {
+    extern s32 gCurrentArchive;
+    SoundArchiveFileTable *table = (SoundArchiveFileTable *)M2C_FIELD(gCurrentArchive, void **, SOUND_ARCHIVE_TABLE);
+    if (index >= table->count) return 0;
+    return table->files[index].size;
+}
 
 /* Read file `index` of the current sound archive into `buffer`: at most `size`
  * bytes starting `offset` bytes into the file, clipped to the file's size.
@@ -288,7 +302,15 @@ s32 Sound_ReadArchiveFile(u32 index, void *buffer, u32 size, u32 offset) {
 
 void Sound_GetArchiveFileRange(volatile u32 *p) {extern s32 gCurrentArchive;u32 a=M2C_FIELD(gCurrentArchive,volatile u32 *,0x7c),b=M2C_FIELD(gCurrentArchive,volatile u32 *,0x80);p[0]=a;p[1]=b;}
 
-s32 GetLoadedArchiveFile(u32 a) {extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,20);}
+/* Return the loaded data pointer of sound-archive file `index`, or NULL when the
+ * archive has no such file. */
+s32 GetLoadedArchiveFile(u32 index) {
+    extern s32 gCurrentArchive;
+    SoundArchiveFileTable *table = (SoundArchiveFileTable *)M2C_FIELD(gCurrentArchive, void **, SOUND_ARCHIVE_TABLE);
+
+    if (index >= table->count) return 0;
+    return (s32)table->files[index].data;
+}
 
 s32 SetLoadedArchiveFile(s32 a,s32 b) {extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84)+a*16;M2C_FIELD(p,s32 *,20)=b;return (s32)p;}
 
@@ -425,15 +447,18 @@ s32 func_0202c778(void *arg0) {
     return M2C_FIELD(arg0, u16 *, 0xC) - 1;
 }
 
-s32 Sound_GetPlayerFreeHeap(s32 *arg0) {
+/* Bytes the sound player's frame heap can still hand out: the largest block it can
+ * allocate at the default heap alignment less one block of overhead, or 0 when even
+ * that would not fit. */
+s32 Sound_GetPlayerFreeHeap(s32 *player) {
     u32 GetAllocatableSizeForFrameHeap(s32, M2C_UNK);
-    u32 temp_r0;
+    u32 available;
 
-    temp_r0 = GetAllocatableSizeForFrameHeap(*arg0, 0x20);
-    if (temp_r0 < 0x20U) {
+    available = GetAllocatableSizeForFrameHeap(*player, HEAP_ALIGN_DEFAULT);
+    if (available < HEAP_ALIGN_DEFAULT) {
         return 0;
     }
-    return (temp_r0 - 0x20) & ~0x1F;
+    return (available - HEAP_ALIGN_DEFAULT) & ~(HEAP_ALIGN_DEFAULT - 1);
 }
 
 void Sound_InitHeapSectionList(M2C_UNK arg0) {
@@ -463,15 +488,17 @@ s32 Sound_CreateHeapSection(void *heap) {
     return 1;
 }
 
+/* Send every queued sound command to the ARM7 and block until it has processed
+ * them all. */
 void Sound_FlushAndWait(void) {
     M2C_UNK Sound_FlushCommands(M2C_UNK);
     M2C_UNK Sound_WaitForCommand(s32);
     s32 Sound_GetQueueMark();
-    s32 temp_r4;
+    s32 commandMark;
 
-    temp_r4 = Sound_GetQueueMark();
-    Sound_FlushCommands(1);
-    Sound_WaitForCommand(temp_r4);
+    commandMark = Sound_GetQueueMark();
+    Sound_FlushCommands(SOUND_FLUSH_BLOCK);
+    Sound_WaitForCommand(commandMark);
 }
 
 s32 Sound_LoadArchiveGroup(void) {

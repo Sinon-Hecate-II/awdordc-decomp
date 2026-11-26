@@ -39,7 +39,7 @@ typedef struct IntroMenuStep {
     const char *name;  /* +0x0C base name of the entry's .tex/.ctx files */
 } IntroMenuStep; /* 0x10 bytes */
 
-/* Intro-menu object: a 3D sprite (engine class data_ov011_02228a78) that walks
+/* Intro-menu object: a 3D sprite (engine class gIntroMenuClass) that walks
    the gIntroMenuTable script, keeps up to three entry sprites and draws the
    selected entry's label.  Vtable words: destroy, destroy-and-free, no-op. */
 typedef struct IntroMenu011 {

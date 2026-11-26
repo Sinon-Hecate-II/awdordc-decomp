@@ -263,11 +263,14 @@ s32 func_0208ed44(s32 arg0) {
 
 void func_0208ed58(void *p){func_0208eb80(p);}
 
-void func_0208ed64(M2C_UNK arg0) {
+/* Create the countdown-timer display sprite owned by `owner` and initialise it;
+ * nothing is created when the sprite could not be made. */
+void CreateTimerDisplay(void *owner) {
     s32 CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *InitTimerDisplay();
-    extern M2C_UNK data_021026b8;
-    if (CreateSpriteFromClass(&data_021026b8, arg0) == 0) {
+    extern M2C_UNK gTimerDisplayClass;
+
+    if (CreateSpriteFromClass(&gTimerDisplayClass, owner) == 0) {
         return;
     }
     InitTimerDisplay();

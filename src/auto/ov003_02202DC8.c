@@ -211,7 +211,7 @@ void func_ov003_02203280(void *arg0) {
     M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK Ov003_SetMapConfirmEnabled();
     s32 IsSessionHostAlt();
-    M2C_UNK func_ov003_02204fac(void *);
+    M2C_UNK SendSetupMenuStart(void *);
     extern u16 gMapConfig;
     void *self;
     void *temp_r0;
@@ -243,7 +243,7 @@ void func_ov003_02203280(void *arg0) {
     if (IsSessionHostAlt() == 0) {
         return;
     }
-    func_ov003_02204fac(self);
+    SendSetupMenuStart(self);
 }
 
 #pragma push

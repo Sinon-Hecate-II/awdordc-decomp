@@ -258,10 +258,15 @@ s16 PageListUp(void *list) {
     return M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW) - old;
 }
 
-s32 ScrollListDown(void *arg0) {
-    s16 old = M2C_FIELD(arg0, s16 *, 0x40);
-    if (old + 6 >= M2C_FIELD(arg0, s16 *, 0x42)) goto done;
-    M2C_FIELD(arg0, s16 *, 0x40)++;
+/* Scroll the menu list's window down one row while a row still follows it:
+ * advance the first visible row and report 1, or report 0 at the end of the
+ * list (the window's last row, firstRow + MENU_LIST_VISIBLE_ROWS - 1, is the
+ * list's last row). */
+s32 ScrollListDown(void *list) {
+    s16 firstRow = M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW);
+
+    if (firstRow + MENU_LIST_VISIBLE_ROWS >= M2C_FIELD(list, s16 *, MENU_LIST_ROW_COUNT)) goto done;
+    M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW)++;
     return 1;
 done:
     return 0;

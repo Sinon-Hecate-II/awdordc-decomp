@@ -715,9 +715,10 @@ s32 SocketIsUnregistered(s32 socket) {
     return 0;
 }
 
-s32 SocketIsClosed(s32 arg0) {
- extern M2C_UNK gClosedSocketList;
- return SocketFindLink(&gClosedSocketList, arg0) != NULL;
+/* Whether socket handle `socket` is in the socket layer's list of closed sockets. */
+s32 SocketIsClosed(s32 socket) {
+    extern M2C_UNK gClosedSocketList;
+    return SocketFindLink(&gClosedSocketList, socket) != NULL;
 }
 
 /* Create a socket from the default template: a stream (TCP) one when `type` is
@@ -753,14 +754,18 @@ s32 SocketConnectAddress(s32 socket, GhiSocketAddress *address) {
     return SocketConnect(socket, (u16) ((u8) ((s32) netPort >> 8) | ((netPort << 8) & 0xFF00)), ((netAddr << 0x18) & 0xFF000000) | (((netAddr << 8) & 0xFF0000) | ((u8) (netAddr >> 0x18) | ((netAddr >> 8) & 0xFF00))));
 }
 
-void func_020215b4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Receive up to `len` bytes from `socket` into `buf` with no flags and no sender
+ * report; the plain wrapper over SocketRecvFrom, the recv counterpart of SocketSend. */
+s32 SocketReceive(M2C_UNK socket, M2C_UNK buf, M2C_UNK len) {
     M2C_UNK SocketRecvFrom(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    SocketRecvFrom(arg0, arg1, arg2, 0, 0, 0);
+    return SocketRecvFrom(socket, buf, len, 0, 0, 0);
 }
 
-void func_020215d4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+/* Receive up to len bytes from socket into buf with flags (SOCK_RECV_NONBLOCK
+ * makes it a try); the sender is not reported, so the peer outputs are NULL. */
+s32 SocketRecvFlags(M2C_UNK socket, M2C_UNK buf, M2C_UNK len, s32 flags) {
     M2C_UNK SocketRecvFrom(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    SocketRecvFrom(arg0, arg1, arg2, 0, 0, arg3);
+    return SocketRecvFrom(socket, buf, len, 0, 0, flags);
 }
 
 /* Receive up to len bytes on a socket and report the sender in peer as a socket
@@ -775,13 +780,16 @@ s32 SocketRecvFromAddress(M2C_UNK sock, M2C_UNK buf, M2C_UNK len, s32 flags, voi
     return result;
 }
 
-void SocketSend(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Send data on a socket without specifying a destination address. */
+void SocketSend(M2C_UNK socket, M2C_UNK buffer, M2C_UNK length) {
     M2C_UNK SocketSendTo(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    SocketSendTo(arg0, arg1, arg2, 0, 0, 0);
+    SocketSendTo(socket, buffer, length, 0, 0, 0);
 }
 
-void func_020216a8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+/* Send up to len bytes from buf on socket with flags; the send counterpart of
+ * SocketRecvFlags, no fixed peer is given, so the peer port and address are NULL. */
+void SocketSendFlags(M2C_UNK socket, M2C_UNK buf, M2C_UNK len, s32 flags) {
     M2C_UNK SocketSendTo(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    SocketSendTo(arg0, arg1, arg2, 0, 0, arg3);
+    SocketSendTo(socket, buf, len, 0, 0, flags);
 }
 

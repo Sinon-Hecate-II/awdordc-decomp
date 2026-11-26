@@ -130,7 +130,7 @@ s32 Ov004_IsPlayerTwoArmyEmpty(void) {
 
 void func_ov004_02213bb8(void) {
 extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
-s32 RandomIntRange(s32,s32); s32 GetUnitKindBuildCost(s32); void func_02086930(s32,u8);
+s32 RandomIntRange(s32,s32); s32 GetUnitKindBuildCost(s32); void SetEventValue(s32,u8);
 u8 buf[27],out[27]; s32 i,t,cnt,maxCount,chosen,primCount,j; u32 outCount; void **map; s32 wt; u8 *dst;
 for(j=0;j<27;j++)buf[j]=0;
 map=gCurrentMap;
@@ -158,22 +158,27 @@ buf[(u8)chosen]=0;
 if (++primCount >= 3) break;
 }
 if(maxCount!=0){u8 *end=out+outCount;for(i=0;i<27;i++){if(maxCount==buf[i]){*end++=i;outCount++;}}}
-if(outCount){i=RandomIntRange(0,outCount-1);func_02086930(0,out[i]);}
-else func_02086930(0,0);
+if(outCount){i=RandomIntRange(0,outCount-1);SetEventValue(0,out[i]);}
+else SetEventValue(0,0);
 }
 
-void func_ov004_02213d90(void) {
+/* Battle-script command: show the name of the unit kind the AI has chosen for
+ * production (event value 0), looked up in the kind-indexed name text table. */
+void Ov004_ShowChosenUnitKindName(void) {
     M2C_UNK SetUiMessageText(s32);
-    s32 func_02086a20(M2C_UNK);
-    extern s32 data_ov004_02225f70[];
-    SetUiMessageText(data_ov004_02225f70[func_02086a20(0)]);
+    s32 GetEventValue(M2C_UNK);
+    extern s32 gChosenUnitKindNameTextIds[];
+    SetUiMessageText(gChosenUnitKindNameTextIds[GetEventValue(0)]);
 }
 
-void func_ov004_02213db0(void) {
+/* Battle-script command: show the description of the unit kind the AI has
+ * chosen for production (event value 0), looked up in the kind-indexed
+ * description text table. */
+void Ov004_ShowChosenUnitKindDescription(void) {
     M2C_UNK SetUiMessageText(s32);
-    s32 func_02086a20(M2C_UNK);
-    extern s32 data_ov004_02225fdc[];
-    SetUiMessageText(data_ov004_02225fdc[func_02086a20(0)]);
+    s32 GetEventValue(M2C_UNK);
+    extern s32 gChosenUnitKindDescriptionTextIds[];
+    SetUiMessageText(gChosenUnitKindDescriptionTextIds[GetEventValue(0)]);
 }
 
 /* Mark every unit of the current player whose kind is the AI's chosen kind as
@@ -181,13 +186,13 @@ void func_ov004_02213db0(void) {
  * no kind was chosen (kind 0). */
 void Ov004_MarkChosenKindActed(void) {
 extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
-s32 func_02086a20(M2C_UNK);
+s32 GetEventValue(M2C_UNK);
 s32 i; u8 *p;
-if(func_02086a20(0)==0)return;
+if(GetEventValue(0)==0)return;
 for(i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+MAP_UNIT_GROUP_SCAN;i++){
 p=(u8 *)*gCurrentMap+MAP_UNIT_RECORDS+i*MAP_UNIT_STRIDE;
 if((u32)(p[0]<<26)>>26) {
-if(func_02086a20(0)==((u32)(p[0]<<26)>>26)) M2C_FIELD(p,u16 *,MAP_UNIT_FLAGS)|=UNIT_FLAG_ACTED;
+if(GetEventValue(0)==((u32)(p[0]<<26)>>26)) M2C_FIELD(p,u16 *,MAP_UNIT_FLAGS)|=UNIT_FLAG_ACTED;
 }
 }
 }
@@ -271,28 +276,30 @@ s32 IsCursorAtScriptedTile(void) {
  return cursorX==0 && cursorY==4;
 }
 
-u8 func_ov004_02214010(void) {
+/* Battle-script condition: true when story event flag 0 is set. */
+u8 Ov004_IsEventFlag0Set(void) {
     s32 IsEventFlagSet(M2C_UNK);
-    u8 var_r0;
+    u8 result;
 
     if (IsEventFlagSet(0) != 0) {
-        var_r0 = 1;
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
-u8 func_ov004_02214030(void) {
+/* Battle-script condition: true when player 1's CO power meter holds any points. */
+u8 Ov004_IsPlayerOneCoMeterNonZero(void) {
     s32 GetCoPowerMeterPoints(M2C_UNK);
-    u8 var_r0;
+    u8 result;
 
     if (GetCoPowerMeterPoints(1) != 0) {
-        var_r0 = 1;
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 /* Battle-script condition: true when player 1's CO power meter holds exactly
@@ -362,27 +369,30 @@ s32 IsPlayerOneCoPowerReady(void) {
     return 0;
 }
 
-u8 func_ov004_022141fc(void) {
+/* Battle-script condition: true when the map's order queue holds no active
+ * radius-5 area attack (MAPORDER_ATTACK_AREA) order. */
+u8 IsNoAreaAttackOrderActive(void) {
     s32 HasActiveMapOrderOfType(M2C_UNK);
-    u8 var_r0;
+    u8 noAreaAttack;
 
-    if (HasActiveMapOrderOfType(4) == 0) {
-        var_r0 = 1;
+    if (HasActiveMapOrderOfType(MAPORDER_ATTACK_AREA) == 0) {
+        noAreaAttack = 1;
     } else {
-        var_r0 = 0;
+        noAreaAttack = 0;
     }
-    return var_r0;
+    return noAreaAttack;
 }
 
-u8 func_ov004_0221421c(void) {
-    u8 var_r0;
+/* Battle-script condition: true while story event flag 0 is clear. */
+u8 Ov004_IsEventFlag0Clear(void) {
+    u8 result;
 
     if (IsEventFlagSet(0) == 0) {
-        var_r0 = 1;
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 /* Mark every unit of the current player as having acted, so the rest of the
@@ -477,9 +487,11 @@ s32 func_ov004_02214454(void) {
     return 1;
 }
 
-void func_ov004_0221445c(s32 arg0) {
+/* Battle-event script command: show an area-effect marker (range 3, power 50)
+ * at tile (9, 6) for the script object `owner`. */
+void ScriptCmd_ShowAreaEffectMarkerAt9_6(s32 owner) {
     void CreateScriptMarkerSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    CreateScriptMarkerSprite(9, 6, 3, 0x32, arg0);
+    CreateScriptMarkerSprite(9, 6, 3, 0x32, owner);
 }
 
 /* Battle-script condition: true on battle turns 3 to 5 inclusive. */
@@ -591,9 +603,13 @@ if(!kind)return;
 CreateMapUnitAndRefreshView(14,8,kind,2);
 }
 
-void func_ov004_022146f8(void) {
-    M2C_UNK Create3DSpriteOffsetTrack(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    Create3DSpriteOffsetTrack(4, 2, 0, 0x32, 0);
+/* Battle-script command: start a screen shake that loops for the rest of the
+ * scene.  Offset target 4 follows path 2 at half (50%) scale with 0 steps, so
+ * the track never hands the sprite back to its regular animation. */
+void StartLoopingScreenShake(void) {
+    void Create3DSpriteOffsetTrack(s32 target, s32 pathIndex, s32 steps, s32 scale, s32 source);
+
+    Create3DSpriteOffsetTrack(4, 2, 0, 50, 0);
 }
 
 /* ov004 battle-script condition: true when no active map order covers tile (6, 6). */

@@ -417,7 +417,7 @@ void CreateOv003Scene(M2C_UNK arg0) {
 void *Ov003Scene_Destructor(void *scene) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK RemoveMapViewSprites();
-    M2C_UNK func_020c8e40();
+    M2C_UNK LoadCampaignMapHeaders();
     M2C_UNK ReleaseUsernameFont();
     extern M2C_UNK gOv003SceneVTable;
     extern M2C_UNK gOv003SceneIfaceVTable;
@@ -474,7 +474,7 @@ void *Ov003Scene_Destructor(void *scene) {
     }
     RemoveMapViewSprites();
     SetOv003SceneState(4);
-    func_020c8e40();
+    LoadCampaignMapHeaders();
     return scene;
 }
 
@@ -495,7 +495,7 @@ void func_ov003_021e6b04(s32 arg0) {
 void *DestroyOv003Scene(void *scene) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK RemoveMapViewSprites();
-    M2C_UNK func_020c8e40();
+    M2C_UNK LoadCampaignMapHeaders();
     M2C_UNK ReleaseUsernameFont();
     extern M2C_UNK gOv003SceneVTable;
     extern M2C_UNK gOv003SceneIfaceVTable;
@@ -552,7 +552,7 @@ void *DestroyOv003Scene(void *scene) {
     }
     RemoveMapViewSprites();
     SetOv003SceneState(4);
-    func_020c8e40();
+    LoadCampaignMapHeaders();
     MemFree(scene);
     return scene;
 }
@@ -567,10 +567,10 @@ void *func_ov003_021e6c2c(void *p) {
     return DestroyOv003Scene((char *)p - 0x34);
 }
 #pragma opt_strength_reduction reset
-void func_ov003_021e5c68(void *);
+void Ov003_CloseMapInfoScene(void *);
 void func_ov003_021e6c3c(void *p) {
-    void func_ov003_021e5c68(void *);
-    func_ov003_021e5c68((char *)p - 52);
+    void Ov003_CloseMapInfoScene(void *);
+    Ov003_CloseMapInfoScene((char *)p - 52);
 }
 
 #pragma opt_peephole off

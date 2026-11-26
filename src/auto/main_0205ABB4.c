@@ -179,7 +179,7 @@ u16 GT2SocketPort(void *arg0) {
     return M2C_FIELD(arg0, u16 *, 8);
 }
 
-s32 func_0205b038(void *arg0) {
+s32 gti2GetConnectionSendFreeSpace(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x54) - M2C_FIELD(arg0, s32 *, 0x58);
 }
 

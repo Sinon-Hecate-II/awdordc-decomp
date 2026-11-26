@@ -90,20 +90,20 @@ if(unitKind!=0&&unitKind==kind&&IsMidActionStep(unit->aiState)==0)count++;
 return count;
 }
 
-/* True while a unit is in an AI step that carries out its chosen action, i.e.
- * the unit is busy with the attack or the capture it started. */
+/* True while a unit's AI step is the one that carries out its chosen action,
+ * i.e. the unit is busy with the attack or the capture it started. */
 u8 IsMidActionStep(s32 aiStep) {
-    u8 var_r0;
+    u8 midAction;
 
     if (aiStep == AI_STEP_ATTACK) {
         return 1U;
     }
     if (aiStep == AI_STEP_CAPTURE) {
-        var_r0 = 1;
+        midAction = 1;
     } else {
-        var_r0 = 0;
+        midAction = 0;
     }
-    return var_r0;
+    return midAction;
 }
 
 /* How far the AI's unit can still travel this turn: its remaining fuel divided by
@@ -292,15 +292,17 @@ u8 IsCurrentPlayerUnit(s32 unitId) {
     return var_r0;
 }
 
-u8 IsPropertyTerrain(s32 arg0) {
+/* TRUE when a terrain kind (bits 0..4 of the cell's terrain byte) is a property,
+ * from headquarters through the missile silo. */
+u8 IsPropertyTerrain(s32 terrain) {
     extern s8 gTerrainIsProperty[];
-    u8 var_r0;
-    if (gTerrainIsProperty[arg0 & 0x1F] != 0) {
-        var_r0 = 1;
+    u8 property;
+    if (gTerrainIsProperty[terrain & MAP_TERRAIN_KIND_MASK] != 0) {
+        property = 1;
     } else {
-        var_r0 = 0;
+        property = 0;
     }
-    return var_r0;
+    return property;
 }
 
 /* Whether terrain byte `terrain` is a property a unit can capture: a property
@@ -328,15 +330,17 @@ u8 IsTerrainPassableForUnitKind(s32 unitKind, s32 terrain) {
     return passable;
 }
 
-u8 IsUnitProductionTerrain(s32 arg0) {
+/* Whether a cell's terrain byte names a terrain kind that can produce units. */
+u8 IsUnitProductionTerrain(s32 terrain) {
     extern s8 gUnitProductionTerrain[];
-    u8 var_r0;
-    if (gUnitProductionTerrain[arg0 & 0x1F] != 0) {
-        var_r0 = 1;
+    u8 result;
+
+    if (gUnitProductionTerrain[terrain & MAP_TERRAIN_KIND_MASK] != 0) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 /* Whether the player owning cell (x,y) is from another army than the player

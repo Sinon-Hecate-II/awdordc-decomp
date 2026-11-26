@@ -52,11 +52,12 @@ s32 func_ov001_0216cd90(void) {
     return -(WhConnTaskReceiveLinkStatus() != 0);
 }
 
-s32 func_ov001_0216cdb4(u8 *arg0, u8 *arg1, s32 arg2) {
+/* Compare up to maxLength bytes, returning the first unsigned-byte difference or zero. */
+s32 Ov001CompareBytes(u8 *left, u8 *right, s32 maxLength) {
     s32 result = 0;
-    while (arg2-- > 0 && (result = *arg0 - *arg1) == 0) {
-        arg0++;
-        arg1++;
+    while (maxLength-- > 0 && (result = *left - *right) == 0) {
+        left++;
+        right++;
     }
     return result;
 }
@@ -118,8 +119,9 @@ void func_ov001_0216ce80(void) {
     func_0202175c();
 }
 
-s32 Ov001SwapEndian32(s32 arg0) {
-    u32 x = (u32) arg0;
+/* Reverse the byte order of a 32-bit value (big-endian to little-endian). */
+s32 Ov001SwapEndian32(s32 value) {
+    u32 x = (u32) value;
     return ((x << 0x18) & 0xFF000000) | (((x << 8) & 0xFF0000) | ((u8) (x >> 0x18) | ((x >> 8) & 0xFF00)));
 }
 

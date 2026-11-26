@@ -66,13 +66,16 @@ s32 GetMapListScreenRow(s32 row) {
     return -1;
 }
 
-s32 func_ov001_0217ee24(s32 arg0) {
+/* Absolute list row shown at the given visible row (0..3) under the current
+ * scroll position: the first visible row is the scroll offset's row. */
+s32 GetMapListRowAt(s32 visibleRow) {
     s32 HardwareDivide(u16, s32);
     extern M2C_UNK gMapListState;
-    s32 result;
-    result = HardwareDivide(M2C_FIELD(&gMapListState, u16 *, 4), 0x1D);
-    result += arg0;
-    return result;
+    s32 row;
+
+    row = HardwareDivide(M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL), OV001_MAP_LIST_ROW_HEIGHT);
+    row += visibleRow;
+    return row;
 }
 
 /* One step of the map-list scroll-up animation: move the scroll position a row
@@ -413,6 +416,8 @@ void MapList_DismissMessage(void) {
     Ov001_SetStepCallback(&MapList_WaitMessageClosed);
 }
 
+/* Map-list step after a message box was dismissed: once the region menu has
+ * finished closing, return to the map list's input step. */
 void MapList_WaitMessageClosed(void) {
     s32 Ov001_IsRegionMenuActive();
     extern M2C_UNK Ov001_UpdateMapListInput;
@@ -427,7 +432,10 @@ void SetMapListMode(s8 arg0) {
     M2C_FIELD(&gMapListState, s8 *, 1) = arg0;
 }
 
-void func_ov001_0217f73c(void) {
+/* Step that hands another screen back to the ov001 map list: reload its
+ * background and save-slot sprites, commit the working save slot and fade the
+ * list back in. */
+void Ov001_ReopenMapListScreen(void) {
     M2C_UNK Ov001_LoadSaveSlotObjLayout();
     void MapList_LoadBackground();
     M2C_UNK CommitSaveSlot();
@@ -472,7 +480,7 @@ void Ov001_FadeInMapListScreen(void) {
 void Ov001_ShowMapListConnectMessage(void) {
     M2C_UNK Ov001_ShowMessage(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 Ov001_IsFadeActive(M2C_UNK);
-    extern M2C_UNK func_ov001_0217f894;
+    extern M2C_UNK Ov001_MapListRegionClosed;
     if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
@@ -480,10 +488,25 @@ void Ov001_ShowMapListConnectMessage(void) {
         return;
     }
     Ov001_ShowMessage(0x44, 5, 1, -1, 0);
-    Ov001_SetStepCallback(&func_ov001_0217f894);
+    Ov001_SetStepCallback(&Ov001_MapListRegionClosed);
 }
 
-void func_ov001_0217f894(void){s32 Ov001_IsRegionMenuActive(void);void func_ov001_0217f8bc(void);void func_ov001_0217f8c0(void);void Ov001_FadeOutMapListForAccessPoint(void);func_ov001_0217f8bc();func_ov001_0217f8c0();if(Ov001_IsRegionMenuActive())return;Ov001_SetStepCallback(Ov001_FadeOutMapListForAccessPoint);}
+/* Per-frame map-list step that runs after the connect message is up: wait for
+ * the region-column menu to close, then fade the map list out to the access-point
+ * screen. */
+void Ov001_MapListRegionClosed(void) {
+    s32 Ov001_IsRegionMenuActive(void);
+    void func_ov001_0217f8bc(void);
+    void func_ov001_0217f8c0(void);
+    void Ov001_FadeOutMapListForAccessPoint(void);
+
+    func_ov001_0217f8bc();
+    func_ov001_0217f8c0();
+    if (Ov001_IsRegionMenuActive()) {
+        return;
+    }
+    Ov001_SetStepCallback(Ov001_FadeOutMapListForAccessPoint);
+}
 
 void func_ov001_0217f8bc(void) {
 
@@ -524,8 +547,10 @@ void Ov001_CloseMapListForAccessPoint(void) {
     Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);
 }
 
+/* TRUE while the console's lid is closed (bit SHARED_LID_CLOSED of the shared
+ * work area's lid word). */
 s32 Ov001_CheckLidClosed(void) {
-    if (((s32) (*(u16 *)0x027FFFA8 & 0x8000) >> 0xF) != 0) {
+    if (((s32) (*(u16 *)SHARED_LID_WORD & SHARED_LID_CLOSED) >> 0xF) != 0) {
         return 1;
     }
     return 0;
@@ -599,6 +624,8 @@ void Ov001_ConnectionScreenWaitIconRow(void) {
     Ov001_SetStepCallback(&Ov001_UpdateOptionPage1);
 }
 
+/* Option page 1's per-frame step: wait a frame, then process the page's choice,
+ * its B/lid cancel input, the no-op step and the back choice. */
 void Ov001_UpdateOptionPage1(void) {
     M2C_UNK SleepMilliseconds(s32);
     M2C_UNK Ov001_HandleOptionPage1Choice();
@@ -646,13 +673,15 @@ void Ov001_HandleOptionPage1Back(void) {
     Ov001_SetStepCallback(&Ov001_PrepareOptionScreenExit);
 }
 
+/* Option-screen exit step after the player chose back: lock the icon row,
+ * hold it for a few frames, then hand the step over to the screen's fade-out. */
 void Ov001_PrepareOptionScreenExit(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_BeginOptionScreenExit;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_BeginOptionScreenExit);
 }
 

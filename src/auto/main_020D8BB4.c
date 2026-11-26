@@ -334,11 +334,11 @@ void func_020d9290(void) {
     Ov000_InfoWindow_Destroy();
 }
 
-void func_020d929c(void){void func_020ae1e8(s32);extern void *gUiMode;func_020ae1e8(M2C_FIELD(gUiMode,s32 *,8));}
+void func_020d929c(void){void CreateScreenChangeSprite(s32);extern void *gUiMode;CreateScreenChangeSprite(M2C_FIELD(gUiMode,s32 *,8));}
 
 void func_020d92b8(void) {
-    M2C_UNK func_020ae20c();
-    func_020ae20c();
+    M2C_UNK DeleteScreenChangeSprite();
+    DeleteScreenChangeSprite();
 }
 
 /* Start a dark fade-out (8 frames) on the sub screen, the fade sprite owned by
@@ -387,9 +387,11 @@ void CreateSubScreenUi(void) {
     StartSubScreenUi(1, 0);
 }
 
-void func_020d93a8(void) {
-extern void *gUiMode;
-StartSubScreenUi(M2C_FIELD(gUiMode,s16 *,2),M2C_FIELD(gUiMode,s32 *,8));
+/* Start the sub-screen UI for the UI mode currently in effect, with that mode's
+ * parameter. */
+void StartSubScreenUiForCurrentMode(void) {
+    extern void *gUiMode;
+    StartSubScreenUi(((UiModeState *)gUiMode)->current, ((UiModeState *)gUiMode)->param);
 }
 
 void func_020d93c8(void) {
@@ -973,33 +975,33 @@ void func_020d99fc(void) {
 }
 
 void func_020d9a08(void) {
-    M2C_UNK func_020e0dcc();
-    func_020e0dcc();
+    M2C_UNK PublishStatusAndStartMatch();
+    PublishStatusAndStartMatch();
 }
 
 void func_020d9a14(void) {
-    M2C_UNK func_020e0dec();
-    func_020e0dec();
+    M2C_UNK RequestLinkMatchStart();
+    RequestLinkMatchStart();
 }
 
 void func_020d9a20(void) {
-    M2C_UNK func_020e0e0c();
-    func_020e0e0c();
+    M2C_UNK PublishStatusAndStartMatch2();
+    PublishStatusAndStartMatch2();
 }
 
 void func_020d9a2c(void) {
-    M2C_UNK func_020e0e2c();
-    func_020e0e2c();
+    M2C_UNK ConfirmLinkMenuStart();
+    ConfirmLinkMenuStart();
 }
 
 void func_020d9a38(void) {
-    M2C_UNK func_020e0e4c();
-    func_020e0e4c();
+    M2C_UNK PublishStatusAndStartMatch3();
+    PublishStatusAndStartMatch3();
 }
 
 void func_020d9a44(void) {
-    M2C_UNK func_020e0e6c();
-    func_020e0e6c();
+    M2C_UNK PublishStatusAndStartMatch4();
+    PublishStatusAndStartMatch4();
 }
 
 void func_020d9a50(void) {

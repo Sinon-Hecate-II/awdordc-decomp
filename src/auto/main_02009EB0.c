@@ -624,8 +624,10 @@ s32 ReadArchiveImage(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
     return 0;
 }
 
-s32 WriteArchiveImage(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
-    MI_CpuCopy8(arg1, M2C_FIELD(arg0, s32 *, 0x28) + arg2, arg3);
+/* Default archive write callback: copy length bytes from buffer into the open
+ * archive's in-memory image at byte offset. */
+s32 WriteArchiveImage(FSArchive *archive, void *buffer, s32 offset, s32 length) {
+    MI_CpuCopy8(buffer, (u8 *)archive->image + offset, length);
     return 0;
 }
 

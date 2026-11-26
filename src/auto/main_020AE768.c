@@ -314,20 +314,24 @@ void CreateMapModeWallpaperSprites(M2C_UNK mainLayer, M2C_UNK mainPalette, M2C_U
     CreateWallpaperSprites(mainLayer, mainPalette, subLayer, subPalette, wallpaperSet);
 }
 
-void func_020af178(M2C_UNK arg0, M2C_UNK arg1) {
-    
+/* Create the main-screen wallpaper sprite for the current map mode's wallpaper
+ * set, on sprite layer `layer` with palette `palette`. */
+void CreateMapModeMainWallpaperSprite(M2C_UNK layer, M2C_UNK palette) {
     s32 GetMapModeWallpaperSet();
-    CreateMainWallpaperSprite(arg0, arg1, GetMapModeWallpaperSet());
+    CreateMainWallpaperSprite(layer, palette, GetMapModeWallpaperSet());
 }
 
-void func_020af19c(M2C_UNK arg0, M2C_UNK arg1) {
-    void CreateSubWallpaperSprite(M2C_UNK, M2C_UNK, s32);
-    CreateSubWallpaperSprite(arg0, arg1, GetMapModeWallpaperSet());
+/* Create the sub-screen wallpaper sprite for the current map mode's wallpaper
+ * set, on sprite layer `layer` with palette `palette`. */
+void CreateMapModeSubWallpaperSprite(M2C_UNK layer, M2C_UNK palette) {
+    void CreateSubWallpaperSprite(s32, s32, s32);
+    CreateSubWallpaperSprite(layer, palette, GetMapModeWallpaperSet());
 }
 
-void func_020af1c0(M2C_UNK arg0, M2C_UNK arg1) {
-    
-    CreateWallpaperSprite(arg0, arg1, GetMapModeWallpaperSet());
+/* Create the current map mode's wallpaper sprite on whichever 3D sprite engine is
+ * current, on sprite layer `layer` with palette `palette`. */
+void CreateMapModeWallpaperSprite(M2C_UNK layer, M2C_UNK palette) {
+    CreateWallpaperSprite(layer, palette, GetMapModeWallpaperSet());
 }
 
 void DeleteWallpaperSpritesOnAllEngines(void) {

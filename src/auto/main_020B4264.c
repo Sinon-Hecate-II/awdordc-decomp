@@ -422,15 +422,17 @@ void UpdateContinueBattleMessage(void) {
     SetUiMessageText(0xC000032E);
 }
 
-void func_020b4cd4(M2C_UNK arg0) {
-    
-    s32 temp_r0;
+/* Create the saved-battle panel for the current save type, owned by `owner`,
+ * unless there is no saved battle to show. */
+void CreateSaveBattlePanelForCurrentSave(M2C_UNK owner) {
+    s32 GetCurrentSaveType();
+    s32 saveType;
 
-    temp_r0 = GetCurrentSaveType();
-    if (temp_r0 == 0) {
+    saveType = GetCurrentSaveType();
+    if (saveType == 0) {
         return;
     }
-    CreateSaveBattlePanel(temp_r0, arg0);
+    CreateSaveBattlePanel(saveType, owner);
 }
 
 void func_020b4cf4(void) {
@@ -441,11 +443,11 @@ void func_020b4cf4(void) {
 
 void func_020b4d0c(void) {
     s32 GetCurrentSaveType();
-    M2C_UNK func_020d4ac8();
+    M2C_UNK CreateSavedBattleView();
     if (GetCurrentSaveType() == 0) {
         return;
     }
-    func_020d4ac8();
+    CreateSavedBattleView();
 }
 
 void func_020b4d24(void) {
@@ -527,7 +529,7 @@ void Init3DSpriteDisplay(void) {
     void ResetTextTiles(s32);
     void LoadUiGraphics(void);
     void CopyToObjPaletteShadow(void *, s32, s32);
-    void func_020af1c0(s32, s32);
+    void CreateMapModeWallpaperSprite(s32, s32);
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain, *g3DSpriteBankMain;
     extern u16 gMapSpritePalette[];
     u16 *volatile ctrl200, *volatile ctrl400, *volatile ctrl800, *volatile oamAttr;
@@ -561,7 +563,7 @@ void Init3DSpriteDisplay(void) {
     ResetTextTiles(0);
     LoadUiGraphics();
     CopyToObjPaletteShadow(gMapSpritePalette, 32, 32);
-    func_020af1c0(3, 15);
+    CreateMapModeWallpaperSprite(3, 15);
 }
 
 /* Places the map sprite object created from `kind` at map cell (x, y) and has the

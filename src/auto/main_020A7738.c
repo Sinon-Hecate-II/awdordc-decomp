@@ -78,12 +78,12 @@ u32 func_020a78ec(u8 *arg0) {
     return (u32) (*arg0 << 0x18) >> 0x1E;
 }
 
-s32 func_020a78fc(void *arg0) {
+s32 GetUnitMaxLuck(void *arg0) {
     s32 GetUnitMaxLuckBonus(void *, u8, u8);
     return GetUnitMaxLuckBonus(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 0xA;
 }
 
-s32 func_020a7914(void *arg0) {
+s32 GetUnitMinLuck(void *arg0) {
  s32 GetUnitDamageVarianceMin(void *, u8, u8);
  s32 result = 0;
  result += GetUnitDamageVarianceMin(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
@@ -279,18 +279,18 @@ u8 UnitHasCargo(void *arg0) {
     return var_r0;
 }
 
-u8 IsUnitSelected(s32 arg0) {
-    s32 GetPlayerSelectedUnit();
-    M2C_UNK GetUnitOwner();
-    u8 var_r0;
+/* Whether `unit` is the unit the player that owns it has currently selected. */
+u8 IsUnitSelected(u8 *unit) {
+    s32 GetUnitOwner(u8 *);
+    u8 *GetPlayerSelectedUnit(s32);
+    u8 selected;
 
-    GetUnitOwner();
-    if (arg0 == GetPlayerSelectedUnit()) {
-        var_r0 = 1;
+    if (unit == GetPlayerSelectedUnit(GetUnitOwner(unit))) {
+        selected = 1;
     } else {
-        var_r0 = 0;
+        selected = 0;
     }
-    return var_r0;
+    return selected;
 }
 
 u8 func_020a7d20(void *arg0) {
@@ -393,7 +393,13 @@ if(!IsPlayerHuman(player))return;
 AddRecordValue(28,1);
 }
 
-void func_020a7f18(void *p,u32 a){u16 v=M2C_FIELD(p,u16 *,6); a=(u16)a; M2C_FIELD(p,u16 *,6)=(v&~0xf800)|((a<<27)>>16);}
+/* Set a unit's capture points to `points` (0 stops its capture): replace the
+ * five MAP_UNIT_CAPTURE bits with the low five bits of `points`. */
+void SetUnitCapturePoints(void *unit, u32 points) {
+    u16 value = M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE);
+    points = (u16) points;
+    M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) = (value & ~MAP_UNIT_CAPTURE_MASK) | ((points << 27) >> 16);
+}
 
 u32 GetUnitCapturePoints(void *arg0) {
     return (u32) (M2C_FIELD(arg0, u16 *, 6) << 0x10) >> 0x1B;
@@ -408,7 +414,7 @@ void MarkEnemyUnitsInArea(void *unit, s32 x, s32 y, s32 mode) {
     u8 IsCellUnitOccupied(s32, s32);
     u8 IsEnemyUnit(s32, s32);
     u8 AreUnitsEnemies(s32, s32);
-    void func_020a7f18(void *, u32);
+    void SetUnitCapturePoints(void *, u32);
     s32 iter[8];
     void *map;
     void *units;
@@ -427,10 +433,10 @@ void MarkEnemyUnitsInArea(void *unit, s32 x, s32 y, s32 mode) {
                 (map + iter[4]), u8 *, MAP_CELL_UNIT_ID);
             units = map + MAP_UNIT_RECORDS;
             if (IsEnemyUnit((s32)unit, (s32)(units + unitIndex * MAP_UNIT_STRIDE))) {
-                func_020a7f18(units + unitIndex * MAP_UNIT_STRIDE, 1);
+                SetUnitCapturePoints(units + unitIndex * MAP_UNIT_STRIDE, 1);
             }
             if (AreUnitsEnemies((s32)unit, (s32)(units + unitIndex * MAP_UNIT_STRIDE))) {
-                func_020a7f18(unit, 1);
+                SetUnitCapturePoints(unit, 1);
             }
         }
     }
@@ -579,15 +585,18 @@ u8 IsUnitKindClass3(void) {
     return result;
 }
 
+/* Whether the unit kind has class 4.  Like IsUnitKindClass3, the kind arrives in
+ * r0 from the caller's old-style call. */
 u8 IsUnitKindClass4(void) {
-    u8 var_r0;
+    s32 GetUnitKindClass();
+    u8 result;
 
     if (GetUnitKindClass() == 4) {
-        var_r0 = 1;
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 /* Whether the unit kind given is of class 3 or 4.  The class accessors take the
@@ -602,15 +611,19 @@ s32 IsUnitKindClass3Or4(void *kind) {
     return (u8) isClass;
 }
 
+/* Whether the unit kind has class 6: the kinds exempt from the attack/damage
+ * bonuses and passed over by scripted damage (DamageUnitAtTile).  Like the other
+ * class checks, the kind arrives in r0 from the caller's old-style call. */
 u8 IsUnitKindClass6(void) {
-    u8 var_r0;
+    s32 GetUnitKindClass();
+    u8 result;
 
     if (GetUnitKindClass() == 6) {
-        var_r0 = 1;
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 /* Whether a unit kind gets no terrain defense from the tile it stands on:

@@ -11,8 +11,8 @@ static inline s8 ReadMovementCommand(void *p) {
 }
 
 void func_ov000_02169020(void *arg0) {
-    s32 func_020c98b4();
-    if (func_020c98b4() == 0) {
+    s32 IsMapActionEffectActive();
+    if (IsMapActionEffectActive() == 0) {
         M2C_FIELD(arg0, s8 *, 0x41) = 3;
     }
 }
@@ -218,12 +218,14 @@ s32 GetPlayerUnitFacing(s32 player) {
     return 0;
 }
 
-void BeginUnitMove(s32 arg0) {
- void StartUnitMove(void *,s32);
- extern M2C_UNK gUnitMoveClass;
- void *p=(void *)FindObjectByClass(&gUnitMoveClass);
- if(!p)return;
- StartUnitMove(p,arg0);
+/* Start the active unit-move controller moving along movement command stream
+ * `commands`; does nothing when no unit is being moved. */
+void BeginUnitMove(s32 commands) {
+    void StartUnitMove(void *, s32);
+    extern M2C_UNK gUnitMoveClass;
+    void *move = (void *)FindObjectByClass(&gUnitMoveClass);
+    if (!move) return;
+    StartUnitMove(move, commands);
 }
 
 /* Starts moving the controller's unit along the movement command stream
@@ -233,7 +235,7 @@ void BeginUnitMove(s32 arg0) {
  * has ended, the path is blocked, the unit is in the state that forbids moving,
  * or a dialog is up. */
 void StartUnitMove(void *move, s32 commands){
-s32 IsUnitSubmerged(void *);s32 func_020a7d68(void *);s32 IsDialogActive(void);void StepMapViewToTile(s32,s32);s32 IsPlayerHuman(u32);void func_020d4790(void);
+s32 IsUnitSubmerged(void *);s32 func_020a7d68(void *);s32 IsDialogActive(void);void StepMapViewToTile(s32,s32);s32 IsPlayerHuman(u32);void SetUnitMoveActiveFlag(void);
 extern u8 gBattleEndState[];
 s32 CountMovePathSteps(volatile s8 *);s32 MovePathEndsInAttack(s8 *);int IsMovePathValid(int,int,const signed char *);void CopyMovePath(void *,void *);void StepUnitMove(void);
 s8 *path=(s8*)commands;
@@ -250,56 +252,66 @@ if(IsDialogActive())M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE)=0;
 if(M2C_FIELD(move,u8 *,UNIT_MOVE_ACTIVE))StepMapViewToTile(x,y);
 if(IsPlayerHuman(M2C_FIELD((void*)*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))AddRecordValue(15,CountMovePathSteps(path));
 CopyMovePath(path,(u8*)move+UNIT_MOVE_COMMANDS);
-func_020d4790();
+SetUnitMoveActiveFlag();
 ((void(*)(void*))StepUnitMove)(move);
 }
 
-void *func_ov000_021696b0(s32 a,s32 b,s32 c,s32 d,s32 e) {
- void StartUnitMove(void *,s32);
- void *p=CreateUnitMoveAt(a,b,c,d);
- if(!p)return 0;
- StartUnitMove(p,e);
- return p;
+/* Create a unit-move controller at tile (tileX, tileY) for a unit of `owner` and
+ * unit `kind` (a new controller faces the way the owner's units do, see
+ * CreateUnitMoveAt), then start it moving along movement command stream
+ * `commands`.  Returns the controller, or 0 when no move slot is free. */
+void *CreateUnitMoveAndStart(s32 tileX, s32 tileY, s32 owner, s32 kind, s32 commands) {
+    void StartUnitMove(void *, s32);
+    void *move = CreateUnitMoveAt(tileX, tileY, owner, kind);
+    if (!move) return 0;
+    StartUnitMove(move, commands);
+    return move;
 }
 
+/* Destroy every unit-move controller: find the first object of the class, delete
+ * it and repeat.  Deleting one unlinks it, so each find returns the next. */
 void DeleteAllUnitMoveObjects(void) {
- s32 FindObjectByClass(M2C_UNK *);
- void DeleteUnitMoveObject(void *);
- extern M2C_UNK gUnitMoveClass;
- void *p=(void *)FindObjectByClass(&gUnitMoveClass);
- if(!p)return;
- DeleteUnitMoveObject(p);
- DeleteAllUnitMoveObjects();
+    s32 FindObjectByClass(M2C_UNK *);
+    void DeleteUnitMoveObject(void *);
+    extern M2C_UNK gUnitMoveClass;
+    void *move = (void *)FindObjectByClass(&gUnitMoveClass);
+    if (!move) return;
+    DeleteUnitMoveObject(move);
+    DeleteAllUnitMoveObjects();
 }
 
-void DeleteUnitMoveObject(void *arg0) {
- void DeleteSpriteObject(void *);
- M2C_UNK func_020d47b0();
- void *p=M2C_FIELD(arg0,void **,0x3C);
- if(p) M2C_FIELD(p,u16 *,4)&=~6;
- DeleteSpriteObject(arg0);
- func_020d47b0();
+/* Delete a unit-move controller: clear the moving flag on the unit it walks (if it
+ * still has one) and destroy its sprite. */
+void DeleteUnitMoveObject(void *move) {
+    void DeleteSpriteObject(void *);
+    M2C_UNK ClearUnitMoveActiveFlag();
+    void *unit = M2C_FIELD(move, void **, UNIT_MOVE_UNIT);
+    if (unit) M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) &= ~UNIT_MOVE_UNIT_FLAGS;
+    DeleteSpriteObject(move);
+    ClearUnitMoveActiveFlag();
 }
 
-u8 func_ov000_0216971c(void) {
+/* Nonzero while a unit-move controller exists (an object of the unit-move
+ * sprite class), i.e. a unit is being walked along its path. */
+u8 IsUnitMoveControllerActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gUnitMoveClass;
-    u8 var_r0;
+    u8 active;
 
     if (FindObjectByClass(&gUnitMoveClass) != 0) {
-        var_r0 = 1;
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 void func_ov000_02169740(void *arg0) {
-    M2C_UNK func_020d47b0();
+    M2C_UNK ClearUnitMoveActiveFlag();
     M2C_UNK PlayUnitMoveSound();
     PlayUnitMoveSound();
     M2C_FIELD(arg0, s8 *, 0x41) = 1;
-    func_020d47b0();
+    ClearUnitMoveActiveFlag();
 }
 
 /* Find a free slot in the map's unit-move pool: the index of the first of its
@@ -593,10 +605,13 @@ s32 GetUnitMoveSpeed(void *move) {
  return (s16)value;
 }
 
-s32 GetUnitMoveAnimFileId(u8 arg0) {
- s32 GetUnitVariantIndex(s32,s32);
- extern M2C_UNK gUnitMoveAnimFileIds;
- return M2C_FIELD(&gUnitMoveAnimFileIds,s32 *,GetUnitVariantIndex(arg0,1)*20);
+/* File id of the move-animation file (LoadUnitMoveAnim) of the unit kind's variant:
+ * its entry in gUnitMoveAnimFileIds is UNIT_MOVE_SOUND_RECORD_SIZE bytes long and
+ * holds the file id in its first field. */
+s32 GetUnitMoveAnimFileId(u8 kind) {
+    s32 GetUnitVariantIndex(s32,s32);
+    extern s32 gUnitMoveAnimFileIds[];
+    return M2C_FIELD(gUnitMoveAnimFileIds,s32 *,GetUnitVariantIndex(kind,1)*UNIT_MOVE_SOUND_RECORD_SIZE);
 }
 
 void StepUnitMove(void) {

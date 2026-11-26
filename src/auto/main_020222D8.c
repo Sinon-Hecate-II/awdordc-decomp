@@ -52,20 +52,22 @@ s32 TlsVerifyCertificateSignature(void *ctx) {
     return errors | VerifyRsaSignature(ctx, (void *)key);
 }
 
-s32 func_02022a54(s8 *p) {
-s8 *start=p;
-s32 c;
-while((c=*p)!=0x2e && c!=0)p++;
-return p-start;
+/* Length of the name label starting at `p`: the bytes up to the next '.' or the
+ * end of the string. */
+s32 TlsLabelLength(s8 *p) {
+    s8 *start = p;
+    s32 c;
+    while ((c = *p) != '.' && c != 0) p++;
+    return p - start;
 }
 
 #pragma optimization_level 4
-s32 func_02022a78(s8 *p,s8 *q) {
+s32 TlsMatchWildcardName(s8 *p,s8 *q) {
 s32 a,b,c,d;
 again:
 while((d=*p++)==(c=*q++)) { if(d==0)return 0; }
 if(c!=0x2a)return 1;
-p--;a=func_02022a54(p);b=func_02022a54(q);
+p--;a=TlsLabelLength(p);b=TlsLabelLength(q);
 if(b>a)return 1;
 p+=a-b;
 goto again;
@@ -90,7 +92,7 @@ M2C_FIELD(a,u8 **,0x804)=b;M2C_FIELD(a,u32 *,0x808)=n;
 remaining-=n+3;
 if(((s32 (*)(void *,u8 **,s32,s32,u8))func_020222d8)(a,&b,0,0,low)!=0 || M2C_FIELD(a,u32 *,0x594)<51 || M2C_FIELD(a,s32 *,0x5a0)==0){M2C_FIELD(a,u8 *,0x455)=9;return;}
 result=TlsVerifyCertificateSignature(a);
-if(i==0 && M2C_FIELD(a,s8 **,0x800)!=0 && func_02022a78(M2C_FIELD(a,s8 **,0x800),(s8 *)a+0x7b0))result|=0x4000;
+if(i==0 && M2C_FIELD(a,s8 **,0x800)!=0 && TlsMatchWildcardName(M2C_FIELD(a,s8 **,0x800),(s8 *)a+0x7b0))result|=0x4000;
 low=(u8)result;
 if(low==1 && remaining){
 next=b+3;M2C_FIELD(a,u8 *,0x5ad)=0;

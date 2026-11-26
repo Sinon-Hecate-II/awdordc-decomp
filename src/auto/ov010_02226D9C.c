@@ -113,7 +113,7 @@ M2C_FIELD(entry,u32 *,8)++;
 #pragma opt_common_subs off
 void func_ov010_02226d9c(void *a){
 s32 IsOnlineSessionFlagSet(s32);s32 GetOnlineTransportPlayerId();s32 GetOnlinePeerMask();s32 CanStartSend(u8); void *func_ov010_02229568(u32);M2C_UNK Ov010Online_FreePacket(s32);void Ov010Online_InitPacketHeader(void *,u32,u32,u32,void *,u32,u32);void Ov010_FreeBlock(s32,void *,u32);
-void func_ov010_02227934(s32,s32);void func_ov010_02227954(s32,void *,s32);M2C_UNK Sprite_ResumeAnimation(void *);
+void Ov010Online_OnTransferStart(s32,s32);void func_ov010_02227954(s32,void *,s32);M2C_UNK Sprite_ResumeAnimation(void *);
 extern M2C_UNK gOv010OnlineSession;
 u32 n; s32 i,self; register u32 one; Ov010Packet *p;
 if(!IsOnlineSessionFlagSet(3))return;
@@ -157,7 +157,7 @@ M2C_FIELD(a,void **,0x3c)=p;M2C_FIELD(a,u32 *,0x40)=p->size+12;
 {void (*cb)(u16,void *)=M2C_FIELD(&gOv010OnlineSession,void (**)(u16,void *),0x58);if(cb)cb(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c));}
 one=1;
 if(M2C_FIELD(a,u16 *,0x44)&(one<<self)){
-func_ov010_02227934(M2C_FIELD(a,s32 *,0x40),(u8)self);
+Ov010Online_OnTransferStart(M2C_FIELD(a,s32 *,0x40),(u8)self);
 func_ov010_02227954((u8)self,M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));
 M2C_FIELD(a,u16 *,0x44)&=~0U ^ (one<<self);
 }
@@ -330,11 +330,19 @@ s32 func_ov010_0222791c(s32 arg0) {
     return temp_r2;
 }
 
-void func_ov010_02227934(s32 a, s32 b) {
-extern M2C_UNK gOv010OnlineSession;
-void (*cb)(s32,s32) = M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32),0x38);
-if (!cb) return;
-cb(a,b);
+/* Forward the transfer layer's "a transfer starts" notification to the online
+ * session's installed transfer-start callback: `size` bytes are about to be sent
+ * to player `playerId`. */
+void Ov010Online_OnTransferStart(s32 size, s32 playerId) {
+    extern M2C_UNK gOv010OnlineSession;
+    void (*callback)(s32, s32) =
+        M2C_FIELD(&gOv010OnlineSession, void (**)(s32, s32),
+                  OV010_SESSION_TRANSFER_START_CALLBACK);
+
+    if (!callback) {
+        return;
+    }
+    callback(size, playerId);
 }
 
 #pragma opt_common_subs off

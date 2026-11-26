@@ -19,7 +19,7 @@ void InitCardArchive(s32 device) {
     void SaveDevice_Init(void);
     void InitArchive(void *);
     s32 RegisterArchiveName(void *, M2C_UNK, M2C_UNK);
-    void SetArchiveProc(void *, s32, s32);
+    void SetArchiveCallback(void *, s32, s32);
     s32 ConfigureArchiveLayout(void *, s32, s32, s32, s32, s32, void *, void *);
     s32 func_0200bd9c(void);
     s32 func_0200bd94(void);
@@ -47,13 +47,13 @@ void InitCardArchive(s32 device) {
         M2C_FIELD(&gCardArchiveWork, s32 *, 0xc) = 0;
         M2C_FIELD(&gCardArchiveWork, s32 *, 0x10) = -1;
         M2C_FIELD(&gCardArchiveWork, s32 *, 0x14) = 0;
-        SetArchiveProc(&gCardArchive, (s32)func_0200bd9c, -1);
+        SetArchiveCallback(&gCardArchive, (s32)func_0200bd9c, -1);
         ConfigureArchiveLayout(&gCardArchive, 0, 0, 0, 0, 0,
                       (void *)func_0200bd94, (void *)func_0200bd20);
         return;
     }
 
-    SetArchiveProc(&gCardArchive, (s32)CardArchiveCommand, 0x602);
+    SetArchiveCallback(&gCardArchive, (s32)CardArchiveCommand, 0x602);
 
     {
         u32 fnt = base[0x80]; /* ROM header FNT offset */
@@ -67,10 +67,12 @@ void InitCardArchive(s32 device) {
     }
 }
 #pragma opt_propagation reset
-void LoadCardArchiveIndex(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK LoadArchiveIndex(M2C_UNK *, M2C_UNK, M2C_UNK);
+/* Load the card archive's FAT/FNT index tables into the given buffer of `size`
+ * bytes and return the number of bytes the tables require. */
+u32 LoadCardArchiveIndex(u32 memory, u32 size) {
+    u32 LoadArchiveIndex(FSArchive *, u32, u32);
     extern M2C_UNK gCardArchive;
-    LoadArchiveIndex(&gCardArchive, arg0, arg1);
+    return LoadArchiveIndex((FSArchive *)&gCardArchive, memory, size);
 }
 
 #pragma opt_strength_reduction off
@@ -103,15 +105,19 @@ void ClearFileBss(FSFileHeader *header) {
     MI_CpuFill8(data + dataSize, 0, imageSize - dataSize);
 }
 
-void BuildFileRange(u32 *arg0,void *arg1) {
+/* Fill the archive/file-id pair `range` that opens the data-pack file whose
+ * header `header` is: the game's card archive and the file id the ROM overlay
+ * table entry holds.  OpenFileRange then opens that file of the card archive. */
+void BuildFileRange(void *range, void *header) {
     extern M2C_UNK gCardArchive;
     volatile u32 tmp[2];
-    u32 base = (u32)&gCardArchive;
-    u32 x = M2C_FIELD(arg1,u32 *,24);
-    tmp[1] = x;
-    arg0[0] = base;
-    tmp[0] = base;
-    arg0[1] = x;
+    u32 archive = (u32)&gCardArchive;
+    u32 fileId = M2C_FIELD(header, u32 *, FS_FILE_HEADER_ID);
+
+    tmp[1] = fileId;
+    M2C_FIELD(range, u32 *, 0) = archive;
+    tmp[0] = archive;
+    M2C_FIELD(range, u32 *, 4) = fileId;
 }
 
 #pragma scheduling off

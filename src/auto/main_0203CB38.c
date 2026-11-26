@@ -39,7 +39,7 @@ void func_0203cb38(void *arg0) {
     s32 SendMatchmakingParameter(s32);
     s32 ReportMatchmakingResult(s32);
     s32 ReconnectUnlessServing(void);
-    void func_0203dc18(void);
+    void ResetLastConnectionCommand(void);
     void ReportConnectionError(s32, s32);
     s32 SendConnectionCommand(u8, s32, s32, u16, s32 *, s32);
     s32 GetNetSessionState(void);
@@ -120,7 +120,7 @@ void func_0203cb38(void *arg0) {
         if(U64Divide((now-M2C_FIELD(GetConnection(),u64 *,0x45c))<<6,0x82ea)<=6000) break;
         M2C_FIELD(GetConnection(),u8 *,0x3cd)++;
         if(M2C_FIELD(GetConnection(),u8 *,0x3cd)>5) {
-            func_0203dc18();
+            ResetLastConnectionCommand();
             if(!RestartConnection(M2C_FIELD(GetConnection(),s32 *,0xf4)))return;
         } else {
             SendConnectionCommand(6,M2C_FIELD(GetConnection(),s32 *,0x454),M2C_FIELD(GetConnection(),s32 *,0x3d0),M2C_FIELD(GetConnection(),u16 *,0x3ce),(s32 *)((u8 *)GetConnection()+0x3d4),M2C_FIELD(GetConnection(),s32 *,0x458));
@@ -133,7 +133,7 @@ void func_0203cb38(void *arg0) {
             (now=GetSystemTick(),U64Divide((now-M2C_FIELD(GetConnection(),u64 *,0x45c))<<6,0x82ea)>6000)) ||
             (M2C_FIELD(GetConnection(),u8 *,0x15)!=0 &&
             (now=GetSystemTick(),U64Divide((now-M2C_FIELD(GetConnection(),u64 *,0x45c))<<6,0x82ea)>19000))) {
-            func_0203dc18();
+            ResetLastConnectionCommand();
             if(!func_02040e1c(M2C_FIELD((u8 *)GetConnection()+((M2C_FIELD(GetConnection(),u8 *,0xd)+1)<<2),s32 *,0xf4))) return;
         }
         break;
@@ -143,7 +143,7 @@ void func_0203cb38(void *arg0) {
         if(U64Divide((now-M2C_FIELD(GetConnection(),u64 *,0x45c))<<6,0x82ea)<=30000)break;
         M2C_FIELD(GetConnection(),u8 *,0x3cd)++;
         if(M2C_FIELD(GetConnection(),u8 *,0x3cd)!=0) {
-            func_0203dc18();
+            ResetLastConnectionCommand();
             if(M2C_FIELD(GetConnection(),u8 *,0x15)==2) {
                 if(!func_02040e1c(M2C_FIELD((u8 *)GetConnection()+(M2C_FIELD(GetConnection(),u8 *,0xd)<<2),s32 *,0xf4)))return;
             } else ReconnectUnlessServing();
@@ -248,7 +248,7 @@ void HandleGt2ConnectAttempt(s32 unused, s32 connectionArg, s32 remoteAddressArg
     s32 FindFreePlayerSlot(void);
     void func_0205adc0(s32, void *, s32);
     void ReportConnectionError(s32, s32);
-    void func_0203dc18(void);
+    void ResetLastConnectionCommand(void);
     void *GetPlayerConnectionSlot(s32);
     void *GetPlayerPeer(s32);
     s32 func_0205adb4(s32, s32);
@@ -327,7 +327,7 @@ accept_connection:
         ReportConnectionError(6, (s32)0xfffec5e6);
         return;
     }
-    func_0203dc18();
+    ResetLastConnectionCommand();
     matchState = GetConnection();
     peerIndex = M2C_FIELD(matchState, u8 *, 0x0d);
     if (peerIndex == 0) {

@@ -136,7 +136,7 @@ void Ov001_CloseWfcProfileScreen(void) {
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern s8 gOv001ProfileScreenResult;
-    void func_ov001_02178250(void);
+    void Ov001_OpenProfileSavedScreen(void);
     void Ov001_OpenProfileResultScreen(void);
     void Ov001_OpenProfileReturnScreen(void);
     if (Ov001_IsFadeActive(0) != 0) return;
@@ -154,7 +154,7 @@ void Ov001_CloseWfcProfileScreen(void) {
         Ov001_SetStepCallback((M2C_UNK *) &Ov001_OpenProfileResultScreen);
         return;
     }
-    Ov001_SetStepCallback((M2C_UNK *) &func_ov001_02178250);
+    Ov001_SetStepCallback((M2C_UNK *) &Ov001_OpenProfileSavedScreen);
 }
 
 /* Completion callback of the WFC profile screen: event 2 means a profile was
@@ -186,13 +186,16 @@ void Ov001_ProfileScreenCallback(s32 event) {
     Ov001_SetStepCallback(&Ov001_FadeOutProfileScreen);
 }
 
-void func_ov001_02178250(void) {
+/* WFC profile-saved screen opener (result other than unchanged/obtained):
+ * lower the background planes so the popup draws over them, show the
+ * profile-saved message, then hand over to the fade-in step. */
+void Ov001_OpenProfileSavedScreen(void) {
     M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
     void Ov001_LowerBackgroundPriorities(void);
-    extern M2C_UNK func_ov001_021782d8;
+    extern M2C_UNK Ov001_FadeInProfileSavedScreen;
     Ov001_LowerBackgroundPriorities();
-    Ov001_ShowMessageBox(0x1F);
-    Ov001_SetStepCallback(&func_ov001_021782d8);
+    Ov001_ShowMessageBox(OV001_MSG_PROFILE_SAVED);
+    Ov001_SetStepCallback(&Ov001_FadeInProfileSavedScreen);
 }
 
 /* Put background planes 0-2 on both engines at the lowest priority, so the
@@ -205,11 +208,14 @@ void Ov001_LowerBackgroundPriorities(void) {
     REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_021782d8(void) {
+/* Fade the WFC profile-saved popup in from white on the main engine's BG0, BG2
+ * and OBJ planes, show those planes, then hand over to the step that waits for
+ * the fade to finish. */
+void Ov001_FadeInProfileSavedScreen(void) {
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK Ov001_ProfileSavedFadeDone;
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(0, 0x15);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
     Ov001_SetStepCallback(&Ov001_ProfileSavedFadeDone);
 }
 
@@ -238,21 +244,23 @@ void Ov001_ProfileSavedWaitIconRow(void) {
 }
 
 void Ov001_ProfileSavedIconRowStep(void) {
-    void func_ov001_02178374(void);
+    void Ov001_HandleProfileSavedPopupInput(void);
     void func_ov001_02178394(void);
     void Ov001_HandleProfileSavedChoice(void);
-    func_ov001_02178374();
+    Ov001_HandleProfileSavedPopupInput();
     func_ov001_02178394();
     Ov001_HandleProfileSavedChoice();
 }
 
-void func_ov001_02178374(void) {
+/* WFC profile-saved popup input: A latches the popup's only button, the
+ * confirm choice. */
+void Ov001_HandleProfileSavedPopupInput(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     s32 KeyPressed(M2C_UNK);
-    if (KeyPressed(1) == 0) {
+    if (KeyPressed(KEY_A) == 0) {
         return;
     }
-    Ov001_LatchIconRowSelection(0);
+    Ov001_LatchIconRowSelection(OV001_PROFILE_SAVED_BUTTON);
 }
 
 void func_ov001_02178394(void) {
@@ -270,13 +278,15 @@ void Ov001_HandleProfileSavedChoice(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_CloseProfileSavedPopup);
 }
 
+/* WFC profile-saved popup exit step: lock the icon row, hold it for a few
+ * frames, then hand the step over to the screen's fade out to white. */
 void Ov001_CloseProfileSavedPopup(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutScreenToWhite;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_FadeOutScreenToWhite);
 }
 
@@ -306,7 +316,10 @@ void Ov001_WaitFadeOutAndWakeDisplay(void) {
     WakeDisplayWait();
 }
 
-void func_ov001_02178460(void) {
+/* Open the Wi-Fi erase-in-progress message screen after a confirmed erase: put
+ * the background planes behind the message box, show that message and start the
+ * screen's fade-in. */
+void Ov001_OpenWfcEraseMessage(void) {
     void Ov001_ResetBackgroundPriorities(void);
     extern M2C_UNK Ov001_FadeInWfcEraseMessage;
     Ov001_ResetBackgroundPriorities();
@@ -360,19 +373,21 @@ void Ov001_WfcEraseMessageWaitIconRow(void) {
 }
 
 void Ov001_UpdateWfcEraseMessageIconRow(void) {
-    void func_ov001_02178594(void);
+    void Ov001_HandleWfcEraseMessageInput(void);
     void func_ov001_021785b4(void);
     void Ov001_HandleWfcEraseMessageChoice(void);
-    func_ov001_02178594();
+    Ov001_HandleWfcEraseMessageInput();
     func_ov001_021785b4();
     Ov001_HandleWfcEraseMessageChoice();
 }
 
-void func_ov001_02178594(void) {
-    if (KeyPressed(1) == 0) {
+/* Wi-Fi erase-in-progress message input: A latches its only button (the back
+ * choice of the one-icon row). */
+void Ov001_HandleWfcEraseMessageInput(void) {
+    if (KeyPressed(KEY_A) == 0) {
         return;
     }
-    Ov001_LatchIconRowSelection(0);
+    Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
 void func_ov001_021785b4(void) {
@@ -390,13 +405,15 @@ void Ov001_HandleWfcEraseMessageChoice(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_StartWfcEraseMessageClose);
 }
 
+/* Close the Wi-Fi erase-in-progress message: lock its icon row, hold it for a
+ * few frames, then hand over to the step that fades the message out. */
 void Ov001_StartWfcEraseMessageClose(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutWfcEraseMessage;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_FadeOutWfcEraseMessage);
 }
 
@@ -546,13 +563,16 @@ void Ov001_HandleWfcEraseChoice(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcEraseExit);
 }
 
+/* Wi-Fi data-erase screen exit step (after the back/confirm choice): lock the
+ * icon row, hold it for a few frames, then hand the step over to the screen's
+ * fade-out. */
 void Ov001_WfcEraseExit(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutWfcEraseScreen;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_FadeOutWfcEraseScreen);
 }
 
@@ -580,7 +600,7 @@ void Ov001_FadeOutWfcEraseScreen(void) {
 void Ov001_CloseWfcEraseScreen(void) {
     s32 Ov001_IsIconRowIdle();
     extern M2C_UNK Ov001_InitOptionMenu;
-    void func_ov001_02178460(void);
+    void Ov001_OpenWfcEraseMessage(void);
     extern u8 gOv001WfcEraseConfirmed;
     if (Ov001_IsFadeActive(0) != 0) return;
     if (gOv001WfcEraseConfirmed == 0 && Ov001_IsFadeActive(1) != 0) return;
@@ -597,7 +617,7 @@ void Ov001_CloseWfcEraseScreen(void) {
         return;
     }
     Ov001_SetNextScreenMode(0, 1);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178460);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenWfcEraseMessage);
 }
 
 /* Open the Wi-Fi profile-result screen: load its background, show its message box
@@ -820,13 +840,16 @@ void Ov001_MessageChoiceStep(void) {
     Ov001_SetStepCallback(&Ov001_LockMessageChoice);
 }
 
+/* Message-popup step after the player's choice: lock the icon row so the choice
+ * can't change, hold it for a few frames, then hand the step over to the
+ * popup's fade-out. */
 void Ov001_LockMessageChoice(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutMessageScreen;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_FadeOutMessageScreen);
 }
 

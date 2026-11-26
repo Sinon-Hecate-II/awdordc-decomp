@@ -34,10 +34,11 @@ s32 StringLengthWide(u16 *arg0) {
     return var_r2;
 }
 
-u16 *StringCopyWide(u16 *arg0, u16 *arg1) {
-    u16 *dest = arg0;
-    while ((*dest++ = *arg1++) != 0) {}
-    return arg0;
+/* Copy the UTF-16 string `src` into `dest`, terminator included; returns `dest`. */
+u16 *StringCopyWide(u16 *dest, u16 *src) {
+    u16 *out = dest;
+    while ((*out++ = *src++) != 0) {}
+    return dest;
 }
 
 /* Find the first occurrence of wide character `ch` in the UTF-16 string `s` and

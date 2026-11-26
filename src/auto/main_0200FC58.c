@@ -109,27 +109,32 @@ s32 SaveDevice_IsReady(void) {
 
 void CARD_LockRom(M2C_UNK arg0) {
     M2C_UNK func_0200551c(M2C_UNK);
-    func_0200fb48(arg0, 1);
+    SaveDevice_Lock(arg0, 1);
     func_0200551c(arg0);
 }
 
 void CARD_UnlockRom(M2C_UNK arg0) {
     M2C_UNK func_02005538();
-    M2C_UNK func_0200fbcc(M2C_UNK, M2C_UNK);
+    M2C_UNK SaveDevice_Unlock(M2C_UNK, M2C_UNK);
     func_02005538();
-    func_0200fbcc(arg0, 1);
+    SaveDevice_Unlock(arg0, 1);
 }
 
 void CARD_LockBackup(M2C_UNK arg0) {
-    M2C_UNK func_0200fb48(M2C_UNK, M2C_UNK);
-    func_0200fb48(arg0, 2);
+    M2C_UNK SaveDevice_Lock(M2C_UNK, M2C_UNK);
+    SaveDevice_Lock(arg0, 2);
 }
 
-void CARD_UnlockBackup(M2C_UNK arg0) {
- s32 func_02010590(void); void func_02010584(void);
- M2C_UNK func_0200fbcc(M2C_UNK, M2C_UNK);
- if (func_02010590() == 0) { func_02010584(); }
- func_0200fbcc(arg0, 2);
+/* Unlock the backup device for the caller's `lockId`: if a save transfer is still
+ * running, wait for it to finish, then release the lock. */
+void CARD_UnlockBackup(M2C_UNK lockId) {
+    s32 SaveDevice_IsIdle(void);
+    void SaveDevice_WaitForTransferDone(void);
+    M2C_UNK SaveDevice_Unlock(M2C_UNK, M2C_UNK);
+    if (SaveDevice_IsIdle() == 0) {
+        SaveDevice_WaitForTransferDone();
+    }
+    SaveDevice_Unlock(lockId, SAVE_DEVICE_LOCK_BACKUP);
 }
 
 #pragma opt_common_subs off
@@ -350,12 +355,12 @@ return **(s32 **)p==0;
 }
 #pragma opt_copy_propagation reset
 #pragma opt_common_subs reset
-void func_02010584(void) {
+void SaveDevice_WaitForTransferDone(void) {
     M2C_UNK SaveDevice_WaitForTransfer();
     SaveDevice_WaitForTransfer();
 }
 
-s32 func_02010590(void) {
+s32 SaveDevice_IsIdle(void) {
     M2C_UNK func_0200fdec();
     return func_0200fdec();
 }

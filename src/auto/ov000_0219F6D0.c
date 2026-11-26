@@ -103,11 +103,11 @@ s32 ProcessAiCommandDelay(void) {
  * action (phase 2, step 0). */
 s32 ResolveAiAttackCommand(void) {
 void func_020bb0d0(u8);
-void func_020bb0ec(u8,u8);
+void StartBattlePreviewOnTile(u8,u8);
 extern u8 gAiCommand[];
 extern void *gAiCommandState;
 if(gAiCommand[AI_COMMAND_KIND] == AI_COMMAND_ATTACK_TARGET) func_020bb0d0(gAiCommand[AI_COMMAND_UNIT]);
-else func_020bb0ec(gAiCommand[AI_COMMAND_UNIT],gAiCommand[AI_COMMAND_ARG_Y]);
+else StartBattlePreviewOnTile(gAiCommand[AI_COMMAND_UNIT],gAiCommand[AI_COMMAND_ARG_Y]);
 M2C_FIELD(gAiCommandState,s8 *,AI_COMMAND_STATE_PHASE)=AI_COMMAND_PHASE_PICK_ACTION;
 M2C_FIELD(gAiCommandState,s8 *,AI_COMMAND_STATE_STEP)=0;
 return 0;
@@ -148,11 +148,14 @@ s32 FinishAiAttackCommand(void) {
     return 0;
 }
 
-s32 func_ov000_0219fa0c(void) {
-extern void *gAiCommandState;
-M2C_FIELD(gAiCommandState, s8 *, 0) = 2;
-M2C_FIELD(gAiCommandState, s8 *, 1) = 0;
-return 0;
+/* AI command step 5: go back to picking the next AI unit's action (phase 2, step 0)
+ * and let the dispatcher continue. */
+s32 ReturnToAiActionSelection(void) {
+    extern void *gAiCommandState;
+
+    M2C_FIELD(gAiCommandState, s8 *, AI_COMMAND_STATE_PHASE) = AI_COMMAND_PHASE_PICK_ACTION;
+    M2C_FIELD(gAiCommandState, s8 *, AI_COMMAND_STATE_STEP) = 0;
+    return 0;
 }
 
 /* AI command step 8: once the action's unit-move animation has ended, delete the
@@ -176,11 +179,14 @@ s32 FinishAiUnitMove(void) {
     return 0;
 }
 
-s32 func_ov000_0219fa98(void) {
-extern void *gAiCommandState;
-M2C_FIELD(gAiCommandState, s8 *, 0) = 2;
-M2C_FIELD(gAiCommandState, s8 *, 1) = 0;
-return 0;
+/* AI command step 9, the last step of a build command (kinds 2 and 3): the unit has
+ * been produced, so go back to picking the next AI unit's action (phase 2, step 0). */
+s32 FinishAiProduceUnitCommand(void) {
+    extern void *gAiCommandState;
+
+    M2C_FIELD(gAiCommandState, s8 *, AI_COMMAND_STATE_PHASE) = AI_COMMAND_PHASE_PICK_ACTION;
+    M2C_FIELD(gAiCommandState, s8 *, AI_COMMAND_STATE_STEP) = 0;
+    return 0;
 }
 
 #pragma opt_common_subs off
@@ -190,7 +196,7 @@ extern void *data_ov000_021e146c[];
 extern void **gCurrentMap;
 extern u16 data_ov000_021df58c[],data_ov000_021df584[];
 extern s32 gMapCursorOptionValue;
-void *func_ov000_021696b0(u16,u16,s32,u32,void *);
+void *CreateUnitMoveAndStart(u16,u16,s32,u32,void *);
 void func_020cad00(u32,s32,s32);
 void DropCarriedUnit(s32);
 u32 state=data_ov000_021df7d6[n];
@@ -203,14 +209,14 @@ u8 *entry=unit+n;
 u32 index=(s16)entry[12]*14;
 s32 player=0;
 if(unit) player=(BattleMapUnitHead *)unit - (BattleMapUnitHead *)base;
-data_ov000_021e146c[n]=func_ov000_021696b0(M2C_FIELD(map,u16 *,0x52dc),M2C_FIELD(map,u16 *,0x52de),(player>>6)+1,((UnitId6 *)(base+index))->id,data_ov000_021df58c);
+data_ov000_021e146c[n]=CreateUnitMoveAndStart(M2C_FIELD(map,u16 *,0x52dc),M2C_FIELD(map,u16 *,0x52de),(player>>6)+1,((UnitId6 *)(base+index))->id,data_ov000_021df58c);
 }else if(state!=0){
 u8 *map;u8 *unit;u8 *entry;s32 index;u8 *base;s32 player=0;
 gMapCursorOptionValue=state-1;
 map=*gCurrentMap;unit=M2C_FIELD(map,u8 **,0x52d0);
 entry=unit+n;index=(s16)entry[12]*14;base=map+0x59a4;
 if(unit) player=(BattleMapUnitHead *)unit - (BattleMapUnitHead *)base;
-data_ov000_021e146c[n]=func_ov000_021696b0(M2C_FIELD(map,u16 *,0x52dc),M2C_FIELD(map,u16 *,0x52de),(player>>6)+1,((UnitId6 *)(base+index))->id,data_ov000_021df584+gMapCursorOptionValue);
+data_ov000_021e146c[n]=CreateUnitMoveAndStart(M2C_FIELD(map,u16 *,0x52dc),M2C_FIELD(map,u16 *,0x52de),(player>>6)+1,((UnitId6 *)(base+index))->id,data_ov000_021df584+gMapCursorOptionValue);
 func_020cad00(((UnitId6 *)(base+index))->id,M2C_FIELD(*gCurrentMap,s16 *,0x52dc),M2C_FIELD(*gCurrentMap,s16 *,0x52de));
 DropCarriedUnit(n);
 }}

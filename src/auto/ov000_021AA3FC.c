@@ -3,6 +3,11 @@
 #include "battle_map.h"
 #include "ov000_unit_entry.h"
 
+/* Area-effect target scoring: a score of AREA_EFFECT_SCORE_NONE means "no
+ * candidate cell", and net damage below AREA_EFFECT_MIN_NET_DAMAGE scores 0. */
+#define AREA_EFFECT_SCORE_NONE     0x80000001
+#define AREA_EFFECT_MIN_NET_DAMAGE 0x2328
+
 /* Estimate the damage an area effect of `unit`'s kind deals to the unit: the
  * kind's attack power times the number of damage steps `power` allows (capped at
  * the unit's HP minus one), halved for friendly units and kept at a floor of 2
@@ -36,17 +41,20 @@ if(GetKindAttackClass(unit->unk0)==UNIT_ATTACK_NONE && isEnemy==0)hits/=2;
 return hits;
 }
 
-s32 CombineAreaEffectDamage(s32 arg0, s32 arg1) {
-    s32 var_r0;
+/* Mode-0 area-effect score: the net damage the effect deals (enemy damage total
+ * minus friendly total), reported only when it clears AREA_EFFECT_MIN_NET_DAMAGE;
+ * AREA_EFFECT_SCORE_NONE when no enemy unit is in range at all. */
+s32 CombineAreaEffectDamage(s32 ownDamage, s32 enemyDamage) {
+    s32 score;
 
-    if (arg1 == 0) {
-        return 0x80000001;
+    if (enemyDamage == 0) {
+        return AREA_EFFECT_SCORE_NONE;
     }
-    var_r0 = arg1 - arg0;
-    if (var_r0 < 0x2328) {
-        var_r0 = 0;
+    score = enemyDamage - ownDamage;
+    if (score < AREA_EFFECT_MIN_NET_DAMAGE) {
+        score = 0;
     }
-    return var_r0;
+    return score;
 }
 
 s32 CombineAreaEffectPenalty(s32 arg0, s32 arg1) {

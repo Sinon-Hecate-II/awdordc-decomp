@@ -137,7 +137,7 @@ void SelectAttackingUnit(void) {
 #pragma opt_strength_reduction off
 void PlanProductionSiteDestination(void){
 s32 IsPlayerHuman(s32);s32 GetUnitAttackClass(u32);
-s32 HasAiOptionalUnitBuildFlag(void);s32 CountPlayerUnitsOfKind(s32);s32 CanKindLoad(u32,u32);
+s32 HasAiOptionalUnitBuildFlag(void);s32 CountPlayerUnitsOfKind(s32);s32 CanKindCarryKind(u32,u32);
 s32 func_ov000_0217d86c(void);void SelectAttackingUnit(void);
 void SelectMapLayer(void*);void FloodFillUnitRange(s32,s32,s32,s32,s32);void FillMapLayer(s32);
 s32 IsMidActionStep(u32);s32 CanUnitAttackKind(u8*,u32);
@@ -152,7 +152,7 @@ if(KIND(SEL)!=26)return;
 if(!HasAiOptionalUnitBuildFlag()&&!CountPlayerUnitsOfKind(24)&&!CountPlayerUnitsOfKind(25))return;
 if((u32)(SEL[11]<<24)>>31)return;
 if(((u32)(M2C_FIELD(SEL,u16*,6)<<25)>>25)<61)return;
-if(!CanKindLoad(24,KIND(SEL)))return;
+if(!CanKindCarryKind(24,KIND(SEL)))return;
 if(func_ov000_0217d86c()==1)return;
 SelectAttackingUnit();
 mode=(u8)(GetUnitAttackClass(KIND(SEL))==2);

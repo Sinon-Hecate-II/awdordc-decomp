@@ -109,13 +109,15 @@ u8 IsSameTeam(s32 a, s32 b) {
     return p1[PLAYER_REC_ARMY] == p2[PLAYER_REC_ARMY];
 }
 
-u8 func_020d277c(s32 arg0, s32 arg1) {
+/* Whether two map unit records belong to the same team: their owners share an
+ * army. */
+u8 AreUnitsOnSameTeam(s32 unit, s32 other) {
     u8 IsSameTeam(s32, s32);
     s32 GetUnitOwner(s32);
-    s32 temp_r4;
+    s32 owner;
 
-    temp_r4 = GetUnitOwner(arg0);
-    return IsSameTeam(temp_r4, GetUnitOwner(arg1));
+    owner = GetUnitOwner(unit);
+    return IsSameTeam(owner, GetUnitOwner(other));
 }
 
 void func_020d27a4(s32 arg0, s32 arg1) {
@@ -388,13 +390,15 @@ s32 GetUnitActionCost(void) {
     return GetUnitBuildCost() * 5;
 }
 
-void func_020d2d60(M2C_UNK arg0) {
+/* Re-enable `player`'s unit selection while it has no unit selected; if one is
+ * already selected, leave it alone. */
+void EnablePlayerSelectionIfNoneSelected(s32 player) {
     s32 HasPlayerSelectedUnit();
-    M2C_UNK EnablePlayerSelection(M2C_UNK);
-    if (HasPlayerSelectedUnit() != 0) {
+    void EnablePlayerSelection(s32);
+    if (HasPlayerSelectedUnit(player) != 0) {
         return;
     }
-    EnablePlayerSelection(arg0);
+    EnablePlayerSelection(player);
 }
 
 void func_020d2d80(M2C_UNK arg0) {
@@ -497,16 +501,20 @@ return (u8 *)*gCurrentMap+0x59a4+offset;
 return 0;
 }
 #pragma opt_common_subs reset
-u8 GetPlayerUnitCount(s32 arg0) {
+/* Number of units the given player has alive, from its player record. */
+u8 GetPlayerUnitCount(s32 player) {
     extern s32 *gCurrentMap;
-    return M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), u8 *, 0x67D5);
+    return M2C_FIELD(((player * MAP_PLAYER_STRIDE) + *gCurrentMap), u8 *, PLAYER_UNIT_COUNT_OFF);
 }
 
-u8 GetPlayerUnitKindCount(s32 a, s32 b) {
-extern s32 *gCurrentMap;
-u8 *p=(u8 *)(a*0x8c+*gCurrentMap);
-p+=b;
-return p[0x67d7];
+/* How many units of kind `unitKind` player `player` has built so far (the
+ * per-kind tallies at PLAYER_REC_UNITS_BUILT, which the results screen shows
+ * instead of the loss tallies). */
+u8 GetPlayerUnitKindBuiltCount(s32 player, s32 unitKind) {
+    extern s32 *gCurrentMap;
+    u8 *p = (u8 *)(player * MAP_PLAYER_STRIDE + *gCurrentMap);
+    p += unitKind;
+    return p[MAP_PLAYER_STATES + PLAYER_REC_UNITS_BUILT];
 }
 
 /* Sum the player's per-kind units-built tallies across all unit kinds. */
@@ -527,11 +535,13 @@ s32 CountPlayerUnitsBuilt(s32 player) {
     return totalBuilt;
 }
 
-u8 GetPlayerUnitKindLossCount(s32 a,s32 b) {
-extern s32 *gCurrentMap;
-u8 *p=(u8 *)(a*0x8c+*gCurrentMap);
-p+=b;
-return p[0x67f2];
+/* How many of player `player`'s units of kind `unitKind` have been destroyed
+ * (the per-kind tallies at PLAYER_REC_UNITS_LOST). */
+u8 GetPlayerUnitKindLossCount(s32 player, s32 unitKind) {
+    extern s32 *gCurrentMap;
+    u8 *p = (u8 *) (player * MAP_PLAYER_STRIDE + *gCurrentMap);
+    p += unitKind;
+    return p[MAP_PLAYER_STATES + PLAYER_REC_UNITS_LOST];
 }
 
 /* Sum the player's destroyed-unit tallies across all unit kinds. */
@@ -595,9 +605,11 @@ void func_020d31e4(void) {
     DecrementPlayerUnitCount();
 }
 
-void SetPlayerGaveUp(s32 a, u8 b) {
-extern s32 *gCurrentMap;
-M2C_FIELD(a*0x8c+*gCurrentMap,u8 *,0x67d3)=b;
+/* Set whether `player` gave up: the AI resigned, or a team-mate was defeated
+ * first (PLAYER_REC_GAVE_UP of the player record). */
+void SetPlayerGaveUp(s32 player, u8 gaveUp) {
+    extern s32 *gCurrentMap;
+    M2C_FIELD(player * MAP_PLAYER_STRIDE + *gCurrentMap, u8 *, MAP_PLAYER_STATES + PLAYER_REC_GAVE_UP) = gaveUp;
 }
 
 /* Whether `player` has given up (its record's PLAYER_REC_GAVE_UP flag is set). */
@@ -621,9 +633,11 @@ u8 HasActivePlayerGivenUp(s32 player) {
     return givenUp;
 }
 
-void SetPlayerLost(s32 a,u8 b) {
-extern s32 *gCurrentMap;
-M2C_FIELD(a*0x8c+*gCurrentMap,u8 *,0x67d4)=b;
+/* Set whether `player` is lost: its HQ was captured (PLAYER_REC_LOST of the
+ * player record). */
+void SetPlayerLost(s32 player, u8 lost) {
+    extern s32 *gCurrentMap;
+    M2C_FIELD(player * MAP_PLAYER_STRIDE + *gCurrentMap, u8 *, MAP_PLAYER_STATES + PLAYER_REC_LOST) = lost;
 }
 
 /* Whether the player's HQ has been captured: its record's lost flag is set. */

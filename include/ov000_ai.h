@@ -128,6 +128,10 @@ enum AiCargoDropDirection {
 #define AI_UNIT_LIST_END     0x00
 #define AI_UNIT_LIST_NO_UNIT 0x40
 
+/* Entries in gAiUnitLoadCounts, the AI's per-unit counts of how often a unit was
+ * picked as a load target (a unit id is masked to this many entries). */
+#define AI_UNIT_LOAD_COUNT 64
+
 /* The army value is scaled by 3/2 and never goes below this floor. */
 #define AI_ARMY_VALUE_MIN      1000
 

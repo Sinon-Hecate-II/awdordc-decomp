@@ -79,7 +79,7 @@ void func_020c5dc4(void) {
     M2C_UNK CreateMenuList(M2C_UNK);
     PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
-    func_020d464c();
+    ResumeMapInputMode();
     CreateMenuList(0);
 }
 
@@ -548,20 +548,24 @@ void func_020c6968(void) {
     OpenCarriedUnitMenu();
 }
 
-void func_020c697c(void) {
-    extern M2C_UNK data_0212a6c4;
+/* Map-menu command "Army Info": save the carried-unit list menu, close the map
+ * menu, return the map to its input mode and run the army-info script in layer 7,
+ * whose callbacks open the army info window and release the map-view hold again. */
+void OpenArmyInfoCommand(void) {
+    extern M2C_UNK gArmyInfoOpenScript;
+
     PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
-    func_020d464c();
-    CreateSpriteFromClass(&data_0212a6c4, 7);
+    ResumeMapInputMode();
+    CreateSpriteFromClass(&gArmyInfoOpenScript, 7);
 }
 
 void func_020c69a0(void) {
-    M2C_UNK func_020d464c();
+    M2C_UNK ResumeMapInputMode();
     M2C_UNK func_ov000_02171028();
     PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
-    func_020d464c();
+    ResumeMapInputMode();
     func_ov000_02171028();
 }
 
@@ -597,7 +601,7 @@ void func_020c69f8(void) {
     M2C_UNK func_ov000_021707c0();
     PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
-    func_020d464c();
+    ResumeMapInputMode();
     func_ov000_021707c0();
 }
 
@@ -726,15 +730,15 @@ void ConfirmWaitCommand(void) {
 }
 
 void func_020c6c20(void) {
-    M2C_UNK func_020cb018(M2C_UNK);
+    M2C_UNK CreateMapCursorOption(M2C_UNK);
     M2C_UNK AcquireMapViewHold();
-    func_020cb018(0);
+    CreateMapCursorOption(0);
     DeleteMapMenuSprites();
     AcquireMapViewHold();
 }
 
 void func_020c6c38(void) {
-    func_020cb018(1);
+    CreateMapCursorOption(1);
     DeleteMapMenuSprites();
     AcquireMapViewHold();
 }

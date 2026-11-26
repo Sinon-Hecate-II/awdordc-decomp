@@ -109,17 +109,19 @@ void CreateBattleEffectPending(s32 player, s32 terrainKind, s32 tileArmy, s32 un
     M2C_FIELD(effect, u8 *, 0x36) = 0;
 }
 #pragma pop
+/* Nonzero while a battle sprite effect object exists (one object of the battle
+ * effect pool's sprite class). */
 u8 IsBattleEffectObjectActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gBattleEffectPool;
-    u8 var_r0;
+    u8 active;
 
     if (FindObjectByClass(&gBattleEffectPool) != 0) {
-        var_r0 = 1;
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 #pragma push
@@ -230,14 +232,16 @@ void CreateBattleEffect(s32 player, s32 terrainKind, s32 tileArmy, s32 unitArmy,
 }
 #pragma pop
 void func_020c32b0(void) {
-    void func_020c32bc();
-    func_020c32bc();
+    void PlayCaptureSoundForPlayer();
+    PlayCaptureSoundForPlayer();
 }
 
-void func_020c32bc(void) {
-    s32 IsPlayerHuman();
+/* Play the property-capture sound effect for a player: the human player gets a
+ * different sound effect than the CPU. */
+void PlayCaptureSoundForPlayer(s32 player) {
+    s32 IsPlayerHuman(s32);
     M2C_UNK PlaySoundEffect(s32);
-    if (IsPlayerHuman() != 0) {
+    if (IsPlayerHuman(player) != 0) {
         PlaySoundEffect(0xE1);
         return;
     }

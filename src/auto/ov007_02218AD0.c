@@ -288,13 +288,13 @@ M2C_UNK func_ov007_02218e98(void *arg0) {
 }
 
 M2C_UNK func_ov007_02219230(void *arg) {
-void MapEditor_ConfirmPaletteEntry(void *); s32 func_ov007_02217c80(void *); s32 func_ov007_02217ca8(void *); void func_ov007_02219bb4(void *,s32); void GotoSpriteAnimationLabel(void *,s32); s32 func_ov007_02217d30(void *); M2C_UNK PlaySoundEffect(s32); void SpriteCellListUpdateTouch(void *);
+void MapEditor_ConfirmPaletteEntry(void *); s32 MapEditor_NextOwnerColor(void *); s32 MapEditor_PrevOwnerColor(void *); void CreatePaletteColorDriver(void *,s32); void GotoSpriteAnimationLabel(void *,s32); s32 func_ov007_02217d30(void *); M2C_UNK PlaySoundEffect(s32); void SpriteCellListUpdateTouch(void *);
 extern u16 *gKeyState;
 u32 keys; void *p; void *q; s32 v; s32 selected;
 keys=*gKeyState;
 if(keys&1) {MapEditor_ConfirmPaletteEntry(arg);return;}
-if(keys&0x400) {func_ov007_02219bb4(arg,func_ov007_02217c80(arg));return;}
-if(keys&0x800) {func_ov007_02219bb4(arg,func_ov007_02217ca8(arg));return;}
+if(keys&0x400) {CreatePaletteColorDriver(arg,MapEditor_NextOwnerColor(arg));return;}
+if(keys&0x800) {CreatePaletteColorDriver(arg,MapEditor_PrevOwnerColor(arg));return;}
 if(keys&0x304) {GotoSpriteAnimationLabel(arg,1);return;}
 if(keys&2) {GotoSpriteAnimationLabel(arg,2);return;}
 if(func_ov007_02217d30(arg)) {PlaySoundEffect(0x10019);return;}
@@ -314,7 +314,7 @@ q=M2C_FIELD(p,void **,0);
 v=-1;
 if(q) v=M2C_FIELD(q,u16 *,8);
 selected=M2C_FIELD((u8 *)arg+M2C_FIELD(arg,u8 *,0x37),u8 *,0x38);
-if(v!=selected) func_ov007_02219bb4(arg,v);
+if(v!=selected) CreatePaletteColorDriver(arg,v);
 }
 }
 

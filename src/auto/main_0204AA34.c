@@ -262,7 +262,7 @@ void ghiReceiveStatusLine(void *);
 void func_0204d5c0(void *);
 void ghiReceiveFile(void *);
 /* Run one tick of an async operation/state machine: validate the handle, dispatch by its kind, then settle (signal completion and release the handle) unless it is still busy. */
-s32 func_0204b210(void *operation) {
+s32 ghiPumpConnection(void *operation) {
     extern M2C_UNK data_020fd170, data_020fd17c, data_020fd158, data_020fd188;
     void ghiCallCompletedCallback(void *);
     s32 ghiFreeConnection(void *);
@@ -385,18 +385,18 @@ s32 ghttpGetEx(char *url, char *headers, void *buffer, s32 bufferSize, s32 post,
         return -1;
     }
     if (blocking) {
-        if (!func_0204b210(connection)) do {
+        if (!ghiPumpConnection(connection)) do {
             gpiSleep(10);
-        } while (!func_0204b210(connection));
+        } while (!ghiPumpConnection(connection));
         return 0;
     }
     return M2C_FIELD(connection, s32 *, 4);
 }
 
-void func_0204b674(void) {
+void ghiPumpConnections(void) {
     void ghiForEachConnection(M2C_UNK *);
-    s32 func_0204b210(void *);
-    ghiForEachConnection((M2C_UNK *)func_0204b210);
+    s32 ghiPumpConnection(void *);
+    ghiForEachConnection((M2C_UNK *)ghiPumpConnection);
 }
 
 s32 func_0204b688(void *arg0) {

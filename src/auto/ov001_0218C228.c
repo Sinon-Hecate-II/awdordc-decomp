@@ -327,10 +327,12 @@ void Ov001_SetSlideStep(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 8) = arg1;
 }
 
-void Ov001_PostTaskMessage(s32 n,u32 arg) {
-M2C_UNK Ov001_QueuePush(s32,u32);
-extern s32 gOv001Tasks;
-Ov001_QueuePush(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,4),arg);
+/* Queue `message` in task group `group`'s pending-message queue, for the group's
+ * next update (see Ov001_UpdateTaskGroup). */
+void Ov001_PostTaskMessage(s32 group, u32 message) {
+    M2C_UNK Ov001_QueuePush(s32, u32);
+    extern s32 gOv001Tasks;
+    Ov001_QueuePush(OV001_TASKS[group].pendingNodes, message);
 }
 
 void Ov001_ReturnTaskNodeVeneer(void) {

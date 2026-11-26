@@ -81,7 +81,7 @@ s32 IsPrintableString(u8 *p,s32 n) {s32 i; for(i=0;i<n;i++){u32 c=*p++;if(c<32||
 
 #pragma scheduling off
 s32 func_ov001_0216bb4c(u32 *arg0) {
-s32 func_ov001_0216cdb4(void *,M2C_UNK *,s32);
+s32 Ov001CompareBytes(void *,M2C_UNK *,s32);
 s32 func_ov001_0216cf08(M2C_UNK *);
 extern M2C_UNK gBuiltinWifiSsid;
 s32 result; u32 n;
@@ -95,7 +95,7 @@ i=0;
 if((s32)n>0) {
 text=p+8;
 do {
-if((M2C_FIELD(p,u32 *,0x54)&1) && M2C_FIELD(p,s32 *,4)==func_ov001_0216cf08(&gBuiltinWifiSsid) && !func_ov001_0216cdb4(text,&gBuiltinWifiSsid,func_ov001_0216cf08(&gBuiltinWifiSsid)))matches++;
+if((M2C_FIELD(p,u32 *,0x54)&1) && M2C_FIELD(p,s32 *,4)==func_ov001_0216cf08(&gBuiltinWifiSsid) && !Ov001CompareBytes(text,&gBuiltinWifiSsid,func_ov001_0216cf08(&gBuiltinWifiSsid)))matches++;
 p+=0x54;text+=0x54;i++;
 }while(i<(s32)n);
 }

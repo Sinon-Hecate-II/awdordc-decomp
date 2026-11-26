@@ -71,7 +71,7 @@ case VOICE_CODEC_ADPCM4: EncodeAdpcm4Bit((u8 *)packet+4,samples,sampleCount,code
 
 #pragma opt_strength_reduction off
 s32 func_ov010_022224b4(void){
-s32 func_020070a4(void); void func_ov010_02225174(void);void func_ov010_02223654(u32);void Link_InitChannelState(void *,u32,s32);void Link_InitPendingPackets(void);void VoiceCodec_ResetState(void);
+s32 func_020070a4(void); void VoiceActivity_InitWindow(void);void func_ov010_02223654(u32);void Link_InitChannelState(void *,u32,s32);void Link_InitPendingPackets(void);void VoiceCodec_ResetState(void);
 extern M2C_UNK gVoiceChatState,data_ov010_0222c000,gLinkConfig;extern u8 gVoiceModePayloadUnits[];extern void *gVoiceChatContexts[];extern u8 gLinkChannelStates[];
 s32 i; s32 saved; s32 n, x, y; u8 *t;
 saved=func_020070a4();
@@ -92,7 +92,7 @@ M2C_FIELD(&gVoiceChatState,s32 *,3852)=0;
 M2C_FIELD(&gVoiceChatState,s32 *,3848)=0;
 M2C_FIELD(&gVoiceChatState,s32 *,3856)=0;
 M2C_FIELD(&gVoiceChatState,s32 *,3860)=0;
-func_ov010_02225174();
+VoiceActivity_InitWindow();
 i=0;goto test;loop:{gVoiceChatContexts[i]=0;func_ov010_02223654(i);Link_InitChannelState(gLinkChannelStates+i*0x94,i,-1);i++;}test:if((u32)i<3)goto loop;
 Link_InitPendingPackets();VoiceCodec_ResetState();return 1;
 }
@@ -114,7 +114,7 @@ s32 VoiceChat_AttachContext(void *p)
 {
     void Link_InitChannelState(void*,u32,s32);
     void func_ov010_02223654(u32);
-    void func_ov010_02224f28(void);
+    void VoiceActivity_Reset(void);
     s32 func_020070a4(void);
     extern s32 gVoiceChatState;
     extern void *gVoiceChatContexts[];
@@ -155,7 +155,7 @@ found:
     func_ov010_02223654(i);
     if (M2C_FIELD(p,s32*,12) != 2) return 1;
     if (M2C_FIELD(&gVoiceChatState,s32*,VOICE_CHAT_CONTEXT_COUNT) == 1) {
-        func_ov010_02224f28();
+        VoiceActivity_Reset();
         M2C_FIELD(&gVoiceChatState,u16*,VOICE_CHAT_STREAM_TICK) = func_020070a4();
         M2C_FIELD(&gVoiceChatState,u16*,VOICE_CHAT_ADPCM_PREDICTOR) = 0;
         M2C_FIELD(&gVoiceChatState,u8*,VOICE_CHAT_ADPCM_STEP_INDEX) = 0;
@@ -172,7 +172,7 @@ found:
 #pragma optimization_level reset
 void VoiceChat_RemoveChannel(void *arg0) {
 extern void *gVoiceChatContexts[]; extern u8 gLinkChannelStates[]; extern M2C_UNK gVoiceChatState;
-void Link_ReleaseChannelState(void *); void Link_FreeChannelQueuedPackets(u32); void Link_FreeChannelPendingPackets(u32); void func_ov010_02224f28(void);
+void Link_ReleaseChannelState(void *); void Link_FreeChannelQueuedPackets(u32); void Link_FreeChannelPendingPackets(u32); void VoiceActivity_Reset(void);
 u32 i;
 for(i=0;i<3;i++) {
 if(gVoiceChatContexts[i]==arg0) {
@@ -198,7 +198,7 @@ break;
 if(M2C_FIELD(&gVoiceChatState,s32 *,0x20)!=0) return;
 {
 M2C_FIELD(&gVoiceChatState,s32 *,0x14)=1;
-func_ov010_02224f28();
+VoiceActivity_Reset();
 M2C_FIELD(&gVoiceChatState,s32 *,4)=0;
 }
 }

@@ -249,7 +249,9 @@ void func_ov007_022143f0(void) {
     CreateSpriteFromClass(&data_ov007_0221f9a8, 7);
 }
 
-void func_ov007_0221440c(void) {
+/* Restore the default map settings, apply them to the battle and mark the map
+ * as modified. */
+void MapEditor_ResetMapSettings(void) {
     M2C_UNK MapSettings_SetDefaults(M2C_UNK);
     MapSettings_SetDefaults(0);
     MapSettings_Apply(0);
@@ -263,16 +265,19 @@ void func_ov007_0221442c(void) {
     CreateSpriteFromClass(&data_ov007_0221f918, 7);
 }
 
-u8 func_ov007_02214448(void) {
+/* Whether the map configuration's second-value-limit flag (MAPCONFIG_LIMIT_FLAG,
+ * bit 6 of the flags word) is clear: MapEditor_ConfirmMapSettings sets it once the
+ * map's value limit has been applied. */
+u8 IsMapConfigLimitClear(void) {
     extern u16 gMapConfig;
-    u8 var_r0;
+    u8 result;
 
     if (((u32) (gMapConfig << 0x19) >> 0x1F) == 0) {
-        var_r0 = 1;
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 /* Opens the map editor's menu: hides the current menu sprites, clears the editor's
@@ -308,10 +313,13 @@ void func_ov007_022144e0(void) {
     DeleteMapMenuSprites();
 }
 
-void func_ov007_022144ec(void) {
-    M2C_UNK CreateMenuAt(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_ov007_0221fc20;
-    CreateMenuAt(&data_ov007_0221fc20, 0x50, 0x18, 0x50);
+/* Open the map editor's options menu (START) at (0x50, 0x18), 0x50 pixels
+ * wide, from the editor's options entry table. */
+void OpenMapEditorOptionsMenu(void) {
+    s32 CreateMenuAt(s32 *entries, s32 x, s32 y, s32 width);
+    extern M2C_UNK gMapEditorOptionsMenuEntries;
+
+    CreateMenuAt(&gMapEditorOptionsMenuEntries, 0x50, 0x18, 0x50);
 }
 
 /* Map-editor action: clear the AI action step (the low nibble of

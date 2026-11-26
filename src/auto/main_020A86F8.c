@@ -142,16 +142,21 @@ u8 MapData_GetBattleSetting(void) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 0xC);
 }
 
-u16 func_020a89a4(void) {
-    return (u16) (M2C_FIELD(MapData_GetRecord(), u8 *, 0xD) * 0xE10);
+/* The map-specific value of the current map (MAPCONFIG_VALUE): the map data
+ * record's value byte in its 0xE10-unit scale, truncated to the 16-bit field. */
+u16 MapData_GetMapValue(void) {
+    return (u16) (M2C_FIELD(MapData_GetRecord(), u8 *, MAP_DATA_MAP_VALUE) * MAP_DATA_MAP_VALUE_UNIT);
 }
 
+/* The map's low value bound, in MAP_DATA_VALUE_LIMIT_UNITs. */
 u16 MapData_GetValueLimitLow(void) {
-    return (u16) (M2C_FIELD(MapData_GetRecord(), u8 *, 0xE) * 0x64);
+    return (u16) (M2C_FIELD(MapData_GetRecord(), u8 *, MAP_DATA_VALUE_LIMIT_LOW) * MAP_DATA_VALUE_LIMIT_UNIT);
 }
 
+/* The highest value the current map's value may reach (MAPCONFIG_VALUE): the
+ * map data record's high-bound byte in its 100-unit scale, truncated to 16 bits. */
 u16 MapData_GetValueLimitHigh(void) {
-    return (u16) (M2C_FIELD(MapData_GetRecord(), u8 *, 0xF) * 0x64);
+    return (u16) (M2C_FIELD(MapData_GetRecord(), u8 *, MAP_DATA_VALUE_LIMIT_HIGH) * MAP_DATA_VALUE_LIMIT_UNIT);
 }
 
 u8 func_020a8a04(void) {
@@ -289,19 +294,22 @@ s32 IsPointInRect(s32 x, s32 y, s32 left, s32 top, s16 width, s16 height) {
     return 1;
 }
 
-u32 func_020a8cc0(u32 arg0) {
-    u32 var_r1;
+/* Largest power-of-two texel chunk (8..256) that fits within `extent`: scaled
+ * quads are drawn in chunks no larger than 256 texels, halving down to 8; an
+ * extent under the minimum chunk size is returned unchanged. */
+u32 GetTileChunkSize(u32 extent) {
+    u32 chunkSize;
 
-    var_r1 = 0x100;
-loop_1:
-    if (arg0 >= var_r1) {
-        return var_r1;
+    chunkSize = 0x100;
+loop:
+    if (extent >= chunkSize) {
+        return chunkSize;
     }
-    var_r1 = (u32) (var_r1 << 0xF) >> 0x10;
-    if (var_r1 < 8U) {
-        return arg0;
+    chunkSize = (u32) (chunkSize << 0xF) >> 0x10;
+    if (chunkSize < 8U) {
+        return extent;
     }
-    goto loop_1;
+    goto loop;
 }
 
 s32 ScaleFixed8(s32 arg0, s32 arg1) {
@@ -321,11 +329,11 @@ void func_020a8cf0(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,s32 arg5,u16 arg
  scaleX=arg8;flags=arg7;scaleY=arg9;
  do {
  remaining=width;
- tileH=func_020a8cc0((u16)height);
+ tileH=GetTileChunkSize((u16)height);
  x=origin-(ScaleFixed8(width,scaleX)>>1);
  dy=(tileH*scaleY)>>8;
  do {
- tileW=func_020a8cc0((u16)remaining);
+ tileW=GetTileChunkSize((u16)remaining);
  SetGxTextureParams(arg5,tileW,tileH,index,flags);
  dx=tileW*scaleX;
  DrawTexturedQuadUV(x,y,z,dx>>8,dy,0,0,tileW,tileH);

@@ -1,6 +1,6 @@
 /* 1 function from 0x02176E28 to 0x02177CE0 (ov000), found by ds-decomp. */
 #include "common.h"
-s32 GetUnitAttackClass(s32);s32 IsFootUnitKind(s32);s32 func_ov000_02176e08(s32);s32 IsCaptureTargetAt(void *,s32,s32);s32 GetUnitDamagePercent(s32,s32);s32 func_ov000_0217c9f4(void *);
+s32 GetUnitAttackClass(s32);s32 IsFootUnitKind(s32);s32 IsAiCombatSpecialUnitKind(s32);s32 IsCaptureTargetAt(void *,s32,s32);s32 GetUnitDamagePercent(s32,s32);s32 func_ov000_0217c9f4(void *);
 
 extern void **gCurrentMap;extern u8 data_ov000_021b5c00[],gUnitKindFlags[],data_ov000_021b5efc[],data_ov000_021df918[],data_ov000_021df9bc[],data_ov000_021dfc4c[],gAiIndirectRangeBitmap[],gAiRangeBitmap[];extern u8 *gAiUnitTypeTuning,*gAiCommandState;
 void func_020d166c(s32,u16,void *);s32 IsUnitSelected(void *);s32 GetKindAttackClass(s32);s32 Divide(s32,s32);s32 func_ov000_021976ac(s32,s32,void *,s32);s32 IsCellOwnedByOtherArmy();s32 WillCaptureCompleteThisTurn(void *);
@@ -71,7 +71,7 @@ combat_check:
 if(M2C_FIELD((*gCurrentMap),s16 *,28390)&&(s32)((u32)(M2C_FIELD(b,u16 *,6)<<25)>>25)-M2C_FIELD((*gCurrentMap),s16 *,28390)<=10)vb>>=2;
 if((s32)((u32)(M2C_FIELD(a,u16 *,6)<<25)>>25)-M2C_FIELD((*gCurrentMap),s16 *,28358)>=70 && M2C_FIELD((u8 *)(*gCurrentMap)+M2C_FIELD((*gCurrentMap),u16 *,21156)*140,u8 *,0x67ce)!=0)vb>>=2;
 special:
-if((func_ov000_02176e08(((u32)(a[0]<<26)>>26))&&func_ov000_02176e08(((u32)(b[0]<<26)>>26)))||(((u32)(a[0]<<26)>>26)==15&&((u32)(b[0]<<26)>>26)==23)||(((u32)(a[0]<<26)>>26)==15&&((u32)(b[0]<<26)>>26)==6)||(((u32)(a[0]<<26)>>26)==23&&((u32)(b[0]<<26)>>26)==22)){vb+=vb>>1;va>>=1;}
+if((IsAiCombatSpecialUnitKind(((u32)(a[0]<<26)>>26))&&IsAiCombatSpecialUnitKind(((u32)(b[0]<<26)>>26)))||(((u32)(a[0]<<26)>>26)==15&&((u32)(b[0]<<26)>>26)==23)||(((u32)(a[0]<<26)>>26)==15&&((u32)(b[0]<<26)>>26)==6)||(((u32)(a[0]<<26)>>26)==23&&((u32)(b[0]<<26)>>26)==22)){vb+=vb>>1;va>>=1;}
 ka=((u32)(a[0]<<26)>>26);attr=gUnitKindFlags[((u32)(a[0]<<26)>>26)*112]&7;
 if(attr&&((u32)(b[0]<<26)>>26)==9){vb+=vb>>1;if(ka==9)va>>=1;}
 if(attr&&((u32)(b[0]<<26)>>26)==26){vb+=vb>>1;if((u8)(ka+248)<=1)va>>=1;}

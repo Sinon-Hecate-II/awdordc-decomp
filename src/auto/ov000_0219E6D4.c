@@ -134,9 +134,9 @@ s32 ProcessAiCommandStep(void) {
     s32 ResolveAiAttackCommand();
     s32 PlayAiAttackEffect();
     s32 FinishAiAttackCommand();
-    s32 func_ov000_0219fa0c();
+    s32 ReturnToAiActionSelection();
     s32 FinishAiUnitMove();
-    s32 func_ov000_0219fa98();
+    s32 FinishAiProduceUnitCommand();
     extern s8 *gAiCommandState;
     s32 continues;
     continues = 0;
@@ -158,7 +158,7 @@ s32 ProcessAiCommandStep(void) {
             continues = PlayAiAttackEffect();
             break;
         case 5:
-            continues = func_ov000_0219fa0c();
+            continues = ReturnToAiActionSelection();
             break;
         case 6:
             continues = FinishAiAttackCommand();
@@ -170,7 +170,7 @@ s32 ProcessAiCommandStep(void) {
             continues = FinishAiUnitMove();
             break;
         case 9:
-            continues = func_ov000_0219fa98();
+            continues = FinishAiProduceUnitCommand();
             break;
         default:
             continues = 0;

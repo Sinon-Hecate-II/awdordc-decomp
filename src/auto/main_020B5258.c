@@ -216,9 +216,11 @@ void RemoveUnitWithEffect(M2C_UNK arg0) {
     func_020b567c(arg0, 0);
 }
 
-void func_020b578c(void *arg0) {
+/* Spawn the boss explosion (type 9) on the effect's own tile, on the default
+ * sprite layer (7). */
+void BossExplosionEffect_Trigger(void *effect) {
     M2C_UNK CreateExplosionEffect(s32, s32, M2C_UNK, M2C_UNK);
-    CreateExplosionEffect(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 9, 7);
+    CreateExplosionEffect(M2C_FIELD(effect, s32 *, BATTLE_PREVIEW_X), M2C_FIELD(effect, s32 *, BATTLE_PREVIEW_Y), 9, 7);
 }
 
 #pragma scheduling off
@@ -274,8 +276,10 @@ void CreateMapOrderEffectSprite(MapOrder *order, s32 parent) {
     M2C_FIELD(effect, s32 *, 0x3c) = pos[1];
 }
 
-void LineAttackEffect_Trigger(void *arg0) {
-    CreateExplosionEffect(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 9, 7);
+/* Trigger of the line-attack highlight effect: spawn the effect's boss explosion
+ * (type 9) on the effect's own tile, owned by the default sprite layer (7). */
+void LineAttackEffect_Trigger(void *effect) {
+    CreateExplosionEffect(M2C_FIELD(effect, s32 *, BATTLE_PREVIEW_X), M2C_FIELD(effect, s32 *, BATTLE_PREVIEW_Y), 9, 7);
 }
 
 #pragma scheduling off
@@ -408,15 +412,19 @@ void CreateLineAttackEffectSprite(MapOrder *order, s32 parent) {
     M2C_FIELD(effect, void **, BATTLE_PREVIEW_UNIT) = order;
 }
 
-void TerrainBlastEffect_Explode(void *arg0) {
-    CreateExplosionEffect(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 8, 7);
+/* Trigger of the terrain-blast effect: play the meteor explosion on the effect's
+ * map tile, owned by the default sprite layer. */
+void TerrainBlastEffect_Explode(void *effect) {
+    CreateExplosionEffect(M2C_FIELD(effect, s32 *, BATTLE_PREVIEW_X), M2C_FIELD(effect, s32 *, BATTLE_PREVIEW_Y), EXPLOSION_TYPE_METEOR, 7);
 }
 
-void TerrainBlastEffect_DestroyTerrain(void *arg0) {
+/* Trigger of the terrain-blast effect: blast away the terrain on the effect's
+ * map tile, then refresh the view and the property cells the terrain owned. */
+void TerrainBlastEffect_DestroyTerrain(void *effect) {
     M2C_UNK ApplyTerrainBlast(s32, s32);
     M2C_UNK RebuildMapPropertyCells();
     M2C_UNK RefreshMapView();
-    ApplyTerrainBlast(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
+    ApplyTerrainBlast(M2C_FIELD(effect, s32 *, BATTLE_PREVIEW_X), M2C_FIELD(effect, s32 *, BATTLE_PREVIEW_Y));
     RefreshMapView();
     RebuildMapPropertyCells();
 }

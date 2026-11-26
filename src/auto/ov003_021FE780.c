@@ -3,7 +3,10 @@
 #include "battle_map.h"
 #include "ov003_scene.h"
 
-void func_ov003_021fe780(M2C_UNK arg0) {
+/* Build the ov003 map-pick list scene (menu kind 7): create the scene object,
+ * install its vtables and flag/menu-kind bytes from the current map, then attach
+ * its paged map list, its two number labels and its 8-byte scratch block. */
+void Ov003_CreateMapPick7Scene(void *owner) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *MemAlloc(s32);
     M2C_UNK SpriteTween_Start(void *, M2C_UNK);
@@ -23,9 +26,10 @@ void func_ov003_021fe780(M2C_UNK arg0) {
     Ov003MapListMenuScene *scene;
     void *child;
     u8 i;
+    s32 mapId;
 
     SetOv003SceneClass(&gOv003MapListMenuClass);
-    scene = (Ov003MapListMenuScene *) CreateSpriteFromClass(&gOv003MapListMenuClass, arg0);
+    scene = (Ov003MapListMenuScene *) CreateSpriteFromClass(&gOv003MapListMenuClass, owner);
     if (scene != NULL) {
         scene->vtable = &gSceneBaseVTable;
         scene->iface = &gSceneBaseIfaceVTable;
@@ -39,7 +43,8 @@ void func_ov003_021fe780(M2C_UNK arg0) {
         scene->flags3B.first = 0;
         scene->flags3B.second = 0;
         scene->flags3B.third = 0;
-        scene->mapId = (u16) M2C_FIELD(*gCurrentMap, u16 *, MAP_ID);
+        mapId = M2C_FIELD(*gCurrentMap, u16 *, MAP_ID);
+        scene->mapId = mapId;
         scene->flags3E.flags.first = 2;
         scene->flags3E.flags.second = 7;
         scene->flags3E.flags.third = 0;

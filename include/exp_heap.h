@@ -41,6 +41,7 @@
 #define HEAP_FREE_LIST  0x24 /* void *head of the free-block list; +0x04 is its tail */
 #define HEAP_USED_LIST  0x2c /* void *head of the used-block list; +0x04 is its tail */
 #define HEAP_FLAGS      0x36 /* u16; bit 0: search the whole free list for the smallest block that fits */
+#define HEAP_FLAG_BEST_FIT 0x0001 /* HEAP_FLAGS bit 0: allocate from the smallest free block that fits */
 
 /* Allocator state of a frame heap (the 'FRMH' heap CreateFrameHeap sets up),
  * reached through the pointer stored at heap+0x24.  Head allocations grow the

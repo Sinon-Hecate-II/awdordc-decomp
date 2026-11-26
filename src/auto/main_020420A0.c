@@ -326,7 +326,18 @@ s32 GetConnectedPlayerMask(s32 fromSessionMask) {
     return mask;
 }
 
-void func_02042ad0(void){void *GetConnection(void);u64 GetSystemTick(void);void *p;M2C_FIELD(GetConnection(),u8 *,0x1ad)=0;p=GetConnection();M2C_FIELD(p,u64 *,0x1f8)=GetSystemTick();}
+/* Restart the wait for the peer to accept our player slot: clear the request
+ * counter and stamp the time the next request is measured from.  Called when the
+ * connection state is reset and whenever the target peer answers. */
+void ResetSlotRequestRetry(void) {
+    void *GetConnection(void);
+    u64 GetSystemTick(void);
+    void *conn;
+
+    M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_SLOT_RETRY) = 0;
+    conn = GetConnection();
+    M2C_FIELD(conn, u64 *, CONN_SESSION_SLOT_RETRY_TICK) = GetSystemTick();
+}
 
 /* Reset the match-sync bookkeeping: clear the peer answer masks and the retry
  * counter and stamp the last-sync time.  With keepStartTick zero (a fresh sync

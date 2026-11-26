@@ -189,21 +189,24 @@ void SetLinkResultFlag(s32 arg0) {
         (M2C_FIELD(&gLinkState, s32 *, 0x50) | (1 << arg0));
 }
 
-s32 IsLinkResultFlagSet(s32 arg0) {
+/* Whether the link result of player slot `player` has already been handled. */
+s32 IsLinkResultFlagSet(s32 player) {
     extern M2C_UNK gLinkState;
-    s32 var_r2 = 1;
-    if (!(M2C_FIELD(&gLinkState, s32 *, 0x50) & (1 << arg0))) {
-        var_r2 = 0;
+    s32 result = 1;
+    if (!(M2C_FIELD(&gLinkState, s32 *, LINK_STATE_RESULT_FLAGS) & (1 << player))) {
+        result = 0;
     }
-    return var_r2;
+    return result;
 }
 
-void ClearLinkResultFlag(s32 arg0) {
+/* Clears the link-result bit of player slot `playerIndex` in gLinkState. */
+void ClearLinkResultFlag(s32 playerIndex) {
     extern M2C_UNK gLinkState;
-    s32 v;
-    v = M2C_FIELD(&gLinkState, s32 *, 0x50);
-    v = v & (-1 ^ (1 << arg0));
-    M2C_FIELD(&gLinkState, s32 *, 0x50) = v;
+    s32 flags;
+
+    flags = M2C_FIELD(&gLinkState, s32 *, LINK_STATE_RESULT_FLAGS);
+    flags = flags & (-1 ^ (1 << playerIndex));
+    M2C_FIELD(&gLinkState, s32 *, LINK_STATE_RESULT_FLAGS) = flags;
 }
 
 void func_ov009_0222454c(void) {
@@ -278,12 +281,15 @@ test:
     return 0;
 }
 #pragma cplusplus off
+/* Move the link state machine from REQUEST to PENDING once a link request has
+ * arrived, so the WFC command that carries it out can start; returns 0 when the
+ * link is not in the request phase. */
 s32 AdvanceLinkRequestToPending(void) {
     M2C_UNK SetLinkPhase(M2C_UNK);
-    if (GetLinkPhase() != 2) {
+    if (GetLinkPhase() != LINK_PHASE_REQUEST) {
         return 0;
     }
-    SetLinkPhase(3);
+    SetLinkPhase(LINK_PHASE_PENDING);
     return 1;
 }
 

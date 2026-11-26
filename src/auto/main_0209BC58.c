@@ -189,6 +189,8 @@ void DeleteTextSprites(void) {
     DeleteSpriteObjectsOfClass(&gScreenTextLineSpriteClass);
 }
 
+/* Delete every live sprite of the two text-line classes: the in-world text line
+ * and the screen text line. */
 void DeleteTextLineSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gTextLineSpriteClass;
@@ -210,9 +212,12 @@ void DrawLocalizedTextToTilemap(s32 x, s32 y, s32 tiles, s32 textId, u16 attrs, 
     DrawTextToTilemap(x, y, tiles, GetLocalizedText(textId), (s32) attrs, (s32) variant);
 }
 
-s32 DrawTextToTilemap(s32 a,s32 b,s32 c,s32 d,u16 e,u16 f) {
-s32 func_0209953c(s32,s32,s32,s32,u16,u16);
-func_0209953c(a,b,c,d,e,f);
+/* Draw the text script `text` at cell (x, y) in the tilemap at `tiles`, with
+ * tile attribute base `attrs` and glyph variant `variant`. Forwards to
+ * DrawCachedTextToTilemap, which caches each string's glyph positions. */
+s32 DrawTextToTilemap(s32 x, s32 y, s32 tiles, s32 text, u16 attrs, u16 variant) {
+s32 DrawCachedTextToTilemap(s32,s32,s32,s32,u16,u16);
+DrawCachedTextToTilemap(x,y,tiles,text,attrs,variant);
 }
 
 /* Writes an unsigned decimal number right to left from (rightX, y), using two tiles per digit. */
@@ -788,14 +793,16 @@ void func_0209c8d4(void) {
 }
 
 #pragma opt_propagation reset
-void IncrementCounter(u32 *arg0) {
-    u32 temp_r2;
+/* Saturating increment of a play- or turn-time counter: add one tick, capped at
+ * TIME_COUNTER_MAX (999:59:59) instead of wrapping. */
+void IncrementCounter(u32 *counter) {
+    u32 next;
 
-    temp_r2 = *arg0 + 1;
-    if (temp_r2 >= 0x0CDFE5C4U) {
-        *arg0 = 0x0CDFE5C4;
+    next = *counter + 1;
+    if (next >= TIME_COUNTER_MAX) {
+        *counter = TIME_COUNTER_MAX;
         return;
     }
-    *arg0 = temp_r2;
+    *counter = next;
 }
 

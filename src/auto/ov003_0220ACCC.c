@@ -4,10 +4,10 @@
 
 /* Configures the path entries for the selected table index, using the simple path for 0/1 entries. */
 void func_ov003_0220accc(void *obj, s32 index) {
-    extern u8 data_ov003_0220f238[];
+    extern u8 gUnitListLayouts[];
     extern u8 data_ov003_02210a4c[];
 
-    void *table = data_ov003_0220f238 + index * 16;
+    void *table = gUnitListLayouts + index * 16;
     void *state;
     u8 count;
     u8 i;

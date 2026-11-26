@@ -195,56 +195,76 @@ void SetBattleUnitAnimation(void *arg0, s32 side, u32 selfKind, u32 otherKind, u
     pState[off] = gAnimStateTable[variant + (u32)state * 4];
 }
 #pragma pop
-s32 func_ov002_021e7fec(s32 arg0,s32 arg1) { switch(M2C_FIELD(arg0+arg1*24,u8 *,12)) {case 0x25: case 0x26:return 1; default:return 0;} }
-
-u8 func_ov002_021e8014(s32 arg0, s32 arg1) {
-    u8 var_r0;
-
-    if (M2C_FIELD(M2C_FIELD(((arg1 * 0x18) + arg0), void **, 8), u8 *, 0x22) == 2) {
-        var_r0 = 1;
-    } else {
-        var_r0 = 0;
+/* Whether the battle-panel side record's unit kind is one of the two special
+ * campaign kinds (0x25/0x26), which get an alternate battle palette. */
+s32 IsSpecialBattleUnitKind(s32 settings, s32 side) {
+    switch (M2C_FIELD(settings + side * 24, u8 *, 12)) {
+    case 0x25:
+    case 0x26:
+        return 1;
+    default:
+        return 0;
     }
-    return var_r0;
 }
 
-u8 func_ov002_021e8038(s32 arg0, s32 arg1) {
-    u8 var_r0;
+/* Whether the unit-set definition chosen for side `side` of the battle settings
+ * has kind 2 (the kind the game's second unit-set group uses). */
+u8 IsSideUnitSetType2(s32 settings, s32 side) {
+    u8 isType2;
 
-    if (M2C_FIELD(M2C_FIELD(((arg1 * 0x18) + arg0), void **, 8), u8 *, 0x22) == 3) {
-        var_r0 = 1;
+    if (M2C_FIELD(M2C_FIELD(((side * 0x18) + settings), void **, 8), u8 *, UNIT_SET_KIND) == 2) {
+        isType2 = 1;
     } else {
-        var_r0 = 0;
+        isType2 = 0;
     }
-    return var_r0;
+    return isType2;
 }
 
-u8 func_ov002_021e805c(s32 arg0, s32 arg1) {
-    u8 var_r0;
+/* Whether the unit-set definition chosen for side `side` of the battle settings is
+ * type 3 (the alternate type the CO selects). */
+u8 IsSideUnitSetKind3(s32 settings, s32 side) {
+    u8 isType3;
 
-    if (M2C_FIELD(M2C_FIELD(((arg1 * 0x18) + arg0), void **, 8), u8 *, 0x21) == 1) {
-        var_r0 = 1;
+    if (M2C_FIELD(M2C_FIELD(((side * 0x18) + settings), void **, 8), u8 *, 0x22) == 3) {
+        isType3 = 1;
     } else {
-        var_r0 = 0;
+        isType3 = 0;
     }
-    return var_r0;
+    return isType3;
 }
 
-u8 func_ov002_021e8080(s32 arg0, s32 arg1) {
-    u8 var_r0;
+/* Whether the unit-set definition chosen for side `side` of the battle settings is
+ * type 1. */
+u8 IsUnitSetDefinitionType1(s32 settings, s32 side) {
+    u8 isType1;
 
-    if (M2C_FIELD(M2C_FIELD(((arg1 * 0x18) + arg0), void **, 8), u8 *, 0x21) == 2) {
-        var_r0 = 1;
+    if (M2C_FIELD(M2C_FIELD(((side * 0x18) + settings), void **, 8), u8 *, 0x21) == 1) {
+        isType1 = 1;
     } else {
-        var_r0 = 0;
+        isType1 = 0;
     }
-    return var_r0;
+    return isType1;
 }
 
-u8 func_ov002_021e80a4(s32 arg0, s32 arg1) {
+/* Whether side `side` of the battle `settings` uses a unit-set definition of
+ * variant 2 (UNIT_SET_VARIANT: 1, 2 or 3, which picks the battle palette). */
+u8 IsUnitSetDefinitionType2(s32 settings, s32 side) {
+    u8 isVariant2;
+
+    if (M2C_FIELD(M2C_FIELD((side * 0x18) + settings, void **, 8), u8 *, UNIT_SET_VARIANT) == 2) {
+        isVariant2 = 1;
+    } else {
+        isVariant2 = 0;
+    }
+    return isVariant2;
+}
+
+/* Whether side `side` (0 or 1) of the versus `settings` has a type-3 unit-set
+ * definition (its byte at +0x21), which picks the third alternate unit set. */
+u8 IsUnitSetDefinitionType3(s32 settings, s32 side) {
     u8 var_r0;
 
-    if (M2C_FIELD(M2C_FIELD(((arg1 * 0x18) + arg0), void **, 8), u8 *, 0x21) == 3) {
+    if (M2C_FIELD(M2C_FIELD(settings + side * VERSUS_DATA_STRIDE, void **, 8), u8 *, 0x21) == 3) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -513,7 +533,7 @@ void func_ov002_021e8898(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, s16 *, 0x1E) = arg1;
 }
 
-void func_ov002_021e88a0(void *arg0) {
+void StopUnitViewShake(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x26) = 0;
 }
 

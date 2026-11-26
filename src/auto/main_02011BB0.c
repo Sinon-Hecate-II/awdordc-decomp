@@ -79,12 +79,15 @@ messages[i]=messages[i-1]+M2C_FIELD(batch,u16 *,6);
 return 0;
 }
 
+/* The WFC player bitmask (bit n-1 set for player slot n) from the ARM7's shared
+ * work area; WFC_PLAYER_MASK_READY once the connection is established, and 0
+ * while there is no session. */
 u16 WFC_GetPlayerMask(void) {
     s32 WFC_CheckReady();
     if (WFC_CheckReady() != 0) {
-        return 0x8000U;
+        return WFC_PLAYER_MASK_READY;
     }
-    return *(u16 *)0x027FFCFA;
+    return *(u16 *)WFC_SHARED_PLAYER_MASK;
 }
 
 /* The status value of the WFC link: 0 unless the link is in state 9, 10 or 11;

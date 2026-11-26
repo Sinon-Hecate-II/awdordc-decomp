@@ -7,13 +7,13 @@
 void func_ov006_022144ac(void *arg0) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern u8 gMapCodeString[],data_ov006_022183cc[],data_ov006_022183ce[],data_ov006_02218728[],data_ov006_02218730[],data_ov006_02218740[],data_ov006_02218750[],data_ov006_02218764[];
-u64 func_020c54ac(void *);void func_020c5618(s32,u32,u32);
+u64 func_020c54ac(void *);void CreateBattleSaveSlotForPlayer(s32,u32,u32);
 void func_02019e64(void *,s32,void *,s32,s32);void SetBattleSlotRecord(s32,void *);
 void Configure3DSpriteLayer(s32,void *);void Clear3DSpriteLayer(s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,s32);void CloseNarcArchive(void);
 void LoadFileSectionToSpriteBuffer(void *,s32,s32,s32);void SetTileRectPalette(s32,s32,s32,s32);
 s32 LoadSpriteResource(s32,s32,s32,s32);void Clear3DSpriteLayerVram(s32);void LoadScenePanelPalette(s32);
-s32 GetUiColor(s32);void Load3DSpritePattern(s32,s32,s32,s32);void func_01ffa920(void *,void *);void Show3DSprite(void *);void Show3DSpriteSlide(void *);
+s32 GetUiColor(s32);void Load3DSpritePattern(s32,s32,s32,s32);void Set3DSpriteDrawCallback(void *,void *);void Show3DSprite(void *);void Show3DSpriteSlide(void *);
 u32 func_020c5464(s16);
 void func_ov006_02215010(void);
 u16 text[13];u16 *volatile p0,*volatile p1,*volatile p2,*volatile p3,*volatile p4,*volatile p5;
@@ -21,7 +21,7 @@ MenuSprite_02213e98 **sprites;void *savedEngine; s32 id,tile;u64 code;
 if(IsMapConfirmEnabled()){
 code=func_020c54ac(gMapCodeString);
 id=M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,8);
-func_020c5618(id,(u32)code,(u32)(code>>32));
+CreateBattleSaveSlotForPlayer(id,(u32)code,(u32)(code>>32));
 func_02019e64(text,0,gMapCodeString,0,0);
 SetBattleSlotRecord(id,text);M2C_FIELD(arg0,u8 *,0x34)=1;
 }
@@ -57,7 +57,7 @@ LoadSpriteResource(1,0,5,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x37c0);
 Load3DSpritePattern(0x3e40,1,GetUiColor(9),2);
 Load3DSpritePattern(0x4240,1,GetUiColor(12),2);
 gCur3DSpriteEngine=savedEngine;
-func_01ffa920(arg0,func_ov006_02215010);
+Set3DSpriteDrawCallback(arg0,func_ov006_02215010);
 sprites=M2C_FIELD(arg0,void **,0x3c);
 Show3DSprite(sprites[0]);Show3DSprite(sprites[1]);Show3DSprite(sprites[2]);Show3DSprite(sprites[3]);Show3DSprite(sprites[4]);Show3DSprite(sprites[5]);
 {MenuSprite_02213e98 **toggle=M2C_FIELD(arg0,void **,0x3c);
@@ -133,10 +133,13 @@ void func_ov006_02215050(void) {
     func_020c52d8();
 }
 
-void func_ov006_0221505c(void *arg0) {
-    M2C_UNK func_020c5664(s16);
-    func_020c5664(M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s16 *, 8));
-    M2C_FIELD(arg0, s8 *, 0x34) = 1;
+/* Erase the battle save the screen's selected slot summary (+0x4C, slot id at
+ * +8) names, then advance the screen to its next step. */
+void EraseSelectedBattleSave(void *screen) {
+    s32 DeleteBattleSaveSlot(s32 slot);
+
+    DeleteBattleSaveSlot(M2C_FIELD(M2C_FIELD(screen, void **, 0x4C), s16 *, 8));
+    M2C_FIELD(screen, s8 *, 0x34) = 1;
 }
 
 void func_ov006_0221507c(void **arg0) {

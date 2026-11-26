@@ -69,21 +69,23 @@ void func_020ccc94(void) {
 
 void CreateMapMenu(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212b424;
-    CreateSpriteFromClass(&data_0212b424, 7);
+    extern M2C_UNK gMapZoomClass;
+    CreateSpriteFromClass(&gMapZoomClass, 7);
 }
 
-u8 func_020cccb8(void) {
+/* Nonzero while the map-view zoom transition is running (an object of the map
+ * zoom sprite class exists). */
+u8 IsMapZoomRunning(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_0212b424;
-    u8 var_r0;
+    extern M2C_UNK gMapZoomClass;
+    u8 running;
 
-    if (FindObjectByClass(&data_0212b424) != 0) {
-        var_r0 = 1;
+    if (FindObjectByClass(&gMapZoomClass) != 0) {
+        running = 1;
     } else {
-        var_r0 = 0;
+        running = 0;
     }
-    return var_r0;
+    return running;
 }
 
 #pragma opt_strength_reduction off
@@ -320,7 +322,7 @@ void func_020cd544(s32 mapKind) {
     gMapConfig &= ~7;
     LoadSaveSlotProgress(mapKind);
     if (IsUnitAvailable(kind)) {
-        func_020d4ac8(kind);
+        CreateSavedBattleView(kind);
     } else {
         CreateSpriteFromClass(&gCampaignMapScreenClass, 7);
     }
@@ -373,16 +375,18 @@ s32 IsFastAnimation(void) {
     return 0;
 }
 
-u8 func_020cd6b0(void) {
+/* Whether the battlefield grid overlay is on: bit 14 of the packed game options
+ * is clear while the grid is drawn over the terrain. */
+u8 IsMapGridEnabled(void) {
     extern M2C_UNK gOptionBits;
-    u8 var_r0;
+    u8 enabled;
 
-    if (((u32) (M2C_FIELD(&gOptionBits, u16 *, 6) << 0x11) >> 0x1F) == 0) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(&gOptionBits, u16 *, GAME_OPTIONS_HALFWORD) << 0x11) >> 0x1F) == 0) {
+        enabled = 1;
     } else {
-        var_r0 = 0;
+        enabled = 0;
     }
-    return var_r0;
+    return enabled;
 }
 
 /* Whether the battle uses the campaign's rules: the map's battle-mode bits

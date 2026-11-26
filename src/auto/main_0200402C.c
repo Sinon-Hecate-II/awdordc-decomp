@@ -159,13 +159,13 @@ void GX_LoadOBJSub(M2C_UNK src, s32 offset, u32 size) {
  * `offset`: through the GX DMA channel when one is free and the copy is larger
  * than 28 bytes, on the CPU otherwise. */
 void GX_LoadBG0ScrSub(M2C_UNK src, s32 offset, u32 size) {
-    s32 func_020036b8();
+    s32 GX_GetBG0ScrPtrSub();
     M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     s32 base;
 
-    base = func_020036b8();
+    base = GX_GetBG0ScrPtrSub();
     if ((gGxDmaChannel != -1) && (size > 0x1CU)) {
         DmaCopy16(gGxDmaChannel, src, base + offset, size);
         return;
@@ -357,8 +357,8 @@ void GX_LoadBG3Char(M2C_UNK src, s32 offset, u32 size) {
  * bank grant, records it, and stores the VRAM base and offset the load copies
  * into, chosen from the banks the release gave back. */
 void GX_BeginLoadBGExtPltt(void) {
-s32 func_02003370(void); extern M2C_UNK gGxExtPlttLoad;
-s32 banks=func_02003370();
+s32 GX_ReleaseBankForBGExtPalette(void); extern M2C_UNK gGxExtPlttLoad;
+s32 banks=GX_ReleaseBankForBGExtPalette();
 M2C_FIELD(&gGxExtPlttLoad,s32 *,GX_EXTPLTT_LOAD_BG_GRANT)=banks;
 switch(banks) {
 case 0: break;
@@ -409,9 +409,9 @@ void GX_EndLoadBGExtPltt(void) {
  * grant and record it, then store the VRAM base the load copies into, chosen from
  * the bank the release gave back (bank F or bank G). */
 void GX_BeginLoadOBJExtPltt(void) {
-    s32 func_02003394();
+    s32 GX_ReleaseBankForObjExtPalette();
     extern M2C_UNK gGxExtPlttLoad;
-    s32 grant = func_02003394();
+    s32 grant = GX_ReleaseBankForObjExtPalette();
     M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, GX_EXTPLTT_LOAD_OBJ_GRANT) = (M2C_UNK)grant;
     if (grant == 0) {
         return;

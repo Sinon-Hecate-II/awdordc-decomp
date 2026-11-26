@@ -36,7 +36,7 @@ extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineMain;
 void MI_CpuCopy32(const void*,void*,u32);
 void Mb_StringCopy(void*,u32);
 int IsLeadByte(void*); int MeasureStringWidth(s32*);
-void func_020b269c(void);
+void PauseSpriteUpdate(void);
 void *CreateTextLayer(void*);
 void RenderTextLayerMessage(void*,s32,s32,u32);
 void GotoSpriteAnimationLabel(void*,s32);
@@ -61,7 +61,7 @@ glyph=M2C_FIELD(M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)+found,u32 *,MAPEDIT
 }else{return PlaySoundEffect(0x1001d);}
 }
 if(M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)>=16){
-SetTextIndex(editor,oldIndex);func_020b269c();
+SetTextIndex(editor,oldIndex);PauseSpriteUpdate();
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 dialog=CreateTextLayer(editor);RenderTextLayerMessage(dialog,2,0x2800,0x46000012);
 M2C_FIELD(dialog,u32 *,0x58)|=0x1000;
@@ -73,7 +73,7 @@ Mb_StringCopy(line+M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX),glyph);
 width=0;glyphPtr=line;
 if(*glyphPtr){do{if(!IsLeadByte(glyphPtr)&&width)width++;width+=MeasureStringWidth((s32*)glyphPtr);glyphPtr++;}while(*glyphPtr);}
 if(width>64){
-SetTextIndex(editor,oldIndex);func_020b269c();
+SetTextIndex(editor,oldIndex);PauseSpriteUpdate();
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 dialog=CreateTextLayer(editor);RenderTextLayerMessage(dialog,2,0x2800,0x46000013);
 M2C_FIELD(dialog,u32 *,0x58)|=0x1000;

@@ -450,10 +450,12 @@ void Qr2ReportErrorCallback(void) {
     ReportQr2Error();
 }
 
-void Qr2OnPublicAddress(s32 arg0, s16 arg1) {
-    void *GetConnection();
-    M2C_FIELD(GetConnection(), s32 *, 0x1C) = arg0;
-    M2C_FIELD(GetConnection(), s16 *, 0x1A) = arg1;
+/* QR2 public-address callback: remember the public IPv4 address and port that the
+ * QR2 master reported for this client's connection. */
+void Qr2OnPublicAddress(s32 address, s16 port) {
+    void *GetConnection(void);
+    M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PUBLIC_IP) = address;
+    M2C_FIELD(GetConnection(), s16 *, CONN_SESSION_PUBLIC_PORT) = port;
 }
 
 /* QR2 target notice: while the session is between states 1, 6 and 11, remember

@@ -31,34 +31,34 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     s32 GetOther3DSpriteScreenMode(M2C_UNK);
     M2C_UNK Set3DSpriteTargetMode(s32);
     M2C_UNK func_02094410(s32);
-    M2C_UNK func_02094a74();
+    M2C_UNK ShowScenePanelUnlessMessageBox();
     M2C_UNK CloseScenePanel();
     M2C_UNK SetScenePanelFaceUnlessMessageBox(s32, s32, s32);
     M2C_UNK SetScenePanelArmyUnlessMessageBox(s32, u8);
     M2C_UNK SetScenePanelModeUnlessMessageBox(s32, s32);
     M2C_UNK SetPanelFaceHiddenUnlessMessageBox(s32, M2C_UNK);
-    M2C_UNK func_02094ba0();
-    M2C_UNK func_02094bc0();
-    M2C_UNK func_02094be0();
+    M2C_UNK ClearScenePanelRowsUnlessMessageBox();
+    M2C_UNK ShowPanelFaceUnlessMessageBox();
+    M2C_UNK HidePanelFaceUnlessMessageBox();
     M2C_UNK CallScenePanelFaceOp(s32, s32, s32, s32);
     M2C_UNK SetScenePanelFaceSlotUnlessMessageBox(s32, s32, s32);
     M2C_UNK SetScenePanelFaceHiddenUnlessMessageBox(s32, M2C_UNK);
     M2C_UNK func_02094c90(s32, void *);
-    M2C_UNK func_02094d8c();
+    M2C_UNK HighlightScenePanelFaceUnlessMessageBox();
     M2C_UNK ClearScenePanelHighlight();
     M2C_UNK func_02094df0(M2C_UNK, s32, s32);
     M2C_UNK RecordsMenu_PlayTrack(s32);
-    M2C_UNK func_020952c8(s32);
+    M2C_UNK ScriptCmd_PlaySound(s32);
     M2C_UNK StartScriptedScreenTransition(M2C_UNK, M2C_UNK, s32);
     M2C_UNK CreateScreenTransitionWaitSprite();
-    M2C_UNK func_0209544c(s32);
+    M2C_UNK CreateScriptWaitSprite(s32);
     M2C_UNK CreateScreenSplitSprite(M2C_UNK, s32, void *);
     M2C_UNK ShowTelopText(u8 *);
     s32 IsTextWaitingForMessageBox(void *);
-    s32 func_020999e8(void *);
-    s32 func_02099a0c(void *);
+    s32 GetTextCursorCell(void *);
+    s32 GetTextLineStartCell(void *);
     M2C_UNK EndTextLine(void *);
-    M2C_UNK func_02099ac4(void *);
+    M2C_UNK EndTextLineAndMarkRedraw(void *);
     s32 IsLeadByte();
     s32 IsGlyphEscape(void *);
     M2C_UNK StopTextObject(void *);
@@ -127,7 +127,7 @@ loop_1:
         if (IsTextWaitingForMessageBox(arg0) == 0) {
             temp_r0_2 = CreateSpriteFromClass(&data_02102e74, 7);
             M2C_FIELD(temp_r0_2, s32 *, 0x4C) = arg1;
-            M2C_FIELD(temp_r0_2, s32 *, 0x3C) = func_02099a0c(arg0);
+            M2C_FIELD(temp_r0_2, s32 *, 0x3C) = GetTextLineStartCell(arg0);
             M2C_FIELD(temp_r0_2, s8 *, 0x40) = (s8) M2C_FIELD(arg0, s8 *, 0x57);
             M2C_FIELD(temp_r0_2, u16 *, 0x48) = (u16) M2C_FIELD(arg0, u16 *, 0x44);
             M2C_FIELD(temp_r0_2, s16 *, 0x4A) = (s16) M2C_FIELD(arg0, u8 *, 0x56);
@@ -144,7 +144,7 @@ loop_1:
         return 2;
     case 10:
     case 13:
-        if (func_020999e8(arg0) == 0) {
+        if (GetTextCursorCell(arg0) == 0) {
             return 0;
         }
         if (IsTextWaitingForMessageBox(arg0) == 0) {
@@ -158,20 +158,20 @@ loop_1:
         if (IsTextWaitingForMessageBox(arg0) == 0) {
             temp_r0_4 = CreateSpriteFromClass(&data_02102eac, 7);
             M2C_FIELD(temp_r0_4, s32 *, 0x4C) = arg1;
-            M2C_FIELD(temp_r0_4, s32 *, 0x3C) = func_02099a0c(arg0);
+            M2C_FIELD(temp_r0_4, s32 *, 0x3C) = GetTextLineStartCell(arg0);
             M2C_FIELD(temp_r0_4, s8 *, 0x40) = (s8) M2C_FIELD(arg0, s8 *, 0x57);
             M2C_FIELD(temp_r0_4, s16 *, 0x4A) = (s16) M2C_FIELD(arg0, u8 *, 0x56);
             M2C_FIELD(temp_r0_4, s32 *, 0x44) = (s32) M2C_FIELD(arg0, s32 *, 0x50);
             M2C_FIELD(arg0, u16 *, 0x4C) = (u16) M2C_FIELD(arg0, u16 *, 0x4E);
             M2C_FIELD(arg0, u8 *, 0x55) = 2U;
-            func_02099ac4(arg0);
+            EndTextLineAndMarkRedraw(arg0);
         }
         Text_SkipLineEnds(arg0);
         return 2;
     case 4:
         if (IsTextWaitingForMessageBox(arg0) == 0) {
             M2C_FIELD(arg0, u16 *, 0x4C) = (u16) M2C_FIELD(arg0, u16 *, 0x4E);
-            func_02099ac4(arg0);
+            EndTextLineAndMarkRedraw(arg0);
         }
         Text_AdvanceScript(arg0);
         return 2;
@@ -182,7 +182,7 @@ loop_1:
         if (IsTextWaitingForMessageBox(arg0) != 0) {
             return 3;
         }
-        func_0209544c(temp_r4);
+        CreateScriptWaitSprite(temp_r4);
         return 2;
     case 12:
         if (IsTextWaitingForMessageBox(arg0) == 0) {
@@ -279,7 +279,7 @@ loop_1:
                     Text_SkipLineEnds(arg0);
                     break;
                 case 10:
-                    func_02094a74();
+                    ShowScenePanelUnlessMessageBox();
                     Text_AdvanceScript(arg0);
                     Text_AdvanceScript(arg0);
                     Text_SkipLineEnds(arg0);
@@ -291,7 +291,7 @@ loop_1:
                     Text_SkipLineEnds(arg0);
                     break;
                 case 14:
-                    func_02094ba0();
+                    ClearScenePanelRowsUnlessMessageBox();
                     Text_AdvanceScript(arg0);
                     Text_AdvanceScript(arg0);
                     Text_SkipLineEnds(arg0);
@@ -353,19 +353,19 @@ loop_1:
                     Text_SkipLineEnds(arg0);
                     break;
                 case 4:
-                    func_02094bc0();
+                    ShowPanelFaceUnlessMessageBox();
                     Text_AdvanceScript(arg0);
                     Text_AdvanceScript(arg0);
                     Text_SkipLineEnds(arg0);
                     break;
                 case 5:
-                    func_02094be0();
+                    HidePanelFaceUnlessMessageBox();
                     Text_AdvanceScript(arg0);
                     Text_AdvanceScript(arg0);
                     Text_SkipLineEnds(arg0);
                     break;
                 case 6:
-                    func_02094d8c();
+                    HighlightScenePanelFaceUnlessMessageBox();
                     Text_AdvanceScript(arg0);
                     Text_AdvanceScript(arg0);
                     Text_SkipLineEnds(arg0);
@@ -478,7 +478,7 @@ loop_1:
         Text_SkipLineEnds(arg0);
         goto return_two;
     case 25:
-        func_020952c8(M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
+        ScriptCmd_PlaySound(M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
         Text_AdvanceScript(arg0);
         Text_SkipLineEnds(arg0);
         return 2;

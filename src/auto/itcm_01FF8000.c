@@ -188,9 +188,11 @@ void DmaStartTransferLockedFlushed(s32 channel, s32 src, s32 dst, s32 control) {
     OS_RestoreInterrupts(state);
 }
 
-void DmaStartTransfer(s32 a,s32 b,s32 c,s32 d) {
- volatile u32 *p=(volatile u32 *)(0x40000b0+a*12);
- p[0]=b;p[1]=c;p[2]=d;
+/* Start a DMA transfer on `channel` without touching the interrupt state: store the
+ * source, destination and control words in the channel's three registers. */
+void DmaStartTransfer(s32 channel, s32 src, s32 dst, s32 control) {
+ volatile u32 *regs=(volatile u32 *)DMA_CHANNEL_BASE(channel);
+ regs[0]=src;regs[1]=dst;regs[2]=control;
 }
 
 #pragma optimization_level 2

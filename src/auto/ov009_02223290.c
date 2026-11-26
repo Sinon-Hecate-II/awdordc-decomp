@@ -368,14 +368,20 @@ s32 SendLinkResetCommand(void) {
     return 0;
 }
 
-void HandleLinkResetResult(void *arg0) {
-    M2C_UNK SetLinkPhase(M2C_UNK);
+/* Completion handler of the link reset command: a nonzero task state is passed on
+ * as the pending link event, otherwise the link moves on to the READY phase so the
+ * next setup step can start. */
+void HandleLinkResetResult(void *event) {
+    s32 SetLinkPhase(M2C_UNK);
     M2C_UNK SignalLinkEvent();
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
-        SignalLinkEvent();
+    u16 state;
+
+    state = M2C_FIELD(event, u16 *, LINK_EVENT_STATE);
+    if (state != 0) {
+        SignalLinkEvent(state);
         return;
     }
-    SetLinkPhase(1);
+    SetLinkPhase(LINK_PHASE_READY);
 }
 
 /* Tear the link's session down before it is set up again: put the link in
@@ -394,10 +400,20 @@ s32 TeardownLinkAndQueueSetup(void) {
     return 0;
 }
 
-void HandleTeardownSetupResult(void *arg0) {
- s32 QueueLinkSetupCommand(void); M2C_UNK RestartLinkSession();
- if(M2C_FIELD(arg0,u16 *,2)!=0) {SignalLinkEvent();RestartLinkSession();return;}
- if(QueueLinkSetupCommand()!=0) return;
+/* Completion of the WFC teardown command posted by TeardownLinkAndQueueSetup: a
+ * failed teardown (a nonzero status) signals the link event and restarts the
+ * session, a good one queues the link's next setup command. */
+void HandleTeardownSetupResult(void *result) {
+    s32 QueueLinkSetupCommand(void);
+
+    if (M2C_FIELD(result, u16 *, LINK_EVENT_STATE) != 0) {
+        SignalLinkEvent();
+        RestartLinkSession();
+        return;
+    }
+    if (QueueLinkSetupCommand() != 0) {
+        return;
+    }
 }
 
 /* Queue the link's next setup command, a WFC command whose completion callback
@@ -415,14 +431,20 @@ s32 QueueLinkSetupCommand(void) {
     return 0;
 }
 
-void FinishLinkSetupCommand(void *arg0) {
-    M2C_UNK SetLinkPhase(M2C_UNK);
+/* Completion of the link's setup command: a failed status (a nonzero task
+ * state) raises the pending link event, otherwise the link moves on to the
+ * READY phase. */
+void FinishLinkSetupCommand(void *event) {
+    s32 SetLinkPhase(M2C_UNK);
     M2C_UNK SignalLinkEvent();
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
-        SignalLinkEvent();
+    u16 state;
+
+    state = M2C_FIELD(event, u16 *, LINK_EVENT_STATE);
+    if (state != 0) {
+        SignalLinkEvent(state);
         return;
     }
-    SetLinkPhase(1);
+    SetLinkPhase(LINK_PHASE_READY);
 }
 
 /* Completion callback of the link-end task: a failed status aborts the link,
@@ -491,14 +513,17 @@ s32 SetLinkDownloadMode(s32 download) {
     return 1;
 }
 #pragma opt_common_subs reset
-void HandleLinkDownloadModeEvent(void *arg0) {
+/* Completion of the WFC download-mode command submitted by SetLinkDownloadMode:
+ * a nonzero task status is passed on as the link event and moves the link to
+ * the error phase. */
+void HandleLinkDownloadModeEvent(void *event) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     M2C_UNK SignalLinkEvent();
-    if (M2C_FIELD(arg0, u16 *, 2) == 0) {
+    if (M2C_FIELD(event, u16 *, LINK_EVENT_STATE) == 0) {
         return;
     }
     SignalLinkEvent();
-    SetLinkPhase(8);
+    SetLinkPhase(LINK_PHASE_ERROR);
 }
 
 /* Submit the link's download-play data block: send the payload with the transfer
@@ -512,13 +537,15 @@ s32 SubmitLinkDownloadData(void) {
  switch(result) {case LINK_TASK_QUEUED: case 3: break; default: SignalLinkError();return 0;} return 1;
 }
 
-void HandleLinkDownloadDataEvent(void *arg0) {
-    u16 temp_r0;
+/* Download Play data event: a status other than 0 or 1 means the transfer
+ * failed, so signal it and move on to the error phase. */
+void HandleLinkDownloadDataEvent(void *event) {
+    u16 status;
 
-    temp_r0 = M2C_FIELD(arg0, u16 *, 2);
-    if ((temp_r0 != 0) && (temp_r0 != 1)) {
+    status = M2C_FIELD(event, u16 *, LINK_EVENT_STATE);
+    if ((status != 0) && (status != 1)) {
         SignalLinkEvent();
-        SetLinkPhase(8);
+        SetLinkPhase(LINK_PHASE_ERROR);
     }
 }
 
@@ -537,12 +564,15 @@ s32 AddLinkEventListener(void) {
     return 0;
 }
 
-void HandleLinkEventsAdded(void *arg0) {
-    if (M2C_FIELD(arg0, u16 *, 2) == 0) {
+/* Completion of the WFC event-notification install command (command 0x23, mode 0)
+ * queued by AddLinkEventListener: a nonzero task status is passed on as the link
+ * event and moves the link to the error phase. */
+void HandleLinkEventsAdded(void *event) {
+    if (M2C_FIELD(event, u16 *, LINK_EVENT_STATE) == 0) {
         return;
     }
     SignalLinkEvent();
-    SetLinkPhase(8);
+    SetLinkPhase(LINK_PHASE_ERROR);
 }
 
 /* Drop one user of the link's event notifications: decrement the listener count
@@ -560,12 +590,15 @@ s32 RemoveLinkEventListener(void) {
     return 0;
 }
 
-void HandleLinkEventsRemoved(void *arg0) {
-    if (M2C_FIELD(arg0, u16 *, 2) == 0) {
+/* Completion of the WFC event-notification uninstall command (command 0x23, mode 1)
+ * queued by RemoveLinkEventListener: a nonzero task status is passed on as the link
+ * event and moves the link to the error phase. */
+void HandleLinkEventsRemoved(void *event) {
+    if (M2C_FIELD(event, u16 *, LINK_EVENT_STATE) == 0) {
         return;
     }
     SignalLinkEvent();
-    SetLinkPhase(8);
+    SetLinkPhase(LINK_PHASE_ERROR);
 }
 
 void SetLinkDownloadCode(s32 a) { extern M2C_UNK gLinkState; M2C_FIELD(&gLinkState,s32 *,0x108)=a; }
@@ -729,11 +762,11 @@ s32 func_ov009_022241c4(s32 arg0) {
 }
 
 s32 func_ov009_022241dc(void) {
- void func_02007724(void *); void func_ov009_02222430(u32); s32 AnnounceNextLinkPlayer(s32);
+ void func_02007724(void *); void LinkRngSeed(u32); s32 AnnounceNextLinkPlayer(s32);
  extern M2C_UNK data_ov009_022268e0;
  u16 mac[3]; s32 result;
  func_02007724(mac);
- func_ov009_02222430(*(u32 *)0x027FFC3C+mac[0]+mac[1]+mac[2]);
+ LinkRngSeed(*(u32 *)0x027FFC3C+mac[0]+mac[1]+mac[2]);
  M2C_FIELD(&data_ov009_022268e0,u16 *,2)=0;
  M2C_FIELD(&data_ov009_022268e0,u16 *,10)=101;
  func_ov009_02221320(3);

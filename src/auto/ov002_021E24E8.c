@@ -145,7 +145,7 @@ M2C_FIELD(tmpl,void **,FX_TEMPLATE_NEXT)=link;
 }
 M2C_FIELD(tmpl,void **,FX_TEMPLATE_CHILD)=((node=MemAlloc(0x54)) ? init_021e2848(node) : node);
 node=M2C_FIELD(tmpl,void **,FX_TEMPLATE_CHILD);
-func_ov002_021e16bc(node,M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_PALETTE),M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_TABLE_INDEX));
+InitEffectNodeAppearance(node,M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_PALETTE),M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_TABLE_INDEX));
 SetEffectNodeTranslation(node,0,0,(s16)side);
 ((M2C_UNK (*)(void *,s32,u16,u8,s32))SetEffectNodeResourceCore)(node,M2C_FIELD(tmpl,s32 *,FX_TEMPLATE_SOURCE_ID),M2C_FIELD(tmpl,u16 *,FX_TEMPLATE_SHAPE),M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_KIND),variant);
 M2C_FIELD(node,s32 *,FX_NODE_GRAPHIC_X)=M2C_FIELD(tmpl,s32 *,FX_TEMPLATE_X);
@@ -185,30 +185,38 @@ s32 func_ov002_021e2994(void) {
  * the selected node flashes for `frames` ticks. */
 void SetEffectNodePaletteFlash(void *node, s32 frames) {
     void SetEffectNodeFlash(s32, s32, s32);
-    extern M2C_UNK data_ov002_021f312c;
+    extern M2C_UNK gUnitViewSlots;
     extern u8 data_ov002_021f3046;
     s32 bank = M2C_FIELD(node, u8 *, FX_NODE_PALETTE);
     s32 row = M2C_FIELD(node, u8 *, FX_NODE_TABLE_INDEX);
-    SetEffectNodeFlash(M2C_FIELD((u8 *)&data_ov002_021f312c + bank * 44, s32 *, row * 4), frames, (&data_ov002_021f3046 + bank * 100)[row * 8]);
+    SetEffectNodeFlash(M2C_FIELD((u8 *)&gUnitViewSlots + bank * 44, s32 *, row * 4), frames, (&data_ov002_021f3046 + bank * 100)[row * 8]);
 }
 
-void func_ov002_021e29d8(void *arg0) {
-    M2C_UNK func_ov002_021e88a0(s32);
+/* Effect-script command 18: stop the screenshake of the unit view the effect
+ * node's palette/effect bank selects. */
+void Ov002_ClearEffectNodeUnitViewShake(void *node) {
+    void StopUnitViewShake(void *);
     extern M2C_UNK gUnitViews;
-    func_ov002_021e88a0((M2C_FIELD(arg0, u8 *, 0x53) * 0x2C) + (s32) &gUnitViews);
+    StopUnitViewShake((void *)((M2C_FIELD(node, u8 *, FX_NODE_PALETTE) * UNIT_VIEW_SIZE) + (s32) &gUnitViews));
 }
 
-void func_ov002_021e29f8(void *arg0,s32 a,s32 b) {
- void func_ov002_021ea4bc(s32,s32,s32);
- extern M2C_UNK data_ov002_021f312c;
- func_ov002_021ea4bc(M2C_FIELD((u8 *)&data_ov002_021f312c+M2C_FIELD(arg0,u8 *,0x53)*44,s32 *,M2C_FIELD(arg0,u8 *,0x47)*4),a,b);
+/* Effect-script action (opcode 26): create the effect disc of the unit model
+ * standing in the node's side's model slot of the battle unit views: the node's
+ * FX_NODE_PALETTE picks the side and FX_NODE_TABLE_INDEX the model slot, and the
+ * disc sits (x, y) pixels from the model's default position. */
+void Ov002_CreateSlotEffectDisc(void *node, s32 x, s32 y) {
+    void func_ov002_021ea4bc(void *, s32, s32);
+    extern M2C_UNK gUnitViewSlots;
+    s32 side = M2C_FIELD(node, u8 *, FX_NODE_PALETTE);
+    s32 slot = M2C_FIELD(node, u8 *, FX_NODE_TABLE_INDEX);
+    func_ov002_021ea4bc(M2C_FIELD((u8 *)&gUnitViewSlots + side * UNIT_VIEW_SIZE, void **, slot * 4), x, y);
 }
 
 /* Reset an effect node's script selection and clear its motion, scale ramp and
  * screen-drift state. */
 void InitEffectNode(void *node) {
-    M2C_UNK func_ov002_021e16bc();
-    func_ov002_021e16bc();
+    M2C_UNK InitEffectNodeAppearance();
+    InitEffectNodeAppearance();
     M2C_FIELD(node, s32 *, FX_NODE_X_FIXED) = 0;
     M2C_FIELD(node, s32 *, FX_NODE_Y_FIXED) = 0;
     M2C_FIELD(node, s32 *, FX_NODE_VX) = 0;
@@ -228,7 +236,15 @@ void InitEffectNode(void *node) {
     M2C_FIELD(node, s16 *, FX_NODE_MODE_86) = 0;
 }
 
-void SetEffectNodeResource(void *a,s32 b,s16 c,s8 d,u8 e){M2C_UNK SetEffectNodeResourceCore(void *,s32,s16,s8,u8);SetEffectNodeResourceCore(a,b,c,d,e);M2C_FIELD(a,s32 *,0x6c)=0;}
+/* Give an effect node its resource, shape, kind and starting script, then start
+ * its lifetime counter at 0 so the node is stepped from the next frame on (a
+ * lifetime of -1 leaves it finished). */
+void SetEffectNodeResource(void *node, s32 resource, s16 shape, s8 kind, u8 script) {
+    M2C_UNK SetEffectNodeResourceCore(void *, s32, s16, s8, u8);
+
+    SetEffectNodeResourceCore(node, resource, shape, kind, script);
+    M2C_FIELD(node, s32 *, FX_NODE_LIFETIME) = 0;
+}
 
 /* Per-frame update of an effect node.  While it is alive, advance its lifetime
  * and integrate its motion (position += velocity, velocity += acceleration, scale

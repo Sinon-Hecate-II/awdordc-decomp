@@ -303,8 +303,11 @@ node=M2C_FIELD(node,void **,104);
 OS_RestoreInterrupts(saved);
 }
 
-s32 IsValidIpAddressPair(s32 arg0, s32 arg1) {
-    if ((arg0 != 0) && (arg0 != -1) && (arg1 != 0) && (arg1 != -1)) {
+/* Whether both IPv4 addresses are usable: neither the unspecified address
+ * (0.0.0.0) nor the limited broadcast address (255.255.255.255). */
+s32 IsValidIpAddressPair(s32 srcAddress, s32 dstAddress) {
+    if ((srcAddress != IP_UNSPECIFIED) && (srcAddress != IP_BROADCAST) &&
+        (dstAddress != IP_UNSPECIFIED) && (dstAddress != IP_BROADCAST)) {
         return 1;
     }
     return 0;

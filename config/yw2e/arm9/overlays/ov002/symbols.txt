@@ -7,7 +7,7 @@ func_ov002_021e15e0 kind:function(arm,size=0x14) addr:0x021e15e0
 CreateBattleSceneSprite kind:function(arm,size=0x30) addr:0x021e15f4
 func_ov002_021e1624 kind:function(arm,size=0x14) addr:0x021e1624
 ResetEffectNodeScriptState kind:function(arm,size=0x84) addr:0x021e1638
-func_ov002_021e16bc kind:function(arm,size=0x20) addr:0x021e16bc
+InitEffectNodeAppearance kind:function(arm,size=0x20) addr:0x021e16bc
 SetEffectNodeResourceCore kind:function(arm,size=0x60) addr:0x021e16dc
 SetEffectNodeScript kind:function(arm,size=0x44) addr:0x021e173c
 ClearEffectNode kind:function(arm,size=0x10) addr:0x021e1780
@@ -33,8 +33,8 @@ func_ov002_021e298c kind:function(arm,size=0x4) addr:0x021e298c
 func_ov002_021e2990 kind:function(arm,size=0x4) addr:0x021e2990
 func_ov002_021e2994 kind:function(arm,size=0x8) addr:0x021e2994
 SetEffectNodePaletteFlash kind:function(arm,size=0x3c) addr:0x021e299c
-func_ov002_021e29d8 kind:function(arm,size=0x20) addr:0x021e29d8
-func_ov002_021e29f8 kind:function(arm,size=0x28) addr:0x021e29f8
+Ov002_ClearEffectNodeUnitViewShake kind:function(arm,size=0x20) addr:0x021e29d8
+Ov002_CreateSlotEffectDisc kind:function(arm,size=0x28) addr:0x021e29f8
 InitEffectNode kind:function(arm,size=0x60) addr:0x021e2a20
 SetEffectNodeResource kind:function(arm,size=0x28) addr:0x021e2a80
 UpdateEffectNode kind:function(arm,size=0x1a0) addr:0x021e2aa8
@@ -110,12 +110,12 @@ Ov002_SelectUnitSetVariantAlt kind:function(arm,size=0x50) addr:0x021e7a14
 SetupPlayerSettings kind:function(arm,size=0x220) addr:0x021e7a64
 SetDemoBattleDefaults kind:function(arm,size=0xb0) addr:0x021e7c84
 SetBattleUnitAnimation kind:function(arm,size=0x2b8) addr:0x021e7d34
-func_ov002_021e7fec kind:function(arm,size=0x28) addr:0x021e7fec
-func_ov002_021e8014 kind:function(arm,size=0x24) addr:0x021e8014
-func_ov002_021e8038 kind:function(arm,size=0x24) addr:0x021e8038
-func_ov002_021e805c kind:function(arm,size=0x24) addr:0x021e805c
-func_ov002_021e8080 kind:function(arm,size=0x24) addr:0x021e8080
-func_ov002_021e80a4 kind:function(arm,size=0x24) addr:0x021e80a4
+IsSpecialBattleUnitKind kind:function(arm,size=0x28) addr:0x021e7fec
+IsSideUnitSetType2 kind:function(arm,size=0x24) addr:0x021e8014
+IsSideUnitSetKind3 kind:function(arm,size=0x24) addr:0x021e8038
+IsUnitSetDefinitionType1 kind:function(arm,size=0x24) addr:0x021e805c
+IsUnitSetDefinitionType2 kind:function(arm,size=0x24) addr:0x021e8080
+IsUnitSetDefinitionType3 kind:function(arm,size=0x24) addr:0x021e80a4
 func_ov002_021e80c8 kind:function(arm,size=0x3a8) addr:0x021e80c8
 func_ov002_021e8470 kind:function(arm,size=0x140) addr:0x021e8470
 SetupBattleAnimation kind:function(arm,size=0x38) addr:0x021e85b0
@@ -123,7 +123,7 @@ InitBattleUnitView kind:function(arm,size=0x110) addr:0x021e85e8
 GetUnitPlacementZOffset kind:function(arm,size=0x40) addr:0x021e86f8
 func_ov002_021e8738 kind:function(arm,size=0x160) addr:0x021e8738
 func_ov002_021e8898 kind:function(arm,size=0x8) addr:0x021e8898
-func_ov002_021e88a0 kind:function(arm,size=0xc) addr:0x021e88a0
+StopUnitViewShake kind:function(arm,size=0xc) addr:0x021e88a0
 StepUnitViewShake kind:function(arm,size=0x68) addr:0x021e88ac
 StepUnitView kind:function(arm,size=0x70) addr:0x021e8914
 func_ov002_021e8984 kind:function(arm,size=0x320) addr:0x021e8984
@@ -1280,6 +1280,6 @@ data_ov002_021f3106 kind:bss addr:0x021f3106
 data_ov002_021f3107 kind:bss addr:0x021f3107
 data_ov002_021f3108 kind:bss addr:0x021f3108
 gUnitViews kind:bss addr:0x021f3124
-data_ov002_021f312c kind:bss addr:0x021f312c
+gUnitViewSlots kind:bss addr:0x021f312c
 gEffectHasVariants kind:bss addr:0x021f314e
 gUnitViewsP2 kind:bss addr:0x021f3150

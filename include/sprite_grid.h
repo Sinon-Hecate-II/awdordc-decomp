@@ -19,6 +19,9 @@ typedef struct SpriteCell {
 /* SpriteCell::tile, as an offset: the id a cell list points cells by. */
 #define SPRITE_CELL_TILE 0x08
 
+/* SpriteCell::attr bit: the cell may become the list's current cell. */
+#define SPRITE_CELL_ATTR_SELECTABLE 0x04
+
 /* Fields of a fixed-capacity block of SpriteCell records. */
 #define SPRITE_CELL_LIST_CAPACITY 0x10 /* u16 cells in the block */
 #define SPRITE_CELL_LIST_USED     0x12 /* u8 cells filled */

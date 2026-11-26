@@ -349,11 +349,11 @@ void func_ov001_02189ad0(void) {
     void CloseFileRequest(void *);
     void InitArchive(void *);
     s32 RegisterArchiveName(void *, void *, s32);
-    void SetArchiveProc(void *, s32, s32);
+    void SetArchiveCallback(void *, s32, s32);
     s32 ConfigureArchiveLayout(void *, s32, s32, s32, s32, s32, void *, void *);
     s32 LoadArchiveIndex(void *, s32, s32);
     s32 Ov001_QueueCreateFromRange(s32, s32, s32);
-    void StringFormatAlt(void *, void *, ...);
+    void StringFormatUnbounded(void *, void *, ...);
     void SetFileDirectory(void *);
     extern void *gOv001UtilityState;
     extern char data_ov001_02191794[];
@@ -384,7 +384,7 @@ void func_ov001_02189ad0(void) {
     if (!RegisterArchiveName((u8 *)gOv001UtilityState + 0x88, data_ov001_0218fd04, 3)) {
         SystemHalt();
     }
-    SetArchiveProc((u8 *)gOv001UtilityState + 0x88, (s32)Ov001_UtilityArchiveCommand, 0x602);
+    SetArchiveCallback((u8 *)gOv001UtilityState + 0x88, (s32)Ov001_UtilityArchiveCommand, 0x602);
     if (!ConfigureArchiveLayout((u8 *)gOv001UtilityState + 0x88, fileSize, lo[0], lo[1], hi[0], hi[1], (void *)Ov001_UtilityArchiveRead, (void *)func_ov001_02189dc0)) {
         SystemHalt();
     }
@@ -393,7 +393,7 @@ void func_ov001_02189ad0(void) {
     *(void **)gOv001UtilityState = data;
     LoadArchiveIndex((u8 *)gOv001UtilityState + 0x88, (s32)*(void **)gOv001UtilityState, dataSize);
     M2C_FIELD(gOv001UtilityState, s32 *, 0x84) = (s32)Ov001_QueueCreateFromRange(0x20, (s32)((u8 *)gOv001UtilityState + 4), 4);
-    StringFormatAlt(dirName, data_ov001_021917ac, data_ov001_0218fd04);
+    StringFormatUnbounded(dirName, data_ov001_021917ac, data_ov001_0218fd04);
     SetFileDirectory(dirName);
 }
 

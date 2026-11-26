@@ -206,12 +206,16 @@ void SpawnUnitFlareEffect(void *task) {
     }
 }
 
-void CreateUnitFlareSprite(s32 arg0) {
+/* Spawn the unit-flare effect object that follows `unit`: the object remembers the
+ * unit in its +0x5C field (the unit its first update, SpawnUnitFlareEffect, will
+ * draw the flare over) and the map view pans onto the unit. */
+void CreateUnitFlareSprite(void *unit) {
     void *CreateSpriteObject();
-    M2C_UNK PanMapViewToUnit(s32);
+    M2C_UNK PanMapViewToUnit(void *);
     extern M2C_UNK gUnitFlareSpriteClass;
-    M2C_FIELD(CreateSpriteObject(&gUnitFlareSpriteClass), s32 *, 0x5C) = arg0;
-    PanMapViewToUnit(arg0);
+
+    M2C_FIELD(CreateSpriteObject(&gUnitFlareSpriteClass), s32 *, 0x5C) = (s32) unit;
+    PanMapViewToUnit(unit);
 }
 
 #pragma opt_propagation off

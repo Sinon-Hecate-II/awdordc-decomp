@@ -59,10 +59,12 @@ void MapEditor_PaletteOpenStep(void *driver) {
     Sprite_ResumeAnimation(driver);
 }
 
-void func_ov007_02219bb4(M2C_UNK arg0, s32 arg1) {
+/* Create the palette panel's animation driver object under `parent`, carrying the
+ * value (the colour the panel cursor picked) its palette step applies. */
+void CreatePaletteColorDriver(M2C_UNK parent, s32 value) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_0221fe48;
-    M2C_FIELD(CreateSpriteObject(&data_ov007_0221fe48, arg0), s32 *, 0x5C) = arg1;
+    extern M2C_UNK gPaletteColorDriverClass;
+    M2C_FIELD(CreateSpriteObject(&gPaletteColorDriverClass, parent), s32 *, OV007_PANEL_ANIM_VALUE) = value;
 }
 
 /* Loads each of the four players' army-colour palettes from the player palette

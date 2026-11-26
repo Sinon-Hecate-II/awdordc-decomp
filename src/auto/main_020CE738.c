@@ -98,7 +98,7 @@ void ResetBattleMap(void) {
     void RefreshMapCursorCellCache(void);
     void ResetMapViewCamera(void *);
     void ResetMapViewHold(void);
-    void func_020d47b0(void);
+    void ClearUnitMoveActiveFlag(void);
     void ResetMapUnits(void);
     void ResetMapOrders(void);
     void MI_CpuFill32(s32, void *, s32);
@@ -129,7 +129,7 @@ void ResetBattleMap(void) {
     *(u8 *)((u8 *)*gCurrentMap + 0x52af) = 0;
 
     ResetMapViewHold();
-    func_020d47b0();
+    ClearUnitMoveActiveFlag();
 
     gLinkAiCommandStage = 0;
     *(u16 *)((u8 *)*gCurrentMap + 0x52b0) = 4;
@@ -145,7 +145,7 @@ void ResetBattleMap(void) {
     ClearMapRenderBuffers();
 }
 
-void func_020ced08(void) {
+void InitDestructibleTerrain(void) {
     extern void **gCurrentMap;
     extern s8 data_ov000_021b56c0[];
     extern u16 data_ov000_021aeee8[];
@@ -216,17 +216,20 @@ void func_020ced08(void) {
     } while (counter < 99);
 }
 
-void func_020ceea8(void) {
+/* Battle start: initialise the players and their units, begin the first player's
+ * turn, re-apply the map's destructible terrain, clear the order queue and reset
+ * the terrain hit points. */
+void InitBattleState(void) {
     M2C_UNK ResetTerrainHitPoints();
     M2C_UNK func_020a4d58();
-    void func_020ced08(void);
+    void InitDestructibleTerrain(void);
     M2C_UNK AdvancePlayerTurn();
     M2C_UNK InitMapPlayers();
     M2C_UNK InitPlayerStates();
     InitPlayerStates();
     InitMapPlayers();
     AdvancePlayerTurn();
-    func_020ced08();
+    InitDestructibleTerrain();
     func_020a4d58();
     ResetTerrainHitPoints();
 }
@@ -461,11 +464,17 @@ void MapCursor_StepTowardTarget(s32 cursorType) {
     }
 }
 
-void MapView_SetCursorPosition(s32 arg0,s32 arg1,s32 arg2) {
-extern void **gCurrentMap;
-void (*callback)(s32,s32,s32);
-callback=M2C_FIELD(gCurrentMap[1],void (**)(s32,s32,s32),8);
-if(!callback)return;
-callback(arg0,arg1,arg2);
+/* Place the map cursor at the 1/16-cell position (`x`, `y`) through the map-view
+ * controller's cursor callback, when it has one; `kind` selects which cursor
+ * (MAP_CURSOR_KIND_*). */
+void MapView_SetCursorPosition(s16 x, s16 y, s32 kind) {
+    extern void **gCurrentMap;
+    void (*cursorCallback)(s16, s16, s32);
+
+    cursorCallback = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16, s16, s32), MAPVIEW_CURSOR_CB);
+    if (cursorCallback == NULL) {
+        return;
+    }
+    cursorCallback(x, y, kind);
 }
 

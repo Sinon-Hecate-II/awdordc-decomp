@@ -1,5 +1,6 @@
 /* 18 functions from 0x020E24C0 to 0x020E34BC (main), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 typedef struct { u8 low:4; u8 high:4; } MenuNibble;
 typedef struct { u32 x:9; u32 y:9; u32 layer:8; u32 rest:6; } MenuSpriteFlags;
 extern M2C_UNK data_0212c6a8, gPlayerLabelVTable, gSpriteDesc64x32, data_0212c5c4;
@@ -284,10 +285,14 @@ u8 GetLanguage(void) {
     return gLanguage;
 }
 
-void SetLanguage(s32 arg0) {
- extern u8 gLanguage;
- gLanguage=1;
- if(arg0==1 || arg0==2 || arg0==5)gLanguage=arg0;
+/* Set the game's language from `language`: only English, French and Spanish
+ * ship with this version, so any other value keeps the default, English. */
+void SetLanguage(s32 language) {
+    extern u8 gLanguage;
+    gLanguage = LANGUAGE_ENGLISH;
+    if (language == LANGUAGE_ENGLISH || language == LANGUAGE_FRENCH || language == LANGUAGE_SPANISH) {
+        gLanguage = language;
+    }
 }
 
 /* Format `fileName` into the shared name buffer with the prefix of the console's
@@ -347,10 +352,16 @@ M2C_UNK *GetLocalizedFileNameDefault(s32 fileName) {
     return localizedName;
 }
 
+/* Clear the name/character graphic buffer slots; the buffers themselves are
+ * released by FreeNameGraphicFiles. */
 void ClearNameGraphicFiles(void) {
- extern s32 gNameGraphicFiles[];
- s32 i=0;
- do { gNameGraphicFiles[i]=0; i++; } while(i<5);
+    extern s32 gNameGraphicFiles[];
+    s32 i = 0;
+
+    do {
+        gNameGraphicFiles[i] = 0;
+        i++;
+    } while (i < NAME_GRAPHIC_FILE_COUNT);
 }
 
 /* Reload the name/character graphics: the two standalone .cg files
@@ -417,12 +428,17 @@ void InitGameHeap(void) {
     SetHeapFlags(heap, 0);
 }
 
-u16 func_020e349c(void) {
- u16 a,b;
- a=*(volatile u16*)0x04000208;
- *(volatile u16*)0x04000208=0;
- b=*(volatile u16*)0x04000208;
- *(volatile u16*)0x04000208=a;
- return b;
+/* Temporarily clear the interrupt master enable (REG_IME), read its value back
+ * while cleared, restore the saved value and return the value read while
+ * interrupts were disabled.  Called after resource loads/unloads and at the end
+ * of boot init. */
+u16 ClearAndRestoreInterrupts(void) {
+    u16 saved;
+    u16 cleared;
+    saved = REG_IME;
+    REG_IME = 0;
+    cleared = REG_IME;
+    REG_IME = saved;
+    return cleared;
 }
 

@@ -1,5 +1,6 @@
 /* 10 functions from 0x0221D818 to 0x0221E5A0 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 #define RESULT_ATTR(tile, palette) ((u16)((((tile) >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17) >> 30)) & 1023) | (palette)))
 
 #pragma opt_peephole off
@@ -14,7 +15,7 @@ s32 func_020cfb94(void);
 void DivMod(s32,s32,s32 *,s32 *);
 s32 Modulo(s32,s32);
 void *GetDisplayUnitKind(s32);
-s32 GetPlayerUnitKindCount(s32,void *);
+s32 GetPlayerUnitKindBuiltCount(s32,void *);
 s32 GetPlayerUnitKindLossCount(s32,void *);
 s32 GetPlayerUnitSpriteTile(s32,void *);
 void *saved,*saved2;
@@ -92,7 +93,7 @@ x+=56;q++;tile+=8;i++;
 ox=0;oy=-2;mode=M2C_FIELD(arg0,u8 *,0x58)?0x400:0;
 for(i=0;GetDisplayUnitKind(i);i++,ox+=64){
 if(!Modulo(i,4)){oy+=20;ox=8;}
-if(M2C_FIELD(arg0,s32 *,0x54)==0)score=GetPlayerUnitKindCount(M2C_FIELD(arg0,s32 *,0x50)+1,GetDisplayUnitKind(i));
+if(M2C_FIELD(arg0,s32 *,0x54)==0)score=GetPlayerUnitKindBuiltCount(M2C_FIELD(arg0,s32 *,0x50)+1,GetDisplayUnitKind(i));
 else score=GetPlayerUnitKindLossCount(M2C_FIELD(arg0,s32 *,0x50)+1,GetDisplayUnitKind(i));
 if(score){
 if(score>99)score=99;
@@ -135,13 +136,15 @@ void func_ov005_0221e1e8(void) {
     func_ov005_0221d818();
 }
 
-void func_ov005_0221e1f4(M2C_UNK arg0) {
+/* Enter the results screen: suppress the message box, move the voice-chat widget
+ * out of the way and set up the results screen's graphics. */
+void Ov005EnterResultsScreen(M2C_UNK parent) {
     M2C_UNK MoveVoiceChatWidgetForMessageBox();
     M2C_UNK SetMessageBoxState(M2C_UNK);
-    M2C_UNK func_ov005_02218fd0(M2C_UNK);
-    SetMessageBoxState(3);
+    M2C_UNK InitResultsScreenGraphics(M2C_UNK);
+    SetMessageBoxState(MESSAGE_BOX_STATE_SUPPRESSED);
     MoveVoiceChatWidgetForMessageBox();
-    func_ov005_02218fd0(arg0);
+    InitResultsScreenGraphics(parent);
 }
 
 void func_ov005_0221e214(void) {

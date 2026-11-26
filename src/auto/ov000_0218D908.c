@@ -30,7 +30,7 @@ void func_ov000_0218d908(void) {
     extern u8 gUnitKindStats[], gAiRangeBitmap[];
     s32 AiUnitCanAct(void);
     M2C_UNK BuildUnitMoveRange(s32);
-    s32 CanKindLoad(s32, s32);
+    s32 CanKindCarryKind(s32, s32);
     s32 IsCurrentPlayerUnit(s16);
     s32 CanUnitAttackKind(void *, s32);
     s32 IsCaptureTargetAt(void *, s32, s32);
@@ -65,7 +65,7 @@ void func_ov000_0218d908(void) {
                         goto nextTile;
                     }
                 }
-                if (!(flags & 0x101) && CanKindLoad(21, (u32)(M2C_FIELD(M2C_FIELD(map, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {
+                if (!(flags & 0x101) && CanKindCarryKind(21, (u32)(M2C_FIELD(M2C_FIELD(map, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {
                     map = *gCurrentMap;
                     unit = (u8 *)map + 0x59a4 + (s16)M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), u8 *, 0) * 14;
                     if (unit && IsCurrentPlayerUnit((s16)(unit ? (unit - ((u8 *)map + 0x59a4)) / 14 : 0)) && ((u32)(unit[0] << 26) >> 26) == 21 && CanUnitAttackKind(unit, (u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {

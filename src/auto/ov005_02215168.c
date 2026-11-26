@@ -95,12 +95,18 @@ void RecordsMenu_SelectNextInList(s16 record) {
  RecordsMenu_BeginAction(RECORDS_SCREEN->list[RECORDS_SCREEN->listCursor],1);
 }
 
-void func_ov005_022153d4(u8 *arg0) {
- M2C_UNK FocusSpriteSlotById(s32);
- extern M2C_UNK gRecordsMenuState;
- s32 value = M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x94);
- if (value == *arg0) return;
- FocusSpriteSlotById(value);
+/* Focus the sprite slot of the records screen's cursor row, unless `selected`
+ * already names that row (the caller has just scrolled the list to another
+ * row). */
+void RecordsMenu_FocusCursorRow(u8 *selected) {
+    M2C_UNK FocusSpriteSlotById(s32);
+    extern M2C_UNK gRecordsMenuState;
+    s32 cursorRow = RECORDS_SCREEN->cursorRow;
+
+    if (cursorRow == *selected) {
+        return;
+    }
+    FocusSpriteSlotById(cursorRow);
 }
 
 /* D-pad navigation of the records screen's list: move the row cursor up or down

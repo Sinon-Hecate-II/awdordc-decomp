@@ -30,7 +30,24 @@ void *WhPacket_AddField(u8 *field, s32 tag, void *data, s32 length) {
     return (void *)((s32)field + padBytes);
 }
 
-s32 func_ov001_0216eca8(void *a,s32 b,void *c,s32 d){s32 n;M2C_FIELD(a,u8 *,0)=0;M2C_FIELD(a,u8 *,1)=0;M2C_FIELD(a,u8 *,2)=0;M2C_FIELD(a,u8 *,3)=0;M2C_FIELD(a,u8 *,4)=0;M2C_FIELD(a,u8 *,5)=0;M2C_FIELD(a,u8 *,6)=0;M2C_FIELD(a,u8 *,7)=0;n=(u8 *)WhPacket_AddField(a+8,b,c,d)-(u8 *)a;M2C_FIELD(a,u16 *,0)=n-8;return n;}
+/* Build a WH user-data block at `block` holding one tagged field: clear the 8-byte
+ * prefix, append the field (`tag`, `data`, `length`) after it and store the field
+ * bytes' count in the prefix's leading u16.  Returns the block's total size. */
+s32 WhPacket_BuildSingleField(void *block, s32 tag, void *data, s32 length) {
+    s32 size;
+
+    M2C_FIELD(block, u8 *, 0) = 0;
+    M2C_FIELD(block, u8 *, 1) = 0;
+    M2C_FIELD(block, u8 *, 2) = 0;
+    M2C_FIELD(block, u8 *, 3) = 0;
+    M2C_FIELD(block, u8 *, 4) = 0;
+    M2C_FIELD(block, u8 *, 5) = 0;
+    M2C_FIELD(block, u8 *, 6) = 0;
+    M2C_FIELD(block, u8 *, 7) = 0;
+    size = (u8 *)WhPacket_AddField(block + WH_PACKET_FIELDS, tag, data, length) - (u8 *)block;
+    M2C_FIELD(block, u16 *, 0) = size - WH_PACKET_FIELDS;
+    return size;
+}
 
 s32 func_ov001_0216ecd0(void *a,s32 *out){s32 kind,len,tag,size; s32 cursor; volatile s32 b; s32 n,base; u16 x,y,t; u16 *p; base=WhPacket_Unwrap(a,&kind,&len);x=0;y=0;cursor=base;b=0;if(!base)return 0;if(kind!=1)return 0;n=len;cursor=base+8; p=(u16 *)WhPacket_ReadEntry(&cursor,n+base,&tag,&size);while(p){switch(tag){case 1:t=*p;x=(u8)((s32)t>>8)|((t<<8)&0xff00);break;case 2:t=*p;b=(u16)((u8)((s32)t>>8)|(0xff00&(t<<8)));break;case 5:t=*p;y=(u8)((s32)t>>8)|((t<<8)&0xff00);break;}p=(u16 *)WhPacket_ReadEntry(&cursor,n+base,&tag,&size);}if(x!=1||b!=1)return 0;if((s32)y>=1)*out=1;else *out=0;return 1;}
 

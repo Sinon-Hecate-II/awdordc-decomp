@@ -78,11 +78,14 @@ void func_0208f3a4(void) {
     func_0208ee90();
 }
 
-void CreateNumberDisplay(M2C_UNK arg0) {
+/* Create a number-display sprite in `mode` (the engine it is made on) and set it
+ * up to show nine empty digits; nothing happens when it could not be made. */
+void CreateNumberDisplay(M2C_UNK mode) {
     s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK InitNumberDisplay();
     extern M2C_UNK gNumberDisplayStateClass;
-    if (CreateSpriteObject(&gNumberDisplayStateClass, arg0) == 0) {
+
+    if (CreateSpriteObject(&gNumberDisplayStateClass, mode) == 0) {
         return;
     }
     InitNumberDisplay();
@@ -258,7 +261,7 @@ void EnsureResource0Loaded(void);
 void EnsureResource4Loaded(void);
 void InitSound(void);
 void OS_EnableIrqMask(s32);
-void func_02007598(void);
+void WaitForVBlank(void);
 void GX_TurnOnDisplay(void);
 s32 savedFifoHandler;void *workBuffer;u16 imeState;
 savedFifoHandler=OS_GetIrqHandler(1);
@@ -280,7 +283,7 @@ OS_EnableIrqMask(1);
 imeState=*(volatile u16 *)0x4000208;
 *(volatile u16 *)0x4000208=1;
 GX_SetVBlankIrq(1);
-func_02007598();
+WaitForVBlank();
 GX_TurnOnDisplay();
 *(volatile u32 *)0x4001000 |= 0x10000;
 }
@@ -356,13 +359,16 @@ void func_0208f808(void) {
     gCurrentMusicTrack = 0xffff;
 }
 
-void func_0208f820(void *arg0) {
+/* Music fade-out sprite's per-frame wait step: count MUSIC_FADE_FRAMES down and
+ * resume the sprite's animation (which stops the track) once it reaches zero. */
+void WaitForMusicFadeFrames(void *sprite) {
     M2C_UNK Sprite_ResumeAnimation(void *);
-    M2C_FIELD(arg0, s16 *, 0x6C)--;
-    if (M2C_FIELD(arg0, s16 *, 0x6C) != 0) {
+
+    M2C_FIELD(sprite, s16 *, MUSIC_FADE_FRAMES)--;
+    if (M2C_FIELD(sprite, s16 *, MUSIC_FADE_FRAMES) != 0) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 /* Fade the running music out over `frames` frames (0 means one frame) by
@@ -388,17 +394,18 @@ M2C_UNK FadeOutMusicDefault(void) {
     FadeOutMusicOverFrames(0x1E);
 }
 
+/* TRUE while a music fade-out (gMusicFadeOutClass sprite) is still running. */
 u8 IsMusicFadingOut(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gMusicFadeOutClass;
-    u8 var_r0;
+    u8 fadingOut;
 
     if (FindObjectByClass(&gMusicFadeOutClass) != 0) {
-        var_r0 = 1;
+        fadingOut = 1;
     } else {
-        var_r0 = 0;
+        fadingOut = 0;
     }
-    return var_r0;
+    return fadingOut;
 }
 
 void FadeMusicToHalfVolume(void) {
@@ -473,11 +480,14 @@ void UpdateLoopingSoundEffect(void *sprite) {
     PlaySoundEffect(M2C_FIELD(sprite, s32 *, SOUND_LOOP_ID));
 }
 
-void StartLoopingSoundEffect(s32 a,s32 b){
- void *CreateSpriteFromClass(M2C_UNK*,M2C_UNK);
- extern M2C_UNK gLoopingSoundEffectClass;
- void *p=CreateSpriteFromClass(&gLoopingSoundEffectClass,7);
- M2C_FIELD(p,s32*,0x5c)=a;M2C_FIELD(p,s16*,0x52)=b;
+/* Spawn the looping-sound-effect sprite; it repeats sound effect `effect` every
+ * `interval` frames for as long as it lives. */
+void StartLoopingSoundEffect(s32 effect, s32 interval) {
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    extern M2C_UNK gLoopingSoundEffectClass;
+    void *sprite = CreateSpriteFromClass(&gLoopingSoundEffectClass, 7);
+    M2C_FIELD(sprite, s32 *, SOUND_LOOP_ID) = effect;
+    M2C_FIELD(sprite, s16 *, SOUND_LOOP_INTERVAL) = interval;
 }
 
 void StopLoopingSoundEffects(void) {
@@ -522,9 +532,11 @@ void func_0208facc(M2C_UNK arg0) {
     Sound_PlayEffectAtVolume(arg0, GetSoundEffectVolume());
 }
 
-void PlaySoundEffectOnChannel0(M2C_UNK arg0) {
+/* Play the packed sound effect `packedSoundId` on scripted sound slot 0 (any
+ * channel) at the current sound-effect volume. */
+void PlaySoundEffectOnChannel0(M2C_UNK packedSoundId) {
     M2C_UNK PlaySlotScriptedSoundAtVolume(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    PlaySlotScriptedSoundAtVolume(0, -1, arg0, GetSoundEffectVolume());
+    PlaySlotScriptedSoundAtVolume(0, -1, packedSoundId, GetSoundEffectVolume());
 }
 
 /* Play sound effect soundId at the current zoom-based volume and pan it by the
@@ -590,7 +602,7 @@ void InitSound(void) {
     func_020903d4();
     func_0208fc4c();
     Sound_InitVolumes();
-    func_020903b0();
+    Sound_PushPlayerHeapSection();
 }
 void func_0208fc4c(void) {
 
@@ -611,7 +623,7 @@ void OpenSoundPlayer(void){
  Sound_OpenArchive(&gSoundArchive,&gSoundArchivePath,player,0);
  Sound_InitArchiveChannels(M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_PLAYER));
  Sound_StartWorker(SOUND_WORKER_PRIORITY,M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_PLAYER));
- M2C_FIELD(&gSoundDriverState,u8*,SOUND_STATE_ENABLED)=1;func_020903b0();
+ M2C_FIELD(&gSoundDriverState,u8*,SOUND_STATE_ENABLED)=1;Sound_PushPlayerHeapSection();
 }
 
 /* Shut the game's sound system down: reset the sound engine, destroy the driver's

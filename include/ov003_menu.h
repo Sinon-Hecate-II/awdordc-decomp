@@ -25,7 +25,13 @@ typedef struct Ov003HelpPanel {
 #define MENU_FLAGS         0x38 /* u8 MENU_FLAG_* */
 #define MENU_SELECTION     0x3C /* u8 *selection context: slots and current mode */
 #define MENU_ROWS          0x48 /* row entry array, MENU_ROW_STRIDE bytes each */
+#define MENU_ROW_ANIM_OBJECT 0x50 /* void *: row-animation state object (byte +1 restarts it) */
 #define MENU_SELECTED_UNIT 0x5C /* void ** selected unit, or 0 */
+
+/* The menu's two volume sliders, each a SCROLLBAR_* object whose SCROLLBAR_VALUE
+ * is the 0..100 setting copied to and from gGameSettings. */
+#define MENU_MUSIC_SLIDER 0x60 /* void *: music-volume slider */
+#define MENU_SFX_SLIDER   0x64 /* void *: sound-effect-volume slider */
 
 /* The unit-list menu's six button sprites, the block kept at MENU_BUTTONS and
  * animated every frame by Ov003_AnimateUnitListButtons. */
@@ -37,6 +43,7 @@ typedef struct Ov003HelpPanel {
 #define MENU_BUTTON_SUBMENU     0x10 /* s32: open the selected row's submenu */
 #define MENU_BUTTON_BACK        0x14 /* s32: leave the unit list */
 
+#define MENU_FLAG_INPUT    0x01 /* input is processed this frame (Ov003_HandleMenuInput returns while clear) */
 #define MENU_FLAG_PENDING  0x02 /* an action is queued for the next update */
 #define MENU_FLAG_ANIM     0x08 /* a row animation is running */
 #define MENU_FLAG_MODE     0x10 /* the mode byte in MENU_MODE has been set */
@@ -75,6 +82,7 @@ typedef struct Ov003ModeTexture {
 #define OV003_MODE_TEXTURE_SIZE 0x10
 
 #define MENU_SELECTION_MODE 0x0F /* u8 current selection mode, indexes MENU_SELECTION_SLOTS */
+#define MENU_SELECTION_ANIMATION 0x11 /* u8 current row animation value (Ov003_SetRowAnimation) */
 #define MENU_SELECTION_SLOTS 0x00 /* u8[] row index selected in each mode */
 
 /* MENU_SELECTION_MODE values: the layout the selection context is in.  Mode 8 is
@@ -96,6 +104,25 @@ typedef struct Ov003ModeTexture {
 /* Row descriptor header (the rest points at the row's text/unit data). */
 #define MENU_DESC_TYPE   0x01 /* u8 MENU_ENTRY_* */
 #define MENU_DESC_VALUE  0x02 /* u8 unit id / submenu value */
+
+/* The unit-list menus' layout records (gUnitListLayouts), one per menu id: the
+ * index of the menu's row group, the labels its help panel shows and, for each of
+ * them, the index (in the help-panel texture table) of the texture it draws. */
+typedef struct MenuLayout {
+    u8 rowGroup;         /* +0x0 index into gUnitListRowGroups */
+    u8 field01;          /* +0x1 0x10 in the known records */
+    u8 labelCount;       /* +0x2 number of labels the help panel shows */
+    u8 labelTiles[0x0D]; /* +0x3 undefined after the last label */
+} MenuLayout;            /* 0x10 bytes, MENU_LAYOUT_SIZE */
+
+#define MENU_LAYOUT_SIZE 0x10
+
+typedef struct MenuRowGroup {
+    u8 rowCount;  /* +0x0 number of rows the menu lists */
+    u8 unk_01[4]; /* +0x1 row layout data, unused by the menu code */
+} MenuRowGroup;   /* 0x5 bytes, one per menu (gUnitListRowGroups) */
+
+#define MENU_ROW_GROUP 0x44 /* const MenuRowGroup *: the menu's row group */
 
 enum {
     MENU_ENTRY_UNIT    = 1, /* select the unit in the row */

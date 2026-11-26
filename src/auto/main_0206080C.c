@@ -67,15 +67,17 @@ void Qr2Query_Update(void *list) {
     M2C_FIELD(list, M2C_UNK (**)(void *, s32, s32, M2C_UNK), SB_LIST_ON_QUERY_DONE)(list, SB_QUERY_STAGE_COMPLETE, 0, M2C_FIELD(list, M2C_UNK *, SB_LIST_QUERY_DATA));
 }
 
-void AddServerListField(void *arg0, u8 arg1) {
-    s32 temp_r3;
+/* Remember that the query asks for the field with key id `keyId`: append it to
+ * the list's field array, unless SB_LIST_MAX_FIELDS are already recorded. */
+void AddServerListField(void *list, u8 keyId) {
+    s32 count;
 
-    temp_r3 = M2C_FIELD(arg0, s32 *, 0x40);
-    if (temp_r3 >= 0x14) {
+    count = M2C_FIELD(list, s32 *, SB_LIST_FIELD_COUNT);
+    if (count >= SB_LIST_MAX_FIELDS) {
         return;
     }
-    M2C_FIELD(arg0, s32 *, 0x40) = (s32) (temp_r3 + 1);
-    M2C_FIELD((arg0 + temp_r3), s8 *, 0x2C) = arg1;
+    M2C_FIELD(list, s32 *, SB_LIST_FIELD_COUNT) = (s32) (count + 1);
+    M2C_FIELD((list + count), s8 *, SB_LIST_FIELDS) = keyId;
 }
 
 /* Take a server record off the browser's query queues: drop it from the
@@ -130,14 +132,16 @@ void FreeStringInternTableIfEmpty(void) {
     M2C_FIELD(&gQr2ParseState, s32 *, SB_QR2_PARSE_INTERN_TABLE) = 0;
 }
 
-void SBServerFree(void **arg0) {
+/* Free the server record that `server` points at: free its key/value table,
+ * clear the field and free the record itself. */
+void SBServerFree(GpiPlayer **server) {
     M2C_UNK TableFree(s32);
-    void *temp_r4;
+    GpiPlayer *record;
 
-    temp_r4 = *arg0;
-    TableFree(M2C_FIELD(temp_r4, s32 *, 0x18));
-    M2C_FIELD(temp_r4, s32 *, 0x18) = 0;
-    gpiFree(temp_r4);
+    record = *server;
+    TableFree(record->keyValues);
+    record->keyValues = 0;
+    gpiFree(record);
 }
 
 /* Store an interned key/value string pair in a gpi player record's key/value
@@ -213,11 +217,10 @@ s32 SBServerGetIp(s32 *arg0) {
     return *arg0;
 }
 
-u16 SBServerGetPort(void *arg0) {
-    u16 temp_r0;
-
-    temp_r0 = M2C_FIELD(arg0, u16 *, 4);
-    return (u16) ((u8) ((s32) temp_r0 >> 8) | ((temp_r0 << 8) & 0xFF00));
+/* GameSpy SBServerGetPort: the server's query port in host byte order (the
+ * GpiPlayer record keeps its ports in network order). */
+u16 SBServerGetPort(GpiPlayer *server) {
+    return SwapPair60E(server->port);
 }
 
 u16 SBServerGetPortNBO(void *arg0) {
@@ -235,11 +238,13 @@ s32 func_02060c90(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 8);
 }
 
-u16 func_02060c98(void *arg0) {
-    u16 temp_r0;
+/* Return the query port of server record `server` (GpiPlayer.queryPort, kept in
+ * network byte order) in host byte order. */
+u16 SBServerGetQueryPort(GpiPlayer *server) {
+    u16 port;
 
-    temp_r0 = M2C_FIELD(arg0, u16 *, 0xC);
-    return (u16) ((u8) ((s32) temp_r0 >> 8) | ((temp_r0 << 8) & 0xFF00));
+    port = server->queryPort;
+    return (u16) ((u8) ((s32) port >> 8) | ((port << 8) & 0xFF00));
 }
 
 void SBServerSetNext(void *arg0, s32 arg1) {
@@ -348,10 +353,12 @@ s32 hash=0; s32 c=*arg0;
 if(c){do{if(c>=0 && c<128){c=(u32)data_020eac40[c];}else{c=(s32)c;}hash=hash*0x9CCF9319+c;c=*++arg0;}while(c);}
 return U32DivideRem(hash,arg1)>>32;
 }
-void FreeServerKeyValue(void *arg0) {
+/* Free one key/value entry of a server record's table (the TableNew2 free
+ * callback): release its interned key and value strings. */
+void FreeServerKeyValue(s32 *pair) {
     M2C_UNK StringInternRelease(M2C_UNK, s32);
-    StringInternRelease(0, M2C_FIELD(arg0, s32 *, 0));
-    StringInternRelease(0, M2C_FIELD(arg0, s32 *, 4));
+    StringInternRelease(0, pair[0]);
+    StringInternRelease(0, pair[1]);
 }
 
 void HashServerKey(s8 **arg0, s32 arg1) {
@@ -490,12 +497,12 @@ void *func_020613dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4
     return obj;
 }
 
-void DestroyServerBrowser(s32 arg0) {
-    M2C_UNK Qr2Query_CloseSocket(s32);
-    M2C_UNK SBServerListClear(s32);
-    SBServerListClear(arg0 + 0x4C);
-    Qr2Query_CloseSocket(arg0);
-    gpiFree(arg0);
+void DestroyServerBrowser(void *browser) {
+    M2C_UNK Qr2Query_CloseSocket(void *);
+    M2C_UNK SBServerListClear(void *);
+    SBServerListClear((u8 *)browser + SB_LIST_QUERY);
+    Qr2Query_CloseSocket(browser);
+    gpiFree(browser);
 }
 
 /* Start a QR2 server-list query: build the filter string from the given key ids

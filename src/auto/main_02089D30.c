@@ -28,9 +28,9 @@ void func_02089d30(void *arg0) {
     u32 flags,packed;
     s32 measuredKind;
     void SetPanelChoice(void *,s32);
-    void func_0208989c(void *);
+    void CreateTextLayerGradientProxy(void *);
     void UpdatePanelLinkedIcons(void *);
-    void func_02089784(void *);
+    void CreateTextLayerPanelProxy(void *);
     void StartWindowOpen(void *);
     void *end,*entry;
     s32 w1,w2,w3,w4,w5,w6,w7,w8;
@@ -199,8 +199,8 @@ M2C_FIELD(arg0,void **,0x5c)=sprite1;
 M2C_FIELD(arg0,void **,0x60)=sprite4;
 }
 gCur3DSpriteEngine=previousEngine;
-if((u8)((M2C_FIELD(arg0,u32 *,0x58)<<20)>>31))func_0208989c(arg0);
-UpdatePanelLinkedIcons(arg0);func_02089784(arg0);StartWindowOpen(arg0);
+if((u8)((M2C_FIELD(arg0,u32 *,0x58)<<20)>>31))CreateTextLayerGradientProxy(arg0);
+UpdatePanelLinkedIcons(arg0);CreateTextLayerPanelProxy(arg0);StartWindowOpen(arg0);
 }
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
@@ -261,7 +261,7 @@ u32 NotifyWindowClosed(void *window) {
 void func_0208a750(void *arg0) {
     s32 GetScreenFlag(u32);
     s32 IsScreenFadeActive();
-    M2C_UNK func_020b269c();
+    M2C_UNK PauseSpriteUpdate();
     M2C_UNK AcquireMapViewHold();
     extern s32 gCur3DSpriteEngine;
     u16 * volatile sp60;
@@ -321,7 +321,7 @@ void func_0208a750(void *arg0) {
     }
     if (((u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x13) >> 0x1F) & 0xFF) {
         AcquireMapViewHold();
-        func_020b269c();
+        PauseSpriteUpdate();
     }
     if (((u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x15) >> 0x1F) & 0xFF) {
         Reset3DSpriteEngineState();
@@ -416,7 +416,7 @@ void func_0208a750(void *arg0) {
 void ReleaseWindowResources(void *window) {
     M2C_UNK Reset3DSpriteBankState();
     M2C_UNK Reset3DSpriteEngineState();
-    M2C_UNK func_020b26dc();
+    M2C_UNK ResumeSpriteUpdate();
     M2C_UNK ReleaseMapViewHold();
     if (((u32) (M2C_FIELD(window, s32 *, TEXT_LAYER_PANEL_STATE) << 0x15) >> 0x1F) & 0xFF) {
         Reset3DSpriteEngineState();
@@ -424,7 +424,7 @@ void ReleaseWindowResources(void *window) {
     }
     if (((u32) (M2C_FIELD(window, s32 *, TEXT_LAYER_PANEL_STATE) << 0x13) >> 0x1F) & 0xFF) {
         ReleaseMapViewHold();
-        func_020b26dc();
+        ResumeSpriteUpdate();
     }
     NotifyWindowClosed(window);
 }

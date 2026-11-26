@@ -161,7 +161,7 @@ void func_ov003_021e8958(void *arg0) {
     void func_ov003_021e9810(void *, s32);
     void func_ov003_021e9818(void *, s32);
     s32 IsMapListCategory3(void);
-    void *func_0208ed64(void *);
+    void *CreateTimerDisplay(void *);
     void SetTimerDisplayGraphics(void *, s32, s32);
     void func_0208eb60(void *, s32);
     s32 GetSceneEntryOffset(void);
@@ -181,7 +181,7 @@ void func_ov003_021e8958(void *arg0) {
     void Clear3DSpriteLayer(s32);
     s32 func_ov003_021e9c24(void *);
     void Ov003_LoadPlayerSelectBg(s32, s32, s32);
-    void func_ov003_021ea134(s32);
+    void Mark3DSpriteLayerDirty(s32);
     void LoadFaceTexture(s32, s32, s32);
     void LoadFaceTextureAndPalette(s32, s32, s32);
     void func_ov003_021ea27c(s32, s32, s32);
@@ -236,7 +236,7 @@ void func_ov003_021e8958(void *arg0) {
     if (IsMapListCategory3()) {
         t2 = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineMain;
-        M2C_FIELD(arg0, void **, 0x60) = func_0208ed64(arg0);
+        M2C_FIELD(arg0, void **, 0x60) = CreateTimerDisplay(arg0);
         SetTimerDisplayGraphics(M2C_FIELD(arg0, void **, 0x60), 0xd400, 0xb);
         func_0208eb60(M2C_FIELD(arg0, void **, 0x60), 0x708);
         func_ov003_021e87d0(M2C_FIELD(arg0, void **, 0x60), 0, 0xb6);
@@ -271,7 +271,7 @@ void func_ov003_021e8958(void *arg0) {
     SetFileDirectory(data_ov003_0220fb84);
     Clear3DSpriteLayer(3);
     Ov003_LoadPlayerSelectBg(3, 0, func_ov003_021e9c24(arg0) & 0xff);
-    func_ov003_021ea134(3);
+    Mark3DSpriteLayerDirty(3);
     for (i = 0; i < 12; i++) LoadFaceTexture(i + 1, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xc) + (((i << 7) + 2) << 5));
     for (i = 0; i < 13; i++) LoadFaceTextureAndPalette(i, ((i << 4) + 0x1f0) << 5, 7);
     func_ov003_021ea27c(4, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0x3400);
@@ -299,7 +299,7 @@ void func_ov003_021e8958(void *arg0) {
     LoadDecompressedFileTo(GetLocalizedFileName(data_ov003_0220fc00), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20));
     LoadFileToSpriteBuffer(data_ov003_0220fc1c, 0, 0x20);
     SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x20, 0x20, 0);
-    func_ov003_021ea134(0);
+    Mark3DSpriteLayerDirty(0);
     LoadScenePanelPalette(2);
     SetFileDirectory(data_ov003_0220fc30);
     h = LoadFileToBuffer(GetLocalizedFileName(data_ov003_0220fc38), 1);

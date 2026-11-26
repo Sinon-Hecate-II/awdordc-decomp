@@ -46,6 +46,7 @@
 #define NETSTACK_SUBNET_MASK 0x1C /* u32 subnet mask that goes with NETSTACK_LOCAL_IP, host order */
 #define NETSTACK_DHCP_SERVER    0x20 /* u32 DHCP server identifier from the OFFER (option 54) */
 #define NETSTACK_REQUESTED_IP   0x34 /* u32 IPv4 address requested from the DHCP server (option 50) */
+#define NETSTACK_GATEWAY        0x2C /* u32 default gateway (next hop) for off-subnet traffic, host order */
 #define NETSTACK_ARP_RESOLVED 0x01 /* u8 set once an ARP reply announcing the local address arrives */
 
 /* ARP packet layout (RFC 826), as handled by HandleArpPacket in main_0201AE0C.
@@ -83,6 +84,7 @@
 #define IP_HEADER_SIZE          20
 #define LINK_HEADER_SIZE        8  /* link-layer header the stack prepends to a frame */
 #define IP_LOOPBACK             0x7F000001u /* 127.0.0.1 in host order */
+#define IP_UNSPECIFIED          0           /* 0.0.0.0, the unspecified address */
 #define IP_BROADCAST            (-1)        /* 255.255.255.255, the limited broadcast address */
 #define IP_MAX_FRAGMENT_PAYLOAD 1480
 #define IP_FRAGMENT_UNIT        8

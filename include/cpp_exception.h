@@ -9,6 +9,10 @@
 #ifndef CPP_EXCEPTION_H
 #define CPP_EXCEPTION_H
 
+/* The game's C++ exception table, as built by the linker: the default
+ * __FindExceptionTable reports it as covering every address. */
+extern u8 __exception_table_start__, __exception_table_end__;
+
 /* One 12-byte entry of the exception table. */
 typedef struct CppExceptionEntry {
     s32 start; /* +0x00 start address of the covered function */

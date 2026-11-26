@@ -277,11 +277,19 @@ default:return 0;
 }
 }
 
-void func_020a54c4(void *arg0) {
+void ResetOrderEffectCursor(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x54) = 0;
 }
 
-void func_020a54d0(void *a) {void DeleteSpriteObject();extern s32 gSelectionQueueCount;if(M2C_FIELD(a,s16 *,84)!=gSelectionQueueCount)return;DeleteSpriteObject(a);}
+/* Delete callback of the order-effect sprite: it removes itself only once every
+ * queued selection entry has been played, that is when its queue cursor has
+ * caught up with the selection queue's count. */
+void DeleteFinishedOrderEffectSprite(void *sprite) {
+    void DeleteSpriteObject();
+    extern s32 gSelectionQueueCount;
+    if (M2C_FIELD(sprite, s16 *, ORDER_SPRITE_QUEUE_CURSOR) != gSelectionQueueCount) return;
+    DeleteSpriteObject(sprite);
+}
 
 /* Step of an order-effect sprite: at each queued order's own cell, play that
  * order's attack visual (area burst, beam or point strike) on the order's tile,

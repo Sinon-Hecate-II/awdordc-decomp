@@ -24,7 +24,7 @@ void RequestMenuMode(void *, s32);
 void func_ov003_0220bcac(void *arg0) {
     extern s32 Divide(s32, s32);
     extern void ScrollBar_PlaceThumb(void *, s16, s16);
-    extern void func_ov003_0220c0e8(void *);
+    extern void ApplySoundVolumeSliders(void *);
 
     void *sub;
     void *p;
@@ -64,7 +64,7 @@ void func_ov003_0220bcac(void *arg0) {
     p=M2C_FIELD(sub,void **,0x1c);
     ScrollBar_PlaceThumb(p, (s16)sum, M2C_FIELD(p, s16 *, 0xA));
 
-    func_ov003_0220c0e8(arg0);
+    ApplySoundVolumeSliders(arg0);
 
     p = M2C_FIELD(arg0, void **, 0x40);
     M2C_FIELD(p, s32 *, 0x4) = 0;
@@ -142,16 +142,20 @@ i++;offset+=36;
 }while(i<(s32)*M2C_FIELD(a,u8 **,0x44));
 }
 
-void func_ov003_0220c0e8(void *arg0) {
-    M2C_UNK func_020bf9f0(s16);
-    M2C_UNK func_020bfa30(s16);
-    func_020bf9f0(M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), s16 *, 0x12));
-    func_020bfa30(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s16 *, 0x12));
+/* Apply the options menu's music and sound-effect volume sliders to the game
+ * settings: the two scroll bars at +0x60 (music) and +0x64 (sound effects) of the
+ * options object hold the values. */
+void ApplySoundVolumeSliders(void *options) {
+    M2C_UNK SetMusicVolumeSetting(s16);
+    M2C_UNK SetSoundEffectVolumeSetting(s16);
+
+    SetMusicVolumeSetting(M2C_FIELD(M2C_FIELD(options, void **, 0x60), s16 *, SCROLLBAR_VALUE));
+    SetSoundEffectVolumeSetting(M2C_FIELD(M2C_FIELD(options, void **, 0x64), s16 *, SCROLLBAR_VALUE));
 }
 
 #pragma opt_propagation off
 void func_ov003_0220c10c(void *arg0) {
-void func_ov003_0220c0e8(void *);
+void ApplySoundVolumeSliders(void *);
 void *q=**(void ***)((u8 *)arg0+0x5c);
 s32 v,b;
 u8 idx,k;
@@ -160,7 +164,7 @@ idx = v - 11;
 k = *(u8 *)(*(u8 **)((u8 *)arg0+0x3c)+15);
 b=0;
 if((u8)(k==8))b=(idx==0)?1:b;
-if((b & 0xff) || (u8)((u8)(k==8) && idx==1))func_ov003_0220c0e8(arg0);
+if((b & 0xff) || (u8)((u8)(k==8) && idx==1))ApplySoundVolumeSliders(arg0);
 }
 #pragma opt_propagation reset
 
@@ -204,10 +208,13 @@ void Ov003_ConfirmRowValue(void *arg0, int arg1) {
  else {DisableMapConfirm();Sprite_ResumeAnimation(menu);}
 }
 
-void RequestMenuMode(void *arg0, s32 arg1) {
-u8 mode=arg1;
-M2C_FIELD(arg0,u8 *,0x38) |= 0x10;
-((Ov003ModeByte *)((u8 *)arg0+0x36))->mode=mode;
+/* Queue a mode switch for the menu: mark the mode byte as pending
+ * (MENU_FLAGS) and store the low nibble of `mode` in the menu's MENU_MODE byte. */
+void RequestMenuMode(void *menu, s32 mode) {
+    u8 modeValue = mode;
+
+    M2C_FIELD(menu, u8 *, MENU_FLAGS) |= MENU_FLAG_MODE;
+    ((Ov003ModeByte *)((u8 *)menu + MENU_MODE))->mode = modeValue;
 }
 
 /* Apply the menu action deferred on this UI object: clear its pending bit and set the

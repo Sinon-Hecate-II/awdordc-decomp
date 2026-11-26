@@ -238,6 +238,10 @@ WFC_SESSION_STATE_WIRELESS   = 4,  /* the wireless start command was queued and 
 #define WFC_SESSION_STATE_HTTP        14 /* the DWC HTTP matchmaking session is open */
 #define WFC_SESSION_STATE_ENDED       18 /* the session is over; Wfc_ProcessStep frees the work blocks */
 #define WFC_SESSION_STATUS   0x2264 /* u32 status bits, set by WFC_SetStatusBits */
+/* The status word WFC_InitSessionStatus gives a brand-new WFC session: the
+ * library's starting link state, before any player slot or connection flag has
+ * been reported. */
+#define WFC_SESSION_STATUS_INITIAL 0xAAA082
 /* A match tracks WFC_PLAYER_SLOT_COUNT player slots in bits 1..13 of
  * WFC_SESSION_STATUS: slot n owns bit n, and a set bit means the slot is taken. */
 #define WFC_PLAYER_SLOT_COUNT 13
@@ -354,6 +358,13 @@ enum {
     WFC_MEASURE_CHANNEL_IDLE_STATE = 2
 };
 
+/* Measurement parameters the game's child-channel scans post (see
+ * RequestChildChannelScan): CCA mode 3, energy-detect threshold 0x11 and a
+ * measure time of 0x1E. */
+#define WFC_SCAN_CCA_MODE       3
+#define WFC_SCAN_ED_THRESHOLD   0x11
+#define WFC_SCAN_MEASURE_TIME   0x1E
+
 /* ARM7 request that declares whether this console is the match's parent (host):
  * request 1 carries a single flag, 1 when this console is the parent and 0
  * otherwise (download play posts 1, the online session 0). */
@@ -383,6 +394,9 @@ typedef struct WfcMeasureChannelRequest {
 /* u16 the ARM7 firmware keeps in the shared work area; its bit 0 is the command
  * channel's handshake flag, which the ARM9 clears once it has handled a packet. */
 #define WFC_SHARED_FLAG_WORD 0x027FFF96
+/* u16 player bitmask the ARM7 firmware keeps in the shared work area (bit n-1
+ * set for player slot n); WFC_GetPlayerMask reads it. */
+#define WFC_SHARED_PLAYER_MASK 0x027FFCFA
 
 /* The region byte the WFC match query sends: the query wrapper uses WFC_REGION_A
  * when its caller passes WFC_REGION_DEFAULT, otherwise the cartridge's own
@@ -579,12 +593,15 @@ enum {
 #define OV001_WFC_ERASE_LAYOUT   0x13 /* layout block its title/border objects come from */
 #define OV001_MSG_WFC_ERASE      0x3C /* the screen's message panel text */
 #define OV001_MSG_WFC_ERASE_INFO 0x1B /* the screen's one-shot info message box text */
+#define OV001_MSG_RESET_PROFILE  0x19 /* message box text of the ov001 WFC-profile reset screen */
 
 /* Object layout block and message id of the ov001 console-info (MAC address) screen. */
 #define OV001_MAC_ADDRESS_LAYOUT 0x11 /* layout block its title/border objects come from */
 #define OV001_MSG_MAC_ADDRESS    0x3A /* the screen's message panel text */
+#define OV001_MSG_PROFILE_SAVED  0x1F /* message box text of the ov001 profile-saved popup */
 #define OV001_MSG_PROFILE_RETURN 0x20 /* message box text of the ov001 profile-return screen */
 #define OV001_MSG_PROFILE_RESULT 0x21 /* message box text of the ov001 profile-result screen */
+#define OV001_MSG_PROFILE_RESET  0x19 /* one-shot message box text of the ov001 WFC-profile reset screen (Ov001_OpenResetProfileScreen) */
 #define OV001_MSG_WFC_SUCCESS    0x2D /* message box text of the ov001 Wi-Fi success screen */
 #define OV001_MSG_MATCH_SETUP    0x2A /* message box text of the ov001 download-play match-setup screen */
 #define OV001_MSG_MATCH_SETUP_ADVANCE 0x26 /* message box text of the ov001 match-setup advance screen */

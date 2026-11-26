@@ -30,8 +30,10 @@
 #define BGCNT_CHAR_BASE_SHIFT 2
 #define BGCNT_BITMAP_CHAR_BASE_MASK 0x003C /* BG3 bitmap base block, selected in bitmap display modes */
 
-/* Sizes of a background's screen base block and of a direct bitmap block. */
+/* Sizes of a background's screen base block, character base block and direct
+ * bitmap block. */
 #define BG_SCR_BLOCK_SHIFT    11 /* screen base block: 2 KiB */
+#define BG_CHAR_BLOCK_SHIFT   14 /* character base block: 16 KiB */
 #define BG_BITMAP_BLOCK_SHIFT 14 /* direct bitmap block: 16 KiB */
 
 /* DISPCNT bits 24..26 select the main engine backgrounds' character base block,
@@ -82,8 +84,9 @@ enum {
     GX_MODE_5,     /* BG2 (and BG3) bitmap */
     GX_MODE_6
 };
-/* Start of the main engine's background VRAM. */
+/* Start of the main engine's background VRAM and of the sub engine's. */
 #define GX_MAIN_VRAM_BASE 0x06000000
+#define GX_SUB_VRAM_BASE  0x06200000
 /* DISPCNT bits 30 and 31 switch the main engine's extended palettes on: bit 30
  * for the backgrounds, bit 31 for the OBJ (sprite) characters. */
 #define DISPCNT_BG_EXT_PALETTE  0x40000000
@@ -153,6 +156,8 @@ typedef struct GxViewport {
 
 /* Geometry engine command ports.  Writing a command's parameters to these
  * FIFO ports queues the command; see GBATEK's GX command list. */
+#define REG_GX_FIFO       (*(volatile u32 *)0x04000400) /* command/parameter FIFO write port */
+#define GX_FIFO_ADDR      0x04000400
 #define REG_GX_MTX_MODE   (*(volatile u32 *)0x04000440)
 #define REG_GX_MTX_PUSH   (*(volatile u32 *)0x04000444)
 #define REG_GX_MTX_POP    (*(volatile u32 *)0x04000448)
@@ -311,7 +316,10 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define VRAM_BANKS_OBJ_CD  0x06 /* banks assigned to the OBJ area built from banks C/D */
 
 /* 3D engine state and render parameters. */
+#define GX_FIFO_ADDR         0x04000400 /* geometry-engine command FIFO port (also written as REG_GX_FIFO in GX_* command code) */
 #define REG_GXSTAT           (*(volatile u32 *)0x04000600)
+#define REG_GX_FIFO_ADDR     0x04000400 /* write-only geometry engine command FIFO port */
+#define REG_GX_FIFO          (*(volatile u32 *)REG_GX_FIFO_ADDR)
 #define REG_BG0OFS           (*(volatile u32 *)0x04000010)
 #define REG_BG2OFS           (*(volatile u32 *)0x04000018)
 #define REG_BG2OFS           (*(volatile u32 *)0x04000018)

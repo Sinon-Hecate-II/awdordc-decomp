@@ -209,8 +209,9 @@ u8 Ov000_StatsWindow_ShouldShowHints(void *arg0) {
     return show;
 }
 
-s32 func_ov000_02176e08(s32 arg0) {
-    switch (arg0) {
+/* True for the unit kinds that receive the AI's special combat-value adjustment. */
+s32 IsAiCombatSpecialUnitKind(s32 unitKind) {
+    switch (unitKind) {
     case 0xE:
     case 0x10:
     case 0x11:

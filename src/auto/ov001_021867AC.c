@@ -195,7 +195,7 @@ void GetSystemUserProfile(void *);
 void MI_CpuCopy8(void *,void *,s32);
 s32 MultiBoot_StartParent(void *,void *,s32,s32,s32);
 void MultiBoot_SetParentParams(s32,s32);
-void func_02013e70(void (*)(void));
+void Mb_SetMatchEventCallback(void (*)(void));
 void Ov001_HandleLinkEvent(void);
 MbParentInfo parentInfo;
 u8 ownerInfo[84];
@@ -211,7 +211,7 @@ Ov001LinkHeader zero={0};
 M2C_FIELD(gOv001LinkWork,void **,0x1b140)=(u8 *)gOv001LinkWork+0x10040;
 if(MultiBoot_StartParent(M2C_FIELD(gOv001LinkWork,void **,0x1b140),&parentInfo,param,programId,2))SystemHalt();
 MultiBoot_SetParentParams(256,1);
-func_02013e70(Ov001_HandleLinkEvent);
+Mb_SetMatchEventCallback(Ov001_HandleLinkEvent);
 Ov001_SetLinkStatus(1);
 }
 
@@ -221,10 +221,10 @@ Ov001_SetLinkStatus(1);
  * fileRequest, halting the console when it cannot be loaded. */
 void Ov001_StartMultibootProgramTransfer(s32 fileRequest, s32 bootParam) {
     M2C_UNK SystemHalt();
-    s32 func_02017f90(s32);
+    s32 MultiBoot_Start(s32);
     s32 Ov001_LoadDownloadPlayProgram(M2C_UNK);
     Ov001_SetLinkStatus(2);
-    if (func_02017f90(bootParam) != 0) {
+    if (MultiBoot_Start(bootParam) != 0) {
         Ov001_SetLinkStatus(7);
         return;
     }

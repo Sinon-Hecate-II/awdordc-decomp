@@ -28,17 +28,19 @@ i++;}while(i<2);
 gCur3DSpriteEngine=old;
 }
 
-void func_020b269c(void) {
+void PauseSpriteUpdate(void) {
     extern void *gSpriteSlotManager;
     M2C_FIELD(gSpriteSlotManager, u8 *, 0x26) = (u8) (M2C_FIELD(gSpriteSlotManager, u8 *, 0x26) + 1);
 }
 
-u8 func_020b26b8(void) {
+/* Whether the sprite-slot update pass is paused: the update-pause nesting
+ * counter is nonzero. Drawing still runs unless it is separately paused. */
+u8 IsSpriteUpdatePaused(void) {
 extern void *gSpriteSlotManager;
-return M2C_FIELD(gSpriteSlotManager,u8 *,0x26)!=0;
+return M2C_FIELD(gSpriteSlotManager,u8 *,SPRITE_SLOT_MGR_UPDATE_PAUSE_DEPTH)!=0;
 }
 
-void func_020b26dc(void) {
+void ResumeSpriteUpdate(void) {
 extern void *gSpriteSlotManager;
 M2C_FIELD(gSpriteSlotManager,u8 *,0x26)-=1;
 }
@@ -48,9 +50,11 @@ extern void *gSpriteSlotManager;
 M2C_FIELD(gSpriteSlotManager,u8 *,0x27)+=1;
 }
 
+/* Whether sprite-slot drawing (and updating) is paused: the pause nesting
+ * counter is nonzero. */
 u8 IsSpriteDrawPaused(void) {
 extern void *gSpriteSlotManager;
-return M2C_FIELD(gSpriteSlotManager,u8 *,0x27)!=0;
+return M2C_FIELD(gSpriteSlotManager,u8 *,SPRITE_SLOT_MGR_DRAW_PAUSE_DEPTH)!=0;
 }
 
 void ResumeSpriteDraw(void) {

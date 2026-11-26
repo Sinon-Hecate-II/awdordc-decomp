@@ -523,11 +523,18 @@ void WakeDisplay(s32 callback, s32 user) {
     Arm7SetPowerState(0xE, callback, user);
 }
 
+/* Wake the display and wait for the ARM7 power command to finish: the reply is
+ * stored through Arm7CommandStoreResult into `reply`, which is returned once
+ * the command has completed. */
 s32 WakeDisplayWait(void) {
-s32 sp0,result;
-result=((s32 (*)(s32,s32))WakeDisplay)((s32)Arm7CommandStoreResult,(s32)&sp0);
-if(result)return result;
-Arm7CommandWait();return sp0;
+    void Arm7CommandWait(void);
+    s32 reply;
+    s32 result;
+
+    result = ((s32 (*)(s32, s32))WakeDisplay)((s32)Arm7CommandStoreResult, (s32)&reply);
+    if (result) return result;
+    Arm7CommandWait();
+    return reply;
 }
 
 void Arm7SetAmpParam2(s32 a) {
@@ -705,15 +712,17 @@ s32 SetLcdPower(s32 on, s32 arm7State, s32 force, s32 wait) {
     return 1;
 }
 
-s32 SetLcdEnabled(s32 arg0) {
+/* Enable the LCD when on == 1, otherwise disable it, waiting for the ARM7 power
+ * driver's reply; returns SetLcdPower's result. */
+s32 SetLcdEnabled(s32 on) {
     M2C_UNK SetLcdPower(s32, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 var_r0;
+    s32 enabled;
 
-    var_r0 = arg0;
-    if (var_r0 != 1) {
-        var_r0 = 0;
+    enabled = on;
+    if (enabled != 1) {
+        enabled = 0;
     }
-    SetLcdPower(var_r0, 0, 0, 1);
+    return SetLcdPower(enabled, 0, 0, 1);
 }
 
 s32 IsLcdEnabled(void) {

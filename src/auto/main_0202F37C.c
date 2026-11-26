@@ -74,13 +74,15 @@ u8 Wfc_GetSessionState(void) {
     return M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, 9);
 }
 
-void Wfc_SetResultCode(s32 arg0) {
+/* Record the result code of the current connection step in the WFC control
+ * block, together with the session state the step ran in. */
+void Wfc_SetResultCode(s32 resultCode) {
     void *Wfc_GetWorkBlock(M2C_UNK);
-    void *temp_r0;
+    void *control;
 
-    temp_r0 = Wfc_GetWorkBlock(1);
-    M2C_FIELD(temp_r0, s32 *, 0xC) = arg0;
-    M2C_FIELD(temp_r0, s8 *, 0xA) = Wfc_GetSessionState();
+    control = Wfc_GetWorkBlock(WFC_WORK_CONTROL);
+    M2C_FIELD(control, s32 *, WFC_CONTROL_RESULT) = resultCode;
+    M2C_FIELD(control, s8 *, WFC_CONTROL_STEP_STATE) = Wfc_GetSessionState();
 }
 
 s32 Wfc_GetResultCode(void) {
@@ -560,7 +562,7 @@ s32 Wfc_GetConnectModeFlags(void *arg0) {
 s32 func_020300e8(void *state, u32 type, void *out) {
 void MI_CpuCopy8(void *,void *,s32);
 void func_0203181c(s32,void *);
-void func_02031784(s32,void *);
+void Wfc_HashFriendConnectionCode(s32,void *);
 switch(type) {
 case 2:state+=0x100;
 case 1:state+=0x100;
@@ -569,7 +571,7 @@ case 5:state+=0x100;
 case 4:state+=0x100;
 case 3:M2C_FIELD(out,u8 *,0)=1;MI_CpuCopy8(state+0xD1,out+2,0x14);M2C_FIELD(out,u8 *,0x16)=0;break;
 case 6:M2C_FIELD(out,u8 *,0)=2;func_0203181c(M2C_FIELD(state,u8 *,0xD13)*0xC0+(s32)(state+0x47C),out+2);break;
-case 7:M2C_FIELD(out,u8 *,0)=2;func_02031784(M2C_FIELD(state,u8 *,0xD13)*0xC0+(s32)(state+0x47C),out+2);break;
+case 7:M2C_FIELD(out,u8 *,0)=2;Wfc_HashFriendConnectionCode(M2C_FIELD(state,u8 *,0xD13)*0xC0+(s32)(state+0x47C),out+2);break;
 case 8:case 9:break;
 }return M2C_FIELD(out,u8 *,0)!=0;
 }
@@ -643,11 +645,14 @@ s32 Wfc_IsNetworkDown(void) {
     return status == 0 || status == WFC_NET_ALREADY_DOWN;
 }
 
+/* The waiting step that follows the finished friend connection (WFC_STEP_DONE at
+ * WFC_CONTROL_STEP_STATE): advance the underlying WFC session and, once it has
+ * ended, move on to WFC_SESSION_STATE_ENDED; otherwise stay at WFC_STEP_DONE. */
 s32 Wfc_StepWait(void) {
     s32 Wfc_AdvanceSessionState(s32);
-    if (Wfc_AdvanceSessionState((s32)(Wfc_GetWorkBlock(1) + 0xA)) == 1) {
-        return 0x12;
+    if (Wfc_AdvanceSessionState((s32)(Wfc_GetWorkBlock(WFC_WORK_CONTROL) + WFC_CONTROL_STEP_STATE)) == 1) {
+        return WFC_SESSION_STATE_ENDED;
     }
-    return 0x11;
+    return WFC_STEP_DONE;
 }
 

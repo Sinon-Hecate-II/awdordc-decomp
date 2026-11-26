@@ -429,10 +429,12 @@ void WaypointPanel_RefreshCoIcons(void *panel) {
     }while(i<count);
 }
 
-void func_ov003_021f01cc(void *arg0) {
+/* Mirror the waypoint panel's open flag into the scene's map-confirm state: map
+ * confirm is enabled while the panel is open and disabled while it is closed. */
+void Ov003_UpdateMapConfirmFromPanel(void *panel) {
     M2C_UNK Ov003_SetMapConfirmEnabled();
     M2C_UNK Ov003_SetMapConfirmDisabled();
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x18) >> 0x1F) != 0) {
+    if (((u32) (M2C_FIELD(panel, u8 *, OV003_FLAGS) << 0x18) >> 0x1F) != 0) {
         Ov003_SetMapConfirmEnabled();
         return;
     }

@@ -26,12 +26,14 @@ extern M2C_UNK data_ov001_0219166c, data_ov001_02191684, data_ov001_021916cc;
 
 /* Initialize the active map state pointed to by the global from the allocated buffer p and the config a. */
 
-void func_ov001_021887ec(void *arg0) {
+/* General WFC event handler installed for the download-play command channel: a
+ * connect-failed status is fatal, so record the failure state and halt. */
+void Ov001_HandleGeneralWfcEvent(void *event) {
     M2C_UNK SystemHalt();
-    if (M2C_FIELD(arg0, u16 *, 2) != 8) {
+    if (M2C_FIELD(event, u16 *, WH_EVENT_STATUS) != WH_STATUS_CONNECT_FAILED) {
         return;
     }
-    SetWhStatus(9);
+    SetWhStatus(WH_STATUS_PARENT_START);
     SystemHalt();
 }
 
@@ -55,7 +57,7 @@ s32 Ov001_StartCommandChannel(void) {
 void Ov001_HandleCommandChannelStartResult(void *event) {
 s32 WFC_SetGeneralHandler(void *);
 if(M2C_FIELD(event,u16 *,WH_EVENT_STATUS)){SetWhError();SetWhStatus(WH_STATUS_ERROR);return;}
-if(WFC_SetGeneralHandler((void *)func_ov001_021887ec)){SetWhError();SetWhStatus(WH_STATUS_ERROR);return;}
+if(WFC_SetGeneralHandler((void *)Ov001_HandleGeneralWfcEvent)){SetWhError();SetWhStatus(WH_STATUS_ERROR);return;}
 SetWhStatus(WH_STATUS_IDLE);
 }
 
@@ -107,10 +109,13 @@ void Ov001_SetChildIndicateCallback(s32 arg0) {
     M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x4C) = arg0;
 }
 
-void Ov001_GetPlayerData(s32 arg0) {
+/* Return player `playerIndex`'s data block in the download-play (data-sharing)
+ * channel of the WH connection's work object. */
+void Ov001_GetPlayerData(s32 playerIndex) {
 extern M2C_UNK gWhWork;
 void WFC_GetPlayerData(void *, void *, s32);
-WFC_GetPlayerData((u8 *)M2C_FIELD(&gWhWork, void **, 4)+0x13E0,(u8 *)M2C_FIELD(&gWhWork, void **, 4)+0x1C00,arg0);
+void *connection = M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION);
+WFC_GetPlayerData((u8 *)connection+WH_DS_CHANNEL,(u8 *)connection+WH_DS_PLAYERS,playerIndex);
 }
 
 /* Step the DWC data-sharing exchange on the connection's channel: pass the step's
@@ -277,7 +282,7 @@ return 1;
 void Ov001_UpdateProfileSetup(void) {
     s32 Ov001_StartProfileTransfer(void);
     void Ov001_UpdateChildSearch(void);
-    void func_ov001_021893c0(void);
+    void Ov001_StartProfileDownloadPlay(void);
     void Ov001_UpdateLinkState(void);
     void Ov001_EnterProfileListSharing(void);
     void Ov001_UpdateProfileTask(void);
@@ -303,7 +308,7 @@ void Ov001_UpdateProfileSetup(void) {
         Ov001_UpdateChildSearch();
         return;
     case 3:
-        func_ov001_021893c0();
+        Ov001_StartProfileDownloadPlay();
         ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 4;
         return;
     case 4:
@@ -451,8 +456,10 @@ void Ov001_UpdateChildSearch(void) {
     }
 }
 
-void func_ov001_021893c0(void) {
+/* Profile-state step 3: start the DS Download Play transfer with the profile's
+ * group id and program id. */
+void Ov001_StartProfileDownloadPlay(void) {
     M2C_UNK Ov001_StartDownloadPlay(s32, u16);
     extern void *gOv001ProfileState;
-    Ov001_StartDownloadPlay(M2C_FIELD(gOv001ProfileState, s32 *, 0xAC8), M2C_FIELD(gOv001ProfileState, u16 *, 0x648));
+    Ov001_StartDownloadPlay(M2C_FIELD(gOv001ProfileState, s32 *, PROFILE_GROUP_ID), M2C_FIELD(gOv001ProfileState, u16 *, PROFILE_PROGRAM_ID));
 }

@@ -117,11 +117,14 @@ void func_ov005_02217264(M2C_UNK arg0) {
     CreateSpriteObject(&data_ov005_02220510, arg0);
 }
 
-void func_ov005_0221727c(void) {
+/* Clear the records screen's highlighted record and fade out the music that was
+ * playing for it. */
+void RecordsMenu_ClearHighlight(void) {
     M2C_UNK FadeOutMusic(M2C_UNK);
     extern M2C_UNK gRecordsMenuState;
+
     FadeOutMusic(0xF);
-    M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x8E) = -1;
+    M2C_FIELD(&gRecordsMenuState, RecordsScreen **, RECORDS_MENU_SCREEN)->highlighted = -1;
 }
 
 /* Records screen: finish the action RecordsMenu_BeginAction started: select the

@@ -594,7 +594,7 @@ s32 HighlightScenePanel(s32 panelIndex) {
         }
     }
     SetMenuCursor(panelIndex);
-    func_02094ba0(panelIndex);
+    ClearScenePanelRowsUnlessMessageBox(panelIndex);
     MarkSpriteLayer1Dirty();
     return 1;
 }

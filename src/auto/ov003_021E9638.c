@@ -287,10 +287,12 @@ s8 func_ov003_021e9c24(void *arg0) {
     return M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), s8 *, 4);
 }
 
-u8 func_ov003_021e9c30(void *arg0) {
+/* Whether the waypoint panel is in its compact layout: bits 2-3 of the panel
+ * flag byte hold WAYPOINT_PANEL_LAYOUT_COMPACT. */
+u8 IsWaypointPanelCompact(void *panel) {
     u8 var_r0;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1C) >> 0x1E) == 1) {
+    if (((u32) (M2C_FIELD(panel, u8 *, WAYPOINT_PANEL_FLAGS) << 0x1C) >> 0x1E) == WAYPOINT_PANEL_LAYOUT_COMPACT) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -346,10 +348,13 @@ Sync3DSpriteToTarget(M2C_FIELD(panel,void**,0x5c));Show3DSprite(M2C_FIELD(panel,
 }else Hide3DSprite(M2C_FIELD(panel,void**,0x5c));
 }
 
-u8 func_ov003_021e9e2c(void *arg0) {
+/* Whether the waypoint panel is in its counter-adjustment animation state: the
+ * high nibble of the panel flag byte holds WAYPOINT_PANEL_STATE_COUNTER.
+ * Clicking a waypoint counter then commits the value instead of opening it. */
+u8 IsWaypointPanelAdjustingCounter(void *panel) {
     u8 var_r0;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x18) >> 0x1C) == 3) {
+    if (((u32) (M2C_FIELD(panel, u8 *, WAYPOINT_PANEL_FLAGS) << 0x18) >> 0x1C) == WAYPOINT_PANEL_STATE_COUNTER) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -361,15 +366,16 @@ void func_ov003_021e9e4c(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x59) = 1;
 }
 
-u8 func_ov003_021e9e58(void *arg0) {
-    u8 var_r0;
+/* Whether the waypoint panel's slot option menu is open (state nibble 2). */
+u8 IsWaypointPanelOptionsOpen(void *panel) {
+    u8 open;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x18) >> 0x1C) == 2) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(panel, u8 *, WAYPOINT_PANEL_FLAGS) << 0x18) >> 0x1C) == WAYPOINT_PANEL_OPTIONS) {
+        open = 1;
     } else {
-        var_r0 = 0;
+        open = 0;
     }
-    return var_r0;
+    return open;
 }
 
 /* Reset the waypoint panel's slot/option transition state to the selected slot
@@ -430,9 +436,11 @@ M2C_FIELD(p,u8*,0x3a)&=~0x70;
 M2C_FIELD(p,u8*,0x3a)&=~0x8;
 }
 #pragma optimization_level reset
-void func_ov003_021ea134(s32 arg0) {
+/* Flag 3D sprite layer `layer` dirty on the current engine, so its texture is
+ * re-uploaded. */
+void Mark3DSpriteLayerDirty(s32 layer) {
     extern void *gCur3DSpriteEngine;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | (1 << arg0));
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | (1 << layer));
 }
 
 /* Draw the selected waypoint option's icon and description on the sub engine,

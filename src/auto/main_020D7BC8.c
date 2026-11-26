@@ -303,11 +303,11 @@ M2C_UNK SetMapConfigMode1(void) {
 /* Enter the versus battle: resume the saved versus battle when its save record
  * exists, otherwise open the map mode 1 (free-play/versus) setup screen. */
 void EnterVersusBattle(void) {
-    M2C_UNK func_020d4ac8(M2C_UNK);
+    M2C_UNK CreateSavedBattleView(M2C_UNK);
     extern M2C_UNK gSaveRecordExists;
 
     if (M2C_FIELD(&gSaveRecordExists, s8 *, SAVE_RECORD_TYPE_VERSUS) != 0) {
-        func_020d4ac8(SAVE_RECORD_TYPE_VERSUS);
+        CreateSavedBattleView(SAVE_RECORD_TYPE_VERSUS);
         return;
     }
     SetMapConfigMode1();

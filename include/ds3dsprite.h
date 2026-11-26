@@ -55,6 +55,16 @@
 #define DS3D_BANK_MODE6 0x0400
 #define DS3D_BANK_MODE7 0x0800
 
+/* Screen mode index Get3DSpriteScreenMode() returns for a 3D-sprite engine: which
+ * of the one-hot DS3D_BANK_MODE* bits the engine currently shows. */
+enum {
+    DS3D_SCREEN_MODE_0 = 0,
+    DS3D_SCREEN_MODE_1 = 1,
+    DS3D_SCREEN_MODE_2 = 2,
+    DS3D_SCREEN_MODE_3 = 3,
+    DS3D_SCREEN_MODE_4 = 4
+};
+
 /* Bank flags copied to DISPCNT's OBJ mapping and boundary fields. */
 #define DS3D_BANK_OBJ_MAPPING_1D 0x0008 /* bit 3: 1D OBJ character VRAM mapping, clear for 2D */
 #define DS3D_BANK_OBJ_1D 0x1000
@@ -166,9 +176,18 @@ typedef struct DS3DSpriteTransform {
     u8  filler_12[2];
 } DS3DSpriteTransform; /* 0x14 bytes */
 
+/* DS3DSpriteBank::irqFlags: the interrupt enables the bank turns on, read by
+ * Apply3DSpriteIrqConfig (itcm_01FF8F90). */
+#define DS3D_BANK_IRQ_FLAGS  0x04 /* u16 interrupt enables */
+#define DS3D_BANK_IRQ_VBLANK 0x0001 /* VBlank interrupt */
+#define DS3D_BANK_IRQ_HBLANK 0x0002 /* HBlank interrupt */
+#define DS3D_BANK_IRQ_VCOUNT 0x0004 /* VCount match interrupt */
+
 typedef struct DS3DSpriteBank {
     u16 flags;         /* +0x00 */
-    u8  filler_02[0x10];
+    u16 modeWord;      /* +0x02 DS3D_BANK_MODE_WORD_BITS* fields */
+    u16 irqFlags;      /* +0x04 DS3D_BANK_IRQ_* enables */
+    u8  filler_06[0x0C];
     u16 oamAttr;       /* +0x12 OBJ attribute word of the 3D sprite */
     DS3DSpriteMatrix matrixA; /* +0x14 transform including the screen offset */
     DS3DSpriteMatrix matrixB; /* +0x24 transform relative to the screen offset */
@@ -528,6 +547,10 @@ typedef struct UiModeState {
 #define DS3D_SPRITE_Z            0x2E /* u16 */
 #define DS3D_SPRITE_FLAGS        0x30 /* u8 DS3D_SPRITE_FLAG_* */
 #define DS3D_SPRITE_CHILD_COUNT  0x31 /* u8 number of children */
+/* The engine has twelve layers (indices 0..DS3D_LAYER_COUNT-1); a sprite created
+ * with no owner goes to DS3D_SPRITE_DEFAULT_LAYER. */
+#define DS3D_LAYER_COUNT         12
+#define DS3D_SPRITE_DEFAULT_LAYER 7
 #define DS3D_SPRITE_TEMPLATE     0x44 /* void *: the SpriteQuadTemplate the sprite draws (handed to AddSprite) */
 #define DS3D_SPRITE_SLEEP_FLAG   0x56 /* s16: 0 while the screen is awake, nonzero once it has put the console to sleep */
 #define DS3D_SPRITE_CELLS        0x64 /* void *the object's SpriteCellList (see sprite_grid.h) */
@@ -591,6 +614,9 @@ typedef struct DS3DSpriteOffsetTrack {
     s32 elapsed;    /* +0x60 path points shown so far */
 } DS3DSpriteOffsetTrack;
 
+
+#define DS3D_SPRITE_LIFETIME_ELAPSED  0x5C /* s32 frames a timed sprite has been alive */
+#define DS3D_SPRITE_LIFETIME_FRAMES   0x60 /* s32 frames a timed sprite lives before it deletes itself */
 
 /* Fields a 3D sprite object gains when it is a screen flash (CreateScreenFlash
  * creates it; the update callbacks in main_02080414 step it): the fade to white,
@@ -660,6 +686,7 @@ typedef struct ScenePanelState {
 #define DS3D_DIALOG_QUEUE_COUNT 8
 #define DS3D_MANAGER_PANEL_ROW_PAIRS 0x4A /* u8: text row pairs of the message panels */
 #define DS3D_MANAGER_TARGET_MODE 0x49 /* u8 DS3D_TARGET_* the 3D sprites are created on (Get3DSpriteTargetMode / Set3DSpriteTargetMode) */
+#define DS3D_MANAGER_MENU_CURSOR 0x4D /* s8 index of the message panel the menu cursor is on (GetMenuCursor / SetMenuCursor); 2 while both screens show a panel */
 
 /* The full-screen message box's state, at g3DSpriteManager+0x46.  Clear/Get/Set
  * and the two predicates (IsMessageBoxIdle, IsMessageBoxActive) all read or write

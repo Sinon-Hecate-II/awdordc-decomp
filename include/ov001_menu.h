@@ -45,7 +45,9 @@ enum {
 #define OV001_REGION_TASK          0x14 /* s32 id of the task animating or reading the menu */
 #define OV001_REGION_TIMER         0x18 /* u16 frames the empty region's menu stays up */
 #define OV001_REGION_BLEND         0x1A /* s8 blend level the fade step animates */
-#define OV001_REGION_SELECTED      0x1B /* s8 selected item: -1 none, -2 before input starts */
+#define OV001_REGION_SELECTED      0x1B /* s8 selected item: OV001_REGION_SELECTED_* */
+#define OV001_REGION_SELECTED_NONE    (-1) /* no item highlighted */
+#define OV001_REGION_SELECTED_PENDING (-2) /* input has not started yet */
 #define OV001_REGION_INDEX         0x1C /* u8 region the menu shows, index into the region tables */
 #define OV001_REGION_CLOSE_DELAY   0x1D /* u8 frames the region menu's close delay has waited */
 #define OV001_REGION_FADE_OUT      0x1E /* u8 nonzero: fade the menu out before closing it */

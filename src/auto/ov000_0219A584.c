@@ -2,7 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ov000_ai.h"
-extern u8 gAiUnitLoadCounts[64];
+extern u8 gAiUnitLoadCounts[AI_UNIT_LOAD_COUNT];
 extern u8 *gAiCommandState;
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
@@ -53,9 +53,13 @@ void ClearAiUnitActions(void) {
     }
 }
 
+/* Reset the AI's per-unit load counts (how often each unit was picked as a load
+ * target) so the turn plan starts over with fresh counts. */
 void ClearAiUnitLoadCounts(void) {
-s32 i=0; u8 *p=gAiUnitLoadCounts; u8 zero=i;
-do { i++; *p++=zero; } while(i<64);
+    s32 i = 0;
+    u8 *p = gAiUnitLoadCounts;
+    u8 zero = i;
+    do { i++; *p++ = zero; } while (i < AI_UNIT_LOAD_COUNT);
 }
 
 /* Pick the need state of an AI unit that has none yet: a unit below its kind's
@@ -99,9 +103,11 @@ if((s32)(gUnitKindMaxFuel[((u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26)*UN
 M2C_FIELD(unit,u16 *,MAP_UNIT_NEED_STATE)&=~MAP_UNIT_NEED_MASK;
 }
 
-void UpdateAiUnitRepairState(void *arg0) {
-    if ((u32) ((u32) (M2C_FIELD(arg0, u16 *, 6) << 0x19) >> 0x19) >= 0x3DU) {
-        M2C_FIELD(arg0, u16 *, 8) = (u16) (M2C_FIELD(arg0, u16 *, 8) & ~0x3000);
+/* A unit that is back to healthy HP no longer needs repair: clear the repair
+ * need from its MAP_UNIT_NEED_STATE field. */
+void UpdateAiUnitRepairState(void *unit) {
+    if ((u32) ((u32) (M2C_FIELD(unit, u16 *, MAP_UNIT_HEALTH) << 0x19) >> 0x19) >= MAP_UNIT_HEALTH_HEALTHY) {
+        M2C_FIELD(unit, u16 *, MAP_UNIT_NEED_STATE) = (u16) (M2C_FIELD(unit, u16 *, MAP_UNIT_NEED_STATE) & ~MAP_UNIT_NEED_MASK);
     }
 }
 

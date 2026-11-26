@@ -18,7 +18,7 @@ s32 GX_GetMatrixStackOverflow(s32 *overflow) {
     *overflow = (REG_GXSTAT & GXSTAT_STACK_OVERFLOW) >> GXSTAT_STACK_OVERFLOW_SHIFT;
     return 0;
 }
-void func_02003f34(void *arg0) {
+void G3X_ClearFifoWords(void *arg0) {
     s32 *p = (s32 *)arg0;
     s32 i;
     for (i = 0; i < 32; i++) {
@@ -119,16 +119,22 @@ s32 GX_ReleaseBankForPurpose(M2C_UNK *grant) {
     return (s32)banks;
 }
 
-void func_02003370(void) {
-    extern M2C_UNK data_0212dbd2;
-    *(s32 *)0x04000000 &= ~0x40000000;
-    GX_ReleaseBankForPurpose(&data_0212dbd2);
+/* Release the main engine's background extended-palette VRAM bank: switch the
+ * palette off in DISPCNT and give its bank grant back to the allocator. */
+void GX_ReleaseBankForBGExtPalette(void) {
+    extern M2C_UNK gVramBankGrantBGExtPalette;
+    REG_DISPCNT &= ~DISPCNT_BG_EXT_PALETTE;
+    GX_ReleaseBankForPurpose(&gVramBankGrantBGExtPalette);
 }
 
-void func_02003394(void) {
-    extern M2C_UNK data_0212dbd4;
-    *(s32 *)0x04000000 &= ~0x80000000;
-    GX_ReleaseBankForPurpose(&data_0212dbd4);
+/* Release the main engine's OBJ (sprite) extended-palette VRAM bank through the
+ * pending-release path: switch the palette off in DISPCNT and give its bank back
+ * to the allocator. */
+void GX_ReleaseBankForObjExtPalette(void) {
+    extern M2C_UNK gVramBankGrantOBJExtPltt;
+
+    REG_DISPCNT &= ~DISPCNT_OBJ_EXT_PALETTE;
+    GX_ReleaseBankForPurpose(&gVramBankGrantOBJExtPltt);
 }
 
 void func_020033b8(void) {
@@ -197,16 +203,22 @@ void GX_ReleaseBankGrantForOBJ(void) {
     GX_ReleaseBankGrant(&data_0212dbc8);
 }
 
+/* Release the main engine's background extended-palette VRAM bank: switch the
+ * palette off in DISPCNT and give its bank grant back to the allocator. */
 void GX_ReleaseBankGrantForBGExtPalette(void) {
-    extern M2C_UNK data_0212dbd2;
-    *(s32 *)0x04000000 &= ~0x40000000;
-    GX_ReleaseBankGrant(&data_0212dbd2);
+    extern M2C_UNK gVramBankGrantBGExtPalette;
+    REG_DISPCNT &= ~DISPCNT_BG_EXT_PALETTE;
+    GX_ReleaseBankGrant(&gVramBankGrantBGExtPalette);
 }
 
+/* Release the main engine's OBJ (sprite) extended-palette VRAM bank grant:
+ * switch the extended palette off in DISPCNT, then give the bank back to the
+ * VRAM allocator. */
 void GX_ReleaseBankGrantForObjExtPalette(void) {
-    extern M2C_UNK data_0212dbd4;
-    *(s32 *)0x04000000 &= ~0x80000000;
-    GX_ReleaseBankGrant(&data_0212dbd4);
+    extern M2C_UNK gVramBankGrantOBJExtPltt;
+
+    REG_DISPCNT &= ~DISPCNT_OBJ_EXT_PALETTE;
+    GX_ReleaseBankGrant(&gVramBankGrantOBJExtPltt);
 }
 
 void GX_ReleaseBankGrantForTex(void) {
@@ -274,8 +286,10 @@ s32 GX_GetBG0ScrPtr(void) {
     return (bank << 16) + GX_MAIN_VRAM_BASE + (scrBase << BG_SCR_BLOCK_SHIFT);
 }
 
-s32 func_020036b8(void) {
-    return (((s32) (*(u16 *)0x04001008 & 0x1F00) >> 8) << 0xB) + 0x06200000;
+/* Address of BG0's map data in the sub engine's background VRAM: the sub
+ * engine's VRAM base plus BG0's screen base block (in 2 KiB units). */
+s32 GX_GetBG0ScrPtrSub(void) {
+    return (((s32) (REG_SUB_BG0CNT & BGCNT_SCR_BASE_MASK) >> BGCNT_SCR_BASE_SHIFT) << BG_SCR_BLOCK_SHIFT) + GX_SUB_VRAM_BASE;
 }
 
 /* Address of BG1's map data in the main engine's background VRAM: the display's
@@ -288,8 +302,10 @@ s32 GX_GetBG1ScrPtr(void) {
     return (base << 16) + GX_MAIN_VRAM_BASE + (index << BG_SCR_BLOCK_SHIFT);
 }
 
+/* Address of BG1's map data in the sub engine's background VRAM: the sub
+ * engine's VRAM base plus BG1's screen base block. */
 s32 GX_GetBG1ScrPtrSub(void) {
-    return (((s32) (*(u16 *)0x0400100A & 0x1F00) >> 8) << 0xB) + 0x06200000;
+    return (((s32)(REG_SUB_BG1CNT & BGCNT_SCR_BASE_MASK) >> BGCNT_SCR_BASE_SHIFT) << BG_SCR_BLOCK_SHIFT) + GX_SUB_VRAM_BASE;
 }
 
 /* Address of BG2's map data in the main engine's background VRAM: the display's
@@ -326,8 +342,10 @@ s32 GX_GetBG0CharPtr(void) {
     return (bank << 16) + GX_MAIN_VRAM_BASE + (charBase << 14);
 }
 
+/* Address of BG0's character data in the sub engine's background VRAM: the sub
+ * engine's VRAM base plus BG0's character base block. */
 s32 GX_GetBG0CharPtrSub(void) {
-    return (((s32) (*(u16 *)0x04001008 & 0x3C) >> 2) << 0xE) + 0x06200000;
+    return (((s32)(REG_SUB_BG0CNT & BGCNT_CHAR_BASE_MASK) >> BGCNT_CHAR_BASE_SHIFT) << BG_CHAR_BLOCK_SHIFT) + GX_SUB_VRAM_BASE;
 }
 
 /* Return the main-engine BG1 character base address: the display's background
@@ -340,8 +358,10 @@ s32 GX_GetBG1CharPtr(void) {
     return (bank << 16) + GX_MAIN_VRAM_BASE + (charBase << 14);
 }
 
+/* Address of BG1's character data in the sub engine's background VRAM: the sub
+ * engine's VRAM base plus BG1's character base block (in 16 KiB units). */
 s32 GX_GetBG1CharPtrSub(void) {
-    return (((s32) (*(u16 *)0x0400100A & 0x3C) >> 2) << 0xE) + 0x06200000;
+    return (((s32) (REG_SUB_BG1CNT & BGCNT_CHAR_BASE_MASK) >> BGCNT_CHAR_BASE_SHIFT) << 14) + GX_SUB_VRAM_BASE;
 }
 
 /* Return the main-engine BG2 character/bitmap base address.  BG2 is a character
@@ -375,14 +395,17 @@ void func_02003984(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     *arg0 = arg1 | 0x40 | (arg2 << 8) | ((arg3 | (arg4 << 8)) << 0x10);
 }
 
-void GX_SetBlendControl(void *arg0, s32 arg1, s32 arg2) {
-    if (arg2 < 0) {
-        M2C_FIELD(arg0, s16 *, 0) = (s16) (arg1 | 0xC0);
-        M2C_FIELD(arg0, s16 *, 4) = (s16) (0 - arg2);
+/* Set a screen's brightness blend on its blend-control registers: `targets` are
+ * the BLDCNT layer target bits, and a positive `brightness` lightens the screen
+ * (BLDY) while a negative one darkens it by its absolute value. */
+void GX_SetBlendControl(void *regs, s32 targets, s32 brightness) {
+    if (brightness < 0) {
+        M2C_FIELD(regs, s16 *, 0) = (s16)(targets | GX_BLDCNT_EFFECT_DARKEN);
+        M2C_FIELD(regs, s16 *, 4) = (s16)(0 - brightness);
         return;
     }
-    M2C_FIELD(arg0, s16 *, 0) = (s16) (arg1 | 0x80);
-    M2C_FIELD(arg0, s16 *, 4) = (s16) arg2;
+    M2C_FIELD(regs, s16 *, 0) = (s16)(targets | GX_BLDCNT_EFFECT_BRIGHTEN);
+    M2C_FIELD(regs, s16 *, 4) = (s16)brightness;
 }
 
 /* Write a blend-state record: BLDCNT (the two target-plane masks and the effect
@@ -480,10 +503,12 @@ REG_GX_TEXIMAGE_PARAM=0;
 REG_GX_TEXPLTT_BASE=0;
 }
 
-void G3X_ClearFifo(void){
-func_02003f34(0x4000400);
-while(*(volatile u32 *)0x4000600&0x8000000){
-}
+/* Clear the geometry engine's command FIFO: zero the FIFO's words, then wait for
+ * the engine to drain what is left (GXSTAT's geometry-busy flag). */
+void G3X_ClearFifo(void) {
+    func_02003f34(GX_FIFO_ADDR);
+    while (REG_GXSTAT & GXSTAT_GEOMETRY_BUSY) {
+    }
 }
 
 

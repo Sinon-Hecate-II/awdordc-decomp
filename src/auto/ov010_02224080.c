@@ -42,11 +42,14 @@ s32 VoiceLink_BuildStepPacket(void *context, s32 step, void *packet, u32 size) {
     return 0;
 }
 
-s32 VoiceLink_TrySendStep(s32 arg0, s32 arg1) {
+/* Send the packet of one voice-link exchange step: the shared-context link mode
+ * (2) has no per-peer exchange to step and refuses with -3. */
+s32 VoiceLink_TrySendStep(VoiceLinkContext *context, s32 step) {
     s32 VoiceLink_SendPacket(void *, s32);
     extern M2C_UNK gLinkConfig;
-    if (M2C_FIELD(&gLinkConfig, s32 *, 0x10) == 2) return -3;
-    return VoiceLink_SendPacket(arg0, arg1);
+
+    if (M2C_FIELD(&gLinkConfig, s32 *, LINK_CONFIG_MODE) == 2) return -3;
+    return VoiceLink_SendPacket(context, step);
 }
 
 #pragma opt_strength_reduction off
@@ -200,14 +203,17 @@ s32 VoiceLink_SendPacket(void *context, s32 step) {
     return -4;
 }
 
-void VoiceLink_SetPacketFromContext(void *arg0, void *arg1) {
+/* Fill a broadcast packet from its exchange context: for a packet whose flag byte
+ * is 1, copy the context's peer id and the link's connected-peer mask into the
+ * packet's peer id and sequence fields. */
+void VoiceLink_SetPacketFromContext(VoiceLinkContext *context, VoiceLinkPacket *packet) {
     extern M2C_UNK gVoiceLinkState;
 
-    if (M2C_FIELD(arg1, u8 *, 0xa) != 1) {
+    if (packet->flag != 1) {
         return;
     }
-    M2C_FIELD(arg1, u8 *, 0xb) = M2C_FIELD(arg0, u8 *, 4);
-    M2C_FIELD(arg1, s32 *, 0xc) = M2C_FIELD(&gVoiceLinkState, s32 *, 4);
+    packet->peerId = context->peerId;
+    packet->sequence = ((VoiceLinkState *) &gVoiceLinkState)->peerMask;
 }
 
 /* Send the reply packet to every connected peer except ourselves, counting the
@@ -215,7 +221,6 @@ void VoiceLink_SetPacketFromContext(void *arg0, void *arg1) {
  * peer set in the exchange context. Returns -4 when nothing could be sent. */
 s32 VoiceLink_BroadcastPacket(void *context, void *packet) {
     s32 SendTransferToPeer(u8, void *, u32);
-    void VoiceLink_SetPacketFromContext(void *, void *);
     extern M2C_UNK gLinkConfig;
     extern M2C_UNK gVoiceLinkState;
     M2C_UNK contextPtr;
@@ -592,26 +597,30 @@ void Link_FreePacket(void *packet) {
 
 #pragma optimization_level 3
 #pragma peephole off
-void func_ov010_02224f28(void) {
-extern M2C_UNK data_ov010_0222c02c;
+void VoiceActivity_Reset(void) {
+extern M2C_UNK gVoiceActivityState;
 s32 i;
 for(i=0;i<4;i++)data_ov010_0222d920[i]=0x1000000;
 data_ov010_0222d914[1]=0;
 data_ov010_0222d914[0]=0;
-M2C_FIELD(&data_ov010_0222c02c,s32 *,0)=0;
-M2C_FIELD(&data_ov010_0222c02c,s32 *,4)=0;
+M2C_FIELD(&gVoiceActivityState,s32 *,0)=0;
+M2C_FIELD(&gVoiceActivityState,s32 *,4)=0;
 data_ov010_0222d914[2]=0;
 }
 #pragma scheduling reset
 #pragma opt_common_subs reset
 #pragma peephole reset
 #pragma optimization_level 4
-void func_ov010_02224f74(s32 arg0) {
+/* Copy the voice-activity detector's state into the caller's snapshot: the
+ * speaking flag, the last level, and the silence tuning and window.  A null
+ * destination is ignored. */
+void VoiceActivity_CopyState(s32 *out) {
     M2C_UNK MI_CpuCopy8(M2C_UNK *, s32, M2C_UNK);
-    extern M2C_UNK data_ov010_0222c02c;
-    if (arg0 == 0) {
+    extern M2C_UNK gVoiceActivityState;
+
+    if (out == NULL) {
         return;
     }
-    MI_CpuCopy8(&data_ov010_0222c02c, arg0, 0x10);
+    MI_CpuCopy8(&gVoiceActivityState, (s32) out, VOICE_ACTIVITY_STATE_SIZE);
 }
 

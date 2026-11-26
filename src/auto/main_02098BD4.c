@@ -57,7 +57,11 @@ typedef struct TextState0209 {
     s8  palette;            /* +0x57 glyph palette */
     u8  width;              /* +0x58 tile width of the line */
     u8  height;             /* +0x59 tile height of the line */
+    u8  filler_5A[2];
+    u8  flags;              /* +0x5C TEXT_FLAG_* */
 } TextState0209;
+/* TextState0209.flags bits. */
+#define TEXT_FLAG_PENDING_REDRAW 0x02 /* set: clear and redraw the line on the next step */
 
 /* Indexes the CO face layout table by expression (0..11, in three-step groups)
  * and by the face's variant flag, and returns the face tile record chosen. */
@@ -509,7 +513,7 @@ void WriteCachedGlyphTilemap(u16 *tilemap, s32 firstTile, s32 tileCount) {
 
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
-s32 func_0209953c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
+s32 DrawCachedTextToTilemap(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
     extern void *gCur3DSpriteEngine;
     s32 StringCompare(void *, void *);
     s32 StringLength(M2C_UNK);
@@ -671,17 +675,26 @@ u8 IsTextWaitingForMessageBox(void *text) {
     return waiting;
 }
 
-s32 func_020999e8(void *a){
- u16 *base=M2C_FIELD(a,u16**,0x40);s32 x,y;
- if(!base)return 0;
- x=M2C_FIELD(a,u8*,0x4a);y=M2C_FIELD(a,u8*,0x4b);
- return (s32)(base+x+(y<<5));
+/* Pointer to the text object's current glyph cell in its line cell buffer (the
+ * cursor position); 0 when the object has no cell buffer. */
+s32 GetTextCursorCell(TextState0209 *text) {
+    u16 *cells = text->cells;
+    s32 x, y;
+
+    if (!cells) return 0;
+    x = text->cellX;
+    y = text->cellY;
+    return (s32)(cells + x + (y << 5));
 }
 
-u16 *func_02099a0c(void *arg0) {
- u16 *base=M2C_FIELD(arg0,u16 **,0x40);
- if(base==0) return 0;
- return base + M2C_FIELD(arg0,u8 *,0x48) + (M2C_FIELD(arg0,u8 *,0x49)<<5);
+/* Pointer to the first glyph cell of the text object's current line in its line
+ * cell buffer; 0 when the object has no cell buffer. */
+u16 *GetTextLineStartCell(void *arg0) {
+    TextState0209 *text = arg0;
+    u16 *cells = text->cells;
+
+    if (cells == 0) return 0;
+    return cells + text->lineX + (text->lineY << 5);
 }
 
 /* Erase the text object's drawn cell area in its glyph cell buffer and invoke
@@ -703,18 +716,21 @@ M2C_UNK EndTextLine(TextState0209 *text) {
     text->column = 0;
 }
 
-M2C_UNK func_02099a9c(void *a){
- s32 n=M2C_FIELD(a,u8*,0x4b)-M2C_FIELD(a,u8*,0x49)+2;
- if(M2C_FIELD(a,u8*,0x59)<n)M2C_FIELD(a,u8*,0x59)=n;
- M2C_FIELD(a,u8*,0x4b)=M2C_FIELD(a,u8*,0x49);
+/* Close the text object's current line vertically: record how many rows it spans
+ * in the object's height, then move the cursor back to the line's first row. */
+M2C_UNK EndTextLineRows(TextState0209 *text) {
+    s32 rows = text->cellY - text->lineY + 2;
+
+    if (text->height < rows) text->height = rows;
+    text->cellY = text->lineY;
 }
 
-void func_02099ac4(void *arg0) {
-    M2C_UNK EndTextLine();
-    M2C_UNK func_02099a9c(void *);
-    EndTextLine();
-    func_02099a9c(arg0);
-    M2C_FIELD(arg0, u8 *, 0x5C) = (u8) (M2C_FIELD(arg0, u8 *, 0x5C) | 2);
+/* Close the text object's current line in both directions (record its width and
+ * height, move the cursor back to the line's origin) and flag the line for redraw. */
+void EndTextLineAndMarkRedraw(TextState0209 *text) {
+    EndTextLine(text);
+    EndTextLineRows(text);
+    text->flags |= TEXT_FLAG_PENDING_REDRAW;
 }
 
 u8 IsLeadByte(u8 *arg0) {

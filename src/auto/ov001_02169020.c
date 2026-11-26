@@ -52,11 +52,14 @@ s32 GetFontCmapGlyphIndex(void *cmap, u32 ch) {
     return glyph;
 }
 
-void Ov001_InitFontSet(void *arg0, M2C_UNK arg1) {
-    M2C_UNK func_ov001_0216aab0(M2C_UNK, void *);
-    extern M2C_UNK func_ov001_0216ad40;
-    func_ov001_0216aab0(arg1, arg0);
-    M2C_FIELD(arg0, M2C_UNK **, 4) = &func_ov001_0216ad40;
+/* Initialise the font `font` from the parsed NFTR `resource`: relocate the
+ * resource's pointers, store its FINF block as the font's resource, and install
+ * the default wide-character decoder. */
+void Ov001_InitFontSet(Ov001Font *font, Ov001FontResource *resource) {
+    M2C_UNK func_ov001_0216aab0(Ov001FontResource *, Ov001FontResource **);
+    u16 DecodeFontChar(u16 **);
+    func_ov001_0216aab0(resource, &font->resource);
+    font->decodeChar = (s32 (*)(s32 *))DecodeFontChar;
 }
 
 /* Glyph index of character code `ch` in the font resource `resourcePtr`: walk the

@@ -32,6 +32,7 @@
 #define KEYPAD_CODE_NEXT    0x11
 #define KEYPAD_CODE_CLEAR   0x12
 #define KEYPAD_CODE_CONFIRM 0x13
+#define KEYPAD_CODE_NONE    0x1F /* KEYPAD_CODE while no key has been pressed */
 
 #define KEYPAD_REPEAT_DELAY 0x28 /* releases before the held delete key repeats */
 #define KEYPAD_REPEAT_STEP  7    /* counter drop per produced delete */

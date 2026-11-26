@@ -142,7 +142,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
     s32 SBServerGetIp(s32 *);
     s32 func_020617b4(void *);
     s32 func_02060c90(void *);
-    u16 func_02060c98(void *);
+    u16 SBServerGetQueryPort(void *);
     s32 GetLocalIpAddressNetworkOrder(void);
     u16 SBServerGetPort(void *);
     u32 RandomBelow(u32);
@@ -175,7 +175,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
                 s = GetConnection();
                 M2C_FIELD(s + index * 4, s32 *, 0x210) = func_02060c90((void *)data);
                 s = GetConnection();
-                M2C_FIELD(s + index * 2, u16 *, 0x290) = func_02060c98((void *)data);
+                M2C_FIELD(s + index * 2, u16 *, 0x290) = SBServerGetQueryPort((void *)data);
                 deferred = result;
             }
         } else {

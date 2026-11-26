@@ -417,10 +417,12 @@ void AppendString(s32 *cursor, M2C_UNK *string, s32 *length) {
     *cursor += size;
 }
 
-void AppendByte(s8 **arg0, s8 arg1, s32 *arg2) {
-    **arg0 = arg1;
-    *arg2 += 1;
-    *arg0 += 1;
+/* Append one byte `value` to a packet buffer at `*cursor`: store it, then advance
+ * the cursor and add one to the packet length in `*length`. */
+void AppendByte(s8 **cursor, s8 value, s32 *length) {
+    **cursor = value;
+    *length += 1;
+    *cursor += 1;
 }
 
 /* Appends `value` to the packet buffer at `*cursor` in big-endian byte order

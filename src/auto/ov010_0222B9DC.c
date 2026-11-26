@@ -221,15 +221,20 @@ M2C_UNK StringStorageReplaceWithText(void *storage, M2C_UNK pos, u32 remove, M2C
     return (M2C_UNK)StringStorageReplace(storage, pos, remove, (void *)text, (u8 *)text + StringLength(text), unused);
 }
 
-s32 func_ov010_0222bd24(s32 arg0) {
+s32 ReleaseNetErrorSpriteText(s32 arg0) {
     M2C_UNK StringStorageFree(s32);
     StringStorageFree(arg0 + 0x44);
     return arg0;
 }
 
-s32 func_ov010_0222bd3c(s32 arg0) {
-    StringStorageFree(arg0 + 0x44);
-    MemFree(arg0);
-    return arg0;
+/* Destroy a network-error message sprite: release the text it keeps at +0x44 and
+ * free the sprite itself.  Returns the sprite (it is the vtable's free slot). */
+void *FreeNetErrorSprite(void *sprite) {
+    M2C_UNK StringStorageFree();
+    M2C_UNK MemFree();
+
+    StringStorageFree((u8 *) sprite + 0x44);
+    MemFree(sprite);
+    return sprite;
 }
 

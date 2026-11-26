@@ -90,7 +90,17 @@ void BuildSaveCodeWord(u8 bitCount, M2C_UNK *code) {
     }
 }
 #pragma opt_common_subs reset
-s32 func_02046088(void *a) { u8 *p=a; s32 i=0;do {if(p[i])return 1;i++;}while(i<32);return 0; }
+/* Whether the SAVE_MAP_NAME_SIZE-byte map name the save slot image holds at
+ * `text` has any text in it (any nonzero byte). */
+s32 IsSaveMapNamePresent(void *text) {
+    u8 *p = text;
+    s32 i = 0;
+    do {
+        if (p[i]) return 1;
+        i++;
+    } while (i < SAVE_MAP_NAME_SIZE);
+    return 0;
+}
 
 /* Whether a saved slot's 4-byte player code word is consistent with the slot's
  * stored code word: the player code's first byte must be a valid text character,
@@ -446,7 +456,7 @@ s32 VerifySaveBlock(void *arg0) {
 
 /* Validate an object's slots and resource references; returns 0 on failure. */
 s32 func_02046b8c(void *obj) {
-    s32 func_02046088(void *);
+    s32 IsSaveMapNamePresent(void *);
     extern M2C_UNK data_020ea940;
     M2C_UNK sp0;
     u8 slot;
@@ -459,7 +469,7 @@ s32 func_02046b8c(void *obj) {
     if ((u32) slot > 2U) {
         return 0;
     }
-    if (func_02046088(obj + 0x40) == 0) {
+    if (IsSaveMapNamePresent(obj + 0x40) == 0) {
         return 0;
     }
     if (ByteCompareN(obj + 0xC0, &data_020ea940, 4) != 0) {

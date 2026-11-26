@@ -343,11 +343,14 @@ void GetOwnFriendCode(s32 arg0) {
     BuildProfilePlayerCode(var_r0 + 4);
 }
 
-void CopyLocalPlayerRecord(M2C_UNK arg0) {
+/* Copy the local player's 12-byte identity record out of the profile save
+ * block's profile-id block into `record`, and return whether that record is
+ * present (its kind is nonzero). */
+s32 CopyLocalPlayerRecord(void *record) {
     M2C_UNK IsPlayerRecordPresent(M2C_UNK);
     M2C_UNK GetLocalPlayerRecord(s32, M2C_UNK);
-    GetLocalPlayerRecord(GetProfileSaveBlock() + 4, arg0);
-    IsPlayerRecordPresent(arg0);
+    GetLocalPlayerRecord(GetProfileSaveBlock() + PROFILE_ID_BLOCK, record);
+    return IsPlayerRecordPresent(record);
 }
 
 void func_020c5424(void) {
@@ -356,9 +359,9 @@ void func_020c5424(void) {
 }
 
 u64 GetBattleSlotMapCode(s32 arg0) {
-u64 func_02032558();
+u64 GetPlayerRecordCode();
 if(arg0==0)return 0;
-return func_02032558();
+return GetPlayerRecordCode();
 }
 
 s32 func_020c544c(s32 arg0) {
@@ -376,14 +379,16 @@ void func_020c5464(void) {
     func_020c544c();
 }
 
-void func_020c5474(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02031f58(s32, M2C_UNK, M2C_UNK);
-    func_02031f58(GetProfileSaveBlock() + 4, arg0, arg1);
+/* Whether `code` is a valid player (friend) code for this profile's game id: the
+ * game id is read from the profile-id block GetProfileSaveBlock returns. */
+s32 IsPlayerCodeValidForProfile(u64 code) {
+    M2C_UNK func_02031f58(s32, u64);
+    return func_02031f58(GetProfileSaveBlock() + 4, code);
 }
 
 s32 FormatMapCodeString(s32 arg0) {
-    M2C_UNK func_02032004();
-    func_02032004();
+    M2C_UNK FormatPlayerCode();
+    FormatPlayerCode();
     return arg0;
 }
 
@@ -460,26 +465,31 @@ s32 CreateBattleSaveSlot(s32 slot, M2C_UNK summary) {
     return slot;
 }
 
-void func_020c5618(s32 arg0) {
-u8 sp0[12];
-InitPlayerCodeRecord(sp0);
-CreateBattleSaveSlot(arg0,(s32)sp0);
+/* Create a battle save in `slot` under the 64-bit player code given as its low
+ * and high words: build the slot's player-code record and register it. */
+void CreateBattleSaveSlotForPlayer(s32 slot, u32 codeLow, u32 codeHigh) {
+    u8 summary[12];
+
+    InitPlayerCodeRecord(summary, codeLow, codeHigh);
+    CreateBattleSaveSlot(slot, (s32) summary);
 }
 
-s32 func_020c5640(M2C_UNK arg0) {
+/* Find a free battle-save slot and register a battle save there from the 12-byte
+ * slot summary `summary`; returns the slot index, or -1 when no slot is free. */
+s32 CreateBattleSaveInFreeSlot(void *summary) {
     s32 FindFreeBattleSaveSlot();
     s32 CreateBattleSaveSlot(s32, M2C_UNK);
-    s32 temp_r0;
+    s32 slot;
 
-    temp_r0 = FindFreeBattleSaveSlot();
-    if (temp_r0 < 0) {
+    slot = FindFreeBattleSaveSlot();
+    if (slot < 0) {
         return -1;
     }
-    return CreateBattleSaveSlot(temp_r0, arg0);
+    return CreateBattleSaveSlot(slot, (M2C_UNK) summary);
 }
 
 #pragma opt_common_subs off
-s32 func_020c5664(s32 arg0) {
+s32 DeleteBattleSaveSlot(s32 arg0) {
 s32 base,p,off,result;
 if(!CanModifyBattleSave()) return 0;
 result=0;

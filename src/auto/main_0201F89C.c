@@ -712,13 +712,16 @@ checkSpace:
     return writableBytes;
 }
 
-s32 SocketGetSendRingFreeBytes(void *arg0) {
-    volatile u16 *q = M2C_FIELD(arg0, void **, 0x68) + 0x100;
-    s32 c = M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), s32 *, 0xf8);
-    s32 a = q[0];
-    s32 b = q[1];
-    b = b - a - 1;
-    if (b < 0) b += c;
-    return b;
+/* Bytes free in the socket's send ring: the gap between the read and write
+ * positions, minus the one slot that tells a full ring from an empty one. */
+s32 SocketGetSendRingFreeBytes(void *sock) {
+    void *connection = M2C_FIELD(sock, void **, SOCK_TX_CONN);
+    volatile u16 *positions = connection + SEND_RING_WRITE;
+    s32 capacity = M2C_FIELD(connection, s32 *, SEND_RING_SIZE);
+    s32 writePos = positions[0];
+    s32 readPos = positions[1];
+    readPos = readPos - writePos - 1;
+    if (readPos < 0) readPos += capacity;
+    return readPos;
 }
 

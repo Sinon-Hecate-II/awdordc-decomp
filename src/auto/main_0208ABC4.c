@@ -319,12 +319,14 @@ void func_0208b600(void *arg0) {
     func_0208b884(M2C_FIELD(arg0, s32 *, 0x34));
 }
 
-void *func_0208b610(s32 arg0) {
+/* Create the draw-proxy child sprite for a scrolling-text sprite: its per-frame
+ * step draws `owner`'s text, which it keeps at +0x34. */
+void *CreateScrollingTextRenderSprite(s32 owner) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_021026d8;
-    void *p = CreateSpriteFromClass(&data_021026d8, 1);
-    M2C_FIELD(p, s32 *, 0x34) = arg0;
-    return p;
+    extern M2C_UNK gScrollingTextRenderSpriteClass;
+    void *sprite = CreateSpriteFromClass(&gScrollingTextRenderSpriteClass, 1);
+    M2C_FIELD(sprite, s32 *, 0x34) = owner;
+    return sprite;
 }
 
 /* Constructor of the scrolling text sprite: run the sprite actor's shared base
@@ -369,9 +371,10 @@ M2C_FIELD(arg0,s16 *,0x5a)=0;M2C_FIELD(arg0,u8 *,0x5c)=0;
 gCur3DSpriteEngine=old;
 }
 
-void SetTextById(M2C_UNK arg0, M2C_UNK arg1) {
+/* Draw the localized message `textId` into a text sprite's text texture. */
+void SetTextById(M2C_UNK sprite, M2C_UNK textId) {
     s32 GetLocalizedText(M2C_UNK);
-    SetSpriteText(arg0, GetLocalizedText(arg1));
+    SetSpriteText(sprite, GetLocalizedText(textId));
 }
 
 /* Refresh the display banks selected by the entity's mode, then allocate and link a handle for it. */
@@ -403,7 +406,7 @@ void func_0208b778(void *entity) {
         i++;
     } while (i < 2);
     gCur3DSpriteEngine = savedBank;
-    M2C_FIELD(entity, void **, 0x60) = func_0208b610((s32)entity);
+    M2C_FIELD(entity, void **, 0x60) = CreateScrollingTextRenderSprite((s32)entity);
 }
 
 void func_0208b868(void *arg0) {

@@ -220,8 +220,13 @@ void Ov001_BuildKeyMask(int round, signed char *mask, int size, signed char *key
     }
 }
 #pragma thumb on
-void Ov001_XorSecondHalf(signed char *a,unsigned char *b,int n) {
- int i; int half=n/2;
- for(i=0;i<half;i++) { b[half+i] ^= a[i]; }
+/* Mix one round of the room-token cipher: XOR the first half of `keyMask` into
+ * the second half of `data`. */
+void Ov001_XorSecondHalf(signed char *keyMask, unsigned char *data, int size) {
+    int i;
+    int half = size / 2;
+    for (i = 0; i < half; i++) {
+        data[half + i] ^= keyMask[i];
+    }
 }
 #pragma thumb off

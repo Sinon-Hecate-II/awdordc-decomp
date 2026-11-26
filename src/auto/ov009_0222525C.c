@@ -316,12 +316,15 @@ void SpawnLinkPlayerAnnounce(M2C_UNK owner) {
     }
 }
 
-M2C_UNK func_ov009_022257d4(s32 arg0) {
+/* Clear the connected-players request record, install it as the link state's
+ * in-flight request (LINK_STATE_CONNECT_REQUEST) and send the request. */
+M2C_UNK SubmitConnectRequest(s32 request) {
     M2C_UNK RequestConnectedPlayers();
     extern M2C_UNK gLinkState;
-    M2C_FIELD(arg0, u8 *, 0) = 0;
-    M2C_FIELD(arg0, u16 *, 2) = 0;
-    M2C_FIELD(&gLinkState, s32 *, 0x24) = arg0;
+
+    M2C_FIELD(request, u8 *, LINK_REQUEST_SENT) = 0;
+    M2C_FIELD(request, u16 *, LINK_REQUEST_PLAYERS) = 0;
+    M2C_FIELD(&gLinkState, s32 *, LINK_STATE_CONNECT_REQUEST) = request;
     return RequestConnectedPlayers();
 }
 
@@ -346,8 +349,8 @@ void func_ov009_02225864() {
 }
 
 void func_ov009_02225878(s32 arg0) {
-    M2C_UNK func_ov009_022257d4(s32);
-    func_ov009_022257d4(arg0 + 0x34);
+    M2C_UNK SubmitConnectRequest(s32);
+    SubmitConnectRequest(arg0 + 0x34);
 }
 
 void func_ov009_02225888(s32 arg0) {
@@ -697,10 +700,12 @@ void CreateLinkResultSprite(s32 callback, s32 owner) {
     }
 }
 
+/* Delete the overlay's live link-result sprite, if one exists. */
 void DeleteLinkResultSprite(void) {
     M2C_UNK DeleteSpriteObject();
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gLinkResultSpriteClass;
+
     if (FindObjectByClass(&gLinkResultSpriteClass) == 0) {
         return;
     }

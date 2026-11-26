@@ -541,10 +541,13 @@ void WFC_ClearSharedFlag(void) {
     }
 }
 
-s32 func_02011910(void) {
+/* The WFC command channel's link state object (the channel info block's
+ * WFC_INFO_LINK pointer, whose first u16 is the link state), or 0 while the
+ * channel is not initialized. */
+s32 WFC_GetLinkObject(void) {
 extern M2C_UNK gWfcChannelState;
 if(WFC_CheckReady()!=0)return 0;
-return M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),s32 *,4);
+return M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,WFC_CMD_STATE_INFO),s32 *,WFC_CMD_INFO_DATA);
 }
 
 /* The local player's aid in the WFC command channel's info block, 0 when the

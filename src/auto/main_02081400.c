@@ -136,10 +136,12 @@ void LoadNarcFileSection(M2C_UNK memberPath, M2C_UNK dest, M2C_UNK offset, M2C_U
     ReadFileSection(BuildNarcPath(memberPath), dest, offset, size);
 }
 
-void LoadNarcFileToSpriteBuffer(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Load the NARC member at `memberPath` into the 3D sprite engine's palette
+ * buffer at byte `paletteOffset`, `size` bytes long. */
+void LoadNarcFileToSpriteBuffer(M2C_UNK memberPath, M2C_UNK paletteOffset, M2C_UNK size) {
     s32 BuildNarcPath(M2C_UNK);
     M2C_UNK LoadFileToSpriteBuffer(s32, M2C_UNK, M2C_UNK);
-    LoadFileToSpriteBuffer(BuildNarcPath(arg0), arg1, arg2);
+    LoadFileToSpriteBuffer(BuildNarcPath(memberPath), paletteOffset, size);
 }
 
 /* Load the NARC member at `memberPath` into the main or sub engine's BG extended
@@ -159,10 +161,12 @@ void QueueNarcFileToBGExtPltt(M2C_UNK memberPath, M2C_UNK paletteSlot, M2C_UNK o
     QueueFileToBGExtPltt(BuildNarcPath(memberPath), paletteSlot, offset, size);
 }
 
-void func_0208166c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
- s32 BuildNarcPath(M2C_UNK);
- void LoadFileToObjExtPalette(M2C_UNK, M2C_UNK, M2C_UNK);
- LoadFileToObjExtPalette(BuildNarcPath(arg0),arg1,arg2);
+/* Load the NARC member at `memberPath` into the main OBJ extended palette at
+ * byte `paletteOffset`, `size` bytes long. */
+void LoadNarcFileToObjExtPalette(M2C_UNK memberPath, M2C_UNK paletteOffset, M2C_UNK size) {
+    s32 BuildNarcPath(M2C_UNK);
+    void LoadFileToObjExtPalette(M2C_UNK, M2C_UNK, M2C_UNK);
+    LoadFileToObjExtPalette(BuildNarcPath(memberPath), paletteOffset, size);
 }
 
 s32 func_0208168c(void *arg0, void *arg1) {
@@ -428,16 +432,18 @@ reset_tail:
     return;
 }
 
-u8 func_02081d18(void) {
+/* Try to switch the LCD back on: returns 1 while the power service refuses the
+ * request (the caller should retry) and 0 once the display is enabled. */
+u8 TryEnableLcd(void) {
     s32 SetLcdEnabled(M2C_UNK);
-    u8 var_r0;
+    u8 retry;
 
     if (SetLcdEnabled(1) == 0) {
-        var_r0 = 1;
+        retry = 1;
     } else {
-        var_r0 = 0;
+        retry = 0;
     }
-    return var_r0;
+    return retry;
 }
 
 void CreateSleepScreenSprites(void) {
@@ -482,15 +488,17 @@ u8 ShouldShowSleepScreen(void) {
     return result;
 }
 
+/* TRUE while the console's lid is closed (bit SHARED_LID_CLOSED of the shared
+ * work area's lid word), i.e. the game should go to sleep. */
 u8 IsSleepRequested(void) {
-    u8 var_r0;
+    u8 sleepRequested;
 
-    if (((s32) (*(u16 *)0x027FFFA8 & 0x8000) >> 0xF) != 0) {
-        var_r0 = 1;
+    if (((s32) (*(u16 *)SHARED_LID_WORD & SHARED_LID_CLOSED) >> 0xF) != 0) {
+        sleepRequested = 1;
     } else {
-        var_r0 = 0;
+        sleepRequested = 0;
     }
-    return var_r0;
+    return sleepRequested;
 }
 
 /* Per-frame screen-off handling for a screen's object: clear the object's
@@ -537,13 +545,15 @@ void func_02081ec8(void *arg0) {
     StartMicTestMeasurement();
 }
 
-void func_02081ee4(void) {
+/* While the lid is closed and no input lock is running, bring up the sleep
+ * screen's sprite (class gSleepRequestSpriteClass) owned by object 3. */
+void CreateSleepRequestSprite(void) {
     u8 ShouldShowSleepScreen(void);
-    extern M2C_UNK data_02101eac;
+    extern M2C_UNK gSleepRequestSpriteClass;
     if (ShouldShowSleepScreen() == 0) {
         return;
     }
-    CreateSpriteFromClass(&data_02101eac, 3);
+    CreateSpriteFromClass(&gSleepRequestSpriteClass, 3);
 }
 
 s8 *func_02081f08(void) { extern M2C_UNK gInputBlockState; volatile s8 *p=(s8 *)&gInputBlockState; p[4]++; return (s8 *)p; }

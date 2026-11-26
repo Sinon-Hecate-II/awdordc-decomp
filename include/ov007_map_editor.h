@@ -10,7 +10,7 @@
 #define MAP_EDITOR_PLAYER_COUNT  0x02 /* u8 players in use (assigned to team 1) */
 #define MAP_EDITOR_TEAM_MIN_PLAYERS 2 /* players in use needed for the map to have a team (MapEditor_PlayerHasTeam(-1)) */
 #define MAP_EDITOR_TERRAIN_KIND  0x03 /* u8 terrain kind (bits 0..4) the terrain brush paints */
-#define MAP_EDITOR_UNIT_COUNT    0x04 /* u8 units placed on the map */
+#define MAP_EDITOR_PROPERTY_COUNT 0x04 /* u8 total owned properties on the map (sum of the per-owner property grid) */
 #define MAP_EDITOR_MODIFIED      0x05 /* u8 nonzero once the map was edited */
 #define MAP_EDITOR_UNIT_FLAGS    0x06 /* u8 low 4 bits of the placed unit's record byte 0x0b */
 #define MAP_EDITOR_UNIT_OWNER    0x07 /* u8 1-based owner the unit brush places */
@@ -53,6 +53,19 @@ enum {
  * MapEditor_RebuildPaletteLists): the page's entry grid and the page markers row. */
 #define MAP_EDITOR_PANEL_ENTRY_LIST  0x58 /* MenuList007 *the palette page's entry grid */
 #define MAP_EDITOR_PANEL_MARKER_LIST 0x5C /* MenuList007 *the page markers row */
+
+/* The map editor's fill dialog (a 3D sprite from gMapEditorFillDialogClass):
+ * MapEditor_OpenFillDialog stores the preset FillMapTerrain should paint with,
+ * and confirming the dialog (MapEditor_ApplyFillPreset, the class's +0x3C
+ * callback) applies it. */
+#define MAP_EDITOR_FILL_PRESET 0x5C /* s32 FillMapTerrain preset (-1 clears the map) */
+
+/* Prompt texts (SetUiMessageText ids) of the fill menu's entries. */
+#define MAP_EDITOR_FILL_MESSAGE_SEA      0x46000000
+#define MAP_EDITOR_FILL_MESSAGE_PLAIN    0x46000001
+#define MAP_EDITOR_FILL_MESSAGE_WOODS    0x46000002
+#define MAP_EDITOR_FILL_MESSAGE_MOUNTAIN 0x46000003
+#define MAP_EDITOR_FILL_MESSAGE_CLEAR    0x46000004
 
 /* The editor's unit-count table: 5 player rows of 12 unit categories of units
  * on the map.  A second table caches one unit total per player. */

@@ -472,12 +472,12 @@ default:
 }
 }
 void func_ov003_021fca84(void *arg0) {
- s32 IsMapConfirmEnabled(); M2C_UNK Clear3DSpriteLayer(M2C_UNK); M2C_UNK MI_CpuFill8(s32,M2C_UNK,M2C_UNK); M2C_UNK func_020c8e40(); extern void *gCur3DSpriteEngine;
+ s32 IsMapConfirmEnabled(); M2C_UNK Clear3DSpriteLayer(M2C_UNK); M2C_UNK MI_CpuFill8(s32,M2C_UNK,M2C_UNK); M2C_UNK LoadCampaignMapHeaders(); extern void *gCur3DSpriteEngine;
  PanelFlagByte *flags=(PanelFlagByte *)((u8 *)arg0+0x3e);
  if(!flags->pending)return;
  flags->pending=0;
  switch(flags->mode) {
- case 0: if(!IsMapConfirmEnabled())return; Clear3DSpriteLayer(0); M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1; MI_CpuFill8(M2C_FIELD(arg0,s32 *,0x44)+0x186c,0,13); func_020c8e40(); Ov003_RefreshMapPreview(arg0,0); return;
+ case 0: if(!IsMapConfirmEnabled())return; Clear3DSpriteLayer(0); M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1; MI_CpuFill8(M2C_FIELD(arg0,s32 *,0x44)+0x186c,0,13); LoadCampaignMapHeaders(); Ov003_RefreshMapPreview(arg0,0); return;
  case 1: case 2: if(!IsMapConfirmEnabled())return; { register void *self = arg0; ((void (**)(void *))*(void **)self)[7](self); }; return;
  case 3: if(!IsMapConfirmEnabled())return; { register void *self = arg0; ((void (**)(void *))*(void **)self)[8](self); }; return;
  case 4: case 5: case 6: default: return;

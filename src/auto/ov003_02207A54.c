@@ -104,17 +104,19 @@ rowOffset+=MAP_SELECT_ROW_STRIDE;rowIndex++;
 }
 DrawMapSelectLabel(arg0);func_ov003_02207c7c(arg0);
 }
-u8 Ov003_GetSelectedRowIndex(void *arg0) {
-    s32 var_r0;
-    void *temp_r0;
+/* Index of the row selected in the map-select list: the pager's current entry id
+ * minus MAP_SELECT_ROW_ID_BASE, or 0xFF when no pager is open. */
+u8 Ov003_GetSelectedRowIndex(void *state) {
+    s32 rowId;
+    void *pager;
 
-    temp_r0 = *M2C_FIELD(arg0, void ***, 0x5C);
-    if (temp_r0 != NULL) {
-        var_r0 = M2C_FIELD(temp_r0, u16 *, 8);
+    pager = *M2C_FIELD(state, void ***, 0x5C);
+    if (pager != NULL) {
+        rowId = M2C_FIELD(pager, u16 *, MAP_SELECT_ENTRY_ID);
     } else {
-        var_r0 = -1;
+        rowId = -1;
     }
-    return (u8) (var_r0 - 0xB);
+    return (u8) (rowId - MAP_SELECT_ROW_ID_BASE);
 }
 
 void func_ov003_02207c7c(void *arg0) {

@@ -284,19 +284,23 @@ void FreeSaveIndicatorBlock(void *sprite) {
     HeapFreeBlock(block);
 }
 
-void func_020be168(M2C_UNK arg0) {
+/* Save-progress indicator completion: delete the indicator sprite once the
+ * background save task has finished. */
+void FinishSaveIndicator(void *sprite) {
     s32 IsSaveTaskRunning();
-    M2C_UNK DeleteSpriteObject(M2C_UNK);
+    void DeleteSpriteObject(void *);
     if (IsSaveTaskRunning() != 0) {
         return;
     }
-    DeleteSpriteObject(arg0);
+    DeleteSpriteObject(sprite);
 }
 
-void CreateSaveIndicator(s32 arg0) {
+/* Create the save-progress indicator sprite on the default layer, handing it the
+ * save block it will free once the background save task finishes. */
+void CreateSaveIndicator(void *block) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gSaveIndicatorClass;
-    M2C_FIELD(CreateSpriteFromClass(&gSaveIndicatorClass, 6), s32 *, 0x54) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&gSaveIndicatorClass, 6), void **, SAVE_INDICATOR_BLOCK) = block;
 }
 
 /* Whether a save is in progress: the save indicator sprite exists, or the save
@@ -424,7 +428,7 @@ void EraseAllSaveData(void) {
  * and the save records, set the default slot words and clear the per-slot
  * setting words. Runs at startup and whenever the settings magic is missing. */
 void InitDefaultGameSettings(void) {
-M2C_UNK func_02086b9c();M2C_UNK ClearRecordValues();M2C_UNK UnlockCosForMap(M2C_UNK);M2C_UNK SetCoUnlocked(s32,s32);M2C_UNK SetCoSavedMode(s32,s32);M2C_UNK func_020bf9f0(M2C_UNK);M2C_UNK func_020bfa30(M2C_UNK);M2C_UNK MapSettings_SetDefaults(M2C_UNK);M2C_UNK func_020e47f8();M2C_UNK ResetCampaignProgress();
+M2C_UNK func_02086b9c();M2C_UNK ClearRecordValues();M2C_UNK UnlockCosForMap(M2C_UNK);M2C_UNK SetCoUnlocked(s32,s32);M2C_UNK SetCoSavedMode(s32,s32);M2C_UNK SetMusicVolumeSetting(M2C_UNK);M2C_UNK SetSoundEffectVolumeSetting(M2C_UNK);M2C_UNK MapSettings_SetDefaults(M2C_UNK);M2C_UNK ClearAllCampaignSaveHeaders();M2C_UNK ResetCampaignProgress();
 s32 i,slot,entry; s32 flagOff,modeOff;
 M2C_FIELD(&gGameSettings,s32 *,0x128)=GAME_SETTINGS_MAGIC;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~15;
@@ -436,9 +440,9 @@ M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0x8000;
 MapSettings_SetDefaults(0);
 i=0;flagOff=0;modeOff=0;
 do{SetCoUnlocked(i,flagOff);SetCoSavedMode(i,modeOff);++i;}while(i<15);
-UnlockCosForMap(0);func_020e47f8();ResetCampaignProgress();func_02086b9c();ClearRecordValues();
+UnlockCosForMap(0);ClearAllCampaignSaveHeaders();ResetCampaignProgress();func_02086b9c();ClearRecordValues();
 M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380)|0x80;
-func_020bf9f0(95);func_020bfa30(95);
+SetMusicVolumeSetting(95);SetSoundEffectVolumeSetting(95);
 slot=0;
 M2C_FIELD(&gGameSettings,s32 *,0x140)=0;
 M2C_FIELD(&gGameSettings,s32 *,0x144)=1;

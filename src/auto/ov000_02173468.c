@@ -216,7 +216,7 @@ void Ov000_InfoWindow_LoadAssets(void *infoWindow) {
     M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK CreateScreenTransitions(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 GetUiColor(M2C_UNK);
-    M2C_UNK func_020af19c(M2C_UNK, M2C_UNK);
+    M2C_UNK CreateMapModeSubWallpaperSprite(M2C_UNK, M2C_UNK);
     s32 GetLocalizedFileName(M2C_UNK *);
     extern void **gCurrentMap;
     extern void *g3DSpriteEngineSub;
@@ -289,7 +289,7 @@ register s32 playerRecord;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
     ((EngineFlags_02173f78 *)gCur3DSpriteEngine)->bg1 = 1;
     ((EngineFlags_02173f78 *)gCur3DSpriteEngine)->bg2 = 1;
-    func_020af19c(3, 0xE);
+    CreateMapModeSubWallpaperSprite(3, 0xE);
     MI_CpuFill32(0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC), 0x40);
     player = 0;
     do {

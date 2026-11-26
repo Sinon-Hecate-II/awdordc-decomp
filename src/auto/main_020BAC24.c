@@ -96,10 +96,14 @@ void func_020bb0d0(M2C_UNK arg0) {
     func_0209ecf0(arg0, 0);
 }
 
-void func_020bb0ec(M2C_UNK arg0, M2C_UNK arg1) {
+/* Move the cursor's unit to the cursor tile, then show the battle preview of
+ * its attack on the target tile (x, y). */
+void StartBattlePreviewOnTile(s32 x, s32 y) {
     M2C_UNK StartBattlePreviewOnFeature(M2C_UNK, M2C_UNK, M2C_UNK);
+    void MoveUnitToCursor(void);
+
     MoveUnitToCursor();
-    StartBattlePreviewOnFeature(arg0, arg1, 0);
+    StartBattlePreviewOnFeature(x, y, 0);
 }
 
 void func_020bb110(void) {
@@ -111,7 +115,7 @@ void func_020bb110(void) {
     M2C_UNK AddRecordValue(s32, s32);
     s32 func_020cd5d8(void);
     void CreateBattleEffectPending(u8, u8, u8, u8, u8, u8);
-    void func_020c32bc(s32);
+    void PlayCaptureSoundForPlayer(s32);
     void CompletePropertyCapture(s16, s16);
     void ScheduleBattleEndCheck(void);
     u8 *map;
@@ -184,7 +188,7 @@ void func_020bb110(void) {
                                       previousCapture, capture);
         }
     } else if (capture >= 20) {
-        func_020c32bc(((unitId & 0xc0) >> 6) + 1);
+        PlayCaptureSoundForPlayer(((unitId & 0xc0) >> 6) + 1);
     }
 
 storeCapture:

@@ -27,6 +27,14 @@ typedef struct Ov003Object {
     void *sub70;         /* +0x70 sub-object with a resource handle at +0x14 */
 } Ov003Object;
 
+/* The layout a battle-setup scene object (vtable data_ov003_022108b4) was built
+ * with: the low six bits of its +0x3A flags byte.  The player-select layout
+ * draws the CO faces below the player slots; the wallpaper layout puts the main
+ * screen's wallpaper sprite behind the setup panel instead, and owns (and
+ * deletes) that sprite when the scene shuts down. */
+#define OV003_SETUP_LAYOUT_PLAYER_SELECT 0 /* player slots with the CO face list */
+#define OV003_SETUP_LAYOUT_WALLPAPER     1 /* setup panel over the main wallpaper */
+
 /* Battle-setup controller; distinct from the scene object's interface layout above. */
 typedef struct Ov003BattleSetup {
     void *vtable;          /* +0x00 gOv003BattleSetupVTable */
@@ -85,9 +93,16 @@ typedef struct Ov003OptionValue {
 #define BATTLE_PANEL_ICON    0x11 /* u8 waypoint option icon */
 #define BATTLE_PANEL_NONE    0x63 /* no player / no icon */
 
+/* The battle-setup data object (the scene object's child44) keeps the 0x24-byte
+ * waypoint packet it broadcasts at +0x110; the WAYPOINT_PACKET_* fields of that
+ * packet say which panel state changed. */
+#define OV003_SETUP_WAYPOINT_PACKET      0x110
+#define OV003_SETUP_WAYPOINT_PACKET_SIZE 0x24
+
 /* The ov003 scene and panel objects share a flag byte at +0x3A. */
 #define OV003_FLAGS           0x3A /* u8 state/dirty flags */
 #define OV003_FLAG_PANEL_DIRTY 0x08 /* a panel value changed: the panel redraws itself */
+#define OV003_FLAG_PANEL_OPEN  0x80 /* the waypoint panel is open (set by OpenWaypointPanel, cleared by CloseWaypointPanel) */
 
 /* The ov003 battle-display object that SetupSceneObjectDisplay and
  * CloseSceneObjectDisplay drive: two tween sprites that slide the rows in and

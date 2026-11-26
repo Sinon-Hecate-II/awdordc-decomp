@@ -34,9 +34,23 @@ s32 FindMapCursorOptionAt(s32 tileX, s32 tileY, s32 optionMask) {
     } while (direction < MAP_CURSOR_OPTION_COUNT);
     return -1;
 }
-s32 NextMapCursorOption(s32 a,s32 b){do{a=(a+1)&3;}while(!(b&gMapCursorDirs[a][0]));return a;}
+/* Return the cursor option after `option` (wrapping through the four
+ * MAP_CURSOR_OPTION_* slots) whose MAP_DIR_* bit is set in `optionMask`. */
+s32 NextMapCursorOption(s32 option, s32 optionMask) {
+    do {
+        option = (option + 1) & 3;
+    } while (!(optionMask & gMapCursorDirs[option][MAP_CURSOR_DIR_MASK]));
+    return option;
+}
 
-s32 PrevMapCursorOption(s32 a,s32 b){do{a=(a-1)&3;}while(!(b&gMapCursorDirs[a][0]));return a;}
+/* Step the map cursor's selected option one direction back (wrapping around the
+ * four directions) to the previous one the option mask allows. */
+s32 PrevMapCursorOption(s32 selected, s32 optionMask) {
+    do {
+        selected = (selected - 1) & (MAP_CURSOR_OPTION_COUNT - 1);
+    } while (!(optionMask & gMapCursorDirs[selected][MAP_CURSOR_DIR_MASK]));
+    return selected;
+}
 
 /* Starts choosing the direction to drop one of the transport's carried units:
  * computes the directions the carried unit could be dropped into from the
@@ -190,9 +204,11 @@ void func_020cb00c(void) {
     func_0207a768();
 }
 
-void func_020cb018(s16 arg0) {
-    extern M2C_UNK data_0212b374;
-    M2C_FIELD(CreateSpriteFromClass(&data_0212b374, 7), s16 *, 0x70) = arg0;
+/* Spawn the map's directional option cursor on the default layer and record which
+ * carried-unit slot its confirm acts on. */
+void CreateMapCursorOption(s16 cargoSlot) {
+    extern M2C_UNK gMapCursorOptionClass;
+    M2C_FIELD(CreateSpriteFromClass(&gMapCursorOptionClass, 7), s16 *, MAP_OPTION_CARGO_SLOT) = cargoSlot;
 }
 
 /* Refills a unit's ammo one point at a time up to its kind's maximum, accumulating
@@ -364,10 +380,10 @@ void FindSupplyTargetDirections(void *option) {
 }
 #pragma opt_instruction_scheduling reset
 void func_020cb78c(void *arg0){
-void DeleteSpriteObject(void *);void BattleUpdateUnitCursor(void);s32 func_020c98b4(void);M2C_UNK SetMapCommandPending();M2C_UNK SetBattleCommand(s32,u8,u8,u8);
+void DeleteSpriteObject(void *);void BattleUpdateUnitCursor(void);s32 IsMapActionEffectActive(void);M2C_UNK SetMapCommandPending();M2C_UNK SetBattleCommand(s32,u8,u8,u8);
 extern s32 gMapCursorOptionValue;extern void **gCurrentMap;
 s32 offset; s16 i;u8 *m;u8 *q;void *p;
-if(func_020c98b4())return;
+if(IsMapActionEffectActive())return;
 loop:
 i=M2C_FIELD(arg0,s16 *,0x34);
 if(i>=4){
@@ -423,7 +439,7 @@ void Sprite_ResumeAnimation(void *);
 void MarkUnitCargoTiles(void *state){
 extern void **gCurrentMap;extern M2C_UNK gUnitKindStats;
 u16 i; s32 a,b; UnitCB9 *unit; s32 n;u8 *map;
-if(func_020c98b4(state))return;
+if(IsMapActionEffectActive(state))return;
 for(i=M2C_FIELD(state,u16 *,0x50);i<51;i++){
 map=*gCurrentMap;
 unit=(UnitCB9 *)(map+MAP_UNIT_RECORDS+(M2C_FIELD(map,u16 *,0x52a8)+i)*MAP_UNIT_STRIDE);

@@ -354,21 +354,29 @@ void func_0208c51c(void) {
     ((void (*)())UpdateSpriteObject)();
 }
 
-void CreateAnimatedSpriteObject(M2C_UNK arg0) {
+/* Create an object of the animated-sprite class (the class animated map sprites and
+ * menu effects belong to) for `owner` and initialise its 3D sprite state. */
+void CreateAnimatedSpriteObject(M2C_UNK owner) {
     s32 CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     M2C_UNK Init3DSpriteObject();
     extern M2C_UNK gAnimatedSpriteObjectClass;
-    if (CreateSpriteFromClass(&gAnimatedSpriteObjectClass, arg0) == 0) {
+
+    if (CreateSpriteFromClass(&gAnimatedSpriteObjectClass, owner) == 0) {
         return;
     }
     Init3DSpriteObject();
 }
 
-void CreateEffectSpriteObject(M2C_UNK arg0) {
-    s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
+/* Create an animated-sprite object as a child of `owner` (an effect sprite) and
+ * initialise its 3D sprite state; nothing happens when no object could be made.
+ * The new object is what CreateSpriteObject returned, which Init3DSpriteObject
+ * takes in r0 (see CreateEffectMapSprite, which keeps the call's result). */
+void CreateEffectSpriteObject(void *owner) {
+    s32 CreateSpriteObject(M2C_UNK *, void *);
     M2C_UNK Init3DSpriteObject();
     extern M2C_UNK gAnimatedSpriteObjectClass;
-    if (CreateSpriteObject(&gAnimatedSpriteObjectClass, arg0) == 0) {
+
+    if (CreateSpriteObject(&gAnimatedSpriteObjectClass, owner) == 0) {
         return;
     }
     Init3DSpriteObject();
@@ -458,30 +466,34 @@ void OpenEffectNarcArchive(M2C_UNK assetName) {
     OpenNarcArchive(path);
 }
 
+/* Close the effect NARC archive, refcounted (see OpenEffectNarcArchive): only the
+ * close that drops the open count to 0 actually closes the archive. */
 void CloseEffectNarcArchive(void) {
     M2C_UNK CloseNarcArchive();
     extern u8 gEffectNarcOpenCount;
-    u32 temp_r1;
+    u32 openCount;
 
-    temp_r1 = gEffectNarcOpenCount - 1;
-    gEffectNarcOpenCount = (u8) temp_r1;
-    if (temp_r1 & 0xFF) {
+    openCount = gEffectNarcOpenCount - 1;
+    gEffectNarcOpenCount = (u8) openCount;
+    if (openCount & 0xFF) {
         return;
     }
     CloseNarcArchive();
 }
 
+/* TRUE while at least one animated sprite object (gAnimatedSpriteObjectClass)
+ * exists. */
 u8 IsAnimatedSpriteObjectActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gAnimatedSpriteObjectClass;
-    u8 var_r0;
+    u8 active;
 
     if (FindObjectByClass(&gAnimatedSpriteObjectClass) != 0) {
-        var_r0 = 1;
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 void func_0208c748(void)

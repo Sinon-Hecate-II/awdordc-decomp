@@ -91,9 +91,9 @@ void BuildMapBackgroundClName(s32 background) {
  LocalizeMapBackgroundFileName(background, &gMapBackgroundClName);
 }
 
-s32 func_020ad560(s32 arg0) {
-    extern s32 data_02127884[];
-    return data_02127884[arg0];
+s32 GetScriptSoundId(s32 arg0) {
+    extern s32 gScriptSoundIds[];
+    return gScriptSoundIds[arg0];
 }
 
 s32 *RecordsMenu_GetRecord(s32 index) {

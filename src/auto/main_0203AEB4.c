@@ -531,9 +531,11 @@ void NatNeg_RequestShutdown(void) {
     NatNeg_Shutdown();
 }
 
+/* Leave the online match session when it can be left cleanly: disconnect from
+ * the match and return 1, or leave the session open and return 0. */
 s32 LeaveOnlineSession(void) {
-    s32 CanLeaveOnlineSession();
-    M2C_UNK DisconnectConnection();
+    s32 CanLeaveOnlineSession(void);
+    void DisconnectConnection(void);
     if (CanLeaveOnlineSession() == 0) {
         return 0;
     }

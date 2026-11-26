@@ -41,13 +41,15 @@ if(M2C_FIELD(a,s32 *,0x60)){DeleteSpriteObject(M2C_FIELD(a,s32 *,0x60));M2C_FIEL
 SetSpriteSlotScroll(0,0);
 }
 
-void func_020d9d5c(void *arg0) {
+/* Restart the entity's animation at the label it has stored at +0x40, unless the
+ * map confirm is enabled (a confirm keeps the entity in its current state). */
+void ResumeEntityAnimation(void *entity) {
     M2C_UNK GotoSpriteAnimationLabel(void *, u8);
     s32 IsMapConfirmEnabled();
     if (IsMapConfirmEnabled() != 0) {
         return;
     }
-    GotoSpriteAnimationLabel(arg0, M2C_FIELD(arg0, u8 *, 0x40));
+    GotoSpriteAnimationLabel(entity, M2C_FIELD(entity, u8 *, MENU_SPRITE_RESUME_LABEL));
 }
 
 /* Draw four 5-wide progress bars (level rows 1/6/11/16) onto the UI screen,

@@ -96,12 +96,14 @@ void StartEndTurn(void) {
     M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = MAP_STATE_END_TURN_STEP;
 }
 
-void func_020d3628(void) {
+/* End the current player's turn and, in a link/online battle, tell the other
+ * players that the turn is over. */
+void EndPlayerTurnStep(void) {
     M2C_UNK SendTurnEndPacket();
     M2C_UNK EndPlayerTurn();
     extern M2C_UNK gMapData;
     EndPlayerTurn();
-    if (M2C_FIELD(&gMapData, u8 *, 4) == 0) {
+    if (M2C_FIELD(&gMapData, u8 *, MAPDATA_LINK_BATTLE) == 0) {
         return;
     }
     SendTurnEndPacket();
@@ -332,8 +334,8 @@ void StepBattleMap(void) {
     void func_020d447c();
     M2C_UNK TurnBannerStep();
     void TurnIntro1Step();
-    void func_020d42a8();
-    void func_020d42d0();
+    void TurnIntro2Step();
+    void TurnIntro3Step();
     void TurnIntroWaitStep();
     void BeginPlayerTurn();
     M2C_UNK UpdateMapMode();
@@ -344,7 +346,7 @@ void StepBattleMap(void) {
     M2C_UNK BattleFinishStep();
     M2C_UNK func_020d466c();
     void StartEndTurn();
-    void func_020d3628();
+    void EndPlayerTurnStep();
     void func_020d3830();
     void AdvanceAfterOverlayEvent();
     void CreateOverlayCleanupSprite();
@@ -396,10 +398,10 @@ void StepBattleMap(void) {
             TurnIntro1Step();
             return;
         case MAP_STATE_TURN_INTRO2:
-            func_020d42a8();
+            TurnIntro2Step();
             return;
         case MAP_STATE_TURN_INTRO3:
-            func_020d42d0();
+            TurnIntro3Step();
             return;
         case MAP_STATE_TURN_INTRO_WAIT:
             TurnIntroWaitStep();
@@ -418,7 +420,7 @@ void StepBattleMap(void) {
         case MAP_STATE_BATTLE_FINISH: BattleFinishStep(); return;
         case MAP_STATE_RESUME_INPUT: func_020d466c(); return;
         case MAP_STATE_END_TURN: StartEndTurn(); return;
-        case MAP_STATE_END_TURN_STEP: func_020d3628(); return;
+        case MAP_STATE_END_TURN_STEP: EndPlayerTurnStep(); return;
         case MAP_STATE_OVERLAY_RESULT: func_020d3830(); return;
         case MAP_STATE_AFTER_OVERLAY: AdvanceAfterOverlayEvent(); return;
         case MAP_STATE_OVERLAY_CLEANUP: CreateOverlayCleanupSprite(); return;
@@ -451,7 +453,7 @@ void ResetBattleMapAndBeginPhase(void) {
     M2C_UNK ResetBattleMap();
     M2C_UNK LoadMapTileset();
     M2C_UNK LoadBattleMap(M2C_UNK);
-    M2C_UNK func_020ceea8();
+    M2C_UNK InitBattleState();
     M2C_UNK ResetPlayerTurnBonuses();
     M2C_UNK func_020cfd14();
     M2C_UNK CenterMapViewAtBattleStart();
@@ -462,7 +464,7 @@ void ResetBattleMapAndBeginPhase(void) {
     ResetBattleMap();
     LoadMapTileset();
     LoadBattleMap(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
-    func_020ceea8();
+    InitBattleState();
     ResetPlayerTurnBonuses();
     func_020cfd14();
     CenterMapViewAtBattleStart();
@@ -736,18 +738,25 @@ void TurnIntro1Step(void) {
     M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = MAP_STATE_TURN_INTRO2;
 }
 
-void func_020d42a8(void) {
+/* Battle-map state MAP_STATE_TURN_INTRO2: create the turn-intro upkeep sprite
+ * (it marks cargo and supply tiles and steps the view to the current player's
+ * cursor), then move on to MAP_STATE_TURN_INTRO3. */
+void TurnIntro2Step(void) {
     M2C_UNK func_020cbc08();
     extern void **gCurrentMap;
+
     func_020cbc08();
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 0xa;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = MAP_STATE_TURN_INTRO3;
 }
 
-void func_020d42d0(void) {
+/* Battle-map state MAP_STATE_TURN_INTRO3: run the turn intro's script event, then
+ * wait it out (MAP_STATE_TURN_INTRO_WAIT). */
+void TurnIntro3Step(void) {
     M2C_UNK RunTurnIntroEvent();
     extern void **gCurrentMap;
+
     RunTurnIntroEvent();
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 11;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = MAP_STATE_TURN_INTRO_WAIT;
 }
 
 /* Turn-intro wait step (MAP_STATE_TURN_INTRO_WAIT): wait while the intro's dialog

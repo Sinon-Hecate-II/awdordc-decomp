@@ -10,16 +10,23 @@ static inline s32 PanelHasSelection(void *p) {
     }
 }
 
-void func_ov003_021f35b0(void *arg0) {
+/* Start the battle scene for the map the setup's menu currently highlights, with
+ * no slide direction and no neighbouring move (the confirm came from a panel
+ * other than the map list). */
+void Ov003_StartSelectedBattleScene(Ov003BattleSetup *setup) {
     void Ov003_StartBattleScene(void *, u8, s32, s32, s32);
-    void *ptr = M2C_FIELD(arg0, void **, 0x40);
-    Ov003_StartBattleScene(arg0, M2C_FIELD(ptr, u8 **, 8)[M2C_FIELD(ptr, s8 *, 5)], 0, 0, 0);
+    Ov003BattleSetupMenu *menu = setup->menu;
+
+    Ov003_StartBattleScene(setup, menu->items[menu->selection], 0, 0, 0);
 }
 
-void func_ov003_021f35d8(void *arg0) {
-    M2C_UNK SetOv003SceneClass(M2C_UNK);
-    M2C_FIELD(arg0, s8 *, 0x44) = 0;
-    M2C_FIELD(arg0, s8 *, 0x34) = 4;
+/* Leave the map-select screen: cancel any pending screen transition, park the
+ * battle setup in its idle state and drop the live ov003 scene object. */
+void Ov003_ExitMapSelect(Ov003BattleSetup *setup) {
+    void SetOv003SceneClass(s32);
+
+    setup->pending = 0;
+    setup->state = 4;
     SetOv003SceneClass(0);
 }
 

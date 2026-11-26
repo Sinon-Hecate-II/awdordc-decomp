@@ -51,10 +51,12 @@ void Ov001_InitProfileScreen(void *arg0) {
     M2C_FIELD(gOv001ProfileBlock, M2C_UNK *, 0x1E29C) = Ov001_AddTask(0, (M2C_UNK *)&func_ov001_0217612c, 0, 0x78);
 }
 
+/* Start the profile screen's exit task: hand it the screen's teardown step and
+ * its run priority. */
 void Ov001_StartProfileExitTask(void) {
     M2C_UNK Ov001_AddTask(M2C_UNK, M2C_UNK *, M2C_UNK, M2C_UNK);
-    extern M2C_UNK Ov001_ExitProfileTask;
-    Ov001_AddTask(0, &Ov001_ExitProfileTask, 0, 0x78);
+    void Ov001_ExitProfileTask(M2C_UNK);
+    Ov001_AddTask(0, (M2C_UNK *)&Ov001_ExitProfileTask, 0, OV001_PROFILE_TASK_PRIORITY);
 }
 
 /* The WFC profile screen's exit task: wait for the profile subsystem to finish
@@ -183,12 +185,14 @@ void Ov001_OpenOptionPage(void) {
     SleepMilliseconds(0xA);
 }
 
+/* Free the option page: close its Wi-Fi session (halting the system if the
+ * session does not shut down cleanly) and release the page's state block. */
 void Ov001_FreeOptionPage(void) {
     M2C_UNK SystemHalt();
-    s32 func_ov001_021712c8();
+    s32 Ov001_CloseWhSession();
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern M2C_UNK gOv001OptionPageState;
-    if (func_ov001_021712c8() != 1) {
+    if (Ov001_CloseWhSession() != 1) {
         SystemHalt();
     }
     Ov001_FreeAlloc(&gOv001OptionPageState);
@@ -580,13 +584,16 @@ void Ov001_HandleWifiMenuChoice(void) {
     }
 }
 
+/* Wi-Fi menu exit step: hold the icon row, let the menu settle for
+ * OV001_STEP_DELAY_FRAMES, then start fading the screen out. */
 void Ov001_WifiMenuExit(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutWifiMenu;
+
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_FadeOutWifiMenu);
 }
 

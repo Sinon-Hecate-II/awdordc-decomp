@@ -170,10 +170,11 @@ void HandleLinkSendComplete(void *completion) {
     DeliverLinkSendResult(completion);
 }
 
-void func_ov009_02221580(void *arg0) {
-    FreeLinkBlock(M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
-    M2C_FIELD(arg0, s32 *, 0x3C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x40) = 0;
+/* Free the link sender's current transfer packet and clear the transfer state. */
+void FreeLinkSenderTransfer(void *sender) {
+    FreeLinkBlock(M2C_FIELD(sender, s32 *, LINK_SENDER_TRANSFER), M2C_FIELD(sender, s32 *, LINK_SENDER_LENGTH));
+    M2C_FIELD(sender, s32 *, LINK_SENDER_TRANSFER) = 0;
+    M2C_FIELD(sender, s32 *, LINK_SENDER_LENGTH) = 0;
 }
 
 #pragma opt_propagation off
@@ -293,7 +294,7 @@ s32 GetLinkPhase(void);s32 func_ov009_02224d0c(u32);M2C_UNK FreeLinkPacket(s32);
 s32 IsLinkHost(void);s32 QueueHostLinkPacket(s32,s32,s32,u16);s32 ClearPlayerActive(s32,s32,s32,u8,s32);
 s32 SetConnectedPlayers(u16);s32 GetConnectedPlayers(void);s32 RequestAddLinkEventListener(void);s32 RequestRemoveLinkEventListener(void);
 M2C_UNK MI_CpuCopy8();void SetLinkPlayerRecord(s32,M2C_UNK);
-s32 GetLinkLocalPlayerId(void);s32 GetLinkPlayerSlot(void);s32 GetBattleSaveBlock(void);s32 func_020c5640(s32);s32 SetBattleSlotRecord(s32,s32);s32 SendLinkPlayerInfo(u8);
+s32 GetLinkLocalPlayerId(void);s32 GetLinkPlayerSlot(void);s32 GetBattleSaveBlock(void);s32 CreateBattleSaveInFreeSlot(s32);s32 SetBattleSlotRecord(s32,s32);s32 SendLinkPlayerInfo(u8);
 u32 func_ov009_022250f8(u8);s32 func_ov009_02225178(u8,s32);
 s32 i,packet,channel,n,value,keep;u8 *p;u32 size;Descriptor21ae8 desc;s32 (*callback)(u8,s32);
 if(GetLinkPhase()!=4 && GetLinkPhase()!=5)return;
@@ -336,12 +337,12 @@ SetLinkPlayerRecord((u8)channel,packet+12);GetLinkLocalPlayerId();p=GetLinkPlaye
 case 12:
 SetLinkPlayerRecord((u8)channel,packet+12);p=M2C_FIELD(gLinkState,s32 *,32);if(p)M2C_FIELD(p,u16 *,2)|=1<<channel;break;
 case 13:
-if(GetBattleSaveBlock()){value=func_020c5640(packet+12);if(value>=0)SetBattleSlotRecord(value,packet+24);SendLinkPlayerInfo((u8)channel);}
+if(GetBattleSaveBlock()){value=CreateBattleSaveInFreeSlot(packet+12);if(value>=0)SetBattleSlotRecord(value,packet+24);SendLinkPlayerInfo((u8)channel);}
 else QueueHostLinkPacket(14,0,0,0xffff);break;
 case 14:
 p=M2C_FIELD(gLinkState,s32 *,40);if(p)M2C_FIELD(p,u16 *,0)|=1<<channel;break;
 case 15:
-if(GetBattleSaveBlock()){value=func_020c5640(packet+12);if(value>=0)SetBattleSlotRecord(value,packet+24);}
+if(GetBattleSaveBlock()){value=CreateBattleSaveInFreeSlot(packet+12);if(value>=0)SetBattleSlotRecord(value,packet+24);}
 p=M2C_FIELD(gLinkState,s32 *,40);if(p)M2C_FIELD(p,u16 *,0)|=1<<channel;break;
 }
 callback=M2C_FIELD(gLinkState,s32 (**)(u8,s32),0x44);if(callback)keep=callback((u8)channel,packet);
@@ -357,10 +358,13 @@ callback=M2C_FIELD(gLinkState,s32 (**)(u8,s32),0x54);if(callback)keep=callback((
 }
 }
 #pragma opt_lifetimes reset
-void SetLinkPlayerRecord(s32 arg0, M2C_UNK arg1) {
-    M2C_UNK MI_CpuCopy8(M2C_UNK, s32);
+/* Copy a player record (LINK_PLAYER_ANNOUNCE_SIZE bytes) into player `player`'s
+ * slot of the link overlay's per-player table. */
+void SetLinkPlayerRecord(s32 player, M2C_UNK source) {
+    M2C_UNK MI_CpuCopy8(M2C_UNK, s32, s32);
     extern M2C_UNK gLinkPlayers;
-    MI_CpuCopy8(arg1, (arg0 * 0x60) + (s32) &gLinkPlayers);
+    MI_CpuCopy8(source, (player * LINK_PLAYER_SLOT_STRIDE) + (s32) &gLinkPlayers,
+                LINK_PLAYER_ANNOUNCE_SIZE);
 }
 
 /* Link phase-wait callback: the first argument is unused (a callback self

@@ -69,7 +69,7 @@ s32 Ov001_RunFrontEnd(M2C_UNK work, s32 mode, s32 options) {
     void Ov001_UpdateTaskGroup(s32);
     void Ov001_UpdateLidState(void);
     void Ov001_UpdateArm7Value(void);
-    void func_02007598(void);
+    void WaitForVBlank(void);
     void Ov001_ShutdownCore(void);
     extern u8 gOv001ScreenState;
 
@@ -86,7 +86,7 @@ s32 Ov001_RunFrontEnd(M2C_UNK work, s32 mode, s32 options) {
         Ov001_UpdateTaskGroup(0);
         Ov001_UpdateLidState();
         Ov001_UpdateArm7Value();
-        func_02007598();
+        WaitForVBlank();
     } while (!M2C_FIELD(&gOv001ScreenState, u8 *, OV001_SCREEN_EXIT));
     Ov001_ShutdownCore();
     return 0;
@@ -221,7 +221,7 @@ void Ov001_ShutdownCore(void) {
     M2C_UNK func_ov001_0218a01c();
     M2C_UNK Ov001_FreeFades();
     M2C_UNK Ov001_FreeTextContext();
-    M2C_UNK func_ov001_0218b688();
+    M2C_UNK Ov001_DestroyExpHeap();
     M2C_UNK Ov001_StopInput();
     M2C_UNK Ov001_RemoveVBlankHandler();
     M2C_UNK Ov001_FreeSpriteObjs();
@@ -240,7 +240,7 @@ void Ov001_ShutdownCore(void) {
     Ov001_FreeFades();
     func_ov001_02189c80();
     Ov001_FreeTasks();
-    func_ov001_0218b688();
+    Ov001_DestroyExpHeap();
     func_ov001_0218c4c0();
 }
 
@@ -255,13 +255,16 @@ void Ov001_SetNextScreenMode(s32 arg0, s32 arg1) {
     M2C_FIELD(&gOv001ScreenState, s32 *, 0x14) = arg1;
 }
 
-void Ov001_GetNextScreenMode(s32 *arg0, s32 *arg1) {
+/* Copy the next screen mode and the argument it is entered with, as stored by
+ * Ov001_SetNextScreenMode, into the caller's out parameters; a NULL pointer skips
+ * that value. */
+void Ov001_GetNextScreenMode(s32 *mode, s32 *argument) {
     extern u8 gOv001ScreenState;
-    if (arg0 != 0) {
-        *arg0 = M2C_FIELD(&gOv001ScreenState, s32 *, 0x10);
+    if (mode != 0) {
+        *mode = M2C_FIELD(&gOv001ScreenState, s32 *, OV001_SCREEN_NEXT_MODE);
     }
-    if (arg1 != 0) {
-        *arg1 = M2C_FIELD(&gOv001ScreenState, s32 *, 0x14);
+    if (argument != 0) {
+        *argument = M2C_FIELD(&gOv001ScreenState, s32 *, OV001_SCREEN_NEXT_ARG);
     }
 }
 
@@ -271,13 +274,16 @@ void Ov001_SetNameEntryMode(s32 arg0, s32 arg1) {
     M2C_FIELD(&gOv001ScreenState, s32 *, 0x1c) = arg1;
 }
 
-void Ov001_GetNameEntryMode(s32 *arg0, s32 *arg1) {
+/* Read the name-entry screen mode and its argument that a previous screen asked
+ * for (see Ov001_SetNameEntryMode); either output pointer may be NULL. */
+void Ov001_GetNameEntryMode(s32 *outMode, s32 *outArg) {
     extern u8 gOv001ScreenState;
-    if (arg0 != 0) {
-        *arg0 = M2C_FIELD(&gOv001ScreenState, s32 *, 0x18);
+
+    if (outMode != 0) {
+        *outMode = M2C_FIELD(&gOv001ScreenState, s32 *, OV001_SCREEN_ENTRY_MODE);
     }
-    if (arg1 != 0) {
-        *arg1 = M2C_FIELD(&gOv001ScreenState, s32 *, 0x1c);
+    if (outArg != 0) {
+        *outArg = M2C_FIELD(&gOv001ScreenState, s32 *, OV001_SCREEN_ENTRY_ARG);
     }
 }
 

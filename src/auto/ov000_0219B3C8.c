@@ -100,7 +100,7 @@ void func_ov000_0219b3c8(void) {
  * unit id, or 0 when there is no candidate. */
 s32 SelectTransportTarget(s32 actX, s32 actY) {
  void SelectMapLayer(void *); void FloodFillUnitRange(s32,s32,s32,s32,s32);void MarkAdjacentCells(s32);
- s32 CanKindLoad(s32,s32); s32 ManhattanDistance(s16,s16,s16,s16);
+ s32 CanKindCarryKind(s32,s32); s32 ManhattanDistance(s16,s16,s16,s16);
  extern u8 gAiRangeLayer[],gUnitKindStats[],gMovementCostTable[];
  extern u16 gPlayerUnitIdBase[];
  extern void **gCurrentMap;
@@ -116,7 +116,7 @@ s32 SelectTransportTarget(s32 actX, s32 actY) {
  u8 *unit=(u8 *)*gCurrentMap+MAP_UNIT_RECORDS+i*MAP_UNIT_STRIDE;
  u32 kind=(u32)(unit[MAP_UNIT_KIND]<<26)>>26;
  if(kind==0)continue;
- if(!CanKindLoad(19,kind))continue;
+ if(!CanKindCarryKind(19,kind))continue;
  if(((u32)(unit[MAP_UNIT_AI_STATE]<<28)>>28)!=0)continue;
  if(((s8 *)gAiRangeLayer)[unit[MAP_UNIT_Y]*M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)+unit[MAP_UNIT_X]]<0)continue;
  if(((u32)(unit[MAP_UNIT_KIND]<<26)>>26)==2 && ManhattanDistance(x,y,unit[MAP_UNIT_X],unit[MAP_UNIT_Y])>2)continue;

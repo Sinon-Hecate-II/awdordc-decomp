@@ -90,7 +90,7 @@ d=((Map16E8 *)*gCurrentMap)->grid[y][x];if(p[8]>d)p[8]=d;
 void UpdateAiCandidateCosts(void){
 extern void *gAiState;extern u8 gAiTargetCandidates[];extern void **gCurrentMap;
 void FloodFillUnitRange(u8,u8,s32,s32,s32);
-s32 IsCurrentPlayerUnit(s16);s32 IsCaptureKind(s32);s32 CanKindLoad(s32,s32);
+s32 IsCurrentPlayerUnit(s16);s32 IsCaptureKind(s32);s32 CanKindCarryKind(s32,s32);
 s32 i;u8 *p; s32 id,d;Map16E8 *map;Unit16E8 *unit;s32 x,y;
 /* For every AI target candidate, flood-fill its movement range and record the
    cheapest current-player capture unit (candidate[9]) and the cheapest unit
@@ -110,7 +110,7 @@ unit=(Unit16E8 *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS)+id;
 if(IsCaptureKind(unit->kind)){
 d=((Map16E8 *)*gCurrentMap)->grid[y][x];if(p[9]>d)p[9]=d;
 }
-if(CanKindLoad(24,unit->kind)&&unit->state==2){
+if(CanKindCarryKind(24,unit->kind)&&unit->state==2){
 d=((Map16E8 *)*gCurrentMap)->grid[y][x];if(p[10]>d)p[10]=d;
 }
 }

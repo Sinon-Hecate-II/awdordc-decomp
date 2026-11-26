@@ -158,19 +158,20 @@ s32 IsCaptureKind(s32 a) {
  switch(a){case 1:case 2:return 1;default:return 0;}
 }
 
-s32 GetUnitAttackClass(s32 arg0) {
-    s32 GetUnitKindMaxAttackRange(void);
-    s32 temp_r0;
+/* Attack class (UNIT_ATTACK_*) of unit kind `kind`, from the kind's maximum
+ * attack range: direct for range 1, indirect for longer ranges, none for range 0. */
+s32 GetUnitAttackClass(s32 kind) {
+    s32 GetUnitKindMaxAttackRange(s32);
+    s32 maxRange;
 
-    (void)arg0;
-    temp_r0 = GetUnitKindMaxAttackRange();
-    if (temp_r0 > 1) {
-        return 1;
+    maxRange = GetUnitKindMaxAttackRange(kind);
+    if (maxRange > 1) {
+        return UNIT_ATTACK_INDIRECT;
     }
-    if (temp_r0 == 1) {
-        return 0;
+    if (maxRange == 1) {
+        return UNIT_ATTACK_DIRECT;
     }
-    return 2;
+    return UNIT_ATTACK_NONE;
 }
 
 /* Attack class (UNIT_ATTACK_*) of a unit kind: UNIT_KIND_UNARMED always counts as
@@ -192,10 +193,15 @@ s32 GetKindAttackClass(s32 unitKind) {
     return UNIT_ATTACK_NONE;
 }
 
-s32 CanKindLoad(s32 a,s32 b) {
- extern u8 gUnitKindLoadMask[];extern u8 gUnitKindLoadClass[];
- u8 *p=&gUnitKindLoadMask[b*0x70];
- return p[gUnitKindLoadClass[a*0x70]];
+/* Whether a unit of kind `carrierKind` may load (carry) a unit of kind `cargoKind`:
+ * look up the carrier kind's load class, then the cargo kind's row of the load mask
+ * at that class. */
+s32 CanKindCarryKind(s32 carrierKind, s32 cargoKind) {
+    extern u8 gUnitKindLoadMask[];
+    extern u8 gUnitKindLoadClass[];
+    u8 *row = &gUnitKindLoadMask[cargoKind * UNIT_KIND_STATS_SIZE];
+
+    return row[gUnitKindLoadClass[carrierKind * UNIT_KIND_STATS_SIZE]];
 }
 
 /* Whether `unit` can attack a unit of `targetKind`: its kind must have cargo
@@ -206,7 +212,7 @@ u8 CanUnitAttackKind(u8 *unit, s32 targetKind) {
     u8 result;
 
     if (!gUnitKindCargoCount[unitKind * 0x70]) return 0;
-    if (!CanKindLoad(unitKind, targetKind)) return 0;
+    if (!CanKindCarryKind(unitKind, targetKind)) return 0;
     if (M2C_FIELD(unit + (gUnitKindCargoCount[((u32)(*unit << 26) >> 26) * 0x70] - 1), u8 *, MAP_UNIT_FIRST_CARRIED) == 0) result = 1;
     else result = 0;
     return result;
@@ -435,14 +441,22 @@ s32 AiSettings_DefaultUnitFilter(s32 commander,s32 unitKind) {
  return 1;
 }
 
-s32 func_ov000_021aa370(s32 arg0,s32 arg1) {
- if(arg1!=9 && arg1!=8 && arg1!=7 && arg1!=14 && arg1!=16 && arg1!=26 && arg1!=11)return 0;
- return 1;
+/* AI settings unit filter: only the fixed unit kinds 7, 8, 9, 11, 14, 16 and 26
+ * may be picked.  `commander` is unused (the sibling filter with the same set
+ * minus the Tank, kind 7, is AiUnitFilter_ArmorSetNoTank). */
+s32 AiUnitFilter_ArmorSet(s32 commander, s32 unitKind) {
+    if (unitKind != 9 && unitKind != 8 && unitKind != 7 && unitKind != 14 &&
+        unitKind != 16 && unitKind != 26 && unitKind != 11) return 0;
+    return 1;
 }
 
-s32 func_ov000_021aa398(s32 arg0, s32 arg1) {
- if(arg1!=9 && arg1!=8 && arg1!=14 && arg1!=16 && arg1!=26 && arg1!=11) return 0;
- return 1;
+/* AI settings unit filter: only the fixed unit kinds 8, 9, 11, 14, 16 and 26 may
+ * be picked.  `commander` is unused (the sibling filter with the same set plus
+ * the Tank, kind 7, is AiUnitFilter_ArmorSet). */
+s32 AiUnitFilter_ArmorSetNoTank(s32 commander, s32 unitKind) {
+    if (unitKind != 9 && unitKind != 8 && unitKind != 14 && unitKind != 16 &&
+        unitKind != 26 && unitKind != 11) return 0;
+    return 1;
 }
 
 /* Whether the unit under the cursor is hurt: its health (the low seven bits of

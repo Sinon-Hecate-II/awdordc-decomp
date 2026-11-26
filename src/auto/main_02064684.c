@@ -328,11 +328,13 @@ return result;
 }
 
 #pragma opt_propagation off
-void RewindStream(void *arg0) {
+/* Rewind a stream to its start: clear the error flag so the seek is accepted,
+ * seek to offset 0 from the start, then clear the flag the seek may have set. */
+void RewindStream(void *stream) {
     M2C_UNK SetFilePosition(void *, M2C_UNK, M2C_UNK);
-    M2C_FIELD(arg0, s8 *, 0xD) = 0;
-    SetFilePosition(arg0, 0, 0);
-    M2C_FIELD(arg0, s8 *, 0xD) = 0;
+    M2C_FIELD(stream, s8 *, STREAM_ERROR) = 0;
+    SetFilePosition(stream, 0, 0);
+    M2C_FIELD(stream, s8 *, STREAM_ERROR) = 0;
 }
 #pragma opt_propagation reset
 M2C_UNK func_02065020(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
@@ -419,10 +421,12 @@ used+=len;
 return used;
 }
 
-s8 *MemCopy(s8 *out,s8 *in,s32 n) {
-s8 *p=out;
-if(n) do {s8 c=*in++;--n;*p++=c;} while(n);
-return out;
+/* Copy `count` bytes from `src` to `dst` (the ranges must not overlap, see
+ * MemMove) and return `dst`. */
+s8 *MemCopy(s8 *dst, s8 *src, s32 count) {
+s8 *to=dst;
+if(count) do {s8 c=*src++;--count;*to++=c;} while(count);
+return dst;
 }
 
 /* Copy `count` bytes from `src` to `dst`: forward when dst is at or after src,

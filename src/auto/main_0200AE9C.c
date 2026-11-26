@@ -352,19 +352,17 @@ s32 EndFileOperation(void *file) {
     return wasFree;
 }
 
-void SetArchiveProc(void *arg0, s32 arg1, s32 arg2) {
-    s32 var_r1;
-    s32 var_r2;
-
-    var_r1 = arg1;
-    var_r2 = arg2;
-    if (var_r2 == 0) {
-        var_r1 = 0;
-    } else if (var_r1 == 0) {
-        var_r2 = 0;
+/* Install `archive`'s command callback and the events it is armed for, keeping
+ * the pair consistent: no events clears the callback, no callback clears the
+ * events. */
+void SetArchiveCallback(FSArchive *archive, void *callback, u32 events) {
+    if (events == 0) {
+        callback = 0;
+    } else if (callback == 0) {
+        events = 0;
     }
-    M2C_FIELD(arg0, s32 *, 0x54) = var_r1;
-    M2C_FIELD(arg0, s32 *, 0x58) = var_r2;
+    archive->callback = callback;
+    archive->events = events;
 }
 
 /* Completion callback of a file's asynchronous command (the card/ROM read task
@@ -395,7 +393,15 @@ M2C_UNK FileOperationCompleted(M2C_UNK file, s32 result) {
     OS_RestoreInterrupts(key);
 }
 
-void InitCardArchiveOnce(s32 a){void InitCardArchive(s32);extern s32 data_0212fbf8;if(data_0212fbf8)return;data_0212fbf8=1;InitCardArchive(a);}
+/* Mount the game's "rom" card archive the first time it is needed; every later
+ * call does nothing.  `device` is the card device to open (-1 for the default). */
+void InitCardArchiveOnce(s32 device) {
+    void InitCardArchive(s32);
+    extern s32 gCardArchiveInitialized;
+    if (gCardArchiveInitialized) return;
+    gCardArchiveInitialized = 1;
+    InitCardArchive(device);
+}
 
 /* Clear a file request to its starting state: no FIFO links, file or flags, an
  * empty wait queue, and no command (FS_COMMAND_NONE) until one is submitted. */
@@ -590,17 +596,20 @@ s32 SetFileDirectory(s32 path) {
     return 1;
 }
 
-void CardArchiveReadDone(M2C_UNK arg0) {
+/* Completion callback of an asynchronous card archive read on `request`: report
+ * the read as failed (result 5) when the system is shutting down, or as
+ * successful (result 0) otherwise, to the file's operation completion. */
+void CardArchiveReadDone(M2C_UNK request) {
     M2C_UNK FileOperationCompleted(M2C_UNK, M2C_UNK);
     s32 System_IsShuttingDown();
-    M2C_UNK var_r1;
+    M2C_UNK result;
 
     if (System_IsShuttingDown() != 0) {
-        var_r1 = 5;
+        result = 5;
     } else {
-        var_r1 = 0;
+        result = 0;
     }
-    FileOperationCompleted(arg0, var_r1);
+    FileOperationCompleted(request, result);
 }
 
 /* The card archive's read procedure: start an asynchronous card transfer of

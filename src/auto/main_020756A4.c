@@ -26,7 +26,7 @@ out[14]=1;out[15]=1;seq=M2C_FIELD(a,u32 *,0xc08);M2C_FIELD(out,u16 *,16)=seq;M2C
 M2C_FIELD(out,s32 *,4)=SaveArchive_ComputeChecksum(a,out);
 id=OS_GetLockID();CARD_LockBackup(id);
 SaveDevice_Transfer(out,(M2C_FIELD(a,s32 *,0xc00)<<10)+(M2C_FIELD(a,s32 *,0xc04)<<8),M2C_FIELD(out,u16 *,12),0,0,1,7,10,2);
-ok=func_02010584()!=0;CARD_UnlockBackup(id);OS_ReleaseLockID(id);
+ok=SaveDevice_WaitForTransferDone()!=0;CARD_UnlockBackup(id);OS_ReleaseLockID(id);
 if(!ok){M2C_FIELD(a,u8 *,0x2052)=1;HeapFreeBlock(out);return;}
 if(M2C_FIELD(a,s32 *,0xc04)==0)MI_CpuCopy8(out+8,(u8 *)a+M2C_FIELD(a,s32 *,0xc00)*12);
 HeapFreeBlock(out);M2C_FIELD(a,u8 *,0x2051)=0;
@@ -69,7 +69,7 @@ if(M2C_FIELD(entry,u16*,8)==0xffff)
 SaveDevice_Transfer((head<<10)+0x38,dest,M2C_FIELD(entry,u16*,4)-0x38,0,0,1,6,1,0);
 else
 SaveDevice_Transfer((head<<10)+0x14,dest,M2C_FIELD(entry,u16*,4)-0x14,0,0,1,6,1,0);
-ok=func_02010584()!=0;
+ok=SaveDevice_WaitForTransferDone()!=0;
 CARD_UnlockBackup(handle);
 if(!ok){M2C_FIELD(manager,u8*,0x2052)=1;break;}
 head=M2C_FIELD(entry,u16*,10);
@@ -181,7 +181,7 @@ void SaveManager_InitTask(void) {
  SaveManager_ScanArchive(&gSaveManager);
 }
 
-void func_02075ee8(void) {
+void SaveList_FlushTask(void) {
 
     extern M2C_UNK gSaveManager;
     SaveList_Flush(&gSaveManager);
@@ -250,12 +250,19 @@ void DeleteSaveRecord(M2C_UNK arg0) {
     SaveList_QueueDelete(&gSaveManager, arg0);
 }
 
-void SaveList_StartFlush(void){CreateTaskSprite(func_02075ee8,1,0x400,0x11,0);}
+/* Start the save-flush task sprite (depth 1, 0x400-byte stack, priority 0x11)
+ * that drains the global save manager's queued record changes. */
+void SaveList_StartFlush(void) {
+    CreateTaskSprite(SaveList_FlushTask, 1, 0x400, 0x11, 0);
+}
 
-void LoadSaveRecord(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK ReadSaveBlockChain(M2C_UNK *, M2C_UNK, M2C_UNK);
+/* Load save-directory record `recordId` into `dest` by walking its saved-block
+ * chain; returns the bytes loaded, or 0 when the archive is unusable or a block
+ * could not be read. */
+s32 LoadSaveRecord(u16 recordId, void *dest) {
+    s32 ReadSaveBlockChain(M2C_UNK *, M2C_UNK, M2C_UNK);
     extern M2C_UNK gSaveManager;
-    ReadSaveBlockChain(&gSaveManager, arg0, arg1);
+    return ReadSaveBlockChain(&gSaveManager, recordId, (s32)dest);
 }
 
 void GetSaveRecordSize(M2C_UNK arg0) {
@@ -287,7 +294,7 @@ void HaltWithMessage(M2C_UNK arg0) {
     M2C_UNK Apply3DSpriteBanks();
     M2C_UNK Update3DSpriteVram();
     M2C_UNK GX_TurnOnDisplay();
-    M2C_UNK func_02008ef0(M2C_UNK);
+    M2C_UNK Sound_StopAllSound(M2C_UNK);
     M2C_UNK Sound_FlushCommands(M2C_UNK);
     M2C_UNK func_02081f08();
     M2C_UNK Apply3DSpriteDisplayConfig();
@@ -324,7 +331,7 @@ void HaltWithMessage(M2C_UNK arg0) {
     void *var_r0;
 
     FadeOutMusic(0);
-    func_02008ef0(0);
+    Sound_StopAllSound(0);
     Sound_FlushCommands(0);
     func_02081f08();
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~1);

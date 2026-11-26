@@ -443,6 +443,8 @@ s32 GetDigitCount(s32 value) {
     return count;
 }
 
+/* Put the default map camera (gDefaultMapCamera) back in its starting state: the
+ * standard eye, ground-plane and up vectors with the eye at the origin. */
 void InitDefaultMapCamera(void) {
     M2C_UNK InitMapViewCameraVectors(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK gDefaultMapCamera;
@@ -539,7 +541,7 @@ void ResetMapViewCamera(void *view) {
     UpdateViewForZoom(view);
 }
 
-void func_0207ce54(void) {
+void UpdateMapViewEyeVeneer(void) {
     M2C_UNK UpdateMapViewEye();
     UpdateMapViewEye();
 }

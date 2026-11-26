@@ -18,7 +18,7 @@ extern s8 gTerrainPropertyType[];
 #pragma opt_strength_reduction off
 void func_ov000_02191970(void){
 void SelectMapLayer(void*);void FloodFillUnitRange(s32,s32,u32,s32,s32);
-s32 GetAiUnitMoveRange(void*);s32 CanKindLoad(u32,u32);
+s32 GetAiUnitMoveRange(void*);s32 CanKindCarryKind(u32,u32);
 s32 GetUnitMoveRange(u32,u32);s32 CanReachProperty(s32,s32,s32);
 s32 func_ov000_0217bcd4(s32,s32,u32,s32);
 s32 IsAllyUnitAtCell(s16,s16);s32 CanUnitKindStandAt(u32,s32,s32);
@@ -39,7 +39,7 @@ offset=index*14;
 for(;
 index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51;index++,offset+=14){
 unit=MAP+0x59a4+offset;
-if(!KIND(unit)||!CanKindLoad(KIND(SEL),KIND(unit))||
+if(!KIND(unit)||!CanKindCarryKind(KIND(SEL),KIND(unit))||
 gAiUnitLoadCounts[index&63]||((u32)(M2C_FIELD(unit,u8*,11)<<24)>>31))continue;
 switch(KIND(SEL)){
 case 13:if(((u32)(M2C_FIELD(unit,u16*,8)<<16)>>30)==1)break;continue;

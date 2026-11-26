@@ -31,15 +31,21 @@ void func_ov003_02204ec4(void *obj) {
     Link_SendPacket((u8 *)packed + 0x110, 0x24);
 }
 
-void func_ov003_02204fac(void *arg0) {
+/* Send the setup menu's start request: flag the first word of the menu's
+ * 0x24-byte setup packet and send it to the other players. */
+void SendSetupMenuStart(void *scene) {
     M2C_UNK Link_SendPacket(void *, M2C_UNK);
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s32 *, 0x110) = 1;
-    Link_SendPacket(M2C_FIELD(arg0, void **, 0x44) + 0x110, 0x24);
+    M2C_FIELD(M2C_FIELD(scene, void **, SETUP_PANEL_MENU), s32 *, SETUP_MENU_PACKET) = 1;
+    Link_SendPacket(M2C_FIELD(scene, void **, SETUP_PANEL_MENU) + SETUP_MENU_PACKET, SETUP_MENU_PACKET_SIZE);
 }
 
-void func_ov003_02204fd0(void *arg0) {
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s32 *, 0x114) = 1;
-    Link_SendPacket(M2C_FIELD(arg0, void **, 0x44) + 0x110, 0x24);
+/* Tell the other players the host confirmed the setup menu: flag the packet's
+ * second request word and send the 0x24-byte setup-state packet. */
+void SendSetupMenuConfirm(void *scene) {
+    M2C_UNK Link_SendPacket(void *, M2C_UNK);
+
+    M2C_FIELD(M2C_FIELD(scene, void **, SETUP_PANEL_MENU), s32 *, SETUP_MENU_PACKET + 4) = 1;
+    Link_SendPacket(M2C_FIELD(scene, void **, SETUP_PANEL_MENU) + SETUP_MENU_PACKET, SETUP_MENU_PACKET_SIZE);
 }
 
 /* Once the scene display has been up for 12 updates, let its sprite animation
@@ -322,15 +328,17 @@ u8 IsSceneDisplayTopTweenRunning(void *arg0) {
     return running;
 }
 
-u8 func_ov003_02205678(void *arg0) {
-    u8 var_r0;
+/* Whether this ov003 setup scene object was built with the wallpaper layout:
+ * the low six bits of its +0x3A flags select the layout (OV003_SETUP_LAYOUT_*). */
+u8 Ov003_SceneUsesWallpaperLayout(void *scene) {
+    u8 usesWallpaper;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1A) >> 0x1A) == 1) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(scene, u8 *, 0x3A) << 0x1A) >> 0x1A) == OV003_SETUP_LAYOUT_WALLPAPER) {
+        usesWallpaper = 1;
     } else {
-        var_r0 = 0;
+        usesWallpaper = 0;
     }
-    return var_r0;
+    return usesWallpaper;
 }
 
 void func_ov003_02205698(void) {

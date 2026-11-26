@@ -288,13 +288,18 @@ void *SpriteCellListFindCell(void *list, s32 tile) {
 }
 
 #pragma optimize_for_size off
-void SpriteCellListSelectCell(void *arg0,void *arg1){
-if(M2C_FIELD(arg1,u16*,0xA)&4){
-u32 zero=0; void *old=M2C_FIELD(arg0,void**,0);
-M2C_FIELD(arg0,void**,0)=arg1;
-M2C_FIELD(arg0,void**,4)=old;
-M2C_FIELD(arg0,s8*,0xF)=zero;
-}}
+/* Make `cell` the list's current cell when it is selectable: the list's old
+ * current cell becomes its previous cell, and the sync counter restarts so the
+ * owner copies the cells' tile ids. */
+void SpriteCellListSelectCell(void *list, void *cell) {
+    if (((SpriteCell *)cell)->attr & SPRITE_CELL_ATTR_SELECTABLE) {
+        u32 zero = 0;
+        void *old = M2C_FIELD(list, void **, SPRITE_CELL_LIST_CURRENT);
+        M2C_FIELD(list, void **, SPRITE_CELL_LIST_CURRENT) = cell;
+        M2C_FIELD(list, void **, SPRITE_CELL_LIST_PREVIOUS) = old;
+        M2C_FIELD(list, u8 *, SPRITE_CELL_LIST_SYNC) = zero;
+    }
+}
 #pragma push
 #pragma opt_propagation off
 /* Point a sprite cell list's current cell at the cell showing `tile`, provided
@@ -313,7 +318,16 @@ void SpriteCellListSelectTile(void *list, s32 tile) {
     SpriteCellListSelectCell(list, SpriteCellListFindCell(list, tile));
 }
 #pragma pop
-void func_02087f00(void *p, s32 id) { void SpriteCellListSelectTile(void *, s32); SpriteCellListSelectTile(p, id); M2C_FIELD(p,s32 *,4)=M2C_FIELD(p,s32 *,0); M2C_FIELD(p,u8 *,15)=255; }
+/* Point a sprite-cell list at the cell showing `tile` and settle the change at
+ * once: that cell becomes both the list's current and its previous cell and the
+ * selection sync is marked done, so the owner does not animate the change. */
+void SpriteCellListSelectTileImmediate(void *list, s32 tile) {
+    void SpriteCellListSelectTile(void *, s32);
+
+    SpriteCellListSelectTile(list, tile);
+    M2C_FIELD(list, s32 *, SPRITE_CELL_LIST_PREVIOUS) = M2C_FIELD(list, s32 *, SPRITE_CELL_LIST_CURRENT);
+    M2C_FIELD(list, u8 *, SPRITE_CELL_LIST_SYNC) = SPRITE_CELL_LIST_SYNC_DONE;
+}
 
 /* Return whether the point (pointX, pointY) lies inside the widget's half-open rectangle. */
 s32 WidgetRectContainsPoint(s32 unused, void *rect, s32 pointX, s32 pointY) {

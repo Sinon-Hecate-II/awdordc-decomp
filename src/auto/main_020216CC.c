@@ -391,11 +391,14 @@ s32 BoostThreadPriority(void) {
     return oldPriority;
 }
 
-void RestoreThreadPriority(u32 a){
-void SetThreadPriority(s32,u32);
-extern M2C_UNK gSocketManager;
-if(a>=32)return;
-SetThreadPriority(M2C_FIELD(&gSocketManager,s32 *,4),a);
+/* Put a saved run priority back on the socket manager's running thread.  A value
+ * at or above THREAD_PRIORITY_MAX is the -1 BoostThreadPriority returns when it
+ * boosted nothing, so there is nothing to restore. */
+void RestoreThreadPriority(u32 priority) {
+    void SetThreadPriority(s32, u32);
+    extern M2C_UNK gSocketManager;
+    if (priority >= THREAD_PRIORITY_MAX) return;
+    SetThreadPriority(M2C_FIELD(&gSocketManager, s32 *, SOCKMGR_RUNNING_THREAD), priority);
 }
 
 /* Give the current connection's TLS context the list of known RSA public keys:

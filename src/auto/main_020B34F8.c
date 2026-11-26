@@ -228,11 +228,13 @@ M2C_FIELD(grid,s16 *,SPRITE_GRID_CURSOR_Y)=(targetY+M2C_FIELD(grid,s16 *,SPRITE_
 }
 }
 
-void *func_020b3b4c(void *arg0) {
+/* Destroy a sprite grid widget: release the cell block it allocated and the
+ * widget itself. */
+void *DestroySpriteGrid(void *grid) {
     M2C_UNK MemFree(void *);
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x2C));
-    MemFree(arg0);
-    return arg0;
+    HeapFreeBlock(M2C_FIELD(grid, s32 *, SPRITE_GRID_CELLS + SPRITE_CELL_LIST_CELLS));
+    MemFree(grid);
+    return grid;
 }
 
 void *func_020b3b6c(void *arg0) {

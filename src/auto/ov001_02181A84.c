@@ -2,6 +2,7 @@
 #include "common.h"
 #include "gx.h"
 #include "wfc.h"
+#include "ov001_wh.h"
 
 /* Load the background-step character data and enable display backgrounds. */
 void func_ov001_02181a84(void) {
@@ -231,13 +232,15 @@ void Ov001_ApplyIconMenuChoice(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_BeginIconMenuClose);
 }
 
+/* Icon-menu exit step after the player's choice: lock the icon row, hold it for
+ * a few frames, then hand the step over to the menu's fade-out. */
 void Ov001_BeginIconMenuClose(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutMenu;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_FadeOutMenu);
 }
 
@@ -486,10 +489,12 @@ void Ov001_FadeOutWfcConnectScreen(void) {
     Ov001_SetStepCallback(&Ov001_WaitCloseWfcConnectFade);
 }
 
+/* Wait for the Wi-Fi connect screen's fade-out on the main engine to finish, then
+ * hand the state machine to the step that closes the screen. */
 void Ov001_WaitCloseWfcConnectFade(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK Ov001_CloseWfcConnectScreen;
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
     Ov001_SetStepCallback(&Ov001_CloseWfcConnectScreen);
@@ -600,15 +605,17 @@ void Ov001_FadeInWfcSuccessScreen(void) {
     Ov001_SetStepCallback(&Ov001_WaitWfcSuccessFadeIn);
 }
 
+/* Step after the Wi-Fi success screen's fade-in: once the main engine's fade
+ * finishes, hand over to the screen's update step. */
 void Ov001_WaitWfcSuccessFadeIn(void) {
-    extern M2C_UNK func_ov001_0218272c;
-    if (Ov001_IsFadeActive(0) != 0) {
+    extern M2C_UNK Ov001_UpdateWfcSuccessScreen;
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_0218272c);
+    Ov001_SetStepCallback(&Ov001_UpdateWfcSuccessScreen);
 }
 
-void func_ov001_0218272c(void) {
+void Ov001_UpdateWfcSuccessScreen(void) {
     void Ov001_WfcSuccessTimeoutStep(void);
     void func_ov001_0218273c(void);
     Ov001_WfcSuccessTimeoutStep();

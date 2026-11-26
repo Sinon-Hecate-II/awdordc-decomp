@@ -409,7 +409,7 @@ s32 BuildDhcpRequest(s32 mode) {
 s32 func_0201e404(s32 arg0, s32 arg1) {
     u64 GetSystemTick(void);
     s32 GetSocketReceivedDataSize(void);
-    void func_0201a238(void);
+    void NetStackWaitIdle(void);
     s32 PeekSocketReceivedData(s32 *);
     s32 MacAddressesDiffer(u16 *, u16 *);
     void ConsumeConnectionReceivedData(s32);
@@ -439,7 +439,7 @@ s32 func_0201e404(s32 arg0, s32 arg1) {
 
 top_loop:
     if (GetSocketReceivedDataSize() == 0) {
-        func_0201a238();
+        NetStackWaitIdle();
     } else {
         q = (u8 *)PeekSocketReceivedData(&slots[1]);
         if ((u32)slots[1] <= 0xF0) goto fail;

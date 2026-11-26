@@ -261,16 +261,18 @@ s32 IsAiCommandPlanningPhase(void) {
     }
 }
 
+/* True while the AI's command task sprite (the one that steps the planning
+ * phases) is running. */
 u8 IsAiCommandTaskRunning(void) {
     s32 IsTaskSpriteRunning(M2C_UNK);
-    u8 var_r0;
+    u8 running;
 
-    if (IsTaskSpriteRunning(6) != 0) {
-        var_r0 = 1;
+    if (IsTaskSpriteRunning(AI_COMMAND_TASK_SPRITE_Z) != 0) {
+        running = 1;
     } else {
-        var_r0 = 0;
+        running = 0;
     }
-    return var_r0;
+    return running;
 }
 
 void EndAiTurn(void);

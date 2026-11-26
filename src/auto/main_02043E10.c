@@ -217,9 +217,11 @@ s32 CanStartTransfer(s32 channel, s32 kind) {
     return 0;
 }
 
-s32 SendTransferToPeer(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Start a kind-1 data transfer of `size` bytes from `buffer` to peer `channel`
+ * (the transfer slot index of the player the data goes to). */
+s32 SendTransferToPeer(s32 channel, void *buffer, s32 size) {
     M2C_UNK SendTransfer(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    return SendTransfer(1, arg0, arg1, arg2);
+    return SendTransfer(1, channel, (s32)buffer, size);
 }
 
 /* Start sending `size` bytes from `buffer` to `channel` as a transfer of `kind`:
@@ -340,11 +342,34 @@ s32 SetTransferReceiveBuffer(s32 playerId, void *buffer, s32 size) {
     return 1;
 }
 
-s32 Transfer_SetStartCallback(s32 a){extern s32 gTransferManager;if(!gTransferManager)return 0;M2C_FIELD(gTransferManager,s32 *,0x600)=a;return 1;}
+/* Set the transfer manager's send-done callback: it is called with the number
+ * of bytes sent and the channel once a transfer is fully queued.  Returns 0 when
+ * there is no transfer manager. */
+s32 Transfer_SetSentCallback(s32 callback) {
+    extern s32 gTransferManager;
 
-s32 Transfer_SetEndCallback(s32 a){extern s32 gTransferManager;if(!gTransferManager)return 0;M2C_FIELD(gTransferManager,s32 *,0x604)=a;return 1;}
+    if (!gTransferManager) return 0;
+    ((TransferManager *)gTransferManager)->onSent = (void (*)(s32, s32)) callback;
+    return 1;
+}
 
-s32 func_02044658(u16 a){extern s32 gTransferManager;if(!gTransferManager)return 0;M2C_FIELD(gTransferManager,u16 *,0x610)=a;return 1;}
+/* Install the callback run with (player id, buffer, size) once an incoming
+ * transfer completes; returns 0 when no transfer manager exists. */
+s32 Transfer_SetReceiveCallback(void (*callback)(s32, void *, s32)) {
+    extern s32 gTransferManager;
+    if (!gTransferManager) return 0;
+    ((TransferManager *)gTransferManager)->onReceived = callback;
+    return 1;
+}
+
+/* Set how many bytes of a transfer the manager sends per frame; returns 0 when
+ * no transfer manager exists. */
+s32 Transfer_SetChunkSize(u16 chunkSize) {
+    extern s32 gTransferManager;
+    if (!gTransferManager) return 0;
+    ((TransferManager *)gTransferManager)->chunkSize = chunkSize;
+    return 1;
+}
 
 /* Build the 8-byte header at `header` that opens a transfer of `size` bytes
  * of `kind`: the payload size, the transfer kind and the magic tag. */
@@ -369,7 +394,19 @@ u16 GetTransferPacketKind(void *header) {
     return 0;
 }
 
-s32 GetTransferStartSpace(s32 a){switch(a){case 2:case 3:case 4:return 12;default:return 8;}}
+/* Free send-space, in bytes, a transfer of `kind` needs before it may start: one
+ * 8-byte transfer header for a data transfer (kind 1), or the header plus a
+ * 4-byte payload for the control kinds 2..4. */
+s32 GetTransferStartSpace(s32 kind) {
+    switch (kind) {
+    case 2:
+    case 3:
+    case 4:
+        return 12;
+    default:
+        return 8;
+    }
+}
 
 /* Point gTransferManager at `manager`, clear every slot and callback and set the
  * default number of bytes sent per frame. */
@@ -604,16 +641,18 @@ void DispatchConnectionNotice(s32 playerId, s32 packet) {
     ReceiveConnectionPacket(playerId, kind, packet);
 }
 
-s32 GetSendSpace(void) {
-    M2C_UNK FindPlayerConnection();
-    s32 func_0205b038();
-    s32 var_r0;
+/* Room left for a transfer chunk in playerId's GT2 send buffer: the buffer's
+ * free space less TRANSFER_SEND_MARGIN, reported as 0 when that would be
+ * negative. */
+s32 GetSendSpace(s32 playerId) {
+    s32 FindPlayerConnection(s32);
+    s32 gti2GetConnectionSendFreeSpace(void *);
+    s32 space;
 
-    FindPlayerConnection();
-    var_r0 = func_0205b038() + 0xFFFFFDF9;
-    if (var_r0 <= 0) {
-        var_r0 = 0;
+    space = gti2GetConnectionSendFreeSpace((void *)FindPlayerConnection(playerId)) + TRANSFER_SEND_MARGIN;
+    if (space <= 0) {
+        space = 0;
     }
-    return var_r0;
+    return space;
 }
 

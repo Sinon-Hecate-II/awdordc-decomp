@@ -51,11 +51,12 @@ s32 IsCampaignMapListCategory(void) {
     return 0;
 }
 
-s32 GetWaypointOptionTextId(s32 arg0) {
+/* Description text key of waypoint-panel CO option `option` (0 .. 12). */
+s32 GetWaypointOptionTextId(s32 option) {
     M2C_UNK InRange(s32, M2C_UNK, M2C_UNK);
-    extern s32 data_ov003_0220f0c8[][2];
-    InRange(arg0, 0, 0xD);
-    return data_ov003_0220f0c8[arg0][0];
+    extern s32 gWaypointOptionTextIds[][2];
+    InRange(option, 0, WAYPOINT_OPTION_COUNT);
+    return gWaypointOptionTextIds[option][0];
 }
 
 /* Whether the waypoint panel may offer CO option `option`: the Random option is

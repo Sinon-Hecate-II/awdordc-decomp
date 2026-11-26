@@ -160,7 +160,7 @@ void MbJob_Clear(M2C_UNK arg0) {
 void MbWorker_Main(void *arg0) {
 extern s32 gMbJobTask;
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
-void OS_SleepThread(s32); void func_02005bbc(void);
+void OS_SleepThread(s32); void TaskExitCurrent(void);
 s32 saved; Work19334 w; void (*second)(Work19334 *);
 for(;;) {
 MI_CpuFill8((s32)&w,0,0x24);
@@ -177,7 +177,7 @@ if(!gMbJobTask) break;
 M2C_FIELD(arg0,Work19334 **,0xc0)=0;
 OS_RestoreInterrupts(saved);
 }
-func_02005bbc();
+TaskExitCurrent();
 }
 
 /* Copy the NUL-terminated string `src` to `dst`, terminator included, and return

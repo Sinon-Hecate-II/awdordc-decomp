@@ -267,10 +267,13 @@ s32 VStringScanf(s8 *text, s32 format, s32 argList) {
     return ScanFormatted(ScanFloatStreamRead, &stream, format, argList, 0);
 }
 
-void StringScanf(s32 arg0, s32 arg1, ...) {
- char *args;
- args=(char *)(((u32)&arg1 & ~3U)+4);
- VStringScanf((s8 *)arg0,arg1,(s32)args);
+/* Read values out of `text` according to the C `format` string, passing the
+ * variable arguments on to the stream scanner.  Returns the number of fields
+ * assigned, or -1 when `text` is NULL or empty (VStringScanf's result). */
+s32 StringScanf(char *text, char *format, ...) {
+    char *args;
+    args = (char *)(((u32)&format & ~3U) + 4);
+    return VStringScanf(text, (s32)format, (s32)args);
 }
 
 /* Takes (and clears) the one-shot socket-event handler registered for id (1..7)

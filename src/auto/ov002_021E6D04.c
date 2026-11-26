@@ -457,7 +457,7 @@ void StepBattleSceneEndDelay(void *state) {
  * decides) and draw its unit models. */
 void DrawBattleSceneUnitView(void) {
     M2C_UNK SetupSprite3DScene();
-    M2C_UNK func_02086ec8();
+    M2C_UNK GX_PopMatrixAndSwapBuffers();
     M2C_UNK SetGxPolygonAttr(M2C_UNK, M2C_UNK);
     s32 IsBattleScreenSwapped(M2C_UNK *);
     M2C_UNK func_ov002_021e8984(s32);
@@ -478,7 +478,7 @@ void DrawBattleSceneUnitView(void) {
         }
         func_ov002_021e8984((otherCountry * 0x2C) + (s32) &gUnitViews);
     }
-    func_02086ec8();
+    GX_PopMatrixAndSwapBuffers();
 }
 
 void EndBattleScene(void *arg0) {
@@ -523,16 +523,16 @@ u8 IsBattleSceneIntro(void *arg0) {
  * the side's unit-set definition selects it (type 1 -> 0x1F, type 2 -> 0x3C,
  * type 3 -> 0x59), with 2 as the default. */
 s32 Ov002_SelectUnitSetVariant(M2C_UNK settings, M2C_UNK side) {
-    s32 func_ov002_021e805c();
-    s32 func_ov002_021e8080(M2C_UNK, M2C_UNK);
-    s32 func_ov002_021e80a4(M2C_UNK, M2C_UNK);
-    if (func_ov002_021e805c() != 0) {
+    s32 IsUnitSetDefinitionType1();
+    s32 IsUnitSetDefinitionType2(M2C_UNK, M2C_UNK);
+    s32 IsUnitSetDefinitionType3(M2C_UNK, M2C_UNK);
+    if (IsUnitSetDefinitionType1() != 0) {
         return 0x1F;
     }
-    if (func_ov002_021e8080(settings, side) != 0) {
+    if (IsUnitSetDefinitionType2(settings, side) != 0) {
         return 0x3C;
     }
-    if (func_ov002_021e80a4(settings, side) != 0) {
+    if (IsUnitSetDefinitionType3(settings, side) != 0) {
         return 0x59;
     }
     return 2;
@@ -542,13 +542,13 @@ s32 Ov002_SelectUnitSetVariant(M2C_UNK settings, M2C_UNK side) {
  * `settings`: its unit-set definition type selects the variant (1 -> 0x21,
  * 2 -> 0x3E, 3 -> 0x5B), with 4 as the default. */
 s32 Ov002_SelectUnitSetVariantAlt(M2C_UNK settings, M2C_UNK side) {
-    if (func_ov002_021e805c() != 0) {
+    if (IsUnitSetDefinitionType1() != 0) {
         return 0x21;
     }
-    if (func_ov002_021e8080(settings, side) != 0) {
+    if (IsUnitSetDefinitionType2(settings, side) != 0) {
         return 0x3E;
     }
-    if (func_ov002_021e80a4(settings, side) != 0) {
+    if (IsUnitSetDefinitionType3(settings, side) != 0) {
         return 0x5B;
     }
     return 4;
@@ -564,9 +564,9 @@ void SetupPlayerSettings(void *settings) {
     extern u8 data_ov002_021f1134[];
 extern u8 gDemoBattle;
     extern u8 data_ov002_021f1bf4[];
-    u8 func_ov002_021e8014(s32, s32);
+    u8 IsSideUnitSetType2(s32, s32);
     s32 Ov002_SelectUnitSetVariant(M2C_UNK, M2C_UNK);
-    u8 func_ov002_021e8038(s32, s32);
+    u8 IsSideUnitSetKind3(s32, s32);
     s32 Ov002_SelectUnitSetVariantAlt(M2C_UNK, M2C_UNK);
 
     M2C_FIELD(settings, void **, 0x4) = (void *)(data_ov002_021f1134 + M2C_FIELD(&gPlayerSettings, u8 *, 0xc) * 64);
@@ -575,25 +575,25 @@ extern u8 gDemoBattle;
     M2C_FIELD(settings, void **, 0x20) = (void *)(data_ov002_021f1bf4 + M2C_FIELD(&gPlayerSettings, u8 *, 0x28) * 0x24);
 
     if (M2C_FIELD(M2C_FIELD(settings, void **, 0x4), u8 *, 0x3d) == 2) {
-        if (func_ov002_021e8014((s32)settings, 0) == 0) {
+        if (IsSideUnitSetType2((s32)settings, 0) == 0) {
             u8 variant = Ov002_SelectUnitSetVariant((M2C_UNK)settings, 0);
             M2C_FIELD(&gPlayerSettings, u8 *, 0x10) = variant;
         }
     }
     if (M2C_FIELD(M2C_FIELD(settings, void **, 0x1c), u8 *, 0x3d) == 2) {
-        if (func_ov002_021e8014((s32)settings, 1) == 0) {
+        if (IsSideUnitSetType2((s32)settings, 1) == 0) {
             u8 variant = Ov002_SelectUnitSetVariant((M2C_UNK)settings, 1);
             M2C_FIELD(&gPlayerSettings, u8 *, 0x28) = variant;
         }
     }
     if (M2C_FIELD(M2C_FIELD(settings, void **, 0x4), u8 *, 0x3d) == 3) {
-        if (func_ov002_021e8038((s32)settings, 0) == 0) {
+        if (IsSideUnitSetKind3((s32)settings, 0) == 0) {
             u8 variant = Ov002_SelectUnitSetVariantAlt((M2C_UNK)settings, 0);
             M2C_FIELD(&gPlayerSettings, u8 *, 0x10) = variant;
         }
     }
     if (M2C_FIELD(M2C_FIELD(settings, void **, 0x1c), u8 *, 0x3d) == 3) {
-        if (func_ov002_021e8038((s32)settings, 1) == 0) {
+        if (IsSideUnitSetKind3((s32)settings, 1) == 0) {
             u8 variant = Ov002_SelectUnitSetVariantAlt((M2C_UNK)settings, 1);
             M2C_FIELD(&gPlayerSettings, u8 *, 0x28) = variant;
         }

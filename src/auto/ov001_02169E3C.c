@@ -266,7 +266,7 @@ void DrawVerticallyAnchoredText(void *state, s32 x, s32 y, s32 blockWidth, s32 a
 
 /* Validates a font resource (magic 'NFTR'-ish, version >= 1.00) and relocates its
    internal pointers; on success returns 1 and writes a pointer to its FINF section into *outFinf. */
-s32 func_ov001_0216aab0(void *font, void **outFinf) {
+s32 Ov001_InitFontResource(void *font, void **outFinf) {
     M2C_UNK SystemHalt();
     NftrBlockHeader *FindFontBlock(NftrFileHeader *, u32);
     M2C_UNK RelocateFontPointers(void *);
@@ -399,7 +399,7 @@ s32 func_ov001_0216ace0(void *arg0,s32 arg1) {
  p=M2C_FIELD(arg0,u8 **,0);shift=arg1-n;M2C_FIELD(arg0,u8 **,0)=p+1;M2C_FIELD(arg0,u8 *,5)=*p;M2C_FIELD(arg0,s8 *,4)=8;value=func_ov001_0216ace0(arg0,shift)|(byte<<shift);
  } return value & (0xff>>(8-arg1));
 }
-u16 func_ov001_0216ad40(u16 **arg0) {
+u16 DecodeFontChar(u16 **arg0) {
 u16 *p=*arg0;
 u16 v=*p++;
 *arg0=p;

@@ -56,28 +56,32 @@ void SleepMilliseconds(s32 milliseconds) {
     OS_RestoreInterrupts(state);
 }
 
-void SleepTimerCallback(void **arg0) {
+/* Wake the thread a sleep timer was armed for: clear the thread pointer the
+ * timer's argument points at and the thread's wake-timer field, then wake it. */
+void SleepTimerCallback(void **timerArg) {
     M2C_UNK TaskWake(void *);
-    void *temp_r2;
+    void *thread;
 
-    temp_r2 = *arg0;
-    *arg0 = NULL;
-    M2C_FIELD(temp_r2, s32 *, 0xB0) = 0;
-    TaskWake(temp_r2);
+    thread = *timerArg;
+    *timerArg = NULL;
+    M2C_FIELD(thread, s32 *, THREAD_WAKE_TIMER) = 0;
+    TaskWake(thread);
 }
 
-s32 func_020060f8(s32 arg0) {
+/* Atomically replace the scheduler's thread-switch callback and return the one it
+ * had before; the callback runs with (from, to) just before a context switch. */
+ThreadSwitchCallback SetThreadSwitchCallback(ThreadSwitchCallback callback) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern M2C_UNK gThreadManager;
     s32 state;
-    s32 temp;
+    ThreadSwitchCallback previous;
 
     state = OS_DisableInterrupts();
-    temp = M2C_FIELD(&gThreadManager, s32 *, 0x30);
-    M2C_FIELD(&gThreadManager, s32 *, 0x30) = arg0;
+    previous = M2C_FIELD(&gThreadManager, ThreadSwitchCallback *, THREAD_MANAGER_SWITCH_CALLBACK);
+    M2C_FIELD(&gThreadManager, ThreadSwitchCallback *, THREAD_MANAGER_SWITCH_CALLBACK) = callback;
     OS_RestoreInterrupts(state);
-    return temp;
+    return previous;
 }
 
 void func_02006120(void)
@@ -432,36 +436,40 @@ s32 TryLockMutex(void *mutex) {
     return locked;
 }
 
-void AppendThreadMutex(void *arg0, void *arg1) {
-    void *temp_r2;
+/* Append `mutex` to the tail of `thread`'s list of held mutexes (the list linked
+ * through the mutex's OSMUTEX_LINK_* fields). */
+void AppendThreadMutex(void *thread, void *mutex) {
+    void *tail;
 
-    temp_r2 = M2C_FIELD(arg0, void **, 0x8C);
-    if (temp_r2 == NULL) {
-        M2C_FIELD(arg0, void **, 0x88) = arg1;
+    tail = M2C_FIELD(thread, void **, THREAD_MUTEX_LIST_TAIL);
+    if (tail == NULL) {
+        M2C_FIELD(thread, void **, THREAD_MUTEX_LIST_HEAD) = mutex;
     } else {
-        M2C_FIELD(temp_r2, void **, 0x10) = arg1;
+        M2C_FIELD(tail, void **, OSMUTEX_LINK_NEXT) = mutex;
     }
-    M2C_FIELD(arg1, void **, 0x14) = temp_r2;
-    M2C_FIELD(arg1, s32 *, 0x10) = 0;
-    M2C_FIELD(arg0, void **, 0x8C) = arg1;
+    M2C_FIELD(mutex, void **, OSMUTEX_LINK_PREV) = tail;
+    M2C_FIELD(mutex, s32 *, OSMUTEX_LINK_NEXT) = 0;
+    M2C_FIELD(thread, void **, THREAD_MUTEX_LIST_TAIL) = mutex;
 }
 
-void RemoveThreadMutex(void *arg0, void *arg1) {
-    void *temp_r1;
-    void *temp_r2;
+/* Unlink `mutex` from `thread`'s list of held mutexes (the doubly-linked list
+ * whose head and tail are THREAD_MUTEX_LIST_HEAD/TAIL). */
+void RemoveThreadMutex(void *thread, void *mutex) {
+    void *next;
+    void *prev;
 
-    temp_r2 = M2C_FIELD(arg1, void **, 0x10);
-    temp_r1 = M2C_FIELD(arg1, void **, 0x14);
-    if (temp_r2 == NULL) {
-        M2C_FIELD(arg0, void **, 0x8C) = temp_r1;
+    next = M2C_FIELD(mutex, void **, OSMUTEX_LINK_NEXT);
+    prev = M2C_FIELD(mutex, void **, OSMUTEX_LINK_PREV);
+    if (next == NULL) {
+        M2C_FIELD(thread, void **, THREAD_MUTEX_LIST_TAIL) = prev;
     } else {
-        M2C_FIELD(temp_r2, void **, 0x14) = temp_r1;
+        M2C_FIELD(next, void **, OSMUTEX_LINK_PREV) = prev;
     }
-    if (temp_r1 == NULL) {
-        M2C_FIELD(arg0, void **, 0x88) = temp_r2;
+    if (prev == NULL) {
+        M2C_FIELD(thread, void **, THREAD_MUTEX_LIST_HEAD) = next;
         return;
     }
-    M2C_FIELD(temp_r1, void **, 0x10) = temp_r2;
+    M2C_FIELD(prev, void **, OSMUTEX_LINK_NEXT) = next;
 }
 
 #pragma opt_propagation off

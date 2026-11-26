@@ -176,11 +176,13 @@ s32 GetNetError(s32 *outParam, s32 *outType) {
     return M2C_FIELD(&gNetError, s32 *, 0);
 }
 
+/* Clear the network error record.  A fatal error (NET_ERROR_FATAL) stays set:
+ * it is neither overwritten nor cleared. */
 void ClearNetError(void) {
     extern M2C_UNK gNetError;
-    if (M2C_FIELD(&gNetError, s32 *, 0) != 9) {
-        M2C_FIELD(&gNetError, s32 *, 0) = 0;
-        M2C_FIELD(&gNetError, s32 *, 4) = 0;
+    if (NET_ERROR->code != NET_ERROR_FATAL) {
+        NET_ERROR->code = NET_ERROR_NONE;
+        NET_ERROR->detail = 0;
     }
 }
 

@@ -181,9 +181,12 @@ void HandleConnectionTextCommand(s32 unusedConnection, s32 peerId, u8 *message) 
     HandleConnectionCommand(message[0], peerId, 0, 0, arguments, argumentCount);
 }
 
-void func_0203dc18(void) {
- M2C_FIELD(GetConnection(),u8 *,0x3cc)=255;
- M2C_FIELD(GetConnection(),u8 *,0x3cd)=0;
+/* Forget the connection command the session last handled: mark that none is
+ * remembered and clear its retry count, so a later command starts its attempt
+ * count from scratch. */
+void ResetLastConnectionCommand(void) {
+    M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_LAST_COMMAND) = CONN_SESSION_NO_COMMAND;
+    M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_LAST_COMMAND_TRIES) = 0;
 }
 
 /* Report a match-making error to the game's connection-event callback - with
@@ -316,12 +319,15 @@ else RefreshConnection(1);
 return 1;
 }
 
-void func_0203e064(M2C_UNK arg0) {
+/* Continue the connection session with playerId (the peer just finished
+ * connecting, or was dropped): start the next handshake step with it.  Once the
+ * session is tearing its peers down that work would be undone, so skip it. */
+void ContinueConnectionSession(M2C_UNK playerId) {
     M2C_UNK func_02040e1c(M2C_UNK);
-    if (M2C_FIELD(GetConnection(), u8 *, 0x1A8) == 2) {
+    if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_TEARDOWN) == CONN_TEARDOWN_IN_PROGRESS) {
         return;
     }
-    func_02040e1c(arg0);
+    func_02040e1c(playerId);
 }
 
 #pragma opt_strength_reduction off
@@ -401,9 +407,16 @@ s32 RemoveConnectionPeer(s32 slotIndex, s32 peerCount) {
     return removedPeerId;
 }
 
-s32 GetConnectionPeerCount(void) { if(GetConnection()==0)return 0; return M2C_FIELD(GetConnection(),u8 *,0xd); }
+/* The number of peers in the current connection (0 when there is none). */
+s32 GetConnectionPeerCount(void) { if(GetConnection()==0)return 0; return M2C_FIELD(GetConnection(),u8 *,CONN_SESSION_PLAYER_COUNT); }
 
-s32 GetConnectionActivePlayerMax(void) { if(GetConnection()==0)return 0; return M2C_FIELD(GetConnection(),u8 *,0xe); }
+/* The highest active player slot (the count of present slots minus one), or 0
+ * when there is no connection. */
+s32 GetConnectionActivePlayerMax(void) {
+    s32 GetConnection(void);
+    if (GetConnection() == 0) return 0;
+    return M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_ACTIVE_MAX);
+}
 
 /* Store the number of present player slots (the set bits of CONN_SESSION_PLAYER_MASK,
  * minus one; 0 when there is none) as CONN_SESSION_ACTIVE_MAX. */

@@ -32,7 +32,7 @@
  * indexed by hardware channel).  An entry is {callback, argument, generation};
  * Sound_StartChannelTimer stores them and sends the bumped generation to the
  * ARM7 with sound command 0x12, whose reply must echo it before the callback
- * runs (func_020097bc). */
+ * runs (Sound_DispatchChannelCallback). */
 #define SOUND_CHANNEL_CALLBACK_CALLBACK 0x00 /* void (*)(void *arg): the channel's timer callback */
 #define SOUND_CHANNEL_CALLBACK_ARG      0x04 /* void * argument passed to the callback */
 #define SOUND_CHANNEL_CALLBACK_GEN      0x08 /* u8 generation counter for the channel */
@@ -376,6 +376,9 @@ typedef struct SoundChannelRecord {
 
 #define SOUND_VOLUME_MAX 0x7F /* full volume, in the 0..0x7F range */
 #define SOUND_VOLUME_LEVELS 3  /* volume levels (master, user setting, fade) multiplied into a channel's effective volume */
+#define SOUND_VOLUME_LEVEL_MASTER 0 /* SetMusicVolumeLevel level: overall music volume */
+#define SOUND_VOLUME_LEVEL_PLAYER 1 /* SetMusicVolumeLevel level: the player's music setting */
+#define SOUND_VOLUME_LEVEL_FADE   2 /* SetMusicVolumeLevel level: fade/duck applied over the setting */
 
 /* Effect volume map sounds play at (GetSoundEffectVolume): reduced in the
  * zoomed-out view, full in the zoomed-in one. */

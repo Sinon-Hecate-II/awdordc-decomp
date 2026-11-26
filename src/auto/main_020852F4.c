@@ -92,10 +92,18 @@ void ShowLinkStatusSpriteOnMainScreen(void) {
     LoadScenePanelGraphicsOnBothEngines(sprite);
 }
 
-void HideLinkStatusSprite(void){
- void *FindObjectByClass(M2C_UNK *); extern M2C_UNK gLinkStatusSpriteClass;
- void *p=FindObjectByClass(&gLinkStatusSpriteClass);
- if(p){M2C_FIELD(p,s8 *,0x40)=0;M2C_FIELD(p,s8 *,0x41)=0;}
+/* Hide the link-status indicator sprite: clear its main-engine flag and the
+ * companion byte ShowLinkStatusSpriteOnMainScreen keeps in step with it. */
+void HideLinkStatusSprite(void) {
+    void *FindObjectByClass(M2C_UNK *);
+    extern M2C_UNK gLinkStatusSpriteClass;
+    LinkStatusSprite *sprite;
+
+    sprite = FindObjectByClass(&gLinkStatusSpriteClass);
+    if (sprite != NULL) {
+        sprite->mainEngine = 0;
+        sprite->unk41 = 0;
+    }
 }
 
 /* Broadcast a link command packet of `size` bytes from `command`: the message
@@ -153,10 +161,12 @@ void func_02085428(M2C_UNK arg0) {
     Link_CreateStartRequest(0x50544453, arg0);
 }
 
-void func_02085440(void *arg0) {
+/* First update of a link data-block sender: broadcast its stored block to the
+ * other players and go back to the sprite's regular animation. */
+void BroadcastLinkBlock(void *sender) {
     M2C_UNK Sprite_ResumeAnimation(void *);
-    Link_BroadcastMessage(LINK_MSG_BLOCK, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
-    Sprite_ResumeAnimation(arg0);
+    Link_BroadcastMessage(LINK_MSG_BLOCK, M2C_FIELD(sender, s32 *, LINK_BLOCK_SENDER_DATA), M2C_FIELD(sender, s32 *, LINK_BLOCK_SENDER_SIZE));
+    Sprite_ResumeAnimation(sender);
 }
 
 void func_02085464(M2C_UNK arg0) {
@@ -630,16 +640,19 @@ void *LinkPlayerData_Delete(void *listener) {
     return listener;
 }
 
-void *LinkPlayerData_Destroy(void *arg0) {
+/* Non-freeing destructor of the link player-data listener: put the base vtable
+ * back and restore the link layer's previous message handler, then hand the
+ * listener back.  (LinkPlayerData_Delete is the deleting twin.) */
+void *LinkPlayerData_Destroy(void *listener) {
     extern M2C_UNK gLinkPlayerDataVtbl;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gLinkPlayerDataVtbl;
-    Link_SetMessageHandler(M2C_FIELD(arg0, s32 *, 0x34));
-    return arg0;
+    M2C_FIELD(listener, M2C_UNK **, 0) = &gLinkPlayerDataVtbl;
+    Link_SetMessageHandler(M2C_FIELD(listener, s32 *, LINK_PLAYER_DATA_PREV_HANDLER));
+    return listener;
 }
 
 /* Deleting destructor of the link block receiver: restore the base vtable,
  * uninstall its link message handler (putting back the one it replaced) and free
- * the receiver.  (func_02085d28 is the non-deleting twin.) */
+ * the receiver.  (LinkBlockReceiver_Destroy is the non-deleting twin.) */
 void *LinkBlockReceiver_Delete(void *receiver) {
     M2C_UNK MemFree(void *);
     extern M2C_UNK gLinkBlockReceiverVtbl;
@@ -650,11 +663,15 @@ void *LinkBlockReceiver_Delete(void *receiver) {
     return receiver;
 }
 
-void *func_02085d28(void *arg0) {
+/* Non-freeing destructor of the link block receiver: put the base vtable back,
+ * uninstall its link message handler (putting back the one it replaced) and hand
+ * the receiver back.  (LinkBlockReceiver_Delete is the deleting twin.) */
+void *LinkBlockReceiver_Destroy(void *receiver) {
     extern M2C_UNK gLinkBlockReceiverVtbl;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gLinkBlockReceiverVtbl;
-    Link_SetMessageHandler(M2C_FIELD(arg0, s32 *, 0x34));
-    return arg0;
+
+    M2C_FIELD(receiver, M2C_UNK **, 0) = &gLinkBlockReceiverVtbl;
+    Link_SetMessageHandler(M2C_FIELD(receiver, s32 *, LINK_PLAYER_DATA_PREV_HANDLER));
+    return receiver;
 }
 
 s32 func_02085d4c(s32 arg0) {

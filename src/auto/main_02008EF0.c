@@ -20,9 +20,11 @@ typedef struct QueueNode09298 { struct QueueNode09298 *next; } QueueNode09298;
 typedef struct { QueueNode09298 *head; s32 count, unk8, unkc; QueueNode09298 *tail; s32 index, unk18, pending, unk20; } State09100;
 typedef struct Queue09298 { s32 unk0, unk4; QueueNode09298 *head, *tail; } Queue09298;
 
-void func_02008ef0(M2C_UNK arg0) {
+/* ARM7 sound command 0x17: silence the sound driver.  HaltWithMessage sends it
+ * with 0 after fading the music out, before it halts the game. */
+void Sound_StopAllSound(M2C_UNK arg) {
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    SendArm7Message(0x17, arg0, 0, 0, 0);
+    SendArm7Message(0x17, arg, 0, 0, 0);
 }
 
 /* Send ARM7 sound command 0x19 with its four arguments.  The streamed voice's
@@ -338,8 +340,16 @@ s32 Sound_CountInFlightCommands(void) {
     return (0x100 - temp_r4) - Sound_CountQueuedCommands();
 }
 
-void Sound_CommandChannelHandler(int unused,int arg1) {
-s32 OS_DisableInterrupts(void);s32 s=OS_DisableInterrupts();func_020097bc(arg1);OS_RestoreInterrupts(s);
+/* FIFO message handler for the sound command channel: `message` carries the
+ * hardware channel in its low byte and the generation its callback was registered
+ * with in bits 8..15; run the channel's timer callback if that generation still
+ * matches. */
+void Sound_CommandChannelHandler(s32 tag, s32 message) {
+    s32 OS_DisableInterrupts(void);
+    s32 saved = OS_DisableInterrupts();
+
+    Sound_DispatchChannelCallback(message);
+    OS_RestoreInterrupts(saved);
 }
 
 /* Ready the ARM7 sound command channel: install its FIFO message handler and,
@@ -424,12 +434,13 @@ void ClearSoundChannelCallbacks(void){
     } while (channel < SOUND_CHANNEL_CALLBACK_COUNT);
 }
 
-void func_0200976c(s32 arg0) {
+/* Drop the pending ARM7 timer callback of hardware `channel` by bumping its
+ * generation counter, so a reply carrying the old generation is ignored. */
+void Sound_InvalidateChannelCallback(s32 channel) {
     extern M2C_UNK gSoundChannelCallbacks;
-    s32 temp_r1;
+    u8 *entry = (u8 *)&gSoundChannelCallbacks + channel * SOUND_CHANNEL_CALLBACK_SIZE;
 
-    temp_r1 = (arg0 * 0xC) + (s32) &gSoundChannelCallbacks;
-    M2C_FIELD(temp_r1, u8 *, 8) = (u8) (M2C_FIELD(temp_r1, u8 *, 8) + 1);
+    entry[SOUND_CHANNEL_CALLBACK_GEN] = entry[SOUND_CHANNEL_CALLBACK_GEN] + 1;
 }
 
 /* Register hardware channel `channel`'s timer callback and its argument in the
@@ -443,7 +454,7 @@ u8 Sound_RegisterChannelCallback(int channel, int callback, int callbackArg) {
     return ++M2C_FIELD(entry, u8 *, SOUND_CHANNEL_CALLBACK_GEN);
 }
 
-s32 func_020097bc(s32 a){
+s32 Sound_DispatchChannelCallback(s32 a){
 extern M2C_UNK gSoundChannelCallbacks;void *p=(char *)&gSoundChannelCallbacks+(a&255)*12;
 if(M2C_FIELD(p,u8 *,8)!=(u8)(a>>8))return;
 if(M2C_FIELD(p,void (**)(int),0))M2C_FIELD(p,void (**)(int),0)(M2C_FIELD(p,int *,4));
@@ -696,13 +707,18 @@ s32 SetFifoMessageHandler(s32 tag, M2C_UNK *handler) {
     return OS_RestoreInterrupts(irqState);
 }
 
-s32 IsFifoMessageReady(s32 a, s32 b) {
+/* Checks whether the ARM7/ARM9 shared work area's ready word `wordIndex` (at
+ * 0x027FFC00 + 0x388 + wordIndex*4) has bit `fifoTag` set: InitSoundCommandLink
+ * polls word 1 for the sound-command FIFO tag until the ARM7 reports the channel
+ * ready. */
+s32 IsFifoMessageReady(s32 fifoTag, s32 wordIndex) {
     extern u8 data_027ffc00[];
-    u32 val = *((u32 *)((u8 *)data_027ffc00 + b * 4 + 0x388));
-    s32 r = 1;
-    if (!(val & (1 << a))) {
-        r = 0;
+    u32 readyTags = *((u32 *)((u8 *)data_027ffc00 + wordIndex * 4 + 0x388));
+    s32 ready = 1;
+
+    if (!(readyTags & (1 << fifoTag))) {
+        ready = 0;
     }
-    return r;
+    return ready;
 }
 

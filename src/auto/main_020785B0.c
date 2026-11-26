@@ -173,7 +173,7 @@ for(i=0;i<32;i++){
 void *p=(void*)(*gCurrentMap+0x58a4+i*8);
 if((u32)(M2C_FIELD(p,u16*,2)<<22)>>28)DrawMapEffectEntry(p);
 }
-if(func_020cd6b0())func_02077740();
+if(IsMapGridEnabled())func_02077740();
 for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++){
 if(IsUnitVisibleAt(x,y))RenderUnitAt(x,y,gMapCellCodes[x*40+y],mode);
 }

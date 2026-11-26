@@ -185,12 +185,12 @@ default:M2C_FIELD(&data_0215d990,u16 *,GAME_OPTIONS_WORD)=(M2C_FIELD(&data_0215d
 }
 }
 #pragma opt_common_subs reset
-u8 func_020bf9e0(void) {
+u8 GetMusicVolumeSetting(void) {
     extern M2C_UNK gGameSettings;
     return M2C_FIELD(&gGameSettings, u8 *, 0x12C);
 }
 
-void func_020bf9f0(s32 a) {
+void SetMusicVolumeSetting(s32 a) {
 extern M2C_UNK gGameSettings;void func_020bfa08(void);
 M2C_FIELD(&gGameSettings,u8 *,0x12c)=a;
 func_020bfa08();
@@ -198,12 +198,12 @@ func_020bfa08();
 
 void func_020bfa08(void) {
     M2C_UNK SetMusicVolumeLevel(M2C_UNK, s32);
-    SetMusicVolumeLevel(1, func_020bf9e0());
+    SetMusicVolumeLevel(1, GetMusicVolumeSetting());
 }
 
-s32 func_020bfa20(void){return M2C_FIELD(&gGameSettings,u8 *,0x12d);}
+s32 GetSoundEffectVolumeSetting(void){return M2C_FIELD(&gGameSettings,u8 *,0x12d);}
 
-void func_020bfa30(s32 a) {
+void SetSoundEffectVolumeSetting(s32 a) {
 void func_020bfa48(void);
 M2C_FIELD(&gGameSettings,u8 *,0x12d)=a;
 func_020bfa48();
@@ -211,8 +211,8 @@ func_020bfa48();
 
 void func_020bfa48(void) {
     M2C_UNK SetSoundEffectVolumeLevel(M2C_UNK, s32);
-    s32 func_020bfa20();
-    SetSoundEffectVolumeLevel(1, func_020bfa20());
+    s32 GetSoundEffectVolumeSetting();
+    SetSoundEffectVolumeLevel(1, GetSoundEffectVolumeSetting());
 }
 
 void *GetBattleRecord(s32 a) {
@@ -438,7 +438,7 @@ void OpenSaveLoadScreen(void) {
 
 void func_020c023c(M2C_UNK arg0) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02129404;
-    CreateSpriteFromClass(&data_02129404, arg0);
+    extern M2C_UNK gSaveLoadScreenOpenClass;
+    CreateSpriteFromClass(&gSaveLoadScreenOpenClass, arg0);
 }
 

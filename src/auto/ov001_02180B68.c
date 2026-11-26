@@ -1,7 +1,9 @@
 /* 27 functions from 0x02180B68 to 0x02181A84 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "ov001_wh.h"
 #include "gx.h"
 #include "wfc.h"
+#include "ov001_wh.h"
 typedef struct { u8 bytes[22]; } PathBuffer80;
 extern u8 gOv001Step11PalettePath[];
 extern u16 sOv001MenuSpriteX[], sOv001MenuSpriteY[];
@@ -9,15 +11,17 @@ extern M2C_UNK gOv001WayObjPalettePath, gOv001Step1TilesPath, gOv001Step1Palette
 extern M2C_UNK gOv001MenuRegion;
 extern M2C_UNK GX_LoadOBJPltt, GX_LoadBG2Char, GX_LoadBGPltt, GX_LoadBG2Scr;
 
-void func_ov001_02180b68(void) {
+/* Friend-list screen input: on B, stop the current sound and latch the back
+ * choice so the step that follows backs the screen out. */
+void Ov001_HandleFriendListMenuInput(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     M2C_UNK Ov001_StopSound();
     s32 KeyPressed(M2C_UNK);
-    if (KeyPressed(2) == 0) {
+    if (KeyPressed(KEY_B) == 0) {
         return;
     }
     Ov001_StopSound();
-    Ov001_LatchIconRowSelection(0);
+    Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
 void func_ov001_02180b8c(void) {
@@ -38,13 +42,15 @@ void Ov001_HandleFriendListBack(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_BackOutFriendList);
 }
 
+/* Friend-list screen exit step (back chosen): lock the icon row, hold it for a
+ * few frames, then hand the step over to the screen's fade-out. */
 void Ov001_BackOutFriendList(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutFriendList;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_FadeOutFriendList);
 }
 
@@ -128,6 +134,8 @@ void Ov001_ConfirmLeaveFriendList(void) {
     Ov001_SetStepCallback(&Ov001_CloseFriendListMessage);
 }
 
+/* Friend-list leave step: the confirm message box was told to close, so once it
+ * is gone, hand the screen to its back-out step. */
 void Ov001_CloseFriendListMessage(void) {
     s32 Ov001_IsRegionMenuActive();
     if (Ov001_IsRegionMenuActive() != 0) {
@@ -264,14 +272,14 @@ void Ov001_AccessPointWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection(void);
     s32 Ov001_IsMenuAnimating(void);
     M2C_UNK Ov001_UnlockIconRow();
-    void func_ov001_02181080(void);
+    void Ov001_UpdateRegionMenu(void);
     if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) return;
     if (Ov001_IsMenuAnimating() == 1) return;
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02181080);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_UpdateRegionMenu);
 }
 
-void func_ov001_02181080(void) {
+void Ov001_UpdateRegionMenu(void) {
     void func_ov001_02181094(void);
     void func_ov001_02181188(void);
     void Ov001_HandleRegionMenuChoice(void);
@@ -520,7 +528,7 @@ void Ov001_MoveSpriteLayout(s32,s32,u16,u16);
 void Ov001_SetSpritePalette(s32,s32,s32);
 void Ov001_DestroySprite(s32);
 M2C_UNK Ov001_CloseRegionMenu();
-void func_ov001_02181990(void);
+void Ov001_WaitRegionMenuClosed(void);
 register s32 slot=((Ov001MenuRegion *)&gOv001MenuRegion)->index-4;
 switch(Ov001_GetRegionMenuSelection()) {
 case 1:
@@ -541,17 +549,19 @@ break;
 default:return;
 }
 Ov001_CloseRegionMenu();
-Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02181990);
+Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitRegionMenuClosed);
 }
 
-void func_ov001_02181990(void) {
+/* Wait until the region menu has closed, then unlock its icon row and hand the
+ * step over to the menu's input update. */
+void Ov001_WaitRegionMenuClosed(void) {
     M2C_UNK Ov001_UnlockIconRow();
-    void func_ov001_02181080(void);
+    void Ov001_UpdateRegionMenu(void);
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02181080);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_UpdateRegionMenu);
 }
 
 /* Show the highlighted region's icon: upload that region's tile from the loaded

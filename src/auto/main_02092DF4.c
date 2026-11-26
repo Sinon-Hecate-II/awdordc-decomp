@@ -106,18 +106,25 @@ s32 MapScriptMoveCursor(void *state) {
     return 0;
 }
 
-s32 func_020930bc(void *arg0) {
+/* Map-script command: stay on this command while a battle preview (the full
+ * battle animation or the quick map battle) is on screen, and advance to the next
+ * command once it has finished. */
+s32 MapScriptWaitForBattlePreview(void *state) {
     s32 IsBattlePreviewActive();
+
     if (IsBattlePreviewActive() == 0) {
-        M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+        M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) = (s32) (M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     }
     return 0;
 }
 
-s32 func_020930e0(void *arg0) {
+/* Map-script command: end the current player's turn, advance to the next command
+ * and stop the script this frame while the turn change runs. */
+s32 MapScriptEndPlayerTurn(void *state) {
     M2C_UNK EndPlayerTurn();
+
     EndPlayerTurn();
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) = (s32) (M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 0;
 }
 
@@ -268,17 +275,20 @@ s32 MapScriptFadeOutMusic(void *state) {
     return 0;
 }
 
-void func_02093370(void *arg0) {
+void WaitForMusicFadeoutDone(void *arg0) {
     s32 IsMusicFadingOut();
     if (IsMusicFadingOut() == 0) {
         M2C_FIELD(arg0, s32 *, 8) = 0;
     }
 }
 
-s32 func_0209338c(void *arg0) {
- M2C_FIELD(arg0, void (**)(void *), 8) = func_02093370;
- M2C_FIELD(arg0, s32 *, 4) += 0x10;
- return 0;
+/* Map-script command: hold the script until the music fadeout started by the
+ * previous command has finished (WaitForMusicFadeoutDone clears the wait
+ * callback), then advance to the next command. */
+s32 MapScriptWaitForMusicFadeout(void *state) {
+    M2C_FIELD(state, void (**)(void *), MAP_SCRIPT_STATE_WAIT) = WaitForMusicFadeoutDone;
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 0;
 }
 
 /* Map-script command: fade the music to the volume the command's first operand
@@ -294,17 +304,21 @@ s32 MapScriptFadeMusicToVolume(void *script) {
     return 0;
 }
 
-s32 func_020933d8(void *arg0) {
-    M2C_UNK FadeMusicToHalfVolume();
+/* Map-script command: duck the music to half volume, then advance to the next command. */
+s32 MapScriptFadeMusicToHalfVolume(void *state) {
+    void FadeMusicToHalfVolume(void);
     FadeMusicToHalfVolume();
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) = (s32) (M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 0;
 }
 
-s32 func_020933f8(void *arg0) {
+/* Map-script command: fade the music back to full volume, advance to the next
+ * command, and stop the script this frame. */
+s32 MapScriptFadeMusicToFullVolume(void *state) {
     M2C_UNK FadeMusicToFullVolume();
+
     FadeMusicToFullVolume();
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) = (s32) (M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 0;
 }
 
@@ -503,17 +517,20 @@ if(found)MoveUnitToTile(found,a,b);
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
-void func_02093944(void *arg0) {
-    s32 func_ov000_0216971c();
-    if (func_ov000_0216971c() == 0) {
+void WaitForUnitMoveDone(void *arg0) {
+    s32 IsUnitMoveControllerActive();
+    if (IsUnitMoveControllerActive() == 0) {
         M2C_FIELD(arg0, s32 *, 8) = 0;
     }
 }
 
-s32 func_02093960(void *arg0) {
- M2C_FIELD(arg0, void (**)(void *), 8) = func_02093944;
- M2C_FIELD(arg0, s32 *, 4) += 0x10;
- return 0;
+/* Map-script command: install WaitForUnitMoveDone as the sequence's wait
+ * callback and advance to the next command, stopping the script this frame until
+ * the unit-move controller finishes. */
+s32 MapScriptWaitForUnitMove(void *state) {
+    M2C_FIELD(state, void (**)(void *), MAP_SCRIPT_STATE_WAIT) = WaitForUnitMoveDone;
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 0;
 }
 
 /* Map-script command: silently remove the unit standing on the command's tile
@@ -568,17 +585,18 @@ s32 MapScriptRemoveUnitAtCell(void *script) {
     return 1;
 }
 
-void func_02093b0c(void *arg0) {
+void MapScriptWaitForBattleEffectDone(void *arg0) {
     s32 IsBattleEffectActive();
     if (IsBattleEffectActive() == 0) {
         M2C_FIELD(arg0, s32 *, 8) = 0;
     }
 }
 
-s32 func_02093b28(void *arg0) {
- M2C_FIELD(arg0, void (**)(void *), 8) = func_02093b0c;
- M2C_FIELD(arg0, s32 *, 4) += 0x10;
- return 0;
+/* Map-script command: wait for the current battle effect to finish before advancing. */
+s32 MapScriptWaitForBattleEffect(void *state) {
+    M2C_FIELD(state, void (**)(void *), MAP_SCRIPT_STATE_WAIT) = MapScriptWaitForBattleEffectDone;
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 0;
 }
 
 s32 func_02093b48(void *arg0) {

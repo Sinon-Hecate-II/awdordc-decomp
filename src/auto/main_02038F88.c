@@ -124,10 +124,11 @@ void func_02039200(void) {
 
 }
 
-void SetNetState(s32 arg0) {
+/* Move the WFC session to state `state`, remembering the state it was in. */
+void SetNetState(s32 state) {
     extern void *gNetSession;
-    M2C_FIELD(gNetSession, s32 *, 0x28) = (s32) M2C_FIELD(gNetSession, s32 *, 0x24);
-    M2C_FIELD(gNetSession, s32 *, 0x24) = arg0;
+    M2C_FIELD(gNetSession, s32 *, NET_SESSION_PREV_STATE) = (s32) M2C_FIELD(gNetSession, s32 *, NET_SESSION_STATE);
+    M2C_FIELD(gNetSession, s32 *, NET_SESSION_STATE) = state;
 }
 
 /* Remove the present peer whose slot id is slotId: find it in the connection's
@@ -359,7 +360,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     M2C_UNK func_0203dee8();
     void SetNetError(s32, s32);
     M2C_UNK ReportGpiSessionStatus();
-    M2C_UNK func_0203e064();
+    M2C_UNK ContinueConnectionSession();
     s32 RemoveConnectionPeer();
     M2C_UNK SetGpiStatus();
     M2C_UNK Qr2_StateChanged();
@@ -438,7 +439,7 @@ void func_02039844(s32 arg0, s32 arg1) {
             u8 d389 = M2C_FIELD(base, u8 *, 0x389);
             if (d389 != 2 || r8 != 0) return;
             ReportGpiSessionStatus();
-            func_0203e064(r5);
+            ContinueConnectionSession(r5);
             return;
         }
     }
@@ -658,14 +659,18 @@ void FreeNasLoginContext(void) {
     M2C_FIELD(&gNasLogin, s32 *, NAS_LOGIN_CONTEXT) = 0;
 }
 #pragma pop
+/* Put the NAS login back to idle: clear the login context's state and its
+ * "gpi connection attempt pending" flag.  Does nothing when no login context
+ * exists. */
 void ResetNasLoginState(void) {
     extern M2C_UNK gNasLogin;
-    M2C_UNK *p;
-    p = (M2C_UNK *)M2C_FIELD(&gNasLogin, void **, 4);
-    if (p == NULL) return;
-    M2C_FIELD(p, s32 *, 4) = 0;
-    p = (M2C_UNK *)M2C_FIELD(&gNasLogin, void **, 4);
-    M2C_FIELD(p, s32 *, 0x30) = 0;
+    NasLoginParameters *context;
+
+    context = (NasLoginParameters *) M2C_FIELD(&gNasLogin, void **, NAS_LOGIN_CONTEXT);
+    if (context == NULL) return;
+    M2C_FIELD(context, s32 *, NAS_LOGIN_STATE) = NAS_STATE_IDLE;
+    context = (NasLoginParameters *) M2C_FIELD(&gNasLogin, void **, NAS_LOGIN_CONTEXT);
+    M2C_FIELD(context, s32 *, NAS_LOGIN_GPI_PENDING) = 0;
 }
 
 /* Reports a GameSpy Presence failure during NAS login and returns the original result. */

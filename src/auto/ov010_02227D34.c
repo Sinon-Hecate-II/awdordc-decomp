@@ -74,13 +74,13 @@ void Ov010Online_OnMatchmakingStarted(void) {
 void Ov010Online_StartSession(s32 owner, s32 arg1) {
     s32 GetNetErrorCode(void);
     s32 PublishPlayerStatusLocation(void *, s32);
-    s32 Transfer_SetStartCallback(s32);
-    s32 Transfer_SetEndCallback(s32);
+    s32 Transfer_SetSentCallback(s32);
+    s32 Transfer_SetReceiveCallback(s32);
     s32 SetNetPeerCallback(s32, s32);
     s32 SetMatchSessionSlotCallback(s32, s32);
     s32 StartMatchMaking(s32, s32, s32, s32, s32, s32, s32);
     s32 GetLastNasError(void);
-    void func_ov010_02227934(void);
+    void Ov010Online_OnTransferStart(void);
     void func_ov010_02227954(void);
     void Ov010Online_OnPeerConnectionLost(void);
     void func_ov010_02227c3c(void);
@@ -107,8 +107,8 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
     M2C_FIELD(&gOv010OnlineSession, s32 *, 0xfc) = arg1;
     PublishPlayerStatusLocation(&gLocalPlayerStatus, 0x6c);
 
-    Transfer_SetStartCallback((s32)func_ov010_02227934);
-    Transfer_SetEndCallback((s32)func_ov010_02227954);
+    Transfer_SetSentCallback((s32)Ov010Online_OnTransferStart);
+    Transfer_SetReceiveCallback((s32)func_ov010_02227954);
     SetNetPeerCallback((s32)Ov010Online_OnPeerConnectionLost, 0);
     SetMatchSessionSlotCallback((s32)func_ov010_02227c3c, 0);
 
@@ -158,10 +158,12 @@ void Ov010Online_SetupPeerReceiveBuffers(void) {
     }
 }
 
-void SetOnlinePlayerRecord(s32 arg0, M2C_UNK arg1) {
-    M2C_UNK MI_CpuCopy8(M2C_UNK, s32);
+/* Copy one 0x6C-byte online player record into slot `slotIndex` of the ov010
+ * player-records array. */
+void SetOnlinePlayerRecord(s32 slotIndex, M2C_UNK source) {
+    M2C_UNK MI_CpuCopy8(M2C_UNK, s32, s32);
     extern M2C_UNK gOv010PlayerRecords;
-    MI_CpuCopy8(arg1, (arg0 * 0x6C) + (s32) &gOv010PlayerRecords);
+    MI_CpuCopy8(source, (slotIndex * ONLINE_PLAYER_RECORD_SIZE) + (s32) &gOv010PlayerRecords, ONLINE_PLAYER_RECORD_SIZE);
 }
 
 /* Host/join match event callback: with no network error and the event not
@@ -298,7 +300,7 @@ s32 func_ov010_02228180(void) {
     void func_02037680(s32, s32);
     M2C_UNK DC_InvalidateRange(M2C_UNK, s32);
     M2C_UNK func_ov010_02226a88();
-    s32 func_02044658(u16);
+    s32 Transfer_SetChunkSize(u16);
     M2C_UNK ClearOnlineEventFlags();
     void func_ov010_02228280(M2C_UNK);
     extern M2C_UNK gOv010OnlineSession;
@@ -318,7 +320,7 @@ s32 func_ov010_02228180(void) {
         M2C_FIELD(&gOv010OnlineSession, s32 *, 0x3c) = workBlock;
         DC_InvalidateRange(workBlock, 0x10e0);
         func_ov010_02226a88();
-        func_02044658(0x5b9);
+        Transfer_SetChunkSize(0x5b9);
         M2C_FIELD(&gOv010OnlineSession, s32 *, 0x40) = 0;
         M2C_FIELD(&gOv010OnlineSession, s32 *, 0x38) = 0;
         M2C_FIELD(&gOv010OnlineSession, s32 *, 0x4c) = 0;
@@ -365,13 +367,16 @@ s32 IsOnlineSessionFlagSet(s32 arg0) {
     return var_r2;
 }
 
-M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK arg0) {
+/* Clear step-flag bit `flagIndex` (an OV010_FLAG_* index) in the online session's
+ * step-flag word and return the new word. */
+M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK flagIndex) {
     extern M2C_UNK gOv010OnlineSession;
-    s32 v;
-    v = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54);
-    v = v & (-1 ^ (1 << arg0));
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) = v;
-    return v;
+    s32 flags;
+
+    flags = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_STEP_FLAGS);
+    flags = flags & (-1 ^ (1 << flagIndex));
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_STEP_FLAGS) = flags;
+    return flags;
 }
 
 s32 GetNetErrorCode(void) {
@@ -470,7 +475,7 @@ s32 Ov010Online_WaitForConnection(void) {
     return 1;
 }
 
-M2C_UNK func_ov010_0222866c(M2C_UNK arg0) {
+M2C_UNK Ov010Online_OpenHttpConnection(M2C_UNK arg0) {
     M2C_UNK func_02037c10(M2C_UNK);
     return func_02037c10(arg0);
 }
@@ -505,22 +510,29 @@ s32 Ov010Online_PollMatchmaking(M2C_UNK *outSuccess) {
     return running;
 }
 
-void func_ov010_022286cc(void *arg0) {
-    M2C_UNK func_ov010_0222866c(M2C_UNK);
+/* HTTP-connect sprite step: open the WFC HTTP connection with the timeout the
+ * sprite stores at +0x34 and, when the connection could not be started, delete
+ * the sprite. */
+void Ov010HttpConnectSprite_Update(void *sprite) {
+    M2C_UNK Ov010Online_OpenHttpConnection(M2C_UNK);
     M2C_UNK DeleteSpriteObject(void *);
-    if (func_ov010_0222866c(M2C_FIELD(arg0, s32 *, 0x34)) != 0) {
+
+    if (Ov010Online_OpenHttpConnection(M2C_FIELD(sprite, s32 *, 0x34)) != 0) {
         return;
     }
-    DeleteSpriteObject(arg0);
+    DeleteSpriteObject(sprite);
 }
 
-void func_ov010_022286f0(void *arg0) {
-    M2C_UNK Sprite_ResumeAnimation(void *);
+/* Update of the status sprite shown while the matchmaking HTTP request runs:
+ * keep the sprite's animation paused for as long as the request is still
+ * running, then resume it once the request has finished. */
+void Ov010MatchmakingSprite_Update(void *sprite) {
     s32 Ov010Online_PollMatchmaking(M2C_UNK *);
-    if (Ov010Online_PollMatchmaking(M2C_FIELD(arg0, s32 *, 0x38)) != 0) {
+
+    if (Ov010Online_PollMatchmaking(M2C_FIELD(sprite, s32 *, 0x38)) != 0) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 void func_ov010_02228714(void) {

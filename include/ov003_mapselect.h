@@ -36,6 +36,11 @@
 #define SCENE_SLIDE_FORWARD 0x02 /* u8 slide direction towards the next map */
 #define SCENE_SLIDE_BACK    0x03 /* u8 slide direction back to the previous map */
 
+/* gOv003SceneState+0xC: the class descriptor of the scene object the screen
+ * creates (SetOv003SceneClass stores it).  GetOv003SceneObject finds the live
+ * object of that class, or returns 0 before a class has been set. */
+#define SCENE_STATE_CLASS 0x0C /* s32 class descriptor */
+
 /* A scene sprite definition (one screen object keeps it at +0x3C): the engine
  * it is drawn on and the sprite sheet tiles and palette its 3D sprite loads.
  * The scene's 3D sprite is built from it. */

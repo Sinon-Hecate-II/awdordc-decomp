@@ -20,13 +20,15 @@ void func_ov004_02211200(void) {
     func_ov000_0216a7fc();
 }
 
-void func_ov004_0221120c(M2C_UNK arg0) {
+/* ov004 map-event sprite handler: wait while a dialog is open, then resume the
+ * sprite's animation so the event script continues. */
+void Ov004_ResumeEventAfterDialog(void *sprite) {
     s32 IsDialogActive();
-    M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
+    void Sprite_ResumeAnimation(void *);
     if (IsDialogActive() != 0) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 /* Create the ov004 map-event sprite under `owner`: it only exists in a team
@@ -100,10 +102,10 @@ void Ov004_InitUraPlaneEffect(void *sprite) {
 }
 
 void func_ov004_02211358(void) {
-    M2C_UNK func_02091a50();
+    M2C_UNK DeleteAllSpriteWrappers();
     M2C_UNK Delete3DSpriteOffsetTracks();
     M2C_UNK StopSlotSound(s32, s32);
-    func_02091a50();
+    DeleteAllSpriteWrappers();
     Delete3DSpriteOffsetTracks();
     StopSlotSound(0, 0x1E);
 }
@@ -117,7 +119,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
     s32 Get3DSpriteTargetMode(void);
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void *Build3DSpriteTransform(void *, void *);
-    void func_0209dabc(s32, void *);
+    void CreateTimedSprite(s32, void *);
     void *Create3DSprite(void);
     M2C_UNK Slide3DSpriteOut(void *, s32, s32, s32, s32, s32);
     void SpawnSoundEffectFullVolume(s32, s32);
@@ -185,7 +187,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
         if (M2C_FIELD(arg0, u16 *, 0x44) > M2C_FIELD(arg0, u16 *, 0x42)) {
             M2C_FIELD(arg0, u16 *, 0x42) = M2C_FIELD(arg0, u16 *, 0x42) + 1;
             if (M2C_FIELD(arg0, u16 *, 0x42) == M2C_FIELD(arg0, u16 *, 0x44)) {
-                func_0209dabc(0x1E, arg0);
+                CreateTimedSprite(0x1E, arg0);
                 spr = Create3DSprite();
                 M2C_FIELD(spr, u16 *, 0x3E) = 0x35C;
                 {
@@ -247,8 +249,9 @@ void func_ov004_02211740(void) {
 
 }
 
-/* Load graphics resources into both screen contexts when the current mode permits. */
-void func_ov004_02211744(void *ctx) {
+/* Load the ura-plane bomb ("ura_bomb") graphics into both screen contexts when the
+ * current mode permits. */
+void Ov004_LoadUraBombGraphics(void *ctx) {
     extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
     extern u8 data_ov004_02218cbc[], data_ov004_02218cc4[], data_ov004_02218cd4[], data_ov004_02218ce0[];
     s32 Get3DSpriteTargetMode(void);
@@ -274,7 +277,7 @@ void func_ov004_02211744(void *ctx) {
 }
 
 /* Load a graphics resource set into both screen contexts when the current mode permits. */
-void func_ov004_02211844(void *ctx) {
+void Ov004_LoadUraBurstGraphics(void *ctx) {
     extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
     extern u8 data_ov004_02218cec[];
     s32 Get3DSpriteTargetMode(void);
@@ -307,7 +310,7 @@ void Ov004_SetUraPlaneZoom(Ov004UraPlaneEffect *effect, s16 centerX, s16 centerY
     effect->scaleFrame = 0;
 }
 
-void func_ov004_0221194c(M2C_UNK arg0, M2C_UNK *arg1) {
+void LoadUraEffectAssets(M2C_UNK arg0, M2C_UNK *arg1) {
     M2C_UNK OffsetTileIndices(s32, u16, M2C_UNK);
     u32 Get3DSpriteLayerSize(u8, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
@@ -502,40 +505,52 @@ void func_ov004_02211f0c(void) {
     func_ov004_02211740();
 }
 
-void func_ov004_02211f18(void) {
+/* Create the ura_plane effect sprite in layer 7 and load the "ura_plane" asset set
+ * into the sprite layers of both engines. */
+void Ov004_CreateUraPlaneEffect(void) {
     s32 CreateSpriteFromClass(M2C_UNK *, s32);
-    void func_ov004_0221194c(s32, M2C_UNK *);
+    void LoadUraEffectAssets(s32, M2C_UNK *);
     extern M2C_UNK gUraPlaneEffectClass;
-    extern M2C_UNK data_ov004_02218d90;
-    func_ov004_0221194c(CreateSpriteFromClass(&gUraPlaneEffectClass, 7), &data_ov004_02218d90);
+    extern M2C_UNK sUraPlaneAssetName;
+
+    LoadUraEffectAssets(CreateSpriteFromClass(&gUraPlaneEffectClass, 7), &sUraPlaneAssetName);
 }
 
-void func_ov004_02211f3c(void) {
+/* Create the ura_side effect sprite in layer 7 and load the "ura_side" asset set
+ * into the sprite layers of both engines. */
+void Ov004_CreateUraSideEffect(void) {
     s32 CreateSpriteFromClass(M2C_UNK *, s32);
-    void func_ov004_0221194c(s32, M2C_UNK *);
+    void LoadUraEffectAssets(s32, M2C_UNK *);
     extern M2C_UNK gUraPlaneEffectClass;
-    extern M2C_UNK data_ov004_02218d9c;
-    func_ov004_0221194c(CreateSpriteFromClass(&gUraPlaneEffectClass, 7), &data_ov004_02218d9c);
+    extern M2C_UNK sUraSideAssetName;
+
+    LoadUraEffectAssets(CreateSpriteFromClass(&gUraPlaneEffectClass, 7), &sUraSideAssetName);
 }
 
-void func_ov004_02211f60(void) {
-    void func_ov004_02211744();
-    s32 FindObjectByClass(M2C_UNK *);
+/* Reload the "ura_bomb" graphics for the ura-plane effect, but only while its
+ * effect sprite still exists; the reload reuses the sprite as its context. */
+void Ov004_ReloadUraBombGraphics(void) {
+    void Ov004_LoadUraBombGraphics(void *effect);
+    s32 FindObjectByClass(M2C_UNK *spriteClass);
     extern M2C_UNK gUraPlaneEffectClass;
-    if (FindObjectByClass(&gUraPlaneEffectClass) == 0) {
+    M2C_UNK effect = FindObjectByClass(&gUraPlaneEffectClass);
+    if (effect == 0) {
         return;
     }
-    func_ov004_02211744();
+    Ov004_LoadUraBombGraphics((void *)effect);
 }
 
-void func_ov004_02211f80(void) {
-    void func_ov004_02211844();
-    s32 FindObjectByClass(M2C_UNK *);
+/* Reload the "ura_burst" graphics for the ura-plane effect, but only while its
+ * effect sprite still exists; the reload reuses the sprite as its context. */
+void Ov004_ReloadUraBurstGraphics(void) {
+    void Ov004_LoadUraBurstGraphics(void *effect);
+    s32 FindObjectByClass(M2C_UNK *spriteClass);
     extern M2C_UNK gUraPlaneEffectClass;
-    if (FindObjectByClass(&gUraPlaneEffectClass) == 0) {
+    M2C_UNK effect = FindObjectByClass(&gUraPlaneEffectClass);
+    if (effect == 0) {
         return;
     }
-    func_ov004_02211844();
+    Ov004_LoadUraBurstGraphics((void *)effect);
 }
 
 /* Zoom the ura-plane effect in from 1x to 8x over 60 frames, centred at

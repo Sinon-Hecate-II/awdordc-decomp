@@ -130,13 +130,15 @@ gCur3DSpriteEngine=savedEngine;
 Ov010Online_StartWfcConnection();
 }
 
-void func_ov010_0222aef8(M2C_UNK arg0) {
+/* Hold the sprite's animation while the WFC connection is still being made
+ * (Ov010Online_WaitForConnection returns 1), and resume it once connected. */
+void Sprite_ResumeAnimationWhenOnlineConnected(M2C_UNK sprite) {
     s32 Ov010Online_WaitForConnection();
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     if (Ov010Online_WaitForConnection() != 0) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 /* Start the online (Wi-Fi) session with no custom handlers installed, then clear
@@ -214,12 +216,14 @@ void func_ov010_0222b080(void) {
     func_ov010_02228714();
 }
 
-void func_ov010_0222b08c(M2C_UNK arg0) {
+/* Keep the online label's animation paused while the WFC session is still up, then
+ * play its session-end animation once the session has ended. */
+void Ov010_PlaySessionEndLabel(void *label) {
     s32 Ov010Online_PollSessionEnd();
     if (Ov010Online_PollSessionEnd() != 0) {
         return;
     }
-    GotoSpriteAnimationLabel(arg0, 0x12);
+    GotoSpriteAnimationLabel(label, ONLINE_LABEL_ANIM_SESSION_END);
 }
 
 /* Online match name-label update: start the split-screen fade on each screen
@@ -240,12 +244,15 @@ void StartOnlineMatchLabelSplitFades(void *label) {
     StartScreenFadeChildren(2, 8, 1, label);
 }
 
-void func_ov010_0222b11c(M2C_UNK arg0) {
+/* Online-session step: attach the local profile-save and battle-save sprites to
+ * the session's owner object, then park the owner on its matchmaking wait
+ * animation. */
+void Ov010_ShowLocalSaveSprites(M2C_UNK owner) {
     M2C_UNK CreateLocalProfileSaveSprite();
     M2C_UNK CreateLocalBattleSaveSprite(M2C_UNK);
     CreateLocalProfileSaveSprite();
-    CreateLocalBattleSaveSprite(arg0);
-    GotoSpriteAnimationLabel(arg0, 1);
+    CreateLocalBattleSaveSprite(owner);
+    GotoSpriteAnimationLabel(owner, 1);
 }
 
 /* Refresh the entity's sprite on the selected display banks, then queue command 19. */

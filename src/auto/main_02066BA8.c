@@ -238,7 +238,7 @@ void StringFormat(char *buffer, s32 format, ...) {
     StringFormatBounded(buffer, -1, format, args);
 }
 
-void func_02067610(s8 *base,u32 count,u32 size,s32 (*compare)(const void*,const void*)) {
+void Vector_SortHelper(s8 *base,u32 count,u32 size,s32 (*compare)(const void*,const void*)) {
 u32 root,child,k; s8 *start,*end,*parent,*q,*p; s8 byte; u32 offset,neg;
 if(count<2)return;
 root=(count>>1)+1;

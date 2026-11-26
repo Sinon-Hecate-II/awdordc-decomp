@@ -216,6 +216,9 @@ typedef struct LinkRequestRecord {
 #define LINK_TASK_QUEUED 2
 /* gLinkState +0x50: s32 bit per player slot whose link result has been handled. */
 #define LINK_STATE_RESULT_FLAGS 0x50
+/* gLinkState +0x5C: the link's pseudo-random generator state, seeded from the
+ * console MAC address at link start by LinkRngSeed and advanced by LinkRngNext. */
+#define LINK_STATE_RANDOM 0x5C
  /* gLinkState +0x3C: handler the overlay's general WFC events are forwarded to. */
  #define LINK_STATE_EVENT_HANDLER 0x3C
  /* gLinkState +0x60: handler the overlay hands a link packet to; set through a

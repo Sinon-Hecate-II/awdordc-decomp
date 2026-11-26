@@ -401,8 +401,8 @@ s32 func_020742ac(s32 arg0) {
 }
 
 void func_020742c8(void) {
-    M2C_UNK func_02063df8();
-    func_02063df8();
+    M2C_UNK ForceFlushSocketEvents();
+    ForceFlushSocketEvents();
 }
 
 void func_020742d4(void) {
@@ -420,12 +420,14 @@ void func_020742f8(void) {
     M2C_FIELD(&data_02100a80, M2C_UNK (**)(), 4)();
 }
 
-void func_02074310(s32 arg0, s32 arg1, void *arg2) {
+/* Push an exit-function record (a node for __cxa_atexit) onto gExitFunctionList:
+ * it stores the callback and its argument, then becomes the new list head. */
+void RegisterExitFunction(s32 argument, s32 callback, void *node) {
     extern void *gExitFunctionList;
-    M2C_FIELD(arg2, void **, 0) = (void *) gExitFunctionList;
-    M2C_FIELD(arg2, s32 *, 4) = arg1;
-    M2C_FIELD(arg2, s32 *, 8) = arg0;
-    gExitFunctionList = arg2;
+    M2C_FIELD(node, void **, EXIT_FUNC_NEXT) = (void *) gExitFunctionList;
+    M2C_FIELD(node, s32 *, EXIT_FUNC_CALLBACK) = callback;
+    M2C_FIELD(node, s32 *, EXIT_FUNC_ARG) = argument;
+    gExitFunctionList = node;
 }
 
 #pragma opt_common_subs off
@@ -555,11 +557,13 @@ void Js_DecodeFrameData(void *frame, void *state) {
     }
 }
 
+/* The default exception-table lookup: point the lookup context at the game's
+ * whole C++ exception table and report that the table covers every address. */
 s32 __FindExceptionTable(void *arg0) {
-extern u8 __exception_table_start__,__exception_table_end__;
-M2C_FIELD(arg0,void **,12)=&__exception_table_start__;
-M2C_FIELD(arg0,void **,16)=&__exception_table_end__;
-return 1;
+    CppExceptionState *state = (CppExceptionState *)arg0;
+    state->tableStart = (u32 *)&__exception_table_start__;
+    state->tableEnd = (u32 *)&__exception_table_end__;
+    return 1;
 }
 
 /* Skip the header of a CodeWarrior exception data block: decode the first value
@@ -617,10 +621,16 @@ if(next>SAVE_ARCHIVE_LINK_MAX && next!=SAVE_ARCHIVE_LINK_NONE)return 0;
 return 1;
 }
 
-u8 func_020747c8(s32 arg0,void *arg1) {
-u8 result;
-if(M2C_FIELD(arg1,s32 *,4)==SaveArchive_ComputeChecksum(arg0,arg1))result=1;else result=0;
-return result;
+/* True when a save-archive block's stored checksum matches the checksum computed
+ * over its contents. The first argument is the save context, unused here. */
+u8 SaveArchive_IsChecksumValid(s32 unused, u8 *block) {
+    u8 valid;
+    if (M2C_FIELD(block, s32 *, SAVE_ARCHIVE_CHECKSUM) == SaveArchive_ComputeChecksum(unused, block)) {
+        valid = 1;
+    } else {
+        valid = 0;
+    }
+    return valid;
 }
 
 /* Check that a save-list record's link chain is consistent: walk its forward (+0x08)

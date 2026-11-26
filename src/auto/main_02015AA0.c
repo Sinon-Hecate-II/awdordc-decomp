@@ -205,7 +205,7 @@ void func_02015f94(void *dest, void *src, s32 extra) {
         CopyU16(extra, dest + 0x220, 0x16U);
     }
     M2C_FIELD(dest, u8 *, 0x236) = (u8) M2C_FIELD(src, u8 *, 0x18);
-    CopyU16(M2C_FIELD(src, s32 *, 4), dest + 0x238, (u16) (func_02016194(M2C_FIELD(src, s32 *, 4)) * 2));
+    CopyU16(M2C_FIELD(src, s32 *, 4), dest + 0x238, (u16) (Mb_Utf16StringLength(M2C_FIELD(src, s32 *, 4)) * 2));
     CopyU16(M2C_FIELD(src, s32 *, 8), dest + 0x298, 0xC0U);
     M2C_FIELD(dest, s8 *, 0x358) = 1;
     M2C_FIELD(dest, s16 *, 0x35A) = 1;
@@ -244,11 +244,20 @@ void DownloadFileSetRoster(void *fileInfo, void *playerInfo, u32 pendingMask, u1
 }
 
 #pragma dont_inline on
-s32 func_02016194(s32 a) {
- s32 n=0;u16 c;
- c=M2C_FIELD(a,u16 *,0);a+=2;
- if(c)do{c=M2C_FIELD(a,u16 *,0);a+=2;n++;}while(c);
- return n;
+/* Length in code units of the UTF-16 string at `text`: walk it until the
+ * terminating 0 unit (the terminator itself is not counted). */
+s32 Mb_Utf16StringLength(u16 *text) {
+    s32 length = 0;
+    u16 c;
+
+    c = *text;
+    text++;
+    if (c) do {
+        c = *text;
+        text++;
+        length++;
+    } while (c);
+    return length;
 }
 #pragma dont_inline reset
 
@@ -279,13 +288,16 @@ M2C_FIELD(&gDownloadSendState,s32 *,DL_CALLBACK)=0;
 DownloadResetProgress();
 }
 
+/* Clear the progress of the file being downloaded, so the file started next sends
+ * its chunk packets from the beginning: per-file progress, file index, chunk
+ * packet index and count, and the packet sequence number all go back to zero. */
 void DownloadResetProgress(void) {
     extern M2C_UNK gDownloadSendState;
-    M2C_FIELD(&gDownloadSendState, s8 *, 0x25) = 0;
-    M2C_FIELD(&gDownloadSendState, s8 *, 0x26) = 0;
-    M2C_FIELD(&gDownloadSendState, s8 *, 0x27) = 0;
-    M2C_FIELD(&gDownloadSendState, s8 *, 0x28) = 0;
-    M2C_FIELD(&gDownloadSendState, s8 *, 0x29) = 0;
+    M2C_FIELD(&gDownloadSendState, u8 *, DL_PROGRESS) = 0;
+    M2C_FIELD(&gDownloadSendState, u8 *, DL_FILE_INDEX) = 0;
+    M2C_FIELD(&gDownloadSendState, u8 *, DL_CHUNK_INDEX) = 0;
+    M2C_FIELD(&gDownloadSendState, u8 *, DL_CHUNK_COUNT) = 0;
+    M2C_FIELD(&gDownloadSendState, u8 *, DL_SEQUENCE) = 0;
 }
 
 /* One step of the DS Download Play sender's state machine: start the next queued

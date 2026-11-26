@@ -160,6 +160,8 @@ resource=func_020a8b1c(id);if(!resource)return;
 SetFileDirectory(data_0212bd5c);LoadDecompressedFileTo(resource,gMapData);
 }
 
+/* Free the decoded tile-graphics block that LoadMapTileData allocated into gMapData
+ * and clear the pointer. */
 void FreeMapTileData(void) {
     M2C_UNK HeapFreeBlock(s32);
     extern s32 gMapData;
@@ -360,12 +362,12 @@ void func_020d0164(M2C_UNK arg0, M2C_UNK arg1) {
 
 /* For each active player, flood-fill and mark the tiles reachable by its current unit's movement range. */
 M2C_UNK func_020d0178(void) {
-void InitAreaScan(void *,s32,s32,s32,s32,s32); void SetPlayerMoveRangeCell(s32,s32,s32,s32); s32 func_020d03c4(s32);
+void InitAreaScan(void *,s32,s32,s32,s32,s32); void SetPlayerMoveRangeCell(s32,s32,s32,s32); s32 GetPlayerMoveRangeGrid(s32);
 s32 IsPlayerActive(s32); void *GetPlayerSelectedUnit(s32); s32 func_020a7d20(void); s32 GetPlayerCoZoneMoveRange(s32); s32 GetPlayerArmyVariantIfSet(s32); s32 NextAreaTile(void *); void BuildMoveRangeFlags(void);
 s32 player; s32 pathState[8]; void *unit; s32 moveRange;
 for(player=1;player<5;player++){
 if(!IsPlayerActive(player))continue;
-func_020d0164(func_020d03c4(player),0);
+func_020d0164(GetPlayerMoveRangeGrid(player),0);
 unit=GetPlayerSelectedUnit(player); if(!unit)continue;
 if(func_020a7d20() && !(M2C_FIELD(unit,u16 *,4)&4))continue;
 moveRange=GetPlayerCoZoneMoveRange(player); if(GetPlayerArmyVariantIfSet(player))moveRange=6;
@@ -376,8 +378,8 @@ BuildMoveRangeFlags();
 }
 
 M2C_UNK func_020d0270(void) {
- M2C_UNK RefreshTeamVisibility(); M2C_UNK func_020d0178(); M2C_UNK func_ov000_02174ce8();
- RefreshTeamVisibility(); RefreshMapCellUnits(); func_020d0178(); func_ov000_02174ce8();
+ M2C_UNK RefreshTeamVisibility(); M2C_UNK func_020d0178(); M2C_UNK Ov000_InfoWindow_RequestCellRefresh();
+ RefreshTeamVisibility(); RefreshMapCellUnits(); func_020d0178(); Ov000_InfoWindow_RequestCellRefresh();
 }
 
 /* Initialise an area scan: the map size, the scan's origin and mode, and reset
@@ -413,12 +415,13 @@ s32 NextAreaTile(void *state) {
     return 0;
 }
 
-s32 func_020d03c4(s32 arg0) {
+/* Return the base of player `player`'s move-range grid: the MAP_PLAYER_MOVE_RANGE
+ * byte layer of gCurrentMap, one MAP_PLAYER_MOVE_RANGE_STRIDE-byte grid per player. */
+s32 GetPlayerMoveRangeGrid(s32 player) {
     extern s32 *gCurrentMap;
     s32 temp = *gCurrentMap;
-    temp = temp + 0x3F8;
-    temp = temp + 0x3400;
-    return arg0 * 0x508 + temp;
+    temp = temp + MAP_PLAYER_MOVE_RANGE;
+    return player * MAP_PLAYER_MOVE_RANGE_STRIDE + temp;
 }
 
 /* Return the move-range flag for map cell (x, y) in player `player`'s grid, which
@@ -438,13 +441,14 @@ void SetPlayerMoveRangeCell(s32 player, s32 x, s32 y, s32 value) {
     M2C_FIELD(range + (x + rowOffset), u8 *, MAP_PLAYER_MOVE_RANGE) = value;
 }
 
-s32 GetMoveRangeCommanderId(M2C_UNK arg0) {
-    s32 IsCellInPlayerMoveRange();
-    s32 GetPlayerCoZoneBonusIndex(M2C_UNK);
-    if (IsCellInPlayerMoveRange() == 0) {
+/* The CO (commanding officer) whose zone bonus applies at map cell (x, y) for
+ * player: that player's bonus index when the cell is inside the player's
+ * movement range, or -1 when no unit of theirs can reach it. */
+s32 GetMoveRangeCommanderId(s32 player, s32 x, s32 y) {
+    if (IsCellInPlayerMoveRange(player, x, y) == 0) {
         return -1;
     }
-    return GetPlayerCoZoneBonusIndex(arg0);
+    return GetPlayerCoZoneBonusIndex(player);
 }
 
 /* Whether `terrain` is a production property (base, airport or port) whose owner

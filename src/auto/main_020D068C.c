@@ -172,14 +172,17 @@ void AddDamageVariance(void *participant, s32 addVariance) {
     M2C_FIELD(participant, s16 *, 0x14) = M2C_FIELD(participant, s16 *, 0x14) + variance;
 }
 #pragma opt_cond_exec reset
-void RollDamageVariance(M2C_UNK arg0) {
-    M2C_UNK RandomIntRange(s32, s32);
-    s32 func_020a78fc();
-    s32 func_020a7914(M2C_UNK);
-    s32 temp_r4;
+/* Roll the damage-variance (luck) roll for a battle participant: a random value
+ * between the unit's minimum luck and its maximum luck (its luck bonus plus 10),
+ * left in r0 as the damage the hit adds or subtracts. */
+void RollDamageVariance(M2C_UNK unit) {
+    s32 RandomIntRange(s32, s32);
+    s32 GetUnitMaxLuck(void *);
+    s32 GetUnitMinLuck(void *);
+    s32 maxLuck;
 
-    temp_r4 = func_020a78fc();
-    RandomIntRange(func_020a7914(arg0), temp_r4);
+    maxLuck = GetUnitMaxLuck((void *)unit);
+    RandomIntRange(GetUnitMinLuck((void *)unit), maxLuck);
 }
 
 /* Settle one side's counter hit on the other battle participant: scale the

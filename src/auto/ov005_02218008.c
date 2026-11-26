@@ -131,12 +131,14 @@ SetTextById(M2C_FIELD(gOv005MenuState,void * *,28),0x40000000);Show3DSpriteSlide
 Ov005RefreshEntryFace();Ov005RefreshNameGraphic();CreateSubWallpaperSprite(3,15,6);gCur3DSpriteEngine=saved;ResetSpriteSlots();Ov005RefreshEntryLabel();M2C_FIELD(gOv005MenuState,s16 *,24)=0;
 }
 #pragma opt_strength_reduction reset
-void func_ov005_0221885c(void) {
+/* Recreate the twelve page-0 CO grid slot sprites and select the slot of the
+ * current list entry. */
+void Ov005AddCoGridAndSelectEntry(void) {
     M2C_UNK SelectSpriteSlot(s16);
     M2C_UNK Ov005AddCoGridSprites();
     extern void *gOv005MenuState;
     Ov005AddCoGridSprites();
-    SelectSpriteSlot(M2C_FIELD(gOv005MenuState, s16 *, 0xE));
+    SelectSpriteSlot(M2C_FIELD(gOv005MenuState, s16 *, OV005_MENU_INDEX));
 }
 
 /* Apply the menu page/index changes made since the last frame. */

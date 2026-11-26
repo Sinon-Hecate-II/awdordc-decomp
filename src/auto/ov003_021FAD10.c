@@ -195,7 +195,9 @@ if((u8)(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0)){s16 a=M2C_FIELD(q,s1
  }}
 }
 
-u16 func_ov003_021fbcd8(void *arg0, s32 arg1) {
+/* Tile offset (0x10 tiles per icon) of the map-category icon of map-list entry
+ * `entryIndex`: the category byte at +0x22C of the entry, mapped to its icon frame. */
+u16 Ov003_GetMapCategoryIconTileOffset(void *entity, s32 entryIndex) {
     s32 GetMapKindIconFrameIndex(u8);
-    return (u16) (GetMapKindIconFrameIndex(M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x44) + (arg1 << 9)), u8 *, 0x22C)) * 0x10);
+    return (u16) (GetMapKindIconFrameIndex(M2C_FIELD((M2C_FIELD(entity, s32 *, 0x44) + (entryIndex << 9)), u8 *, 0x22C)) * 0x10);
 }

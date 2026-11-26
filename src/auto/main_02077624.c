@@ -64,10 +64,13 @@ void UpdateToonTableBlend(void) {
     GX_LoadToonTable();
 }
 
-void GetFrameStep(void) {
+/* Animation step used for a map sprite's control word (+0x40): the base step
+ * 0x20000 divided by the map view's current speed factor, the count at
+ * gMapHighlightState + 0x18 (0x60000 is three times the base step). */
+s32 GetFrameStep(void) {
     M2C_UNK FX_Div(M2C_UNK, s32);
     extern M2C_UNK gMapHighlightState;
-    FX_Div(0x60000, M2C_FIELD(&gMapHighlightState, s32 *, 0x18) * 3);
+    return FX_Div(0x60000, M2C_FIELD(&gMapHighlightState, s32 *, 0x18) * 3);
 }
 
 void func_02077720(void) {*(volatile u32 *)0x40004c0=0x7fffffff;*(volatile u32 *)0x40004c4=0x7fff4210;}
@@ -221,7 +224,7 @@ void UpdateMapView(void) {
     void ApplyMapViewProjection(s32);
     M2C_UNK BuildMapViewTransform(s32);
     M2C_UNK BuildMapViewScreenTransform(s32, M2C_UNK *);
-    M2C_UNK func_0207ce54(s32);
+    M2C_UNK UpdateMapViewEyeVeneer(s32);
     M2C_UNK SetGxViewport(M2C_UNK);
     extern M2C_UNK gMapViewProjection;
     extern s32 *gCurrentMap;
@@ -230,7 +233,7 @@ void UpdateMapView(void) {
     view = *gCurrentMap + 0x2F8;
     SetGxViewport(0);
     func_02077ab8(view + 0x6C00);
-    func_0207ce54(view + 0x6C00);
+    UpdateMapViewEyeVeneer(view + 0x6C00);
     BuildMapViewTransform(view + 0x6C00);
     BuildMapViewScreenTransform(view + 0x6C00, &gMapViewProjection);
     ApplyMapViewProjection(view + 0x6C00);
@@ -328,7 +331,7 @@ void func_02077ebc(void) {
     M2C_UNK LoadFileToObjExtPalette(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK OpenNarcArchive(M2C_UNK *);
     M2C_UNK CloseNarcArchive();
-    M2C_UNK func_0208166c(M2C_UNK *, s32, M2C_UNK);
+    M2C_UNK LoadNarcFileToObjExtPalette(M2C_UNK *, s32, M2C_UNK);
     M2C_UNK func_0208168c(M2C_UNK *, s32);
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
     extern M2C_UNK data_02100ad8;
@@ -370,15 +373,15 @@ void func_02077ebc(void) {
     LoadFileToObjExtPalette(&data_02100b0c, 0x1400, 0x40);
     OpenNarcArchive(&data_02100b1c);
     func_0208168c(&data_02100b28, 0x22F20);
-    func_0208166c(&data_02100b3c, 0x1460, 0x40);
+    LoadNarcFileToObjExtPalette(&data_02100b3c, 0x1460, 0x40);
     func_0208168c(&data_02100b50, 0x21000);
     func_0208168c(&data_02100b60, 0x21980);
-    func_0208166c(&data_02100b70, 0x1440, 0x20);
+    LoadNarcFileToObjExtPalette(&data_02100b70, 0x1440, 0x20);
     func_0208168c(&data_02100b7c, 0x32520);
     func_0208168c(&data_02100b88, 0x325A0);
-    func_0208166c(&data_02100b94, 0x1520, 0x20);
+    LoadNarcFileToObjExtPalette(&data_02100b94, 0x1520, 0x20);
     func_0208168c(&data_02100b9c, 0x327A0);
-    func_0208166c(&data_02100ba4, 0x1540, 0x20);
+    LoadNarcFileToObjExtPalette(&data_02100ba4, 0x1540, 0x20);
     CloseNarcArchive();
 }
 
@@ -433,7 +436,7 @@ void BuildMoveRangeFlags(void)
  * clamped to the map: 2 for land, 3 for high ground (elevation >= 0x40), 1 for a
  * highlighted cell (a bridge/pipe terrain kind or the cursor) and 0 elsewhere. */
 void BuildMapCellCodes(s32 x0, s32 y0, s32 x1, s32 y1) {
-    u8 func_020bd118(void);
+    u8 IsTouchCursorActive(void);
     s32 IsOrderEffectHighlightActive(void);
     u8 IsCellInOrderEffectArea(s32, s32);
     extern s32 *gCurrentMap;
@@ -449,7 +452,7 @@ void BuildMapCellCodes(s32 x0, s32 y0, s32 x1, s32 y1) {
     viewRect = (u8 *)*gCurrentMap + 0x120;
     mapWidth = M2C_FIELD(viewRect,u16 *,0x5024);
     mapHeight = M2C_FIELD(viewRect,u16 *,0x5026);
-    highlightCursor = func_020bd118();
+    highlightCursor = IsTouchCursorActive();
     if (x0 < 0) x0 = 0;
     if (y0 < 0) y0 = 0;
     if (x1 > mapWidth - 1) x1 = mapWidth - 1;

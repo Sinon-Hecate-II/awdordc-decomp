@@ -6,12 +6,12 @@
    non-null, receives the stream position just past the parsed text, and an
    underflow/overflow raises errno 34 (ERANGE). */
 double func_0206a294(M2C_UNK p,M2C_UNK end){
-double ScanFloatStrtod();double fabs(double);void ScanFloatStreamRead();extern s32 gErrno;
+double ScanFloatStrtod();double Fabs(double);void ScanFloatStreamRead();extern s32 gErrno;
 s32 count,overflow;M2C_UNK state[2];double value,absolute;
 state[1]=0;state[0]=p;
 value=ScanFloatStrtod(0x7fffffff,ScanFloatStreamRead,state,&count,&overflow);
 if(end)M2C_FIELD(end,s32*,0)=p+count;
-absolute=fabs(value);
+absolute=Fabs(value);
 if(overflow || (value!=0.0 && (absolute<2.2250738585072014e-308 || absolute>1.7976931348623157e308)))gErrno=34;
 return value;
 }
@@ -292,8 +292,13 @@ void func_0206adc0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     MemCopy(arg0, arg1, arg2 * 2);
 }
 
-u16 *func_0206add0(u16 *p,s32 value,u32 n) {
-if(n){do {if(*p==value)return p;p++;}while(--n);}
-return NULL;
+/* Find the first of the len wide characters at text whose value equals value
+ * (the wide-character counterpart of FindFirstByte); NULL when none matches. */
+u16 *FindFirstWideChar(u16 *text, s32 value, u32 len) {
+    if (len) do {
+        if (*text == value) return text;
+        text++;
+    } while (--len);
+    return NULL;
 }
 

@@ -24,16 +24,16 @@ void func_02000b9c(void) {
 }
 
 extern void func_020e4490(void);
-extern void func_020e4570(void);
+extern void StartDisplay(void);
 extern void Init3DSpriteScene(void);
 extern void NitroMain(void);
 void main(void)
 {
   void func_020e4490(void);
-  void func_020e4570(void);
+  void StartDisplay(void);
   void Init3DSpriteScene(void);
   void NitroMain(void);
-  func_020e4570();
+  StartDisplay();
   Init3DSpriteScene();
   NitroMain();
   for (;;)

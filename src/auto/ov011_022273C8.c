@@ -1,5 +1,6 @@
 /* 6 functions from 0x022273C8 to 0x02227F08 (ov011), found by ds-decomp. */
 #include "common.h"
+#include "intro_menu.h"
 
 #pragma opt_instruction_scheduling off
 void func_ov011_022273c8(void *arg0) {
@@ -224,14 +225,18 @@ void SpawnIntroMenuEntry(M2C_UNK owner) {
     }
 }
 
-void func_ov011_02227ecc(M2C_UNK arg0) {
-    s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    M2C_UNK InitIntroMenu();
-    extern M2C_UNK data_ov011_02228a78;
-    if (CreateSpriteObject(&data_ov011_02228a78, arg0) == 0) {
+/* Create the intro-menu object (gIntroMenuClass) owned by `owner` and initialise
+ * its menu script; nothing happens if the sprite cannot be created. */
+void CreateIntroMenu(M2C_UNK owner) {
+    IntroMenu011 *InitIntroMenu(IntroMenu011 *);
+    extern M2C_UNK gIntroMenuClass;
+    IntroMenu011 *menu;
+
+    menu = CreateSpriteObject(&gIntroMenuClass, owner);
+    if (menu == 0) {
         return;
     }
-    InitIntroMenu();
+    InitIntroMenu(menu);
 }
 
 void func_ov011_02227ef0(void) {

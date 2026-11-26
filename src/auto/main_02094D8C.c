@@ -2,8 +2,8 @@
 #include "common.h"
 #include "ds3dsprite.h"
 
-/* Frame countdown of the scene-script wait sprite: func_0209544c creates the
- * sprite (class data_02102a88) with it and the sprite's update callback steps it,
+/* Frame countdown of the scene-script wait sprite: CreateScriptWaitSprite creates the
+ * sprite (class gScriptWaitSpriteClass) with it and the sprite's update callback steps it,
  * resuming the script when it reaches 0 or the player skips the dialog. */
 #define SCRIPT_WAIT_FRAMES 0x6C /* s16 frames left to wait */
 
@@ -12,13 +12,15 @@ typedef struct SpriteBuffer094df0 { u8 bytes[1]; } SpriteBuffer094df0;
 static inline u8 IsMain094df0(void) { extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain; u8 value; if(gCur3DSpriteEngine==g3DSpriteEngineMain)value=1;else value=0; return value; }
 static inline void *SpriteBufferAt094df0(s32 buffer,s32 offset) { return (u8*)buffer+offset; }
 
-void func_02094d8c(M2C_UNK arg0) {
+/* Highlight face `faceIndex` of the two-face scene panel, unless a message box is
+ * up: while one is shown the panels belong to it. */
+void HighlightScenePanelFaceUnlessMessageBox(s32 faceIndex) {
     s32 IsMessageBoxActive();
-    M2C_UNK HighlightScenePanelFace(M2C_UNK);
+    void HighlightScenePanelFace(s32);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    HighlightScenePanelFace(arg0);
+    HighlightScenePanelFace(faceIndex);
 }
 
 /* Clears the current scene-panel highlight: with the single-panel layout (fewer
@@ -111,36 +113,40 @@ gCur3DSpriteEngine=saved;
  * that record, RECORD_TRACK_STOP fades the music out and RECORD_TRACK_WAIT
  * starts a sprite that waits for the fade to finish. */
 void RecordsMenu_PlayTrack(s32 track) {
-    extern M2C_UNK data_02102aa8;
+    extern M2C_UNK gMusicFadeWaitSpriteClass;
     if (IsMessageBoxActive()) return;
     switch (track) {
     case RECORD_TRACK_STOP: FadeOutMusicDefault(); return;
-    case RECORD_TRACK_WAIT: CreateSpriteFromClass(&data_02102aa8, 7); return;
+    case RECORD_TRACK_WAIT: CreateSpriteFromClass(&gMusicFadeWaitSpriteClass, 7); return;
     default: PlayMusicTrack(RecordsMenu_GetRecordTrack(track)); return;
     }
 }
 
-u8 func_020952a4(void) {
+/* Whether the sprite that waits for the music to finish fading out (the one
+ * RECORD_TRACK_WAIT creates) is still running. */
+u8 IsMusicFadeWaitSpriteActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02102aa8;
-    u8 var_r0;
+    extern M2C_UNK gMusicFadeWaitSpriteClass;
+    u8 active;
 
-    if (FindObjectByClass(&data_02102aa8) != 0) {
-        var_r0 = 1;
+    if (FindObjectByClass(&gMusicFadeWaitSpriteClass) != 0) {
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
-void func_020952c8(M2C_UNK arg0) {
-    M2C_UNK PlaySoundEffect();
-    M2C_UNK func_020ad560(M2C_UNK);
+/* Text-script command: play the preset sound effect the command's operand
+ * selects from the script's sound table, unless a message box is up. */
+void ScriptCmd_PlaySound(s32 soundIndex) {
+    s32 PlaySoundEffect(s32);
+    s32 GetScriptSoundId(s32);
+
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    func_020ad560(arg0);
-    PlaySoundEffect();
+    PlaySoundEffect(GetScriptSoundId(soundIndex));
 }
 
 /* Scene-script opcode: `isFade` 0 creates a screen transition object and 1 a
@@ -188,17 +194,19 @@ void CreateScreenTransitionWaitSprite(void) {
     CreateSpriteFromClass(&gScreenTransitionWaitSpriteClass, 7);
 }
 
+/* TRUE while the screen-transition wait sprite (gScreenTransitionWaitSpriteClass)
+ * is on screen. */
 u8 IsScreenTransitionWaitSpriteActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gScreenTransitionWaitSpriteClass;
-    u8 var_r0;
+    u8 active;
 
     if (FindObjectByClass(&gScreenTransitionWaitSpriteClass) != 0) {
-        var_r0 = 1;
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 /* Scene-script wait sprite's update: resume the script after SCRIPT_WAIT_FRAMES
@@ -220,22 +228,25 @@ void WaitForScriptFramesOrSkip(void *sprite) {
     Sprite_ResumeAnimation(sprite);
 }
 
-void func_0209544c(s16 arg0) {
-    extern M2C_UNK data_02102a88;
-    M2C_FIELD(CreateSpriteFromClass(&data_02102a88, 7), s16 *, 0x6C) = arg0;
+/* Create the scene-script wait sprite (class gScriptWaitSpriteClass) with a frame
+ * countdown of `frames`; the sprite resumes the script when it reaches 0. */
+void CreateScriptWaitSprite(s16 frames) {
+    extern M2C_UNK gScriptWaitSpriteClass;
+    M2C_FIELD(CreateSpriteFromClass(&gScriptWaitSpriteClass, 7), s16 *, SCRIPT_WAIT_FRAMES) = frames;
 }
 
-u8 func_0209546c(void) {
+/* TRUE while a scene-script wait sprite (gScriptWaitSpriteClass) is on screen. */
+u8 IsScriptWaitSpriteActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02102a88;
-    u8 var_r0;
+    extern M2C_UNK gScriptWaitSpriteClass;
+    u8 active;
 
-    if (FindObjectByClass(&data_02102a88) != 0) {
-        var_r0 = 1;
+    if (FindObjectByClass(&gScriptWaitSpriteClass) != 0) {
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 void func_02095490(void *arg0) {

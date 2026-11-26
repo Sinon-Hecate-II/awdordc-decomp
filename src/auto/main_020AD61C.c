@@ -66,9 +66,10 @@ void MarkRecordsMusicEntryHeard(s32 arg0) {
     SetRecordsMusicHeard(arg0, 1);
 }
 
-s32 IsRecordsMusicEntryHeard(s32 arg0) {
-    s32 func_020869e0();
-    if ((arg0 >= 0) && (func_020869e0() != 0)) {
+/* Whether the records screen has marked music entry `entryId` as heard. */
+s32 IsRecordsMusicEntryHeard(s32 entryId) {
+    s32 IsRecordsMusicHeardFlagSet();
+    if ((entryId >= 0) && (IsRecordsMusicHeardFlagSet() != 0)) {
         return 1;
     }
     return 0;

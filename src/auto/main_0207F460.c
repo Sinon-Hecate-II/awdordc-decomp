@@ -255,11 +255,13 @@ void EnableHBlankIrqTask(void) {
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) | 2);
 }
 
+/* Disable the HBlank (scanline) interrupt: clear the main sprite bank's HBlank
+ * enable and mask the interrupt in the IRQ controller. */
 void DisableHBlankIrqTask(void) {
     void OS_DisableIrqMask(s32);
     extern void *g3DSpriteBankMain;
-    M2C_FIELD(g3DSpriteBankMain, u16 *, 4) &= ~2;
-    OS_DisableIrqMask(2);
+    ((DS3DSpriteBank *)g3DSpriteBankMain)->irqFlags &= ~DS3D_BANK_IRQ_HBLANK;
+    OS_DisableIrqMask(IRQ_HBLANK);
 }
 
 #pragma push

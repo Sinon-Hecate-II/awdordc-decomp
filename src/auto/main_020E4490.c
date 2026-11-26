@@ -1,5 +1,6 @@
 /* 22 functions from 0x020E4490 to 0x020E5080 (main), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 #include "ds3dsprite.h"
 #include "battle_map.h"
 #include "hw_div.h"
@@ -42,7 +43,7 @@ void func_020e4490(void) {
     M2C_UNK SeedRandomFromRtc();
     M2C_UNK SaveManager_Start();
     void ResetGameState(void);
-    M2C_UNK func_020e349c();
+    M2C_UNK ClearAndRestoreInterrupts();
     extern s32 data_027e15bc;
     extern s32 gVBlankCount;
     extern u8 gFramePending;
@@ -91,15 +92,17 @@ void func_020e4490(void) {
     SeedRandomFromRtc();
     SaveManager_Start();
     ResetGameState();
-    func_020e349c();
+    ClearAndRestoreInterrupts();
 }
 #pragma opt_common_subs reset
-void func_020e4570(void) {
+/* Switch both displays on at boot: wait for VBlank, turn on the main engine's
+ * display, then enable the sub engine's graphics display. */
+void StartDisplay(void) {
     M2C_UNK GX_TurnOnDisplay();
-    M2C_UNK func_02007598();
-    func_02007598();
+    M2C_UNK WaitForVBlank();
+    WaitForVBlank();
     GX_TurnOnDisplay();
-    *(s32 *)0x04001000 |= 0x10000;
+    REG_DISPCNT_SUB |= DISPCNT_DISPLAY_MODE_GRAPHICS;
 }
 
 /* NNS/NitroSDK main loop body, run once per frame by main(): wait for the game
@@ -108,12 +111,12 @@ void func_020e4570(void) {
 void NitroMain(void) {
 extern u8 gFramePending;
 extern s32 gFrameCounter;
-extern void (*data_02168fe8)(void);
+extern void (*gFrameEndCallback)(void);
 void func_0208f4d8(void);
 void func_0208184c(void);
 void UpdateTouchInput(void);
 void func_02090390(void);
-void func_02081ee4(void);
+void CreateSleepRequestSprite(void);
 void IncrementPlayTime(void);
 void UpdateSpriteSlots(void);
 void DrawSpriteSlots(void);
@@ -123,10 +126,10 @@ void GetSpriteLayerHead(int);
 void Update3DSpriteObject(void);
 void OS_WaitIrq(int,int);
 if (!gFramePending) return;
-data_02168fe8=0;
+gFrameEndCallback=0;
 func_0208f4d8();
 gFrameCounter++;
-func_0208184c(); UpdateTouchInput(); func_02090390(); func_02081ee4();
+func_0208184c(); UpdateTouchInput(); func_02090390(); CreateSleepRequestSprite();
 GetSpriteLayerHead(3);Update3DSpriteObject();
 GetSpriteLayerHead(4);Update3DSpriteObject();
 GetSpriteLayerHead(5);Update3DSpriteObject();
@@ -137,7 +140,7 @@ IncrementPlayTime();UpdateSpriteSlots();DrawSpriteSlots();
 GetSpriteLayerHead(9);Update3DSpriteObject();
 GetSpriteLayerHead(10);Update3DSpriteObject();
 func_0209db48();
-if(data_02168fe8) data_02168fe8();
+if(gFrameEndCallback) gFrameEndCallback();
 gFramePending=0;
 SoundEngineUpdateTimers();
 OS_WaitIrq(1,1);
@@ -247,15 +250,16 @@ void ResetGameState(void) {
     func_020960b4();
 }
 
-void func_020e47f8(void) {
+/* Clear every campaign save record's 8-byte save summary, emptying the slots. */
+void ClearAllCampaignSaveHeaders(void) {
     void ClearSaveRecordHeader(s32);
-    s32 var_r4;
+    s32 record;
 
-    var_r4 = 0;
+    record = 0;
     do {
-        ClearSaveRecordHeader(var_r4);
-        var_r4 += 1;
-    } while (var_r4 < 3);
+        ClearSaveRecordHeader(record);
+        record += 1;
+    } while (record < CAMPAIGN_RECORD_COUNT);
 }
 
 /* Clear the 8-byte header (the save-slot summary) of save record `record`. */
@@ -520,11 +524,13 @@ s32 TickMicTestTimer(MicTestScreen *screen) {
     return 1;
 }
 #pragma scheduling reset
-void func_020e4e8c(void *arg0) {
+/* Start the ARM7 transfer that fills the microphone sample buffer and mark the
+ * mic test screen as measuring. */
+void StartMicTestSampleTransfer(MicTestScreen *screen) {
     M2C_UNK Arm7TransferStartWait(M2C_UNK *);
-    extern M2C_UNK data_02168ff8;
-    Arm7TransferStartWait(&data_02168ff8);
-    M2C_FIELD(arg0, u8 *, 0x3C) = (u8) (M2C_FIELD(arg0, u8 *, 0x3C) | 2);
+    extern M2C_UNK gMicTestTransferDesc;
+    Arm7TransferStartWait(&gMicTestTransferDesc);
+    M2C_FIELD(screen, u8 *, 0x3C) = (u8) (M2C_FIELD(screen, u8 *, 0x3C) | MIC_TEST_FLAG_RUNNING);
 }
 
 #pragma scheduling off

@@ -9,7 +9,7 @@ extern s32 gErrno;
 #pragma opt_common_subs off
 double func_0206ce00(double x,double y) {
 double func_02070134(double,double);double func_02070b70(double,double);double func_02070658(double,double);double RuntimeDoubleDivide(double,double);
-double func_020709bc(double);double fabs(double);double _f2d(float);double Ldexp(double,s32);
+double func_020709bc(double);double Fabs(double);double _f2d(float);double Ldexp(double,s32);
 s32 hx=POW_HI(x),hy=POW_HI(y),ix=hx&0x7fffffff,iy=hy&0x7fffffff;
 u32 lx=POW_LO(x),ly=POW_LO(y);s32 j; s32 yisint,k,n,i,signFlag;
 double z,ax,zh,zl,ph,pl,y1,t1,t2,r,s,t,u,v,w;
@@ -35,7 +35,7 @@ if(iy==0x3ff00000){if(hy>=0)return x;return RuntimeDoubleDivide(1.0,x);}
 if(hy==0x40000000)return func_02070658(x,x);
 if(hy==0x3fe00000&&hx>=0)return func_020709bc(x);
 }
-ax=fabs(x);
+ax=Fabs(x);
 if(lx==0&&(ix==0x7ff00000||ix==0||ix==0x3ff00000)){
 z=ax;if(hy<0)z=RuntimeDoubleDivide(1.0,z);
 if(hx<0){

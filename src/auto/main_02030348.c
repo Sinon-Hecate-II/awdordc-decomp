@@ -621,7 +621,16 @@ s32 Wfc_SelectNextFriend(void *state) {
     return Wfc_NextFriendPass(state);
 }
 
-void Wfc_SubmitMessage(s32 a,s32 b,s32 c,s32 d){void WFC_ProcessConnectOrMatch(s32,s32,s32);extern M2C_UNK data_020ea860;if(c>12)c=12;WFC_ProcessConnectOrMatch(a,b,d|M2C_FIELD(&data_020ea860,s32 *,c*4));}
+/* Submit one WFC friend request: pair the friend code `friendCode` with the
+ * player name `playerName` and the request status bits `statusBits`, adding the
+ * status bit of friend `friendIndex` (clamped to the last friend), and hand it
+ * to the WFC engine (WFC_ProcessConnectOrMatch -> WFC_SubmitMatchRequest). */
+void Wfc_SubmitMessage(s32 friendCode,s32 playerName,s32 friendIndex,s32 statusBits){
+void WFC_ProcessConnectOrMatch(s32,s32,s32);
+extern M2C_UNK gWfcFriendStatusBits;
+if(friendIndex>WFC_FRIEND_ID_COUNT-1)friendIndex=WFC_FRIEND_ID_COUNT-1;
+WFC_ProcessConnectOrMatch(friendCode,playerName,statusBits|M2C_FIELD(&gWfcFriendStatusBits,s32 *,friendIndex*4));
+}
 
 /* First step of a WFC friend connection: while the session has only started,
  * rebuild the friend-list rows from the save slots and ask the WFC engine to

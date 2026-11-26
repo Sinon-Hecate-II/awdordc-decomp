@@ -77,18 +77,21 @@ return self;
 /* Set a string storage's contents to the byte range [first, last): drop the
  * storage's current length, then insert the range at position 0. */
 void StringStorageAssignRange(void *storage, s32 first, s32 last) {
-    void func_0207000c(void *, s32, u32, s32, s32, s32);
+    void StringStorageReplaceRange(void *, s32, u32, s32, s32, s32);
     u32 length;
 
     if (((StringStorage *)storage)->large.flag == 0) {
         length = ((StringStorage *)storage)->small.length;
     } else length = ((StringStorage *)storage)->large.length;
-    func_0207000c(storage, 0, length, first, last, 0);
+    StringStorageReplaceRange(storage, 0, length, first, last, 0);
 }
 
-void func_0207000c(void *a, s32 b, u32 c, s32 d, s32 e, s32 f) {
-    Flag unused;
-    StringStorageReplace(a,b,c,d,e,unused);
+/* Replace the contents of `storage` over the byte range [first, last): remove
+ * `remove` bytes at `pos` and insert `last - first` bytes from `first` there.
+ * The Flag argument StringStorageReplace takes is a throwaway. */
+void StringStorageReplaceRange(void *storage, s32 pos, u32 remove, s32 first, s32 last, s32 extraArg) {
+    Flag unusedFlag;
+    StringStorageReplace(storage,pos,remove,first,last,unusedFlag);
 }
 
 s32 func_02070030(s32 arg0) {
@@ -97,11 +100,14 @@ s32 func_02070030(s32 arg0) {
     return arg0;
 }
 
-s32 func_02070048(s32 arg0) {
-    M2C_UNK MemFree(s32);
-    func_0206f994(arg0 + 4);
-    MemFree(arg0);
-    return arg0;
+/* std::exception deleting destructor: release the exception's message string
+ * owner, free the exception object and return it. */
+s32 DeleteException(s32 exception) {
+    M2C_UNK func_0206f994(s32);
+    s32 MemFree(s32);
+    func_0206f994(exception + 4);
+    MemFree(exception);
+    return exception;
 }
 
 s32 func_02070068(s32 arg0) {
@@ -110,10 +116,14 @@ s32 func_02070068(s32 arg0) {
     return arg0;
 }
 
-s32 func_02070080(s32 arg0) {
-    func_0206f994(arg0 + 4);
-    MemFree(arg0);
-    return arg0;
+/* std::length_error deleting destructor: release the exception's message string
+ * owner, free the exception object and return it. */
+s32 DeleteLengthError(s32 exception) {
+    M2C_UNK func_0206f994(s32);
+    s32 MemFree(s32);
+    func_0206f994(exception + 4);
+    MemFree(exception);
+    return exception;
 }
 
 s32 func_020700a0(s32 arg0) {
@@ -121,10 +131,14 @@ s32 func_020700a0(s32 arg0) {
     return arg0;
 }
 
-s32 func_020700b8(s32 arg0) {
-    func_0206f994(arg0 + 4);
-    MemFree(arg0);
-    return arg0;
+/* std::out_of_range deleting destructor: release the exception's message string
+ * owner, free the exception object and return it. */
+s32 DeleteOutOfRange(s32 exception) {
+    M2C_UNK func_0206f994(s32);
+    s32 MemFree(s32);
+    func_0206f994(exception + 4);
+    MemFree(exception);
+    return exception;
 }
 
 #pragma optimization_level 4

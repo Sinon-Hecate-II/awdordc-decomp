@@ -65,7 +65,15 @@ enum {
  * player * VERSUS_DATA_STRIDE; gVersusPlayerHp is the HP the gauge animates to. */
 #define VERSUS_DATA_STRIDE 0x18
 #define VERSUS_DATA_COUNTRY 0x01 /* u8 country/army id that picks the player's screen assets */
+#define VERSUS_DATA_UNIT_SET 0x08 /* void *: the side's terrain unit-set record (a UNIT_SET_RECORD_SIZE-byte data_ov002_021f1bf4 entry) */
 #define VERSUS_DATA_PLACEMENTS 0x28 /* void *[UNIT_VIEW_MODEL_COUNT] where the side's unit models stand */
+
+/* A side's terrain unit-set record (data_ov002_021f1bf4 + terrain * UNIT_SET_RECORD_SIZE):
+ * its style and variant bytes pick the unit palette and animation variant the side uses
+ * (SetupPlayerSettings, LoadCountryBattleResources). */
+#define UNIT_SET_RECORD_SIZE 0x24
+#define UNIT_SET_VARIANT 0x21 /* u8: palette variant chosen when UNIT_SET_STYLE is 3 */
+#define UNIT_SET_STYLE   0x22 /* u8: 2 and 3 select an alternate unit animation/palette set */
 
 /* One unit's placement in the versus screen's scene, UNIT_PLACEMENT_STRIDE bytes:
  * where its model stands and the order it is drawn in.  A model's z is its
@@ -176,5 +184,12 @@ enum {
 #define FX_CULL_TOP    (-0x20)
 #define FX_CULL_RIGHT  0xA0
 #define FX_CULL_BOTTOM 0xE0
+
+/* One entry of the battle settings' unit-set table (data_ov002_021f1bf4,
+ * UNIT_SET_SIZE bytes per unit-set id, pointed to by a side record at +8).  Two
+ * bytes classify the set and pick the battle palette and the unit-set variant. */
+#define UNIT_SET_SIZE    0x24
+#define UNIT_SET_VARIANT 0x21 /* u8: unit-set variant type, 1..3 */
+#define UNIT_SET_KIND    0x22 /* u8: unit-set kind, 2 or 3, matched against the unit definition's kind */
 
 #endif

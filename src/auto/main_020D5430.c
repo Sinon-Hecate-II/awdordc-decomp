@@ -385,7 +385,7 @@ void UpdateMapTargetCursor(void) {
 
     if (IsMapCommandPending() == 0) {
         if (CountHeldDirections() != 0) {
-            func_020c95e4();
+            ReleaseHeldDirection();
             OpenMapActionMenuAtCursor();
             return;
         }

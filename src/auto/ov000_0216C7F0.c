@@ -163,19 +163,30 @@ void *GetArmyPalette(s32 arg0) {
     return (u8 *)&gArmyPalettes + ((arg0 - 1) << 5);
 }
 
-s32 GetTerrainTileBase(s32 arg0) {
-s32 GetNameGraphicFile(s32);extern u8 data_ov000_021b8711;
-return GetNameGraphicFile(0)+((&data_ov000_021b8711)[arg0*3]<<9);
+/* Address of the terrain tile graphics for terrain `terrainId` in the loaded name
+ * graphics file (block set 0): the terrain's three-byte index record gives, at +1,
+ * the 0x200-byte tile block to add. The caller copies 512 bytes from here. */
+s32 GetTerrainTileBase(s32 terrainId) {
+    s32 GetNameGraphicFile(s32);
+    extern u8 gTerrainTileBaseBlock;
+    return GetNameGraphicFile(0) + (((&gTerrainTileBaseBlock)[terrainId * 3]) << 9);
 }
 
-void *GetTerrainTileData(s32 arg0) {
-extern u8 data_02123c40;extern u8 data_ov000_021b8710;
-return &data_02123c40+((&data_ov000_021b8710)[arg0*3]<<8);
+/* Address of the 256-byte terrain tile data block for terrain `terrainId`: the
+ * terrain's three-byte index record gives the block index into the loaded terrain
+ * tile data buffer.  The caller copies 256 bytes from here. */
+void *GetTerrainTileData(s32 terrainId) {
+extern u8 gTerrainTileData;extern u8 gTerrainTileDataBlock;
+return &gTerrainTileData+((&gTerrainTileDataBlock)[terrainId*3]<<8);
 }
 
-void *GetTerrainPalette(s32 arg0,s32 arg1) {
-extern u8 data_02120b20;extern u8 data_ov000_021b8712;
-return &data_02120b20+((arg1+(&data_ov000_021b8712)[arg0*3])<<5);
+/* Address of the 32-byte palette for terrain `terrainId`'s `variant` (0 or 1) in
+ * the loaded palette buffer: the terrain's three-byte record gives the palette
+ * block, and each block holds the terrain's two palettes. The caller copies 32
+ * bytes from here. */
+void *GetTerrainPalette(s32 terrainId,s32 variant) {
+extern u8 gTerrainPaletteData;extern u8 gTerrainPaletteBlock;
+return &gTerrainPaletteData+((variant+(&gTerrainPaletteBlock)[terrainId*3])<<5);
 }
 
 /* Return the 0x80-byte face-icon tile graphic for an army state: states 1..5 use

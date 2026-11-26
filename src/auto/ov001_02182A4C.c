@@ -102,10 +102,13 @@ void Ov001_FadeInWfcConnectDoneScreen(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitWfcConnectDoneFadeIn);
 }
 
+/* Step of the WFC connection-done screen: once the main screen's fade-in has
+ * finished, hand the screen over to Ov001_UpdateWfcConnectDone. */
 void Ov001_WaitWfcConnectDoneFadeIn(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK Ov001_UpdateWfcConnectDone;
-    if (Ov001_IsFadeActive(0) != 0) {
+
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
     Ov001_SetStepCallback(&Ov001_UpdateWfcConnectDone);
@@ -234,12 +237,18 @@ void Ov001_WaitWfcConnectStep2FadeIn(void) {
 
 #pragma push
 #pragma opt_common_subs off
+/* Step that runs while the Wi-Fi connect screen's icon row slides in: once the
+ * row takes input (its selection is no longer OV001_ICON_ROW_NOT_READY), unlock
+ * it and hand over to the step that handles the connect menu's choices. */
 void Ov001_WaitWfcConnectIconRow(void) {
-s32 Ov001_GetIconRowSelection(); M2C_UNK Ov001_UnlockIconRow(); extern M2C_UNK func_ov001_02182ebc;
-if(Ov001_GetIconRowSelection()==-2)return;
-Ov001_UnlockIconRow();Ov001_SetStepCallback(&func_ov001_02182ebc);
+    s32 Ov001_GetIconRowSelection();
+    M2C_UNK Ov001_UnlockIconRow();
+    extern M2C_UNK Ov001_WfcConnectIconRowStep;
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) return;
+    Ov001_UnlockIconRow();
+    Ov001_SetStepCallback(&Ov001_WfcConnectIconRowStep);
 }
-void func_ov001_02182ebc(void) {
+void Ov001_WfcConnectIconRowStep(void) {
  void Ov001_HandleWfcConnectMenuInput(void);
  void func_ov001_02182f08(void);
  void Ov001_ApplyWfcMenuSelection(void);
@@ -286,13 +295,16 @@ void Ov001_ApplyWfcMenuSelection(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_PrepareCloseWfcMenu);
 }
 
+/* WFC menu close step: stop the icon row from taking input, hold the screen for
+ * OV001_STEP_DELAY_FRAMES, then hand over to Ov001_StartCloseWfcMenu. */
 void Ov001_PrepareCloseWfcMenu(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_StartCloseWfcMenu;
+
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_StartCloseWfcMenu);
 }
 
@@ -347,8 +359,10 @@ void Ov001_CloseWfcMenuScreen(void) {
     Ov001_SetStepCallback(&Ov001_OpenUsbConnectScreen);
 }
 
+/* Whether the console's lid is closed: the Wi-Fi connection-wait screen treats a
+ * closed lid like a B press and backs out of the connection. */
 s32 Ov001_IsLidClosedForConnectionWait(void) {
-    if (((s32) (*(u16 *)0x027FFFA8 & 0x8000) >> 0xF) != 0) {
+    if (((s32)(*(u16 *)SHARED_LID_WORD & SHARED_LID_CLOSED) >> 0xF) != 0) {
         return 1;
     }
     return 0;
@@ -435,12 +449,16 @@ void Ov001_UsbConnectFadeDone(void) {
     Ov001_SetStepCallback(&Ov001_UsbConnectWaitIconRow);
 }
 
+/* Step that runs while the USB-connector Wi-Fi connect screen's icon row slides
+ * in: once the row takes input (its selection is no longer
+ * OV001_ICON_ROW_NOT_READY), unlock it and hand over to the step that waits for
+ * the connection status. */
 void Ov001_UsbConnectWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern M2C_UNK Ov001_UpdateConnectionWait;
-    if (Ov001_GetIconRowSelection() == -2) return;
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) return;
     Ov001_UnlockIconRow();
     Ov001_SetStepCallback(&Ov001_UpdateConnectionWait);
 }
@@ -490,13 +508,15 @@ void Ov001_CancelConnectionWait(void) {
     Ov001_SetStepCallback((M2C_UNK *) &Ov001_StartConnectionClose);
 }
 
+/* Wi-Fi connection screen exit step: hold the icon row for a short delay, then
+ * fade the connection screen out. */
 void Ov001_StartConnectionClose(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_StartConnectionFadeOut;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_StartConnectionFadeOut);
 }
 
@@ -620,16 +640,17 @@ void Ov001_ConfirmNoPlayersMessage(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_CloseRegionMenu();
     s32 Ov001_GetRegionMenuSelection();
-    extern M2C_UNK Ov001_CloseNoPlayersMessage;
+    extern M2C_UNK Ov001_CloseEmptyRegionMessage;
     if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
     Ov001_PlaySound(OV001_SOUND_CONFIRM);
     Ov001_CloseRegionMenu();
-    Ov001_SetStepCallback(&Ov001_CloseNoPlayersMessage);
+    Ov001_SetStepCallback(&Ov001_CloseEmptyRegionMessage);
 }
 
-void Ov001_CloseNoPlayersMessage(void) {
+/* After the empty-region message closes, start closing the connection screen. */
+void Ov001_CloseEmptyRegionMessage(void) {
     s32 Ov001_IsRegionMenuActive();
     if (Ov001_IsRegionMenuActive() != 0) {
         return;

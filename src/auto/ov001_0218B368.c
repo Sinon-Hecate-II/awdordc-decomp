@@ -150,10 +150,11 @@ void Ov001_InitExpHeap(s32 arena) {
     if (gOv001Heap == 0) SystemHalt();
 }
 
-void func_ov001_0218b688(void) {
-    M2C_UNK func_0202a45c(s32);
+/* Tear down the overlay's expansion heap: destroy it and clear its handle. */
+void Ov001_DestroyExpHeap(void) {
+    M2C_UNK DestroyExpHeap(s32);
     extern s32 gOv001Heap;
-    func_0202a45c(gOv001Heap);
+    DestroyExpHeap(gOv001Heap);
     gOv001Heap = 0;
 }
 
@@ -176,14 +177,16 @@ s32 Ov001_HeapAlloc(s32 size, s32 align) {
     return block;
 }
 
-s32 Ov001_Alloc(M2C_UNK arg0) {
+/* Allocate `size` bytes with alignment `align` from the ov001 expansion heap
+ * and clear the new block. */
+void *Ov001_Alloc(s32 size, s32 align) {
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
-    s32 Ov001_HeapAlloc();
-    s32 temp_r0;
+    s32 Ov001_HeapAlloc(s32, s32);
+    void *block;
 
-    temp_r0 = Ov001_HeapAlloc();
-    MI_CpuFill8(temp_r0, 0, arg0);
-    return temp_r0;
+    block = (void *) Ov001_HeapAlloc(size, align);
+    MI_CpuFill8((s32) block, 0, size);
+    return block;
 }
 
 /* Free the block that *p points at on the ov001 expansion heap and clear the
@@ -319,26 +322,34 @@ else if(M2C_FIELD(g,u8 *,1)==47){g->state->flags.released=1;M2C_FIELD(g,u8 *,1)=
 }
 
 #pragma opt_peephole off
-s32 KeyPressed(s32 arg0) {
+/* Whether `keys` contains a key newly pressed this frame: every bit in `keys` is
+ * set in the input state's new-press mask. */
+s32 KeyPressed(s32 keys) {
     extern M2C_UNK gOv001Input;
-    if (arg0 == (arg0 & M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x32))) {
+    if (keys == (keys & ((InputGlobal *)&gOv001Input)->state->newPressed)) {
         return 1;
     }
     return 0;
 }
 #pragma opt_peephole reset
-s32 KeyHeld(s32 a) {
+/* Whether all of `keys` (a KEY_* bit mask) are held: every requested bit is set
+ * in the input state's auto-repeat key mask. */
+s32 KeyHeld(s32 keys) {
     extern M2C_UNK gOv001Input;
-    s32 t;
-    t = a & M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x34);
-    return a == t;
+    s32 held;
+
+    held = keys & ((InputGlobal *)&gOv001Input)->state->repeat;
+    return keys == held;
 }
 
-s32 KeyReleased(s32 a) {
+/* Whether all of `keys` (a KEY_* bit mask) were released this frame: every
+ * requested bit is set in the input state's release mask. */
+s32 KeyReleased(s32 keys) {
     extern M2C_UNK gOv001Input;
-    s32 t;
-    t = a & M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x36);
-    return a == t;
+    s32 released;
+
+    released = keys & ((InputGlobal *)&gOv001Input)->state->released;
+    return keys == released;
 }
 
 /* Touch hit test: return 1 when the current touch point is inside rectangle

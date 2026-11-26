@@ -421,25 +421,28 @@ return v;
 }
 #pragma opt_common_subs reset
 s32 SendRtcReadDateTimeCommand(void) {
-    s32 func_0200f70c(s32);
-    return func_0200f70c(0x10);
+    s32 SendRtcCommand(s32);
+    return SendRtcCommand(0x10);
 }
 
 s32 SendRtcReadDateCommand(void) {
-    return func_0200f70c(0x11);
+    return SendRtcCommand(0x11);
 }
 
 s32 SendRtcReadTimeCommand(void) {
-    return func_0200f70c(0x12);
+    return SendRtcCommand(0x12);
 }
 
 s32 func_0200f6fc(void) {
-    return func_0200f70c(0x27);
+    return SendRtcCommand(0x27);
 }
 
-s32 func_0200f70c(s32 arg0) {
+/* Queue a one-frame RTC command over the RTC FIFO: the command byte travels in
+ * bits 8-14 (RTC_COMMAND_SHIFT..RTC_COMMAND_MASK) of the payload.  Returns 1 when
+ * the message was posted, 0 when the FIFO refused it. */
+s32 SendRtcCommand(s32 command) {
     s32 SendFifoMessage(M2C_UNK, s32, M2C_UNK);
-    if (SendFifoMessage(5, (arg0 << 8) & 0x7F00, 0) < 0) {
+    if (SendFifoMessage(RTC_FIFO_TAG, (command << RTC_COMMAND_SHIFT) & RTC_COMMAND_MASK, 0) < 0) {
         return 0;
     }
     return 1;
@@ -597,7 +600,7 @@ func_02005e5c(thread);
 }
 
 #pragma opt_common_subs off
-void func_0200fb48(s32 arg0,s32 arg1) {
+void SaveDevice_Lock(s32 arg0,s32 arg1) {
 void OS_SleepThread(void *); s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void SystemHalt(void);
 extern M2C_UNK gSaveDeviceState;
 void *p=&gSaveDeviceState; s32 state=OS_DisableInterrupts();
@@ -613,7 +616,7 @@ M2C_FIELD(p,s32 *,8)=arg0; M2C_FIELD(p,s32 *,0x18)=arg1;
 OS_RestoreInterrupts(state);
 }
 #pragma opt_instruction_scheduling off
-void func_0200fbcc(s32 arg0, s32 arg1) {
+void SaveDevice_Unlock(s32 arg0, s32 arg1) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void SystemHalt(void); void OS_WakeupThread(void *);
 extern M2C_UNK gSaveDeviceState;
 void *p=&gSaveDeviceState; s32 state=OS_DisableInterrupts();

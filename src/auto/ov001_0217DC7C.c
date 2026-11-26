@@ -52,7 +52,9 @@ void MapListHandleState(void) {
  }
 }
 
-void func_ov001_0217ded8(void) {
+/* Map-list screen exit step (back chosen): block its scroll bar, hold for a few
+ * frames, then hand the step over to the screen's fade-out. */
+void MapList_BeginExit(void) {
     M2C_UNK Ov001_BlockScrollBar();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
@@ -83,7 +85,7 @@ void Ov001_FadeOutMapList(void) {
 #pragma opt_strength_reduction off
 void Ov001_CloseMapListScreen(void) {
 extern M2C_UNK gMapListState, data_ov001_0219085c, data_ov001_02193db4;
-extern M2C_UNK GX_LoadOBJPltt,InitNameEntryScreen,func_ov001_0217bf84,Ov001_OpenWfcConnectScreen,func_ov001_0217f73c,Ov001_OpenAccessPointMenu,func_ov001_02181a84;
+extern M2C_UNK GX_LoadOBJPltt,InitNameEntryScreen,func_ov001_0217bf84,Ov001_OpenWfcConnectScreen,Ov001_ReopenMapListScreen,Ov001_OpenAccessPointMenu,func_ov001_02181a84;
 s32 Ov001_IsFadeActive(s32);
 void *GetCurrentMapRecord(void);
 s32 CountSetBits(void *);
@@ -113,7 +115,7 @@ case 11:p=GetCurrentMapRecord();p[0xd0]=CountSetBits(p+0xf0);
 if(p[0xf5]){MI_CpuFill8(p+0xc0,0,4);MI_CpuFill8(p+0xc4,0,4);MI_CpuFill8(p+0xf0,0,4);p[0xd0]=0;}
 if(p[0xf6])MI_CpuFill8(p+0xc8,0,8);
 Ov001_SetNextScreenMode(2,0);Ov001_SetNameEntryMode(0,0);Ov001_SetStepCallback(&Ov001_OpenWfcConnectScreen);break;
-case 12:Ov001_SetNextScreenMode(0,0);Ov001_SetStepCallback(&func_ov001_0217f73c);break;
+case 12:Ov001_SetNextScreenMode(0,0);Ov001_SetStepCallback(&Ov001_ReopenMapListScreen);break;
 case 13:if(M2C_FIELD(&gMapListState,u8 *,1)==0){Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);}
 else{p=GetCurrentMapRecord();LoadSaveSlot(p[0xf4]);Ov001_SetNextScreenMode(0,1);Ov001_SetStepCallback(&func_ov001_02181a84);}break;
 }
@@ -303,7 +305,7 @@ s32 IsMapListChoiceAvailable(u32 choice) {
 }
 
 void func_ov001_0217e67c(s32 arg0, s32 arg1, s32 arg2) {
-    s32 func_ov001_0217ee24(s32);
+    s32 GetMapListRowAt(s32);
     M2C_UNK Ov001_LoadSpriteObjLayout(M2C_UNK);
     extern u8 data_ov001_0218f8ee[][3];
     extern M2C_UNK gMapListState;
@@ -319,7 +321,7 @@ void func_ov001_0217e67c(s32 arg0, s32 arg1, s32 arg2) {
     sp[4] = 0x8F;
     var_r4 = M2C_FIELD(&gMapListState, void **, 8) + 0x18 + (arg2 * 4);
     if ((u32) (arg0 - 1) <= 1U) {
-        if (func_ov001_0217ee24(arg2) == 2) {
+        if (GetMapListRowAt(arg2) == 2) {
             var_r4 = M2C_FIELD(&gMapListState, void **, 8) + 0x2C;
         } else {
             var_r4 = M2C_FIELD(&gMapListState, void **, 8) + 0x30;

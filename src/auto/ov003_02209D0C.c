@@ -56,8 +56,8 @@ static inline void UpdateA9Value(void *p,s32 value) {
 #pragma opt_strength_reduction off
 M2C_UNK func_ov003_02209d0c(void *a,s32 b) {
 void Ov003_LoadMapSelectTitleBlock(void *,s32);void Ov003_LoadModeTexture(void *,s32);
-u8 func_ov003_022066c8(u8);void *func_ov003_022066a8(u8);
-s16 func_020bfa20(void);s16 func_020bf9e0(void);
+u8 func_ov003_022066c8(u8);void *Ov003_GetMenuRowGroup(u8);
+s16 GetSoundEffectVolumeSetting(void);s16 GetMusicVolumeSetting(void);
 void func_ov003_0220accc(void *,u8);void Clear3DSpriteLayer(s32);
 s32 GetLanguage(void);s32 GetLocalizedText(void *);s32 func_0209c2a8(s32);
 void DrawLocalizedText(u8,s32,s32,void *,s32,u16);
@@ -77,18 +77,18 @@ M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,0x10)=func_ov003_022066c8(b);
 M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15)=b;
 M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,17)=16;
 if((u8)(M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15)==8)) {
-UpdateA9Slider(M2C_FIELD(a,void **,0x64),func_020bfa20());
-UpdateA9Slider(M2C_FIELD(a,void **,0x60),func_020bf9e0());
+UpdateA9Slider(M2C_FIELD(a,void **,0x64),GetSoundEffectVolumeSetting());
+UpdateA9Slider(M2C_FIELD(a,void **,0x60),GetMusicVolumeSetting());
 p=M2C_FIELD(a,void **,0x40);
 UpdateA9Value(p,(u32)(M2C_FIELD(&gOptionBits,u16 *,6)<<18)>>30);
 UpdateA9Value((u8 *)p+24,(u32)(M2C_FIELD(&gOptionBits,u16 *,6)<<20)>>30);
 UpdateA9Value((u8 *)p+48,(u32)(M2C_FIELD(&gOptionBits,u16 *,6)<<17)>>31);
 }
-M2C_FIELD(a,void **,0x44)=func_ov003_022066a8(b);
+M2C_FIELD(a,void **,0x44)=Ov003_GetMenuRowGroup(b);
 for(i=0;i<M2C_FIELD(M2C_FIELD(a,void **,0x44),u8 *,0);i++) {
 j=0;
 total=j;
-for(;j!=(u8)b;j++)total+=M2C_FIELD(func_ov003_022066a8(j),u8 *,0);
+for(;j!=(u8)b;j++)total+=M2C_FIELD(Ov003_GetMenuRowGroup(j),u8 *,0);
 M2C_FIELD(M2C_FIELD(a,void **,0x48),void **,i*36)=data_ov003_02210c80+(total+i)*16;
 }
 if((u8)(((u32)(M2C_FIELD(a,u8 *,0x36)<<24)>>28)==0)) {
@@ -201,10 +201,12 @@ void Ov003_LoadModeTexture(void *screen, s32 mode) {
     HeapFreeBlock(textureFile);
 }
 
-void Ov003_SetRowAnimation(void *arg0, s8 arg1) {
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), s8 *, 0x11) = arg1;
-    M2C_FIELD(arg0, u8 *, 0x38) = (u8) (M2C_FIELD(arg0, u8 *, 0x38) & ~1);
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x50), s8 *, 1) = 1;
+/* Store `animation` as the menu selection's current row animation, pause input
+ * (clear MENU_FLAG_INPUT) and restart the row-animation object. */
+void Ov003_SetRowAnimation(void *menu, s8 animation) {
+    M2C_FIELD(M2C_FIELD(menu, void **, MENU_SELECTION), s8 *, MENU_SELECTION_ANIMATION) = animation;
+    M2C_FIELD(menu, u8 *, MENU_FLAGS) = (u8) (M2C_FIELD(menu, u8 *, MENU_FLAGS) & ~MENU_FLAG_INPUT);
+    M2C_FIELD(M2C_FIELD(menu, void **, MENU_ROW_ANIM_OBJECT), s8 *, 1) = 1;
 }
 
 /* Per-frame update of the ov003 map-select screen while its transition timer

@@ -44,17 +44,19 @@ extern u8 gCarriedUnitMenuStateStack[];
  * position and width, the chosen row and the caller's entry table. */
 typedef struct { s8 x, y, selection, width; s32 entries; } CarriedUnitMenuState;
 
-u8 func_020c0254(void) {
+/* TRUE while a pending save/load screen open sprite exists (the screen is
+ * about to be opened once the current screen has faded out). */
+u8 IsSaveLoadScreenOpening(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02129404;
-    u8 var_r0;
+    extern M2C_UNK gSaveLoadScreenOpenClass;
+    u8 opening;
 
-    if (FindObjectByClass(&data_02129404) != 0) {
-        var_r0 = 1;
+    if (FindObjectByClass(&gSaveLoadScreenOpenClass) != 0) {
+        opening = 1;
     } else {
-        var_r0 = 0;
+        opening = 0;
     }
-    return var_r0;
+    return opening;
 }
 
 /* In each graphics bank, clear the low status bits of the first entry and set status bit 0x100. */
@@ -93,7 +95,9 @@ void func_020c0278(void) {
     gCur3DSpriteEngine = savedBank;
 }
 
-void func_020c0374(void) {
+/* Flush the save list: queue a no-op update request, then start the save-flush
+ * task that applies the queue and rewrites the save directory. */
+void FlushSaveList(void) {
     M2C_UNK SaveList_QueueUpdate(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK SaveList_StartFlush();
     SaveList_QueueUpdate(0, 0, 0, 0);
@@ -249,21 +253,23 @@ void CloseCarriedUnitListMenu(void *menu) {
 
 s32 GetCarriedUnitMenu(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02129630;
-    return FindObjectByClass(&data_02129630);
+    extern M2C_UNK gCarriedUnitListMenuClass;
+    return FindObjectByClass(&gCarriedUnitListMenuClass);
 }
 
+/* Nonzero while the carried-unit list menu is open (an object of its sprite
+ * class exists). */
 u8 IsCarriedUnitListOpen(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02129630;
-    u8 var_r0;
+    extern M2C_UNK gCarriedUnitListMenuClass;
+    u8 open;
 
-    if (FindObjectByClass(&data_02129630) != 0) {
-        var_r0 = 1;
+    if (FindObjectByClass(&gCarriedUnitListMenuClass) != 0) {
+        open = 1;
     } else {
-        var_r0 = 0;
+        open = 0;
     }
-    return var_r0;
+    return open;
 }
 
 s32 func_020c05e8(void) {
@@ -289,9 +295,9 @@ void CreateMenuFromEntries(s32 entries, s32 x, s32 y, s32 selection, s32 width) 
 #pragma opt_instruction_scheduling off
 s32 func_020c0634(s32 entries,s32 x,s32 y,s32 selection,s32 width) {
 void ResetSpriteSlots(void); s32 CreateSpriteFromClass(s32 *,s32); void AcquireMapViewHold(void);
-extern s32 data_02129630;
+extern s32 gCarriedUnitListMenuClass;
 MenuC0634 *p; s16 n=0; u16 height=16; s32 i; s32 offset;
-ResetSpriteSlots(); p=(MenuC0634 *)CreateSpriteFromClass(&data_02129630,7); i=n; offset=i;
+ResetSpriteSlots(); p=(MenuC0634 *)CreateSpriteFromClass(&gCarriedUnitListMenuClass,7); i=n; offset=i;
 p->entries=(void *)entries;
 for(;;) {
 u8 *entry=((u8 *)p->entries)+offset;
@@ -329,9 +335,9 @@ void CreateMenuAt(M2C_UNK entries, M2C_UNK x, M2C_UNK y, s32 width) {
 void DeleteMapMenuSprites(void) {
     M2C_UNK DeleteTextLineSprites();
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02129630;
+    extern M2C_UNK gCarriedUnitListMenuClass;
     DeleteTextLineSprites();
-    DeleteSpriteObjectsOfClass(&data_02129630);
+    DeleteSpriteObjectsOfClass(&gCarriedUnitListMenuClass);
 }
 
 /* Stamps a filled window frame into the 32-column tile map `tilemap`: the frame
@@ -395,10 +401,13 @@ void LoadUiGraphicsBlock(M2C_UNK arg0) {
     LoadGraphicsBlock(&data_0211e0a8, arg0);
 }
 
-void LoadUiSpritePalette(s32 arg0) {
+/* Copy the UI sprite palette into the current 3D sprite engine's OBJ palette
+ * shadow, at palette slot `slot`. */
+void LoadUiSpritePalette(s32 slot) {
     M2C_UNK CopyToObjPaletteShadow(M2C_UNK *, s32, M2C_UNK);
     extern M2C_UNK gUiSpritePalette;
-    CopyToObjPaletteShadow(&gUiSpritePalette, arg0 << 5, 0x20);
+
+    CopyToObjPaletteShadow(&gUiSpritePalette, slot << DS3D_PALETTE_SHIFT, DS3D_PALETTE_BYTES);
 }
 
 /* Load the UI graphics into one 3D sprite engine layer: put the UI tile block at
@@ -559,11 +568,15 @@ void FocusListMenuRow(void *slot) {
     HighlightListMenuRow(menu, index);
 }
 
-void UpdateListMenuRowSlot(void *arg0) {
-u8 index = M2C_FIELD(arg0,u8 *,0);
-void *p = M2C_FIELD(arg0,void **,0x10);
-if (!IsCarriedUnitListOpen()) return;
-UpdateListMenuRow(p,index);
+/* Per-frame update handler of a carried-unit list row slot: while the carried-unit
+ * list is open, run the row's update callback with the slot's owner (the list menu)
+ * and the slot's id (the row index). */
+void UpdateListMenuRowSlot(void *slot) {
+    u8 row = M2C_FIELD(slot, u8 *, SPRITE_SLOT_ID);
+    void *menu = M2C_FIELD(slot, void **, SPRITE_SLOT_OWNER);
+
+    if (!IsCarriedUnitListOpen()) return;
+    UpdateListMenuRow(menu, row);
 }
 
 /* Create one sprite slot per visible row of the carried-unit list: stack them

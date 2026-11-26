@@ -179,21 +179,23 @@ s32 Sound_AcquireChannel(void *player, s32 channelCount, s32 channelList) {
     return 1;
 }
 
-void Sound_ReleaseChannel(void *arg0) {
+/* Drop one reference to the player's hardware channels; when the last one goes,
+ * stop the voices still playing on them. */
+void Sound_ReleaseChannel(void *player) {
     M2C_UNK Sound_StopVoices();
-    s32 temp_r1;
-    s32 temp_r1_2;
+    s32 refs;
+    s32 remaining;
 
-    temp_r1 = M2C_FIELD(arg0, s32 *, 0x120);
-    if (temp_r1 == 0) {
+    refs = M2C_FIELD(player, s32 *, SOUND_HANDLE_CHANNEL_REFS);
+    if (refs == 0) {
         return;
     }
-    temp_r1_2 = temp_r1 - 1;
-    M2C_FIELD(arg0, s32 *, 0x120) = temp_r1_2;
-    if (temp_r1_2 != 0) {
+    remaining = refs - 1;
+    M2C_FIELD(player, s32 *, SOUND_HANDLE_CHANNEL_REFS) = remaining;
+    if (remaining != 0) {
         return;
     }
-    Sound_StopVoices();
+    Sound_StopVoices(player);
 }
 
 /* Create the sound worker thread inside `worker`: give it `priority`, a

@@ -285,13 +285,16 @@ s32 Wfc_IsSharedApCode(M2C_UNK connCode) {
     return 0;
 }
 
-void func_02031784(M2C_UNK arg0, M2C_UNK arg1) {
+/* Decode the 32-character connection code of a friend record and store the
+ * 13-byte MD5-based friend-code hash that the connection settings send for it
+ * at `hash`. */
+void Wfc_HashFriendConnectionCode(M2C_UNK code, void *hash) {
     M2C_UNK Wfc_DecodeSharedApCode(M2C_UNK, M2C_UNK *);
     void Wfc_ComputeFriendCodeHash(M2C_UNK *, M2C_UNK);
-    M2C_UNK buf[6];
+    u8 decoded[0x18];
 
-    Wfc_DecodeSharedApCode(arg0, &buf[0]);
-    Wfc_ComputeFriendCodeHash(&buf[0], arg1);
+    Wfc_DecodeSharedApCode(code, (M2C_UNK *)decoded);
+    Wfc_ComputeFriendCodeHash((M2C_UNK *)decoded, (M2C_UNK)hash);
 }
 
 /* If `connCode` is a shared access point connection code, copies the 10-byte
@@ -310,10 +313,13 @@ void Wfc_GetSharedApCode(M2C_UNK connCode, M2C_UNK apCode) {
     MI_CpuCopy8(&buf[2], (void *)apCode, 0xA);
 }
 
-s32 Wfc_IsUsbApCode(M2C_UNK arg0) {
+/* Whether `code` is the built-in access-point tag "NWCUSBAP" (the code of the
+ * Nintendo Wi-Fi USB Connector used with a Download Play friend). */
+s32 Wfc_IsUsbApCode(M2C_UNK code) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK gWfcUsbApCodeTag;
-    if (ByteCompareN(arg0, &gWfcUsbApCodeTag, 8) == 0) {
+    extern M2C_UNK gWfcUsbApCodeTag; /* "NWCUSBAP" */
+
+    if (ByteCompareN(code, &gWfcUsbApCodeTag, 8) == 0) {
         return 1;
     }
     return 0;
@@ -680,10 +686,12 @@ if(ok) {mask--; mask=(u32)arg0 & mask;}
 return mask;
 }
 #pragma opt_propagation reset
-void func_02032004(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
+/* Format a player code as its 12-digit zero-padded decimal text at `out` (the
+ * 64-bit code arrives as its low and high words). */
+void FormatPlayerCode(char *out, u32 codeLow, u32 codeHigh) {
     M2C_UNK StringFormatN(M2C_UNK, M2C_UNK, M2C_UNK *, ...);
-    extern M2C_UNK data_020fb2bc;
-    StringFormatN(arg0, 0xD, &data_020fb2bc, arg1, arg2);
+    extern u8 gFmtPlayerCode[];
+    StringFormatN(out, 0xD, gFmtPlayerCode, codeLow, codeHigh);
 }
 
 #pragma opt_strength_reduction off

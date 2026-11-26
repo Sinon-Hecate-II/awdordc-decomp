@@ -18,7 +18,7 @@ static inline void Unk0220C6C8Reset(Unk0220C6C8Anim *p) { p->unkE=0; p->unkF=0; 
 
 
 void *CreateSpriteObject(void *, void *);
-int func_ov003_022066a8(int);
+int Ov003_GetMenuRowGroup(int);
 void *MemAlloc(int);
 extern u8 data_ov003_022109ec[];
 extern u8 gMapSelectVTable[];
@@ -30,8 +30,8 @@ void SpriteAnim_SetupFrame(void *);
 void SpriteTween_Start(void *, int);
 void func_020a9a1c(void *, int, int);
 void ScrollBar_PlaceThumb(void *, int, int);
-int func_020bf9e0(void);
-int func_020bfa20(void);
+int GetMusicVolumeSetting(void);
+int GetSoundEffectVolumeSetting(void);
 int Divide(int, int);
 extern int gScrollBarVTable;
 static inline u8 *Unk0220DE5CCreateSlider(int y,int childY) { u8 *q,*t; q=MemAlloc(0x20);
@@ -87,7 +87,7 @@ p[0x34]=0; p[0x35]=0;
 ((Unk0220C6C8Bits *)(p+0x38))->b7=0;
 *(u32 *)(p+0x3c)=data_02101fd8;
 *(u32 *)(p+0x40)=0;
-*(u32 *)(p+0x44)=func_ov003_022066a8(0);
+*(u32 *)(p+0x44)=Ov003_GetMenuRowGroup(0);
 *(u32 *)(p+0x68)=0;
 *(void **)(p+0x4c)=MemAlloc(0x24);anim=MemAlloc(0x10);
 if (anim) {
@@ -216,7 +216,7 @@ t[16]=16;t[17]=32;ScrollBar_PlaceThumb(t,180,18);
 M2C_FIELD(q,u8 **,28)=t;
 }
 M2C_FIELD(p,u8 **,96)=q;
-i=func_020bf9e0(); q=M2C_FIELD(p,u8 **,96); M2C_FIELD(q,s16 *,18)=i;
+i=GetMusicVolumeSetting(); q=M2C_FIELD(p,u8 **,96); M2C_FIELD(q,s16 *,18)=i;
 if(M2C_FIELD(q,s16 *,22)>=M2C_FIELD(q,s16 *,18)) M2C_FIELD(q,s16 *,18)=M2C_FIELD(q,s16 *,20)>M2C_FIELD(q,s16 *,18)?M2C_FIELD(q,s16 *,20):M2C_FIELD(q,s16 *,18);
 base=M2C_FIELD(q,s16 *,8);
 i=base+Divide(M2C_FIELD(q,s16 *,18)*(s16)(M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,20)-M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,18)),M2C_FIELD(q,s16 *,22)-M2C_FIELD(q,s16 *,20));
@@ -241,7 +241,7 @@ t[16]=16;t[17]=32;ScrollBar_PlaceThumb(t,180,48);
 M2C_FIELD(q,u8 **,28)=t;
 }
 M2C_FIELD(p,u8 **,100)=q;
-i=func_020bfa20(); q=M2C_FIELD(p,u8 **,100); M2C_FIELD(q,s16 *,18)=i;
+i=GetSoundEffectVolumeSetting(); q=M2C_FIELD(p,u8 **,100); M2C_FIELD(q,s16 *,18)=i;
 if(M2C_FIELD(q,s16 *,22)>=M2C_FIELD(q,s16 *,18)) M2C_FIELD(q,s16 *,18)=M2C_FIELD(q,s16 *,20)>M2C_FIELD(q,s16 *,18)?M2C_FIELD(q,s16 *,20):M2C_FIELD(q,s16 *,18);
 base=M2C_FIELD(q,s16 *,8);
 i=base+Divide(M2C_FIELD(q,s16 *,18)*(s16)(M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,20)-M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,18)),M2C_FIELD(q,s16 *,22)-M2C_FIELD(q,s16 *,20));

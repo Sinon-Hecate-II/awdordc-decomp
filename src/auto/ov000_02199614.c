@@ -379,7 +379,7 @@ void BeginAiTurn(void) {
     void CountEnemyProperties(void);
     void Ov000_AssignAiOrders(void);
     void func_ov000_02181c88(void);
-    void func_ov000_0219a350(void);
+    void ResetAiTurnState(void);
     void UpdateAiSupplyStates(void);
     s32 AiMayAttackMapFeatures(void);
     extern s32 *gCurrentMap;
@@ -411,7 +411,7 @@ void BeginAiTurn(void) {
     CountEnemyProperties();
     Ov000_AssignAiOrders();
     func_ov000_02181c88();
-    func_ov000_0219a350();
+    ResetAiTurnState();
     UpdateAiSupplyStates();
     if (AiMayAttackMapFeatures() == 1) {
         gAiCommandState[AI_COMMAND_STATE_FLAGS] |= 0x04;
@@ -425,10 +425,13 @@ void BeginAiTurn(void) {
 }
 
 #pragma pop
-void func_ov000_0219a350(void) {
+/* Reset the AI turn state's phase and built-unit placement step at the start of
+ * the AI's turn (BeginAiTurn). */
+void ResetAiTurnState(void) {
     extern void *gAiState;
-    M2C_FIELD(gAiState, s8 *, 2) = 0;
-    M2C_FIELD(gAiState, s8 *, 3) = 0;
+
+    M2C_FIELD(gAiState, u8 *, AI_STATE_PHASE) = 0;
+    M2C_FIELD(gAiState, u8 *, AI_STATE_PLACE_STEP) = 0;
 }
 
 /* Reset the per-property bookkeeping of the map's property-cell table for the AI

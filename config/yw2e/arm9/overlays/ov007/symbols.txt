@@ -13,7 +13,7 @@ MapEditor_TryPaintTerrain kind:function(arm,size=0x84) addr:0x0221190c
 MapEditor_GetCursorType kind:function(arm,size=0x158) addr:0x02211990
 MapEditor_Update kind:function(arm,size=0x384) addr:0x02211ae8
 func_ov007_02211e6c kind:function(arm,size=0x18) addr:0x02211e6c
-func_ov007_02211e84 kind:function(arm,size=0x20) addr:0x02211e84
+MapEditor_ResumeAnimation kind:function(arm,size=0x20) addr:0x02211e84
 SetMapEditorMode kind:function(arm,size=0x5c) addr:0x02211ea4
 GetMapEditorMode kind:function(arm,size=0x10) addr:0x02211f00
 SetMapEditorTool kind:function(arm,size=0x10) addr:0x02211f10
@@ -30,7 +30,7 @@ SetMapEditorTerrainKind kind:function(arm,size=0x10) addr:0x02211fb0
 SetMapEditorTerrainOwner kind:function(arm,size=0x10) addr:0x02211fc0
 CachePlayerUnitCounts kind:function(arm,size=0x2c) addr:0x02211fd0
 GetCachedPlayerUnitCount kind:function(arm,size=0x10) addr:0x02211ffc
-CountEditorUnits kind:function(arm,size=0x20) addr:0x0221200c
+CacheEditorPropertyCount kind:function(arm,size=0x20) addr:0x0221200c
 GetEditorUnitCategoryCount kind:function(arm,size=0x20) addr:0x0221202c
 MapEditor_GetPropertyCount kind:function(arm,size=0x10) addr:0x0221204c
 AssignPlayerTeams kind:function(arm,size=0x110) addr:0x0221205c
@@ -54,12 +54,12 @@ func_ov007_02213358 kind:function(arm,size=0x8) addr:0x02213358
 func_ov007_02213360 kind:function(arm,size=0xc) addr:0x02213360
 func_ov007_0221336c kind:function(arm,size=0xc) addr:0x0221336c
 MapEditor_ApplyFillPreset kind:function(arm,size=0x30) addr:0x02213378
-func_ov007_022133a8 kind:function(arm,size=0x24) addr:0x022133a8
-func_ov007_022133cc kind:function(arm,size=0x14) addr:0x022133cc
-func_ov007_022133e0 kind:function(arm,size=0x18) addr:0x022133e0
-func_ov007_022133f8 kind:function(arm,size=0x18) addr:0x022133f8
-func_ov007_02213410 kind:function(arm,size=0x18) addr:0x02213410
-func_ov007_02213428 kind:function(arm,size=0x18) addr:0x02213428
+MapEditor_OpenFillDialog kind:function(arm,size=0x24) addr:0x022133a8
+MapEditor_FillWithSea kind:function(arm,size=0x14) addr:0x022133cc
+MapEditor_FillWithPlain kind:function(arm,size=0x18) addr:0x022133e0
+MapEditor_FillWithWoods kind:function(arm,size=0x18) addr:0x022133f8
+MapEditor_FillWithMountain kind:function(arm,size=0x18) addr:0x02213410
+MapEditor_ClearMap kind:function(arm,size=0x18) addr:0x02213428
 func_ov007_02213440 kind:function(arm,size=0x18) addr:0x02213440
 OpenMapEditorFillMenu kind:function(arm,size=0x5c) addr:0x02213458
 MapEditor_ApplyMapSize kind:function(arm,size=0x78) addr:0x022134b4
@@ -77,13 +77,13 @@ func_ov007_02214394 kind:function(arm,size=0x14) addr:0x02214394
 func_ov007_022143a8 kind:function(arm,size=0x14) addr:0x022143a8
 MapEditor_ConfirmMapSettings kind:function(arm,size=0x34) addr:0x022143bc
 func_ov007_022143f0 kind:function(arm,size=0x1c) addr:0x022143f0
-func_ov007_0221440c kind:function(arm,size=0x20) addr:0x0221440c
+MapEditor_ResetMapSettings kind:function(arm,size=0x20) addr:0x0221440c
 func_ov007_0221442c kind:function(arm,size=0x1c) addr:0x0221442c
-func_ov007_02214448 kind:function(arm,size=0x24) addr:0x02214448
+IsMapConfigLimitClear kind:function(arm,size=0x24) addr:0x02214448
 OpenMapEditorMenu kind:function(arm,size=0x68) addr:0x0221446c
 func_ov007_022144d4 kind:function(arm,size=0xc) addr:0x022144d4
 func_ov007_022144e0 kind:function(arm,size=0xc) addr:0x022144e0
-func_ov007_022144ec kind:function(arm,size=0x20) addr:0x022144ec
+OpenMapEditorOptionsMenu kind:function(arm,size=0x20) addr:0x022144ec
 MapEditor_ClearCursorUnitAiStep kind:function(arm,size=0x38) addr:0x0221450c
 MapEditor_SetCursorUnitAiStepFirst kind:function(arm,size=0x3c) addr:0x02214544
 MapEditor_SetCursorUnitAiStepCapture kind:function(arm,size=0x3c) addr:0x02214580
@@ -136,8 +136,8 @@ MapEditor_GetPaletteKind kind:function(arm,size=0x18) addr:0x02217bd0
 MapEditor_GetPaletteOwner kind:function(arm,size=0x34) addr:0x02217be8
 MapEditor_GetOwnerColorIndex kind:function(arm,size=0x34) addr:0x02217c1c
 MapEditor_GetPageOwnerColorCount kind:function(arm,size=0x30) addr:0x02217c50
-func_ov007_02217c80 kind:function(arm,size=0x28) addr:0x02217c80
-func_ov007_02217ca8 kind:function(arm,size=0x28) addr:0x02217ca8
+MapEditor_NextOwnerColor kind:function(arm,size=0x28) addr:0x02217c80
+MapEditor_PrevOwnerColor kind:function(arm,size=0x28) addr:0x02217ca8
 MapEditor_ConfirmPaletteEntry kind:function(arm,size=0x60) addr:0x02217cd0
 func_ov007_02217d30 kind:function(arm,size=0x25c) addr:0x02217d30
 func_ov007_02217f8c kind:function(arm,size=0x5e4) addr:0x02217f8c
@@ -169,7 +169,7 @@ func_ov007_02219acc kind:function(arm,size=0x1c) addr:0x02219acc
 UpdatePanelRowCollapse kind:function(arm,size=0x50) addr:0x02219ae8
 MapEditor_ApplyPaletteColorStep kind:function(arm,size=0x2c) addr:0x02219b38
 MapEditor_PaletteOpenStep kind:function(arm,size=0x50) addr:0x02219b64
-func_ov007_02219bb4 kind:function(arm,size=0x24) addr:0x02219bb4
+CreatePaletteColorDriver kind:function(arm,size=0x24) addr:0x02219bb4
 MapEditor_LoadPlayerPalettes kind:function(arm,size=0x80) addr:0x02219bd8
 MapEditor_DrawCatalogueCell kind:function(arm,size=0xb8) addr:0x02219c58
 func_ov007_02219d10 kind:function(arm,size=0x23c) addr:0x02219d10
@@ -257,7 +257,7 @@ data_ov007_0221f544 kind:data(any) addr:0x0221f544
 data_ov007_0221f574 kind:data(any) addr:0x0221f574
 data_ov007_0221f5a4 kind:data(any) addr:0x0221f5a4
 data_ov007_0221f5c0 kind:data(any) addr:0x0221f5c0
-data_ov007_0221f5f8 kind:data(any) addr:0x0221f5f8
+gMapEditorClass kind:data(any) addr:0x0221f5f8
 gMapNameFormat kind:data(any) addr:0x0221f678
 gUnitEraseEffect kind:data(any) addr:0x0221f680
 data_ov007_0221f690 kind:data(any) addr:0x0221f690
@@ -266,7 +266,7 @@ data_ov007_0221f6b0 kind:data(any) addr:0x0221f6b0
 data_ov007_0221f6e8 kind:data(any) addr:0x0221f6e8
 gMapResizeSpriteClass kind:data(any) addr:0x0221f740
 gMapEditorMenuClass kind:data(any) addr:0x0221f780
-data_ov007_0221f7c0 kind:data(any) addr:0x0221f7c0
+gMapEditorFillDialogClass kind:data(any) addr:0x0221f7c0
 gMapEditListMenuClass kind:data(any) addr:0x0221f820
 gMapEditCursorClass kind:data(any) addr:0x0221f890
 data_ov007_0221f918 kind:data(any) addr:0x0221f918
@@ -275,7 +275,7 @@ data_ov007_0221fa00 kind:data(any) addr:0x0221fa00 ambiguous
 gMapEditorFillMenuEntries kind:data(any) addr:0x0221fa40
 data_ov007_0221fb30 kind:data(any) addr:0x0221fb30
 data_ov007_0221fbc8 kind:data(any) addr:0x0221fbc8 ambiguous
-data_ov007_0221fc20 kind:data(any) addr:0x0221fc20
+gMapEditorOptionsMenuEntries kind:data(any) addr:0x0221fc20
 data_ov007_0221fd20 kind:data(any) addr:0x0221fd20 ambiguous
 data_ov007_0221fdb0 kind:data(any) addr:0x0221fdb0
 data_ov007_0221fdbc kind:data(any) addr:0x0221fdbc
@@ -285,7 +285,7 @@ data_ov007_0221fde4 kind:data(any) addr:0x0221fde4
 gMapEditorOwnerByColor kind:data(any) addr:0x0221fdf0
 data_ov007_0221fdf8 kind:data(any) addr:0x0221fdf8
 data_ov007_0221fe20 kind:data(any) addr:0x0221fe20
-data_ov007_0221fe48 kind:data(any) addr:0x0221fe48
+gPaletteColorDriverClass kind:data(any) addr:0x0221fe48
 data_ov007_0221fe80 kind:data(any) addr:0x0221fe80
 data_ov007_0221ff07 kind:data(any) addr:0x0221ff07
 data_ov007_0221ff64 kind:data(any) addr:0x0221ff64 ambiguous

@@ -167,7 +167,7 @@ void OpenMapCodeEntryScreen(void *screen) {
  code = GetBattleSlotMapCode();
  if (code) FormatMapCodeString(gMapCodeString, (u32)code, (u32)(code >> 32));
  else MI_CpuFill8(gMapCodeString, 0, 13);
- func_01ffa920(screen, 0);
+ Set3DSpriteDrawCallback(screen, 0);
  sprites = M2C_FIELD(screen, void **, 0x3c);
  Hide3DSprite(M2C_FIELD(sprites, s32 *, 0));
  Hide3DSprite(M2C_FIELD(sprites, s32 *, 4));

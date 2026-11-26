@@ -151,7 +151,17 @@ s32 WFC_SubmitDownloadMode(M2C_UNK callback, s32 downloadMode) {
     return commandResult;
 }
 
-void func_02013e70(s32 arg0) { s32 OS_DisableInterrupts(); void OS_RestoreInterrupts(s32); extern s32 gMbWork; s32 state=OS_DisableInterrupts(); M2C_FIELD(gMbWork,s32 *,0x14e4)=arg0; OS_RestoreInterrupts(state); }
+/* Set the multiboot match's event callback in the match work area, with
+ * interrupts off so the link task cannot see a half-written pointer. */
+void Mb_SetMatchEventCallback(void (*callback)(s32, s32, void *)) {
+    s32 OS_DisableInterrupts();
+    void OS_RestoreInterrupts(s32);
+    extern s32 gMbWork;
+    s32 saved = OS_DisableInterrupts();
+
+    M2C_FIELD(gMbWork, s32 *, MB_EVENT_CALLBACK) = (s32)callback;
+    OS_RestoreInterrupts(saved);
+}
 
 #pragma opt_strength_reduction off
 /* Returns a copy of player `player`'s multiboot info block, or NULL when the
@@ -231,11 +241,14 @@ void Mb_SetPlayerState(s32 player, s32 state, M2C_UNK packet) {
     Mb_DispatchPlayerEvent(player, state, packet);
 }
 
-M2C_UNK Mb_DispatchPlayerEvent(s32 arg0,s32 arg1,M2C_UNK arg2) {
- extern s32 gMbWork;
- void (*callback)(s32,s32,M2C_UNK)=M2C_FIELD(gMbWork,void (**)(s32,s32,M2C_UNK),0x14e4);
- if(!callback) return;
- callback(arg0,arg1,arg2);
+/* Run the match's multiboot event callback (installed by
+ * Mb_SetMatchEventCallback) for `player` with one of the MB_EVENT_* events,
+ * passing `packet` along; nothing happens while no callback is installed. */
+M2C_UNK Mb_DispatchPlayerEvent(s32 player, s32 event, M2C_UNK packet) {
+    extern s32 gMbWork;
+    void (*callback)(s32, s32, M2C_UNK) = M2C_FIELD(gMbWork, void (**)(s32, s32, M2C_UNK), MB_EVENT_CALLBACK);
+    if (!callback) return;
+    callback(player, event, packet);
 }
 
 #pragma opt_scheduling off

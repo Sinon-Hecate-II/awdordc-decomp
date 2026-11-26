@@ -101,20 +101,28 @@ func_ov000_02175230(menu->statsWindow);M2C_FIELD(menu->panel,s32 *,0)=M2C_FIELD(
 gCur3DSpriteEngine=saved;
 }
 
+/* Flag both info panels as showing a unit when the cell under the map cursor
+ * holds one. */
 void Ov000_InfoWindow_SetUnitFlags(void *arg0) {
-    if (M2C_FIELD(arg0, u8 *, 0x13) == 0) {
+    Ov000InfoMenu *menu = (Ov000InfoMenu *)arg0;
+
+    if (menu->hasUnit == 0) {
         return;
     }
-    M2C_FIELD(M2C_FIELD(arg0, void **, 4), s8 *, 0x14) = 1;
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0), s8 *, 0xC) = 1;
+    M2C_FIELD(menu->panel, s8 *, OV000_INFO_PANEL_HAS_UNIT) = 1;
+    ((Ov000StatsWindow *)menu->statsWindow)->hasUnit = 1;
 }
 
+/* Clear both info panels' "showing a unit" flags when the cursor cell no longer
+ * holds a unit (the inverse of Ov000_InfoWindow_SetUnitFlags). */
 void Ov000_InfoWindow_ClearUnitFlags(void *arg0) {
-    if (M2C_FIELD(arg0, u8 *, 0x13) != 0) {
+    Ov000InfoMenu *menu = (Ov000InfoMenu *)arg0;
+
+    if (menu->hasUnit != 0) {
         return;
     }
-    M2C_FIELD(M2C_FIELD(arg0, void **, 4), s8 *, 0x14) = 0;
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0), s8 *, 0xC) = 0;
+    M2C_FIELD(menu->panel, s8 *, OV000_INFO_PANEL_HAS_UNIT) = 0;
+    ((Ov000StatsWindow *)menu->statsWindow)->hasUnit = 0;
 }
 
 /* Open the info window's panel for the cell under the map cursor: with no unit
@@ -210,15 +218,15 @@ void func_ov000_02174c00(void) {
     DeleteWallpaperSpritesOnAllEngines();
 }
 
+/* Whether the ov000 map info window currently exists: it is created when the
+ * map screen sets up and freed when the screen closes. */
 u8 Ov000_InfoWindow_Exists(void) {
-    extern Ov000MenuState *gOv000InfoWindow;
-    u8 var_r0;
+    extern Ov000InfoMenu *gOv000InfoWindow;
+
     if (gOv000InfoWindow != 0) {
-        var_r0 = 1;
-    } else {
-        var_r0 = 0;
+        return 1;
     }
-    return var_r0;
+    return 0;
 }
 
 /* Create the ov000 map info window: allocate its Ov000InfoMenu, initialize its
@@ -238,7 +246,8 @@ void Ov000_InfoWindow_Create(void) {
     CreateSpriteFromClass(&gOv000InfoWindowSpriteClass, OV000_INFO_SPRITE_LAYER);
 }
 
-void func_ov000_02174c64(void) {
+/* Per-frame tick of the ov000 map info window: update it while one is open. */
+void Ov000_InfoWindow_Tick(void) {
     void Ov000_InfoWindow_Update(Ov000MenuState *);
     extern Ov000MenuState *gOv000InfoWindow;
     if (Ov000_InfoWindow_Exists() == 0) return;
@@ -269,10 +278,12 @@ void Ov000_InfoWindow_Destroy(void) {
     RemoveMapViewSprites();
 }
 
-void func_ov000_02174ce8(void) {
-    extern Ov000MenuState *gOv000InfoWindow;
+/* Ask the open map info window to re-read the cell under the cursor on its next
+ * update; does nothing when no window is open. */
+void Ov000_InfoWindow_RequestCellRefresh(void) {
+    extern Ov000InfoMenu *gOv000InfoWindow;
     if (Ov000_InfoWindow_Exists() == 0) return;
-    M2C_FIELD(gOv000InfoWindow, u8 *, 0x11) = 1;
+    gOv000InfoWindow->trigger = 1;
 }
 
 /* Show a production preview in the map info window: ask the window to re-read
@@ -285,11 +296,14 @@ void Ov000_InfoWindow_ShowProductionUnit(s32 player, s32 unitKind) {
     Ov000_InfoWindow_ShowUnitStats(gOv000InfoWindow, player, unitKind);
 }
 
+/* Whether the X (cancel) key can act on the info window: only when the window
+ * is open and its panel is showing a unit. */
 s32 Ov000_InfoWindow_CanCancel(void) {
     extern Ov000MenuState *gOv000InfoWindow;
     s32 result;
+
     if (Ov000_InfoWindow_Exists() != 0) {
-        result = M2C_FIELD(gOv000InfoWindow, u8 *, 0x13);
+        result = gOv000InfoWindow->hasUnit;
     } else {
         result = 0;
     }

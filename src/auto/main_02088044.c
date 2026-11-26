@@ -179,7 +179,7 @@ M2C_UNK LoadResource(M2C_UNK index) {
     s32 FileRead(void *, void *, s32);
     void CloseFileRequest(void *);
     void CompleteFileLoad(void *);
-    M2C_UNK func_020e349c(void);
+    M2C_UNK ClearAndRestoreInterrupts(void);
 
     Unk0200FilePair range;
     FSFileHeader header;
@@ -209,18 +209,18 @@ M2C_UNK LoadResource(M2C_UNK index) {
     CloseFileRequest(request);
     CompleteFileLoad(&header);
     ((u8 *) &gResourceLoaded)[index] = 1;
-    func_020e349c();
+    ClearAndRestoreInterrupts();
 }
 
 /* Unload resource slot `index` when it is loaded: drop its archive file from the
  * module loader, clear the loaded flag if the drop succeeded, then commit. */
 void UnloadResource(u8 index) {
  s32 UnloadFileModule(M2C_UNK, s32);
- M2C_UNK func_020e349c();
+ M2C_UNK ClearAndRestoreInterrupts();
  extern M2C_UNK gResourceFileIds, gResourceLoaded;
  if (M2C_FIELD(&gResourceLoaded, u8 *, index) == 0) return;
  if (UnloadFileModule(0, ((s32 *)&gResourceFileIds)[index]) == 1) M2C_FIELD(&gResourceLoaded, u8 *, index) = 0;
- func_020e349c();
+ ClearAndRestoreInterrupts();
 }
 
 /* Unload every loaded resource that shares a memory group with slot `index`
@@ -630,7 +630,12 @@ void Set3DSpriteSlideBackLength(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s8 *, 0x4F) = arg1;
 }
 
-void Set3DSpriteSlideTargetAndStart(void *p,s16 a,s16 b,s16 c,s32 d){Set3DSpriteSlideTarget(p,a,b);Set3DSpriteSlideStart(p,c,d);}
+/* Set both ends of a 3D sprite's slide: the destination (targetX, targetY) and
+ * the origin (startX, startY) it slides from. */
+void Set3DSpriteSlideTargetAndStart(void *sprite, s16 targetX, s16 targetY, s16 startX, s32 startY) {
+    Set3DSpriteSlideTarget(sprite, targetX, targetY);
+    Set3DSpriteSlideStart(sprite, startX, startY);
+}
 
 /* Slide a 3D sprite in: set the slide's origin (startX, startY) and target
  * (targetX, targetY), give it a length in frames, then start it (SPRITE_SLIDE_SHOW). */

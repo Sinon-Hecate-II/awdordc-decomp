@@ -109,11 +109,14 @@ void UnloadRuleConfirmWindow(void) {
     PlaySoundEffect(0x10018);
 }
 
-void func_ov000_02172408(s32 arg0) {
-    M2C_UNK Sprite_ResumeAnimation(s32);
-    extern u16 *gKeyState;
-    if (!(*gKeyState & 2)) return;
-    Sprite_ResumeAnimation(arg0);
+/* Update callback that lets a sprite's animation continue as soon as the player
+ * presses B (the "press B to skip" handler). */
+void ResumeAnimationOnB(void *sprite) {
+    M2C_UNK Sprite_ResumeAnimation(void *);
+    extern KeyState *gKeyState;
+
+    if ((gKeyState->pressed & KEY_B) == 0) return;
+    Sprite_ResumeAnimation(sprite);
 }
 
 void func_ov000_0217242c(void) {

@@ -134,6 +134,7 @@ enum {
 #define MAP_UNIT_SLOT_CURSOR 0x52c0 /* s16 unit slot the free-slot search starts after, 0 = none used yet */
 #define MAP_CURRENT_OWNER   0x52a6 /* u16 the current player's owner bits (MAP_CURRENT_PLAYER << 5) */
 #define MAP_VIEW_HOLD       0x52aa /* s8 holds taken on the map view; map input is blocked while it is nonzero */
+#define MAP_UNIT_MOVE_ACTIVE 0x52ab /* u8 nonzero while a unit move is running; the battle loop waits on it (IsUnitMoveActive) */
 #define MAP_ACTIVE_PLAYER   0x52b6 /* u16 player whose units are being processed, saved and restored around influence builds */
 #define MAP_CURSOR_UNIT     0x52d0 /* BattleMapUnit * of the unit under the cursor */
 #define MAP_CURSOR_UNIT_ID  0x52d4 /* u8 id of the unit under the cursor */
@@ -521,9 +522,16 @@ typedef struct MapSettingsPlayer {
  * (gOccupationBackgroundNames) per property terrain kind in the table. */
 #define OCCUPATION_BACKGROUND_COUNT 9
 
+/* OBJ tile offset of one occupation-screen background graphic in the sprite
+ * atlas: OCCUPATION_BACKGROUND_TILE_BASE per background index, one background
+ * every OCCUPATION_BACKGROUND_TILE_STEP tiles (GetOccupationBackgroundTileOffset). */
+#define OCCUPATION_BACKGROUND_TILE_BASE 0x424
+#define OCCUPATION_BACKGROUND_TILE_STEP 0x14
+
 /* gMapConfig, the decoded per-battle configuration (a 16-byte record): a u16
  * flags word followed by the battle setting, value limits and per-player mask. */
 #define MAPCONFIG_FLAGS     0x00 /* u16 packed rule flags */
+#define MAPCONFIG_CONFIG_FLAGS 0x0038 /* bits 3..5 of MAPCONFIG_FLAGS: the setup's four-choice config flags, saved in MapSettings.rules bits 28..30 (MAP_SETTINGS_FLAGS) */
 #define MAPCONFIG_MODE      0x00 /* u16: the battle mode in the low three bits of MAPCONFIG_FLAGS */
 #define MAPCONFIG_MODE_MASK 0x0007 /* low three bits of MAPCONFIG_FLAGS */
 #define MAPCONFIG_MODE_TEAM 0    /* battle mode of the story/team battles, whose maps restrict what may be built */
@@ -531,8 +539,13 @@ typedef struct MapSettingsPlayer {
 #define MAPCONFIG_CO_POWER  0x1000 /* bit 12 of MAPCONFIG_FLAGS: CO powers are enabled */
 #define MAPCONFIG_ARMY_MODE 0x2000 /* bit 13 of MAPCONFIG_FLAGS: army mode — the map uses per-army movement costs and the CO-zone bonus tables */
 #define MAPCONFIG_LIMIT_FLAG 0x0040 /* bit 6 of MAPCONFIG_FLAGS: the second value limit applies (MAP_SETTINGS_VALUE_FLAG) */
+#define MAPCONFIG_VALUE_FLAG 0x0100 /* bit 8 of MAPCONFIG_FLAGS: the value flag is on, saved as MAP_SETTINGS_VALUE_FLAG */
+#define MAPCONFIG_SHOW_UNIT_INFO_PANEL 0x0400 /* bit 10 of MAPCONFIG_FLAGS: the map view draws the unit info panel; a map script sets and clears it (MapScriptShowUnitInfoPanel / MapScriptHideUnitInfoPanel) */
+#define MAPCONFIG_INFO_PANEL 0x0400 /* bit 10 of MAPCONFIG_FLAGS: the map-view unit info panel is shown; a map script may show and hide it (DrawUnitInfoPanel) */
+#define MAPCONFIG_INFO_PANEL 0x0400 /* bit 10 of MAPCONFIG_FLAGS: the cursor info panel is drawn (DrawUnitInfoPanel tests it; the map-script opcodes MapScriptShow/HideInfoPanel set and clear it) */
 #define MAPCONFIG_UNBUILDABLE_KINDS 0x0C /* u32 per unit kind: a set bit means the map forbids building that kind (a map script sets and clears the bits) */
 #define MAPCONFIG_INCOME    0x06 /* u16 funds each income-paying property adds to its owner's income per turn; the second value limit, MAP_SETTINGS_VALUE_HIGH */
+#define MAPCONFIG_VALUE     0x04 /* u16 map-specific value: set from the map data (MapData record byte 0xD) and overridable by a map script (MapScriptSetMapValue) */
 
 /* Packed per-map settings, saved with a slot and copied into the battle map and
  * gMapConfig by ApplyMapSettings. */
@@ -765,6 +778,11 @@ enum {
 #define MAP_TOUCH_TILE_Y    0x52cc
 #define MAP_TOUCH_NO_TILE   0xff   /* MAP_TOUCH_TILE_X/Y value while no tile is touched */
 
+/* Fields of the touch cursor sprite (class gTouchCursorClass), the ring the map
+ * draws around the tile a stylus press started on. */
+#define TOUCH_CURSOR_FRAME_TIMER 0x4C /* s16 frames the cursor's held state has run */
+#define TOUCH_CURSOR_FRAME_LIMIT 8    /* frames after which the state resumes the cursor's animation */
+
 /* The battle help/status panel state (gBattleHelpPanel): the page it shows, a flag
  * that the panel is up, and the cursor position saved around the panel's unit
  * cursor (SaveBattleCursorPosition saves it, RestoreBattleCursorPosition restores it). */
@@ -849,6 +867,7 @@ enum {
 #define MAP_SCRIPT_OP_END       7  /* terminator command: the block ends here */
 #define MAP_SCRIPT_OP_LABEL     29 /* label command: names a jump target in MAP_SCRIPT_OPERAND2 */
 #define MAP_SCRIPT_OP_MESSAGE   0x6B /* a message command: the script-skip command seeks to the next one, or to the end */
+#define MAP_SCRIPT_PLAYER_CURRENT 5 /* player operand meaning "the player whose turn it is" (MapScriptResolvePlayer) */
 #define MAP_SCRIPT_PARAM        0x04 /* opcode-specific word of the current command (a callback or a sprite class) */
 #define MAP_SCRIPT_STATE_BLOCK  0x00 /* the script block being run; MapScriptFindLabel scans its commands */
 #define MAP_SCRIPT_STATE_IP     0x04
@@ -1106,6 +1125,9 @@ enum {
 /* Z-order carried by the battle-end screen's sprites (its banner and two
  * decorations); the screen counts as up once a sprite at this Z exists. */
 #define BATTLE_END_SPRITE_Z 0xFF03
+/* Field of the frame-callback task that removes the battle-end sprites: the Z of
+ * the sprites it deletes (main_020D4430.c). */
+#define BATTLE_END_TASK_Z  0x5C /* s32 */
 
 /* The battle-preview panel sprite (gBattlePreviewPanelDef, the class function
  * func_0209eaf4 creates) and the preview sprite built under it: the feature it
@@ -1228,6 +1250,11 @@ typedef struct MapRecordStamp {
 #define MAP_DATA_TILESET       0x06 /* u8 the map's tileset index (MapData_GetTileset) */
 #define MAP_DATA_PLAYER_COUNT  0x09 /* u8 the number of armies the map is set up for */
 #define MAP_DATA_CATEGORY      0x0A /* u8 the map-data category (MapData_GetCategory) */
+#define MAP_DATA_MAP_VALUE     0x0D /* u8 the map-specific value, in MAP_DATA_MAP_VALUE_UNITs (scaled into MAPCONFIG_VALUE) */
+#define MAP_DATA_MAP_VALUE_UNIT 0xE10 /* one unit of MAP_DATA_MAP_VALUE when stored in MAPCONFIG_VALUE */
+#define MAP_DATA_VALUE_LIMIT_LOW  0x0E /* u8 low bound of the map's value, in MAP_DATA_VALUE_LIMIT_UNITs (MapData_GetValueLimitLow) */
+#define MAP_DATA_VALUE_LIMIT_HIGH 0x0F /* u8 high bound of the map's value (MapData_GetValueLimitHigh) */
+#define MAP_DATA_VALUE_LIMIT_UNIT 100  /* the value bounds are stored in units of 100 */
 #define MAP_DATA_FOLLOWUP_MAPS 0x14 /* u16[4] map ids a cleared battle on this map unlocks, per player count slot */
 #define MAP_DATA_EVENT_SCRIPT  0x44 /* void *the map's event-script block (GetMapEventScript) */
 
@@ -1236,7 +1263,7 @@ typedef struct MapRecordStamp {
  * end with opcode 0x22.  The EvalScriptConditions wrappers in ov000_02169F94 run
  * one list per event. */
 #define MAP_EVENT_TURN_START    0x08 /* run at the start of a player's turn (MAP_STATE_TURN_START_SETUP) */
-#define MAP_EVENT_TURN_INTRO    0x0C /* run once the player's turn intro (army banner) has played (func_020d42d0, MAP_STATE_TURN_INTRO3); what the event stands for is not confirmed */
+#define MAP_EVENT_TURN_INTRO    0x0C /* run once the player's turn intro (army banner) has played (TurnIntro3Step, MAP_STATE_TURN_INTRO3); what the event stands for is not confirmed */
 #define MAP_EVENT_UNIT_SELECTED 0x10 /* run with the unit a player just selected */
 #define MAP_EVENT_BATTLE        0x14 /* run when a battle starts, with its attacker and defender (the MAP_BATTLE_* records) */
 #define MAP_EVENT_CURSOR_UNIT   0x18 /* run with the unit under the battle cursor once its path is refreshed */

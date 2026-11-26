@@ -226,10 +226,12 @@ s64 GetElapsedSeconds(s32 syncStamp, s32 *date, s32 *time) {
     return MakeTime(date, time) - sinceSync;
 }
 
-void func_020c488c(void *arg0) {
+/* Create the save screen's child sprites: the profile save sprite and the battle
+ * save sprite, each bound to its save block on the screen object. */
+void CreateSaveSprites(void *screen) {
     M2C_UNK CreateBattleSaveSprite(s32, void *);
-    CreateProfileSaveSprite(M2C_FIELD(arg0, s32 *, 0x34), arg0);
-    CreateBattleSaveSprite(M2C_FIELD(arg0, s32 *, 0x38), arg0);
+    CreateProfileSaveSprite(M2C_FIELD(screen, s32 *, SAVE_SPRITE_BLOCK), screen);
+    CreateBattleSaveSprite(M2C_FIELD(screen, s32 *, SAVE_SPRITE_BATTLE_BLOCK), screen);
 }
 
 /* Save/load screen step: if the profile save's id block fails its CRC (no save
@@ -244,11 +246,13 @@ void EnsureSaveDataValid(void *sprite) {
     GotoSpriteAnimationLabel(sprite, 1);
 }
 
-void func_020c48ec(void *arg0) {
+/* Create the save/load screen's load sprites: the profile-load sprite and the
+ * battle-load sprite, each parented to `screen`. */
+void CreateLoadSprites(void *screen) {
     M2C_UNK CreateProfileLoadSprite(s32, void *);
     M2C_UNK CreateBattleLoadSprite(s32, void *);
-    CreateProfileLoadSprite(M2C_FIELD(arg0, s32 *, 0x34), arg0);
-    CreateBattleLoadSprite(M2C_FIELD(arg0, s32 *, 0x38), arg0);
+    CreateProfileLoadSprite(M2C_FIELD(screen, s32 *, SAVE_SPRITE_BLOCK), screen);
+    CreateBattleLoadSprite(M2C_FIELD(screen, s32 *, SAVE_SPRITE_BATTLE_BLOCK), screen);
 }
 
 /* Create the save/load screen object: give it its vtable and point it at the
@@ -274,7 +278,7 @@ void CreateSaveLoadScreen(void) {
  * 0x5957324A ("YW2J"). */
 s32 InitPlayerProfile(s32 profile) {
 void func_020323a4(void *,u32);
-void func_0203287c(void *);
+void FormatProfilePlayerIds(void *);
 SaveDate defaultDate;
 SaveTime timeA;
 SaveDate dateA;
@@ -307,7 +311,7 @@ M2C_FIELD(profile,s32 *,0x84)=0;
 M2C_FIELD(profile,s32 *,0x88)=timeB.v[1];
 M2C_FIELD(profile,s32 *,0x8c)=timeB.v[2];
  func_020323a4((void *)(profile+PROFILE_ID_BLOCK),PROFILE_GAME_ID_CODE);
-func_0203287c((void *)(profile+PROFILE_ID_BLOCK));
+FormatProfilePlayerIds((void *)(profile+PROFILE_ID_BLOCK));
 return 1;
 }
 
@@ -320,7 +324,7 @@ s32 ResetProfileIdBlock(void *profileBlock) {
     void func_020323a4(void *, u32);
     s32 GetBattleSlotSummary(s32);
     void ClearPlayerRecordJoined(void);
-    void func_0203287c(void *);
+    void FormatProfilePlayerIds(void *);
     s32 i;
 
     if (profileBlock == 0) profileBlock = GetProfileSaveBlock();
@@ -330,7 +334,7 @@ s32 ResetProfileIdBlock(void *profileBlock) {
         if (GetBattleSlotSummary(i) != 0) ClearPlayerRecordJoined();
         i++;
     } while (i < SAVE_SLOT_COUNT);
-    func_0203287c((u8 *)profileBlock + PROFILE_ID_BLOCK);
+    FormatProfilePlayerIds((u8 *)profileBlock + PROFILE_ID_BLOCK);
     return 1;
 }
 

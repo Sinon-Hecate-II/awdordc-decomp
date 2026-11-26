@@ -268,28 +268,32 @@ s32 OSi_DoLockByWord(s32 lockId, s32 lockAddress, M2C_UNK onLock, s32 maskFiq) {
     return result;
 }
 
-void func_020054a0(M2C_UNK arg0) {
+/* Release the shared OS lock word for `lockId` with FIQ masked; OSi_EnableFIQ
+ * re-enables FIQ once the word is free.  Core of OSi_UnlockWord. */
+void OSi_UnlockWordCore(M2C_UNK lockId) {
     M2C_UNK OSi_DoUnlockByWord(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_02005504(void);
-    OSi_DoUnlockByWord(arg0, 0x027FFFE8, (M2C_UNK)func_02005504, 1);
+    void OSi_EnableFIQ(void);
+    OSi_DoUnlockByWord(lockId, OS_LOCK_WORD_ADDR, (M2C_UNK)OSi_EnableFIQ, 1);
 }
 
 void OSi_UnlockWord(M2C_UNK arg0) {
-    void func_020054a0(M2C_UNK);
-    func_020054a0(arg0);
+    void OSi_UnlockWordCore(M2C_UNK);
+    OSi_UnlockWordCore(arg0);
 }
 
-void OSi_TryLockWord(M2C_UNK arg0) {
+/* Try to take the shared OS lock word for `lockId` without blocking; FIQ stays
+ * masked through OSi_DisableFIQ until the word is released. */
+void OSi_TryLockWord(M2C_UNK lockId) {
     M2C_UNK OSi_DoLockByWord(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_020054ec(void);
-    OSi_DoLockByWord(arg0, 0x027FFFE8, (M2C_UNK)func_020054ec, 1);
+    void OSi_DisableFIQ(void);
+    OSi_DoLockByWord(lockId, OS_LOCK_WORD_ADDR, (M2C_UNK)OSi_DisableFIQ, 1);
 }
 
-void func_020054ec(void) {
+void OSi_DisableFIQ(void) {
     *(u16 *)0x04000204 &= ~0x80;
 }
 
-void func_02005504(void) {
+void OSi_EnableFIQ(void) {
     *(u16 *)0x04000204 |= 0x80;
 }
 
@@ -326,29 +330,32 @@ result+=n;*p=*p & ~(0x80000000U>>n);return result;
 }
 void OS_ReleaseLockID(s32 a){u32 *p=(u32 *)0x027fffb0;u32 mask;if(a>=96)p++;if(a>=96)a-=96;else a-=64;mask=0x80000000U>>a;*p|=mask;}
 #pragma optimization_level reset
-void StringFormatAlt(s32 arg0, s32 arg1, ...) {
-    void StringFormatAltArgs();
+/* Format the printf-style `format` and its arguments into `buffer`, writing as
+ * much as the result needs: the va_list formatter gets INT_MAX as its capacity,
+ * so this is the unbounded counterpart of StringFormatN. */
+void StringFormatUnbounded(char *buffer, char *format, ...) {
+    void StringFormatUnboundedVa();
     char *args;
-    args = (char *)(((u32)&arg1 & ~3U) + 4);
-    StringFormatAltArgs(arg0, arg1, args);
+    args = (char *)(((u32)&format & ~3U) + 4);
+    StringFormatUnboundedVa(buffer, format, args);
 }
 
-void StringFormatAltArgs(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    void func_020056a4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_020056a4(arg0, (M2C_UNK)0x7fffffff, arg1, arg2);
+void StringFormatUnboundedVa(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+    void VStringFormat(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    VStringFormat(arg0, (M2C_UNK)0x7fffffff, arg1, arg2);
 }
 
 /* Format the printf-style `format` and its arguments into `buffer`, which holds
  * at most `capacity` bytes including the terminator (the bounded narrow string
  * formatter does the work). */
 void StringFormatN(char *buffer, s32 capacity, s32 format, ...) {
-    void func_020056a4();
+    void VStringFormat();
     char *args;
     args = (char *)(((u32)&format & ~3U) + 4);
-    func_020056a4(buffer, capacity, format, args);
+    VStringFormat(buffer, capacity, format, args);
 }
 
-void func_020056a4() {
+void VStringFormat() {
     M2C_UNK func_020195e8();
     func_020195e8();
 }
@@ -522,7 +529,7 @@ M2C_FIELD(&data_0212dc80,s32 *,400)=0;
 M2C_FIELD(&data_0212dc80,u16 *,36)=0;
 M2C_FIELD(&data_0212dc80,u16 *,38)=0;
 *(void **)0x027fffa0=&data_0212dca4;
-func_020060f8(0);
+SetThreadSwitchCallback(0);
 func_02005ac0(&data_0212dcb4,func_02006120,0,(u8 *)&data_0212defc,200,31);
 M2C_FIELD(&data_0212dc80,s32 *,164)=32;
 M2C_FIELD(&data_0212dc80,s32 *,152)=1;
@@ -537,7 +544,7 @@ s32 func_02005ab0(void) {
 void TaskCreate(void *obj,void *callback,s32 owner,u8 *buf,u32 bufLen,s32 priority) {
 s32 OS_DisableInterrupts(void); s32 OS_RestoreInterrupts(s32);
 void InitThreadContext(); void func_02006198();
-void CpuFill(s32,void *,s32); void func_02005bbc(void);
+void CpuFill(s32,void *,s32); void TaskExitCurrent(void);
 s32 state; s32 id; u8 *base;
 state=OS_DisableInterrupts();
 id=func_020056b0();
@@ -554,7 +561,7 @@ M2C_FIELD(obj,s32 *,0x98)=0;
 M2C_FIELD(obj,s32 *,0x9c)=M2C_FIELD(obj,s32 *,0xa0)=0;
 InitThreadContext(obj,callback,buf-4);
 M2C_FIELD(obj,s32 *,4)=owner;
-M2C_FIELD(obj,void (**)(void),0x3c)=func_02005bbc;
+M2C_FIELD(obj,void (**)(void),0x3c)=TaskExitCurrent;
 CpuFill(0,base+4,bufLen-8);
 M2C_FIELD(obj,s32 *,0x8c)=M2C_FIELD(obj,s32 *,0x88)=M2C_FIELD(obj,s32 *,0x84)=0;
 func_02006198(obj,0);
@@ -566,11 +573,13 @@ M2C_FIELD(obj,s32 *,0xb0)=0;
 OS_RestoreInterrupts(state);
 }
 
-void func_02005bbc(void) {
+/* End the running task with exit status 0, with interrupts masked. */
+void TaskExitCurrent(void) {
     M2C_UNK TaskExit(s32, M2C_UNK);
     extern M2C_UNK gThreadManager;
+
     OS_DisableInterrupts();
-    TaskExit(M2C_FIELD(&gThreadManager, s32 *, 0x28), 0);
+    TaskExit(M2C_FIELD(&gThreadManager, s32 *, THREAD_MANAGER_CURRENT), 0);
 }
 
 /* End task `thread` with exit `status`: once the scheduler is up, point the
@@ -719,11 +728,13 @@ void TaskWake(Thread *task) {
     OS_RestoreInterrupts(irqState);
 }
 
+/* Return the first thread on the ready list whose state is ready, or NULL when
+ * none of them is. */
 void *FindNextReadyThread(void) {
-extern M2C_UNK gThreadManager;
-void *p = M2C_FIELD(&gThreadManager, void **, 0x2c);
-while (p && M2C_FIELD(p, s32 *, 0x64) != 1) p = M2C_FIELD(p, void **, 0x68);
-return p;
+    extern M2C_UNK gThreadManager;
+    Thread *thread = M2C_FIELD(&gThreadManager, Thread **, THREAD_MANAGER_READY);
+    while (thread && thread->state != THREAD_STATE_READY) thread = thread->next;
+    return thread;
 }
 
 void OS_Reschedule(void) {

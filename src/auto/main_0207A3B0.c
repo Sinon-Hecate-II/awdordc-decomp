@@ -105,15 +105,16 @@ void SpawnMapOrderEffectSprite(void *parent) {
     M2C_FIELD(CreateSpriteFromClass(script, parent), s16 *, MAPORDER_EFFECT_SPRITE_KIND) = (s16) M2C_FIELD(parent, s16 *, MAPORDER_EFFECT_SPRITE_KIND);
 }
 
-void SetMapCursorVisible(s16 arg0) {
-    extern M2C_UNK data_02100bb0;
-    M2C_FIELD(CreateSpriteFromClass(&data_02100bb0, 7), s16 *, 0x6C) = arg0;
+/* Show (nonzero) or hide the map cursor sprite. */
+void SetMapCursorVisible(s16 visible) {
+    extern M2C_UNK gMapCursorClass;
+    M2C_FIELD(CreateSpriteFromClass(&gMapCursorClass, 7), s16 *, 0x6C) = visible;
 }
 
 void func_0207a768(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02100bb0;
-    DeleteSpriteObjectsOfClass(&data_02100bb0);
+    extern M2C_UNK gMapCursorClass;
+    DeleteSpriteObjectsOfClass(&gMapCursorClass);
 }
 
 /* Run the map-view controller's per-frame callback (its +0x2C slot) with the

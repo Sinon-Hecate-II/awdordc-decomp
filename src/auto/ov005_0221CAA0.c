@@ -122,7 +122,7 @@ if(func_020cfb94()>0){y=79;do{
 func_02087d18(M2C_FIELD(arg0,void**,0x34),(s16)y,170,16,16,(u16)(i+3),12);
 i++;y+=20;
 }while(i<func_020cfb94());}
-func_02087f00(M2C_FIELD(arg0,void**,0x34),3);
+SpriteCellListSelectTileImmediate(M2C_FIELD(arg0,void**,0x34),3);
 M2C_FIELD(arg0,void**,0x38)=func_020896f0(arg0);
 SetFrameBorderSpritePattern(M2C_FIELD(arg0,void**,0x38),4096,1,func_020ae22c(9));
 sprite=M2C_FIELD(arg0,void**,0x38);p=*(void**)M2C_FIELD(arg0,void**,0x34);

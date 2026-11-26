@@ -1,6 +1,7 @@
 /* 25 functions from 0x0218851C to 0x021893E4 (ov001), found by ds-decomp. */
 #include "common.h"
 #include "ov001_wh.h"
+#include "wfc.h"
 extern M2C_UNK gWhWork;
 extern M2C_UNK data_ov001_0219169c;
 extern M2C_UNK data_ov001_0219166c, data_ov001_02191684, data_ov001_021916cc;
@@ -27,9 +28,11 @@ void HandleChildScanResult(void *report) {
  SetWhStatus(WH_STATUS_PARENT_START);
 }
 
-void RequestChildChannelScan(M2C_UNK arg0, M2C_UNK arg1) {
+/* Queue the channel-occupancy measurement of one child channel; the report goes
+ * to `callback` (HandleChildScanResult). */
+void RequestChildChannelScan(M2C_UNK callback, M2C_UNK channel) {
     M2C_UNK WFC_MeasureChannel(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    WFC_MeasureChannel(arg0, 3, 0x11, arg1, 0x1E);
+    WFC_MeasureChannel(callback, WFC_SCAN_CCA_MODE, WFC_SCAN_ED_THRESHOLD, channel, WFC_SCAN_MEASURE_TIME);
 }
 
 /* Pick the child of the wireless connection to connect to: allowed only once

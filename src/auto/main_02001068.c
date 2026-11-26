@@ -320,7 +320,7 @@ void MTX_Mult4x4(void *arg0, void *arg1, void *arg2) {
         *(Matrix016 *)arg2 = tmp;
 }
 
-u64 func_02001fd4(void);
+u64 Div_GetResult64(void);
 #pragma push
 #pragma opt_strength_reduction off
 void GX_BuildOrthoMatrix(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 *p) {
@@ -345,7 +345,7 @@ void GX_BuildOrthoMatrix(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 *p
     p[11] = 0;
     p[15] = g;
 
-    t1 = (s64)func_02001fd4();
+    t1 = (s64)Div_GetResult64();
 
     *(volatile u64 *)0x04000290 = (u64)0x1000 << 32;
     *(volatile u64 *)0x04000298 = (u32)(a-b);
@@ -357,7 +357,7 @@ void GX_BuildOrthoMatrix(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 *p
     }
     p[0] = (s32)(((q1 << 13) + 0x80000000ULL) >> 32);
 
-    t2 = (s64)func_02001fd4();
+    t2 = (s64)Div_GetResult64();
 
     *(volatile u64 *)0x04000290 = (u64)0x1000 << 32;
     *(volatile u64 *)0x04000298 = (u32)(e-f);
@@ -369,7 +369,7 @@ void GX_BuildOrthoMatrix(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 *p
     }
     p[5] = (s32)(((q2 << 13) + 0x80000000ULL) >> 32);
 
-    t3 = (s64)func_02001fd4();
+    t3 = (s64)Div_GetResult64();
 
     if (g != 0x1000) {
         product=t3*g;
@@ -397,9 +397,13 @@ void func_02001fc4(void) {
     Div_GetResultRounded();
 }
 
-u64 func_02001fd4(void) {
-while (*(volatile u16 *)0x04000280 & 0x8000) {}
-return *(u64 *)0x040002a0;
+/* Wait for the ARM9 hardware divider to finish, then return both 32-bit result
+ * registers in one 64-bit read: the quotient in one word and the remainder in
+ * the other. (Read as a plain 64-bit load, which the hardware latches together.) */
+u64 Div_GetResult64(void) {
+    while (REG_DIVCNT & DIVCNT_BUSY) {
+    }
+    return *(u64 *)0x040002A0;
 }
 
 /* Wait for the hardware divider to finish and return its quotient rounded to a

@@ -55,15 +55,17 @@ void SetScreenTransitionDirectory(void) {
     SetFileDirectory(&data_02127d78);
 }
 
+/* Which half of the screen the running split transition slides (0 or 1). */
 s32 GetScreenTransitionSide(void) {
-extern s16 *gScreenTransition;
-return gScreenTransition[2] != 0;
+    extern s16 *gScreenTransition;
+    return ((ScreenTransition *)gScreenTransition)->side != 0;
 }
 
-s32 GetScreenTransitionCgTarget(void) {
+/* Return the selected screen engine's destination for the transition character graphics. */
+s32 GetScreenTransitionCharacterTarget(void) {
     extern s32 g3DSpriteEngineSub;
     s32 side = GetScreenTransitionSide();
-    return M2C_FIELD(g3DSpriteEngineSub + side * 4, s32 *, 0xC);
+    return M2C_FIELD(g3DSpriteEngineSub + side * 4, s32 *, DS3D_ENGINE_LAYER_VRAM);
 }
 
 s32 GetScreenTransitionScTarget(void) {
@@ -82,7 +84,8 @@ extern s16 *gScreenTransition;
 *gScreenTransition &= ~1;
 }
 
+/* TRUE once the running screen transition has finished (or been applied at once). */
 u8 IsScreenTransitionDone(void) {
     extern s16 *gScreenTransition;
-    return (gScreenTransition[0] & 1) != 0;
+    return (((ScreenTransition *)gScreenTransition)->flags & TRANSITION_DONE) != 0;
 }

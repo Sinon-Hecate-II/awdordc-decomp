@@ -469,7 +469,7 @@ void CloseTransport(void) {
 void WaitForTlsCloseNotify(void) {
     extern M2C_UNK gSocketManager, gNetStack;
     void TlsResetChannel(void *);
-    M2C_UNK func_0201a238();
+    M2C_UNK NetStackWaitIdle();
     u64 GetSystemTick(void);
     void *socketManagerEntry = M2C_FIELD(&gSocketManager, void **, 4);
     void *rawConnection = M2C_FIELD(socketManagerEntry, void **, NETSTACK_SOCKET_RAW_CONNECTION);
@@ -483,7 +483,7 @@ void WaitForTlsCloseNotify(void) {
     startTick = (u32)(GetSystemTick() >> 16);
     goto check;
 loop:
-    func_0201a238();
+    NetStackWaitIdle();
 check:
     if (!M2C_FIELD(&gNetStack, s32 (**)(void), NETSTACK_POLL)() || !M2C_FIELD(rawConnection, u8 *, TCP_SOCK_STATE)) goto done;
     if ((s32)((u32)(GetSystemTick() >> 16) - startTick) < NETSTACK_TLS_CLOSE_WAIT) goto loop;
@@ -691,7 +691,7 @@ void TcpSendBuffers(M2C_UNK src1, s32 len1, M2C_UNK src2, s32 len2, s32 sock, s3
  * data or 0x9F ticks pass without progress; returns the number of bytes sent. */
 s32 TcpSendData(s32 src1, s32 len1, s32 src2, s32 len2, void *sock) {
     u64 GetSystemTick();
-    M2C_UNK func_0201a238();
+    M2C_UNK NetStackWaitIdle();
     extern M2C_UNK gNetStack;
     s32 total;
     u32 lastSend;
@@ -722,7 +722,7 @@ body:
     TcpSendBuffers(ptr1, left1, ptr2, left2, sock, waited);
     pollStart = (u32)(GetSystemTick() >> 16);
 loop_2:
-    func_0201a238();
+    NetStackWaitIdle();
     if ((M2C_FIELD(&gNetStack, s32 (**)(), NETSTACK_POLL)() != 0) && (M2C_FIELD(sock, u8 *, TCP_SOCK_STATE) == 4) && (M2C_FIELD(sock, s32 *, TCP_SOCK_SENDPOS) != M2C_FIELD(sock, s32 *, TCP_SOCK_SENTPOS))) {
         now1 = (u32)(GetSystemTick() >> 16);
         if ((s32)(now1 - pollStart) < 0xF) {
@@ -745,7 +745,7 @@ loop_2:
             waitStart = (s32)(u32)(GetSystemTick() >> 16);
             goto check_22;
 loop_22:
-            func_0201a238();
+            NetStackWaitIdle();
             if (M2C_FIELD(sock, u16 *, TCP_SOCK_ACKFLAG) != 0) goto done_22;
 check_22:
             if (M2C_FIELD(&gNetStack, s32 (**)(), NETSTACK_POLL)() != 0) {

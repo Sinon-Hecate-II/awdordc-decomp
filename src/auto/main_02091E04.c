@@ -15,11 +15,13 @@ s32 Get3DSpriteTargetMode(void) {
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x49);
 }
 
+/* Screen the 3D-sprite system draws on; when it targets both engines this
+ * reports main (0), which the draw loop handles as its first pass. */
 u8 Get3DSpriteTarget(void) {
-    if (Get3DSpriteTargetMode() == 2) {
+    if (Get3DSpriteTargetMode() == DS3D_TARGET_BOTH) {
         return 0U;
     }
-    return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x49);
+    return M2C_FIELD(Get3DSpriteManager(), u8 *, DS3D_MANAGER_TARGET_MODE);
 }
 
 void GetScriptTransitionTarget(void) {
@@ -27,12 +29,14 @@ void GetScriptTransitionTarget(void) {
     Get3DSpriteTargetMode();
 }
 
+/* Index of the message panel the menu cursor is on: panel 2 while both screens
+ * show a panel, otherwise the manager's stored cursor. */
 s8 GetMenuCursor(void) {
     s32 Get3DSpriteCount();
     if (Get3DSpriteCount() == 2) {
         return 2;
     }
-    return M2C_FIELD(Get3DSpriteManager(), s8 *, 0x4D);
+    return M2C_FIELD(Get3DSpriteManager(), s8 *, DS3D_MANAGER_MENU_CURSOR);
 }
 
 /* First cell x where the message text line of scene panel `panelIndex` starts: a
@@ -59,12 +63,14 @@ s32 GetScenePanelTextLineX(s32 panelIndex) {
     return 0;
 }
 
-u16 MapScriptResolvePlayer(u16 arg0) {
+/* Resolve a map-script player operand: MAP_SCRIPT_PLAYER_CURRENT stands for the
+ * player whose turn it is, every other operand is already a player id. */
+u16 MapScriptResolvePlayer(u16 playerId) {
     extern void **gCurrentMap;
-    if (arg0 != 5) {
-        return arg0;
+    if (playerId != MAP_SCRIPT_PLAYER_CURRENT) {
+        return playerId;
     }
-    return M2C_FIELD(*gCurrentMap, u16 *, 0x52A4);
+    return M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER);
 }
 
 s32 func_02091ef0(void) {
@@ -175,11 +181,14 @@ s16 MapScriptCallFunction(void *state) {
     return running;
 }
 
-void WaitForDialogSpriteGone(void *arg0) {
+/* Map-script wait callback: once the dialog sprite (gDialogSpriteClass) has gone,
+ * clear the command's wait callback (MAP_SCRIPT_STATE_WAIT) to let the script run
+ * on; until then the script stays on the command. */
+void WaitForDialogSpriteGone(void *state) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gDialogSpriteClass;
     if (FindObjectByClass(&gDialogSpriteClass) == 0) {
-        M2C_FIELD(arg0, s32 *, 8) = 0;
+        M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_WAIT) = 0;
     }
 }
 
@@ -208,9 +217,12 @@ s32 MapScriptWaitForCallback(void *script) {
     return 1;
 }
 
-s32 func_02092160(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 8) = (s32) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 4);
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+/* Map-script opcode (5): install the command's MAP_SCRIPT_PARAM as the
+ * sequence's wait callback (MAP_SCRIPT_STATE_WAIT), advance to the next command,
+ * and stop the script this frame until the callback clears the wait. */
+s32 MapScriptSetWaitCallback(void *state) {
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_WAIT) = (s32) M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_PARAM);
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 0;
 }
 
@@ -236,30 +248,36 @@ s32 func_020921c4(void) {
     return 0;
 }
 
-s32 MapScriptSetVariableByte(void *arg0) {
-    void *temp_r1;
+/* Map-script opcode: store the command's wide operand (MAP_SCRIPT_OPERAND2) as a
+ * byte at the address in MAP_SCRIPT_PARAM, then advance to the next command. */
+s32 MapScriptSetVariableByte(void *script) {
+    void *command;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 4);
-    *M2C_FIELD(temp_r1, s8 **, 4) = (s8) M2C_FIELD(temp_r1, s32 *, 0xC);
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    *M2C_FIELD(command, s8 **, MAP_SCRIPT_PARAM) = (s8) M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 MapScriptSetVariableHalfword(void *arg0) {
-    void *temp_r1;
+/* Map-script opcode: store the command's wide operand (MAP_SCRIPT_OPERAND2) as a
+ * halfword at the address in MAP_SCRIPT_PARAM, then advance to the next command. */
+s32 MapScriptSetVariableHalfword(void *script) {
+    void *command;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 4);
-    *M2C_FIELD(temp_r1, s16 **, 4) = (s16) M2C_FIELD(temp_r1, s32 *, 0xC);
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    *M2C_FIELD(command, s16 **, MAP_SCRIPT_PARAM) = (s16) M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 MapScriptSetVariableWord(void *arg0) {
-    void *temp_r1;
+/* Map-script opcode: store the command's wide operand (MAP_SCRIPT_OPERAND2) as a
+ * word at the address in MAP_SCRIPT_PARAM, then advance to the next command. */
+s32 MapScriptSetVariableWord(void *script) {
+    void *command;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 4);
-    *M2C_FIELD(temp_r1, s32 **, 4) = M2C_FIELD(temp_r1, s32 *, 0xC);
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    *M2C_FIELD(command, s32 **, MAP_SCRIPT_PARAM) = M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -469,20 +487,26 @@ s32 MapScriptSetUiMode(void *state) {
     return 1;
 }
 
-s32 func_020925bc(void *arg0) {
+/* Map-script opcode: copy the command's wide operand into the map
+ * configuration's map-specific value word (+4), then advance to the next
+ * command and keep running. */
+s32 MapScriptSetMapValue(void *state) {
     extern M2C_UNK gMapConfig;
-    void *temp_r1;
+    void *command;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 4);
-    M2C_FIELD(&gMapConfig, s16 *, 4) = (s16) M2C_FIELD(temp_r1, s32 *, 0xC);
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP);
+    M2C_FIELD(&gMapConfig, s16 *, MAPCONFIG_VALUE) = (s16) M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2);
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *)(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_020925e4(void *arg0) {
+/* Map-script opcode: clear the map-specific value (MAPCONFIG_VALUE) to 0, then
+ * advance the sequence to the next command. */
+s32 MapScriptClearMapValue(void *state) {
     extern M2C_UNK gMapConfig;
-    M2C_FIELD(&gMapConfig, s16 *, 4) = 0;
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+
+    M2C_FIELD(&gMapConfig, s16 *, MAPCONFIG_VALUE) = 0;
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *)(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -498,17 +522,21 @@ s32 MapScriptCreateOwnedUnit(void *state) {
     return 0;
 }
 
-s32 func_02092654(void *arg0) {
-    M2C_UNK EnableTouchInput();
+/* Map-script command: enable touch input again, then advance to the next command. */
+s32 MapScriptEnableTouchInput(void *state) {
+    void EnableTouchInput(void);
     EnableTouchInput();
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) = (s32) (M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_02092674(void *arg0) {
+/* Map-script opcode (20): disable touch input, advance to the next command, and
+ * go straight on to it in the same frame. */
+s32 MapScriptDisableTouchInput(void *state) {
     M2C_UNK DisableTouchInput();
+
     DisableTouchInput();
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) = (s32) (M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -648,16 +676,24 @@ else SetUiMode(2,row);
 PlaySoundEffect(0x121);M2C_FIELD(ctx,s32 *,MAP_SCRIPT_STATE_IP)+=MAP_SCRIPT_COMMAND_SIZE;return 0;
 }
 
-s32 func_02092a54(void *arg0) {
+/* Map-script opcode: set MAPCONFIG_SHOW_UNIT_INFO_PANEL so the map view draws
+ * the unit info panel, then run the next command (the partner of
+ * MapScriptHideUnitInfoPanel, which clears the bit). */
+s32 MapScriptShowUnitInfoPanel(void *state) {
 extern M2C_UNK gMapConfig;
-M2C_FIELD(&gMapConfig,s16 *,0)=(s16)(M2C_FIELD(&gMapConfig,u16 *,0)|0x400);
-M2C_FIELD(arg0,s32 *,4)+=16;return 1;
+
+M2C_FIELD(&gMapConfig,s16 *,MAPCONFIG_FLAGS)=(s16)(M2C_FIELD(&gMapConfig,u16 *,MAPCONFIG_FLAGS)|MAPCONFIG_SHOW_UNIT_INFO_PANEL);
+M2C_FIELD(state,s32 *,MAP_SCRIPT_STATE_IP)+=MAP_SCRIPT_COMMAND_SIZE;return 1;
 }
 
-s32 func_02092a7c(void *arg0) {
-extern M2C_UNK gMapConfig;
-M2C_FIELD(&gMapConfig,s16 *,0)=(s16)(M2C_FIELD(&gMapConfig,u16 *,0)&~0x400);
-M2C_FIELD(arg0,s32 *,4)+=16;return 1;
+/* Map-script opcode: clear MAPCONFIG_SHOW_UNIT_INFO_PANEL so the map view stops
+ * drawing the unit info panel, then run the next command. */
+s32 MapScriptHideUnitInfoPanel(void *state) {
+    extern M2C_UNK gMapConfig;
+
+    M2C_FIELD(&gMapConfig, s16 *, MAPCONFIG_FLAGS) = (s16) (M2C_FIELD(&gMapConfig, u16 *, MAPCONFIG_FLAGS) & ~MAPCONFIG_SHOW_UNIT_INFO_PANEL);
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 1;
 }
 
 /* Map-script opcode: hold the script until the map reaches the player's turn

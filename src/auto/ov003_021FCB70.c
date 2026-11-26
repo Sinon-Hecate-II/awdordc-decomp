@@ -7,7 +7,7 @@
  * the menu kind, starts it or plays the unavailable-map sound. */
 void ConfirmMapSelection(void *entity) {
 M2C_UNK PlaySoundEffect(s32);s32 IsCampaignMapAvailable(u16);
-M2C_UNK func_ov006_022177c8(u16,void *);M2C_UNK func_ov006_02217c0c(u16,void *);M2C_UNK func_ov006_02217c30(u16,void *);
+M2C_UNK func_ov006_022177c8(u16,void *);M2C_UNK CreateMapTransferObjectMode0(u16,void *);M2C_UNK CreateMapTransferObjectMode1(u16,void *);
 u16 mapId;s16 cursorRow;u8 pageIndex;u8 *pageBase;u32 menuKind=(u32)(M2C_FIELD(entity,u8 *,MENU_ENTITY_MODE)<<28)>>28;
 if((u8)(menuKind==0)||(u8)(menuKind==2)||(u8)(menuKind==3)||(u8)(menuKind==4)||(u8)(menuKind==6)||(u8)(menuKind==7)||(u8)(menuKind==8)){
 cursorRow=M2C_FIELD(M2C_FIELD(entity,void **,MENU_ENTITY_CURSOR),s32 *,0x14);pageIndex=M2C_FIELD(M2C_FIELD(entity,void **,MENU_ENTITY_PAGER),s32 *,4);
@@ -18,9 +18,9 @@ if((u8)(menuKind==6)){
 if(IsCampaignMapAvailable(mapId)){SetMenuPanelState(entity,1);func_ov006_022177c8(mapId,entity);PlaySoundEffect(0x1000d);return;}
 PlaySoundEffect(0x1001d);return;
 }
-if((u8)(menuKind==7)){SetMenuPanelState(entity,2);func_ov006_02217c30(mapId,entity);PlaySoundEffect(0x1000d);return;}
+if((u8)(menuKind==7)){SetMenuPanelState(entity,2);CreateMapTransferObjectMode1(mapId,entity);PlaySoundEffect(0x1000d);return;}
 if(!(u8)(menuKind==8))return;
-SetMenuPanelState(entity,2);func_ov006_02217c0c(mapId,entity);PlaySoundEffect(0x1000d);
+SetMenuPanelState(entity,2);CreateMapTransferObjectMode0(mapId,entity);PlaySoundEffect(0x1000d);
 }
 #pragma opt_common_subs reset
 void func_ov003_021fcd10(void **arg0) {
@@ -344,15 +344,17 @@ void BeginLinkMapTransfer(void *entity) {
     CreateMapTransferPanelStep1(entity);
 }
 
-u8 func_ov003_021fd250(void *arg0) {
-    u8 var_r0;
+/* Whether the map-list menu entity is in menu kind 4, one of the paged map-list
+ * modes (see MENU_ENTITY_MODE); the class descriptor polls this. */
+u8 IsMapMenuKind4(void *entity) {
+    u8 isKind4;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x3B) << 0x1C) >> 0x1C) == 4) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(entity, u8 *, MENU_ENTITY_MODE) << 0x1C) >> 0x1C) == 4) {
+        isKind4 = 1;
     } else {
-        var_r0 = 0;
+        isKind4 = 0;
     }
-    return var_r0;
+    return isKind4;
 }
 
 /* True when the entity's menu kind is one of the three kinds that open an ov006

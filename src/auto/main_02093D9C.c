@@ -119,10 +119,10 @@ s32 ScriptCmd_RemoveMapCursor(void *script) {
     return 1;
 }
 
-s32 func_02093f98(void *arg0) {
-    M2C_UNK StopLoopingSoundEffects();
+/* Map-script command: stop every looping sound effect, then advance to the next command. */
+s32 MapScriptStopLoopingSoundEffects(void *state) {
     StopLoopingSoundEffects();
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) = (s32) (M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -212,10 +212,13 @@ s32 ScriptCmd_ShowTelopText(void *script) {
     return 1;
 }
 
-s32 func_02094110(void *arg0) {
+/* Map-script command: delete the caption (telop) window, advance to the next
+ * command, and keep the script running. */
+s32 MapScriptDeleteTelopWindow(void *state) {
     M2C_UNK DeleteTelopWindow();
+
     DeleteTelopWindow();
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) = (s32) (M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -341,10 +344,11 @@ s32 ScriptCmd_CancelMessageBoxClose(void *script) {
     return 1;
 }
 
-s32 func_02094384(void *arg0) {
-    M2C_UNK SetMessageBoxState(M2C_UNK);
-    SetMessageBoxState(3);
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+/* Map-script command: mark the message box suppressed (MESSAGE_BOX_STATE_SUPPRESSED,
+ * the text could not be shown), then advance the script and keep running. */
+s32 ScriptCmd_SuppressMessageBox(void *script) {
+    SetMessageBoxState(MESSAGE_BOX_STATE_SUPPRESSED);
+    M2C_FIELD(script, s32 *, MAP_SCRIPT_STATE_IP) = (s32) (M2C_FIELD(script, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -478,16 +482,17 @@ s32 IsDialogActive(void) {
     return 0;
 }
 
-u8 func_02094704(void) {
+/* Whether a dialog sequence running `sequence` occupies one of the dialog slots. */
+u8 IsDialogSequenceActive(void *sequence) {
     s32 FindDialogSequence();
-    u8 var_r0;
+    u8 active;
 
-    if (FindDialogSequence() != -1) {
-        var_r0 = 1;
+    if (FindDialogSequence(sequence) != -1) {
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 /* Find the gDialogSequences slot whose script is `script` (0 finds a free slot),
@@ -674,13 +679,15 @@ void UpdateDialogSequences(void) {
     } while (i < DIALOG_SEQUENCE_COUNT);
 }
 
-void func_02094a74(M2C_UNK arg0) {
+/* Bring scene panel `panelIndex` on screen, unless a message box is up: while one
+ * is shown the panels belong to it. */
+void ShowScenePanelUnlessMessageBox(s32 panelIndex) {
     s32 IsMessageBoxActive();
-    M2C_UNK ShowScenePanel(M2C_UNK);
+    s32 ShowScenePanel(s32);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    ShowScenePanel(arg0);
+    ShowScenePanel(panelIndex);
 }
 
 /* Close the scene panel `panelIndex`.  While a message box is up, close every
@@ -747,28 +754,34 @@ void SetPanelFaceHiddenUnlessMessageBox(s32 panelIndex, s32 hidden) {
     SetPanelFaceHidden(panelIndex, hidden);
 }
 
-void func_02094ba0(M2C_UNK arg0) {
-    M2C_UNK ClearScenePanelRows(M2C_UNK);
+/* Clear the tile rows of scene panel `panelIndex`, unless a message box is up:
+ * while one is shown the panels belong to it. */
+void ClearScenePanelRowsUnlessMessageBox(s32 panelIndex) {
+    void ClearScenePanelRows(s32);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    ClearScenePanelRows(arg0);
+    ClearScenePanelRows(panelIndex);
 }
 
-void func_02094bc0(M2C_UNK arg0) {
-    M2C_UNK ShowPanelFace(M2C_UNK);
+/* Show the face in slot `faceIndex` of the scene panel, unless a message box is
+ * up: while one is shown the panels belong to it. */
+void ShowPanelFaceUnlessMessageBox(s32 faceIndex) {
+    void ShowPanelFace(s32);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    ShowPanelFace(arg0);
+    ShowPanelFace(faceIndex);
 }
 
-void func_02094be0(M2C_UNK arg0) {
-    M2C_UNK HidePanelFace(M2C_UNK);
+/* Hide the face in slot `faceIndex` of the scene panel, unless a message box is
+ * up: while one is shown the panels belong to it. */
+void HidePanelFaceUnlessMessageBox(s32 faceIndex) {
+    void HidePanelFace(s32);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    HidePanelFace(arg0);
+    HidePanelFace(faceIndex);
 }
 
 /* Dialog-script guard: while no message box is up, forward the script's four

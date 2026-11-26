@@ -66,7 +66,7 @@ void BattleFinishStep(void) {
     M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = MAP_STATE_NONE;
 }
 
-void func_020d464c(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b0)=20;}
+void ResumeMapInputMode(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b0)=20;}
 
 void func_020d466c(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b0)=13;}
 
@@ -81,17 +81,26 @@ u8 IsMapCommandPending(void) {
 
 s32 GetMapViewHoldCount(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,s8*,MAP_VIEW_HOLD);}
 
-void AcquireMapViewHold(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,s8*,MAP_VIEW_HOLD)++;}
+/* Take a hold on the map view: map input stays blocked while any hold is held. */
+void AcquireMapViewHold(void) {
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, s8 *, MAP_VIEW_HOLD)++;
+}
 
-void ReleaseMapViewHold(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,s8*,MAP_VIEW_HOLD)--;}
+/* Release one hold on the battle map view; the view ignores map input while the
+ * hold count is nonzero. */
+void ReleaseMapViewHold(void) {
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, s8 *, MAP_VIEW_HOLD)--;
+}
 
 void ResetMapViewHold(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,s8*,MAP_VIEW_HOLD)=0;}
 
 u8 IsUnitMoveActive(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,u8*,0x52ab);}
 
-void func_020d4790(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ab)=1;}
+void SetUnitMoveActiveFlag(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ab)=1;}
 
-void func_020d47b0(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ab)=0;}
+void ClearUnitMoveActiveFlag(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ab)=0;}
 
 void EnableMapConfirm(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ad)=1;}
 
@@ -105,7 +114,7 @@ void func_020d482c(void) {
     extern void **gCurrentMap;
     extern u16 gMapConfig;
     void *GetMapRecord(s32);
-    s32 func_020a89a4(s32);
+    s32 MapData_GetMapValue(s32);
     void *dst;
     u32 mapId;
     s32 inRange;
@@ -123,20 +132,22 @@ void func_020d482c(void) {
             M2C_FIELD(*gCurrentMap, u16 *, 0x5142) = 225;
         }
         if (IsOnlineMatchmakingHost())
-            M2C_FIELD(&gMapConfig, u16 *, 4) = func_020a89a4(M2C_FIELD(*gCurrentMap, u16 *, 0x5142));
+            M2C_FIELD(&gMapConfig, u16 *, 4) = MapData_GetMapValue(M2C_FIELD(*gCurrentMap, u16 *, 0x5142));
     }
     ResetDialogUI();
     MapSettings_SavePlayers(0);
     AddRecordValue(25, 1);
 }
 
-void func_020d4928(void) {
-    M2C_UNK CreateSubScreenUi();
-    M2C_UNK InitBattleMapPresentation();
-    M2C_UNK InitPlayerCursorPositions();
-    M2C_UNK LoadCurrentMap();
-    M2C_UNK SetupBattleMapView();
-    M2C_UNK SetDefaultMapView();
+/* Start the battle-map scene: install the default map view, load the map and the
+ * players' cursors, then build the map presentation and the sub-screen UI. */
+void InitBattleMapScene(void) {
+    M2C_UNK CreateSubScreenUi(void);
+    M2C_UNK InitBattleMapPresentation(void);
+    M2C_UNK InitPlayerCursorPositions(void);
+    M2C_UNK LoadCurrentMap(void);
+    M2C_UNK SetupBattleMapView(void);
+    M2C_UNK SetDefaultMapView(void);
     SetDefaultMapView();
     SetupBattleMapView();
     LoadCurrentMap();
@@ -151,7 +162,17 @@ void func_020d4948(void) {
     CreateSpriteFromClass(&data_0212be74, 7);
 }
 
-void func_020d4960(void *arg0){extern M2C_UNK gBattleEndState; void *CreateSessionDepartureObject(void *); void DeleteVoiceChatWidgets(void *); if(M2C_FIELD(&gBattleEndState,u8*,0)==0)return;DeleteVoiceChatWidgets(CreateSessionDepartureObject(arg0));}
+/* Once the battle has finished, begin tearing down the running link/online
+ * session: create its departure object for `owner` and remove the voice-chat
+ * widgets. */
+void BeginSessionDeparture(void *owner) {
+    extern M2C_UNK gBattleEndState;
+    void *CreateSessionDepartureObject(void *);
+    void DeleteVoiceChatWidgets(void *);
+
+    if (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_ENDED) == 0) return;
+    DeleteVoiceChatWidgets(CreateSessionDepartureObject(owner));
+}
 
 /* Hand the finished battle over to its ending: in team mode (config mode 0) pick
  * the special ending when the player won on map BA with the clear counter at 1,
@@ -212,18 +233,20 @@ extern void **gCurrentMap;
 void (*callback)(void);
 ResetBattleMap();
 ResumeSavedBattle(M2C_FIELD(sprite,s16*,0x34));
-func_020d1c38();
+ResetUnitSlotCursor();
 SetDefaultMapView();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x50);
 if(callback)callback();
 InitBattleMapPresentation();
 PlayPlayerMusic(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER));
-func_020d93a8();
+StartSubScreenUiForCurrentMode();
 }
 
-void func_020d4ac8(s16 arg0) {
-    extern M2C_UNK data_0212bdcc;
-    M2C_FIELD(CreateSpriteFromClass(&data_0212bdcc, 7), s16 *, 0x34) = arg0;
+/* Spawn the saved-battle loading sprite on the default layer, recording the save
+ * type it should resume. */
+void CreateSavedBattleView(s16 saveType) {
+    extern M2C_UNK gSavedBattleViewClass;
+    M2C_FIELD(CreateSpriteFromClass(&gSavedBattleViewClass, 7), s16 *, 0x34) = saveType;
 }
 
 /* Reset and start the battle map, then run the map-view controller's callbacks:
@@ -346,11 +369,13 @@ void DrawBattleMapFrame(void){
     ClearBattleMapFramePending(map);
 }
 
-void RemoveBattleEndSpritesTask(void *arg0) {
+/* Frame-callback task that tears the battle-end sprite set down: delete every 3D
+ * sprite at the Z recorded in the task, then resume the task's own animation. */
+void RemoveBattleEndSpritesTask(void *task) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK DeleteSpriteObjectsWithZ(u16);
-    DeleteSpriteObjectsWithZ((u16) M2C_FIELD(arg0, s32 *, 0x5C));
-    Sprite_ResumeAnimation(arg0);
+    DeleteSpriteObjectsWithZ((u16) M2C_FIELD(task, s32 *, BATTLE_END_TASK_Z));
+    Sprite_ResumeAnimation(task);
 }
 
 void func_020d4ca4(void *arg0) {
@@ -406,19 +431,20 @@ int ScheduleBattleEndSpriteRemoval(void) {
     s32 FindObjectByZ(s32);
     void *CreateFrameCallbackTask(void (*)(void *), int);
     if (!FindObjectByZ(BATTLE_END_SPRITE_Z)) return;
-    M2C_FIELD(CreateFrameCallbackTask(RemoveBattleEndSpritesTask, 2), s32 *, 0x5C) = BATTLE_END_SPRITE_Z;
+    M2C_FIELD(CreateFrameCallbackTask(RemoveBattleEndSpritesTask, 2), s32 *, BATTLE_END_TASK_Z) = BATTLE_END_SPRITE_Z;
 }
 
-u8 func_020d4dac(void) {
+/* Whether the battle-end sprite set (the objects at BATTLE_END_SPRITE_Z) exists. */
+u8 IsBattleEndSpritePresent(void) {
     s32 FindObjectByZ(s32);
-    u8 var_r0;
+    u8 present;
 
-    if (FindObjectByZ(0xFF03) != 0) {
-        var_r0 = 1;
+    if (FindObjectByZ(BATTLE_END_SPRITE_Z) != 0) {
+        present = 1;
     } else {
-        var_r0 = 0;
+        present = 0;
     }
-    return var_r0;
+    return present;
 }
 
 /* Whether the map cursor is idle: no map-view scroll is running (the low nibble

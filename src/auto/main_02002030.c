@@ -7,7 +7,7 @@ typedef struct UnkVec3 { s32 x,y,z; } UnkVec3;
 
 #pragma thumb off
 
-u64 func_02001fd4(void);
+u64 Div_GetResult64(void);
 #pragma opt_strength_reduction off
 
 #pragma opt_common_subs off

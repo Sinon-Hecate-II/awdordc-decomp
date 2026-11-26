@@ -22,39 +22,39 @@ typedef struct PlayerDefeatSprite {
     s16 unitSlot; /* +0x70 next slot of the player's unit group to handle */
 } PlayerDefeatSprite;
 static inline s32 RangeLeft(void) {
-extern void **gCurrentMap; s32 func_020a7714(void *);
-void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52dc)-range;
+extern void **gCurrentMap; s32 GetUnitAttackRangeRadius(void *);
+void *p=*gCurrentMap; s32 range=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52dc)-range;
 }
 static inline s32 RangeTop(void) {
-extern void **gCurrentMap; s32 func_020a7714(void *);
-void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52de)-range;
+extern void **gCurrentMap; s32 GetUnitAttackRangeRadius(void *);
+void *p=*gCurrentMap; s32 range=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52de)-range;
 }
 static inline s32 RangeRight(void) {
-extern void **gCurrentMap; s32 func_020a7714(void *);
-void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52dc)+range;
+extern void **gCurrentMap; s32 GetUnitAttackRangeRadius(void *);
+void *p=*gCurrentMap; s32 range=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52dc)+range;
 }
 static inline s32 RangeRightLimit(void) {
-extern void **gCurrentMap; s32 func_020a7714(void *);
-void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0));
+extern void **gCurrentMap; s32 GetUnitAttackRangeRadius(void *);
+void *p=*gCurrentMap; s32 range=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0));
 s32 sum=M2C_FIELD(p,s16 *,0x52dc)+range;
 s32 limit=M2C_FIELD(p,u16 *,0x5144)-1;
 if(sum<limit)return RangeRight();
 return limit;
 }
 static inline s32 RangeBottomLimit(void) {
-extern void **gCurrentMap; s32 func_020a7714(void *);
-void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0));
+extern void **gCurrentMap; s32 GetUnitAttackRangeRadius(void *);
+void *p=*gCurrentMap; s32 range=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0));
 s32 sum=M2C_FIELD(p,s16 *,0x52de)+range;
 s32 limit=M2C_FIELD(p,u16 *,0x5146)-1;
 if(sum<limit){
-range=func_020a7714(M2C_FIELD(p,void **,0x52d0));
+range=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0));
 return M2C_FIELD(*gCurrentMap,s16 *,0x52de)+range;
 }
 return limit;
 }
 static inline s32 RangeBottom(void) {
-extern void **gCurrentMap; s32 func_020a7714(void *);
-void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52de)+range;
+extern void **gCurrentMap; s32 GetUnitAttackRangeRadius(void *);
+void *p=*gCurrentMap; s32 range=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52de)+range;
 }
 
 #pragma push
@@ -365,7 +365,7 @@ void InitTargetSelectionMenu(void *dialog) {
 void UpdateUnitSelectionMenu(void *dialog) {
     M2C_UNK func_020be010(void);
     s32 IsMapViewScrolling(void);
-    s32 func_020cccb8(void);
+    s32 IsMapZoomRunning(void);
     s32 GetKeyActionFlags(void);
     s32 GetTouchActionFlags(s16);
     s32 IsMapCommandPending(void);
@@ -397,7 +397,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
         func_020be010();
     }
     if (IsMapViewScrolling() != 0) return;
-    if (func_020cccb8() != 0) return;
+    if (IsMapZoomRunning() != 0) return;
 
     flags |= GetKeyActionFlags();
     merged = flags | GetTouchActionFlags(count);
@@ -456,23 +456,23 @@ void func_020ca77c(M2C_UNK arg0) {
 #pragma opt_propagation off
 void func_020ca794(void *arg0) {
 extern void **gCurrentMap;
-void func_0209f8c0(void);void FillMapLayer(s32);s32 func_020a7714(void *);void AppendTargetEntry(s32,s32,s32,s32);s16 GetTargetCount(void);void PlaySoundEffect(s32);
+void func_0209f8c0(void);void FillMapLayer(s32);s32 GetUnitAttackRangeRadius(void *);void AppendTargetEntry(s32,s32,s32,s32);s16 GetTargetCount(void);void PlaySoundEffect(s32);
 s32 y1,x0,x1,dist,v,x,y; void *p; s32 range; void *centre;
 M2C_FIELD(arg0,s16*,0x6c)=0;
 func_0209f8c0();FillMapLayer(-1);
-p=*gCurrentMap;range=func_020a7714(M2C_FIELD(p,void **,0x52d0));
+p=*gCurrentMap;range=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0));
 if(M2C_FIELD(p,s16 *,0x52dc)-range<0)x0=0;
-else {p=*gCurrentMap;range=func_020a7714(M2C_FIELD(p,void **,0x52d0));x0=M2C_FIELD(p,s16 *,0x52dc)-range;}
-centre=*gCurrentMap;range=func_020a7714(M2C_FIELD(p,void **,0x52d0));
+else {p=*gCurrentMap;range=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0));x0=M2C_FIELD(p,s16 *,0x52dc)-range;}
+centre=*gCurrentMap;range=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0));
 if(M2C_FIELD(centre,s16 *,0x52de)-range<0)y=0;
-else {p=*gCurrentMap;range=func_020a7714(M2C_FIELD(p,void **,0x52d0));y=M2C_FIELD(p,s16 *,0x52de)-range;}
+else {p=*gCurrentMap;range=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0));y=M2C_FIELD(p,s16 *,0x52de)-range;}
 x1=RangeRightLimit();
 y1=RangeBottomLimit();
 for(;y<=y1;y++){for(x=x0;x<=x1;x++){
 p=*gCurrentMap;
 v=M2C_FIELD(p,s16*,0x52dc)-x;if(v<=0)v=x-M2C_FIELD(p,s16*,0x52dc);dist=0;dist+=v;
 v=M2C_FIELD(p,s16*,0x52de)-y;if(v<=0)v=y-M2C_FIELD(p,s16*,0x52de);dist=dist+v;
-if(dist<0)continue; if(dist<=func_020a7714(M2C_FIELD(p,void **,0x52d0))){
+if(dist<0)continue; if(dist<=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0))){
 AppendTargetEntry(x,y,0,0);
 M2C_FIELD((u8*)*gCurrentMap+y*4,u8 **,0x52e8)[x]=1;
 }

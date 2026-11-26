@@ -369,11 +369,14 @@ void *ResultsScreen_Delete(void *screen) {
     return screen;
 }
 
-void *ResultsScreen_Destroy(void *arg0) {
+/* Non-deleting destructor of the results screen object: restore its vtable and
+ * free the bird.anm animation it loaded, leaving the screen itself allocated.
+ * (ResultsScreen_Delete is the freeing twin.) */
+void *ResultsScreen_Destroy(void *screen) {
     extern M2C_UNK gResultsScreenVtbl;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gResultsScreenVtbl;
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x34));
-    return arg0;
+    M2C_FIELD(screen, M2C_UNK **, 0) = &gResultsScreenVtbl;
+    HeapFreeBlock(M2C_FIELD(screen, s32 *, RESULTS_SCREEN_BIRD));
+    return screen;
 }
 
 void func_ov005_0221ffe8(void) {

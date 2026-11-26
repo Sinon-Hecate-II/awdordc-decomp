@@ -98,7 +98,7 @@ s32 CanBuildUnitKindIgnoringMap(s32 player,s32 kind) {
  * [0xa1, limit] (larger limits cover more facilities). */
 s32 CanBuildUnitKindOnMap(s32 unit, s32 facility) {
     s32 GetUnitKindBuildCost(s32);
-    s32 func_ov004_02213820(void);
+    s32 Ov004_IsEventFlag1Set(void);
     extern M2C_UNK gUnitKindBuildable;
     extern void **gCurrentMap;
     u16 mapId;
@@ -121,7 +121,7 @@ s32 CanBuildUnitKindOnMap(s32 unit, s32 facility) {
         case 26:
             mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
             if (mapId >= 0xa1 && mapId <= 0xa5) return 0;
-            if (mapId == 0xa5 && func_ov004_02213820() == 0) return 0;
+            if (mapId == 0xa5 && Ov004_IsEventFlag1Set() == 0) return 0;
             break;
         case 6: case 11: case 12:
             mapId = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
@@ -249,7 +249,7 @@ s32 IsFriendlyUnitAt(s32 unit, s32 x, s32 y) {
     extern void **gCurrentMap;
     s32 IsCellUnitEmpty(s32, s32);
     s32 IsUnitPresent(void *);
-    s32 func_020d277c(s32, void *);
+    s32 AreUnitsOnSameTeam(s32, void *);
     u8 *map, *base;
     s32 offset;
     u8 result;
@@ -265,7 +265,7 @@ valid:
     base = map + MAP_UNIT_RECORDS;
     offset = (s16)map[x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)] * (s16)MAP_UNIT_STRIDE;
     if (!IsUnitPresent(base + offset)) return 0;
-    if (func_020d277c(unit, base + offset)) result = 1; else result = 0;
+    if (AreUnitsOnSameTeam(unit, base + offset)) result = 1; else result = 0;
     return result;
 }
 

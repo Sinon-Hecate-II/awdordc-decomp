@@ -648,10 +648,12 @@ u16 GetOnlineEventFlags(void) {
     return gOv010OnlineSession;
 }
 
-void func_ov010_02229a74(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_ov010_022269f8(M2C_UNK *, M2C_UNK, M2C_UNK);
+/* Online overlay's Link_SendPacket path: stage a buffer of `size` bytes as this
+ * console's player panel in the online local-player record. */
+void StageOnlineLocalPlayerRecord(void *source, u32 size) {
+    M2C_UNK CopyLocalPlayerPanel(M2C_UNK *, M2C_UNK, M2C_UNK);
     extern M2C_UNK gLocalPlayerStatus;
-    func_ov010_022269f8(&gLocalPlayerStatus, arg0, arg1);
+    CopyLocalPlayerPanel(&gLocalPlayerStatus, source, size);
 }
 
 /* Publish the local player's status: while matchmaking has started, store it in

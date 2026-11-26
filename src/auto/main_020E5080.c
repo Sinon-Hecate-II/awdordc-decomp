@@ -1,5 +1,8 @@
 /* 6 functions from 0x020E5080 to 0x020E5824 (main), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
+#include "sound.h"
+#include "sound.h"
 
 #pragma opt_cse off
 void func_020e5080(void *arg0) {
@@ -89,13 +92,15 @@ M2C_FIELD(&gMicTestIpc,s32 *,0x18)=0;
 M2C_FIELD(&gMicTestIpc,s32 *,0x1c)=0;
 }
 #pragma opt_cse reset
-void func_020e5678(void) {
+/* Tear down the mic test screen: remove its wallpaper sprites, unduck the music,
+ * wait for the ARM7 transfer to end and reset the amplifier's gain parameter. */
+void TeardownMicTestScreen(void) {
     M2C_UNK Arm7TransferEndWait();
     M2C_UNK Arm7SetAmpParam2(M2C_UNK);
     M2C_UNK SetMusicVolumeLevel(M2C_UNK, M2C_UNK);
     M2C_UNK DeleteWallpaperSpritesOnAllEngines();
     DeleteWallpaperSpritesOnAllEngines();
-    SetMusicVolumeLevel(2, 0x7F);
+    SetMusicVolumeLevel(SOUND_VOLUME_LEVEL_FADE, SOUND_VOLUME_MAX);
     Arm7TransferEndWait();
     Arm7SetAmpParam2(0);
 }

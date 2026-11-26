@@ -206,7 +206,7 @@ void MbWorkerTask_Main(void *worker) {
     void SetThreadPriority(void *, s32);
     void OS_SleepThread(s32);
     s32 GetThreadPriority(void *);
-    void func_02005bbc(void);
+    void TaskExitCurrent(void);
 
     void *task;
 
@@ -251,7 +251,7 @@ void MbWorkerTask_Main(void *worker) {
                 OS_RestoreInterrupts(completionState);
                 continue;
             }
-            func_02005bbc();
+            TaskExitCurrent();
             return;
         }
     }
@@ -409,10 +409,12 @@ void Mb_InitRecordReassembly(s32 packetSize) {
     MB_RECORD_RX->recordSize = MB_RECORD_SIZE;
 }
 
-void func_02018940(s32 arg0) {
+/* Point the multiboot info-record reassembly at `buffer` and clear its player
+ * slots and received-fragment masks. */
+void Mb_SetRecordBuffer(u8 *buffer) {
     extern M2C_UNK gMbRecordRx;
-    M2C_FIELD(&gMbRecordRx, s32 *, 4) = arg0;
-    MI_CpuFill8(arg0, 0, 0x21C);
+    MB_RECORD_RX->buffer = buffer;
+    MI_CpuFill8(buffer, 0, MB_RECORD_BUFFER_SIZE);
 }
 
 /* Clear a player's 30-byte reassembled multiboot record and its received-fragment mask. */
@@ -682,13 +684,17 @@ void Mb_LockCartridgeAccess(M2C_UNK lockId, void *stateBuf) {
     }
 }
 
-void Mb_UnlockCartridgeAccess(M2C_UNK arg0, void *arg1) {
+/* Releases the cartridge-access lock `lockId` taken by Mb_LockCartridgeAccess
+ * (unless that call found it already owned) and restores the caller's interrupts. */
+void Mb_UnlockCartridgeAccess(M2C_UNK lockId, void *stateBuf) {
     M2C_UNK OSi_UnlockWord(M2C_UNK);
     void OS_RestoreInterrupts(s32);
-    if (M2C_FIELD(arg1, s32 *, 0) == 0) {
-        OSi_UnlockWord(arg0);
+    MbLockState *state = (MbLockState *)stateBuf;
+
+    if (state->busy == 0) {
+        OSi_UnlockWord(lockId);
     }
-    OS_RestoreInterrupts(M2C_FIELD(arg1, s32 *, 4));
+    OS_RestoreInterrupts(state->interrupts);
 }
 
 /* Posts the multiboot control message `command` on the boot-handshake FIFO

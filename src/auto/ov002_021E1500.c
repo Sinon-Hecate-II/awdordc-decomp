@@ -120,11 +120,13 @@ s32 ResetEffectNodeScriptState(void *node) {
     M2C_FIELD(node, u8 *, FX_NODE_FLAG_51) = 0;
 }
 
-void func_ov002_021e16bc(void *arg0, s8 arg1, s8 arg2) {
+/* Reset an effect node's script state, then give it the palette/effect bank and
+ * the effect-table row it draws from. */
+void InitEffectNodeAppearance(void *node, s8 palette, s8 tableIndex) {
     M2C_UNK ResetEffectNodeScriptState();
     ResetEffectNodeScriptState();
-    M2C_FIELD(arg0, s8 *, 0x53) = arg1;
-    M2C_FIELD(arg0, s8 *, 0x47) = arg2;
+    M2C_FIELD(node, s8 *, FX_NODE_PALETTE) = palette;
+    M2C_FIELD(node, s8 *, FX_NODE_TABLE_INDEX) = tableIndex;
 }
 
 /* Point an effect node at a resource and one of its scripts: store the resource
@@ -219,8 +221,8 @@ next:
 void func_ov002_021e1844(void *arg0) {
     void ClearEffectNode(void *);
     M2C_UNK SetEffectNodePaletteFlash(void *, M2C_UNK);
-    M2C_UNK func_ov002_021e29d8(void *);
-    M2C_UNK func_ov002_021e29f8(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov002_ClearEffectNodeUnitViewShake(void *);
+    M2C_UNK Ov002_CreateSlotEffectDisc(void *, M2C_UNK, M2C_UNK);
     M2C_UNK Ov002_EnableEffectNodes(void *);
     M2C_UNK Ov002_DisableEffectNodes(void *);
     M2C_UNK Ov002_SetEffectNodesFlag51(void *, M2C_UNK);
@@ -294,7 +296,7 @@ void func_ov002_021e1844(void *arg0) {
             SetEffectNodePaletteFlash(arg0, 6);
             break;
         case 18:
-            func_ov002_021e29d8(arg0);
+            Ov002_ClearEffectNodeUnitViewShake(arg0);
             break;
         case 19:
             M2C_FIELD(arg0, u8 *, 0x4a) = 1;
@@ -316,7 +318,7 @@ void func_ov002_021e1844(void *arg0) {
             M2C_FIELD(arg0, u8 *, 0x4b) = (u8)M2C_FIELD((void *)M2C_FIELD(arg0, void **, 0x1c), u8 *, 1);
             break;
         case 26:
-            func_ov002_021e29f8(arg0, (M2C_UNK)M2C_FIELD(current, s16 *, 0x8), (M2C_UNK)M2C_FIELD(current, s16 *, 0xa));
+            Ov002_CreateSlotEffectDisc(arg0, (M2C_UNK)M2C_FIELD(current, s16 *, 0x8), (M2C_UNK)M2C_FIELD(current, s16 *, 0xa));
             break;
         case 27:
             Ov002_EnableEffectNodes(arg0);

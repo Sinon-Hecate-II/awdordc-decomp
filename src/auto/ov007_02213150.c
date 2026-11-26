@@ -122,7 +122,7 @@ void func_ov007_0221336c(void) {
 }
 
 /* Confirm the map editor's map-fill menu: paint every cell from the preset the
- * fill dialog was opened with (stored at +0x5C by func_ov007_022133a8), refresh
+ * fill dialog was opened with (stored at +0x5C by MapEditor_OpenFillDialog), refresh
  * the map view and the editor, fit the preview to the new map, mark the map as
  * edited and play the fill sound. */
 void MapEditor_ApplyFillPreset(void *dialog) {
@@ -133,7 +133,7 @@ void MapEditor_ApplyFillPreset(void *dialog) {
     M2C_UNK FillMapTerrain(s32);
     M2C_UNK MapEditor_FitPreviewToMap();
 
-    FillMapTerrain(M2C_FIELD(dialog, s32 *, 0x5C));
+    FillMapTerrain(M2C_FIELD(dialog, s32 *, MAP_EDITOR_FILL_PRESET));
     RefreshMapView();
     RefreshMapEditor();
     MapEditor_FitPreviewToMap();
@@ -141,33 +141,35 @@ void MapEditor_ApplyFillPreset(void *dialog) {
     PlaySoundEffect(0x11D);
 }
 
-void func_ov007_022133a8(s32 arg0, s32 arg1) {
+/* Open the map editor's fill dialog: show its prompt text and record the terrain
+ * preset that confirming the dialog fills the map with. */
+void MapEditor_OpenFillDialog(s32 messageId, s32 preset) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void SetUiMessageText(s32);
-    extern M2C_UNK data_ov007_0221f7c0;
-    SetUiMessageText(arg0);
-    M2C_FIELD(CreateSpriteFromClass(&data_ov007_0221f7c0, 7), s32 *, 0x5C) = arg1;
+    extern M2C_UNK gMapEditorFillDialogClass;
+    SetUiMessageText(messageId);
+    M2C_FIELD(CreateSpriteFromClass(&gMapEditorFillDialogClass, 7), s32 *, MAP_EDITOR_FILL_PRESET) = preset;
 }
 
-void func_ov007_022133cc(void) {
-    void func_ov007_022133a8(M2C_UNK, M2C_UNK);
-    func_ov007_022133a8(0x46000000, 8);
+void MapEditor_FillWithSea(void) {
+    void MapEditor_OpenFillDialog(M2C_UNK, M2C_UNK);
+    MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_SEA, 8);
 }
 
-void func_ov007_022133e0(void) {
-    func_ov007_022133a8(0x46000001, 1);
+void MapEditor_FillWithPlain(void) {
+    MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_PLAIN, 1);
 }
 
-void func_ov007_022133f8(void) {
-    func_ov007_022133a8(0x46000002, 4);
+void MapEditor_FillWithWoods(void) {
+    MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_WOODS, 4);
 }
 
-void func_ov007_02213410(void) {
-    func_ov007_022133a8(0x46000003, 3);
+void MapEditor_FillWithMountain(void) {
+    MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_MOUNTAIN, 3);
 }
 
-void func_ov007_02213428(void) {
-    func_ov007_022133a8(0x46000004, -1);
+void MapEditor_ClearMap(void) {
+    MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_CLEAR, -1);
 }
 
 void func_ov007_02213440(M2C_UNK arg0, M2C_UNK arg1) {

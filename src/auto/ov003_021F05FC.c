@@ -648,20 +648,26 @@ void func_ov003_021f1348(s32 arg0) {
     DestroyBattleObject(arg0 + 0xFFFFFFCC);
 }
 
+/* The live ov003 scene object of the class SetOv003SceneClass stored, or 0 before
+ * a class is set.  FindObjectByClass is called without an argument because r0
+ * still holds the class word from the load above. */
 s32 GetOv003SceneObject(void) {
     s32 FindObjectByClass();
     extern M2C_UNK gOv003SceneState;
-    if (M2C_FIELD(&gOv003SceneState, s32 *, 0xC) == 0) {
+
+    if (M2C_FIELD(&gOv003SceneState, s32 *, SCENE_STATE_CLASS) == 0) {
         return 0;
     }
     return FindObjectByClass();
 }
 
-void SetOv003SceneClass(s32 arg0) {
+/* Set the class descriptor of the scene object the ov003 screen creates and
+ * clear the scene state, so GetOv003SceneObject starts looking for the new class. */
+void SetOv003SceneClass(s32 sceneClass) {
     void SetOv003SceneState(s8);
     extern M2C_UNK gOv003SceneState;
     SetOv003SceneState(0);
-    M2C_FIELD(&gOv003SceneState, s32 *, 0xC) = arg0;
+    M2C_FIELD(&gOv003SceneState, s32 *, SCENE_STATE_CLASS) = sceneClass;
 }
 
 void SetOv003SceneState(s8 arg0) {

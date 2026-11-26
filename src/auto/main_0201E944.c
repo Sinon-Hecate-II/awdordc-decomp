@@ -24,7 +24,7 @@ static inline u64 NextPacketRandom64(void) {
    (high, low half) when outLen is 0, or fails with 2 when the name does not fit in
    outLen bytes.  A "name does not exist" answer gives -1, a timeout 0. */
 s32 DnsResolveName(M2C_UNK a,s32 b,M2C_UNK c,s32 d,u32 e) {
-void SendNetPacket(void*,s32); s32 GetSocketReceivedDataSize(void); void func_0201a238(void); u8 *PeekSocketReceivedData(u32*); void ConsumeConnectionReceivedData(u32); u8 *DnsSkipName(u8*); u64 GetSystemTick(void); void MI_CpuCopy8(void*,void*,u32);
+void SendNetPacket(void*,s32); s32 GetSocketReceivedDataSize(void); void NetStackWaitIdle(void); u8 *PeekSocketReceivedData(u32*); void ConsumeConnectionReceivedData(u32); u8 *DnsSkipName(u8*); u64 GetSystemTick(void); void MI_CpuCopy8(void*,void*,u32);
 extern M2C_UNK gNetStack;
 u8 qname[48]; u16 packet[6]; u32 size; u8 *name=(u8*)a; s32 result; u32 start;u8 *label,*p,*end; s32 n; u8 ch; s32 questions; u16 len,type,v1,v2;
 packet[0]=(c>>8)|(c<<8);if(b!=32)packet[1]=1;else packet[1]=0x1001;packet[2]=DNS_QUESTION_CLASS;packet[3]=0;label=qname;p=label;packet[4]=0;packet[5]=0;
@@ -40,7 +40,7 @@ ch=*name++;
 SendNetPacket(packet,p+5-(u8*)packet);
 result=0;start=(u32)(GetSystemTick()>>16);
 while(M2C_FIELD(&gNetStack,s32 (**)(void),0x48)()!=0 && result==0 && (s32)((u32)(GetSystemTick()>>16)-start)<15){
-if(!GetSocketReceivedDataSize()){func_0201a238();continue;}
+if(!GetSocketReceivedDataSize()){NetStackWaitIdle();continue;}
 p=PeekSocketReceivedData(&size);
 if(size>12 && c==(u16)((M2C_FIELD(p,u16*,0)>>8)|(M2C_FIELD(p,u16*,0)<<8))){
 type=p[3]&DNS_ANSWER_TYPE_MASK;
@@ -371,13 +371,15 @@ s32 SocketAllocTask(M2C_UNK *taskFunc, s32 socket, M2C_UNK wait) {
     return task;
 }
 
-void SocketFreeTask(s32 arg0) {
+/* Return a socket-task slot to the pool's free-task queue; the NULL task of a
+ * stop message is not queued. */
+void SocketFreeTask(s32 task) {
     M2C_UNK OS_SendMessage(M2C_UNK *, s32, M2C_UNK);
     extern M2C_UNK gSocketTaskQueue;
-    if (arg0 == 0) {
+    if (task == 0) {
         return;
     }
-    OS_SendMessage(&gSocketTaskQueue, arg0, 0);
+    OS_SendMessage(&gSocketTaskQueue, task, 0);
 }
 
 s32 GetSocketConnection(void *arg0) {

@@ -45,7 +45,7 @@ void Sound_UpdateVoices(void) {
     void *ListNext(void *, s32);
     s32 Sound_IsCommandReached(void *);
     M2C_UNK func_02008c38(u8, s32);
-    void func_02008c18(u8);
+    void Sound_StopArm7Channel(u8);
     void Sound_RecycleVoice(void *);
     void AdvanceFade(void *);
     s32 GetFadeValue(void *);
@@ -105,7 +105,7 @@ void Sound_UpdateVoices(void) {
             }
         }
         if (M2C_FIELD(voice, u8 *, SOUND_VOICE_STOP_PENDING)) {
-            func_02008c18(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL));
+            Sound_StopArm7Channel(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL));
             M2C_FIELD(voice, u8 *, SOUND_VOICE_STOP_PENDING) = 0;
         }
     next:
@@ -246,13 +246,13 @@ M2C_UNK Sound_InsertActiveVoice(void *voice) {
  * volume down to the release level (-0x2D3, the driver's near-silent value)
  * first, then release that channel and put the voice back on the free list. */
 void Sound_ReleaseVoice(void *voice) {
-    M2C_UNK func_02008bd0(u8);
+    M2C_UNK Sound_ReleaseArm7Channel(u8);
     M2C_UNK func_02008c38(u8, s32);
 
     if (M2C_FIELD(voice, u8 *, SOUND_VOICE_STATE) == SOUND_VOICE_PLAYING) {
         func_02008c38(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL), 0xFFFFFD2D);
     }
-    func_02008bd0(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL));
+    Sound_ReleaseArm7Channel(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL));
     Sound_RecycleVoice(voice);
 }
 

@@ -17,18 +17,22 @@ static inline MenuList007 *InitMenuList007(MenuList007 *p, s32 count) {
 #pragma pop
 
 
-s32 func_ov007_02217c80(void *arg0) {
+/* Move the palette panel's current page to the next owner/colour slot, wrapping
+ * back to the first one past the page's colour count. */
+s32 MapEditor_NextOwnerColor(void *panel) {
     s32 MapEditor_GetPageOwnerColorCount(void *);
-    s32 result = M2C_FIELD(arg0 + M2C_FIELD(arg0, u8 *, 0x37), u8 *, 0x38) + 1;
-    if (result >= MapEditor_GetPageOwnerColorCount(arg0)) result = 0;
-    return result;
+    s32 color = M2C_FIELD(panel + M2C_FIELD(panel, u8 *, MAP_EDITOR_PANEL_PAGE), u8 *, MAP_EDITOR_PANEL_OWNER) + 1;
+    if (color >= MapEditor_GetPageOwnerColorCount(panel)) color = 0;
+    return color;
 }
 
-s32 func_ov007_02217ca8(void *arg0) {
+/* Move the palette panel's current page to the previous owner/colour slot,
+ * wrapping to the page's last one below zero. */
+s32 MapEditor_PrevOwnerColor(void *panel) {
     s32 MapEditor_GetPageOwnerColorCount(void *);
-    s32 result = M2C_FIELD(arg0 + M2C_FIELD(arg0, u8 *, 0x37), u8 *, 0x38) - 1;
-    if (result < 0) result = MapEditor_GetPageOwnerColorCount(arg0) - 1;
-    return result;
+    s32 color = M2C_FIELD(panel + M2C_FIELD(panel, u8 *, MAP_EDITOR_PANEL_PAGE), u8 *, MAP_EDITOR_PANEL_OWNER) - 1;
+    if (color < 0) color = MapEditor_GetPageOwnerColorCount(panel) - 1;
+    return color;
 }
 
 /* Confirm the palette entry the panel cursor points at: arm it so closing the

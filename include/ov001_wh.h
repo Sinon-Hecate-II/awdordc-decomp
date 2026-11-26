@@ -176,9 +176,16 @@ enum {
  * (gOv001WfcConnectDoneFrames). */
 #define OV001_WFC_CONNECT_DONE_FRAMES 120 /* ticks the screen stays up before it fades out */
 
+/* Frames Ov001_StartDelay holds a screen's step before the next one runs: the
+ * pause the option-menu screens share when a step starts a fade. */
+#define OV001_STEP_DELAY_FRAMES 8
+
 /* The ov001 Wi-Fi settings screen's two-choice message popup (gOv001MessageState). */
 #define OV001_MESSAGE_SHOWN  0x00 /* u8: nonzero while the popup is on screen */
 #define OV001_MESSAGE_OPTION 0x01 /* u8: the option the player picked (0 = the first one) */
+
+/* The WFC profile-saved popup's icon row has a single button, at selection 0. */
+#define OV001_PROFILE_SAVED_BUTTON 0
 
 /* What the ov001 option menu's icon row reports: the shared row has a back icon
  * and a confirm icon, and the menu latches a touch or key press as one of them
@@ -234,6 +241,7 @@ enum {
 #define OV001_PROFILE_BLOCK_TASK      0x1E29C /* s32 id of the profile update task */
 #define OV001_PROFILE_BLOCK_DONE      0x1E2A0 /* u8 set once the profile action finished; the update task then fires the callback */
 #define OV001_PROFILE_BLOCK_EXIT_DONE 0x1E2A1 /* u8 set by the screen's exit task once the profile subsystem has left, letting the update task reach its teardown state */
+#define OV001_PROFILE_TASK_PRIORITY   0x78    /* run priority of the profile screen's setup, update and exit tasks (a lower priority runs first) */
 
 /* Outcome of the ov001 WFC profile screen, kept in gOv001ProfileScreenResult for
  * the screen that follows it to show. */

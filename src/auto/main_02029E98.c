@@ -29,7 +29,7 @@ M2C_UNK InitHeapHead(void *heap, s32 signature, s32 start, M2C_UNK end, s32 attr
     ListAppend(GetHeapParentList(heap), heap);
 }
 
-M2C_UNK func_02029f14(void *arg0) {
+M2C_UNK UnlinkHeap(void *arg0) {
     M2C_UNK GetHeapParentList(void *);
     M2C_UNK ListRemove(M2C_UNK, void *);
     ListRemove(GetHeapParentList(arg0), arg0);
@@ -278,9 +278,9 @@ void *CreateExpHeapInRange(u32 base, u32 size, s32 attribute) {
     return CreateExpHeap((void *)start, end, attribute);
 }
 
-void func_0202a45c(void) {
-    M2C_UNK func_02029f14();
-    func_02029f14();
+void DestroyExpHeap(void) {
+    M2C_UNK UnlinkHeap();
+    UnlinkHeap();
 }
 
 /* Allocate `size` bytes with `alignment` from an expanded heap: round the size up
@@ -312,13 +312,17 @@ void FreeExpHeapBlock(s32 heap, s32 block) {
 }
 
 #pragma opt_propagation off
-s32 SetHeapFlags(void *arg0,u32 arg1) {
-u32 old; u32 bit;
-old=M2C_FIELD(arg0,u16 *,0x36);
-bit=old&1;
-M2C_FIELD(arg0,u16 *,0x36)=old & ~1;
-M2C_FIELD(arg0,u16 *,0x36)=M2C_FIELD(arg0,u16 *,0x36)|(arg1&1);
-return bit;
+/* Set the heap's allocation flag (HEAP_FLAGS bit 0: allocate from the smallest
+ * free block) from the low bit of `flags` and return the bit's old value. */
+s32 SetHeapFlags(void *heap, u32 flags) {
+    u32 old;
+    u32 bit;
+
+    old = M2C_FIELD(heap, u16 *, HEAP_FLAGS);
+    bit = old & HEAP_FLAG_BEST_FIT;
+    M2C_FIELD(heap, u16 *, HEAP_FLAGS) = old & ~HEAP_FLAG_BEST_FIT;
+    M2C_FIELD(heap, u16 *, HEAP_FLAGS) = M2C_FIELD(heap, u16 *, HEAP_FLAGS) | (flags & HEAP_FLAG_BEST_FIT);
+    return bit;
 }
 #pragma opt_propagation reset
 /* Initialise a frame heap ('FRMH') over the memory the caller hands in: set up its
@@ -417,8 +421,8 @@ void *CreateFrameHeap(u32 startAddress, u32 size, s32 attribute) {
 }
 
 void DestroyFrameHeap(void) {
-    M2C_UNK func_02029f14();
-    func_02029f14();
+    M2C_UNK UnlinkHeap();
+    UnlinkHeap();
 }
 
 /* Allocate `size` bytes from the frame heap of the sound heap `heap`: round the
@@ -823,7 +827,7 @@ if(*arg0==NULL)return;
 *arg0=NULL;
 }
 
-void func_0202acdc(void **arg0, s8 arg1) {
+void Sound_SetVoiceExpression(void **arg0, s8 arg1) {
 if (*(void * volatile *)arg0 != NULL) {
 M2C_FIELD(*(void * volatile *)arg0,s8 *,0x41)=arg1;
 }
@@ -854,31 +858,41 @@ if(*arg0==NULL)return;
 func_02008c50(M2C_FIELD(*arg0,u8 *,0x3c),arg1);
 }
 
-void func_0202ad50(void *arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_02008d94(u8, s32, s32);
-    if (M2C_FIELD(arg0, s32 *, 0) == 0) return;
-    func_02008d94(M2C_FIELD(M2C_FIELD(arg0, void **, 0), u8 *, 0x3C), arg1, arg2);
+/* Hand channel `level` to the voice attached to `player`, run in over `duration`
+ * frames (ARM7 sound command 8); a detached handle is left alone. */
+void Sound_SetPlayerChannelLevel(void *player, s32 level, s32 duration) {
+    M2C_UNK Sound_SetChannelLevel(u8, s32, s32);
+    if (M2C_FIELD(player, s32 *, 0) == 0) return;
+    Sound_SetChannelLevel(M2C_FIELD(M2C_FIELD(player, void **, 0), u8 *, SOUND_VOICE_CHANNEL), level, duration);
 }
 
-void func_0202ad70(void *arg0, s32 arg1, s32 arg2) {
+/* Move the voice attached to `player` to pitch `value` over `duration` frames
+ * (ARM7 player parameter 0xC); a detached handle is left alone. */
+void Sound_SetPlayerPitch(void *player, s32 value, s32 duration) {
     M2C_UNK func_02008c68(u8, s32, s32);
-    if (M2C_FIELD(arg0, s32 *, 0) == 0) return;
-    func_02008c68(M2C_FIELD(M2C_FIELD(arg0, void **, 0), u8 *, 0x3C), arg1, arg2);
+    if (M2C_FIELD(player, s32 *, 0) == 0) return;
+    func_02008c68(M2C_FIELD(M2C_FIELD(player, void **, 0), u8 *, SOUND_VOICE_CHANNEL), value, duration);
 }
 
-void Sound_SetPlayerPan(void *arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_02008c84(u8, s32, s32);
-    if (M2C_FIELD(arg0, s32 *, 0) == 0) return;
-    func_02008c84(M2C_FIELD(M2C_FIELD(arg0, void **, 0), u8 *, 0x3C), arg1, arg2);
+/* Set the stereo pan of the voice attached to `player` (ARM7 player parameter 9):
+ * `value` is passed through (0xFFFF keeps the current volume) and `pan` is the
+ * new position; a detached handle is left alone. */
+void Sound_SetPlayerPan(void *player, s32 value, s32 pan) {
+    M2C_UNK Sound_SendPlayerPan(u8, s32, s32);
+    if (M2C_FIELD(player, s32 *, 0) == 0) return;
+    Sound_SendPlayerPan(M2C_FIELD(M2C_FIELD(player, void **, 0), u8 *, SOUND_VOICE_CHANNEL), value, pan);
 }
 
 #pragma opt_common_subs off
-void Sound_SetSequenceSource(void **arg0, s32 arg1) {
-    if (*(void * volatile *)arg0 == NULL) {
+/* Record on the player that it plays sequence `sequenceId`, so the player's
+ * restart callback can find the sequence again.  A detached player (a NULL
+ * handle) is left alone. */
+void Sound_SetSequenceSource(void **player, s32 sequenceId) {
+    if (*(void * volatile *)player == NULL) {
         return;
     }
-    M2C_FIELD(*(void * volatile *)arg0, s16 *, 0x34) = 1;
-    M2C_FIELD(*(void * volatile *)arg0, s16 *, 0x38) = arg1;
+    M2C_FIELD(*(void * volatile *)player, s16 *, SOUND_HANDLE_SOURCE_TYPE) = 1;
+    M2C_FIELD(*(void * volatile *)player, s16 *, SOUND_HANDLE_SOURCE_ARCHIVE) = sequenceId;
 }
 #pragma opt_common_subs reset
 /* Record on the player that it plays sound entry `entryIndex` of sound archive

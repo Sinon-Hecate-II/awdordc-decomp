@@ -131,28 +131,32 @@ u8 TryBuildSpecialistUnits(void) {
     return built;
 }
 
-u8 HasAiBuildFlag(s32 arg0) {
+/* Whether any of the optional unit kinds named by `buildFlags` (AI_BUILD_FLAG_*)
+ * is enabled in the AI settings' build-flags byte. */
+u8 HasAiBuildFlag(s32 buildFlags) {
     extern void *gAiSettings;
-    u8 var_r0;
+    u8 enabled;
 
-    if (M2C_FIELD(gAiSettings, u8 *, 0x11) & arg0) {
-        var_r0 = 1;
+    if (M2C_FIELD(gAiSettings, u8 *, AI_SETTING_BUILD_FLAGS) & buildFlags) {
+        enabled = 1;
     } else {
-        var_r0 = 0;
+        enabled = 0;
     }
-    return var_r0;
+    return enabled;
 }
 
+/* Whether the AI may build either of its optional unit kinds (24 or 25): one of
+ * their two build flags is set in the AI settings' build-flags byte. */
 u8 HasAiOptionalUnitBuildFlag(void) {
     extern void *gAiSettings;
-    u8 var_r0;
+    u8 set;
 
-    if (M2C_FIELD(gAiSettings, u8 *, 0x11) & 3) {
-        var_r0 = 1;
+    if (M2C_FIELD(gAiSettings, u8 *, AI_SETTING_BUILD_FLAGS) & (AI_BUILD_FLAG_UNIT_24 | AI_BUILD_FLAG_UNIT_25)) {
+        set = 1;
     } else {
-        var_r0 = 0;
+        set = 0;
     }
-    return var_r0;
+    return set;
 }
 
 s32 func_ov000_021a43e8(s32 kind) {

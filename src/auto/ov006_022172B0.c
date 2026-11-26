@@ -88,12 +88,14 @@ void func_ov006_02217410(void) {
 
 }
 
-void func_ov006_02217414(void) {
+/* Allocate the player-record buffer the map-offer search receives into and clear
+ * the state's received and finished flags, ready for a new search. */
+void InitMapOfferState(void) {
     s32 MemAlloc(M2C_UNK);
     extern M2C_UNK gMapOfferState;
-    M2C_FIELD(&gMapOfferState, s32 *, 4) = MemAlloc(0x310);
-    M2C_FIELD(&gMapOfferState, s32 *, 8) = 0;
-    M2C_FIELD(&gMapOfferState, s8 *, 0) = 0;
+    M2C_FIELD(&gMapOfferState, s32 *, MAP_OFFER_STATE_RECORD) = MemAlloc(PLAYER_ENTRY_SIZE);
+    M2C_FIELD(&gMapOfferState, s32 *, MAP_OFFER_STATE_DONE) = 0;
+    M2C_FIELD(&gMapOfferState, u8 *, MAP_OFFER_STATE_RECEIVED) = 0;
 }
 
 /* Release the player-record buffer the map-offer search receives into, so the
@@ -453,7 +455,7 @@ void ShowMapTransferChosenName(void *transfer) {
     M2C_UNK TextLayer_AppendText(s32, M2C_UNK *);
     s32 CreateTextLayer();
     M2C_UNK CreateQueuedSpriteTask(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_020c8e40();
+    M2C_UNK LoadCampaignMapHeaders();
     extern M2C_UNK sMapTransferNameBreak;
     extern M2C_UNK Ov003_RedrawMapList;
     s32 layer;
@@ -462,7 +464,7 @@ void ShowMapTransferChosenName(void *transfer) {
     RenderTextLayerMessageDefault(layer, 2, MAP_TRANSFER_MSG_CHOSEN_MAP);
     TextLayer_AppendText(layer, &sMapTransferNameBreak);
     TextLayer_AppendText(layer, M2C_FIELD(transfer, s32 *, MAP_TRANSFER_CHOSEN) + MAP_RECORD_NAME);
-    func_020c8e40();
+    LoadCampaignMapHeaders();
     CreateQueuedSpriteTask(&Ov003_RedrawMapList, 6);
 }
 
@@ -501,13 +503,22 @@ void func_ov006_02217bf0(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x38) = 2;
 }
 
-void func_ov006_02217c0c(s32 a) {
-extern M2C_UNK data_ov006_02218bd8;
-void *p=((void *(*)())CreateSpriteObject)(&data_ov006_02218bd8);
-M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=0;
+/* Open the map-transfer screen for campaign map `mapId` in transfer mode 0: build
+ * its object, which then collects an online-player list capped at 100 players. */
+void CreateMapTransferObjectMode0(s32 mapId) {
+    extern M2C_UNK gMapTransferClass;
+    void *transfer = ((void *(*)())CreateSpriteObject)(&gMapTransferClass);
+    M2C_FIELD(transfer, s32 *, MAP_TRANSFER_MAP_ID) = mapId;
+    M2C_FIELD(transfer, s32 *, MAP_TRANSFER_MODE) = 0;
 }
 
-void func_ov006_02217c30(s32 a) { extern M2C_UNK data_ov006_02218bd8; void *p=((void *(*)())CreateSpriteObject)(&data_ov006_02218bd8); M2C_FIELD(p,s32 *,0x34)=a; M2C_FIELD(p,s32 *,0x38)=1; }
+/* Open the map-transfer screen for campaign map `mapId` in transfer mode 1: build
+ * its object, which then collects the uncapped list of online players. */
+void CreateMapTransferObjectMode1(s32 mapId) {
+ extern M2C_UNK gMapTransferClass;
+ void *transfer=((void *(*)())CreateSpriteObject)(&gMapTransferClass);
+ M2C_FIELD(transfer,s32 *,MAP_TRANSFER_MAP_ID)=mapId;M2C_FIELD(transfer,s32 *,MAP_TRANSFER_MODE)=1;
+}
 
 void func_ov006_02217c54(void) {
     LoadUiGraphicsBank(4);

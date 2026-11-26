@@ -133,10 +133,10 @@ void DrawMapUnitMarkers(u16 *dst) {
 
 #pragma opt_global_reg off
 M2C_UNK CopyMapPreviewTopHalf(s32 arg){
-u32 func_020d4dac(void);u16 *func_020c10a4(s32,s32,s32);
+u32 IsBattleEndSpritePresent(void);u16 *func_020c10a4(s32,s32,s32);
 extern void **gCurrentMap;extern u16 gPreviewColumnOffset[],gPreviewRowOffset[];
 s32 a[2],b[2],half,w,h,mode,x,y,sum; u8 *map; s32 width,height;u16 *src,*out; s32 index;u16 *dst=(u16 *)arg;
-mode=func_020d4dac();
+mode=IsBattleEndSpritePresent();
 map=*gCurrentMap;
 width=M2C_FIELD(map,u16 *,0x5144);
 height=M2C_FIELD(map,u16 *,0x5146);
@@ -155,9 +155,9 @@ out[0]=src[0];out[2]=src[2];out[4]=src[4];out[6]=src[6];
 }
 #pragma opt_global_reg reset
 M2C_UNK CopyMapPreviewBottomHalf(M2C_UNK p){
-u32 func_020d4dac(void);u16 *func_020c10a4(s32,s32,s32);
+u32 IsBattleEndSpritePresent(void);u16 *func_020c10a4(s32,s32,s32);
 extern void **gCurrentMap;extern u16 gPreviewColumnOffset[],gPreviewRowOffset[];
-s32 x,y,w,z,h;u16 *src,*dst;void *base;z=func_020d4dac();base=*gCurrentMap;
+s32 x,y,w,z,h;u16 *src,*dst;void *base;z=IsBattleEndSpritePresent();base=*gCurrentMap;
 h=M2C_FIELD(base,volatile u16 *,0x5146+0);w=M2C_FIELD(base,volatile u16 *,0x5144+0);
 w=(w+1)&~1;h=(h+1)&~1;
 for(y=h>>1;y<h;y++){for(x=0;x<w;x++){src=func_020c10a4(x,y,z);dst=(u16*)p+gPreviewColumnOffset[x]+gPreviewRowOffset[y];dst[0]=src[0];dst[2]=src[2];dst[4]=src[4];dst[6]=src[6];}}
@@ -378,9 +378,11 @@ s32 GetOccupationBackgroundIndex(s32 terrainKind) {
     }
 }
 
-u16 GetOccupationPaletteOffset(void) {
-    s32 GetOccupationBackgroundIndex();
-    return (u16) ((GetOccupationBackgroundIndex() * 0x14) + 0x424);
+/* OBJ tile offset of the occupation screen's background graphic for property
+ * terrain kind `terrainKind`: the background index times the per-background tile
+ * stride, based at OCCUPATION_BACKGROUND_TILE_BASE. */
+u16 GetOccupationBackgroundTileOffset(s32 terrainKind) {
+    return (u16) ((GetOccupationBackgroundIndex(terrainKind) * OCCUPATION_BACKGROUND_TILE_STEP) + OCCUPATION_BACKGROUND_TILE_BASE);
 }
 
 /* Name of the occupation screen's background graphic for property terrain

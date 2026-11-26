@@ -26,9 +26,9 @@ typedef struct TargetCursor {
    from the saved index and find the first one worth marking - a transport (kind 21/23)
    whose cargo has a cost or a value, or a unit a friendly supply unit can refill -
    highlight its tile and save the next index; at the end of the list retire the task. */
-void MarkSupplyUnitTiles(void *state){extern void **gCurrentMap;s32 func_020c98b4(void *);s32 MarkTransportCargo(void *);s32 CanBeSupplied(void *);s32 RefillSuppliedUnit(void *);M2C_UNK Sprite_ResumeAnimation(void *);
+void MarkSupplyUnitTiles(void *state){extern void **gCurrentMap;s32 IsMapActionEffectActive(void *);s32 MarkTransportCargo(void *);s32 CanBeSupplied(void *);s32 RefillSuppliedUnit(void *);M2C_UNK Sprite_ResumeAnimation(void *);
 u16 i;void *p,*q;u32 k;
-if(func_020c98b4(state))return;
+if(IsMapActionEffectActive(state))return;
 for(i=M2C_FIELD(state,u16 *,0x50);i<51;i++){
 p=*gCurrentMap;q=(u8 *)p+0x59a4+(M2C_FIELD(p,u16 *,0x52a8)+i)*14;
 k=((UnkCBUnit *)q)->kind;if(!k)continue;if(M2C_FIELD(q,u16 *,4)&8)continue;
@@ -85,8 +85,8 @@ void CreateUnitRemovalEffect(void *unit) {
 }
 
 void func_020cbcc0(void *arg0) {
-    M2C_UNK func_0207b784(s32);
-    func_0207b784(M2C_FIELD(arg0, s32 *, 0x34));
+    M2C_UNK SpriteState_StepMapViewToTile(s32);
+    SpriteState_StepMapViewToTile(M2C_FIELD(arg0, s32 *, 0x34));
 }
 
 void func_020cbcd0(void *arg0) {
@@ -544,9 +544,12 @@ void ResumeMapCursorAfterCommand(void) {
     BattleUpdateUnitCursor();
 }
 
-s32 func_020cc9a4(void) {
+/* If the map cursor's scroll is still running, advance it by 4 pixels and return
+ * 1; return 0 once the view has settled. */
+s32 StepMapViewScrollIfMoving(void) {
     M2C_UNK func_0207a7a4(M2C_UNK, M2C_UNK);
     s32 IsMapCursorIdle();
+
     if (IsMapCursorIdle() != 0) {
         return 0;
     }

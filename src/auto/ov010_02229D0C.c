@@ -329,34 +329,48 @@ void CreateNetErrorReporter(s32 callback) {
     }
 }
 
-void func_ov010_0222a238(void) {
+/* Retain the online screen's net-error text: while its error text layer is up,
+ * increment the child count of the net-error reporter sprite, if it exists. */
+void Ov010Online_RetainTextLayer(void) {
     M2C_UNK IncrementSpriteChildCount();
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gNetErrorReporterClass;
-    if (FindObjectByClass(&gNetErrorReporterClass) == 0) {
+    s32 reporter;
+
+    reporter = FindObjectByClass(&gNetErrorReporterClass);
+    if (reporter == 0) {
         return;
     }
-    IncrementSpriteChildCount();
+    IncrementSpriteChildCount(reporter);
 }
 
+/* Release the online screen's net-error text layer: decrement the child count of
+ * the net-error reporter sprite, if it exists. */
 void Ov010Online_ReleaseTextLayer(void) {
     M2C_UNK DecrementSpriteChildCount();
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gNetErrorReporterClass;
-    if (FindObjectByClass(&gNetErrorReporterClass) == 0) {
+    s32 reporter;
+
+    reporter = FindObjectByClass(&gNetErrorReporterClass);
+    if (reporter == 0) {
         return;
     }
-    DecrementSpriteChildCount();
+    DecrementSpriteChildCount(reporter);
 }
 
-void func_ov010_0222a278(void) {
+/* Destroy the online match's network-error reporter sprite, if it exists. */
+void DeleteNetErrorReporter(void) {
     M2C_UNK DeleteSpriteObject();
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gNetErrorReporterClass;
-    if (FindObjectByClass(&gNetErrorReporterClass) == 0) {
+    s32 reporter;
+
+    reporter = FindObjectByClass(&gNetErrorReporterClass);
+    if (reporter == 0) {
         return;
     }
-    DeleteSpriteObject();
+    DeleteSpriteObject(reporter);
 }
 
 u8 func_ov010_0222a298(void) {
@@ -393,7 +407,7 @@ void StartOnlineMatchSplitFades(void *sprite) {
 #pragma scheduling on
 void func_ov010_0222a320(void *a){
 extern u8 data_ov010_0222c8f4[];extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
-void *func_ov010_0222832c(void *,void *);void *GetLocalizedText(void *);void StringStorageAssignText(void *,void *);void func_0206f8b8(s32,void *,s32);void StringStorageConcat(void *,void *,void *);void StringStorageAssign(void *,void *);void StringStorageFree(void *);s32 FindTextLayer(void);void StartWindowClose(void);void *CreateTextLayer(void *);void RenderTextLayer(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
+void *func_ov010_0222832c(void *,void *);void *GetLocalizedText(void *);void StringStorageAssignText(void *,void *);void func_0206f8b8(s32,void *,s32);void StringStorageConcat(void *,void *,void *);void StringStorageAssign(void *,void *);void StringStorageFree(void *);s32 FindTextLayer(void);void StartWindowClose(void);void *CreateTextLayer(void *);void RenderTextLayer(void *,s32,s32,void *);void Ov010Online_RetainTextLayer(void);void DeleteNetErrorReporter(void);
 u8 sp[0x44];s32 v;
 StringStorageAssignText((u8 *)a+0x44,GetLocalizedText(func_ov010_0222832c(M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,void **,0x40))));
 v=M2C_FIELD(a,s32 *,0x3c);if(v<0)v=-v;func_0206f8b8(v,sp+0x24,10);
@@ -403,7 +417,7 @@ StringStorageConcat(sp,sp+0xc,sp+0x24);
 StringStorageAssign((u8 *)a+0x44,sp);StringStorageFree(sp);StringStorageFree(sp+0xc);StringStorageFree(sp+0x18);
 if(!M2C_FIELD(a,s32 *,0x38))return;
 switch(M2C_FIELD(a,s32 *,0x40)){
-case 0:case 1:func_ov010_0222a238();return;
+case 0:case 1:Ov010Online_RetainTextLayer();return;
 case 2:{
 s32 old;void *text;s32 i;u32 current;s8 mode;void *p;
 if(FindTextLayer())StartWindowClose();
@@ -416,7 +430,7 @@ if(mode==1&&current!=g3DSpriteEngineSub)continue;
 if(mode==3&&current!=old)continue;
 p=CreateTextLayer(a);RenderTextLayer(p,2,M2C_FIELD(a,u16 *,0x36)<<5,text);M2C_FIELD(p,u32 *,0x58)|=0x1400;
 }while(++i<2);
-gCur3DSpriteEngine=old;func_ov010_0222a238();return;
+gCur3DSpriteEngine=old;Ov010Online_RetainTextLayer();return;
 }
 case 3:case 4:case 5:case 6:{
 s32 old;void *text;s32 i;u32 current;s8 mode;void *p;
@@ -430,7 +444,7 @@ if(mode==1&&current!=g3DSpriteEngineSub)continue;
 if(mode==3&&current!=old)continue;
 p=CreateTextLayer(a);RenderTextLayer(p,2,M2C_FIELD(a,u16 *,0x36)<<5,text);M2C_FIELD(p,u32 *,0x58)|=0x1400;
 }while(++i<2);
-gCur3DSpriteEngine=old;func_ov010_0222a278();return;
+gCur3DSpriteEngine=old;DeleteNetErrorReporter();return;
 }
 case 7:{
 s32 old;void *text;s32 i;u32 current;s8 mode;void *p;
@@ -444,9 +458,9 @@ if(mode==1&&current!=g3DSpriteEngineSub)continue;
 if(mode==3&&current!=old)continue;
 p=CreateTextLayer(a);RenderTextLayer(p,0,M2C_FIELD(a,u16 *,0x36)<<5,text);M2C_FIELD(p,u32 *,0x58)|=0x1c00;
 }while(++i<2);
-gCur3DSpriteEngine=old;func_ov010_0222a278();return;
+gCur3DSpriteEngine=old;DeleteNetErrorReporter();return;
 }
-default:func_ov010_0222a238();return;}}
+default:Ov010Online_RetainTextLayer();return;}}
 #pragma opt_common_subs reset
 #pragma scheduling reset
 /* Net-error sprite frame: release the text layer the text error classes (0..2)

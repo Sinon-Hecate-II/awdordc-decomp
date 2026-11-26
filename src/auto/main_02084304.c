@@ -487,7 +487,17 @@ s32 GetOverlayEventFlags(void) {
     }
 }
 
-s32 IsOverlayEventSet(s32 a){s32 v,r;v=GetOverlayEventFlags();r=1;if(!(v&(1<<a)))r=0;return r;}
+/* Whether the active network session has raised the event bit of the player at
+ * zero-based index `player` (bit 0 is the first player). */
+s32 IsOverlayEventSet(s32 player) {
+    s32 GetOverlayEventFlags(void);
+    s32 flags, set;
+
+    flags = GetOverlayEventFlags();
+    set = 1;
+    if (!(flags & (1 << player))) set = 0;
+    return set;
+}
 
 /* The player record of `player` in the active network session: the single-card
  * link's player slot, or the online session's player record, or NULL when no
@@ -648,15 +658,25 @@ void CreateSessionDepartureObject(M2C_UNK owner) {
     }
 }
 
-s32 GetOnlineLocalPlayerId(void){void *GetLocalPlayerStatus(void);s32 v=-1;if(GetActiveOverlay()==2)v=M2C_FIELD(GetLocalPlayerStatus(),s32 *,0x1c);return v;}
+/* Id the online session assigned to this console's player, or -1 when no online
+ * (WFC) session is running. */
+s32 GetOnlineLocalPlayerId(void) {
+    void *GetLocalPlayerStatus(void);
+    s32 playerId = -1;
+    if (GetActiveOverlay() == NET_OVERLAY_ONLINE)
+        playerId = M2C_FIELD(GetLocalPlayerStatus(), s32 *, LOCAL_STATUS_PLAYER_ID);
+    return playerId;
+}
 
-void SetOnlineLocalPlayerId(s32 arg0) {
+/* Store the id the online session assigned to this console's player, when an
+ * online (WFC) session is running. */
+void SetOnlineLocalPlayerId(s32 playerId) {
     s32 GetActiveOverlay();
     void *GetLocalPlayerStatus();
-    if (GetActiveOverlay() != 2) {
+    if (GetActiveOverlay() != NET_OVERLAY_ONLINE) {
         return;
     }
-    M2C_FIELD(GetLocalPlayerStatus(), s32 *, 0x1C) = arg0;
+    M2C_FIELD(GetLocalPlayerStatus(), s32 *, LOCAL_STATUS_PLAYER_ID) = playerId;
 }
 
 /* Copy the local player's record into `buffer`, which `length` bytes, through
@@ -682,7 +702,7 @@ s32 Link_ReceivePacket(M2C_UNK buffer, M2C_UNK length) {
  * stages it as this console's local-player record to be sent to the others. */
 void Link_SendPacket(M2C_UNK src, M2C_UNK size) {
     M2C_UNK StageLinkLocalPlayerRecord(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov010_02229a74(M2C_UNK, M2C_UNK);
+    M2C_UNK StageOnlineLocalPlayerRecord(M2C_UNK, M2C_UNK);
     s32 overlay;
 
     overlay = GetActiveOverlay();
@@ -691,7 +711,7 @@ void Link_SendPacket(M2C_UNK src, M2C_UNK size) {
         StageLinkLocalPlayerRecord(src, size);
         return;
     case NET_OVERLAY_ONLINE:
-        func_ov010_02229a74(src, size);
+        StageOnlineLocalPlayerRecord(src, size);
         return;
     }
 }

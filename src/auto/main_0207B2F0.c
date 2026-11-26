@@ -152,27 +152,31 @@ s32 PanMapViewToTile(M2C_UNK arg0, M2C_UNK arg1) {
     return ScrollMapViewToTile(arg0, arg1, 1);
 }
 
-s32 func_0207b784(void *arg0) {
-    if (arg0 == NULL) return 0;
-    return StepMapViewToTile(M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
+/* Sprite-state callback: step the map view to the tile coordinates stored in the state. */
+s32 SpriteState_StepMapViewToTile(void *tilePosition) {
+    if (tilePosition == NULL) return 0;
+    return StepMapViewToTile(M2C_FIELD(tilePosition, u8 *, 1), M2C_FIELD(tilePosition, u8 *, 2));
 }
 
-s32 PanMapViewToUnit(void *arg0) {
-    if (arg0 == NULL) return 0;
-    return PanMapViewToTile(M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
+/* Sprite-state callback: pan the map view to the tile the unit record `unit`
+ * stands on. */
+s32 PanMapViewToUnit(void *unit) {
+    if (unit == NULL) return 0;
+    return PanMapViewToTile(M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y));
 }
 
+/* TRUE while the map view is panning: its scroll sprite exists. */
 u8 IsMapViewScrolling(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gMapScrollSpriteClass;
-    u8 var_r0;
+    u8 scrolling;
 
     if (FindObjectByClass(&gMapScrollSpriteClass) != 0) {
-        var_r0 = 1;
+        scrolling = 1;
     } else {
-        var_r0 = 0;
+        scrolling = 0;
     }
-    return var_r0;
+    return scrolling;
 }
 
 void CreateMapViewScrollHold(M2C_UNK arg0) {
@@ -401,9 +405,11 @@ void AddSpriteToBatch(s32 kind, s32 selected) {
     SPRITE_BATCH->count++;
 }
 
-s32 GetBatchTileOffset(s32 arg0) {
+/* Running tile offset of the batch's placed sprite `sprite`: its tile index within
+ * the batch's tile list, one entry per placed sprite. */
+s32 GetBatchTileOffset(s32 sprite) {
 extern s32 gSpriteBatch;
-return M2C_FIELD(gSpriteBatch+arg0*4,s32 *,0x14);
+return SPRITE_BATCH->tileOffset[sprite];
 }
 
 /* Reserve `tileCount` tiles for placed sprite `index`: the sprite placed next
@@ -414,11 +420,13 @@ void AdvanceBatchTileOffset(s32 index, s32 tileCount) {
     SPRITE_BATCH->tileOffset[index + 1] = tileCount + SPRITE_BATCH->tileOffset[index];
 }
 
-s32 GetBatchSpriteTile(s32 arg0) {
+/* Absolute tile (in the batch's tile bank) the placed sprite `sprite` draws at:
+ * the batch's tile base plus its tile stride times the sprite's running offset. */
+s32 GetBatchSpriteTile(s32 sprite) {
 s32 GetBatchTileOffset(s32); extern s32 gSpriteBatch;
-s32 base=gSpriteBatch;
-s32 index=GetBatchTileOffset(arg0);
-return M2C_FIELD(base,s32 *,0x10)+M2C_FIELD(base,s32 *,0x60)*index;
+SpriteBatch *batch=(SpriteBatch *)gSpriteBatch;
+s32 index=GetBatchTileOffset(sprite);
+return batch->tileBase+batch->tileStride*index;
 }
 
 s32 GetBatchPalette(s32 arg0) {
@@ -580,16 +588,18 @@ s32 GetBatchSpriteRows(s32 arg0) {
     return (s32) (GetBatchSpriteSourceHeight(arg0) + 7) >> 3;
 }
 
-s32 GetBatchSpriteSourceWidth(s32 arg0) {
+/* Width in pixels of the source tiles of placed sprite `index`, looked up by its kind. */
+s32 GetBatchSpriteSourceWidth(s32 index) {
     extern s32 gSpriteBatch;
     extern u8 gSpriteKindWidths[];
-    return gSpriteKindWidths[M2C_FIELD((void *)(gSpriteBatch + arg0), u8 *, 0x3C) * 8];
+    return gSpriteKindWidths[SPRITE_BATCH->kind[index] * 8];
 }
 
-s32 GetBatchSpriteSourceHeight(s32 arg0) {
+/* Height in pixels of the source tiles of placed sprite `index`, looked up by its kind. */
+s32 GetBatchSpriteSourceHeight(s32 index) {
     extern s32 gSpriteBatch;
     extern u8 gSpriteKindHeights[];
-    return gSpriteKindHeights[M2C_FIELD((void *)(gSpriteBatch + arg0), u8 *, 0x3C) * 8];
+    return gSpriteKindHeights[SPRITE_BATCH->kind[index] * 8];
 }
 
 /* Load the demo battle's fixed graphics into VRAM: the compressed tile block into

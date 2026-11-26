@@ -528,14 +528,17 @@ s32 Ov001_SendWhResetCommand(void) {
     return 0;
 }
 
-void Ov001_HandleWhResetResult(void *arg0) {
+/* Completion callback of Ov001_SendWhResetCommand's WFC reset command: a reported
+ * step error fails the connection, otherwise the reset worked and the connection
+ * goes idle. */
+void Ov001_HandleWhResetResult(void *event) {
     void SetWhStatus(M2C_UNK);
     M2C_UNK SetWhError();
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
+    if (M2C_FIELD(event, u16 *, WH_EVENT_STATUS) != 0) {
         SetWhError();
         return;
     }
-    SetWhStatus(1);
+    SetWhStatus(WH_STATUS_IDLE);
 }
 
 /* End the WH connection's key-sharing step: only while the connection is in the
@@ -598,12 +601,14 @@ s32 QueueWhSetupCommand(void) {
     return 0;
 }
 
-void FinishWhSetupCommand(void *arg0) {
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
+/* Completion callback of the WH setup command: a failed step records the WH error
+ * and leaves the connection where it is, otherwise the connection becomes idle. */
+void FinishWhSetupCommand(void *event) {
+    if (M2C_FIELD(event, u16 *, WH_EVENT_STATUS) != 0) {
         SetWhError();
         return;
     }
-    SetWhStatus(1);
+    SetWhStatus(WH_STATUS_IDLE);
 }
 
 /* Mark the WH connection busy and queue the WFC stop command; FinishWhStopCommand

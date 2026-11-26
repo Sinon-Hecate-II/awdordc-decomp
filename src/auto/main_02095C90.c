@@ -22,7 +22,7 @@ void InitTelopWindow(void *telop) {
     void CloseNarcArchive(void);
     M2C_UNK Get3DSpriteLayerSize(M2C_UNK, M2C_UNK);
     M2C_UNK OffsetTileIndices(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020af1c0(M2C_UNK, M2C_UNK);
+    M2C_UNK CreateMapModeWallpaperSprite(M2C_UNK, M2C_UNK);
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern M2C_UNK sTelopWindowPath;
@@ -75,7 +75,7 @@ void InitTelopWindow(void *telop) {
                   0x1000);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) =
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1;
-    func_020af1c0(2, 0xF);
+    CreateMapModeWallpaperSprite(2, 0xF);
     M2C_FIELD(telop, s8 *, 0x34) = 0;
     gCur3DSpriteEngine = savedEngine;
 }

@@ -404,24 +404,28 @@ u8 IsLinkSessionHost(void) {
     return result;
 }
 
-u8 func_ov006_02216eb0(void) {
-    void *func_ov006_02217164(void);
-    return M2C_FIELD(func_ov006_02217164(), u8 *, 0x34) == 1;
+/* Whether the link map-transfer panel is showing transfer step 1. */
+u8 IsMapTransferPanelStep1(void) {
+    void *GetMapTransferPanelState(void);
+    return M2C_FIELD(GetMapTransferPanelState(), u8 *, MAP_TRANSFER_PANEL_STEP) == 1;
 }
 
-u8 func_ov006_02216ed0(void) {
-    void *func_ov006_02217164(void);
-    return M2C_FIELD(func_ov006_02217164(), u8 *, 0x34) == 2;
+/* Whether the link map-transfer panel is showing transfer step 2. */
+u8 IsMapTransferPanelStep2(void) {
+    void *GetMapTransferPanelState(void);
+    return M2C_FIELD(GetMapTransferPanelState(), u8 *, MAP_TRANSFER_PANEL_STEP) == 2;
 }
 
-u8 func_ov006_02216ef0(void) {
-    void *func_ov006_02217164(void);
-    return M2C_FIELD(func_ov006_02217164(), u8 *, 0x34) == 3;
+/* Whether the link map-transfer panel is showing transfer step 3. */
+u8 IsMapTransferPanelStep3(void) {
+    void *GetMapTransferPanelState(void);
+    return M2C_FIELD(GetMapTransferPanelState(), u8 *, MAP_TRANSFER_PANEL_STEP) == 3;
 }
 
-u8 func_ov006_02216f10(void) {
- void *func_ov006_02217164(void);
- return M2C_FIELD(func_ov006_02217164(),u8 *,0x34)==4;
+/* Whether the link map-transfer panel is showing transfer step 4. */
+u8 IsMapTransferPanelStep4(void) {
+    void *GetMapTransferPanelState(void);
+    return M2C_FIELD(GetMapTransferPanelState(), u8 *, MAP_TRANSFER_PANEL_STEP) == 4;
 }
 
 /* True when the battle map in play is a custom map (id in the custom range). */
@@ -438,11 +442,11 @@ void SyncLinkCampaignMapPages(void *panel) {
     M2C_UNK MI_CpuFill32(M2C_UNK, s32, s32);
     M2C_UNK MI_CpuCopy32(s32, s32, s32);
     M2C_UNK CreateLinkPlayerDataListener(void *, s32, s32, void *);
-    M2C_UNK func_020c8e40();
+    M2C_UNK LoadCampaignMapHeaders();
     s32 pageBase;
     u8 local;
 
-    func_020c8e40();
+    LoadCampaignMapHeaders();
     MI_CpuFill32(0, M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_PAGE0) + 0x1068, 0x3138);
     local = M2C_FIELD(panel, u8 *, MAP_TRANSFER_PANEL_LOCAL);
     if (local) {
@@ -532,7 +536,7 @@ void func_ov006_02217160(void) {
 
 }
 
-void *func_ov006_02217164(void) {
+void *GetMapTransferPanelState(void) {
     void *FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gMapTransferPanelStateClass;
     return FindObjectByClass(&gMapTransferPanelStateClass);

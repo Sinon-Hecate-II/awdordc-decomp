@@ -73,16 +73,18 @@ MI_CpuCopy32(record,(MapRecordHeader *)gCampaignMapHeaders+index,sizeof(MapRecor
 return 1;
 }
 
-void func_020c8e40(void) {
+/* Rebuild the cached campaign map headers: clear them, then load the header of
+ * each of the MAP_ID_CAMPAIGN_PER_PLAYER campaign maps from the first one. */
+void LoadCampaignMapHeaders(void) {
     M2C_UNK LoadCampaignMapHeader(s32);
-    s32 var_r4;
+    s32 index;
 
     ClearCampaignMapHeaders();
-    var_r4 = 0;
+    index = 0;
     do {
-        LoadCampaignMapHeader(var_r4 + 0xE1);
-        var_r4 += 1;
-    } while (var_r4 < 0x32);
+        LoadCampaignMapHeader(index + MAP_ID_CAMPAIGN_FIRST);
+        index += 1;
+    } while (index < MAP_ID_CAMPAIGN_PER_PLAYER);
 }
 
 void func_020c8e64(void *arg0) {
@@ -257,12 +259,16 @@ if (!playerId) return 0;
 return ((u64)(u16)~playerId<<36) | ((u64)(s32)M2C_FIELD(stamp,u16 *,6)<<20) | ((u64)(s32)(u16)(~playerId>>16)<<4) | ((M2C_FIELD(stamp,u32 *,0xc)<<14>>20)&15);
 }
 #pragma opt_instruction_scheduling reset
-s32 MapCode_GetPid(u64 a) {
-return ~((u32)((a>>4)&0xffff)<<16 | (u32)((a>>36)&0xffff));
+/* The WFC player id of the console that recorded map code `code`: the id is
+ * stored inverted in two 16-bit halves, bits 4..19 (high) and 36..51 (low). */
+s32 MapCode_GetPid(u64 code) {
+return ~((u32)((code>>4)&0xffff)<<16 | (u32)((code>>36)&0xffff));
 }
 
-u16 MapCode_GetCrc(u64 a) {
-return (u16)((a>>20)&0xffff);
+/* The campaign map record's checksum carried in the shareable map code `code`:
+ * bits 20..35 (see PackMapCode). */
+u16 MapCode_GetCrc(u64 code) {
+return (u16)((code>>20)&0xffff);
 }
 
 /* Format the packed code of map `mapIndex` as four base-10000 decimal groups
@@ -363,14 +369,18 @@ s32 y = M2C_FIELD(p,s16 *,0x52de);
 M2C_FIELD(&data_ov000_021e146c,s32 *,a*4)=CreateDirectionMarker(x + M2C_FIELD(&gMapCursorDirDX,s8 *,i*4), y + M2C_FIELD(&gMapCursorDirDY,s8 *,i*4));
 }
 #pragma optimization_level reset
-void func_020c95e4(void) {
-extern M2C_UNK gHeldDirections;
-s32 CountHeldDirections();
-u32 i=CountHeldDirections()+1;
-u8 *p=(u8 *)&gHeldDirections;
-i=p[i];
-p[i]=0;
-DeleteDirectionMarkerSprites();
+/* Release the direction held on the cursor selector used most recently: how many
+ * directions are held picks that selector out of the two "last used" bytes, and
+ * its held direction is then cleared. */
+void ReleaseHeldDirection(void) {
+    extern M2C_UNK gHeldDirections;
+    s32 CountHeldDirections();
+    u32 selector = CountHeldDirections() + 1;
+    u8 *directions = (u8 *)&gHeldDirections;
+
+    selector = directions[selector];
+    directions[selector] = 0;
+    DeleteDirectionMarkerSprites();
 }
 
 /* Face the map action popup sprite at tile (tileX, tileY): use animation frame
@@ -470,17 +480,19 @@ void func_020c989c(void *arg0) {
     Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x54));
 }
 
-u8 func_020c98b4(void) {
+/* Nonzero while a map-action effect is playing (an object of the map-action
+ * effect sprite class exists), which holds the map view during the animation. */
+u8 IsMapActionEffectActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_0212b3e4;
-    u8 var_r0;
+    extern M2C_UNK gMapActionEffectClass;
+    u8 active;
 
-    if (FindObjectByClass(&data_0212b3e4) != 0) {
-        var_r0 = 1;
+    if (FindObjectByClass(&gMapActionEffectClass) != 0) {
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 s32 func_020c98d8(s32 x, s32 y, s32 mode) {
@@ -494,7 +506,7 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
     M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, s32);
     void PlayMapActionSound(s32, s32, s32);
     extern void **gCurrentMap;
-    extern M2C_UNK data_0212b3e4;
+    extern M2C_UNK gMapActionEffectClass;
     extern M2C_UNK data_0212b77c;
     extern M2C_UNK data_0212b788;
     extern M2C_UNK data_0212b794;
@@ -535,12 +547,12 @@ s32 func_020c98d8(s32 x, s32 y, s32 mode) {
 
     if (mode != 0 && mode != 1 && mode != 2) goto second_path;
 
-    if (FindObjectByClass(&data_0212b3e4) == 0) {
+    if (FindObjectByClass(&gMapActionEffectClass) == 0) {
         SetFileDirectory(&data_0212b77c);
         QueueFileToTextureBank(GetLocalizedFileName(&data_0212b788), 0x329a0);
         QueueFileToObjExtPalette(&data_0212b794, 0x1560, 0x20);
     }
-    obj = (void *)CreateSpriteFromClass(&data_0212b3e4, 7);
+    obj = (void *)CreateSpriteFromClass(&gMapActionEffectClass, 7);
     M2C_FIELD(obj, s32 *, 0x34) = px;
     M2C_FIELD(obj, s32 *, 0x38) = py;
     M2C_FIELD(obj, s32 *, 0x3c) = x;

@@ -540,11 +540,11 @@ PlanMoveDestination(target[0],target[1]);
 }
 #pragma opt_strength_reduction reset
 void SelectPortDestination(void) {
-s32 CanKindLoad(u32,u32); void GetAiUnitRange(void);void BuildAiUnitThreatRange(void);s32 IsMoveDestinationAllowed(s16,s16);void PlanMoveDestination(s16,s16);
+s32 CanKindCarryKind(u32,u32); void GetAiUnitRange(void);void BuildAiUnitThreatRange(void);s32 IsMoveDestinationAllowed(s16,s16);void PlanMoveDestination(s16,s16);
 extern void **gCurrentMap;extern u8 **gAiCommandState;
 s32 best=0x7fff; s16 sx,sy; s32 cols,t,x,y; s16 row;u8 *base; s8 *grid,*p;
 if(!(((u32)(M2C_FIELD(gAiCommandState,u16 *,10)<<29)>>29)&4))return;
-if(!CanKindLoad(24,((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind))return;
+if(!CanKindCarryKind(24,((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind))return;
 GetAiUnitRange();BuildAiUnitThreatRange();
 base=*gCurrentMap;
 y=0; if((s32)M2C_FIELD(base,u16 *,0x5146)>0) do {

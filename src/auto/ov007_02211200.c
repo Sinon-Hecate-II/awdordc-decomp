@@ -371,7 +371,7 @@ void MapEditor_Update(M2C_UNK editor) {
     void MapCursor_StepTowardTarget(s32);
     void CreateMapMenu(void);
     void func_ov007_02219418(void);
-    void func_ov007_022144ec(void);
+    void OpenMapEditorOptionsMenu(void);
     void func_ov007_0221330c(void);
     u8 GetMapEditorMode(void);
     u8 GetMapEditorTool(void);
@@ -416,7 +416,7 @@ void MapEditor_Update(M2C_UNK editor) {
 
     if (keyPressed & KEY_R) { CreateMapMenu(); return; }
     if (keyPressed & KEY_L) { func_ov007_02219418(); return; }
-    if (keyPressed & KEY_START) { func_ov007_022144ec(); return; }
+    if (keyPressed & KEY_START) { OpenMapEditorOptionsMenu(); return; }
     if (keyPressed & KEY_SELECT) { func_ov007_0221330c(); return; }
     if (!gTouchState[TOUCH_ACTIVE]) goto L_b4c;
     if (IsAnyUnitSpritePressed()) return;
@@ -490,18 +490,22 @@ Done:
 #pragma optimization_level reset
 void func_ov007_02211e6c(M2C_UNK arg0) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_0221f5f8;
-    CreateSpriteObject(&data_ov007_0221f5f8, arg0);
+    extern M2C_UNK gMapEditorClass;
+    CreateSpriteObject(&gMapEditorClass, arg0);
 }
 
-void func_ov007_02211e84(void) {
+/* Resume the map editor object's animation, if the editor object is alive. */
+void MapEditor_ResumeAnimation(void) {
     M2C_UNK Sprite_ResumeAnimation();
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_ov007_0221f5f8;
-    if (FindObjectByClass(&data_ov007_0221f5f8) == 0) {
+    extern M2C_UNK gMapEditorClass;
+    s32 editor;
+
+    editor = FindObjectByClass(&gMapEditorClass);
+    if (editor == 0) {
         return;
     }
-    Sprite_ResumeAnimation();
+    Sprite_ResumeAnimation(editor);
 }
 
 /* Select the map editor's palette page and put the battle map's input mode into
@@ -610,17 +614,21 @@ s32 GetCachedPlayerUnitCount(s32 arg0) {
     return M2C_FIELD(&gPlayerUnitCounts, u8 *, arg0);
 }
 
-void CountEditorUnits(void) {
+/* Recount the map's properties into the per-owner grid (gEditorUnitCounts) and
+ * cache the total property count in the map editor state. */
+void CacheEditorPropertyCount(void) {
     s8 CountMapProperties(M2C_UNK *);
     extern M2C_UNK gEditorUnitCounts;
     extern u8 gMapEditorState;
-    M2C_FIELD(&gMapEditorState, u8 *, 4) = CountMapProperties(&gEditorUnitCounts);
+    M2C_FIELD(&gMapEditorState, u8 *, MAP_EDITOR_PROPERTY_COUNT) = CountMapProperties(&gEditorUnitCounts);
 }
 
-s32 GetEditorUnitCategoryCount(M2C_UNK arg0, M2C_UNK arg1) {
+/* Number of map-editor units in category `categoryIndex` owned by `playerBand`
+ * (a negative band sums the category over all five player bands). */
+s32 GetEditorUnitCategoryCount(s32 categoryIndex, s32 playerBand) {
     M2C_UNK GetUnitCategoryCount(M2C_UNK *, M2C_UNK, M2C_UNK);
     extern M2C_UNK gEditorUnitCounts;
-    return GetUnitCategoryCount(&gEditorUnitCounts, arg0, arg1);
+    return GetUnitCategoryCount(&gEditorUnitCounts, categoryIndex, playerBand);
 }
 
 u8 MapEditor_GetPropertyCount(void) {
@@ -674,9 +682,9 @@ u8 MapEditor_PlayerHasTeam(s32 player) {
 void RefreshMapEditor(void) {
     void CachePlayerUnitCounts(void);
     void AssignPlayerTeams(void);
-    void CountEditorUnits(void);
+    void CacheEditorPropertyCount(void);
     CachePlayerUnitCounts();
-    CountEditorUnits();
+    CacheEditorPropertyCount();
     AssignPlayerTeams();
 }
 

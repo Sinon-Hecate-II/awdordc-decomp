@@ -1,6 +1,6 @@
 /* 48 functions from 0x020E0194 to 0x020E0F14 (main), found by ds-decomp. */
 #include "common.h"
-M2C_UNK func_020e0e8c();
+M2C_UNK CloseOnlineMenuImmediate();
 M2C_UNK CloseLinkMenu();
 M2C_UNK CloseOnlineMenu();
 typedef struct { unsigned char value:4; } E0194Bits;
@@ -467,53 +467,69 @@ void func_020e0dc0(void *entity) {
     func_020e0d78(entity);
 }
 
-void func_020e0dcc(M2C_UNK arg0) {
+/* Publish the local player's status, then create the match-start request tagged
+ * with the VCHT id, owned by `owner`. */
+void PublishStatusAndStartMatch(M2C_UNK owner) {
     M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
-    M2C_UNK PublishLocalPlayerStatus();
+    M2C_UNK PublishLocalPlayerStatus(void);
     PublishLocalPlayerStatus();
-    Link_CreateStartRequest(0x56434854, arg0);
+    Link_CreateStartRequest(0x56434854, owner);
 }
 
-void func_020e0dec(M2C_UNK arg0) {
+/* Link-menu start callback: publish this console's player status, then post the
+ * match-start request (match id 0x56434854) that the peers wait on. */
+void RequestLinkMatchStart(M2C_UNK owner) {
     PublishLocalPlayerStatus();
-    Link_CreateStartRequest(0x56434854, arg0);
+    Link_CreateStartRequest(0x56434854, owner);
 }
 
-void func_020e0e0c(M2C_UNK arg0) {
+/* Publish this console's player status, then create the match-start request
+ * (match id MATCH_ID_VCHT) owned by `owner`.  One of the several identical
+ * command handlers the link/online menus' command tables share. */
+void PublishStatusAndStartMatch2(M2C_UNK owner) {
     PublishLocalPlayerStatus();
-    Link_CreateStartRequest(0x56434854, arg0);
+    Link_CreateStartRequest(MATCH_ID_VCHT, owner);
 }
 
-void func_020e0e2c(M2C_UNK arg0) {
+/* Link-menu confirm handler: publish this console's player status, then post the
+ * match-start request (match id 0x56434854). One of several identical menu-start
+ * handlers in the link/online screens. */
+void ConfirmLinkMenuStart(M2C_UNK owner) {
     PublishLocalPlayerStatus();
-    Link_CreateStartRequest(0x56434854, arg0);
+    Link_CreateStartRequest(0x56434854, owner);
 }
 
-void func_020e0e4c(M2C_UNK arg0) {
-    M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
-    M2C_UNK PublishLocalPlayerStatus();
+/* Publish this console's player status, then create the match-start request
+ * (match id MATCH_ID_VCHT) owned by `owner`.  One of the several identical
+ * command handlers the link/online menus' command tables share. */
+void PublishStatusAndStartMatch3(M2C_UNK owner) {
     PublishLocalPlayerStatus();
-    Link_CreateStartRequest(0x56434854, arg0);
+    Link_CreateStartRequest(MATCH_ID_VCHT, owner);
 }
 
-void func_020e0e6c(M2C_UNK arg0) {
-    M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
-    M2C_UNK PublishLocalPlayerStatus();
+/* Publish this console's player status, then create the match-start request
+ * (match id MATCH_ID_VCHT) owned by `owner`.  Twin of PublishStatusAndStartMatch3;
+ * one of the identical command handlers the link/online menus share. */
+void PublishStatusAndStartMatch4(M2C_UNK owner) {
     PublishLocalPlayerStatus();
-    Link_CreateStartRequest(0x56434854, arg0);
+    Link_CreateStartRequest(MATCH_ID_VCHT, owner);
 }
 
-M2C_UNK func_020e0e8c(void *arg0) { M2C_UNK HideAllSpriteSlots();
-M2C_UNK SetSpriteSlotScroll();
-Ov010Online_LeaveMatch();
-CreateOnlineDepartureObject(arg0);
-HideAllSpriteSlots();
-return SetSpriteSlotScroll(0,0);
+/* Close an online menu on the spot, without the panel tween: leave the session,
+ * spawn its departure object, hide every sprite slot and reset the sprite slots'
+ * scroll offset. */
+M2C_UNK CloseOnlineMenuImmediate(void *menu) {
+    M2C_UNK HideAllSpriteSlots();
+    M2C_UNK SetSpriteSlotScroll();
+    Ov010Online_LeaveMatch();
+    CreateOnlineDepartureObject(menu);
+    HideAllSpriteSlots();
+    return SetSpriteSlotScroll(0, 0);
 }
 
 void func_020e0eb4(void) {
-    M2C_UNK func_020e0e8c();
-    ((M2C_UNK (*)())func_020e0e8c)();
+    M2C_UNK CloseOnlineMenuImmediate();
+    ((M2C_UNK (*)())CloseOnlineMenuImmediate)();
 }
 
 void func_020e0ec0(void) {
@@ -521,11 +537,11 @@ void func_020e0ec0(void) {
 }
 
 void func_020e0ecc(void) {
-    ((M2C_UNK (*)())func_020e0e8c)();
+    ((M2C_UNK (*)())CloseOnlineMenuImmediate)();
 }
 
 void func_020e0ed8(void) {
-    ((M2C_UNK (*)())func_020e0e8c)();
+    ((M2C_UNK (*)())CloseOnlineMenuImmediate)();
 }
 
 void func_020e0ee4(void) {

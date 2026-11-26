@@ -184,10 +184,15 @@ s32 gpiAuthAddProfile(void **connection, M2C_UNK profileId) {
     return 0;
 }
 
-s32 func_0204fb2c(void *unused,void *arg1,s32 arg2) {
-s32 *p=M2C_FIELD(arg1,s32 **,8);
-if(p) { s32 n=*p; if(n>arg2) *p=n-1; }
-return 1;
+/* Buddy-table walk callback after buddy `removedIndex` was removed: shift every
+ * buddy listed after it down one place so the list indices stay contiguous. */
+s32 gpiDecrementBuddyIndex(void *connection, void *buddy, s32 removedIndex) {
+    GpiBuddyStatusDetails *details = M2C_FIELD(buddy, GpiBuddyStatusDetails **, GPI_BUDDY_DETAILS);
+    if (details) {
+        s32 index = details->index;
+        if (index > removedIndex) details->index = index - 1;
+    }
+    return 1;
 }
 
 /* Removes operation `opId` from the session: appends the removal fields to the
@@ -195,7 +200,7 @@ return 1;
    callback table and decrements the session's operation counter. */
 s32 gpiAuthDeleteProfile(void **connection,s32 opId) {
 void gpiAppendStringField(M2C_UNK,M2C_UNK,M2C_UNK);
-s32 func_0204fb2c(void *,void *,s32);
+s32 gpiDecrementBuddyIndex(void *,void *,s32);
 s32 gpiFindBuddyStatus(void **,s32,void **);
 s32 gpiPeerConnectionDone(void *);
 M2C_UNK gpiFreeBuddyList(void **,void *);
@@ -221,7 +226,7 @@ M2C_FIELD(M2C_FIELD(op,void **,8),s32 *,12)=0;
 gpiFree(M2C_FIELD(op,s32 *,8));M2C_FIELD(op,s32 *,8)=0;
 if(gpiPeerConnectionDone(op))gpiFreeBuddyList(connection,op);
 if(--M2C_FIELD(session,s32 *,0x430)<0)AssertFailed(&data_020fdea8,&data_020fde9c,&data_020fdd84,0x204);
-gpiWalkBuddyTable(connection,func_0204fb2c,refCount);
+gpiWalkBuddyTable(connection,gpiDecrementBuddyIndex,refCount);
 }
 return 0;
 }

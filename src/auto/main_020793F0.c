@@ -1,9 +1,19 @@
 /* 16 functions from 0x020793F0 to 0x0207A3B0 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "sprite.h"
 typedef struct { u16 mode:3; u16 rest:13; } Mode0207;
 typedef struct { u8 kind:6; u8 group:2; u8 pad[10]; u8 variant:4; u8 rest:4; } UnitBits7971c;
 typedef struct { s32 values[4]; } DrawLookup793f0;
+
+/* Timed effect sprite: a 3D sprite object the map spawns as a short-lived
+ * effect.  Its hold counter (+0x6C) runs up to the hold length (+0x6E) and the
+ * sprite's animation is resumed once the hold is over. */
+typedef struct {
+    u8  pad00[0x6C];
+    s16 elapsed; /* +0x6C frames the hold has run */
+    s16 hold;    /* +0x6E frames to hold the animation */
+} TimedEffectSprite;
 extern const DrawLookup793f0 data_020eb1c0;
 extern u8 data_020eb7b8[];
 
@@ -194,18 +204,22 @@ s32 ey=(s16)py, ex=(s16)(px+192);
 (*(volatile u32*)0x4000504)=0;
 }
 #pragma scheduling reset
-void func_02079b64(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0x5C) = 0x80;
-    M2C_FIELD(arg0, s32 *, 0x60) = 0x180;
-    M2C_FIELD(arg0, s16 *, 0x6C) = 0;
-    M2C_FIELD(arg0, s16 *, 0x6E) = 0x10;
+/* Give a timed effect sprite its position (the wrapper's child at 0x80, 0x180 in
+ * 1/16-cell units) and start it holding its animation for 16 frames. */
+void InitTimedEffectSprite(void *sprite) {
+    M2C_FIELD(sprite, s32 *, SPRITE_WRAPPER_X) = 0x80;
+    M2C_FIELD(sprite, s32 *, SPRITE_WRAPPER_Y) = 0x180;
+    M2C_FIELD(sprite, s16 *, 0x6C) = 0;
+    M2C_FIELD(sprite, s16 *, 0x6E) = 0x10;
 }
 
-void func_02079b88(void *arg0) {
+/* Per-frame handler of the timed effect sprite class: count the hold frame and
+ * resume the sprite's animation once the hold length is reached. */
+void UpdateTimedEffectSprite(TimedEffectSprite *sprite) {
     void Sprite_ResumeAnimation(void *);
-    M2C_FIELD(arg0, s16 *, 0x6C)++;
-    if (M2C_FIELD(arg0, s16 *, 0x6C) < M2C_FIELD(arg0, s16 *, 0x6E)) return;
-    Sprite_ResumeAnimation(arg0);
+    sprite->elapsed++;
+    if (sprite->elapsed < sprite->hold) return;
+    Sprite_ResumeAnimation(sprite);
 }
 
 /* Spawn the timed effect sprite for `owner` with the default 16-frame hold. */
@@ -227,18 +241,23 @@ M2C_UNK CreateTimedEffectSprite(M2C_UNK holdFrames, M2C_UNK owner) {
     M2C_FIELD(CreateSpriteObject(&data_02100ab0, owner), s16 *, 0x6E) = holdFrames;
 }
 
-void func_02079bf0(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0x5C) = 0x180;
-    M2C_FIELD(arg0, s32 *, 0x60) = 0x80;
-    M2C_FIELD(arg0, s16 *, 0x6C) = 0;
-    M2C_FIELD(arg0, s16 *, 0x6E) = 0x10;
+/* Give a mirrored timed effect sprite its position (the wrapper child's x/y,
+ * 0x180 and 0x80 in 1/16-cell units) and start it holding its animation for
+ * its default 16 frames. */
+void InitMirroredTimedEffectSprite(TimedEffectSprite *sprite) {
+    M2C_FIELD(sprite, s32 *, SPRITE_WRAPPER_X) = 0x180;
+    M2C_FIELD(sprite, s32 *, SPRITE_WRAPPER_Y) = 0x80;
+    sprite->elapsed = 0;
+    sprite->hold = 0x10;
 }
 
-void func_02079c14(void *arg0) {
+/* Per-frame handler of the mirrored timed effect sprite class: count the hold
+ * frame and resume the sprite's animation once the hold length is reached. */
+void UpdateMirroredTimedEffectSprite(TimedEffectSprite *sprite) {
     void Sprite_ResumeAnimation(void *);
-    M2C_FIELD(arg0, s16 *, 0x6C)++;
-    if (M2C_FIELD(arg0, s16 *, 0x6C) < M2C_FIELD(arg0, s16 *, 0x6E)) return;
-    Sprite_ResumeAnimation(arg0);
+    sprite->elapsed++;
+    if (sprite->elapsed < sprite->hold) return;
+    Sprite_ResumeAnimation(sprite);
 }
 
 void func_02079c3c(M2C_UNK arg0) {
@@ -252,9 +271,12 @@ M2C_UNK func_02079c50(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_FIELD(CreateSpriteObject(&data_02100a88, arg1), s16 *, 0x6E) = arg0;
 }
 
-void MapTileToScreen(s32 arg0, s32 arg1) {
-    void func_02079c90();
-    func_02079c90((arg0 * 0x300) + 0x180, (arg1 * 0x300) + 0x180);
+/* Project the centre of map tile (tileX, tileY) into screen coordinates (`screen`):
+ * the tile centre in the map's fixed-point cell units (0x300 per cell, half a cell
+ * in) is handed to func_02079c90, which unprojects it through the map view. */
+void MapTileToScreen(s32 tileX, s32 tileY, s32 *screen) {
+    void func_02079c90(s32, s32, s32 *);
+    func_02079c90((tileX * 0x300) + 0x180, (tileY * 0x300) + 0x180, screen);
 }
 
 #pragma opt_common_subs off

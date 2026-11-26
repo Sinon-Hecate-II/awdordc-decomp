@@ -114,33 +114,38 @@ s32 SpriteState_SetDeleteCallback(void *sprite) {
 /* 3D-sprite state handler: install the state entry's data as the sprite's draw
  * callback, then move on to the next entry. */
 s32 SpriteState_SetDrawCallback(void *sprite) {
-    M2C_UNK func_01ffa920(void *, s32);
-    func_01ffa920(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA));
+    M2C_UNK Set3DSpriteDrawCallback(void *, s32);
+    Set3DSpriteDrawCallback(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA));
     M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
-s32 func_0209cdd0(void *arg0) {
-    void *temp_r1;
-    M2C_UNK (*fn)();
+/* 3D-sprite state handler: call the state entry's callback with the sprite and move
+ * on to the next entry (the callback's result is ignored). */
+s32 SpriteState_CallCallback(void *sprite) {
+    void *entry;
+    M2C_UNK (*callback)();
 
-    temp_r1 = M2C_FIELD(arg0, void **, 8);
-    fn = M2C_FIELD(temp_r1, M2C_UNK (**)(), 4);
-    M2C_FIELD(arg0, void **, 8) = (void *) (temp_r1 + 8);
-    fn(arg0);
+    entry = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    callback = M2C_FIELD(entry, M2C_UNK (**)(), DS3D_STATE_DATA);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (entry + DS3D_STATE_SIZE);
+    callback(sprite);
     return 1;
 }
 
-s32 func_0209cdf0(void *arg0) {
-    void *temp_r2;
-    s16 value;
-    M2C_UNK (*fn)();
+/* 3D-sprite state handler: call the state entry's callback with the entry's
+ * parameter and move on to the next entry at once (the callback's result is
+ * ignored). */
+s32 SpriteState_CallCallbackWithParam(void *sprite) {
+    void *entry;
+    s16 param;
+    M2C_UNK (*callback)();
 
-    temp_r2 = M2C_FIELD(arg0, void **, 8);
-    value = M2C_FIELD(temp_r2, s16 *, 2);
-    fn = M2C_FIELD(temp_r2, M2C_UNK (**)(), 4);
-    M2C_FIELD(arg0, void **, 8) = (void *) (temp_r2 + 8);
-    fn(arg0, value);
+    entry = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    param = M2C_FIELD(entry, s16 *, DS3D_STATE_PARAM);
+    callback = M2C_FIELD(entry, M2C_UNK (**)(), DS3D_STATE_DATA);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (entry + DS3D_STATE_SIZE);
+    callback(sprite, param);
     return 1;
 }
 
@@ -214,9 +219,12 @@ s32 SpriteState_WaitForTrueCallbackWithParam(void *sprite) {
     return 0;
 }
 
-s32 func_0209cf0c(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0x10) = (s32) M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4);
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+/* 3D-sprite state handler: install the state entry's data as the sprite's update
+ * callback, then stop the state run for this frame so the new callback starts on
+ * the next one. */
+s32 SpriteState_SetUpdateCallback(void *sprite) {
+    M2C_FIELD(sprite, s32 *, DS3D_SPRITE_UPDATE_CB) = (s32) M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 0;
 }
 
@@ -338,11 +346,13 @@ s32 func_0209d10c(void *arg0) {
     return 1;
 }
 
-void SpriteState_WaitForTimeout(void *arg0) {
+/* 3D-sprite update callback: count the wait state's timer down and resume the
+ * sprite's animation script once it reaches zero. */
+void SpriteState_WaitForTimeout(void *sprite) {
     void Sprite_ResumeAnimation(void *);
-    M2C_FIELD(arg0, s16 *, 0x2C)--;
-    if (M2C_FIELD(arg0, s16 *, 0x2C) > 0) return;
-    Sprite_ResumeAnimation(arg0);
+    M2C_FIELD(sprite, s16 *, DS3D_SPRITE_WAIT_TIMER)--;
+    if (M2C_FIELD(sprite, s16 *, DS3D_SPRITE_WAIT_TIMER) > 0) return;
+    Sprite_ResumeAnimation(sprite);
 }
 
 /* 3D-sprite state handler: store the delay the state entry names in the sprite
@@ -392,9 +402,11 @@ s32 SpriteState_StartWaitForInputOrTimeout(void *sprite) {
     return 0;
 }
 
-s32 func_0209d204(void *arg0) {
-    M2C_FIELD(arg0, s16 *, 0x2E) = (s16) M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2);
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+/* 3D-sprite state handler: store the state entry's parameter as the sprite's Z
+ * depth and move on to the next entry. */
+s32 SpriteState_SetZ(void *sprite) {
+    M2C_FIELD(sprite, s16 *, DS3D_SPRITE_Z) = (s16) M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
@@ -828,29 +840,34 @@ s32 SpriteState_CloseTextLayerWindow(void *sprite) {
     return 0;
 }
 
-s32 func_0209da68(void *arg0) {
+/* 3D-sprite state handler: stay on this state entry while the text layer is
+ * animating, then move on to the next entry. */
+s32 SpriteState_WaitForTextLayerAnimation(void *sprite) {
     if (IsTextLayerAnimating() != 0) {
         return 0;
     }
-    M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + 8);
+    M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ANIM) = (s32) (M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 0;
 }
 
-void func_0209da8c(void *arg0) {
+void ResetTimedSpriteElapsed(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x5C) = 0;
 }
 
-void func_0209da98(void *arg0) {
-    s32 count;
-    count = M2C_FIELD(arg0, s32 *, 0x5c) + 1;
-    M2C_FIELD(arg0, s32 *, 0x5c) = count;
-    if (count < M2C_FIELD(arg0, s32 *, 0x60)) return;
-    DeleteSpriteObject(arg0);
+/* Frame update of a timed sprite: count one more frame alive and, once the count
+ * reaches the sprite's lifetime, delete it. */
+void UpdateTimedSprite(void *sprite) {
+    s32 elapsed;
+
+    elapsed = M2C_FIELD(sprite, s32 *, DS3D_SPRITE_LIFETIME_ELAPSED) + 1;
+    M2C_FIELD(sprite, s32 *, DS3D_SPRITE_LIFETIME_ELAPSED) = elapsed;
+    if (elapsed < M2C_FIELD(sprite, s32 *, DS3D_SPRITE_LIFETIME_FRAMES)) return;
+    DeleteSpriteObject(sprite);
 }
 
-void func_0209dabc(s32 arg0) {
-    extern M2C_UNK data_0211e030;
-    M2C_FIELD(CreateSpriteFromClass(&data_0211e030), s32 *, 0x60) = arg0;
+void CreateTimedSprite(s32 arg0) {
+    extern M2C_UNK gTimedSpriteClass;
+    M2C_FIELD(CreateSpriteFromClass(&gTimedSpriteClass), s32 *, 0x60) = arg0;
 }
 
 void func_0209dad8(void **arg0) {

@@ -190,7 +190,15 @@ s32 WFC_StartWirelessStep(void) {
     return 3;
 }
 
-void WFC_ProcessConnectOrMatch(s32 a,s32 b){s32 WFC_ProcessConnectStep(void); s32 WFC_SubmitMatchRequest(); if(a==0 || b==0)WFC_ProcessConnectStep();else WFC_SubmitMatchRequest();}
+/* One WFC step: without a friend code or a player name, advance the connect
+ * phase; otherwise submit the match request, whose arguments are already in
+ * place in the registers.  Returns the status of whichever step ran. */
+s32 WFC_ProcessConnectOrMatch(s32 friendCode, s32 playerName, s32 statusBits) {
+    s32 WFC_ProcessConnectStep(void);
+    s32 WFC_SubmitMatchRequest();
+    if (friendCode == 0 || playerName == 0) return WFC_ProcessConnectStep();
+    return WFC_SubmitMatchRequest();
+}
 
 void WFC_ProcessCallback(void);
 /* Fills the local player's match request from the friend code, name and status
@@ -383,7 +391,7 @@ s32 WFC_ProcessLinkStep(void) {
  * state, starts hosting or joining, and moves the session to the next state
  * (or to the error/finished state on failure). */
 s32 WFC_ProcessLinkState(void){
-u16 *func_02011910(void);
+u16 *WFC_GetLinkObject(void);
 M2C_UNK DC_InvalidateRange();
 s32 WFC_ShutdownCommandChannel(void);
 s32 WFC_SendCommand4(void *);
@@ -408,7 +416,7 @@ default:OS_RestoreInterrupts(irq);return 1;
 if(M2C_FIELD(session,u8 *,WFC_SESSION_ABORT)==1){
 WFC_SetState(13);M2C_FIELD((void *)gWfcSession,u16 *,WFC_SESSION_SUBSTATE)=9;
 }else{
-linkState=func_02011910();
+linkState=WFC_GetLinkObject();
 DC_InvalidateRange(linkState,2);
 switch(*linkState){
 case 0:
@@ -529,5 +537,9 @@ void WFC_FillRequest(s32 a, void *b, s32 c) {
     M2C_FIELD((void *)gWfcSession, u32 *, 0x2284) = 0;
 }
 
-void WFC_InitSessionStatus(void){M2C_FIELD((void *)gWfcSession,u32 *,0x2264)=0xaaa082;}
+/* Give the newly created WFC session its initial status word: the library's
+ * starting link state, before any player slot or connection flag is reported. */
+void WFC_InitSessionStatus(void) {
+    M2C_FIELD((void *)gWfcSession, u32 *, WFC_SESSION_STATUS) = WFC_SESSION_STATUS_INITIAL;
+}
 

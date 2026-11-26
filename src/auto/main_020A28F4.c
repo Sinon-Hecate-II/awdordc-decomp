@@ -315,11 +315,14 @@ void func_020a3088(M2C_UNK arg0) {
     LevelUpUnit(arg0, 3, 0);
 }
 
-void func_020a309c(M2C_UNK arg0) {
+/* Refill a unit's ammo and fuel up to their maxima at no cost (a scripted action
+ * such as a supply drop or repair). */
+void RestockUnit(s32 unit) {
     M2C_UNK RefillUnitAmmo(M2C_UNK, M2C_UNK);
     M2C_UNK RefillUnitFuel(M2C_UNK, M2C_UNK);
-    RefillUnitAmmo(arg0, 0);
-    RefillUnitFuel(arg0, 0);
+
+    RefillUnitAmmo(unit, 0);
+    RefillUnitFuel(unit, 0);
 }
 
 void func_020a30bc(void) {
@@ -340,9 +343,10 @@ void EnablePlayerSelection(s32 player) {
     M2C_FIELD((player * MAP_PLAYER_STRIDE) + *gCurrentMap, s8 *, PLAYER_SELECTION_ENABLED_OFF) = 1;
 }
 
-void DisablePlayerSelection(s32 arg0){
-extern s32 *gCurrentMap;
-M2C_FIELD(arg0*0x8c+*gCurrentMap,s8 *,0x6815)=0;
+/* Stop `player` from picking a unit: clear its selection-enabled flag. */
+void DisablePlayerSelection(s32 player) {
+    extern s32 *gCurrentMap;
+    M2C_FIELD((player * MAP_PLAYER_STRIDE) + *gCurrentMap, s8 *, PLAYER_SELECTION_ENABLED_OFF) = 0;
 }
 
 /* Whether player `player` may still pick a unit: the start of its turn enables
@@ -480,10 +484,12 @@ void SetPlayerCoAnimationToIdle(M2C_UNK arg0) {
 #pragma opt_common_subs off
 void AdvancePlayerSpriteState(s32 a){u32 v;u32 n;extern s32 *gCurrentMap;s32 p;p=*gCurrentMap;p+=0x3a4;p+=0x6400;p+=a*0x8c;v=*(u32*)(p+0x6c);n=(v<<14)>>28;if(n>=10)return;*(u32*)(p+0x6c)=(v&~0x3c000)|(((n+1)<<28)>>14);}
 #pragma opt_common_subs reset
-void ConsumeDualCoPowerCost(M2C_UNK arg0) {
-    s32 GetCoPowerMeterCost(M2C_UNK, M2C_UNK);
-    M2C_UNK AddCoPowerMeterPoints(M2C_UNK, s32);
-    AddCoPowerMeterPoints(arg0, 0 - GetCoPowerMeterCost(arg0, 2));
+/* Consume the player's dual CO power: take its dual-power meter cost back off
+ * the player's CO power meter. */
+void ConsumeDualCoPowerCost(s32 player) {
+    s32 GetCoPowerMeterCost(s32, s32);
+    s32 AddCoPowerMeterPoints(s32, s32);
+    AddCoPowerMeterPoints(player, 0 - GetCoPowerMeterCost(player, CO_POWER_LEVEL_DUAL));
 }
 
 #pragma opt_common_subs off
@@ -587,9 +593,11 @@ void StartPlayerArmyDisplay(void *panel) {
     M2C_FIELD(panel, s32 *, 0x38) = pos[1];
 }
 
-void func_020a3740(void *arg0) {
+/* Draw handler of the player's army display panel: add its child tile marker at
+ * the panel position saved at +0x34/+0x38, showing image tile 0x50. */
+void CreateArmyPanelMarkerSprite(void *panel) {
     M2C_UNK CreateTileMarkerSprite(s32, s32, M2C_UNK, M2C_UNK, void *);
-    CreateTileMarkerSprite(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 2, 0x50, arg0);
+    CreateTileMarkerSprite(M2C_FIELD(panel, s32 *, 0x34), M2C_FIELD(panel, s32 *, 0x38), 2, 0x50, panel);
 }
 
 void func_020a3764(void *arg0) {

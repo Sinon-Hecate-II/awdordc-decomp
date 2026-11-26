@@ -344,10 +344,12 @@ gDnsQueryState[22]=n;}
 return 0;
 }
 #pragma schedule reset
-void Vector_ReleaseItem(void *a,s32 b) {
-s32 Vector_GetItem(void *,s32);
-if(!M2C_FIELD(a,void (**)(),16))return;
-M2C_FIELD(a,void (**)(s32),16)(Vector_GetItem(a,b));
+/* GameSpy darray ArrayReleaseItem: hand the item at `index` to the array's
+ * per-item release callback, when the array has one. */
+void Vector_ReleaseItem(void *array, s32 index) {
+    s32 Vector_GetItem(void *, s32);
+    if (!M2C_FIELD(array, s32 *, VECTOR_USER_DATA)) return;
+    ((void (*)(s32))M2C_FIELD(array, s32 *, VECTOR_USER_DATA))(Vector_GetItem(array, index));
 }
 
 /* GameSpy darray ArrayGrow: enlarge the array by its growth step, then
@@ -365,9 +367,12 @@ void Vector_GrowCapacity(void *array) {
         AssertFailed(&data_020fcc98, &sDarrayFileName, &data_020fcc04, 65);
 }
 
-void Vector_SetItem(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* GameSpy darray ArraySetItem: copy item into the array's slot index (the caller
+ * has already range-checked the index through Vector_GetItem). */
+void Vector_SetItem(void *array, M2C_UNK item, M2C_UNK index) {
+    s32 Vector_GetItem(void *, s32);
     M2C_UNK MemCopy(s32, M2C_UNK, s32);
-    MemCopy(Vector_GetItem(arg0, arg2), arg1, M2C_FIELD(arg0, s32 *, 8));
+    MemCopy(Vector_GetItem(array, index), item, M2C_FIELD(array, s32 *, VECTOR_ELEM_SIZE));
 }
 
 /* GameSpy gpi ArrayNew: allocates an array of `capacity` items of `elemSize` bytes
@@ -497,9 +502,11 @@ void Vector_ReplaceItem(s32 *array, s32 item, s32 index) {
     Vector_SetItem(array, item, index);
 }
 
-void Vector_Sort(void *arg0, M2C_UNK arg1) {
-    M2C_UNK func_02067610(s32, s32, s32, M2C_UNK);
-    func_02067610(M2C_FIELD(arg0, s32 *, 0x14), M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg0, s32 *, 8), arg1);
+/* GameSpy darray ArraySort: sort the array's items in place with the caller's
+ * comparison function. */
+void Vector_Sort(Vector *array, s32 compare) {
+    void Vector_SortHelper(s32, s32, s32, s32);
+    Vector_SortHelper(M2C_FIELD(array, s32 *, VECTOR_ITEMS), array->count, array->elemSize, compare);
 }
 
 /* GameSpy darray ArraySearch: returns the index of `item` in `array`, searching

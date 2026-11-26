@@ -1,5 +1,6 @@
 /* 6 functions from 0x02200EE4 to 0x02201E88 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_scene.h"
 s32 SetSceneLayerOverrideMain();
 s32 SetSceneLayerOverrideSub();
 void *CreateScrollingTextSprite();
@@ -35,7 +36,7 @@ s32 LoadGraphicsBlock();
 s32 HeapFreeBlock();
 s32 LoadFileToSpriteBuffer();
 s32 SetTileRectPalette();
-s32 func_ov003_021ea134();
+s32 Mark3DSpriteLayerDirty();
 s32 LoadDecompressedFileTo();
 s32 func_ov003_022023e4();
 s32 func_ov003_021ea294();
@@ -51,8 +52,8 @@ s32 LoadFaceTexture();
 s32 FillFaceTileMap();
 s32 LoadFacePalette();
 s32 func_ov003_021ea27c();
-u8 func_ov003_02201500(void *);
-u8 func_ov003_0220151c(void *);
+u8 Ov003_IsSetupPlayerSelectLayout(void *);
+u8 Ov003_IsSetupWallpaperLayout(void *);
 void func_ov003_0220153c(s32,s32,s32,s32,u8);
 void func_ov003_02201620(void *,s32);
 void CreatePanelSprites(void *,s32);
@@ -88,7 +89,7 @@ u8 i;
 s32 side,side2,offset,slot;
 s8 character;
 SetSceneLayerOverrideMain(3,data_ov003_02210456);
-if(func_ov003_02201500(p)){
+if(Ov003_IsSetupPlayerSelectLayout(p)){
 SetSceneLayerOverrideSub(0,data_ov003_02210454);
 SetSceneLayerOverrideSub(1,data_ov003_02210458);
 SetSceneLayerOverrideSub(3,data_ov003_0221045a);
@@ -97,7 +98,7 @@ M2C_FIELD(p,void**,0x58)=CreateScrollingTextSprite(p);
 func_ov003_021e9810(M2C_FIELD(p,void**,0x58),0x210);
 func_ov003_021e9818(M2C_FIELD(p,void**,0x58),8);
 gCur3DSpriteEngine=saved;
-}else if(func_ov003_0220151c(p)){
+}else if(Ov003_IsSetupWallpaperLayout(p)){
 SetSceneLayerOverrideMain(2,data_ov003_0221045c);
 CreateMainWallpaperSprite(2,15,6);
 func_ov003_0220153c(0,0,1,1,1);
@@ -106,7 +107,7 @@ Apply3DSpriteBanks();Reset3DSpriteBankDisplay();
 func_ov003_021e9830(M2C_FIELD(p,void**,0x48),-32);
 func_ov003_02201620(M2C_FIELD(p,void**,0x44),p);
 CreatePanelSprites(M2C_FIELD(p,void**,0x40),p);
-if(func_ov003_02201500(p))func_ov003_02201e88(M2C_FIELD(p,void**,0x50),p);
+if(Ov003_IsSetupPlayerSelectLayout(p))func_ov003_02201e88(M2C_FIELD(p,void**,0x50),p);
 M2C_FIELD(p,void**,0x4c)=CreateFrameBorderSprite(p);
 LoadFrameBorderSpritePattern(M2C_FIELD(p,void**,0x4c),0x2d80,1);
 SetSpriteActorPositionAndSize(M2C_FIELD(p,void**,0x4c),112,164,58,58);
@@ -132,7 +133,7 @@ LoadGraphicsBlock((u8 *)res+0x3cc,M2C_FIELD(gCur3DSpriteEngine,void**,0x2c));
 HeapFreeBlock(res);
 LoadFileToSpriteBuffer(data_ov003_02210918,0,64);
 SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,void**,0x2c),32,32,0);
-func_ov003_021ea134(3);
+Mark3DSpriteLayerDirty(3);
 SetFileDirectory(data_ov003_0221092c);
 res=LoadFileToBuffer(GetLocalizedFileName(data_ov003_02210934),1);
 LoadGraphicsBlock(res,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x3800);
@@ -146,11 +147,11 @@ func_ov003_021ea294(1,0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,0x30)+0x2c0);
 res=LoadFileToBuffer(GetLocalizedFileName(data_ov003_02210990),1);
 LoadGraphicsBlock((u8 *)res+0x92c,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x6400);
 HeapFreeBlock(res);gCur3DSpriteEngine=saved;
-if(func_ov003_0220151c(p))return;
+if(Ov003_IsSetupWallpaperLayout(p))return;
 saved2=gCur3DSpriteEngine;gCur3DSpriteEngine=(u16 **)g3DSpriteEngineSub;
 SetFileDirectory(data_ov003_022109a4);Clear3DSpriteLayer(3);
 Ov003_LoadPlayerSelectBg(3,2,func_ov003_022023fc(p));
-func_ov003_021ea134(3);
+Mark3DSpriteLayerDirty(3);
 Clear3DSpriteLayerVram(0);Clear3DSpriteLayerVram(1);Clear3DSpriteLayer(0);Clear3DSpriteLayer(1);
 for(i=0;i<(u32)func_ov003_022023fc(p);i++){
 if(Modulo(i,2)==0)side=0;else side=1;
@@ -166,7 +167,7 @@ FillFaceTileMap(1,offset,0,(u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine+side*4,void*
 LoadFacePalette(character,1,side2,i,0);
 }
 }
-func_ov003_021ea134(0);func_ov003_021ea134(1);
+Mark3DSpriteLayerDirty(0);Mark3DSpriteLayerDirty(1);
 SetFileDirectory(data_ov003_022109ac);
 res=LoadFileToBuffer(GetLocalizedFileName(data_ov003_022109b4),1);
 LoadGraphicsBlock((u8 *)res+0x67c,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x2800);
@@ -175,7 +176,7 @@ func_ov003_021ea27c(4,0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x3000);
 func_ov003_021ea294(5,0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,0x30)+0x2c0);
 Reset3DSpriteBankDisplay();gCur3DSpriteEngine=saved2;
 }
-u8 func_ov003_02201500(void *arg0) {
+u8 Ov003_IsSetupPlayerSelectLayout(void *arg0) {
     u8 var_r0;
 
     if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1A) >> 0x1A) == 0) {
@@ -186,15 +187,17 @@ u8 func_ov003_02201500(void *arg0) {
     return var_r0;
 }
 
-u8 func_ov003_0220151c(void *arg0) {
-    u8 var_r0;
+/* Whether the battle-setup scene object was built with the wallpaper layout:
+ * the low six bits of its +0x3A flags select the layout. */
+u8 Ov003_IsSetupWallpaperLayout(void *scene) {
+    u8 isWallpaper;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1A) >> 0x1A) == 1) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(scene, u8 *, 0x3A) << 0x1A) >> 0x1A) == OV003_SETUP_LAYOUT_WALLPAPER) {
+        isWallpaper = 1;
     } else {
-        var_r0 = 0;
+        isWallpaper = 0;
     }
-    return var_r0;
+    return isWallpaper;
 }
 
 /* Set bits 4-8 of the word pointed to by *gCur3DSpriteEngine from five boolean flags. */

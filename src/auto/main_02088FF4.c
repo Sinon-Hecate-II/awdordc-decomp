@@ -96,12 +96,12 @@ u8 Is3DSpriteAnimating(void *sprite) {
 
 #pragma scheduling on
 M2C_UNK Init3DSpriteActor(void *arg0) {
-extern M2C_UNK data_02102610;
+extern M2C_UNK g3DSpriteVtable;
 extern void *data_027e01d8;
 extern s32 data_027e00c8;
 u8 a;
 u8 b;
-M2C_FIELD(arg0, M2C_UNK **, 0) = &data_02102610;
+M2C_FIELD(arg0, M2C_UNK **, 0) = &g3DSpriteVtable;
 M2C_FIELD(arg0,u8 *,0x48) = (M2C_FIELD(arg0,u8 *,0x48)&~1)|1;
 M2C_FIELD(arg0,s16 *,0x34)=0;
 M2C_FIELD(arg0,s16 *,0x36)=0;
@@ -124,9 +124,9 @@ M2C_FIELD(arg0,u8 *,0x4F)=8;
 M2C_FIELD(arg0,s16 *,0x38)=0;
 M2C_FIELD(arg0,s16 *,0x3A)=0;
 }
-void func_020891fc(void *arg0)
+void Init3DSprite(void *arg0)
 {
-    extern M2C_UNK data_02102610;
+    extern M2C_UNK g3DSpriteVtable;
     extern void *gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
 
@@ -134,7 +134,7 @@ void func_020891fc(void *arg0)
     u8 b;
     M2C_UNK z = 0;
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_02102610;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &g3DSpriteVtable;
 
     M2C_FIELD(arg0, u8 *, 0x48) =
         (M2C_FIELD(arg0, u8 *, 0x48) & ~1) | 1;
@@ -192,19 +192,21 @@ void func_02089310(void) {
 }
 
 
-void Create3DSprite(M2C_UNK arg0)
+/* Create a plain 3D sprite owned by `owner` and initialise it to the base actor
+ * state, unless it could not be created. */
+void Create3DSprite(M2C_UNK owner)
 {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02102658;
-    void *ptr;
+    extern M2C_UNK g3DSpriteClass;
+    void *sprite;
 
-    ptr = CreateSpriteFromClass(&data_02102658, arg0);
+    sprite = CreateSpriteFromClass(&g3DSpriteClass, owner);
 
-    if (ptr == NULL) {
+    if (sprite == NULL) {
         return;
     }
 
-    func_020891fc(ptr);
+    Init3DSprite(sprite);
 }
 
 
@@ -313,12 +315,13 @@ void func_020896e4(void) {
     func_0208946c();
 }
 
-void CreateFrameBorderSprite(M2C_UNK arg0) {
+/* Create a frame-border sprite of `owner`'s and initialise it, if it was created. */
+void CreateFrameBorderSprite(M2C_UNK owner) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gFrameBorderSpriteClass;
-    void *ptr = CreateSpriteFromClass(&gFrameBorderSpriteClass, arg0);
-    if (ptr == NULL) return;
-    InitFrameBorderSprite(ptr);
+    void *sprite = CreateSpriteFromClass(&gFrameBorderSpriteClass, owner);
+    if (sprite == NULL) return;
+    InitFrameBorderSprite(sprite);
 }
 
 s32 FindFrameBorderSprite(void) {
@@ -349,16 +352,19 @@ u8 DrawTextLayerPanelProxy(void *proxy) {
     return M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x49);
 }
 
-void func_02089784(s32 arg0) {
+/* Create the proxy sprite that redraws `panel` (a text layer) whenever the proxy
+ * is drawn; draw layer 6 puts it behind the screen's other UI sprites. */
+void CreateTextLayerPanelProxy(s32 panel) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02102698;
-    M2C_FIELD(CreateSpriteFromClass(&data_02102698, 6), s32 *, 0x34) = arg0;
+    extern M2C_UNK gTextLayerPanelProxyClass;
+
+    M2C_FIELD(CreateSpriteFromClass(&gTextLayerPanelProxyClass, 6), s32 *, TEXT_LAYER_PANEL_PROXY_PANEL) = panel;
 }
 
-void DeleteTextLayerIconObjects(void) {
+void DeleteTextLayerPanelProxies(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02102698;
-    DeleteSpriteObjectsOfClass(&data_02102698);
+    extern M2C_UNK gTextLayerPanelProxyClass;
+    DeleteSpriteObjectsOfClass(&gTextLayerPanelProxyClass);
 }
 
 /* Draws the resting UI bar gradient: the gradient strip runs from UI colour 0xD
@@ -395,16 +401,19 @@ void DrawUiGradientPulse(void) {
     Update3DSpriteVram();
 }
 
-void func_0208989c(s32 arg0) {
+/* Create the gradient-bar proxy sprite of text layer `panel` on the main engine
+ * and keep the panel pointer the proxy's draw callbacks use. */
+void CreateTextLayerGradientProxy(void *panel) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02102738;
-    M2C_FIELD(CreateSpriteFromClass(&data_02102738, 1), s32 *, 0x34) = arg0;
+    extern M2C_UNK gTextLayerGradientProxyClass;
+
+    M2C_FIELD(CreateSpriteFromClass(&gTextLayerGradientProxyClass, 1), s32 *, 0x34) = (s32) panel;
 }
 
-void DeleteTextLayerAuxIconObjects(void) {
+void DeleteTextLayerGradientProxies(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02102738;
-    DeleteSpriteObjectsOfClass(&data_02102738);
+    extern M2C_UNK gTextLayerGradientProxyClass;
+    DeleteSpriteObjectsOfClass(&gTextLayerGradientProxyClass);
 }
 
 /* Initializes a 3D text layer with no child sprites or text buffers. */
@@ -476,7 +485,7 @@ void RenderTextLayer(M2C_UNK entity, M2C_UNK arg1, u32 arg2, s32 arg3) {
     M2C_UNK DrawUiGradient(M2C_UNK, M2C_UNK, s32, s32);
     void LoadScenePanelGraphics(void);
     void LoadScenePanelPalette(s32);
-    void func_02089b18(M2C_UNK, M2C_UNK);
+    void TextLayer_ReplaceText(M2C_UNK, M2C_UNK);
 
     s32 low3;
     u32 spriteIndex;
@@ -514,18 +523,20 @@ void RenderTextLayer(M2C_UNK entity, M2C_UNK arg1, u32 arg2, s32 arg3) {
             DrawUiGradient(0x1400, 1, t1, t2);
             LoadScenePanelGraphics();
             LoadScenePanelPalette(0x12);
-            func_02089b18(entity, arg3);
+            TextLayer_ReplaceText(entity, arg3);
         }
         i++;
     } while (i < 2);
     gCur3DSpriteEngine = savedBank;
 }
 
-void func_02089b18(M2C_UNK arg0, M2C_UNK arg1) {
+/* Replace a text layer's accumulated text: drop the old string, then append the
+ * new one. */
+void TextLayer_ReplaceText(M2C_UNK layer, M2C_UNK text) {
     M2C_UNK TextLayer_AppendText(M2C_UNK, M2C_UNK);
     M2C_UNK TextLayer_FreeText();
     TextLayer_FreeText();
-    TextLayer_AppendText(arg0, arg1);
+    TextLayer_AppendText(layer, text);
 }
 
 #pragma opt_common_subs off
@@ -633,6 +644,6 @@ M2C_UNK TextLayer_FreeChildSprites(M2C_UNK **layer) {
 
     sprite = M2C_FIELD(layer, void **, TEXT_LAYER_LEFT_ICON); if (sprite) { DeleteSpriteObject(sprite); M2C_FIELD(layer, s32 *, TEXT_LAYER_LEFT_ICON) = 0; }
     sprite = M2C_FIELD(layer, void **, TEXT_LAYER_RIGHT_ICON); if (sprite) { DeleteSpriteObject(sprite); M2C_FIELD(layer, s32 *, TEXT_LAYER_RIGHT_ICON) = 0; }
-    DeleteTextLayerIconObjects(); DeleteTextLayerAuxIconObjects();
+    DeleteTextLayerPanelProxies(); DeleteTextLayerGradientProxies();
 }
 

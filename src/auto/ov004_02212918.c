@@ -408,16 +408,18 @@ s32 IsPlayerTwoDefeatedFlagClear(void) {
     return 1;
 }
 
-u8 func_ov004_02213820(void) {
+/* Battle-script condition: true while event flag 1 is set (the construction menu
+ * uses it to allow a facility on map 0xa5 once the mission raised the flag). */
+u8 Ov004_IsEventFlag1Set(void) {
     s32 IsEventFlagSet(M2C_UNK);
-    u8 var_r0;
+    u8 flagSet;
 
     if (IsEventFlagSet(1) != 0) {
-        var_r0 = 1;
+        flagSet = 1;
     } else {
-        var_r0 = 0;
+        flagSet = 0;
     }
-    return var_r0;
+    return flagSet;
 }
 
 /* Battle-script condition that succeeds when player 2 has no units: counts the

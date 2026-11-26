@@ -1,5 +1,6 @@
 /* 28 functions from 0x02170830 to 0x021717FC (ov001), found by ds-decomp. */
 #include "common.h"
+#include "md5.h"
 extern s32 gWhState[];
 extern s32 gWhPacketInfo[];
 extern u8 data_ov001_0219283c[];
@@ -34,7 +35,15 @@ void Ov001_StoreWordsBigEndian(u8 *dest,volatile u32 *words,u32 bytes){
     }
 }
 #pragma thumb on
-void func_ov001_021710a4(u32 *a,u8 *b,u32 n){u32 i;for(i=0;i<n;i+=4){*a++=b[i]|(b[i+1]<<8)|(b[i+2]<<16)|(b[i+3]<<24);}}
+/* Load `bytes` bytes of `data` as little-endian words into `words` (the inverse
+ * of Ov001_StoreWordsBigEndian). */
+void Ov001_LoadWordsLittleEndian(u32 *words, u8 *data, u32 bytes) {
+    u32 i;
+
+    for (i = 0; i < bytes; i += 4) {
+        *words++ = data[i] | (data[i + 1] << 8) | (data[i + 2] << 16) | (data[i + 3] << 24);
+    }
+}
 
 #pragma thumb on
 void Ov001_CopyBytes(u8 *a,u8 *b,u32 n){u32 i;for(i=0;i<n;i++)a[i]=b[i];}
@@ -43,9 +52,16 @@ void Ov001_CopyBytes(u8 *a,u8 *b,u32 n){u32 i;for(i=0;i<n;i++)a[i]=b[i];}
 #pragma thumb on
 void Ov001_MemSet(s8 *a,s32 b,u32 n){u32 i;for(i=0;i<n;i++)*a++=(s8)b;}
 
-void func_ov001_02171100(M2C_UNK a,M2C_UNK b,M2C_UNK c){
- M2C_UNK func_ov001_0217073c(M2C_UNK *);M2C_UNK Ov001_MD5_Update(M2C_UNK *,M2C_UNK,M2C_UNK);M2C_UNK Ov001_MD5_Final(M2C_UNK,M2C_UNK *);
- M2C_UNK p[22];func_ov001_0217073c(p);Ov001_MD5_Update(p,b,c);Ov001_MD5_Final(a,p);
+/* Compute the MD5 digest of `length` bytes at `data` into the 16-byte `digest`. */
+void Ov001_MD5Digest(u8 *digest, s32 data, u32 length) {
+    void Ov001_MD5_Init(MD5Context *);
+    void Ov001_MD5_Update(MD5Context *, s32, u32);
+    void Ov001_MD5_Final(u8 *, MD5Context *);
+    MD5Context context;
+
+    Ov001_MD5_Init(&context);
+    Ov001_MD5_Update(&context, data, length);
+    Ov001_MD5_Final(digest, &context);
 }
 
 void WhGetTime(void){u64 GetSystemTick(void);void U64Divide(u64,u64);U64Divide(GetSystemTick()<<6,0x82ea);}
@@ -199,7 +215,13 @@ s8 Ov001_GetIconRowSelection(void) {
     return M2C_FIELD(gOv001IconRow, s8 *, 0x16);
 }
 
-void Ov001_LatchIconRowSelection(s8 a){if(M2C_FIELD(gOv001IconRow,s8 *,0x16)==-1)M2C_FIELD(gOv001IconRow,s8 *,0x16)=a;}
+/* Select bar `bar` of the icon row, but only if no bar has been selected yet. */
+void Ov001_LatchIconRowSelection(s8 bar) {
+    extern void *gOv001IconRow;
+    if (((Ov001IconRow *)gOv001IconRow)->selected == -1) {
+        ((Ov001IconRow *)gOv001IconRow)->selected = bar;
+    }
+}
 
 void Ov001_SetIconRowSelection(s8 a){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRow,s8 *,0x16)=a;}
 

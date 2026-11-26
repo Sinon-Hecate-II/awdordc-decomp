@@ -147,10 +147,14 @@ BuildCrc32Table(table,CRC32_POLYNOMIAL);
 M2C_FIELD(block,u32 *,PROFILE_ID_BLOCK_CRC)=Crc32Block(table,block,0x3c);
 }
 
-u64 func_02032558(void *a) {
-u64 GetPlayerCodeValue(void *);
-if(GetPlayerRecordKind(a)!=2)return 0;
-return GetPlayerCodeValue(a);
+/* The player code stored in `record`, or 0 when the record is not a code
+ * record (an empty, unresolved or profile-id record holds no code). */
+u64 GetPlayerRecordCode(void *record) {
+    u64 GetPlayerCodeValue(void *);
+    s32 GetPlayerRecordKind(void *);
+
+    if (GetPlayerRecordKind(record) != PLAYER_RECORD_KIND_CODE) return 0;
+    return GetPlayerCodeValue(record);
 }
 
 /* Resolve the GameSpy profile id behind a match player record: -1 while the
@@ -241,7 +245,7 @@ return 0;
 s32 FormatPlayerRecordId(s32 session, s32 record) {
     s32 IsPlayerRecordJoined(s32);
     u64 GetPlayerCodeValue(void *);
-    void func_02032004(void *, u32, u32);
+    void FormatPlayerCode(void *, u32, u32);
     void FormatNasId(s32, s32, s32);
     u8 text[33];
     u64 code;
@@ -252,7 +256,7 @@ s32 FormatPlayerRecordId(s32 session, s32 record) {
     }
     if (GetPlayerRecordKind((void *) record) == PLAYER_RECORD_KIND_CODE) {
         code = GetPlayerCodeValue((void *) record);
-        func_02032004(text + 21, (u32) code, (u32) (code >> 32));
+        FormatPlayerCode(text + 21, (u32) code, (u32) (code >> 32));
         return;
     }
     if (GetPlayerRecordKind((void *) record) == PLAYER_RECORD_KIND_UNRESOLVED) {
@@ -260,10 +264,13 @@ s32 FormatPlayerRecordId(s32 session, s32 record) {
     }
 }
 
-void func_0203287c(s32 arg0) {
+/* Format the player-id text of the profile-id block's two 12-byte player
+ * records: its NAS login key at PROFILE_ID_BLOCK_LOGIN_KEY and its NAS player key
+ * at PROFILE_ID_BLOCK_KEY, salted with the block's game id. */
+void FormatProfilePlayerIds(void *block) {
     M2C_UNK FormatPlayerRecordId(s32, s32);
-    FormatPlayerRecordId(arg0, arg0 + 4);
-    FormatPlayerRecordId(arg0, arg0 + 0x10);
+    FormatPlayerRecordId((s32)block, (s32)block + PROFILE_ID_BLOCK_LOGIN_KEY);
+    FormatPlayerRecordId((s32)block, (s32)block + PROFILE_ID_BLOCK_KEY);
 }
 
 void SetNasServerUrl(s32 arg0) {

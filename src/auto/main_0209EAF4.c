@@ -225,7 +225,14 @@ void func_0209f220(void) {
     M2C_FIELD(g3DSpriteBankSub, s8 *, 0x50) = 0;
 }
 
-void func_0209f238(void){extern void **gCurrentMap;void RunBattleEvent(s32,s32);u8 *p=(u8 *)*gCurrentMap+0x6000;RunBattleEvent(M2C_FIELD(p,s32 *,0xeb8),M2C_FIELD(p,s32 *,0xed8));}
+/* Run the map's staged battle event: hand its recorded attacker and defender
+ * (MAP_BATTLE_ATTACKER / MAP_BATTLE_DEFENDER) to RunBattleEvent. */
+void RunStagedBattleEvent(void) {
+    extern void **gCurrentMap;
+    void RunBattleEvent(s32, s32);
+    u8 *battle = (u8 *)*gCurrentMap + 0x6000;
+    RunBattleEvent(M2C_FIELD(battle, s32 *, MAP_BATTLE_ATTACKER - 0x6000), M2C_FIELD(battle, s32 *, MAP_BATTLE_DEFENDER - 0x6000));
+}
 
 void func_0209f260(void) {
     M2C_UNK FadeMusicToHalfVolume();
@@ -287,10 +294,11 @@ void BattlePreviewAttackTile(void *preview) {
     SetBattleCommand(AI_COMMAND_ATTACK_TILE, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), M2C_FIELD(preview, s32 *, BATTLE_PREVIEW_X), M2C_FIELD(preview, s32 *, BATTLE_PREVIEW_Y));
 }
 
-void func_0209f360(void) {
+/* Run the map cursor-unit script event for the unit under the cursor. */
+void RunSelectedCursorUnitEvent(void) {
     M2C_UNK RunCursorUnitEvent(s32);
     extern void **gCurrentMap;
-    RunCursorUnitEvent(M2C_FIELD(*gCurrentMap, s32 *, 0x52D0));
+    RunCursorUnitEvent(M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT));
 }
 
 void func_0209f384(void) {
@@ -314,7 +322,7 @@ void InitBattleMapConfig(void) {
     void ResetPlayerSetupTables(void);
     s32 func_020a8a30(s32,s32); s32 func_020a8a68(s32,s32); s32 GetMapPlayerId(s32,s32); s32 GetMapPlayerFlags(s32,s32);
     void SetPlayerCoId(s32,s32); void SetPlayerArmyId(s32,s32); void SetPlayerIdForSlot(s32,s32); void SetPlayerTeam(s32,s32);
-    s32 func_020a88d4(s32); s32 MapData_GetBattleSetting(s32); s32 func_020a89a4(s32); s32 MapData_GetValueLimitLow(s32); s32 MapData_GetValueLimitHigh(s32); s32 func_020a8a04(s32);
+    s32 func_020a88d4(s32); s32 MapData_GetBattleSetting(s32); s32 MapData_GetMapValue(s32); s32 MapData_GetValueLimitLow(s32); s32 MapData_GetValueLimitHigh(s32); s32 func_020a8a04(s32);
     void func_020a88c4(s32); void SetMapWeather(void); s32 MapData_GetTileset(s32);
     s32 player, value, fieldA, fieldB, playerFlags, team;
     u8 *base;
@@ -341,7 +349,7 @@ void InitBattleMapConfig(void) {
     if (func_020a88d4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) M2C_FIELD(*gCurrentMap, u8 *, 0x5156) = 1;
     setting = MapData_GetBattleSetting(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
     gMapConfig.unk_3 = setting;
-    setting = func_020a89a4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
+    setting = MapData_GetMapValue(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
     gMapConfig.unk_4 = setting;
     setting = MapData_GetValueLimitLow(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
     gMapConfig.unk_8 = setting;
@@ -475,12 +483,15 @@ void ResetPlayerSetupTables(void) {
     *cfg = bits;
 }
 
+/* Reset the battle-end record to its start-of-battle state: the battle has not
+ * ended and no end condition has been raised (the qualifier byte keeps its
+ * default of 1). */
 void ResetBattleEndState(void) {
     extern M2C_UNK gBattleEndState;
-    M2C_FIELD(&gBattleEndState, s8 *, 0) = 0;
-    M2C_FIELD(&gBattleEndState, s8 *, 1) = 0;
-    M2C_FIELD(&gBattleEndState, s8 *, 2) = 0;
-    M2C_FIELD(&gBattleEndState, s8 *, 3) = 1;
+    M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_ENDED) = 0;
+    M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_FLAG1) = 0;
+    M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_FLAG2) = 0;
+    M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_FLAG3) = 1;
 }
 
 /* Reset the map config record to its free-play defaults: mode 1 in

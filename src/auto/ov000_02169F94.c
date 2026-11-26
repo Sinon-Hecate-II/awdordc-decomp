@@ -262,9 +262,11 @@ void GetFavouriteRecordIndex(void) {
     GetFavouriteRecord(1);
 }
 
-s32 GetFavouriteRecordTextId(s32 a) {
-if(a==-1)return 0xc0000025;
-return M2C_FIELD(GetRecordDefinition(1,a),s32 *,0x14);
+/* The text id naming the player's favourite record: -1 (no favourite) has its
+ * own string, otherwise the text id held in the record's definition. */
+s32 GetFavouriteRecordTextId(s32 recordIndex) {
+    if (recordIndex == -1) return FAVOURITE_RECORD_TEXT_NONE;
+    return ((RecordDefinition *)GetRecordDefinition(1, recordIndex))->value;
 }
 
 /* Run the map's first event-script list (script slot +0x00) with no arguments;
@@ -320,7 +322,7 @@ s32 RunTurnStartEvent(void) {
 }
 
 /* Run the map's turn-intro event (script slot MAP_EVENT_TURN_INTRO, +0x0C) once
- * the player's turn-intro banner has played (func_020d42d0, MAP_STATE_TURN_INTRO3);
+ * the player's turn-intro banner has played (TurnIntro3Step, MAP_STATE_TURN_INTRO3);
  * returns nonzero when a condition of the event matched. */
 s32 RunTurnIntroEvent(void) {
     s32 script;

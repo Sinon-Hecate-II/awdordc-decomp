@@ -103,6 +103,8 @@ void Ov001_ConfirmLeaveOptionMessage(void) {
     Ov001_SetStepCallback(&Ov001_CloseLeaveOptionMessage);
 }
 
+/* Option-screen step after the "leave" confirmation box has closed: wait for the
+ * region menu to finish, then fade the option screen out. */
 void Ov001_CloseLeaveOptionMessage(void) {
     s32 Ov001_IsRegionMenuActive();
     extern M2C_UNK Ov001_PrepareOptionScreenExit;
@@ -112,8 +114,10 @@ void Ov001_CloseLeaveOptionMessage(void) {
     Ov001_SetStepCallback(&Ov001_PrepareOptionScreenExit);
 }
 
-s32 func_ov001_0217fd74(void) {
-    if (((s32) (*(u16 *)0x027FFFA8 & 0x8000) >> 0xF) != 0) {
+/* Whether the console's lid is closed, using the shared lid word's top bit; the
+ * match-setup popup treats that like pressing B (back). */
+s32 Ov001_IsLidClosedForMatchSetup(void) {
+    if (((s32) (*(u16 *)SHARED_LID_WORD & SHARED_LID_CLOSED) >> 0xF) != 0) {
         return 1;
     }
     return 0;
@@ -186,6 +190,8 @@ void Ov001_WaitMatchSetupMenu(void) {
     Ov001_SetStepCallback(&Ov001_UpdateMatchSetupMenu);
 }
 
+/* Download-play match-setup popup's per-frame step: wait a frame, then process the
+ * second page's menu choice, the popup's B/lid input and the back choice. */
 void Ov001_UpdateMatchSetupMenu(void) {
     M2C_UNK SleepMilliseconds(s32);
     void Ov001_HandleMatchSetupPage2Choice(void);
@@ -200,17 +206,17 @@ void Ov001_UpdateMatchSetupMenu(void) {
 }
 
 /* Match-setup popup input: B latches the popup's only choice, the back icon,
- * and so does closing the console's lid (func_ov001_0217fd74 is the inlined copy
- * of the shared lid-state test). */
+ * and so does closing the console's lid (Ov001_IsLidClosedForMatchSetup is the
+ * lid-state test). */
 void Ov001_HandleMatchSetupMenuInput(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     s32 KeyPressed(M2C_UNK);
-    s32 func_ov001_0217fd74(void);
+    s32 Ov001_IsLidClosedForMatchSetup(void);
     if (KeyPressed(KEY_B) != 0) {
         Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
         return;
     }
-    if (func_ov001_0217fd74() == 0) {
+    if (Ov001_IsLidClosedForMatchSetup() == 0) {
         return;
     }
     Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
@@ -234,13 +240,15 @@ void Ov001_HandleMatchSetupBack(void) {
     Ov001_SetStepCallback(&Ov001_BeginMatchSetupExit);
 }
 
+/* Match-setup page exit step (back chosen): lock the icon row, hold it for a few
+ * frames, then hand the step over to the page's fade-out. */
 void Ov001_BeginMatchSetupExit(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutMatchSetup;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_FadeOutMatchSetup);
 }
 
@@ -326,8 +334,11 @@ void Ov001_ConfirmMatchSetupMessage(void) {
     Ov001_SetStepCallback(&Ov001_LeaveMatchSetupMessage);
 }
 
+/* Match-setup cancel step: once the cancel message box has closed, hand the
+ * step over to the page's exit. */
 void Ov001_LeaveMatchSetupMessage(void) {
     s32 Ov001_IsRegionMenuActive();
+    void Ov001_BeginMatchSetupExit(void);
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
@@ -375,16 +386,18 @@ void Ov001_FadeInMatchSetupAdvance(void) {
     Ov001_SetStepCallback(&Ov001_MatchSetupAdvanceFadeDone);
 }
 
+/* Step after the advance match-setup screen has faded in: wait for the main
+ * engine's fade, then hand the step to the save-delay stage. */
 void Ov001_MatchSetupAdvanceFadeDone(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
-    extern M2C_UNK func_ov001_021802d8;
+    extern M2C_UNK Ov001_MatchSetupSaveDelayStep;
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_021802d8);
+    Ov001_SetStepCallback(&Ov001_MatchSetupSaveDelayStep);
 }
 
-void func_ov001_021802d8(void) {
+void Ov001_MatchSetupSaveDelayStep(void) {
     void func_ov001_021802e8(void);
     void Ov001_TickMatchSetupSaveDelay(void);
     Ov001_TickMatchSetupSaveDelay();
@@ -438,8 +451,10 @@ void Ov001_TickMatchSetupSaveDelay(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeOutMatchSetupForSave);
 }
 
-s32 func_ov001_021803cc(void) {
-    if (((s32) (*(u16 *)0x027FFFA8 & 0x8000) >> 0xF) != 0) {
+/* TRUE while the console's lid is closed (bit SHARED_LID_CLOSED of the shared
+ * work area's lid word); the option page 2 popup treats that like the B press. */
+s32 Ov001_IsLidClosedForOptionPage2(void) {
+    if (((s32) (*(u16 *)SHARED_LID_WORD & SHARED_LID_CLOSED) >> 0xF) != 0) {
         return 1;
     }
     return 0;
@@ -527,6 +542,8 @@ void Ov001_UnlockOptionPage2IconRow(void) {
     Ov001_SetStepCallback(&Ov001_UpdateOptionPage2Menu);
 }
 
+/* Option page 2's per-frame step: wait a frame, then process the page's menu
+ * choice, its B/lid input, the no-op step and the back choice. */
 void Ov001_UpdateOptionPage2Menu(void) {
     M2C_UNK SleepMilliseconds(s32);
     void Ov001_HandleOptionPage2Choice();
@@ -541,7 +558,7 @@ void Ov001_UpdateOptionPage2Menu(void) {
 }
 
 /* Option page 2's popup input: B latches the page's only choice, the back icon,
- * and so does closing the console's lid (func_ov001_021803cc is the inlined copy
+ * and so does closing the console's lid (Ov001_IsLidClosedForOptionPage2 is the inlined copy
  * of the shared lid-state test). */
 void Ov001_HandleOptionPage2MenuInput(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
@@ -550,7 +567,7 @@ void Ov001_HandleOptionPage2MenuInput(void) {
         Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
         return;
     }
-    if (func_ov001_021803cc() == 0) {
+    if (Ov001_IsLidClosedForOptionPage2() == 0) {
         return;
     }
     Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
@@ -574,13 +591,15 @@ void Ov001_HandleOptionPage2Back(void) {
     Ov001_SetStepCallback(&Ov001_OptionPage2ConfirmStep);
 }
 
+/* Option page 2's exit step (back chosen): lock the icon row, hold it for a few
+ * frames, then hand the step over to the page's fade-out. */
 void Ov001_OptionPage2ConfirmStep(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_OptionPage2FadeOutStep;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_OptionPage2FadeOutStep);
 }
 
@@ -682,6 +701,8 @@ void Ov001_OptionPage2CancelStep(void) {
     Ov001_SetStepCallback(&Ov001_OptionPage2CancelDoneStep);
 }
 
+/* Second option page's cancel-done step: wait for the region menu to finish
+ * closing, then return to the page's confirm step. */
 void Ov001_OptionPage2CancelDoneStep(void) {
     s32 Ov001_IsRegionMenuActive();
     if (Ov001_IsRegionMenuActive() != 0) {
@@ -780,7 +801,7 @@ void Ov001_FriendListWaitIconRow(void) {
 void Ov001_UpdateFriendList(void) {
     M2C_UNK Ov001_HandleFriendListBack();
     void Ov001_CheckFriendList(void);
-    func_ov001_02180b68();
+    Ov001_HandleFriendListMenuInput();
     func_ov001_02180b8c();
     Ov001_HandleFriendListBack();
     Ov001_CheckFriendList();

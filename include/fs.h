@@ -103,6 +103,11 @@ struct FSFileRequest {
 #define FS_FILE_WRITE_PROC 0x4C /* s32 (*)(void *file, void *buffer, s32 offset, s32 length): default write callback */
 #define FS_FILE_EVENTS     0x58 /* u32 events the callback is armed for */
 
+/* An archive's command callback and the events it is armed for (the same pair
+ * an FSFile carries; the archive setter installs them together). */
+#define FS_ARCHIVE_CALLBACK 0x54 /* void (*)(void *archive, s32 event) */
+#define FS_ARCHIVE_EVENTS   0x58 /* u32 FS_EVENT_*_MASK bits the callback is armed for */
+
 /* File state bits at FS_FILE_STATE. */
 #define FS_FILE_BUSY           0x00000008
 #define FS_FILE_NOTIFY_PENDING 0x00000010 /* idle callback armed, not yet run */
@@ -123,10 +128,12 @@ struct FSFileRequest {
 #define FS_EVENT_IDLE             10
 #define FS_EVENT_IDLE_MASK    0x400
 
-/* The header LoadFileHeader fills for one file of a game data archive: the file
- * entry index, the buffer its data is read into and the sizes of the data and
- * of the zeroed BSS part that follows it, then the range of initializer
- * callbacks CompleteFileLoad runs once the data is in place. */
+/* The header LoadFileHeader fills for one file of a game data archive: the first
+ * 0x20 bytes are one entry of the ROM header's overlay table (the game's data
+ * pack files are laid out like overlays: RAM address, RAM and BSS sizes, the
+ * initializer range, the file's id in the archive and its flags), and
+ * LoadFileHeader then records the archive the file comes from and the byte
+ * range of its data. */
 typedef struct FSFileHeader {
     u32  index;              /* +0x00 file entry index in the archive */
     void *data;              /* +0x04 buffer the file data is read into */
@@ -134,12 +141,15 @@ typedef struct FSFileHeader {
     u32  bssSize;            /* +0x0C bytes of BSS zeroed after the data */
     void **initCallbacks;    /* +0x10 first initializer FinishFileLoad runs */
     void **initCallbacksEnd; /* +0x14 end of the initializer list */
-    u32  archiveSize;        /* +0x18 size of the archive range the file lives in */
+    u32  fileId;             /* +0x18 id of the file's FAT record in the archive */
     u32  flags;              /* +0x1C top byte: 1 flush the data, 2 verify its HMAC */
     u32  archive;            /* +0x20 archive the file comes from */
     u32  fileOffset;         /* +0x24 offset of the data in the archive file */
     u32  fileSize;           /* +0x28 size of the data in the archive file */
 } FSFileHeader;              /* 0x2C bytes */
+
+/* The entry's file id, for code that reads a file header through M2C_FIELD. */
+#define FS_FILE_HEADER_ID 0x18 /* u32 id of the file's FAT record in the archive */
 
 /* A resource archive (the game's data pack).  The 0x30-byte file header names
  * three sections by file offset and byte size; LoadResourceArchive reads them
@@ -198,6 +208,8 @@ typedef struct FSArchive {
     void *readProc;    /* +0x48 default read callback */
     void *writeProc;   /* +0x4C default write callback */
     void *proc;        /* +0x50 active read callback */
+    void *callback;    /* +0x54 command callback (events at FS_ARCHIVE_EVENTS) */
+    u32 events;        /* +0x58 FS_EVENT_*_MASK bits the callback is armed for */
 } FSArchive;
 
 /* The archives the game has open, in the order they were opened

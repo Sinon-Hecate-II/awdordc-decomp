@@ -2,6 +2,7 @@
 #include "common.h"
 #include "wfc.h"
 #include "gx.h"
+#include "ov001_menu.h"
 #include "ov001_wh.h"
 
 /* The ov001 profile screen's confirmation state (gOv001ProfileChoice). */
@@ -93,19 +94,23 @@ void Ov001_FadeInProfileMessage(void) {
     Ov001_SetStepCallback(&Ov001_ProfileMessageFadeDone);
 }
 
+/* Step after the profile confirmation message's fade-in: once the main engine's
+ * fade finishes, hand over to the step that waits for the player's menu choice. */
 void Ov001_ProfileMessageFadeDone(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK Ov001_WaitProfileChoiceMenu;
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
     Ov001_SetStepCallback(&Ov001_WaitProfileChoiceMenu);
 }
 
+/* Profile screen step that follows the message fade: keep waiting until the region
+ * menu starts taking input, then install the step that reads the player's pick. */
 void Ov001_WaitProfileChoiceMenu(void) {
     s32 Ov001_GetRegionMenuSelection();
     void Ov001_ProfileChoiceStep(void);
-    if (Ov001_GetRegionMenuSelection() == -2) {
+    if (Ov001_GetRegionMenuSelection() == OV001_REGION_SELECTED_PENDING) {
         return;
     }
     Ov001_SetStepCallback(&Ov001_ProfileChoiceStep);
@@ -213,8 +218,10 @@ void func_ov001_021792ec(void) {
     gOv001ProfileChoice = 1;
 }
 
+/* TRUE while the console's lid is closed (bit SHARED_LID_CLOSED of the shared
+ * work area's lid word), i.e. the game should go to sleep. */
 s32 Ov001_IsLidClosed(void) {
-    if (((s32) (*(u16 *)0x027FFFA8 & 0x8000) >> 0xF) != 0) {
+    if (((s32) (*(u16 *)SHARED_LID_WORD & SHARED_LID_CLOSED) >> 0xF) != 0) {
         return 1;
     }
     return 0;
@@ -274,10 +281,13 @@ void Ov001_WfcEraseResultFadeDone(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitWfcEraseResultMenu);
 }
 
+/* Wait for the icon row of the Wi-Fi erase-result screen to slide in: once the
+ * row reports a selection (not OV001_ICON_ROW_NOT_READY), hand the step over to
+ * the erase-result menu's update. */
 void Ov001_WaitWfcEraseResultMenu(void) {
     s32 Ov001_GetIconRowSelection();
     extern M2C_UNK Ov001_UpdateWfcEraseResultMenu;
-    if (Ov001_GetIconRowSelection() == -2) {
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) {
         return;
     }
     Ov001_SetStepCallback(&Ov001_UpdateWfcEraseResultMenu);
@@ -412,8 +422,10 @@ void Ov001_WfcEraseResultCallback(s32 event) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_LeaveWfcEraseScreen);
 }
 
+/* TRUE while the console's lid is closed (bit SHARED_LID_CLOSED of the shared
+ * work area's lid word); the wireless setup input treats that like the B press. */
 s32 Ov001_IsLidClosedForWireless(void) {
-    if (((s32) (*(u16 *)0x027FFFA8 & 0x8000) >> 0xF) != 0) {
+    if (((s32) (*(u16 *)SHARED_LID_WORD & SHARED_LID_CLOSED) >> 0xF) != 0) {
         return 1;
     }
     return 0;
@@ -709,9 +721,9 @@ void Ov001_BeginWirelessCancel(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_AbandonWirelessConnection);
 }
 
-/* Step that opens the ov001 save screen once the wireless flow is done: reset the
- * save screen timer, load its background and save-slot layout, show the message
- * box and a sound, and hand the step to the fade-in. */
+/* Open the ov001 save screen: reset its frame timer, load the screen background
+   and the save-slot object layout, show its message box and the "saved" sound,
+   then hand the step over to the fade-in. */
 void Ov001_OpenSaveScreen(void) {
     extern u8 gOv001SaveScreenTimer;
     void Ov001_LoadSaveScreenBg(void);
@@ -719,8 +731,8 @@ void Ov001_OpenSaveScreen(void) {
     gOv001SaveScreenTimer = 0;
     Ov001_LoadSaveScreenBg();
     Ov001_LoadSaveSlotObjLayout();
-    Ov001_ShowMessageBox(0x23);
-    Ov001_PlaySound(0x10);
+    Ov001_ShowMessageBox(OV001_MSG_SAVE_SCREEN);
+    Ov001_PlaySound(OV001_SOUND_SAVED);
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInSaveScreen);
 }
 
@@ -747,15 +759,18 @@ void Ov001_FadeInSaveScreen(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitSaveScreenFadeIn);
 }
 
+/* Step after the save screen's fade-in: once the main screen's fade has finished,
+ * move on to the save screen's delay step. */
 void Ov001_WaitSaveScreenFadeIn(void) {
-    extern M2C_UNK func_ov001_02179db4;
-    if (Ov001_IsFadeActive(0) != 0) {
+    extern M2C_UNK Ov001_SaveScreenDelayStep;
+
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_02179db4);
+    Ov001_SetStepCallback(&Ov001_SaveScreenDelayStep);
 }
 
-void func_ov001_02179db4(void) {
+void Ov001_SaveScreenDelayStep(void) {
  void Ov001_TickSaveDelay(void);
  void func_ov001_02179dc4(void);
  Ov001_TickSaveDelay();

@@ -196,23 +196,36 @@ s32 WhStartSession(s32 eventCallback, s32 workBlock, s32 extraLength) {
     return 0;
 }
 
-void func_ov001_0216e288(s32 a,s32 b,s32 c) {
-extern M2C_UNK data_ov001_02192824,gWhState;
-if(b && c>0){
-LockMutex(&data_ov001_02192824);
-M2C_FIELD(&gWhState,void (**)(s32),12)(b);
-UnlockMutex(&data_ov001_02192824);
-}
+/* Run the overlay's session cleanup callback on `context` under the WH
+ * cleanup mutex, when `context` is set and `count` is positive; the first
+ * argument is not read. */
+void WhCleanupContext(void *unused, void *context, s32 count) {
+    void LockMutex(void *);
+    void UnlockMutex(void *);
+    extern M2C_UNK gWhState, gWhCleanupMutex;
+    if (context && count > 0) {
+        LockMutex(&gWhCleanupMutex);
+        M2C_FIELD(&gWhState, void (**)(void *), WH_STATE_CLEANUP)(context);
+        UnlockMutex(&gWhCleanupMutex);
+    }
 }
 
-void func_ov001_0216e2b0(void) {
-extern M2C_UNK gWhState; extern s32 gWhEventRing;
-s32 t; s32 *p; s32 i;
-t=OS_DisableInterrupts();i=0;
-M2C_FIELD(&gWhState,s32 *,0x68)=0;
-M2C_FIELD(&gWhState,s32 *,0x6c)=0;
-p=&gWhEventRing;
-do {i++;*p++=0;}while(i<4);OS_RestoreInterrupts(t);
+/* Clear the shared WH event ring: both indices and every WH_EVENT_QUEUE_LEN
+ * slot, with interrupts disabled. */
+void WhResetEventQueue(void) {
+    extern M2C_UNK gWhState;
+    extern s32 gWhEventRing;
+    s32 interruptState;
+    s32 *slot;
+    s32 i;
+
+    interruptState = OS_DisableInterrupts();
+    i = 0;
+    M2C_FIELD(&gWhState, s32 *, WH_STATE_EVENT_WRITE) = 0;
+    M2C_FIELD(&gWhState, s32 *, WH_STATE_EVENT_READ) = 0;
+    slot = &gWhEventRing;
+    do { i++; *slot++ = 0; } while (i < WH_EVENT_QUEUE_LEN);
+    OS_RestoreInterrupts(interruptState);
 }
 
 /* Push one WH event onto the shared event ring: drop it when the next write slot
@@ -243,7 +256,7 @@ s32 func_ov001_0216e34c(s32 a) {
 extern M2C_UNK gWhState;
 s32 WhPopEvent(void);
 s32 active=1; s32 result; s32 x,y,r; s32 v=31;
-M2C_FIELD(&gWhState,s32 *,0x70)=a;func_ov001_0216e2b0();
+M2C_FIELD(&gWhState,s32 *,0x70)=a;WhResetEventQueue();
 x=a*0xd0;
 r=M2C_FIELD(&gWhState,s32 (**)(s32),4)(x+0x24d0+a*0xc0);
 M2C_FIELD(&gWhState,s32 *,0x54)=r;

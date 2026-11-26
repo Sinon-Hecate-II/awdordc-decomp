@@ -100,11 +100,14 @@ s32 GetPanelKeyAction(void) {
     return 0;
 }
 
-void InitFullScreenTouchRect(void *arg0) {
-    M2C_FIELD(arg0, s16 *, 0) = 0;
-    M2C_FIELD(arg0, s16 *, 2) = 0;
-    M2C_FIELD(arg0, s16 *, 4) = 0x100;
-    M2C_FIELD(arg0, s16 *, 6) = 0xC0;
+/* Fill `rect` with the whole touch screen: the top-left corner at (0, 0) and the
+ * screen's full width and height. */
+void InitFullScreenTouchRect(void *rect) {
+    WidgetRect *r = (WidgetRect *) rect;
+    r->x = 0;
+    r->y = 0;
+    r->w = SCREEN_WIDTH;
+    r->h = SCREEN_HEIGHT;
 }
 
 /* Return PANEL_INPUT_CONFIRM while a touch is held that began inside the whole
@@ -205,13 +208,15 @@ s32 GetPanelTouchAction(void) {
     }
 }
 
-void func_0209dfe4(void *arg0) {
+/* Task-sprite per-frame handler: once the sprite's own OS thread has finished,
+ * delete the sprite (its destructor frees the thread object and stack). */
+void UpdateTaskSprite(void *sprite) {
     M2C_UNK DeleteSpriteObject(void *);
     s32 TaskIsFinished(s32);
-    if (TaskIsFinished(M2C_FIELD(arg0, s32 *, 0x34)) == 0) {
+    if (TaskIsFinished(M2C_FIELD(sprite, s32 *, TASK_SPRITE_THREAD)) == 0) {
         return;
     }
-    DeleteSpriteObject(arg0);
+    DeleteSpriteObject(sprite);
 }
 
 /* Task sprite's class destructor: free the thread object and stack block the
@@ -257,8 +262,8 @@ void CreateTaskSprite(s32 entry, s32 z, u32 stackSize, s32 priority, s32 cleanup
     TaskWake(M2C_FIELD(sprite, s32 *, TASK_SPRITE_THREAD));
 }
 
-/* True while the task sprite created by CreateTaskSprite is alive at sprite
- * depth `z`; a sprite with no depth set is never found. */
+/* True while the task sprite created by CreateTaskSprite (class gTaskSpriteClass)
+ * is alive at sprite depth `z`; a sprite with no depth set is never found. */
 u8 IsTaskSpriteRunning(u16 z) {
     extern M2C_UNK gTaskSpriteClass;
     u8 running;

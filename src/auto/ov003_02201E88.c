@@ -575,7 +575,7 @@ void func_ov003_02202cc4(void *arg0) {
     M2C_UNK func_ov003_021f140c(M2C_UNK);
     M2C_UNK Ov003_SetMapConfirmDisabled();
     s32 IsSessionHostAlt();
-    M2C_UNK func_ov003_02204fd0(void *);
+    M2C_UNK SendSetupMenuConfirm(void *);
     extern u16 data_02168f14;
     s32 temp_r6;
     s32 var_r0;
@@ -613,6 +613,6 @@ void func_ov003_02202cc4(void *arg0) {
     if (IsSessionHostAlt() == 0) {
         return;
     }
-    func_ov003_02204fd0(arg0);
+    SendSetupMenuConfirm(arg0);
 }
 

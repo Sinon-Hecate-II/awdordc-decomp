@@ -105,9 +105,9 @@ void ShowPlayerUnitDialogSequence(void) {
 }
 
 void func_02096b3c(void) {
-    M2C_UNK func_02094704(M2C_UNK *);
+    M2C_UNK IsDialogSequenceActive(M2C_UNK *);
     extern M2C_UNK data_02102e14;
-    func_02094704(&data_02102e14);
+    IsDialogSequenceActive(&data_02102e14);
 }
 
 void ShowUiMessage(void) {

@@ -74,7 +74,7 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     void AddSprite(s32, s32, u16, void *, s32);
     s32 Ov003Battle_IsSoloLinkSession(void);
     s32 Ov003Battle_IsLinkSessionGuest(void);
-    u16 func_ov003_021fbcd8(void *, s32);
+    u16 Ov003_GetMapCategoryIconTileOffset(void *, s32);
     s32 IsOv003BoxOnScreen(s32, s32, s32, s32);
     s16 WrapValueToRange(s32, s32, s32);
     s32 Divide(s32, s32);
@@ -333,7 +333,7 @@ L3:
             r7v = (lim + 1) * 0x70;
             cv = (temp_r5 + 4) & 0xFF;
             do {
-                temp_v6 = func_ov003_021fbcd8(arg0, i & 0xFF);
+                temp_v6 = Ov003_GetMapCategoryIconTileOffset(arg0, i & 0xFF);
                 if (arg0->state == 2) {
                     cond = 1;
                 } else {

@@ -51,6 +51,19 @@ typedef struct MissileEffect {
 } MissileEffect;
 
 
+/* Explosion effect type: which sprite sheet GetExplosionSpriteName picks.  Types
+ * 0..2 are the normal ground explosion, 8 the meteor burst a terrain blast plays
+ * and 9 the boss explosion. */
+enum {
+    EXPLOSION_TYPE_NORMAL = 0, /* 0..2: normal ground explosion */
+    EXPLOSION_TYPE_AIR    = 3, /* air unit hit */
+    EXPLOSION_TYPE_SHIP   = 4, /* naval unit hit */
+    EXPLOSION_TYPE_QUICK  = 5, /* quick, bright explosion */
+    EXPLOSION_TYPE_HIT    = 6, /* 6..7: hit explosion */
+    EXPLOSION_TYPE_METEOR = 8, /* meteor / terrain blast */
+    EXPLOSION_TYPE_BOSS   = 9  /* boss explosion */
+};
+
 /* An explosion effect: the effect task the battle map creates on a tile and the
  * animated sprite it spawns for it.  The task keeps its tile at +0x38/+0x3C and
  * its type at +0x5C; the spawned sprite carries the same type, a triggered flag,

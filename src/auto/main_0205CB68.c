@@ -611,10 +611,11 @@ void NatNeg_Shutdown(void) {
     M2C_FIELD(&gNatNegManager, s32 *, NATNEG_PEERS) = 0;
 }
 
-s32 IsNatNegPacket(M2C_UNK arg0) {
+/* TRUE when `packet` starts with the GameSpy NAT-negotiation magic bytes. */
+s32 IsNatNegPacket(M2C_UNK packet) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK gNatNegMagic;
-    if (ByteCompareN(arg0, &gNatNegMagic, 6) == 0) {
+    extern u8 gNatNegMagic[];
+    if (ByteCompareN(packet, gNatNegMagic, NATNEG_MAGIC_LEN) == 0) {
         return 1;
     }
     return 0;

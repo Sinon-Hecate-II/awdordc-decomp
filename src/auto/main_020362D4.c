@@ -134,7 +134,7 @@ void SendWfcHttpRequest(void) {
  * otherwise; then stop the socket and put the connection into the done state.
  * A recv result of -6 (would block) just waits for the next poll. */
 void ReceiveWfcHttpResponse(void) {
-    s32 func_020215b4(s32, void *, s32);
+    s32 SocketReceive(s32, void *, s32);
     M2C_UNK func_02021750(s32, s32);
     M2C_UNK func_0202175c(s32);
     s32 StringCompareN(void *, void *, s32);
@@ -144,7 +144,7 @@ void ReceiveWfcHttpResponse(void) {
     s8 *scan;
 
     conn = M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10);
-    got = func_020215b4(conn->socket, conn->response + conn->received, WFC_HTTP_RESPONSE_SIZE - conn->received);
+    got = SocketReceive(conn->socket, conn->response + conn->received, WFC_HTTP_RESPONSE_SIZE - conn->received);
     if (got == -6) return;
     if (got >= 0) {
         M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->received += got;
@@ -196,7 +196,7 @@ fail:return 0;
  * profile, then uploads the region, type and tab-separated player-name
  * parameters. Returns 1 on success, 0 on failure. */
 M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOut,s32 countOut,s8 *region) {
- s32 StringLengthWide();void StringCopyWide();void MI_CpuFill8();M2C_UNK HeapAlloc();M2C_UNK HeapFree();void StringCopyPad();void *StringFind();void MI_CpuCopy8();s32 HttpClientInit();s32 func_020336c0();s32 func_02033988();s32 func_020346d0();s32 HttpBufferAppendString();s32 HttpAppendConnectionHeaders();s32 GetThreadPriority();void HttpClientStartTask();M2C_UNK HttpClientCleanup(void *);void func_020371f4();void func_02037204();
+ s32 StringLengthWide();void StringCopyWide();void MI_CpuFill8();M2C_UNK HeapAlloc();M2C_UNK HeapFree();void StringCopyPad();void *StringFind();void MI_CpuCopy8();s32 HttpClientInit();s32 BuildLocalFriendProfile();s32 func_02033988();s32 func_020346d0();s32 HttpBufferAppendString();s32 HttpAppendConnectionHeaders();s32 GetThreadPriority();void HttpClientStartTask();M2C_UNK HttpClientCleanup(void *);void func_020371f4();void func_02037204();
  s32 options[7];u8 work[0x94];s32 totalLen,i,pos,n;u16 *namesBuf=0;void *p;
  if(!names||count<=0||count>50||!flagsOut||!countOut)return 0;
  totalLen=0;for(i=0;i<count;i++)totalLen+=StringLengthWide(((s32 *)names)[i])+1;
@@ -220,7 +220,7 @@ M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOu
  options[0]=(s32)p;options[1]=0;options[2]=0x400;options[3]=(s32)func_020371f4;options[4]=(s32)func_02037204;options[5]=0;if(timeout<=0)options[6]=10000;else options[6]=timeout;
  if(HttpClientInit(gWfcMatchSession,options)!=0)goto fail;
  M2C_FIELD(gWfcMatchSession,s32 *,0x1c14)=1;
- if(!func_020336c0(work))goto fail;
+ if(!BuildLocalFriendProfile(work))goto fail;
  if(!func_02033988(gWfcMatchSession,work,data_0213d13c[0]))goto fail;
  if(func_020346d0(gWfcMatchSession,sWfcParamRegion,region,1))goto fail;
  if(func_020346d0(gWfcMatchSession,sWfcParamEncoding,sWfcEncodingUtf16,8))goto fail;

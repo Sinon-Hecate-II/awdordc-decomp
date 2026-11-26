@@ -211,8 +211,8 @@ void ghiAccept(M2C_UNK socket, u8 *address, s32 *addressLength) {
 }
 
 void ghiRecv(void) {
-    s32 func_020215d4();
-    ghiRecordSocketError(func_020215d4(), -1);
+    s32 SocketRecvFlags();
+    ghiRecordSocketError(SocketRecvFlags(), -1);
 }
 
 /* ghi recvfrom: receive up to `len` bytes from `socket` into `buf` with `flags`
@@ -230,9 +230,9 @@ void ghiRecvFrom(s32 socket, void *buf, s32 len, s32 flags, UnkSocketAddress *ad
 }
 
 void ghiSend(void) {
-    s32 func_020216a8();
+    s32 SocketSendFlags();
     M2C_UNK ghiRecordSocketError(s32, M2C_UNK);
-    ghiRecordSocketError(func_020216a8(), -1);
+    ghiRecordSocketError(SocketSendFlags(), -1);
 }
 
 s32 ghiSendTo(int a,int b,int c,int d,UnkSocketAddress *e,int f) {
@@ -242,9 +242,12 @@ addr.bytes[0]=f;
 return ghiRecordSocketError(func_020216cc(a,b,c,d,&addr),-1);
 }
 
-s32 ghiGetSockOpt(s32 a,s32 b,s32 c,s32 d,s32 *e) {
-M2C_UNK MI_CpuFill8(s32,s32,s32);
-MI_CpuFill8(d,0,*e);return ghiRecordSocketError(0,-1);
+/* GameSpy ghi getsockopt: the DS socket layer has no option lookup, so clear
+ * the caller's `length`-byte value buffer and report success (0). */
+s32 ghiGetSockOpt(s32 socket, s32 level, s32 option, s32 value, s32 *length) {
+    M2C_UNK MI_CpuFill8(s32, s32, s32);
+    MI_CpuFill8(value, 0, *length);
+    return ghiRecordSocketError(0, -1);
 }
 
 void ghiSetSockOpt(void) {
@@ -305,15 +308,26 @@ if(v>0x7fffffffU)v=(v&0x7fffffffU)+1;
 return v;
 }
 
-s32 func_020499c0(void) { extern s32 data_020fcdd4; s32 func_02049974(s32); return data_020fcdd4=func_02049974(data_020fcdd4); }
+s32 NextRandom(void) { extern s32 gRandomState; s32 func_02049974(s32); return gRandomState=func_02049974(gRandomState); }
 
 void SeedRandom(s32 arg0) {
-    extern s32 data_020fcdd4;
+    extern s32 gRandomState;
 
-    data_020fcdd4 = arg0 ? (arg0 & ~0x80000000) : 1;
+    gRandomState = arg0 ? (arg0 & ~0x80000000) : 1;
 }
 
-s32 RandomRange(s32 a,s32 b){s32 n=b-a;s32 result;if(n==0)return a;result=func_020499c0();result%=n;return result+a;}
+/* Random number in [min, max): advance the game's random state and fold the new
+ * value into the range, or return `min` for an empty range. */
+s32 RandomRange(s32 min, s32 max) {
+    s32 range;
+    s32 result;
+
+    range = max - min;
+    if (range == 0) return min;
+    result = NextRandom();
+    result %= range;
+    return result + min;
+}
 
 /* Pack up to `count` bytes of `src` into the four base64 digit values of
  * `dst`: the group's bytes are read into a 3-byte buffer (padded with zeros

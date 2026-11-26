@@ -286,13 +286,15 @@ void func_ov005_0221c9d8(void) {
     StartCoVictoryQuote();
 }
 
-void func_ov005_0221c9e4(M2C_UNK arg0) {
+/* Results-screen step: hold the sprite's animation while any message or text
+ * sprite is still alive, and resume it once they are all gone. */
+void Sprite_ResumeAnimationWhenTextSpritesDone(M2C_UNK sprite) {
     s32 IsTextSpriteActive();
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     if (IsTextSpriteActive() != 0) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 /* Create the results-screen slide band that AnimateResultSlide animates and

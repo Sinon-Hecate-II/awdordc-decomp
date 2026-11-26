@@ -77,9 +77,10 @@ void Set3DSpriteOffset(s16 target, u16 scale, s32 x, s32 y) {
     }
 }
 
-void Clear3DSpriteOffset(void *arg0) {
+/* Stop a screen-offset track: move the engine offsets it drives back to zero. */
+void Clear3DSpriteOffset(DS3DSpriteOffsetTrack *track) {
     void Set3DSpriteOffset(s16, u16, M2C_UNK, M2C_UNK);
-    Set3DSpriteOffset(M2C_FIELD(arg0, s16 *, 0x50), M2C_FIELD(arg0, u16 *, 0x52), 0, 0);
+    Set3DSpriteOffset(track->target, track->scale, 0, 0);
 }
 
 /* Zero the engine offsets a screen-offset track drives and rewind it: its path
@@ -108,9 +109,12 @@ void Step3DSpriteOffsetPath(DS3DSpriteOffsetTrack *track) {
  Sprite_ResumeAnimation(track);
 }
 
-void CreateScreenOffsetEffect(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
+/* Start a screen-offset effect: move both engines' second offset pair along
+ * the screen-shake path `pathIndex` for `steps` points at full (100%) size,
+ * using the sprite cloned from `source` (0 = the class's default mode). */
+void CreateScreenOffsetEffect(s32 pathIndex, s32 steps, s32 source) {
     M2C_UNK Create3DSpriteOffsetTrack(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    Create3DSpriteOffsetTrack(4, arg0, arg1, 0x64, arg2);
+    Create3DSpriteOffsetTrack(4, pathIndex, steps, 0x64, source);
 }
 
 /* Create a screen-offset track sprite: a 3D sprite object of

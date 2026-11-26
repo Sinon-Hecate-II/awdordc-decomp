@@ -235,12 +235,15 @@ s32 func_02058450(void **arg0, s8 *arg1, s32 *arg2, void *arg3, void *arg4) {
     return 0;
 }
 #pragma opt_propagation reset
-void gpiSetError(void **arg0, s32 arg1, M2C_UNK arg2) {
-    void *temp_r4;
+/* Record a GPI error on the connection: copy the error message into the
+ * connection's error text and store the code, so the error callback can report
+ * both. */
+void gpiSetError(void **connection, s32 code, M2C_UNK message) {
+    void *p;
 
-    temp_r4 = *arg0;
-    StringCopyN(temp_r4, arg2, 0x100);
-    M2C_FIELD(temp_r4, s32 *, 0x418) = arg1;
+    p = *connection;
+    StringCopyN(p, message, 0x100);
+    M2C_FIELD(p, s32 *, GPI_ERROR_CODE) = code;
 }
 
 void gpiSetErrorString(s32 *arg0, M2C_UNK arg1) {
@@ -465,14 +468,18 @@ s32 BucketSetValue(void *entry, void *value) {
     return (s32)BucketValue(entry);
 }
 
-void *BucketValue(void *arg0) {
-    if (arg0 == NULL) {
+/* gbucket.c BucketValue: return the entry's value.  A string entry (type
+ * GPI_BUCKET_STRING) owns the string at GPI_BUCKET_VALUE and returns that
+ * pointer; a numeric entry keeps its value inline there, so its address is
+ * returned instead. */
+void *BucketValue(void *entry) {
+    if (entry == NULL) {
         return NULL;
     }
-    if (M2C_FIELD(arg0, s32 *, 4) == 2) {
-        return M2C_FIELD(arg0, void **, 0xC);
+    if (M2C_FIELD(entry, s32 *, GPI_BUCKET_TYPE) == GPI_BUCKET_STRING) {
+        return M2C_FIELD(entry, void **, GPI_BUCKET_VALUE);
     }
-    return arg0 + 0xC;
+    return entry + GPI_BUCKET_VALUE;
 }
 
 /* gbucket.c BucketFind: look up the entry for `key` in bucket `store` (or the
@@ -498,8 +505,8 @@ gpiInfoFreeProfiles();
 if(M2C_FIELD(&gGpiInfoState,void **,GPI_INFO_RECV_BUFFER)){gpiFree(M2C_FIELD(&gGpiInfoState,void **,GPI_INFO_RECV_BUFFER));M2C_FIELD(&gGpiInfoState,s32 *,GPI_INFO_RECV_BUFFER)=0;M2C_FIELD(&gGpiInfoState,s32 *,GPI_INFO_RECV_CAPACITY)=0;M2C_FIELD(&gGpiInfoState,s32 *,GPI_INFO_USED)=0;}
 }
 
-s32 func_02058c84(void) {
-    extern s32 gGpiInfoSocket;
+/* Nonzero while the GPI info module has an open socket (its socket id is not -1). */
+s32 IsGpiInfoSocketOpen(void) {
     if (gGpiInfoSocket != -1) {
         return 1;
     }

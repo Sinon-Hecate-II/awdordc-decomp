@@ -390,14 +390,19 @@ void LaunchMissileAtTargetTile(AttackTargetEffect *effect) {
     SetMissileSiloFired(effect->targetX, effect->targetY);
 }
 
-void func_020c782c(void *arg0) {
+/* Spawn the "missile_n" marker owned by `effect`: at the effect's tile, with a
+ * range of 2 and the effect's tile index (0x52). */
+void SpawnMissileNMarker(void *effect) {
     M2C_UNK CreateMissileNMarker(s32, s32, M2C_UNK, u16, void *);
-    CreateMissileNMarker(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 2, M2C_FIELD(arg0, u16 *, 0x52), arg0);
+    CreateMissileNMarker(M2C_FIELD(effect, s32 *, 0x34), M2C_FIELD(effect, s32 *, 0x38), 2, M2C_FIELD(effect, u16 *, 0x52), effect);
 }
 
-void func_020c7850(void *arg0) {
+/* Marker-sprite start handler: spawn the missile_e marker at the sprite's tile
+ * (+0x34/+0x38), carrying its range (+0x64) and tile index (+0x52), owned by the
+ * sprite itself. */
+void CreateMissileEMarkerForSprite(void *sprite) {
     M2C_UNK CreateMissileEMarker(s32, s32, s32, u16, void *);
-    CreateMissileEMarker(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x64), M2C_FIELD(arg0, u16 *, 0x52), arg0);
+    CreateMissileEMarker(M2C_FIELD(sprite, s32 *, 0x34), M2C_FIELD(sprite, s32 *, 0x38), M2C_FIELD(sprite, s32 *, 0x64), M2C_FIELD(sprite, u16 *, 0x52), sprite);
 }
 
 /* Create a marker sprite owned by `parent` at tile (x, y): it shows image tile
@@ -418,9 +423,12 @@ void func_020c78ac(void *arg0) {
     PanMapViewToTile(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
 }
 
-void func_020c78c4(void *arg0) {
+/* Spawn the missile_b marker for this effect sprite: its tile (x at +0x34, y at
+ * +0x38), range (+0x64) and label tile index (+0x52) come from the effect. */
+void CreateMissileBMarkerFromEffect(void *effect) {
     M2C_UNK CreateMissileBMarker(s32, s32, s32, u16, void *);
-    CreateMissileBMarker(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x64), M2C_FIELD(arg0, u16 *, 0x52), arg0);
+
+    CreateMissileBMarker(M2C_FIELD(effect, s32 *, 0x34), M2C_FIELD(effect, s32 *, 0x38), M2C_FIELD(effect, s32 *, 0x64), M2C_FIELD(effect, u16 *, 0x52), effect);
 }
 
 /* Create the script's marker sprite owned by `owner` at tile (x, y), showing an

@@ -188,22 +188,25 @@ void TlsProcessFinished(void *tls, void *verifyData) {
     else M2C_FIELD(tls,s8 *,TLS_STATE)=TLS_STATE_FINISHED;
 }
 
-void IncrementBe64(u8 *arg0) {
-    s32 var_r2;
-    u8 *var_r0;
-    u8 temp_r1;
+/* Increment by one the big-endian 64-bit integer that ends where end points,
+ * adding to its last (least significant) byte first and carrying toward the
+ * front; the counter wraps silently after eight bytes. */
+void IncrementBe64(u8 *end) {
+    s32 remaining;
+    u8 *p;
+    u8 byte;
 
-    var_r0 = arg0;
-    var_r2 = 8;
+    p = end;
+    remaining = 8;
 loop_1:
-    var_r0 -= 1;
-    temp_r1 = *var_r0 + 1;
-    *var_r0 = temp_r1;
-    if (temp_r1 != 0) {
+    p -= 1;
+    byte = *p + 1;
+    *p = byte;
+    if (byte != 0) {
         return;
     }
-    var_r2 -= 1;
-    if (var_r2 == 0) {
+    remaining -= 1;
+    if (remaining == 0) {
         return;
     }
     goto loop_1;

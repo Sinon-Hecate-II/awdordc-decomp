@@ -3,8 +3,8 @@
 #include "gx.h"
 typedef struct { s32 x,y,z; } Vec02086dfc;
 extern const Vec02086dfc gSpriteSceneCameraEye, gSpriteSceneCameraUp;
-extern void (*data_02168fe8)(void);
-extern u8 gEventFlagsLow[4];
+extern void (*gFrameEndCallback)(void);
+extern u8 gEventFlagsLow[EVENT_FLAG_LOW_BYTES];
 
 /* Push-to-talk voice-chat widget (same fields as the definition in main_020852F4). */
 typedef struct VoiceChatWidget {
@@ -107,14 +107,17 @@ void ShowVoiceChatWidgetOnMainScreen(void) {
     LoadScenePanelGraphicsOnBothEngines(widget);
 }
 
-void func_020863cc(void) {
+/* Draw the voice-chat widget on the sub engine again, undoing
+ * ShowVoiceChatWidgetOnMainScreen; nothing happens without a widget. */
+void ShowVoiceChatWidgetOnSubScreen(void) {
     void *FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gVoiceChatWidgetClass;
-    void *temp_r0;
-    temp_r0 = FindObjectByClass(&gVoiceChatWidgetClass);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(temp_r0, s8 *, 0x4C) = 0;
-        M2C_FIELD(temp_r0, s8 *, 0x4D) = 0;
+    VoiceChatWidget *widget;
+
+    widget = (VoiceChatWidget *)FindObjectByClass(&gVoiceChatWidgetClass);
+    if (widget != NULL) {
+        widget->mainScreen = 0;
+        widget->unk_4D = 0;
     }
 }
 
@@ -295,14 +298,15 @@ s32 GetLocalizedText(u32 textId) {
  return 0;
 }
 
-s32 IsMessageTextIdValid(s32 arg0) {
-    s32 var_r0;
+/* Whether `textId` names a message that can be shown: -1 asks for the id of the
+ * current message, and id 0 means "no message". */
+s32 IsMessageTextIdValid(s32 textId) {
+    s32 id = textId;
 
-    var_r0 = arg0;
-    if (var_r0 == -1) {
-        var_r0 = GetUiMessageText();
+    if (id == -1) {
+        id = GetUiMessageText();
     }
-    if (var_r0 == 0) {
+    if (id == 0) {
         return 0;
     }
     return 1;
@@ -401,55 +405,71 @@ void SetEventFlagHigh(u32 flagId, s32 value) {
     }
 }
 
-void func_02086930(s32 arg0, s8 arg1) {
+void SetEventValue(s32 arg0, s8 arg1) {
     extern M2C_UNK gEventValues;
     M2C_FIELD(&gEventValues, s8 *, arg0) = arg1;
 }
 
-u8 IsMapListFlagSet(u32 arg0) {
+/* Whether the map-list flag for `mapId` is set, as bit mapId&7 of byte mapId>>3
+ * in the map-list flag bitmap gMapListFlags. */
+u8 IsMapListFlagSet(u32 mapId) {
     extern M2C_UNK gMapListFlags;
-    return (u8) (M2C_FIELD(&gMapListFlags, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
+    return (u8) (M2C_FIELD(&gMapListFlags, u8 *, mapId >> 3) & (1 << (mapId & 7)));
 }
 
-u8 IsCampaignMapCleared(u32 arg0) {
+/* Whether campaign map `mapId` has been cleared, as bit mapId&7 of byte mapId>>3
+ * in the cleared-campaign-map bitmap gCampaignMapCleared. */
+u8 IsCampaignMapCleared(u32 mapId) {
     extern M2C_UNK gCampaignMapCleared;
-    return (u8) (M2C_FIELD(&gCampaignMapCleared, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
+    return (u8) (M2C_FIELD(&gCampaignMapCleared, u8 *, mapId >> 3) & (1 << (mapId & 7)));
 }
 
-u8 IsCampaignMapSaved(u32 arg0) {
+/* Whether campaign map `mapId` has a saved game, as bit mapId&7 of byte mapId>>3
+ * in the saved-campaign-map bitmap gCampaignMapSaved. */
+u8 IsCampaignMapSaved(u32 mapId) {
     extern M2C_UNK gCampaignMapSaved;
-    return (u8) (M2C_FIELD(&gCampaignMapSaved, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
+    return (u8) (M2C_FIELD(&gCampaignMapSaved, u8 *, mapId >> 3) & (1 << (mapId & 7)));
 }
 
-s32 IsEventFlagHighSet(s32 arg0) {
+/* Whether bit `flagId` of the high event-flag bank is set: one of the 64 flags
+ * in gEventFlagsHigh, at bit flagId&7 of byte flagId>>3. */
+s32 IsEventFlagHighSet(s32 flagId) {
     extern M2C_UNK gEventFlagsHigh;
-    return (u8)(M2C_FIELD(&gEventFlagsHigh,u8 *, (u32)arg0 >> 3) & (1 << (arg0 & 7)));
+    return (u8)(M2C_FIELD(&gEventFlagsHigh, u8 *, (u32)flagId >> 3) & (1 << (flagId & 7)));
 }
 
-u8 IsMapBackgroundSeenFlagSet(u32 arg0) {
+/* Whether the map background for `mapId` has been seen, as bit mapId&7 of byte
+ * mapId>>3 in the seen-map-background bitmap gSeenMapBackgroundFlags. */
+u8 IsMapBackgroundSeenFlagSet(u32 mapId) {
     extern M2C_UNK gSeenMapBackgroundFlags;
-    return (u8) (M2C_FIELD(&gSeenMapBackgroundFlags, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
+    return (u8) (M2C_FIELD(&gSeenMapBackgroundFlags, u8 *, mapId >> 3) & (1 << (mapId & 7)));
 }
 
-u8 func_020869e0(u32 arg0) {
+/* Whether the "music heard" record `entry` is set: one of the 0x40 bits in
+ * gRecordsMusicHeard, at bit entry&7 of byte entry>>3. */
+u8 IsRecordsMusicHeardFlagSet(u32 entry) {
     extern M2C_UNK gRecordsMusicHeard;
-    return (u8) (M2C_FIELD(&gRecordsMusicHeard, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
+    return (u8) (M2C_FIELD(&gRecordsMusicHeard, u8 *, entry >> 3) & (1 << (entry & 7)));
 }
 
-u8 IsListRowFlagSet(u32 arg0) {
+/* Whether list row `rowId` is flagged, as bit rowId&7 of byte rowId>>3 in the
+ * list-row flag bitmap gListRowFlags. */
+u8 IsListRowFlagSet(u32 rowId) {
     extern M2C_UNK gListRowFlags;
-    return (u8) (M2C_FIELD(&gListRowFlags, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
+    return (u8) (M2C_FIELD(&gListRowFlags, u8 *, rowId >> 3) & (1 << (rowId & 7)));
 }
 
-u8 func_02086a20(s32 arg0) {
+u8 GetEventValue(s32 arg0) {
     extern M2C_UNK gEventValues;
     return M2C_FIELD(&gEventValues, u8 *, arg0);
 }
 
-s32 IsEventFlagMidSet(s32 arg0) {
+/* Whether bit `flagId` of the middle event-flag bank is set: one of the 64 flags in
+ * gEventFlagsMid, at bit flagId&7 of byte flagId>>3. */
+s32 IsEventFlagMidSet(s32 flagId) {
     extern M2C_UNK gEventFlagsMid;
-    s32 shift = arg0 & 7;
-    u8 value = M2C_FIELD(&gEventFlagsMid,u8 *, (u32)arg0 >> 3);
+    s32 shift = flagId & 7;
+    u8 value = M2C_FIELD(&gEventFlagsMid, u8 *, (u32) flagId >> 3);
     return (u8)(value & (1 << shift));
 }
 
@@ -469,13 +489,20 @@ void SetEventFlagLow(s32 flagId, s32 value) {
     }
 }
 
-s32 IsEventFlagLowSet(s32 arg0) {
- s32 shift=arg0&7;u8 value=gEventFlagsLow[arg0>>3];return (u8)(value&(1<<shift));
+/* Whether bit `flagId` of the low event-flag bank is set: one of the 32 flags in
+ * gEventFlagsLow, at bit flagId&7 of byte flagId>>3. */
+s32 IsEventFlagLowSet(s32 flagId) {
+    s32 shift = flagId & 7;
+    u8 value = gEventFlagsLow[flagId >> 3];
+    return (u8)(value & (1 << shift));
 }
 
+/* Clear all 32 flags of the game's low event-flag bank. */
 void ClearEventFlagsLow(void) {
- s32 i=0;u8 *p=gEventFlagsLow;u8 zero=i;
- do{i++;*p++=zero;}while(i<4);
+    s32 i = 0;
+    u8 *p = gEventFlagsLow;
+    u8 zero = i;
+    do { i++; *p++ = zero; } while (i < EVENT_FLAG_LOW_BYTES);
 }
 
 /* Set event flag `flag` to `value` in whichever of the three event-flag blocks owns
@@ -572,7 +599,7 @@ void func_02086b9c(void) {
     } while (var_r5_6 < 0x40);
     var_r5_7 = 0;
     do {
-        func_02086930(var_r5_7, 0);
+        SetEventValue(var_r5_7, 0);
         var_r5_7 += 1;
     } while (var_r5_7 < 8);
 }
@@ -624,13 +651,17 @@ void func_02086e9c(void) {
     M2C_FIELD((void *)0x04000448, s32 *, 0xF8) = 1;
 }
 
-void func_02086eb4(void) {
+void SwapGxBuffers(void) {
     *(s32 *)0x04000540 = 1;
 }
 
-void func_02086ec8(void) {
- void func_02086eb4(void);
- *(volatile u32 *)0x04000448=1;data_02168fe8=func_02086eb4;
+/* Pop the 3D matrix stack and queue a buffer swap for the end of the frame, once
+ * this frame's drawing is done (the frame-end callback runs the swap). */
+void GX_PopMatrixAndSwapBuffers(void) {
+    void SwapGxBuffers(void);
+    extern void (*gFrameEndCallback)(void);
+    REG_GX_MTX_POP = 1;
+    gFrameEndCallback = SwapGxBuffers;
 }
 
 /* Maps a texture's side length in pixels (GX_TEX_SIZE_*) to the code the GX

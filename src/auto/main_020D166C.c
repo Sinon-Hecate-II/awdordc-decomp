@@ -221,9 +221,11 @@ void AdvancePlayerTurn(void) {
     M2C_FIELD(p + M2C_FIELD(p, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, s32 *, MAP_PLAYER_STATES + PLAYER_REC_TURN_TIME) = 0;
 }
 
-void func_020d1c38(void) {
+/* Rewind the unit-slot allocation cursor so the next free-slot search starts at
+ * unit slot 0. */
+void ResetUnitSlotCursor(void) {
     extern void **gCurrentMap;
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52C0) = 0;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_UNIT_SLOT_CURSOR) = 0;
 }
 
 /* Set up the new current player's phase: point the view at that player, set the
@@ -246,7 +248,7 @@ SetupPlayerTeams();FillTeamSightBitmap((u8)M2C_FIELD(*gCurrentMap,u16 *,MAP_TEAM
 void InitPlayerTurnState(void) {
     extern void **gCurrentMap;
     void func_020d2d80(s32);  /* clears the player's unit-sprite state bits 8..9 */
-    void func_020d2d60(s32);  /* re-enables selection while the player has none */
+    void EnablePlayerSelectionIfNoneSelected(s32);  /* re-enables selection while the player has none */
     void PayPlayerIncome(s32);
     s32 IsPlayerCursorOwner(s32);   /* nonzero when the map cursor belongs to the player */
     void SetMapCursorTargetTile(s16, s16);
@@ -255,7 +257,7 @@ void InitPlayerTurnState(void) {
 
     M2C_FIELD(*gCurrentMap, u16 *, MAP_UNIT_SLOT_CURSOR) = 0;
     func_020d2d80(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
-    func_020d2d60(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
+    EnablePlayerSelectionIfNoneSelected(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
     PayPlayerIncome(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
     if (IsPlayerCursorOwner(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
         p = *gCurrentMap;
@@ -440,7 +442,7 @@ void func_020d2168(void) {
  * the per-unit-kind counters, then builds the derived per-player data. */
 void InitPlayerStates(void){
 extern void **gCurrentMap;extern M2C_UNK gMapData;
-void SetPlayerArmyVariant(s32,s32);void SetPlayerSpriteSet(s32,s32);void SetPlayerSpriteAuxBits(s32,s32);void SetCoPowerMeterPoints(s32,s32);void SetPlayerSelectedUnit(s32,s32);void SetPlayerGaveUp(s32,u8);void SetPlayerLost(s32,s32);void func_020d2d60(s32);void func_020d33c4(void);
+void SetPlayerArmyVariant(s32,s32);void SetPlayerSpriteSet(s32,s32);void SetPlayerSpriteAuxBits(s32,s32);void SetCoPowerMeterPoints(s32,s32);void SetPlayerSelectedUnit(s32,s32);void SetPlayerGaveUp(s32,u8);void SetPlayerLost(s32,s32);void EnablePlayerSelectionIfNoneSelected(s32);void func_020d33c4(void);
 s32 playerOffset; s32 player;
 s32 unitKind;player=1;playerOffset=140;
 do{
@@ -468,7 +470,7 @@ M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67ca)=player;M2C_FIELD((*gCurrentMap
 SetPlayerGaveUp(player,0);SetPlayerLost(player,0);
 M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67d5)=0;
 unitKind=0;do{M2C_FIELD((void *)(unitKind+((s32)playerOffset+(s32)*gCurrentMap)),u8*,0x67d7)=0;M2C_FIELD((void *)(unitKind+((s32)playerOffset+(s32)*gCurrentMap)),u8*,0x67f2)=0;unitKind++;}while(unitKind<27);
-func_020d2d60(player);
+EnablePlayerSelectionIfNoneSelected(player);
 M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x6828)=0;M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x682c)=0;
 player++;playerOffset+=140;
 }while(player<5);func_020d33c4();

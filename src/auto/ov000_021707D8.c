@@ -213,17 +213,20 @@ void UnloadWinRuleWindow(void) {
     PlaySoundEffect(SOUND_MENU_BACK);
 }
 
-void func_ov000_021711f0(s32 arg0) {
+/* Win-rule window input: while the B button is held, resume the window's
+ * scrolling text animation. */
+void ResumeWinRuleWindowAnimation(void *window) {
     M2C_UNK Sprite_ResumeAnimation(s32);
     extern u16 *gKeyState;
-    if (!(*gKeyState & 2)) return;
-    Sprite_ResumeAnimation(arg0);
+
+    if (!(*gKeyState & KEY_B)) return;
+    Sprite_ResumeAnimation((s32)window);
 }
 
 void func_ov000_02171214(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov000_021b8c18;
-    CreateSpriteFromClass(&data_ov000_021b8c18, 7);
+    extern M2C_UNK gWinRuleWindowClass;
+    CreateSpriteFromClass(&gWinRuleWindowClass, 7);
 }
 
 #pragma push
@@ -322,11 +325,14 @@ void UnloadUsernameScreen(void) {
     PlaySoundEffect(SOUND_MENU_BACK);
 }
 
-void func_ov000_0217172c(s32 arg0) {
+/* Username screen input: while the B button is held, resume the screen object's
+ * animation. */
+void ResumeUsernameScreenAnimation(void *screen) {
     M2C_UNK Sprite_ResumeAnimation(s32);
     extern u16 *gKeyState;
-    if (!(*gKeyState & 2)) return;
-    Sprite_ResumeAnimation(arg0);
+
+    if (!(*gKeyState & KEY_B)) return;
+    Sprite_ResumeAnimation((s32)screen);
 }
 
 void func_ov000_02171750(void) {

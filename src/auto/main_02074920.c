@@ -220,7 +220,7 @@ CARD_UnlockBackup(lockIdLow); OS_ReleaseLockID(lockIdLow); return result;
 
 void SaveManager_ScanArchive(s32 arg0){
 void *HeapAllocBlock(u32);void HeapFreeBlock(void *);s32 OS_GetLockID(void);void OS_ReleaseLockID(u8);void CARD_LockBackup(u16);void CARD_UnlockBackup(u8);
-s32 SaveDevice_Transfer(s32,s32 *,s32,s32,s32,s32,s32,s32,s32);s32 IsSaveArchiveBlockValid(void *,void *);s32 func_020747c8(void *,void *);s32 IsNodeChainValid(void *,u16);
+s32 SaveDevice_Transfer(s32,s32 *,s32,s32,s32,s32,s32,s32,s32);s32 IsSaveArchiveBlockValid(void *,void *);s32 SaveArchive_IsChecksumValid(void *,void *);s32 IsNodeChainValid(void *,u16);
 void MI_CpuCopy32(void *,void *,u32);void MI_CpuFill32(s32,void *,u32);void MI_CpuFill8(void *,s32,u32);void MI_CpuCopy8(void *,void *,u32);
 u8 *a=(u8 *)arg0;s32 selected;u8 *p;u8 *buf;u8 low;u32 stamp;s32 page;s32 i;u16 id;u8 ok0,ok1,ok2,ok;s32 off,off20,off256;u32 value,old; s32 newer;u8 rank; s32 shift;u32 *count;u16 invalid=65535;s32 mask;
 buf=HeapAllocBlock(1024);selected=-1;stamp=0;page=0;if(!a[0x2050]||a[0x2052]==1)return;
@@ -231,7 +231,7 @@ if(!ok0){a[0x2052]=1;goto empty;}
 if(!IsSaveArchiveBlockValid(a,buf))goto empty;
 CARD_LockBackup(low);ok1=SaveDevice_Transfer(off20,(s32 *)(buf+20),M2C_FIELD(buf,u16*,12)-20,0,0,0,6,1,0)!=0;CARD_UnlockBackup(low);
 if(ok1 == 0){a[0x2052]=1;goto empty;}
-if(!func_020747c8(a,buf))goto empty;
+if(!SaveArchive_IsChecksumValid(a,buf))goto empty;
 MI_CpuCopy32(buf+8,p,12);
 if(buf[14]==1){
 value=M2C_FIELD(buf,u16*,16)|(M2C_FIELD(buf,u16*,18)<<16);
@@ -273,7 +273,7 @@ if(ok == 0){a[0x2052]=1;MI_CpuFill32(0,((u8 *)((List_02074920 *)(a+0xc4c))->entr
 void func_020753f8(void *a, void *b, void *c, s32 d, u8 e, u32 f) {
 void *HeapAllocBlock(u32); void HeapFreeBlock(void *); s32 OS_GetLockID(void); void OS_ReleaseLockID(u8); void CARD_LockBackup(u16); void CARD_UnlockBackup(u8);
 void MI_CpuCopy32(void *,void *,u32); void MI_CpuFill32(s32,void *,u32); void MI_CpuCopy8(void *,void *,u32);
-u32 SaveArchive_ComputeChecksum(void *,void *); s32 SaveDevice_Transfer(s32,s32 *,s32,s32,s32,s32,s32,s32,s32); s32 func_02010584(void);
+u32 SaveArchive_ComputeChecksum(void *,void *); s32 SaveDevice_Transfer(s32,s32 *,s32,s32,s32,s32,s32,s32,s32); s32 SaveDevice_WaitForTransferDone(void);
 u8 *p; s32 idx; u16 prev; s32 mask; u16 id; u8 ok; u32 n;
 if(!M2C_FIELD(a,u8 *,0x2050)||M2C_FIELD(a,u8 *,0x2052)==1||!e)return;
 p=HeapAllocBlock(0x400); prev=0xffff; idx=FindFreeNode(a);
@@ -303,7 +303,7 @@ M2C_FIELD(p,u16 *,18)=d?FindFreeNode(a):0xffff;
 M2C_FIELD(p,u32 *,4)=SaveArchive_ComputeChecksum(a,p);
 CARD_LockBackup(id);
 SaveDevice_Transfer((s32)p,(s32 *)(idx<<10),M2C_FIELD(p,u16 *,12),0,0,1,7,10,2);
-ok=func_02010584()!=0;((void(*)(u32))CARD_UnlockBackup)(id);
+ok=SaveDevice_WaitForTransferDone()!=0;((void(*)(u32))CARD_UnlockBackup)(id);
 if(!ok){M2C_FIELD((u8 *)a+0x2000,u8 *,0x52)=1;break;}
 MI_CpuCopy8(p+8,(u8 *)a+idx*12,12);
 prev=idx;idx=M2C_FIELD(p,u16 *,18);

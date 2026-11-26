@@ -1,5 +1,6 @@
 /* 2 functions from 0x021EA57C to 0x021EAED0 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "waypoint_panel.h"
 static inline void SetMenuSpritePosition(void *p,s16 x,s16 y){M2C_FIELD(p,s16 *,0x34)=x;M2C_FIELD(p,s16 *,0x36)=y;}
 
 #pragma opt_common_subs off
@@ -279,13 +280,15 @@ after_56:
 #pragma opt_propagation reset
 #pragma opt_strength_reduction reset
 #pragma opt_common_subs reset
-u8 func_ov003_021eaeb0(void *arg0) {
-    u8 var_r0;
+/* Whether the waypoint panel is on a two-player map (flag bit 0): those maps
+ * use the reduced player layout and close the panel differently. */
+u8 IsWaypointPanelTwoPlayerMap(void *panel) {
+    u8 twoPlayer;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1F) >> 0x1F) == 1) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(panel, u8 *, WAYPOINT_PANEL_FLAGS) << 0x1F) >> 0x1F) == 1) {
+        twoPlayer = 1;
     } else {
-        var_r0 = 0;
+        twoPlayer = 0;
     }
-    return var_r0;
+    return twoPlayer;
 }

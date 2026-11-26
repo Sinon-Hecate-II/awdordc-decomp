@@ -89,8 +89,10 @@ extern M2C_UNK gMapOfferState;
 
 /* A received player record (0x310 bytes, as created by
  * CreateOnlinePlayerListNode) carrying the player's map data. */
+#define PLAYER_ENTRY_SIZE     0x310  /* bytes of one received player record */
 #define PLAYER_ENTRY_ID       0x04   /* s32 player id, 0 when the record is empty */
 #define PLAYER_ENTRY_DATA_LEN 0x30C  /* s32 bytes of map data at +0x10 */
+#define PLAYER_ENTRY_SIZE     0x310  /* bytes of one received player record */
 
 /* Status texts of the map-offer search. */
 #define MAP_OFFER_MSG_PLAYER_FOUND 0x46000017

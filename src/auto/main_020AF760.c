@@ -324,10 +324,11 @@ pos.x=(x+8)*MAP_SPRITE_CELL_SIZE;pos.y=(y+8)*MAP_SPRITE_CELL_SIZE;pos.z=MAP_SPRI
 DrawSpriteScript(scripts,spriteId,gFrameCounter,&pos,gfxAddr,MAP_SPRITE_TILE_DATA_SIZE,gfxSize,0,0);
 }
 
-void func_020b00c0(void) {
-    M2C_UNK func_0207ce54(s32);
+/* Recompute the current map view's eye position from the map's scroll. */
+void RefreshCurrentMapViewEye(void) {
+    M2C_UNK UpdateMapViewEyeVeneer(s32);
     extern s32 *gCurrentMap;
-    func_0207ce54(*gCurrentMap + 0x6EF8);
+    UpdateMapViewEyeVeneer(*gCurrentMap + MAP_VIEW_ZOOM);
 }
 
 void func_020b00e4(void) {

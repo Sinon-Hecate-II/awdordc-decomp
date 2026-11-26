@@ -570,12 +570,16 @@ timestamp:
 }
 #pragma opt_propagation reset
 #pragma optimization_level reset
-s32 VoiceLink_CreatePeerContext(s32 a) {
-s32 VoiceLink_AllocContext(s32);
-extern s32 gLinkConfig;
-s32 state=M2C_FIELD(&gLinkConfig,s32 *,0x10);
-if(state==0 || state==2) return 0;
-return VoiceLink_AllocContext(a);
+/* Create a per-peer voice-link exchange context for `peerId`: nothing is done
+ * while the link is off (mode 0) or runs through the single shared context
+ * (mode 2); otherwise a context is taken from the free list. */
+s32 VoiceLink_CreatePeerContext(s32 peerId) {
+    s32 VoiceLink_AllocContext(s32);
+    extern M2C_UNK gLinkConfig;
+    s32 mode = M2C_FIELD(&gLinkConfig, s32 *, LINK_CONFIG_MODE);
+
+    if (mode == 0 || mode == 2) return 0;
+    return VoiceLink_AllocContext(peerId);
 }
 
 /* Release a voice-chat context: clear its valid flag and put it back at the head
@@ -659,10 +663,13 @@ s32 VoiceLink_BuildControlPacket(void *context, s32 step, void *packet, u32 size
     return 0;
 }
 
-s32 VoiceLink_TrySendControlStep(s32 arg0, s32 arg1) {
+/* Try to send a voice-link control step: in link mode 2 (the single shared
+ * context) the step is refused with -3, otherwise it goes out to the peer. */
+s32 VoiceLink_TrySendControlStep(s32 context, s32 step) {
     s32 VoiceLink_SendControlPacket(s32, s32);
     extern M2C_UNK gLinkConfig;
-    if (M2C_FIELD(&gLinkConfig, s32 *, 0x10) == 2) return -3;
-    return VoiceLink_SendControlPacket(arg0, arg1);
+
+    if (M2C_FIELD(&gLinkConfig, s32 *, LINK_CONFIG_MODE) == 2) return -3;
+    return VoiceLink_SendControlPacket(context, step);
 }
 

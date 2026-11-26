@@ -667,9 +667,11 @@ void func_02008bb8(void) {
     DmaStopChannel(0);
 }
 
-void func_02008bd0(M2C_UNK arg0) {
+/* ARM7 sound command 1: release hardware `channel` after its voice has ramped
+ * down, letting the sound driver stop and free it. */
+void Sound_ReleaseArm7Channel(u8 channel) {
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    SendArm7Message(1, arg0, 0, 0, 0);
+    SendArm7Message(1, channel, 0, 0, 0);
 }
 
 /* Send ARM7 sound command 2 for `channel`: the caller hands over the hardware
@@ -679,8 +681,10 @@ void func_02008bf0(M2C_UNK channel, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     SendArm7Message(2, channel, arg1, arg2, arg3);
 }
 
-void func_02008c18(M2C_UNK arg0) {
-    SendArm7Message(3, arg0, 0, 0, 0);
+/* Send ARM7 sound command 3, the channel-stop command, for hardware `channel`;
+ * the per-frame voice update sends it once a started voice's stop is pending. */
+void Sound_StopArm7Channel(u8 channel) {
+    SendArm7Message(3, channel, 0, 0, 0);
 }
 
 void func_02008c38(M2C_UNK arg0, M2C_UNK arg1) {
@@ -697,7 +701,7 @@ void func_02008c68(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     Sound_SetPlayerParameter(arg0, arg1, 0xC, arg2, 2);
 }
 
-void func_02008c84(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void Sound_SendPlayerPan(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     Sound_SetPlayerParameter(arg0, arg1, 9, arg2, 1);
 }
 
@@ -720,7 +724,7 @@ void Sound_StartChannels(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK channelMask, s32 ar
  * channelMask, first bumping the in-flight command counter of each selected
  * channel so Sound_WaitForCommand can tell when the ARM7 has processed it. */
 void Sound_StopChannels(M2C_UNK arg0, M2C_UNK arg1, u32 channelMask, s32 arg3) {
-    M2C_UNK func_0200976c(s32);
+    M2C_UNK Sound_InvalidateChannelCallback(s32);
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 channel;
     u32 mask;
@@ -729,7 +733,7 @@ void Sound_StopChannels(M2C_UNK arg0, M2C_UNK arg1, u32 channelMask, s32 arg3) {
     channel = 0;
     while (channel < 8 && mask != 0) {
         if (mask & 1) {
-            func_0200976c(channel);
+            Sound_InvalidateChannelCallback(channel);
         }
         channel += 1;
         mask = mask >> 1;
@@ -747,7 +751,7 @@ void Sound_StartChannelTimer(M2C_UNK channel, M2C_UNK period, M2C_UNK reload, M2
 
 /* Send ARM7 sound command 8 for `channel` with two values: the sound-slot code
  * uses it to hand a channel level and a duration to the driver. */
-void func_02008d94(M2C_UNK channel, M2C_UNK value, M2C_UNK duration) {
+void Sound_SetChannelLevel(M2C_UNK channel, M2C_UNK value, M2C_UNK duration) {
     SendArm7Message(8, channel, value, duration, 0);
 }
 
@@ -755,9 +759,12 @@ void Sound_Arm7ReserveChannels(M2C_UNK arg0, M2C_UNK arg1) {
     SendArm7Message(0x1A, arg0, arg1, 0, 0);
 }
 
-void Sound_Arm7ReleaseChannels(M2C_UNK arg0, M2C_UNK arg1) {
+/* Send ARM7 sound command 0x1B: tell the sound driver to release the hardware
+ * channels selected by `channelMask` (one bit per channel).  The second command
+ * word is passed along to the driver (0 at every caller). */
+void Sound_Arm7ReleaseChannels(M2C_UNK channelMask, M2C_UNK arg1) {
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    SendArm7Message(0x1B, arg0, arg1, 0, 0);
+    SendArm7Message(0x1B, channelMask, arg1, 0, 0);
 }
 
 /* Send ARM7 sound command 0x14: write a precomputed hardware volume, given as
@@ -767,9 +774,11 @@ void Sound_SetHwChannelVolumes(M2C_UNK channelMask, M2C_UNK volumeLow, M2C_UNK v
     SendArm7Message(0x14, channelMask, volumeLow, volumeHigh, 0);
 }
 
-void Sound_SetHwChannelVolume(M2C_UNK arg0, M2C_UNK arg1) {
+/* Send ARM7 sound command 0x15: write `volume` to the single hardware channel
+ * selected by `channelMask` (one bit per channel). */
+void Sound_SetHwChannelVolume(M2C_UNK channelMask, M2C_UNK volume) {
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    SendArm7Message(0x15, arg0, arg1, 0, 0);
+    SendArm7Message(0x15, channelMask, volume, 0, 0);
 }
 
 /* Send the ARM7 "start channel" command (id 0xE), which keys one hardware
@@ -782,18 +791,25 @@ void Sound_StartChannel(s32 channel, s32 playMode, s32 sampleAddr, s32 channelFl
     SendArm7Message(0xE, channel | (timer << 0x10), sampleAddr, lengthWords | ((volume << 0x18) | (loopFlags << 0x16)), loopStart | (((channelFlags << 0x1A) | (playMode << 0x18)) | (pan << 0x10)));
 }
 
-void Sound_FreeSequenceMemory(M2C_UNK arg0, M2C_UNK arg1) {
+/* Send ARM7 sound command 0x1E to free the sequence memory between
+ * `startAddress` and `endAddress`; the other two words are unused. */
+void Sound_FreeSequenceMemory(M2C_UNK startAddress, M2C_UNK endAddress) {
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    SendArm7Message(0x1E, arg0, arg1, 0, 0);
+
+    SendArm7Message(0x1E, startAddress, endAddress, 0, 0);
 }
 
-void Sound_FreeBankArchiveMemory(M2C_UNK arg0, M2C_UNK arg1) {
+/* Send ARM7 sound command 0x1F to free the bank-archive memory between
+ * `startAddress` and `endAddress`; the other two words are unused. */
+void Sound_FreeBankArchiveMemory(M2C_UNK startAddress, M2C_UNK endAddress) {
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    SendArm7Message(0x1F, arg0, arg1, 0, 0);
+    SendArm7Message(0x1F, startAddress, endAddress, 0, 0);
 }
 
-void Sound_FreeWaveArchiveMemory(M2C_UNK arg0, M2C_UNK arg1) {
+/* Send ARM7 sound command 0x20 to free the wave-archive memory between
+ * `startAddress` and `endAddress`; the other two words are unused. */
+void Sound_FreeWaveArchiveMemory(M2C_UNK startAddress, M2C_UNK endAddress) {
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    SendArm7Message(0x20, arg0, arg1, 0, 0);
+    SendArm7Message(0x20, startAddress, endAddress, 0, 0);
 }
 

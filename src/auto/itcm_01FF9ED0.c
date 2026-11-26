@@ -154,28 +154,35 @@ void Free3DSpriteObject(void *sprite) {
     *g3DSpriteOrderCursor = sprite;
 }
 
-void InsertSpriteInLayer(void *arg0, u32 arg1) {
- extern s32 g3DSpriteLayerLists[];
- void **table=(void **)g3DSpriteLayerLists;
- void *prev=table[arg1];
- if(prev!=NULL) {
- M2C_FIELD(prev,void **,0x20)=arg0;
- M2C_FIELD(arg0,void **,0x24)=table[arg1];
- }
- M2C_FIELD(arg0,u32 *,0x18)=arg1;
- table[arg1]=arg0;
+/* Put `sprite` at the head of the list of the 3D sprite layer `layer`: the
+ * layer's previous head becomes `sprite`'s next sibling, and `sprite` becomes
+ * the new head, with the layer index recorded as its parent. */
+void InsertSpriteInLayer(void *sprite, u32 layer) {
+    extern s32 g3DSpriteLayerLists[];
+    void **table = (void **)g3DSpriteLayerLists;
+    void *head = table[layer];
+
+    if (head != NULL) {
+        M2C_FIELD(head, void **, DS3D_SPRITE_PREV) = sprite;
+        M2C_FIELD(sprite, void **, DS3D_SPRITE_NEXT) = table[layer];
+    }
+    M2C_FIELD(sprite, u32 *, DS3D_SPRITE_PARENT) = layer;
+    table[layer] = sprite;
 }
 
-void InsertSpriteInParent(void *arg0, void *arg1) {
-    void *temp_r2;
+/* Put `sprite` at the head of the parent sprite's child list: the parent's
+ * previous first child becomes `sprite`'s next sibling, and `sprite` becomes the
+ * new first child, with the parent recorded as its parent. */
+void InsertSpriteInParent(void *sprite, void *parent) {
+    void *firstChild;
 
-    temp_r2 = M2C_FIELD(arg1, void **, 0x1C);
-    if (temp_r2 != NULL) {
-        M2C_FIELD(temp_r2, void **, 0x20) = arg0;
-        M2C_FIELD(arg0, void **, 0x24) = (void *) M2C_FIELD(arg1, void **, 0x1C);
+    firstChild = M2C_FIELD(parent, void **, DS3D_SPRITE_CHILD);
+    if (firstChild != NULL) {
+        M2C_FIELD(firstChild, void **, DS3D_SPRITE_PREV) = sprite;
+        M2C_FIELD(sprite, void **, DS3D_SPRITE_NEXT) = (void *) M2C_FIELD(parent, void **, DS3D_SPRITE_CHILD);
     }
-    M2C_FIELD(arg1, void **, 0x1C) = arg0;
-    M2C_FIELD(arg0, void **, 0x18) = arg1;
+    M2C_FIELD(parent, void **, DS3D_SPRITE_CHILD) = sprite;
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_PARENT) = parent;
 }
 
 /* Unlink `sprite` from the sibling list it is in - one of the twelve per-layer
@@ -257,9 +264,14 @@ void CreateSpriteObject(M2C_UNK arg0, M2C_UNK arg1) {
     CreateChildSpriteObject(arg0, arg1, gCur3DSpriteEngine);
 }
 
-void CreateSpriteForOwner(s32 a,s32 b) {
- if(b==0)b=7;
- if(b<12)CreateSpriteFromClass(a,b);else CreateSpriteObject(a,b);
+/* Create a 3D sprite of class `spriteClass` owned by `owner`: a small owner value
+ * is a layer index (0 asks for the default layer, DS3D_SPRITE_DEFAULT_LAYER) and
+ * creates a layer sprite; a larger value is a parent object and creates a child
+ * sprite of it. */
+void CreateSpriteForOwner(s32 spriteClass, s32 owner) {
+    if (owner == 0) owner = DS3D_SPRITE_DEFAULT_LAYER;
+    if (owner < DS3D_LAYER_COUNT) CreateSpriteFromClass(spriteClass, owner);
+    else CreateSpriteObject(spriteClass, owner);
 }
 
 /* Mark a 3D sprite object and, recursively, its later siblings and its children
@@ -506,7 +518,7 @@ void func_01ffa918(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0xC) = arg1;
 }
 
-void func_01ffa920(void *arg0, s32 arg1) {
+void Set3DSpriteDrawCallback(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x14) = arg1;
 }
 

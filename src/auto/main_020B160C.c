@@ -208,7 +208,9 @@ void UploadPaletteFadeColor(s32 phase) {
     QueueMainOBJExtPaletteCopy(gObjPaletteFadeRamp + ((u32)((phase >> 2) << 28) >> 27), 0x1448, 2, 0);
 }
 
-void func_020b1abc(void) {
+/* The battle map view's per-frame callback (MAPVIEW_FRAME_CB): advance the view's
+ * own frame tick and the players' army animations with the frame counter. */
+void StepMapViewFrame(void) {
     M2C_UNK MapView_UpdateFrame(s32);
     M2C_UNK func_0207ad30(s32);
     extern s32 gFrameCounter;
@@ -449,7 +451,18 @@ void func_020b216c(void *arg0) {
     M2C_FIELD(arg0, s8 *, 1) = 0;
 }
 
-void HideAllSpriteSlots(void){extern u8 gSpriteSlots[];s32 i=0;u8 *p=gSpriteSlots;u8 zero=i;do{i++;p[1]=zero;p+=60;}while(i<85);}
+/* Hide every touchable sprite slot: clear the visible flag of each slot. */
+void HideAllSpriteSlots(void) {
+    extern u8 gSpriteSlots[];
+    s32 i = 0;
+    u8 *slot = gSpriteSlots;
+    u8 zero = i;
+    do {
+        i++;
+        slot[SPRITE_SLOT_VISIBLE] = zero;
+        slot += SPRITE_SLOT_STRIDE;
+    } while (i < SPRITE_SLOT_COUNT);
+}
 
 /* Clear the active bit of every sprite slot that still has the enabled flag,
  * hiding the list's slots before the active ones are closed. */
@@ -581,13 +594,13 @@ s32 InitSpriteSlotFromDef(s32 x, s32 y, void *slot, void *desc, s32 id) {
  * ones (unless a slot already took focus), then calls each visible slot's per-frame
  * callback and the focused-slot key handler. */
 void UpdateSpriteSlots(void) {
-s32 IsSpriteDrawPaused(void); s32 func_020b26b8(void); s32 TryFocusSpriteSlot(u8 *);
+s32 IsSpriteDrawPaused(void); s32 IsSpriteUpdatePaused(void); s32 TryFocusSpriteSlot(u8 *);
 void AnimateSpriteSlot(u8 *); s32 HandleSpriteSlotTouch(u8 *); void HandleFocusedSpriteSlotKey(void);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub,*gSpriteSlotManager;
 extern u8 gSpriteSlots[];
 s32 slotFocused=0; void *savedEngine; s32 pass; s32 i; u8 *slot;
 if(IsSpriteDrawPaused())return;
-if(func_020b26b8())return;
+if(IsSpriteUpdatePaused())return;
 savedEngine=gCur3DSpriteEngine;
 for(pass=0;pass<2;pass++){
 void *engine=pass==0?g3DSpriteEngineMain:g3DSpriteEngineSub;

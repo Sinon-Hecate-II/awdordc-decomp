@@ -156,15 +156,17 @@ void func_0201a134(s32 arg0) {
     func_02025298();
 }
 
-void func_0201a238(void) {
+/* Wait between network-stack polls: sleep for the stack's configured poll
+ * interval (NETSTACK_WAIT_INTERVAL), or just yield the thread when it is 0. */
+void NetStackWaitIdle(void) {
     extern M2C_UNK gNetStack;
     void TaskYield(void);
     void SleepMilliseconds(s32);
-    s32 f = M2C_FIELD(&gNetStack, s32 *, 0x24);
-    if (f == 0) {
+    s32 wait = M2C_FIELD(&gNetStack, s32 *, NETSTACK_WAIT_INTERVAL);
+    if (wait == 0) {
         TaskYield();
     } else {
-        SleepMilliseconds(f);
+        SleepMilliseconds(wait);
     }
 }
 
@@ -369,7 +371,14 @@ s32 IsLocalSubnetAddress(s32 address){
     return isLocal;
 }
 
-s32 GetIpNextHop(s32 a){s32 IsLocalSubnetAddress(s32);extern M2C_UNK gNetStack;if(!IsLocalSubnetAddress(a))a=M2C_FIELD(&gNetStack,s32 *,44);return a;}
+/* The IPv4 address to send to in order to reach `destination`: the destination
+ * itself when it is on this host's subnet, otherwise the default gateway. */
+s32 GetIpNextHop(s32 destination) {
+    s32 IsLocalSubnetAddress(s32);
+    extern M2C_UNK gNetStack;
+    if (!IsLocalSubnetAddress(destination)) destination = M2C_FIELD(&gNetStack, s32 *, NETSTACK_GATEWAY);
+    return destination;
+}
 
 /* True when `address` is this subnet's directed broadcast address: a local-subnet
    address whose host bits (those outside NETSTACK_SUBNET_MASK) are all set. */

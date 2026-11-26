@@ -319,7 +319,7 @@ void func_ov001_0217a880(void) {
     M2C_UNK Ov001_ShowMessage(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void Ov001_ConfirmMapSelectNotice(void);
-    void func_ov001_0217a98c(void);
+    void MapSelectList_BeginExit(void);
     extern M2C_UNK gMapSelectState;
     void *map;
     s32 r;
@@ -355,7 +355,7 @@ void func_ov001_0217a880(void) {
                 map = M2C_FIELD(&gMapSelectState, void **, 4);
                 M2C_FIELD(map, u8 *, 0x52) = (u8)idx;
                 Ov001_PlaySound(6);
-                Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217a98c);
+                Ov001_SetStepCallback((M2C_UNK *)&MapSelectList_BeginExit);
                 goto done;
             }
         }
@@ -366,7 +366,9 @@ done:
     return;
 }
 #pragma optimize_for_speed reset
-void func_ov001_0217a98c(void) {
+/* Map-select list exit step (a map was chosen): lock the icon row, hold it for a
+ * few frames, then hand the step over to the screen's fade-out. */
+void MapSelectList_BeginExit(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);

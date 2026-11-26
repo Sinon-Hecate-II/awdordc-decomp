@@ -254,7 +254,7 @@ void Ov001_FadeInNameEntryScreen(void);
 u8 modeMessages[2]={M2C_FIELD(&gOv001NameEntryConfig,u8 *,0),M2C_FIELD(&gOv001NameEntryConfig,u8 *,1)};s32 mode,variant;
 gNameEntryState=Ov001_Alloc(44,4);
 Ov001_GetNameEntryMode(&mode,(s32)&variant);
-if(mode==0) {func_ov001_021846f8((u8 *)gNameEntryState+NAME_ENTRY_TEXT); M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)=StringLengthUpTo((u8 *)gNameEntryState+NAME_ENTRY_TEXT,NAME_ENTRY_MAX_LENGTH);}
+if(mode==0) {Ov001_LoadSavedMapName((u8 *)gNameEntryState+NAME_ENTRY_TEXT); M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)=StringLengthUpTo((u8 *)gNameEntryState+NAME_ENTRY_TEXT,NAME_ENTRY_MAX_LENGTH);}
 Ov001_LoadNameEntryGraphics();Ov001_LoadObjLayoutBlock(mode+9);
 if(variant==1)Ov001_ShowMessagePanel(53,-1,0);else Ov001_ShowMessagePanel(modeMessages[mode],-1,0);
 Ov001_OpenMenuForMode(2);
@@ -327,16 +327,18 @@ void Ov001_OpenNameEntryKeyboard(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitKeyboardFirstKey);
 }
 
+/* Step after the ov001 name-entry keyboard has opened: wait until the player
+ * presses a key, then hand the step to the keyboard's input handler. */
 void Ov001_WaitKeyboardFirstKey(void) {
     s32 GetKeyboardKey();
-    void func_ov001_0217b724(void);
-    if (GetKeyboardKey() == 0xFF) {
+    void Ov001_KeyboardInputStep(void);
+    if (GetKeyboardKey() == KBD_KEY_NONE) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_0217b724);
+    Ov001_SetStepCallback(&Ov001_KeyboardInputStep);
 }
 
-void func_ov001_0217b724(void) {
+void Ov001_KeyboardInputStep(void) {
     void HandleNameEntryInput(void);
     void func_ov001_0217b8f4(void);
     HandleNameEntryInput();

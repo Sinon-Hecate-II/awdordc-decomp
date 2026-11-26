@@ -5,7 +5,7 @@
 extern M2C_UNK gMapListState;
 extern const u8 gMapListChoiceRow[];
 void MapList_DismissMessage(void);
-void func_ov001_0217ded8(void);
+void MapList_BeginExit(void);
 void MapListSetExtraEmptyA(s32);
 void MapListSetExtraEmptyB(s32);
 
@@ -119,18 +119,19 @@ void Ov001_WfcErrorWaitIconRow(void) {
 }
 
 void Ov001_UpdateWfcErrorScreen(void) {
-    void func_ov001_0217d0f0(void);
+    void Ov001_WfcErrorMenuConfirmInput(void);
     void func_ov001_0217d110(void);
     void Ov001_ConfirmWfcErrorChoice(void);
-    func_ov001_0217d0f0();
+    Ov001_WfcErrorMenuConfirmInput();
     func_ov001_0217d110();
     Ov001_ConfirmWfcErrorChoice();
 }
 
-void func_ov001_0217d0f0(void) {
+/* Wi-Fi error screen's A/confirm input: latch its single OK icon. */
+void Ov001_WfcErrorMenuConfirmInput(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     s32 KeyPressed(M2C_UNK);
-    if (KeyPressed(1) == 0) {
+    if (KeyPressed(KEY_PRESSED) == 0) {
         return;
     }
     Ov001_LatchIconRowSelection(0);
@@ -151,13 +152,15 @@ void Ov001_ConfirmWfcErrorChoice(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_PrepareCloseWfcErrorScreen);
 }
 
+/* Wi-Fi error screen exit step: lock its single-button icon row, hold it for a
+ * few frames, then hand the step over to the screen's fade-out. */
 void Ov001_PrepareCloseWfcErrorScreen(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutWfcErrorScreen;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_FadeOutWfcErrorScreen);
 }
 
@@ -431,7 +434,7 @@ void func_ov001_0217d754(void) {
     if (KeyPressed(2) != 0) {
         Ov001_PlaySound(7);
         M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x40) = 0xd;
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217ded8);
+        Ov001_SetStepCallback((M2C_UNK *)&MapList_BeginExit);
         return;
     }
     if (KeyHeld(0x200) != 0) {
@@ -530,7 +533,7 @@ s32 HandleMapListTouchChoice(void) {
     return 1;
 }
 
-/* Dispatch a screen selection (0..13): set up UI state, graphics, and continue via func_ov001_0217ded8. */
+/* Dispatch a screen selection (0..13): set up UI state, graphics, and continue via MapList_BeginExit. */
 s32 DispatchMapListChoice(u32 a){
 if(IsMapListChoiceAvailable()==0){Ov001_PlaySound(9);return;}
 switch(a){
@@ -547,7 +550,7 @@ Ov001_PlaySound(9);Ov001_ShowMessage(6,1,1,-1,0);Ov001_SetStepCallback((M2C_UNK 
 if(a==11)Ov001_PlaySound(6);else Ov001_PlaySound(14);
 }else if(a==13){MapList_UploadSubScreenIcon();Ov001_PlaySound(7);}
 else {Ov001_PlaySound(6);func_ov001_0217e67c(0,1,GetMapListScreenRow(gMapListChoiceRow[a]));MapListUpdateRowSprites();}
-Ov001_BlockScrollBar();Ov001_SetStepCallback((M2C_UNK *)func_ov001_0217ded8);
+Ov001_BlockScrollBar();Ov001_SetStepCallback((M2C_UNK *)MapList_BeginExit);
 }
 
 /* Set whether the current map's first optional player code is absent

@@ -448,9 +448,11 @@ s32 GetUnitAttackRangeMax(u8 *unit) {
     return maxRange;
 }
 
-s32 func_020a7714(void *arg0) {
+/* Radius in tiles of the attack-range scan around battle-map `unit`: a fixed five
+ * tiles plus the range bonus its commander grants it. */
+s32 GetUnitAttackRangeRadius(void *unit) {
     s32 GetUnitAttackRangeBonus(void *, u8, u8);
     GetUnitOwner();
-    return GetUnitAttackRangeBonus(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 5;
+    return GetUnitAttackRangeBonus(unit, M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y)) + 5;
 }
 

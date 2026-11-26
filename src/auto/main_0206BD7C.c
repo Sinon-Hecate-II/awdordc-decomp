@@ -101,7 +101,7 @@ u16 *ParseFormatSpec(u16 *,char **,FormatBD *);
 u16 *FormatInteger(s32,u16 *,FormatBD);
 u16 *func_0206b5c0(u64,u16 *,FormatBD);
 u16 *func_0206b8c0(double,u16 *,FormatBD);
-u16 *func_0206add0(u16 *,s32,s32);
+u16 *FindFirstWideChar(u16 *,s32,s32);
 char *FindFirstByte(char *,s32,s32);
 s32 StringLength(char *);
 s32 StringToWideString(void *,void *,s32);
@@ -223,7 +223,7 @@ if(f.b && len>f.precision)len=f.precision;
 }
 else if(f.b){u16 *e;
 len=f.precision;
-e=func_0206add0(text,0,len);
+e=FindFirstWideChar(text,0,len);
 if(e)len=e-text;
 }
 else len=StringLengthWide(text);

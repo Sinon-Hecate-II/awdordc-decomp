@@ -96,13 +96,15 @@ void Ov001_HandleWfcSettingsChoice(void) {
     }
 }
 
+/* Wi-Fi settings screen exit step (the BACK choice): lock the icon row, hold it
+ * for a few frames, then hand the step over to the screen's fade-out. */
 void Ov001_WfcSettingsExit(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutWfcSettings;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_FadeOutWfcSettings);
 }
 
@@ -130,7 +132,7 @@ void Ov001_FadeOutWfcSettings(void) {
 void Ov001_CloseWfcSettingsScreen(void) {
     s32 Ov001_IsIconRowIdle();
     extern M2C_UNK Ov001_InitOptionMenu;
-    void func_ov001_02177214(void);
+    void Ov001_OpenResetProfileScreen(void);
     extern u8 gOv001WfcSettingsReset;
     if (Ov001_IsFadeActive(0) != 0) return;
     if (gOv001WfcSettingsReset == 0 && Ov001_IsFadeActive(1) != 0) return;
@@ -147,7 +149,7 @@ void Ov001_CloseWfcSettingsScreen(void) {
         return;
     }
     Ov001_SetNextScreenMode(0, 1);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177214);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenResetProfileScreen);
 }
 
 /* WFC-settings screen step after its popup opened: read the region menu's answer
@@ -172,21 +174,25 @@ void Ov001_WfcSettingsRegionChoiceStep(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcSettingsRegionClosed);
 }
 
+/* WFC-settings screen step: wait for the region choice popup to finish closing,
+ * then move on to the step that exits the WFC settings screen. */
 void Ov001_WfcSettingsRegionClosed(void) {
-    s32 Ov001_IsRegionMenuActive();
+    s32 Ov001_IsRegionMenuActive(void);
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcSettingsExit);
 }
 
-void func_ov001_02177214(void) {
+/* WFC-profile reset screen step: load the reset background, show its info message,
+ * reset the save slots to the WFC profile, then fade the screen in. */
+void Ov001_OpenResetProfileScreen(void) {
     M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
     void Ov001_LoadResetProfileBg(void);
     M2C_UNK ResetSaveSlotsWithWfcProfile();
     extern M2C_UNK Ov001_FadeInResetProfileScreen;
     Ov001_LoadResetProfileBg();
-    Ov001_ShowMessageBox(0x19);
+    Ov001_ShowMessageBox(OV001_MSG_PROFILE_RESET);
     ResetSaveSlotsWithWfcProfile();
     Ov001_SetStepCallback(&Ov001_FadeInResetProfileScreen);
 }
@@ -242,18 +248,20 @@ void Ov001_WaitResetProfileMenu(void) {
 }
 
 void Ov001_UpdateResetProfileMenu(void) {
-    void func_ov001_02177354(void);
+    void Ov001_ResetProfileMenuConfirmInput(void);
     void func_ov001_02177374(void);
     void Ov001_HandleResetProfileMenuChoice(void);
-    func_ov001_02177354();
+    Ov001_ResetProfileMenuConfirmInput();
     func_ov001_02177374();
     Ov001_HandleResetProfileMenuChoice();
 }
 
-void func_ov001_02177354(void) {
+/* Per-frame input of the WFC-profile reset menu: on a fresh A press, latch the
+ * menu's only row (0) so the choice handler confirms it. */
+void Ov001_ResetProfileMenuConfirmInput(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     s32 KeyPressed(M2C_UNK);
-    if (KeyPressed(1) == 0) {
+    if (KeyPressed(KEY_A) == 0) {
         return;
     }
     Ov001_LatchIconRowSelection(0);
@@ -275,13 +283,15 @@ void Ov001_HandleResetProfileMenuChoice(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_CloseResetProfileMenu);
 }
 
+/* Reset-profile screen exit step: lock the icon row, hold it for a few frames,
+ * then hand the step over to the screen's fade to white. */
 void Ov001_CloseResetProfileMenu(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_ResetProfileFadeToWhite;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_ResetProfileFadeToWhite);
 }
 
@@ -400,16 +410,18 @@ void Ov001_MacAddressWaitIconRow(void) {
 }
 
 void Ov001_UpdateMacAddressMenu(void) {
-    void func_ov001_02177794(void);
+    void Ov001_MacAddressMenuCancelInput(void);
     void func_ov001_021777b4(void);
     void Ov001_CancelMacAddressMenu(void);
-    func_ov001_02177794();
+    Ov001_MacAddressMenuCancelInput();
     func_ov001_021777b4();
     Ov001_CancelMacAddressMenu();
 }
 
-void func_ov001_02177794(void) {
-    if (KeyPressed(2) == 0) {
+/* Per-frame input of the ov001 MAC-address menu: on a fresh B press, latch its
+ * cancel icon (row 0) so the cancel handler closes the screen. */
+void Ov001_MacAddressMenuCancelInput(void) {
+    if (KeyPressed(KEY_B) == 0) {
         return;
     }
     Ov001_LatchIconRowSelection(0);
@@ -428,13 +440,15 @@ void Ov001_CancelMacAddressMenu(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_PrepareCloseMacAddressScreen);
 }
 
+/* MAC-address screen exit step: lock the icon row, hold it for a few frames,
+ * then hand the step over to the screen's fade-out. */
 void Ov001_PrepareCloseMacAddressScreen(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutMacAddress;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_FadeOutMacAddress);
 }
 
@@ -667,10 +681,13 @@ void Ov001_OptionMenuConfirm(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_OptionMenuExit);
 }
 
+/* Option-menu exit step (taken after the back/confirm choice): lock the icon
+ * row, hold it for a few frames, then hand the step over to the menu's
+ * fade-out. */
 void Ov001_OptionMenuExit(void) {
     extern M2C_UNK Ov001_FadeOutOptionMenu;
     Ov001_LockIconRow();
-    Ov001_StartDelay(8);
+    Ov001_StartDelay(OV001_STEP_DELAY_FRAMES);
     Ov001_SetStepCallback(&Ov001_FadeOutOptionMenu);
 }
 

@@ -73,7 +73,7 @@ s32 DrawTextStep(void *arg0) {
     s32 DrawGlyph(u8, s32, u8, u16);
     M2C_UNK func_02099854(void *, s32, u8, u16);
     s32 IsTextWaitingForMessageBox(void *);
-    s32 func_020999e8(void *);
+    s32 GetTextCursorCell(void *);
     M2C_UNK RedrawTextObject(void *);
     s32 IsLeadByte(void *);
     s32 IsGlyphEscape(void *);
@@ -89,7 +89,7 @@ s32 DrawTextStep(void *arg0) {
 
 main_loop:
     {
-        u32 sw = func_02099e6c(st, func_020999e8(st));
+        u32 sw = func_02099e6c(st, GetTextCursorCell(st));
         switch (sw) {
         case 0:
             return 0;
@@ -130,10 +130,10 @@ main_loop:
                     }
                 }
                 if ((u8) st->column <= 1U) {
-                    WriteTextCellTilePair(st, func_020999e8(st));
+                    WriteTextCellTilePair(st, GetTextCursorCell(st));
                 }
                 if (AdvanceTextColumn(st, var_r6) != 0) {
-                    WriteTextCellTilePair(st, func_020999e8(st));
+                    WriteTextCellTilePair(st, GetTextCursorCell(st));
                 }
                 if ((notify = st->sound) != 0 && (s8) st->speed != 0) {
                     PlaySoundEffect(notify);
@@ -155,9 +155,9 @@ end_block:
 /* Per-frame update of a text object: handles action input, ticks the step delay,
  * runs the redraw callback and advances the text script on the mapped screen. */
 void UpdateTextObject(TextState *st) {
-    s32 func_020952a4(void);
+    s32 IsMusicFadeWaitSpriteActive(void);
     s32 IsScreenTransitionWaitSpriteActive(void);
-    s32 func_0209546c(void);
+    s32 IsScriptWaitSpriteActive(void);
     void SetMessageBoxState(s8);
     s32 IsMessageBoxIdle(void);
     s32 HideAllScenePanels(void);
@@ -188,9 +188,9 @@ void UpdateTextObject(TextState *st) {
         if (FindObjectByClass(&data_02102eac) != 0) return;
         if (FindObjectByClass(&data_02102e74) != 0) return;
         if (IsAnyScenePanelAnimating() != 0) return;
-        if (func_020952a4() != 0) return;
+        if (IsMusicFadeWaitSpriteActive() != 0) return;
         if (IsScreenTransitionWaitSpriteActive() != 0) return;
-        if (func_0209546c() != 0) return;
+        if (IsScriptWaitSpriteActive() != 0) return;
     }
 
     if (st->speed >= 1 && IsMessageBoxIdle()) {
@@ -288,13 +288,15 @@ void func_0209b084(void *entity) {
     }
 }
 #pragma optimization_level reset
-void func_0209b190(M2C_UNK arg0) {
+/* Resume the animation of a sprite, but hold it while any scene panel is still
+ * animating (the panels take priority over the sprite's motion). */
+void Sprite_ResumeAnimationUnlessScenePanelsAnimating(M2C_UNK sprite) {
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     s32 IsAnyScenePanelAnimating();
     if (IsAnyScenePanelAnimating() != 0) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 /* Initialise a new text object from the current screen engine's shared default
@@ -333,10 +335,13 @@ void DrawLocalizedText(s32 x, s32 y, s32 palette, s32 textId, u16 attr, u16 attr
     DrawTextLine(x, y, palette, GetLocalizedText(textId), attr, attr16);
 }
 
-void DrawTextLine(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
+/* Draw one line of the glyph text `text` at (x, y) on the current engine layer
+ * `palette`, with base cell attribute `attr` and the line's pixel offset
+ * `lineOffset`; the per-glyph draw attribute is left 0. */
+void DrawTextLine(M2C_UNK x, M2C_UNK y, M2C_UNK palette, M2C_UNK text, u16 attr, u16 lineOffset) {
     void DrawTextLineCore(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16, u16);
 
-    DrawTextLineCore(arg0, arg1, arg2, arg3, arg4, 0, arg5);
+    DrawTextLineCore(x, y, palette, text, attr, 0, lineOffset);
 }
 
 /* Draw a line of localized text: resolve the text id for the current locale and
@@ -405,17 +410,19 @@ block++;}while(block<blockCount);
 HeapFreeBlock((s32)temp);
 }
 
-/* Zero the text bitmap buffer that will hold a line `width` pixels wide: one
- * fill of TEXT_BITMAP_BLOCKS(width) 256-byte blocks. */
-void ClearTextBitmap(void *bitmap, s32 width) {
-    void MI_CpuFill32(u32, void *, u32);
-    MI_CpuFill32(0, bitmap, TEXT_BITMAP_BLOCKS(width) << 8);
+/* Zero the text bitmap `bitmap`: enough TEXT_BITMAP_BLOCK_BYTES-byte blocks for a
+ * text line `width` pixels wide. */
+void ClearTextBitmap(s32 bitmap, s32 width) {
+    M2C_UNK MI_CpuFill32(M2C_UNK, M2C_UNK, s32);
+    MI_CpuFill32(0, bitmap, (s32) TEXT_BITMAP_BLOCKS(width) << 8);
 }
 
-void RenderLocalizedTextToTiles(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 GetLocalizedText(M2C_UNK);
-    M2C_UNK RenderTextToTiles(M2C_UNK, s32);
-    RenderTextToTiles(arg0, GetLocalizedText(arg1));
+/* Render the localized text `textId` into the label tile layout at `destination`. */
+void RenderLocalizedTextToTiles(s32 destination, s32 textId) {
+    s32 GetLocalizedText(s32);
+    s32 RenderTextToTiles(s32, s32);
+
+    RenderTextToTiles(destination, GetLocalizedText(textId));
 }
 
 /* Renders a text string into a temporary bitmap and splits it into the label

@@ -57,7 +57,7 @@ void FormatDoubleAsDecimal(void *form, s32 valueLo, s32 valueHi, Decimal38 *numb
 
 double func_0206f0dc(Decimal38 *input){
 s32 ClassifyDouble(double,...);
-double func_0206df88(double,double);
+double Copysign(double,double);
 double _f2d(u32);
 double func_0206e2d8(double,double);
 double ScaleDoubleByExp(double,s32);
@@ -69,10 +69,10 @@ extern u32 data_021002e8;
 extern u8 data_021006d0[];
 extern double data_021005bc[];
 Decimal38 value,a,b,c,d,e;DoubleBits nan;double x,y,tmp,scaled;volatile u64 *yp;u8 *cursor,*end;s32 exp,n,i,digits;int above,below;
-if(input->length==0)return func_0206df88(0.0,input->sign==0?1.0:-1.0);
+if(input->length==0)return Copysign(0.0,input->sign==0?1.0:-1.0);
 switch(input->digits[0]){
-case '0':return func_0206df88(0.0,input->sign==0?1.0:-1.0);
-case 'I':return func_0206df88(_f2d(data_021002e8),input->sign==0?1.0:-1.0);
+case '0':return Copysign(0.0,input->sign==0?1.0:-1.0);
+case 'I':return Copysign(_f2d(data_021002e8),input->sign==0?1.0:-1.0);
 case 'N':{DoubleBits *nanp;nanp=&nan;
 #pragma scheduling off
 nanp->u=0x7ff0000000000000ULL;if(input->sign)nanp->u|=0x8000000000000000ULL;nanp->u|=0x0008000000000000ULL;return nanp->d;
@@ -83,7 +83,7 @@ value=*input;cursor=value.digits;end=cursor+value.length;
 if(cursor<end)do{*cursor=(u8)(*cursor-'0');cursor++;}while(cursor<end);
 value.exponent+=value.length-1;exp=value.exponent;
 DecimalFromDigitString(&a,data_021006d0,0x134);
-if(func_0206eb30(&a,&value))return func_0206df88(_f2d(data_021002e8),input->sign==0?1.0:-1.0);
+if(func_0206eb30(&a,&value))return Copysign(_f2d(data_021002e8),input->sign==0?1.0:-1.0);
 cursor=value.digits;x=*cursor++;
 while(cursor<end){
 n=(end-cursor)%8;if(n==0)n=8;
@@ -176,7 +176,7 @@ void func_0206f8b8(void) {
  * the destructor, the string having taken the buffer over. */
 void *func_0206f8c4(u32 *string,u32 buffer,u32 firstArg,...) {
  void *MemAlloc(u32);
- s32 *func_0206f9d4(s32 *);
+ s32 *ReleaseScopedCharArray(s32 *);
  u32 temp[2];
 
  void *owner;
@@ -186,7 +186,7 @@ void *func_0206f8c4(u32 *string,u32 buffer,u32 firstArg,...) {
  if(owner) {((u32*)owner)[0]=(u32)data_02100734;((u32*)owner)[1]=1;((u32*)owner)[2]=1;((u32*)owner)[0]=(u32)data_0210074c;((u32*)owner)[3]=buffer;}
  string[1]=(u32)owner;
  temp[0]=0;
- func_0206f9d4((s32 *)temp);
+ ReleaseScopedCharArray((s32 *)temp);
  return string;
 }
 
@@ -230,11 +230,14 @@ void func_0206f9c0(void *arg0) {
 
 #pragma frame_pointer reset
 
-s32 *func_0206f9d4(s32 *arg0) {
-    if (*arg0 != 0) {
-        MemFreeArray();
+/* Free the character array held by the scoped guard record `guard` (when it holds
+ * one) and return the guard. */
+s32 *ReleaseScopedCharArray(s32 *guard) {
+    M2C_UNK MemFreeArray(s32);
+    if (*guard != 0) {
+        MemFreeArray(*guard);
     }
-    return arg0;
+    return guard;
 }
 
 s32 func_0206f9f4(s32 arg0) {

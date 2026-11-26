@@ -14,7 +14,7 @@
 #define RESULT_SPARK_END_Y   (-8)  /* y at which the spark has left the top edge */
 
 #pragma scheduling off
-void func_ov005_02218fd0(void *arg0) {
+void InitResultsScreenGraphics(void *arg0) {
     M2C_UNK func_01ff85b8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_020026d8(M2C_UNK);
     M2C_UNK func_02002968(M2C_UNK);
