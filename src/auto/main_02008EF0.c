@@ -331,13 +331,15 @@ s32 Sound_CountQueuedCommands(void) {
     return count;
 }
 
+/* Count the sound commands currently in flight: the command pool's nodes minus
+ * the free ones and the ones still waiting on the send list. */
 s32 Sound_CountInFlightCommands(void) {
     s32 Sound_CountFreeCommands();
     s32 Sound_CountQueuedCommands();
-    s32 temp_r4;
+    s32 freeCommands;
 
-    temp_r4 = Sound_CountFreeCommands();
-    return (0x100 - temp_r4) - Sound_CountQueuedCommands();
+    freeCommands = Sound_CountFreeCommands();
+    return (SOUND_CMD_NODE_COUNT - freeCommands) - Sound_CountQueuedCommands();
 }
 
 /* FIFO message handler for the sound command channel: `message` carries the
@@ -595,7 +597,16 @@ void Link_ClearSlotChain(void *object) {
     Sound_UnlockMutex();
 }
 
-void InitPackedTableCursor(u32 *a){volatile u32 zero[2];a[0]=0;zero[0]=0;zero[1]=0;a[1]=0;}
+/* Clear a packed-table iterator to its start: entry index 0 and intra-entry
+ * index 0, before the first IteratePackedTableRecord call. */
+void InitPackedTableCursor(u32 *cursor) {
+    volatile u32 cleared[2];
+
+    cursor[0] = 0;
+    cleared[0] = 0;
+    cleared[1] = 0;
+    cursor[1] = 0;
+}
 
 /* Iterate the entries of a packed animation table: read the entry-table word
    (entry type in the low byte, data offset in the upper 24 bits) and copy the

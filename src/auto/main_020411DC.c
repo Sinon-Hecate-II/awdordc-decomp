@@ -3,51 +3,56 @@
 void *GetConnection();
 void CloseGt2Connection(void);
 
-void func_020411dc(s32 arg0){
+/* Connection session state-machine action handler (DWC connection object).  Action
+ * 0 advances the join/connect chain, gathering the next peer's slot data into
+ * `values` and sending connection command 8/9; actions 1, 2 and 3 react to a
+ * finished connect, a new peer and the peer-data exchange; action 4 tears the
+ * session down once the target is known. */
+void ProcessConnectionStateAction(s32 action){
 extern s32 sEmptyString;extern u8 gConnectionMgr[];
 s32 SetConnectionState(s32);void Qr2_StateChanged(s32);void SendConnectionPacket(s8,s32);u64 GetSystemTick(void);void TryConnectToPeer(s32,s32,s32);u32 GetConnectedPlayerMask(s32);void ReconnectUnlessServing(void);s32 SendConnectionCommand();s32 ReportConnectionCommandResult(void);void ResetSlotRequestRetry(void);void SetGpiStatus(s32,void *,s32);s32 GetSessionPlayerSlot(s32);void TeardownConnectionSession(void);void DestroyServerBrowser(s32);void NatNeg_RequestShutdown(void);void ReportGpiSessionStatus(void);s32 ReportConnectionStatusResult(void);void ResetSessionList(s32);
-s32 n=3,update=0; s32 values[5];s32 b,c;u8 *a,*d,*e,*f,*g,*h;s32 i;
-switch(arg0){
+s32 argCount=3,update=0; s32 values[5];s32 scratch,slot;u8 *conn,*conn2,*conn3,*conn4,*conn5,*conn6;s32 i;
+switch(action){
 case 0:
-a=GetConnection();if(M2C_FIELD(a,u8*,420)<M2C_FIELD(GetConnection(),u8*,13)-1){
+conn=GetConnection();if(M2C_FIELD(conn,u8*,CONN_SESSION_JOIN_SLOT)<M2C_FIELD(GetConnection(),u8*,CONN_SESSION_PLAYER_COUNT)-1){
 SetConnectionState(13);
-a=GetConnection();values[0]=M2C_FIELD(a+(M2C_FIELD(GetConnection(),u8*,420)+1)*4,s32*,244);
-values[1]=M2C_FIELD(GetConnection(),u8*,420)+1;
-a=GetConnection();values[2]=M2C_FIELD(a+(M2C_FIELD(GetConnection(),u8*,420)+1),u8*,720);
-a=GetConnection();values[3]=M2C_FIELD(a+(M2C_FIELD(GetConnection(),u8*,420)+1)*4,s32*,36);
-a=GetConnection();values[4]=M2C_FIELD(a+(M2C_FIELD(GetConnection(),u8*,420)+1)*2,u16*,164);n=5;
+conn=GetConnection();values[0]=M2C_FIELD(conn+(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_JOIN_SLOT)+1)*4,s32*,CONN_SESSION_PEER_IDS);
+values[1]=M2C_FIELD(GetConnection(),u8*,CONN_SESSION_JOIN_SLOT)+1;
+conn=GetConnection();values[2]=M2C_FIELD(conn+(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_JOIN_SLOT)+1),u8*,CONN_SESSION_PEER_SLOTS);
+conn=GetConnection();values[3]=M2C_FIELD(conn+(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_JOIN_SLOT)+1)*4,s32*,CONN_SESSION_PEER_DATA);
+conn=GetConnection();values[4]=M2C_FIELD(conn+(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_JOIN_SLOT)+1)*2,u16*,CONN_SESSION_PEER_DATA_PORT);argCount=5;
 }else{
-M2C_FIELD(GetConnection(),u8*,23)=0;M2C_FIELD(GetConnection(),s32*,32)=0;Qr2_StateChanged(M2C_FIELD(GetConnection(),s32*,16));
-if(M2C_FIELD(GetConnection(),u8*,21)==0)SetConnectionState(n);else if(M2C_FIELD(GetConnection(),u8*,21)==1)SetConnectionState(4);else SetConnectionState(10);
-M2C_FIELD(GetConnection(),u8*,420)=0;
-a=0;if(M2C_FIELD(GetConnection(),u8*,21)==2)goto complete;
-a=GetConnection();if(M2C_FIELD(a,u8*,13)==M2C_FIELD(GetConnection(),u8*,22)){
+M2C_FIELD(GetConnection(),u8*,CONN_SESSION_ADDRESS_VALID)=0;M2C_FIELD(GetConnection(),s32*,CONN_SESSION_MATCH_ADDRESS)=0;Qr2_StateChanged(M2C_FIELD(GetConnection(),s32*,CONN_SESSION_QR2_RECORD));
+if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==0)SetConnectionState(argCount);else if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==1)SetConnectionState(CONN_STATE_JOINING);else SetConnectionState(CONN_STATE_MATCH);
+M2C_FIELD(GetConnection(),u8*,CONN_SESSION_JOIN_SLOT)=0;
+conn=0;if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==2)goto complete;
+conn=GetConnection();if(M2C_FIELD(conn,u8*,CONN_SESSION_PLAYER_COUNT)==M2C_FIELD(GetConnection(),u8*,CONN_SESSION_CAPACITY)){
 complete:
-if(M2C_FIELD(GetConnection(),u8*,21)==2){a=GetConnection();d=GetConnection();M2C_FIELD(a,s32*,524)=M2C_FIELD(d+M2C_FIELD(GetConnection(),u8*,13)*4,s32*,244);}else{M2C_FIELD(GetConnection(),s32*,524)=0;a=GetConnection();M2C_FIELD(a,s32*,244)=M2C_FIELD(GetConnection(),s32*,512);}
-SetConnectionState(16);M2C_FIELD(GetConnection(),s32*,468)=0;for(i=1;i<=M2C_FIELD(GetConnection(),u8*,13);i++)((void (*)(u32,s32))SendConnectionPacket)(M2C_FIELD((u8 *)GetConnection()+i,u8*,720),2);
+if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==2){conn=GetConnection();conn2=GetConnection();M2C_FIELD(conn,s32*,CONN_SESSION_TARGET_ID)=M2C_FIELD(conn2+M2C_FIELD(GetConnection(),u8*,CONN_SESSION_PLAYER_COUNT)*4,s32*,CONN_SESSION_PEER_IDS);}else{M2C_FIELD(GetConnection(),s32*,CONN_SESSION_TARGET_ID)=0;conn=GetConnection();M2C_FIELD(conn,s32*,CONN_SESSION_PEER_IDS)=M2C_FIELD(GetConnection(),s32*,CONN_SESSION_QR2_PARAM);}
+SetConnectionState(CONN_STATE_WAIT_SYNC_ACK);M2C_FIELD(GetConnection(),s32*,CONN_SESSION_READY_MASK)=0;for(i=1;i<=M2C_FIELD(GetConnection(),u8*,CONN_SESSION_PLAYER_COUNT);i++)((void (*)(u32,s32))SendConnectionPacket)(M2C_FIELD((u8 *)GetConnection()+i,u8*,CONN_SESSION_PEER_SLOTS),2);
 }else{
-values[0]=0;values[1]=M2C_FIELD(GetConnection(),u8*,13);a=GetConnection();values[2]=M2C_FIELD(a+M2C_FIELD(GetConnection(),u8*,13),u8*,720);
-if(M2C_FIELD(GetConnection(),u8*,21)==0){M2C_FIELD(GetConnection(),s32*,232)=2;a=GetConnection();M2C_FIELD(a,u64*,236)=GetSystemTick();}
-else if(M2C_FIELD(GetConnection(),u8*,21)==1){TryConnectToPeer(1,0,0);if(M2C_FIELD(GetConnection(),u8*,422)==0&&M2C_FIELD(GetConnection(),u8*,13)>=2){a=GetConnection();b=GetConnectedPlayerMask(0);d=GetConnection();if(M2C_FIELD(a,u32*,476)!=(b&~(1<<M2C_FIELD(d+M2C_FIELD(GetConnection(),u8*,13),u8*,720)))){ReconnectUnlessServing();break;}}}
+values[0]=0;values[1]=M2C_FIELD(GetConnection(),u8*,CONN_SESSION_PLAYER_COUNT);conn=GetConnection();values[2]=M2C_FIELD(conn+M2C_FIELD(GetConnection(),u8*,CONN_SESSION_PLAYER_COUNT),u8*,CONN_SESSION_PEER_SLOTS);
+if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==0){M2C_FIELD(GetConnection(),s32*,CONN_SESSION_BROWSE_RETRY)=2;conn=GetConnection();M2C_FIELD(conn,u64*,CONN_SESSION_BROWSE_RETRY_TICK)=GetSystemTick();}
+else if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==1){TryConnectToPeer(1,0,0);if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_JOIN_FLAG)==0&&M2C_FIELD(GetConnection(),u8*,CONN_SESSION_PLAYER_COUNT)>=2){conn=GetConnection();scratch=GetConnectedPlayerMask(0);conn2=GetConnection();if(M2C_FIELD(conn,u32*,CONN_SESSION_JOIN_ACK_MASK)!=(scratch&~(1<<M2C_FIELD(conn2+M2C_FIELD(GetConnection(),u8*,CONN_SESSION_PLAYER_COUNT),u8*,CONN_SESSION_PEER_SLOTS)))){ReconnectUnlessServing();break;}}}
 }
-if(M2C_FIELD(GetConnection(),u8*,21)!=2)update=1;
+if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)!=2)update=1;
 }
-if(M2C_FIELD(GetConnection(),s32*,416)!=16){a=GetConnection();d=GetConnection();e=GetConnection();f=GetConnection();g=GetConnection();h=GetConnection();
-SendConnectionCommand(8,M2C_FIELD(a+M2C_FIELD(d,u8*,13)*4,s32*,244),M2C_FIELD(e+M2C_FIELD(f,u8*,13)*4,s32*,36),M2C_FIELD(g+M2C_FIELD(h,u8*,13)*2,u16*,164),values,n);
-if(ReportConnectionCommandResult())return;M2C_FIELD(GetConnection(),u8*,973)=0;}break;
-case 1:SetConnectionState(1);if(M2C_FIELD(GetConnection(),u8*,21)==3){a=GetConnection();d=GetConnection();M2C_FIELD(a,s32*,524)=M2C_FIELD(d+M2C_FIELD(GetConnection(),u8*,13)*4,s32*,244);}update=1;break;
-case 2:SetConnectionState(1);if(M2C_FIELD(GetConnection(),u8*,21)==0||M2C_FIELD(GetConnection(),u8*,21)==1){M2C_FIELD(GetConnection(),u8*,23)=1;a=GetConnection();M2C_FIELD(a,s32*,32)=M2C_FIELD(GetConnection(),s32*,512);}
-ResetSlotRequestRetry();if(M2C_FIELD(GetConnection(),u8*,13)>1){a=GetConnection();d=GetConnection();e=GetConnection();f=GetConnection();g=GetConnection();SendConnectionCommand(9,M2C_FIELD(a,s32*,244),M2C_FIELD(d,s32*,36),M2C_FIELD(e,u16*,164),f+244+(M2C_FIELD(g,u8*,13)-1)*4,1);if(ReportConnectionCommandResult())return;}break;
-case 3:SetConnectionState(1);ResetSlotRequestRetry();M2C_FIELD(GetConnection(),s32*,524)=0;update=1;break;
-case 4:if(M2C_FIELD(GetConnection(),u8*,21)!=2)SetGpiStatus(2,&sEmptyString,0);
-b=M2C_FIELD(GetConnection(),s32*,524)==0;a=GetConnection();c=GetSessionPlayerSlot(M2C_FIELD(GetConnection(),s32*,524));d=GetConnection();
-((void (*)(s32,s32,s32,s32,s32,s32))M2C_FIELD(a,void **,1124))(0,0,b,0,c,M2C_FIELD(d,s32*,1128));
-if(M2C_FIELD(GetConnection(),u8*,21)==0||M2C_FIELD(GetConnection(),u8*,21)==1){TeardownConnectionSession();}else{
-if(M2C_FIELD(GetConnection(),s32*,228)!=0){DestroyServerBrowser(M2C_FIELD(GetConnection(),s32*,228));M2C_FIELD(GetConnection(),s32*,228)=0;}
-NatNeg_RequestShutdown();if(M2C_FIELD(GetConnection(),u8*,21)==2){ReportGpiSessionStatus();if(ReportConnectionStatusResult())return;if(gConnectionMgr[28]==1)gConnectionMgr[29]=1;SetConnectionState(10);}else SetConnectionState(1);M2C_FIELD(GetConnection(),s32*,524)=0;
-}M2C_FIELD(GetConnection(),u8*,425)=0;break;
+if(M2C_FIELD(GetConnection(),s32*,CONN_SESSION_STATE)!=CONN_STATE_WAIT_SYNC_ACK){conn=GetConnection();conn2=GetConnection();conn3=GetConnection();conn4=GetConnection();conn5=GetConnection();conn6=GetConnection();
+SendConnectionCommand(8,M2C_FIELD(conn+M2C_FIELD(conn2,u8*,CONN_SESSION_PLAYER_COUNT)*4,s32*,CONN_SESSION_PEER_IDS),M2C_FIELD(conn3+M2C_FIELD(conn4,u8*,CONN_SESSION_PLAYER_COUNT)*4,s32*,CONN_SESSION_PEER_DATA),M2C_FIELD(conn5+M2C_FIELD(conn6,u8*,CONN_SESSION_PLAYER_COUNT)*2,u16*,CONN_SESSION_PEER_DATA_PORT),values,argCount);
+if(ReportConnectionCommandResult())return;M2C_FIELD(GetConnection(),u8*,CONN_SESSION_LAST_COMMAND_TRIES)=0;}break;
+case 1:SetConnectionState(1);if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==3){conn=GetConnection();conn2=GetConnection();M2C_FIELD(conn,s32*,CONN_SESSION_TARGET_ID)=M2C_FIELD(conn2+M2C_FIELD(GetConnection(),u8*,CONN_SESSION_PLAYER_COUNT)*4,s32*,CONN_SESSION_PEER_IDS);}update=1;break;
+case 2:SetConnectionState(1);if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==0||M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==1){M2C_FIELD(GetConnection(),u8*,CONN_SESSION_ADDRESS_VALID)=1;conn=GetConnection();M2C_FIELD(conn,s32*,CONN_SESSION_MATCH_ADDRESS)=M2C_FIELD(GetConnection(),s32*,CONN_SESSION_QR2_PARAM);}
+ResetSlotRequestRetry();if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_PLAYER_COUNT)>1){conn=GetConnection();conn2=GetConnection();conn3=GetConnection();conn4=GetConnection();conn5=GetConnection();SendConnectionCommand(9,M2C_FIELD(conn,s32*,CONN_SESSION_PEER_IDS),M2C_FIELD(conn2,s32*,CONN_SESSION_PEER_DATA),M2C_FIELD(conn3,u16*,CONN_SESSION_PEER_DATA_PORT),conn4+CONN_SESSION_PEER_IDS+(M2C_FIELD(conn5,u8*,CONN_SESSION_PLAYER_COUNT)-1)*4,1);if(ReportConnectionCommandResult())return;}break;
+case 3:SetConnectionState(1);ResetSlotRequestRetry();M2C_FIELD(GetConnection(),s32*,CONN_SESSION_TARGET_ID)=0;update=1;break;
+case 4:if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)!=2)SetGpiStatus(2,&sEmptyString,0);
+scratch=M2C_FIELD(GetConnection(),s32*,CONN_SESSION_TARGET_ID)==0;conn=GetConnection();slot=GetSessionPlayerSlot(M2C_FIELD(GetConnection(),s32*,CONN_SESSION_TARGET_ID));conn2=GetConnection();
+((void (*)(s32,s32,s32,s32,s32,s32))M2C_FIELD(conn,void **,CONN_SESSION_EVENT_CALLBACK))(0,0,scratch,0,slot,M2C_FIELD(conn2,s32*,CONN_SESSION_EVENT_DATA));
+if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==0||M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==1){TeardownConnectionSession();}else{
+if(M2C_FIELD(GetConnection(),s32*,CONN_SESSION_SERVER_BROWSER)!=0){DestroyServerBrowser(M2C_FIELD(GetConnection(),s32*,CONN_SESSION_SERVER_BROWSER));M2C_FIELD(GetConnection(),s32*,CONN_SESSION_SERVER_BROWSER)=0;}
+NatNeg_RequestShutdown();if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==2){ReportGpiSessionStatus();if(ReportConnectionStatusResult())return;if(gConnectionMgr[CONN_MGR_MATCH_STARTED]==1)gConnectionMgr[CONN_MGR_MATCH_FINISHED]=1;SetConnectionState(CONN_STATE_MATCH);}else SetConnectionState(1);M2C_FIELD(GetConnection(),s32*,CONN_SESSION_TARGET_ID)=0;
+}M2C_FIELD(GetConnection(),u8*,CONN_SESSION_BUSY)=0;break;
 }
-if(update&&M2C_FIELD(GetConnection(),u8*,21)!=3)ResetSessionList(M2C_FIELD(GetConnection(),s32*,228));
+if(update&&M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)!=3)ResetSessionList(M2C_FIELD(GetConnection(),s32*,CONN_SESSION_SERVER_BROWSER));
 }
 
 /* True when every player id in the list is a member of the connection.  While a

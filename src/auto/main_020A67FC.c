@@ -4,6 +4,7 @@
 #include "ov000_ai.h"
 typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 #include "ov000_unit_entry.h"
+#include "unit_sprite.h"
 static inline s32 unitHealth7074(UnkStruct_ov000_021A860C *p) { s32 Divide(s32,s32);s32 h=p->unk6;if(h==0)return 0;return Divide(h-1,10)+1; }
 extern u8 data_ov000_021b5c6a[], gUnitKindLoadMask[],gUnitKindCargoCount[],gUnitKindLoadClass[];
 extern void **gCurrentMap;
@@ -139,10 +140,13 @@ void UnitSprite_PlaceCursorAndResume(void *sprite) {
     Sprite_ResumeAnimation(sprite);
 }
 
-void SpawnUnitSprite(s32 arg0, void *unused) {
+/* Create the sprite that draws map unit `unit` blowing up (the explosion
+ * animation script) and remember the unit it draws.  The effect that spawned the
+ * sprite is passed as `unused`. */
+void SpawnUnitSprite(BattleMapUnitHead *unit, void *unused) {
     void *CreateSpriteObject(M2C_UNK *);
-    extern M2C_UNK data_02120670;
-    M2C_FIELD(CreateSpriteObject(&data_02120670), s32 *, 0x54) = arg0;
+    extern M2C_UNK gUnitExplosionSpriteScript;
+    M2C_FIELD(CreateSpriteObject(&gUnitExplosionSpriteScript), s32 *, UNIT_SPRITE_UNIT) = (s32) unit;
 }
 
 /* Initialise an area-damage battle effect: set its two active flags, allocate

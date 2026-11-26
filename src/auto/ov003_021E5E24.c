@@ -45,11 +45,13 @@ DrawTextSprite(M2C_FIELD(arg0,void**,0x50));gCur3DSpriteEngine=saved;
 }
 }
 
-M2C_UNK func_ov003_021e6204(M2C_UNK arg0) {
+/* Scene entry method: mark the ov003 scene active and create the ov006
+ * map-list object attached to `parent`. */
+M2C_UNK Ov003_ShowMapListScene(M2C_UNK parent) {
     M2C_UNK SetOv003SceneState(s32);
-    M2C_UNK func_ov006_02218328(M2C_UNK);
+    M2C_UNK CreateMapListObject(M2C_UNK);
     SetOv003SceneState(1);
-    return func_ov006_02218328(arg0);
+    return CreateMapListObject(parent);
 }
 
 void func_ov003_021e6220(void **arg0) {
@@ -68,7 +70,7 @@ void func_ov003_021e6234(void *obj) {
     M2C_UNK LoadBattleMap(M2C_UNK);
     M2C_UNK PreloadMapTileset(M2C_UNK);
     s32 GetMapName(M2C_UNK);
-    s32 func_ov006_02217d0c();
+    s32 GetReceivedMapDisplayValue();
     extern void **gCurrentMap;
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
@@ -89,7 +91,7 @@ void func_ov003_021e6234(void *obj) {
     DrawMapPreviewLayer(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x143, 5);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
     gCur3DSpriteEngine = savedContext;
-    SetTextSpriteValue(M2C_FIELD(obj, s32 *, 0x58), func_ov006_02217d0c());
+    SetTextSpriteValue(M2C_FIELD(obj, s32 *, 0x58), GetReceivedMapDisplayValue());
 }
 
 void func_ov003_021e635c(void) {
@@ -169,8 +171,8 @@ u8 Ov003_IsMapInfoSceneTweenRunning(void *scene) {
 }
 
 void func_ov003_021e6470(void) {
-    M2C_UNK func_ov003_021e6204();
-    func_ov003_021e6204();
+    M2C_UNK Ov003_ShowMapListScene();
+    Ov003_ShowMapListScene();
 }
 
 /* Scene method of the map-info scene: cache in the scene's flag byte (+0x60)

@@ -268,14 +268,17 @@ void ghiGetSockName(s32 socket, UnkSocketAddress *address, s32 *addressLength) {
     ghiRecordSocketError(result, -1);
 }
 
-s32 ghiInetAddr(M2C_UNK arg0) {
-    s32 ghiResolveInetAddr(M2C_UNK, s32 *);
-    s32 sp0;
+/* ghi inet_addr: resolve host name `hostname` to a network-order IPv4
+ * address (the order the rest of the stack uses), or -1 when it does not
+ * resolve at all. */
+s32 ghiInetAddr(s32 hostname) {
+    M2C_UNK ghiResolveInetAddr(s32, u32 *);
+    u32 address;
 
-    if (ghiResolveInetAddr(arg0, &sp0) == 0) {
+    if (ghiResolveInetAddr(hostname, &address) == 0) {
         return -1;
     }
-    return sp0;
+    return address;
 }
 
 s32 ghiGetLastSocketError(void) {
@@ -297,7 +300,7 @@ void gpiGetTime(int *out) {
     if (out) *out = timeMs;
 }
 
-s32 func_02049974(s32 x) {
+s32 AdvanceRandomState(s32 x) {
 u32 lo=(u32)x<<16;
 u32 hi=(u32)x>>16;
 u32 a=hi*16807;
@@ -308,12 +311,20 @@ if(v>0x7fffffffU)v=(v&0x7fffffffU)+1;
 return v;
 }
 
-s32 NextRandom(void) { extern s32 gRandomState; s32 func_02049974(s32); return gRandomState=func_02049974(gRandomState); }
+/* Advance the game's random state and return its new value. */
+s32 NextRandom(void) {
+    extern s32 gRandomState;
+    s32 AdvanceRandomState(s32);
+    return gRandomState = AdvanceRandomState(gRandomState);
+}
 
-void SeedRandom(s32 arg0) {
+/* Seed the game's random state (gRandomState, which NextRandom advances) with
+ * `seed`; 0 falls back to 1, and the sign bit is dropped because the state is
+ * kept as 31 bits. */
+void SeedRandom(s32 seed) {
     extern s32 gRandomState;
 
-    gRandomState = arg0 ? (arg0 & ~0x80000000) : 1;
+    gRandomState = seed ? (seed & ~0x80000000) : 1;
 }
 
 /* Random number in [min, max): advance the game's random state and fold the new

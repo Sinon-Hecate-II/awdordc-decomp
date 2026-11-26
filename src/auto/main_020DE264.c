@@ -180,7 +180,7 @@ void Show3DSpriteSlide(void *); void Hide3DSprite(void *); void SetTextById(void
 void func_ov010_02228f80(s32,s32,s32,void *,void *,void *,void *,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern M2C_UNK gMatchScenePath,gMatchSceneNarc,gMatchScene4PScreen,gMatchScene2PScreen;
-void func_020de868(s32,s32,void *); s32 WaitForMatchSession(s32);
+void MatchScenePeerClosedCallback(s32,s32,void *); s32 WaitForMatchSession(s32);
 void *savedEngine=gCur3DSpriteEngine; void *sprite; s32 layout,animValue;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 Clear3DSpriteLayer(1);
@@ -215,15 +215,18 @@ M2C_FIELD(setup,u16 *,0x48)&=~0x100;
 M2C_FIELD(setup,u16 *,0x48)&=~0x200;
 M2C_FIELD(setup,u8 *,0x41)=0;
 layout=GetSetupCode((void *)setup);
-func_ov010_02228f80(side,layout,1,(void *)func_020de868,(void *)setup,(void *)WaitForMatchSession,(void *)setup,0);
+func_ov010_02228f80(side,layout,1,(void *)MatchScenePeerClosedCallback,(void *)setup,(void *)WaitForMatchSession,(void *)setup,0);
 }
 
-void func_020de868(s32 arg0, s32 arg1, void *arg2) {
-    if (arg0 != 0) {
+/* Matchmaking scene's peer event callback: on a clean close (status 0, closed
+ * nonzero) flag the scene (+0x48 bit 8) so its update closes the window and shows
+ * the failure message. */
+void MatchScenePeerClosedCallback(s32 status, s32 closed, void *scene) {
+    if (status != 0) {
         return;
     }
-    if (arg1 != 0) {
-        M2C_FIELD(arg2, u16 *, 0x48) = (u16) (M2C_FIELD(arg2, u16 *, 0x48) | 0x100);
+    if (closed != 0) {
+        M2C_FIELD(scene, u16 *, 0x48) = (u16) (M2C_FIELD(scene, u16 *, 0x48) | 0x100);
     }
 }
 

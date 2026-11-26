@@ -35,7 +35,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     M2C_UNK GetPlayerCoId(s32);
     M2C_UNK GetPlayerArmyId(s32);
     M2C_UNK GetPlayerTeam(s32);
-    M2C_UNK func_020cfb94();
+    M2C_UNK GetCurrentMapPlayerCount();
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern u8 data_ov003_02210484[];
@@ -54,7 +54,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     u16 tileIndex;
 
     /* Create three setup icons per player, remapping participant icons when needed. */
-    playerCount = (u32) func_020cfb94();
+    playerCount = (u32) GetCurrentMapPlayerCount();
     slotCount = 0;
     do {
         participantSlots[slotCount] = 0xFF;
@@ -226,7 +226,12 @@ void func_ov003_022023a0(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x17) = arg1;
 }
 
-void func_ov003_022023a8(void *arg0,s32 arg1){M2C_FIELD(arg0,u8*,0x28)=(M2C_FIELD(arg0,u8*,0x28)&~0xe0)|((u32)((u8)arg1<<29)>>24);}
+/* Set the three flag bits at 5..7 of a scene-view label's +0x28 byte; the low
+ * 3 bits of `priority` go there.  DrawTextSprite copies them into the glyph
+ * sprites' tile word, where they are the sprites' OAM draw priority. */
+void Ov003_SetLabelGlyphPriority(void *label, s32 priority) {
+    M2C_FIELD(label, u8 *, 0x28) = (M2C_FIELD(label, u8 *, 0x28) & ~0xE0) | ((u32)((u8)priority << 29) >> 24);
+}
 
 void func_ov003_022023c4(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x24) = arg1;
@@ -240,8 +245,8 @@ void func_ov003_022023e4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 void func_ov003_022023fc(void) {
-    M2C_UNK func_020cfb94();
-    func_020cfb94();
+    M2C_UNK GetCurrentMapPlayerCount();
+    GetCurrentMapPlayerCount();
 }
 
 s32 func_ov003_02202408(s32 arg0) {
@@ -277,7 +282,7 @@ void Ov003_HideSetupPanelSprites(void *panel) {
 #pragma opt_common_subs off
 void func_ov003_022024a8(void *arg0) {
     void AddSprite(u16, u8, u16, void *, s32);
-    s32 func_020cfb94(void);
+    s32 GetCurrentMapPlayerCount(void);
     void UpdateSpriteAnimation(void *);
     s16 GetSpriteAnimValue(void *);
     s32 GetWaypointSlotX(u8);
@@ -349,7 +354,7 @@ void func_ov003_022024a8(void *arg0) {
     temp_r5_2 = GetWaypointSlotBaseX();
     M2C_FIELD(*(void **)gCur3DSpriteEngine, s16 *, 0x3A) = (s16) (0 - (temp_r4_2 + temp_r5_2 + GetWaypointSlotOffsetX(1)));
     M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x42) = 0xFFC0;
-    temp_r10 = func_020cfb94();
+    temp_r10 = GetCurrentMapPlayerCount();
     screenX = (s16)(temp_r6 - 4);
     temp_r8 = M2C_FIELD(arg0, s32 *, 0x50);
     var_r9 = 0;
@@ -392,10 +397,10 @@ void func_ov003_0220277c(void *arg0) {
     void Ov003_RefreshSelectedEntry();
     void Ov003_DecreaseSelectedEntry(void *, s32);
     void Ov003_UpdateSetupMenuButtons(void *);
-    u8 func_ov003_022036c8(void *);
-    s8 func_ov003_022036e4(void *);
-    u8 func_ov003_022036ec(void *);
-    s8 func_ov003_02203708(void *);
+    u8 SetupMenuHasClickedEntry(void *);
+    s8 GetSetupMenuClickedEntry(void *);
+    u8 SetupMenuHasPressedEntry(void *);
+    s8 GetSetupMenuPressedEntry(void *);
     void func_ov003_02203710(void *, s32);
     s32 func_ov003_02200c64(s32, s32, s32);
     M2C_UNK IsSessionHostAlt();
@@ -459,13 +464,13 @@ void func_ov003_0220277c(void *arg0) {
     Ov003_UpdateSetupMenuButtons(M2C_FIELD(arg0, void **, 0x44));
 
     if (r7 != 0) {
-        if (func_ov003_022036c8(M2C_FIELD(arg0, void **, 0x44)) != 0) {
-            func_ov003_02202ec0(arg0, (u8)func_ov003_022036e4(M2C_FIELD(arg0, void **, 0x44)));
+        if (SetupMenuHasClickedEntry(M2C_FIELD(arg0, void **, 0x44)) != 0) {
+            func_ov003_02202ec0(arg0, (u8)GetSetupMenuClickedEntry(M2C_FIELD(arg0, void **, 0x44)));
             r7 = 0;
         }
     } else {
-        if (func_ov003_022036ec(M2C_FIELD(arg0, void **, 0x44)) != 0) {
-            Ov003_RefreshSelectedEntry(arg0, (u8)func_ov003_02203708(M2C_FIELD(arg0, void **, 0x44)));
+        if (SetupMenuHasPressedEntry(M2C_FIELD(arg0, void **, 0x44)) != 0) {
+            Ov003_RefreshSelectedEntry(arg0, (u8)GetSetupMenuPressedEntry(M2C_FIELD(arg0, void **, 0x44)));
         }
     }
 

@@ -331,16 +331,13 @@ s32 GetBattleSlotCustomName(s32 slot) {
     return records + slot * SAVE_SLOT_RECORD_SIZE;
 }
 
-void GetOwnFriendCode(s32 arg0) {
-    M2C_UNK BuildProfilePlayerCode(s32);
+/* Fill in the player code of the profile save block `profile` (the local profile
+ * when it is 0) and return it as the player's friend code. */
+u64 GetOwnFriendCode(s32 *profile) {
+    u64 BuildProfilePlayerCode(s32);
     s32 GetProfileSaveBlock();
-    s32 var_r0;
-
-    var_r0 = arg0;
-    if (var_r0 == 0) {
-        var_r0 = GetProfileSaveBlock();
-    }
-    BuildProfilePlayerCode(var_r0 + 4);
+    if (profile == NULL) profile = (s32 *)GetProfileSaveBlock();
+    return BuildProfilePlayerCode((s32)((u8 *)profile + PROFILE_ID_BLOCK));
 }
 
 /* Copy the local player's 12-byte identity record out of the profile save
@@ -358,10 +355,12 @@ void func_020c5424(void) {
     InitPlayerCodeRecord();
 }
 
-u64 GetBattleSlotMapCode(s32 arg0) {
-u64 GetPlayerRecordCode();
-if(arg0==0)return 0;
-return GetPlayerRecordCode();
+/* The player code (the map code shown for the save) of battle-save slot summary
+ * `record`, or 0 when the slot has no record. */
+u64 GetBattleSlotMapCode(void *record) {
+    u64 GetPlayerRecordCode(void *);
+    if (record == NULL) return 0;
+    return GetPlayerRecordCode(record);
 }
 
 s32 func_020c544c(s32 arg0) {
@@ -382,8 +381,8 @@ void func_020c5464(void) {
 /* Whether `code` is a valid player (friend) code for this profile's game id: the
  * game id is read from the profile-id block GetProfileSaveBlock returns. */
 s32 IsPlayerCodeValidForProfile(u64 code) {
-    M2C_UNK func_02031f58(s32, u64);
-    return func_02031f58(GetProfileSaveBlock() + 4, code);
+    M2C_UNK IsPlayerCodeValidForGameId(s32, u64);
+    return IsPlayerCodeValidForGameId(GetProfileSaveBlock() + 4, code);
 }
 
 s32 FormatMapCodeString(s32 arg0) {
@@ -705,7 +704,9 @@ s32 CanUseFreePlayOnlyCommand(void) {
     return 2;
 }
 
-s32 func_020c5cd4(void) {
+/* Availability of a battle-menu entry that only opens once the battle has
+ * finished: available (0) after it ends, hidden (2) while it is still running. */
+s32 CanUseAfterBattleEndCommand(void) {
     extern u8 gBattleEndState;
     if (gBattleEndState != 0) {
         return 0;
@@ -713,9 +714,11 @@ s32 func_020c5cd4(void) {
     return 2;
 }
 
-s32 func_020c5cf0(void) {
-extern u8 gBattleEndState;
-if(gBattleEndState) return 2;
-return 0;
+/* Availability of a battle-menu entry that is only usable while the battle is
+ * running: available (0) until the battle ends, hidden (2) afterwards. */
+s32 CanUseDuringBattleCommand(void) {
+ extern u8 gBattleEndState;
+ if(gBattleEndState) return 2;
+ return 0;
 }
 

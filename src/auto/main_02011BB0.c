@@ -434,7 +434,7 @@ s32 WFC_SendCommand9(M2C_UNK callback) {
  * and queues it in a 16-byte command-10 packet carrying the command handler,
  * match id, player count, info word and the info bytes.  Returns 0 on success
  * (2 once handed to the queue), 6 for a bad profile. */
-s32 func_020124c4(s32 commandHandler,void *profile){
+s32 Mb_SendMatchProfile(s32 commandHandler,void *profile){
 s32 WFC_CheckChannelState();s32 WFC_SendCommandPacket(void *,s32);
 u32 packet[4];s32 result;u16 playerCount;
 result=WFC_CheckChannelState(3,2,3,5);
@@ -577,7 +577,7 @@ s32 MultiBoot_SubmitLinkTask(s32 index, s32 peer, s32 payloadSize, s32 param, u1
     return rc;
 }
 
-void func_02012a64(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,u16 f,u16 g,s32 h,s32 i,s32 j,s32 k){void CpuFill();PacketParams_02012a64 x;CpuFill(0,&x,16); x.g=k;x.e=h;x.f=i;x.flags=0x1e03;x.d=g;x.a=f;x.b=f;if(j && f){x.flags|=4;x.c=f;} MultiBoot_SubmitLinkTask(a,b,c,d,e,&x);}
+void Mb_SubmitLinkDataTask(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,u16 f,u16 g,s32 h,s32 i,s32 j,s32 k){void CpuFill();PacketParams_02012a64 x;CpuFill(0,&x,16); x.g=k;x.e=h;x.f=i;x.flags=0x1e03;x.d=g;x.a=f;x.b=f;if(j && f){x.flags|=4;x.c=f;} MultiBoot_SubmitLinkTask(a,b,c,d,e,&x);}
 
 /* Queue a multiboot link task over a data buffer and an extra buffer, with
  * `flag` set in the 16-byte task spec; `handler` receives its completion

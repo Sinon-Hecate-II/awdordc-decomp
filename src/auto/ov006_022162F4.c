@@ -165,13 +165,15 @@ void func_ov006_0221661c(void *spriteList) {
             AddSpriteCell(M2C_FIELD(spriteList, s32 *, 0x40), (s16)(x * 24 + 56), (s16)(y * 24 + 8), 24, 24, (u16)(x + y * 6), 14);
 }
 
-void func_ov006_0221679c(void *arg0) {
- M2C_UNK SpriteCellListClear(s32);
- M2C_UNK func_020b2140();
- M2C_UNK HideAllSpriteSlots();
- HideAllSpriteSlots();
- SpriteCellListClear(M2C_FIELD(arg0, s32 *, 0x40));
- func_020b2140();
+/* Hide the map-code entry panel: hide every sprite slot, clear the panel's
+ * sprite grid and clear the sprite-slot focus flag. */
+void HideMapCodeEntryPanel(void *panel) {
+    M2C_UNK SpriteCellListClear(s32);
+    M2C_UNK ClearSpriteSlotFocusFlag();
+    M2C_UNK HideAllSpriteSlots();
+    HideAllSpriteSlots();
+    SpriteCellListClear(M2C_FIELD(panel, s32 *, MAP_CODE_PANEL_GRID));
+    ClearSpriteSlotFocusFlag();
 }
 
 void func_ov006_022167b8(void) {
@@ -231,8 +233,8 @@ void func_ov006_02216bac(void) {
 }
 
 void func_ov006_02216bb8(void) {
-    void func_ov006_0221679c();
-    func_ov006_0221679c();
+    void HideMapCodeEntryPanel();
+    HideMapCodeEntryPanel();
 }
 
 /* Frame step of the map-code entry panel: advance its reveal tween and, once the

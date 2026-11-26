@@ -129,7 +129,15 @@ extern M2C_UNK gCoUnlocked;
 return (u32)(M2C_FIELD(&gCoUnlocked,u8 *,a)<<31)>>31;
 }
 
-void SetCoUnlocked(s32 a,s32 b){extern M2C_UNK gCoUnlocked;u32 old=M2C_FIELD(&gCoUnlocked,u8*,a); b&=1;M2C_FIELD(&gCoUnlocked,u8*,a)=(old&~1)|b;}
+/* Set (flag 1) or clear (flag 0) the unlock bit of CO `coId` in the CO roster,
+ * leaving the saved-mode bits beside it alone. */
+void SetCoUnlocked(s32 coId, s32 flag) {
+    extern M2C_UNK gCoUnlocked;
+    u32 old = M2C_FIELD(&gCoUnlocked, u8 *, coId);
+
+    flag &= 1;
+    M2C_FIELD(&gCoUnlocked, u8 *, coId) = (old & ~1) | flag;
+}
 
 /* Return the mode a CO was left in: the 3-bit field beside the CO's unlock bit,
  * 0 for the empty roster entry 0 and for every entry past the roster. */

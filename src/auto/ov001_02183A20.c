@@ -674,34 +674,43 @@ void StorePlayerName(u8 *arg0) {
     }
 }
 
-void func_ov001_02184660(u8 *arg0) {
+/* Parse `text` into the first player's 4-byte code field (SAVE_PLAYER_CODES)
+ * of the working save slot. */
+void Ov001_ParseSavePlayerCode1(u8 *text) {
     void ParsePlayerCode(u8 *, u8 *);
     extern s32 gSaveData;
-    ParsePlayerCode(arg0, (u8 *)gSaveData + 0x4c0);
+    ParsePlayerCode(text, (u8 *)gSaveData + SAVE_PLAYER_CODES);
 }
 
-void func_ov001_0218467c(u8 *arg0) {
+/* Parse `text` into the working save slot's 4-byte map/verification code
+ * (SAVE_CODE, which exists only in the working copy of the slot). */
+void Ov001_ParseSaveCode(u8 *text) {
     void ParsePlayerCode(u8 *, u8 *);
     extern s32 gSaveData;
-    ParsePlayerCode(arg0, (u8 *)gSaveData + 0x4f0);
+    ParsePlayerCode(text, (u8 *)gSaveData + SAVE_CODE);
 }
 
-void func_ov001_02184698(u8 *arg0) {
+/* Parse `text` into the second saved player code (SAVE_PLAYER_CODES + 4). */
+void Ov001_ParseSavePlayerCode2(u8 *text) {
     void ParsePlayerCode(u8 *, u8 *);
     extern s32 gSaveData;
-    ParsePlayerCode(arg0, (u8 *)gSaveData + 0x4c4);
+    ParsePlayerCode(text, (u8 *)gSaveData + SAVE_PLAYER_CODES + 4);
 }
 
-void func_ov001_021846b8(u8 *arg0) {
+/* Parse the player-code text into the third player's 4-byte code field
+ * (SAVE_PLAYER_CODES + 8) of the working save slot. */
+void Ov001_ParseSavePlayerCode3(u8 *text) {
     void ParsePlayerCode(u8 *, u8 *);
     extern s32 gSaveData;
-    ParsePlayerCode(arg0, (u8 *)gSaveData + 0x4c8);
+    ParsePlayerCode(text, (u8 *)gSaveData + SAVE_PLAYER_CODES + 8);
 }
 
-void func_ov001_021846d8(u8 *arg0) {
+/* Parse the player-supplied code text into the fourth player's 4-byte code field
+ * (SAVE_PLAYER_CODES + 12) of the working save slot. */
+void Ov001_ParseSavePlayerCode4(u8 *text) {
     void ParsePlayerCode(u8 *, u8 *);
     extern s32 gSaveData;
-    ParsePlayerCode(arg0, (u8 *)gSaveData + 0x4cc);
+    ParsePlayerCode(text, (u8 *)gSaveData + SAVE_PLAYER_CODES + 12);
 }
 
 /* Copy the working save slot's saved map name (SAVE_MAP_NAME) into `dest`,

@@ -113,11 +113,11 @@ void VoiceCodec_ResetState(void) {
 
 void func_ov010_02225304(M2C_UNK arg0, M2C_UNK arg1) {
 M2C_UNK MI_CpuCopy32(M2C_UNK,M2C_UNK *,M2C_UNK);
-extern M2C_UNK data_ov010_0222d974;
-MI_CpuCopy32(arg0,&data_ov010_0222d974,arg1);
+extern M2C_UNK gVoiceCodecSampleBuffer;
+MI_CpuCopy32(arg0,&gVoiceCodecSampleBuffer,arg1);
 }
 
-void func_ov010_0222531c(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK arg2, M2C_UNK arg3) {
+void VoiceCodec_ProcessFrame(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK arg2, M2C_UNK arg3) {
     extern M2C_UNK data_ov010_0222d930;
     volatile u16 *hw0 = (volatile u16 *) 0x4000280;
     volatile u32 *hw1 = (volatile u32 *) 0x40002a0;
@@ -245,10 +245,13 @@ tail1:
 #pragma opt_common_subs reset
 }
 
-void func_ov010_02225538(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2) {
- void func_ov010_0222531c(M2C_UNK,M2C_UNK *,M2C_UNK,M2C_UNK);
- extern M2C_UNK data_ov010_0222d974;
- func_ov010_0222531c(arg0,&data_ov010_0222d974,arg1,arg2);
+/* Normalize one outgoing voice payload: run the codec's adaptive-gain stage over
+ * `payload` (`size` bytes) at the given measured energy level, handing it the
+ * shared codec sample buffer as the stage's reference. */
+void VoiceCodec_NormalizePayload(void *payload, u32 size, u32 level) {
+    void VoiceCodec_ProcessFrame(M2C_UNK, M2C_UNK *, M2C_UNK, M2C_UNK);
+    extern M2C_UNK gVoiceCodecSampleBuffer;
+    VoiceCodec_ProcessFrame(payload, &gVoiceCodecSampleBuffer, size, level);
 }
 
 /* Add two signed 16-bit sample buffers into `out`, four samples a turn, clamping
@@ -389,11 +392,15 @@ void func_ov010_02225934(void) {
  M2C_FIELD(&gStreamVoiceState,s32 *,0x10)=1;
 }
 
-void func_ov010_02225948(void) {
-void VoiceActivity_Reset(void);
-extern s32 gStreamVoiceState;
-VoiceActivity_Reset();
-M2C_FIELD(&gStreamVoiceState,s32 *,16)=0;
+/* ARM7 transfer-end callback of the streamed voice (posted by
+ * DisableVoiceStream): restart the voice-activity detector and clear the voice's
+ * pause flag. */
+void StreamedVoice_TransferEnded(void) {
+    void VoiceActivity_Reset(void);
+    extern s32 gStreamVoiceState;
+
+    VoiceActivity_Reset();
+    M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_PAUSED) = 0;
 }
 
 /* Segment callback of the streaming voice player (installed by
@@ -575,7 +582,7 @@ M2C_FIELD(&gStreamVoiceState,s32 *,4)=1;
 void DisableVoiceStream(void) {
     extern s32 gStreamVoiceState;
     void Arm7TransferEnd(void (*)(void), s32);
-    Arm7TransferEnd(func_ov010_02225948, 0);
+    Arm7TransferEnd(StreamedVoice_TransferEnded, 0);
     M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_ACTIVE) = 0;
 }
 
@@ -584,9 +591,13 @@ s32 func_ov010_02225d8c(void) {
     return M2C_FIELD(&gStreamVoiceState, s32 *, 0x10);
 }
 
-s32 func_ov010_02225d9c(void) {
-void VoiceActivity_CopyState(s32 *);
-s32 out[4];VoiceActivity_CopyState(out);return out[0];
+/* Whether the voice-activity detector currently hears a voice burst (the
+ * snapshot's VOICE_ACTIVITY_SPEAKING flag). */
+s32 VoiceActivity_IsSpeaking(void) {
+    void VoiceActivity_CopyState(s32 *);
+    s32 state[VOICE_ACTIVITY_STATE_SIZE / 4];
+    VoiceActivity_CopyState(state);
+    return state[VOICE_ACTIVITY_SPEAKING / 4];
 }
 
 /* Stop the streaming voice, free its two sample buffers and switch the sound

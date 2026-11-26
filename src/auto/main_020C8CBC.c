@@ -126,7 +126,12 @@ void StepCampaignMapHeaderLoad(void *loader) {
 
 #pragma optimization_level 2
 void func_020c8ed4(M2C_UNK arg0) { M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK); extern M2C_UNK data_0212b07c; CreateSpriteFromClass(&data_0212b07c,arg0); }
-s32 ClearCampaignMapHeaders(void) { s32 MI_CpuFill32(s32,void *,s32); extern u8 gCampaignMapHeaders[]; return MI_CpuFill32(0,gCampaignMapHeaders,0x41a0); }
+/* Clear the cached header of every campaign map (all player slots). */
+s32 ClearCampaignMapHeaders(void) {
+    s32 MI_CpuFill32(s32, void *, s32);
+    extern u8 gCampaignMapHeaders[];
+    return MI_CpuFill32(0, gCampaignMapHeaders, CAMPAIGN_MAP_COUNT * sizeof(MapRecordHeader));
+}
 
 /* Decodes a game text string into the font's glyph codes: ordinary characters go
  * through the shared text decoder, while the 0x1F escape supplies a raw glyph code
@@ -162,11 +167,13 @@ dst++;count++;
 }
 
 #pragma optimization_level reset
-void func_020c9040(void *a) {
-void GotoSpriteAnimationLabel(void *,s32);
-M2C_FIELD(a,volatile u8 *,0x35)=0;
-if(M2C_FIELD(a,volatile u8 *,0x34)) return;
-GotoSpriteAnimationLabel(a,0);
+/* Rewind the campaign map load queue to its first entry; when nothing is queued,
+ * park its sprite at animation label 0. */
+void ResetCampaignMapLoadQueue(void *queue) {
+    void GotoSpriteAnimationLabel(void *, s32);
+    M2C_FIELD(queue, volatile u8 *, CAMPAIGN_LOAD_QUEUE_INDEX) = 0;
+    if (M2C_FIELD(queue, volatile u8 *, CAMPAIGN_LOAD_QUEUE_COUNT)) return;
+    GotoSpriteAnimationLabel(queue, 0);
 }
 
 /* Per-frame step of the campaign map list loader: expands the next queued map
@@ -202,10 +209,12 @@ void LoadNextCampaignMapRecord(void *loader) {
     M2C_FIELD(loader, u8 *, 0x35) = (u8) (M2C_FIELD(loader, u8 *, 0x35) + 1);
 }
 
-void func_020c9100(s32 a) {
-void *CreateSpriteForOwner();
-extern M2C_UNK gCampaignMapLoadQueueClass;
-M2C_FIELD(CreateSpriteForOwner(&gCampaignMapLoadQueueClass,a),u8 *,0x34)=0;
+/* Create an empty campaign map load queue for `owner`: AppendCampaignMapLoadEntry
+ * then appends the map records the queue expands one per frame. */
+void CreateCampaignMapLoadQueue(s32 owner) {
+    void *CreateSpriteForOwner();
+    extern M2C_UNK gCampaignMapLoadQueueClass;
+    M2C_FIELD(CreateSpriteForOwner(&gCampaignMapLoadQueueClass, owner), u8 *, CAMPAIGN_LOAD_QUEUE_COUNT) = 0;
 }
 
 /* Append a map id and its runtime record to the campaign map load queue; the
@@ -238,10 +247,13 @@ void EraseCampaignMapSave(void *panel) {
     DeleteSaveRecordAndSaveSettings(saveType);
 }
 
-void func_020c9190(s32 arg0) {
+/* Open the erase-confirmation panel for the campaign map `mapId` chosen in the
+ * campaign map list; the panel belongs to `owner` and erases that map's saved
+ * progress once the player confirms (EraseCampaignMapSave). */
+void OpenCampaignMapEraseDialog(s32 mapId, s32 owner) {
     void *CreateSpriteForOwner();
-    extern M2C_UNK data_0212b114;
-    M2C_FIELD(CreateSpriteForOwner(&data_0212b114), s32 *, 0x34) = arg0;
+    extern M2C_UNK gCampaignErasePanelClass;
+    M2C_FIELD(CreateSpriteForOwner(&gCampaignErasePanelClass, owner), s32 *, CAMPAIGN_ERASE_PANEL_MAP_ID) = mapId;
 }
 
 #pragma opt_instruction_scheduling off

@@ -31,9 +31,9 @@ s32 gti2SendClosedOnSocket(s32 socket, s32 address, s32 port) {
  * the send time.  When the command was our CONNECT_ACCEPT, restart the
  * connection's start-time clock.  Returns 0 when the send fails. */
 s32 gti2ResendPendingCommand(void *connection, Gt2SentCommand *command) {
-    void func_0205b0ec(void *, s32, u16);
+    void Gt2WriteShort(void *, s32, u16);
     s32 gti2SendRaw(void *, void *, s32);
-    func_0205b0ec(M2C_FIELD(connection, void **, GT2_CONNECTION_SEND_BUFFER), command->offset + 5,
+    Gt2WriteShort(M2C_FIELD(connection, void **, GT2_CONNECTION_SEND_BUFFER), command->offset + 5,
                   M2C_FIELD(connection, u16 *, GT2_RECV_SEQUENCE));
     if (!gti2SendRaw(connection, M2C_FIELD(connection, u8 **, GT2_CONNECTION_SEND_BUFFER) + command->offset, command->size)) return 0;
     command->lastSent = M2C_FIELD(connection, s32 *, GT2_CONNECTION_LAST_SENT);
@@ -49,10 +49,12 @@ void gti2Send(s32 a, s32 b, s32 c, s32 d) {
     gti2SendUnreliable();
 }
 
-s32 func_0205cc3c(void **a, s32 b) {
-    void *p = *a;
+/* Hash a connection-table key (remote address and port) into a bucket of the
+ * socket's connection table: (address * port) modulo the bucket count. */
+s32 HashConnectionLookup(void **key, s32 bucketCount) {
+    GT2ConnectionLookup *lookup = *key;
     s64 U32DivideRem(s32, s32);
-    return (s32)(U32DivideRem(M2C_FIELD(p, s32 *, 0) * (s32)M2C_FIELD(p, u16 *, 4), b) >> 32);
+    return (s32)(U32DivideRem(M2C_FIELD(lookup, s32 *, GT2_CONNECTION_IP) * (s32)M2C_FIELD(lookup, u16 *, GT2_CONNECTION_PORT), bucketCount) >> 32);
 }
 
 /* Compare two connection-table keys (GT2ConnectionLookup) for the socket's
@@ -117,7 +119,7 @@ M2C_FIELD(p,s32 *,0)=-1;
 M2C_FIELD(p,s32 *,0x3c)=d;
 M2C_FIELD(p,s32 *,0x38)=c;
 M2C_FIELD(p,s32 *,0x24)=e;
-M2C_FIELD(p,s32 *,0xc)=TableNew2(4,0x20,2,func_0205cc3c,CompareConnectionLookups,0);
+M2C_FIELD(p,s32 *,0xc)=TableNew2(4,0x20,2,HashConnectionLookup,CompareConnectionLookups,0);
 if(!M2C_FIELD(p,s32 *,0xc)){gpiFree(p);return 1;}
 M2C_FIELD(p,s32 *,0x10)=Vector_New(4,4,(void (*)(void *))func_0205cc90);
 if(!M2C_FIELD(p,s32 *,0x10)){TableFree(M2C_FIELD(p,s32 *,0xc));gpiFree(p);return 1;}

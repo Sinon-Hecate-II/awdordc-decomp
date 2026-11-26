@@ -391,8 +391,10 @@ s32 GX_GetBG3CharPtr(void) {
     return 0;
 }
 
-void func_02003984(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    *arg0 = arg1 | 0x40 | (arg2 << 8) | ((arg3 | (arg4 << 8)) << 0x10);
+/* Fill a blend-state record for plain alpha blending: BLDCNT (the target-plane
+ * masks and the alpha effect bit) and BLDALPHA (the two blend coefficients). */
+void GX_SetAlphaBlend(s32 *record, s32 targetA, s32 targetB, s32 eva, s32 evb) {
+    *record = targetA | GX_BLDCNT_EFFECT_ALPHA | (targetB << 8) | ((eva | (evb << 8)) << 0x10);
 }
 
 /* Set a screen's brightness blend on its blend-control registers: `targets` are
@@ -444,17 +446,39 @@ void GX_SetBlendY(void *blendCnt, s32 level) {
     M2C_FIELD(blendCnt, s16 *, 4) = (s16) level;
 }
 
-void GX_LoadMatrix4x4(s32 a){void func_02004e44(s32);*(volatile s32 *)0x4000400=0x16;func_02004e44(a);}
+/* Queue a load of the 4x4 matrix at `matrix` onto the geometry engine's matrix
+ * stack: send the LOAD_4x4 command, then the matrix's 16 words through the FIFO. */
+void GX_LoadMatrix4x4(s32 matrix) {
+    void GX_SendMatrix4x4(s32);
 
-void GX_LoadMatrix4x3(s32 a) {
-void func_02004e20(s32);
-*(s32 *)0x04000400=0x17;
-func_02004e20(a);
+    REG_GX_FIFO = GX_MTX_CMD_LOAD_4X4;
+    GX_SendMatrix4x4(matrix);
 }
 
-void GX_MultMatrix4x4(s32 a){void func_02004e44(s32);*(s32 *)0x4000400=0x18;func_02004e44(a);}
+/* Queue the 4x3 position matrix at `matrix` (12 fixed-point words) for loading
+ * onto the geometry engine's matrix stack. */
+void GX_LoadMatrix4x3(void *matrix) {
+void GX_SendMatrix4x3(s32);
+REG_GX_FIFO = GX_MTX_CMD_LOAD_4X3;
+GX_SendMatrix4x3((s32)matrix);
+}
 
-void func_02003aa8(s32 a){void func_02004e20(s32);*(s32 *)0x4000400=0x19;func_02004e20(a);}
+/* Queue a 4x4 matrix multiply on the geometry engine's current matrix: send
+ * the MULT_4x4 command, then the matrix's 16 words through the FIFO. */
+void GX_MultMatrix4x4(void *matrix) {
+    void GX_SendMatrix4x4(s32);
+    REG_GX_FIFO = GX_MTX_CMD_MULT_4X4;
+    GX_SendMatrix4x4((s32)matrix);
+}
+
+/* Queue a 4x3 matrix multiply on the geometry engine's current matrix: send
+ * the MULT_4x3 command, then the matrix's 12 words through the FIFO. */
+void GX_MultMatrix4x3(void *matrix) {
+    void GX_SendMatrix4x3(s32);
+
+    REG_GX_FIFO = GX_MTX_CMD_MULT_4X3;
+    GX_SendMatrix4x3((s32)matrix);
+}
 
 /* Initialize the geometry engine, matrix stacks, render state and lookup tables. */
 void G3X_Init(void) {

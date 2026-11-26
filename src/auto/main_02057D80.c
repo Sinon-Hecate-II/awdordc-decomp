@@ -9,7 +9,7 @@ typedef struct { s32 unk_0; s32 unk_4; } Unk02050838Pair;
 
 extern M2C_UNK sGpiBucketFindName, gGpiInfoState;
 extern s32 gGpiInfoSocket;
-extern M2C_UNK data_0213dcd0, sGpiAssertSet, sGpiBucketSourceFile, sGpiBucketNewName;
+extern M2C_UNK gGpiBucketScratchState, sGpiAssertSet, sGpiBucketSourceFile, sGpiBucketNewName;
 
 /* Processes the pending searches queued on the connection: allocates a temporary list of matching search entries, runs each through gpiProcessSingleSearch, and removes finished ones. */
 s32 gpiProcessSearches(void **connection) {
@@ -259,7 +259,7 @@ void *BucketNew(void *store,s32 key,s32 type,void *value){
 void *BucketValue(void *);void AssertFailed(void *,void *,void *,s32);s32 gpiStringDup(s32);
 s32 BucketSetValue(void *,void *);void TableEnter(s32,void *);void *BucketFind(void *,s32);
 s32 entry[5];
-if(!store)store=M2C_FIELD(&data_0213dcd0,void **,4);
+if(!store)store=M2C_FIELD(&gGpiBucketScratchState,void **,4);
 if(!store)AssertFailed(&sGpiAssertSet,&sGpiBucketSourceFile,&sGpiBucketNewName,120);
 M2C_FIELD(entry,s32 *,GPI_BUCKET_KEY)=gpiStringDup(key);
 M2C_FIELD(entry,s32 *,GPI_BUCKET_TYPE)=type;
@@ -293,7 +293,7 @@ s32 BucketAdd(void *store, s32 key, void *value) {
     void *BucketFind(void *, s32);
     s32 BucketSetValue(void *, void *);
     s32 BucketConcat(void *, s32, void *);
-    s64 func_02070134(s64, s64); /* the C runtime's double addition */
+    s64 RuntimeDoubleAdd(s64, s64); /* the C runtime's double addition */
     void *entry = BucketFind(store, key);
     void *old;
     s64 sum;
@@ -304,7 +304,7 @@ s32 BucketAdd(void *store, s32 key, void *value) {
         return BucketSetValue(entry, BucketIntValue(M2C_FIELD(value, s32 *, 0) + M2C_FIELD(old, s32 *, 0)));
     } else if (M2C_FIELD(entry, s32 *, GPI_BUCKET_TYPE) == GPI_BUCKET_DOUBLE) {
         old = BucketValue(entry);
-        sum = func_02070134(*(s64 *)value, *(s64 *)old);
+        sum = RuntimeDoubleAdd(*(s64 *)value, *(s64 *)old);
         return BucketSetValue(entry, BucketDoubleValue((s32)sum, (s32)(sum >> 32)));
     } else return BucketConcat(store, key, value);
 }
@@ -315,11 +315,11 @@ s32 BucketAdd(void *store, s32 key, void *value) {
 s32 BucketSubtract(void *store,s32 key,void *value) {
 void *BucketFind(void *,s32);M2C_UNK *BucketIntValue(s32);s32 BucketSetValue(void *,void *);
 void *BucketValue(void *);M2C_UNK *BucketDoubleValue(s32,s32);
-s64 func_02070b70(s64,s64); /* the C runtime's double subtraction */
+s64 RuntimeDoubleSubtract(s64,s64); /* the C runtime's double subtraction */
 void *entry=BucketFind(store,key);void *old;s64 difference;
 if(!entry)return 0;
 if(M2C_FIELD(entry,s32 *,GPI_BUCKET_TYPE)==GPI_BUCKET_INT){old=BucketValue(entry);return BucketSetValue(entry,BucketIntValue(M2C_FIELD(old,s32 *,0) - M2C_FIELD(value,s32 *,0)));}
-if(M2C_FIELD(entry,s32 *,GPI_BUCKET_TYPE)==GPI_BUCKET_DOUBLE){old=BucketValue(entry);difference=func_02070b70(*(s64 *)old,*(s64 *)value);return BucketSetValue(entry,BucketDoubleValue((s32)difference,(s32)(difference>>32)));}
+if(M2C_FIELD(entry,s32 *,GPI_BUCKET_TYPE)==GPI_BUCKET_DOUBLE){old=BucketValue(entry);difference=RuntimeDoubleSubtract(*(s64 *)old,*(s64 *)value);return BucketSetValue(entry,BucketDoubleValue((s32)difference,(s32)(difference>>32)));}
 return (s32)BucketValue(entry);
 }
 
@@ -329,11 +329,11 @@ return (s32)BucketValue(entry);
 s32 BucketMultiply(void *store,s32 key,void *value) {
 void *BucketFind(void *,s32);M2C_UNK *BucketIntValue(s32);s32 BucketSetValue(void *,void *);
 void *BucketValue(void *);M2C_UNK *BucketDoubleValue(s32,s32);
-s64 func_02070658(s64,s64); /* the C runtime's double multiplication */
+s64 RuntimeDoubleMultiply(s64,s64); /* the C runtime's double multiplication */
 void *entry=BucketFind(store,key);void *old;s64 product;
 if(!entry)return 0;
 if(M2C_FIELD(entry,s32 *,GPI_BUCKET_TYPE)==GPI_BUCKET_INT){old=BucketValue(entry);return BucketSetValue(entry,BucketIntValue(M2C_FIELD(value,s32 *,0) * M2C_FIELD(old,s32 *,0)));}
-if(M2C_FIELD(entry,s32 *,GPI_BUCKET_TYPE)==GPI_BUCKET_DOUBLE){old=BucketValue(entry);product=func_02070658(*(s64 *)value,*(s64 *)old);return BucketSetValue(entry,BucketDoubleValue((s32)product,(s32)(product>>32)));}
+if(M2C_FIELD(entry,s32 *,GPI_BUCKET_TYPE)==GPI_BUCKET_DOUBLE){old=BucketValue(entry);product=RuntimeDoubleMultiply(*(s64 *)value,*(s64 *)old);return BucketSetValue(entry,BucketDoubleValue((s32)product,(s32)(product>>32)));}
 return (s32)BucketValue(entry);
 }
 
@@ -386,8 +386,8 @@ concat=gpiMalloc(length+1);StringCopy(concat,value);StringAppend(concat,text);Bu
  * left alone. */
 s32 gpiValueAverage(void *store, s32 key, void *value) {
     s64 func_020705dc(s32);
-    s64 func_02070658(s64, s64);
-    s64 func_02070134(s64, s64);
+    s64 RuntimeDoubleMultiply(s64, s64);
+    s64 RuntimeDoubleAdd(s64, s64);
     s64 RuntimeDoubleDivide(s64, s64);
     s32 RuntimeIntDivMod(s32, s32);
     void *BucketFind(void *, s32);
@@ -409,7 +409,7 @@ s32 gpiValueAverage(void *store, s32 key, void *value) {
     if (M2C_FIELD(entry, s32 *, 4) == 1) {
         old = BucketValue(entry);
         count = ++M2C_FIELD(entry, s32 *, 8);
-        average = func_02070134(*(s64 *)value, func_02070658(func_020705dc(count), *(s64 *)old));
+        average = RuntimeDoubleAdd(*(s64 *)value, RuntimeDoubleMultiply(func_020705dc(count), *(s64 *)old));
         average = RuntimeDoubleDivide(average, func_020705dc(count));
         return BucketSetValue(entry, BucketDoubleValue((s32)average, (s32)(average >> 32)));
     }
@@ -417,16 +417,18 @@ s32 gpiValueAverage(void *store, s32 key, void *value) {
 }
 
 M2C_UNK *BucketIntValue(s32 a) {
-    *(s32 *)&data_0213dcd0 = a;
-    return (M2C_UNK *)&data_0213dcd0;
+    *(s32 *)&gGpiBucketScratchState = a;
+    return (M2C_UNK *)&gGpiBucketScratchState;
 }
 
-M2C_UNK *BucketDoubleValue(s32 arg0, s32 arg1) {
-    extern M2C_UNK data_0213dcd0;
-    extern M2C_UNK data_0213dcd8;
-    M2C_FIELD(&data_0213dcd0, s32 *, 8) = arg0;
-    M2C_FIELD(&data_0213dcd0, s32 *, 0xC) = arg1;
-    return &data_0213dcd8;
+/* Store the two 32-bit halves (low word first) of a double in the gbucket.c
+ * scratch double and return a pointer to it for BucketSetValue. */
+M2C_UNK *BucketDoubleValue(s32 lowWord, s32 highWord) {
+    extern M2C_UNK gGpiBucketScratchState;
+    extern M2C_UNK gGpiBucketTmpDouble;
+    M2C_FIELD(&gGpiBucketScratchState, s32 *, GPI_BUCKET_SCRATCH_DOUBLE) = lowWord;
+    M2C_FIELD(&gGpiBucketScratchState, s32 *, GPI_BUCKET_SCRATCH_DOUBLE + 4) = highWord;
+    return &gGpiBucketTmpDouble;
 }
 
 /* Replace every backslash in the string at `p` with a forward slash, in place;
@@ -483,13 +485,13 @@ void *BucketValue(void *entry) {
 }
 
 /* gbucket.c BucketFind: look up the entry for `key` in bucket `store` (or the
-   module's default store, kept at data_0213dcd0+4, when store is null) and
+   module's default store, kept at gGpiBucketScratchState+4, when store is null) and
    return its value, or 0 when there is no such entry. */
 void *BucketFind(void *store, s32 key) {
     void AssertFailed(void *, void *, void *, s32);
     void *TableLookup(s32, void *);
     s32 keyBuf[5];
-    if (!store) store = M2C_FIELD(&data_0213dcd0, void **, 4);
+    if (!store) store = M2C_FIELD(&gGpiBucketScratchState, void **, 4);
     if (!store) AssertFailed(&sGpiAssertSet, &sGpiBucketSourceFile, &sGpiBucketFindName, 0x153);
     keyBuf[0] = key;
     return TableLookup(M2C_FIELD(store, s32 *, 0), keyBuf);

@@ -2,6 +2,7 @@
 #include "common.h"
 #include "ov001_room.h"
 #include "ov001_wh.h"
+#include "wfc.h"
 extern M2C_UNK gWhConnTaskState;
 
 #pragma thumb on
@@ -45,7 +46,10 @@ s32 WhInitNetwork(s32 address0, s32 address1, s32 address2) {
     return 0;
 }
 
-s32 func_ov001_0216cd90(void) {
+/* Shut the network stack down, then wait for the connection task's link-status
+ * message: returns 0 when it arrived, -1 when the shutdown failed or no link
+ * status came. */
+s32 WhConnTaskShutdown(void) {
     s32 ghiShutdown();
     s32 WhConnTaskReceiveLinkStatus();
     if (ghiShutdown() < 0) return -1;
@@ -190,11 +194,14 @@ void func_ov001_0216cf98(s32 arg0, void *arg1) {
     M2C_FIELD(arg1, s16 *, 4) = 1;
 }
 
-void func_ov001_0216d02c(s32 *arg0, void *arg1) {
+/* Fill a WFC connection record's code from a length-prefixed room code: clear
+ * the record's 32-byte code area, store the code length (at code[0]) and copy
+ * the code text that follows it. */
+void Ov001_SetConnectionCode(s32 *code, void *record) {
     void FillU16(s32, void *, s32);
-    FillU16(0, arg1 + 12, 32);
-    M2C_FIELD(arg1, u16 *, 10) = *arg0;
-    MI_CpuCopy8((s32)(arg0 + 1), (s32)(arg1 + 12), M2C_FIELD(arg1, u16 *, 10));
+    FillU16(0, record + WFC_RECORD_CODE, WFC_RECORD_CODE_BYTES);
+    M2C_FIELD(record, u16 *, WFC_RECORD_CODE_LEN) = *code;
+    MI_CpuCopy8((s32)(code + 1), (s32)(record + WFC_RECORD_CODE), M2C_FIELD(record, u16 *, WFC_RECORD_CODE_LEN));
 }
 
 #pragma thumb on
@@ -249,7 +256,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  s32 OS_ReceiveMessage(void *,s32 *,s32);void InitTimer(void *);void ScheduleTimer(void *,s32,s32,void *,s32);void CancelTimer(void *);
  void MI_CpuFill8(s32,u8);void WFC_ClearPlayerList(void);
  s32 func_ov001_0216d8e4(s32,void *,s32,s32);
- extern s32 gWhConnTaskQueue,data_ov001_02192620,data_ov001_021926e0;
+ extern s32 gWhConnTaskQueue,gWhConnRecord,data_ov001_021926e0;
  u32 timer[11];s32 msg;s32 result,tries,bound,i,active,flags,ready;u8 *packet;s32 offset;u16 *rx; void *p;
  active=1;p=arg0;result=active-2;ready=0;
  if(M2C_FIELD(p,s32 *,0x24)==0)flags=0x80000;
@@ -276,18 +283,18 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  bottom:continue;
  case 5:if(ready)break;
  CancelTimer(timer);
- if(Ov001_CopyPlayerRecords((s32)&data_ov001_02192620,1)!=1){active=0;break;}
- func_ov001_0216d02c(p,&data_ov001_02192620);
- i=0;bound=*(u16 *)((s32)&data_ov001_02192620 + 10);for(;i<bound;i++){}
- if(!WhConnTaskStartConnection((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags)){active=0;break;}
+ if(Ov001_CopyPlayerRecords((s32)&gWhConnRecord,1)!=1){active=0;break;}
+ Ov001_SetConnectionCode(p,&gWhConnRecord);
+ i=0;bound=*(u16 *)((s32)&gWhConnRecord + 10);for(;i<bound;i++){}
+ if(!WhConnTaskStartConnection((s32)&gWhConnRecord,(s32)&data_ov001_021926e0,flags)){active=0;break;}
  ready=1;break;
  case 10:
- func_ov001_0216d02c(p,&data_ov001_02192620);
- if(!WhConnTaskStartConnection((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags))active=0;
+ Ov001_SetConnectionCode(p,&gWhConnRecord);
+ if(!WhConnTaskStartConnection((s32)&gWhConnRecord,(s32)&data_ov001_021926e0,flags))active=0;
  break;
  case 12:active=0;result=0;break;
  case 13:
- if(++tries<3){if(!WhConnTaskStartConnection((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags))active=0;}else active=0;
+ if(++tries<3){if(!WhConnTaskStartConnection((s32)&gWhConnRecord,(s32)&data_ov001_021926e0,flags))active=0;}else active=0;
  break;
  case 4:case 8:break;
  default:active=0;break;
@@ -295,7 +302,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  CancelTimer(timer);
  while(OS_ReceiveMessage(&gWhConnTaskQueue,&msg,0)==1){}
  }
- func_ov001_0216d050(arg1,(s32)&data_ov001_02192620,result==0);
+ func_ov001_0216d050(arg1,(s32)&gWhConnRecord,result==0);
  return result;
 }
 #pragma pop

@@ -28,9 +28,11 @@ i++;}while(i<2);
 gCur3DSpriteEngine=old;
 }
 
+/* Suspend the sprite-slot manager's per-frame update: bump its update-pause
+ * nesting depth (ResumeSpriteUpdate drops it again). */
 void PauseSpriteUpdate(void) {
     extern void *gSpriteSlotManager;
-    M2C_FIELD(gSpriteSlotManager, u8 *, 0x26) = (u8) (M2C_FIELD(gSpriteSlotManager, u8 *, 0x26) + 1);
+    M2C_FIELD(gSpriteSlotManager, u8 *, SPRITE_SLOT_MGR_UPDATE_PAUSE_DEPTH) = (u8) (M2C_FIELD(gSpriteSlotManager, u8 *, SPRITE_SLOT_MGR_UPDATE_PAUSE_DEPTH) + 1);
 }
 
 /* Whether the sprite-slot update pass is paused: the update-pause nesting
@@ -40,14 +42,20 @@ extern void *gSpriteSlotManager;
 return M2C_FIELD(gSpriteSlotManager,u8 *,SPRITE_SLOT_MGR_UPDATE_PAUSE_DEPTH)!=0;
 }
 
+/* Resume the sprite-slot manager's per-frame update: drop the update-pause
+ * nesting depth that PauseSpriteUpdate raised. */
 void ResumeSpriteUpdate(void) {
-extern void *gSpriteSlotManager;
-M2C_FIELD(gSpriteSlotManager,u8 *,0x26)-=1;
+    extern void *gSpriteSlotManager;
+
+    M2C_FIELD(gSpriteSlotManager, u8 *, SPRITE_SLOT_MGR_UPDATE_PAUSE_DEPTH) -= 1;
 }
 
+/* Pause sprite-slot drawing and updating: raise the draw-pause nesting depth
+ * that ResumeSpriteDraw drops again. */
 void PauseSpriteDraw(void) {
-extern void *gSpriteSlotManager;
-M2C_FIELD(gSpriteSlotManager,u8 *,0x27)+=1;
+    extern void *gSpriteSlotManager;
+
+    M2C_FIELD(gSpriteSlotManager, u8 *, SPRITE_SLOT_MGR_DRAW_PAUSE_DEPTH) += 1;
 }
 
 /* Whether sprite-slot drawing (and updating) is paused: the pause nesting
@@ -57,9 +65,12 @@ extern void *gSpriteSlotManager;
 return M2C_FIELD(gSpriteSlotManager,u8 *,SPRITE_SLOT_MGR_DRAW_PAUSE_DEPTH)!=0;
 }
 
+/* Resume sprite-slot drawing and updating: drop the draw-pause nesting depth
+ * that PauseSpriteDraw raised. */
 void ResumeSpriteDraw(void) {
-extern void *gSpriteSlotManager;
-M2C_FIELD(gSpriteSlotManager,u8 *,0x27)-=1;
+    extern void *gSpriteSlotManager;
+
+    M2C_FIELD(gSpriteSlotManager, u8 *, SPRITE_SLOT_MGR_DRAW_PAUSE_DEPTH) -= 1;
 }
 
 /* Is screen point (x, y) inside a sprite slot?  A slot flagged always-hit
@@ -470,7 +481,7 @@ u8 CanScrollSpriteGridUp(void *grid) {
     return result;
 }
 
-u8 func_020b3290(void *arg0) {
+u8 ScrollSpriteGridDown(void *arg0) {
     M2C_UNK Divide();
     M2C_UNK PlaySoundEffect(s32);
     s32 temp_r4;

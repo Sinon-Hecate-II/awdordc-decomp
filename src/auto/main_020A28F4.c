@@ -99,7 +99,7 @@ s32 GetPlayerMusicTrack(u8 player) {
     if (GetPlayerArmyVariant(player)) {
         return GetCoPowerMusicTrack(player);
     }
-    track = func_020a8ac4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
+    track = MapData_GetPlayerTrack(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
     if (track) {
         return track;
     }
@@ -228,10 +228,12 @@ RefreshMapView();
 
 void func_020a2f28(void *arg0){RefreshPlayerArmyDisplay(M2C_FIELD(arg0,s32 *,0x5c));}
 
-void func_020a2f38(s32 arg0) {
+/* Create the on-map army display panel of player `player` and record the player in
+ * it so its step callback can refresh the display. */
+void CreatePlayerArmyDisplay(s32 player) {
     void *CreateSpriteObject(M2C_UNK *);
-    extern M2C_UNK data_02120404;
-    M2C_FIELD(CreateSpriteObject(&data_02120404), s32 *, 0x5C) = arg0;
+    extern M2C_UNK gPlayerArmyDisplayClass;
+    M2C_FIELD(CreateSpriteObject(&gPlayerArmyDisplayClass), s32 *, 0x5C) = player;
 }
 
 /* Choose a different adverse weather, start its transition, and refresh the player's army. */
@@ -604,10 +606,12 @@ void func_020a3764(void *arg0) {
     RefreshPlayerArmyDisplay(M2C_FIELD(arg0, s16 *, 0x6C));
 }
 
-void func_020a3774(s16 arg0) {
+/* Create the army display panel sprite of player `player` and record the player id
+ * at +0x6C, where its start, draw and step handlers read it. */
+void CreatePlayerArmyDisplayPanel(s16 player) {
     void *CreateSpriteObject(M2C_UNK *);
-    extern M2C_UNK data_02120444;
-    M2C_FIELD(CreateSpriteObject(&data_02120444), s16 *, 0x6C) = arg0;
+    extern M2C_UNK gPlayerArmyDisplayPanelClass;
+    M2C_FIELD(CreateSpriteObject(&gPlayerArmyDisplayPanelClass), s16 *, 0x6C) = player;
 }
 
 s32 NormalizeWeather(s32 arg0) {

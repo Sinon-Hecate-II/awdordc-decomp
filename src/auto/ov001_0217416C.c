@@ -117,6 +117,8 @@ void Ov001_SetKeypadDigitsEnabled(s8 arg0) {
 
 void Ov001_SetKeypadNextEnabled(s8 arg0){extern void *gOv001Keypad;M2C_FIELD(gOv001Keypad,s8*,0x68)=arg0;}
 
+/* Whether the ov001 on-screen keypad is up (its object has been created and not
+ * yet freed). */
 s32 Ov001_IsKeypadOpen(void) {
     extern void *gOv001Keypad;
     if (gOv001Keypad != 0) {

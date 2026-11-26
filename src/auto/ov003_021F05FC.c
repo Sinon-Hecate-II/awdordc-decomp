@@ -675,45 +675,53 @@ void SetOv003SceneState(s8 arg0) {
     M2C_FIELD(&gOv003SceneState, s8 *, 5) = arg0;
 }
 
-u8 func_ov003_021f141c(void) {
+u8 GetOv003SceneState(void) {
     extern M2C_UNK gOv003SceneState;
     return M2C_FIELD(&gOv003SceneState, u8 *, 5);
 }
 
-u8 func_ov003_021f142c(void) {
-    u8 var_r0;
+/* TRUE while the ov003 scene state is 4, the state the scene view's destructor
+ * leaves behind; the map-select cursor waits for it before switching to the
+ * battle scene. */
+u8 IsOv003SceneClosed(void) {
+    u8 closed;
 
-    if (func_ov003_021f141c() == 4) {
-        var_r0 = 1;
+    if (GetOv003SceneState() == 4) {
+        closed = 1;
     } else {
-        var_r0 = 0;
+        closed = 0;
     }
-    return var_r0;
+    return closed;
 }
 
-u8 func_ov003_021f1448(void) {
-    u8 var_r0;
+/* TRUE while the ov003 scene is up and taking input (state 1), which lets the
+ * map-select view start its screen transition. */
+u8 IsOv003SceneActive(void) {
+    u8 active;
 
-    if (func_ov003_021f141c() == 1) {
-        var_r0 = 1;
+    if (GetOv003SceneState() == SCENE_STATE_ACTIVE) {
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
-u8 func_ov003_021f1464(void) {
-    u8 var_r0;
+/* TRUE while the ov003 scene is in its map-select phase (state 2), the phase
+ * the overlay goes back to when a sub-screen (the map info, the waypoint panel
+ * or the map-select panel) closes. */
+u8 IsOv003SceneMapSelect(void) {
+    u8 mapSelect;
 
-    if (func_ov003_021f141c() == 2) {
-        var_r0 = 1;
+    if (GetOv003SceneState() == 2) {
+        mapSelect = 1;
     } else {
-        var_r0 = 0;
+        mapSelect = 0;
     }
-    return var_r0;
+    return mapSelect;
 }
 
-void func_ov003_021f1480(s8 arg0) {
+void SetMapListCategory(s8 arg0) {
     extern M2C_UNK gOv003SceneState;
     M2C_FIELD(&gOv003SceneState, s8 *, 6) = arg0;
 }

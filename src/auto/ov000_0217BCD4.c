@@ -11,12 +11,16 @@ static inline s32 UnitIndexC4c8(u8 *p){if(p)return (p-((u8 *)*gCurrentMap+0x59a4
 static inline s32 UnitOwnerC4c8(u8 *p){if(p)return (UnitIndexC4c8(p)>>6)+1;return 0;}
 
 #pragma scheduling off
-s32 func_ov000_0217bcd4(s8 a, s8 b, s8 c, s16 d) {
-s32 func_ov000_0217b3bc(s8,s8,s8,s16);
-extern s32 (*gMoveSearchGoal)(s32,s32,s32);
-extern s32 IsAttackableEnemyMoveGoal(s32,s32,s32);
-gMoveSearchGoal=IsAttackableEnemyMoveGoal;
-return func_ov000_0217b3bc(a,b,c,d);
+/* Whether the unit at (x, y), moving as unit kind `kind` for up to `range`
+ * terrain-cost steps, can reach a tile that holds an enemy it can attack: run the
+ * kind's move-range search with the attackable-enemy goal. */
+s32 CanReachAttackableEnemy(s8 x, s8 y, s8 kind, s16 range) {
+    s32 func_ov000_0217b3bc(s8, s8, s8, s16);
+    extern s32 (*gMoveSearchGoal)(s32, s32, s32);
+    extern s32 IsAttackableEnemyMoveGoal(s32, s32, s32);
+
+    gMoveSearchGoal = IsAttackableEnemyMoveGoal;
+    return func_ov000_0217b3bc(x, y, kind, range);
 }
 /* Whether a unit at (x, y) can reach a property tile within `range` movement
  * steps: check the starting tile and then run the move-range search with the

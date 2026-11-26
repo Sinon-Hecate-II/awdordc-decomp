@@ -77,7 +77,17 @@ s32 BuildRoomSetupPacket(void *session) {
  M2C_FIELD(session,u8 *,0x116)=0;return 0;
  fail:Ov001MemClear(dst,0,0x154);return -1;
 }
-s32 IsPrintableString(u8 *p,s32 n) {s32 i; for(i=0;i<n;i++){u32 c=*p++;if(c<32||c>127)return -1;}return 0;}
+/* Return 0 when the first `length` bytes at `text` are all printable ASCII
+ * (TEXT_PRINTABLE_MIN..TEXT_PRINTABLE_MAX), or -1 as soon as a byte is outside
+ * that range. */
+s32 IsPrintableString(u8 *text, s32 length) {
+    s32 i;
+    for (i = 0; i < length; i++) {
+        u32 c = *text++;
+        if (c < TEXT_PRINTABLE_MIN || c > TEXT_PRINTABLE_MAX) return -1;
+    }
+    return 0;
+}
 
 #pragma scheduling off
 s32 func_ov001_0216bb4c(u32 *arg0) {

@@ -337,9 +337,12 @@ void RewindStream(void *stream) {
     M2C_FIELD(stream, s8 *, STREAM_ERROR) = 0;
 }
 #pragma opt_propagation reset
-M2C_UNK func_02065020(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
- extern u32 data_0210040c[];
- return (*(M2C_UNK (**)(M2C_UNK,M2C_UNK,M2C_UNK))data_0210040c[2])(a,b,c);
+/* Convert one multibyte character to a wide character with the locale's mbtowc
+ * (the conversion table at gMultibyteLocale's LOCALE_FUNCTIONS), returning the
+ * number of bytes the character took. */
+s32 MultibyteCharToWideChar(s16 *wideChar, u8 *multibyte, s32 remainingBytes) {
+    extern u32 gMultibyteLocale[];
+    return ((MultibyteFunctions *) M2C_FIELD(gMultibyteLocale, u32 *, LOCALE_FUNCTIONS))->mbtowc(wideChar, multibyte, remainingBytes);
 }
 
 s32 MultibyteToWideChar(s16 *wideChar, u8 *multibyteChar, s32 remainingBytes) {
@@ -367,14 +370,16 @@ s32 func_02065074(s8 *arg0, s8 arg1) {
     return 1;
 }
 
-s32 WideCharToMultibyte(s8 *a,u16 b) {
-extern u32 data_0210040c[];
-return (*(s32 (**)(s8 *,u16))(data_0210040c[2]+4))(a,b);
+/* Convert the wide character `wideChar` to its multibyte form at `multibyte`
+ * with the locale's wctomb, returning the number of bytes stored. */
+s32 WideCharToMultibyte(s8 *multibyte, u16 wideChar) {
+    extern u32 gMultibyteLocale[];
+    return ((MultibyteFunctions *) M2C_FIELD(gMultibyteLocale, u32 *, LOCALE_FUNCTIONS))->wctomb(multibyte, wideChar);
 }
 
 /* Convert the multibyte string `in` to wide characters at `out`, at most `count`
  * of them: each character is converted with the locale's mbtowc
- * (data_0210040c[2]), and the string's NUL is stored as the end.  Returns the
+ * (gMultibyteLocale[2]), and the string's NUL is stored as the end.  Returns the
  * number of characters stored, or -1 when a character cannot be converted. */
 u32 StringToWideString(s16 *out, char *in, u32 count) {
     s32 StringLength(char *);
@@ -387,7 +392,7 @@ u32 StringToWideString(s16 *out, char *in, u32 count) {
     if (out) {
         for (; index < count; index++) {
             if (*in) {
-                length = func_02065020(out, in, left);
+                length = MultibyteCharToWideChar(out, in, left);
                 out++;
                 if (length > 0) {
                     in += length;

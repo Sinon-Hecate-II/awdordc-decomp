@@ -618,7 +618,7 @@ void InitSoundDriver(void) {
     M2C_UNK InitSoundCommandSystem(M2C_UNK);
     M2C_UNK PM_AddPreSleepCallback(M2C_UNK);
     M2C_UNK PM_AddPostSleepCallback(M2C_UNK);
-    void func_0202ab60(void);
+    void Sound_ResetChannelMasks(void);
     M2C_UNK func_0202ba8c(void);
     M2C_UNK Sound_InitVoices(void);
     void Sound_StopAllChannels(void);
@@ -637,7 +637,7 @@ void InitSoundDriver(void) {
     M2C_FIELD(&gSoundInitState, s32 *, 0x20) = 0;
     PM_AddPreSleepCallback((M2C_UNK)&data_02138eb0);
     PM_AddPostSleepCallback((M2C_UNK)&data_02138ebc);
-    func_0202ab60();
+    Sound_ResetChannelMasks();
     func_0202ba8c();
     Sound_InitVoices();
     M2C_FIELD(&gSoundInitState, s8 *, 0) = -1;
@@ -710,9 +710,12 @@ void Sound_ReleaseChannels(s32 channelMask) {
     masks[SOUND_CHANNEL_MASK_RESERVED / 4] = masks[SOUND_CHANNEL_MASK_RESERVED / 4] & ~channelMask;
 }
 
-void func_0202aadc(s32 arg0) {
+/* Clear the voice channels in `channelMask` from the voice mask
+ * (gSoundChannelMasks word 0) once the streaming voice has been stopped. */
+void Sound_ClearVoiceChannels(s32 channelMask) {
     extern s32 gSoundChannelMasks;
-    gSoundChannelMasks &= ~arg0;
+
+    gSoundChannelMasks &= ~channelMask;
 }
 
 #pragma push
@@ -735,18 +738,24 @@ s32 Sound_AllocChannel(void) {
     return -1;
 }
 #pragma pop
-void Sound_FreeChannel(s32 arg0) {
+/* Release a hardware channel handed out by Sound_AllocChannel: clear its bit in
+ * the allocated-channel mask. */
+void Sound_FreeChannel(s32 channel) {
     extern M2C_UNK gSoundChannelMasks;
-    M2C_UNK *g = &gSoundChannelMasks;
-    M2C_UNK m = 1;
-    g[1] = g[1] & ~(m << arg0);
+    M2C_UNK *masks = &gSoundChannelMasks;
+    M2C_UNK mask = 1;
+
+    masks[SOUND_CHANNEL_MASK_ALLOC / 4] = masks[SOUND_CHANNEL_MASK_ALLOC / 4] & ~(mask << channel);
 }
 
-void func_0202ab60(void) {
+/* Clear the sound driver's channel masks when it starts: no voice is running, no
+ * hardware channel is allocated and none is reserved by the sound library. */
+void Sound_ResetChannelMasks(void) {
     extern M2C_UNK gSoundChannelMasks;
-    M2C_FIELD(&gSoundChannelMasks, u32 *, 8) = 0;
-    M2C_FIELD(&gSoundChannelMasks, u32 *, 0) = 0;
-    M2C_FIELD(&gSoundChannelMasks, u32 *, 4) = 0;
+
+    M2C_FIELD(&gSoundChannelMasks, u32 *, SOUND_CHANNEL_MASK_RESERVED) = 0;
+    M2C_FIELD(&gSoundChannelMasks, u32 *, SOUND_CHANNEL_MASK_VOICE) = 0;
+    M2C_FIELD(&gSoundChannelMasks, u32 *, SOUND_CHANNEL_MASK_ALLOC) = 0;
 }
 
 void Sound_SetChannelMixVolume(s32 arg0, s8 arg1) {
@@ -754,9 +763,12 @@ void Sound_SetChannelMixVolume(s32 arg0, s8 arg1) {
     data_0213b724[arg0 * 0x24] = (u8)arg1;
 }
 
-void func_0202ab94(s32 arg0, s32 arg1) {
-    extern u8 data_0213b71c[];
-    *(s32 *)(data_0213b71c + arg0 * 0x24) = (s32)(u16)arg1;
+/* Store the SOUND_CHANNEL_VOICE_LIMIT word of sound `channel`: how many voices,
+ * and so how many sequence-player heaps, the channel accepts. */
+void Sound_SetChannelVoiceLimit(s32 channel, s32 voiceLimit) {
+    extern u8 gSoundChannelVoiceLimits[];
+
+    *(s32 *)(gSoundChannelVoiceLimits + channel * SOUND_CHANNEL_SIZE) = (s32)(u16)voiceLimit;
 }
 
 void func_0202abb4(s32 arg0, s32 arg1) {
@@ -794,7 +806,7 @@ s32 Sound_CreateChannelHeap(s32 channel, void *soundPlayer, s32 heapSize) {
     return 1;
 }
 
-void func_0202ac60(s32 *arg0) {
+void Sound_FadeOutPlayerVoice(s32 *arg0) {
     M2C_UNK Sound_FadeOutVoice(s32);
     Sound_FadeOutVoice(*arg0);
 }
@@ -821,10 +833,14 @@ void func_0202acb0(s32 *arg0) {
     *arg0 = 0;
 }
 
-void func_0202acbc(s32 * volatile *arg0) {
-if(*arg0==NULL)return;
-**arg0=0;
-*arg0=NULL;
+/* Detach the driver voice currently attached to sound `player`: clear the
+ * voice's owner pointer (SOUND_VOICE_PLAYER) and the player's
+ * SOUND_PLAYER_VOICE, leaving the voice to be reused.  A player with no voice
+ * is left alone. */
+void Sound_DetachPlayerVoice(void *volatile *player) {
+    if (*player == NULL) return;
+    *(void **)*player = NULL;
+    *player = NULL;
 }
 
 void Sound_SetVoiceExpression(void **arg0, s8 arg1) {
@@ -852,10 +868,12 @@ void Sound_StartPlayerVolumeFade(void * volatile *player, s32 volume, s32 frames
  if (*player != 0) { voice=*player; if (M2C_FIELD(voice,u8 *,SOUND_VOICE_STATE)!=SOUND_VOICE_PLAYING) Sound_StartFade((u8 *)voice+SOUND_VOICE_ENVELOPE,volume<<8,frames); }
 }
 #pragma pop
-void Sound_SetChannelPan(void * volatile *arg0, s32 arg1) {
-M2C_UNK func_02008c50(u8,s32);
-if(*arg0==NULL)return;
-func_02008c50(M2C_FIELD(*arg0,u8 *,0x3c),arg1);
+/* Set the stereo pan of the voice attached to `player` on its hardware channel
+ * (ARM7 sound command 6, parameter 4); a detached handle is left alone. */
+void Sound_SetChannelPan(void * volatile *player, s32 pan) {
+    M2C_UNK Sound_SendChannelPan(u8, s32);
+    if (*player == NULL) return;
+    Sound_SendChannelPan(M2C_FIELD(*player, u8 *, SOUND_VOICE_CHANNEL), pan);
 }
 
 /* Hand channel `level` to the voice attached to `player`, run in over `duration`
@@ -869,9 +887,9 @@ void Sound_SetPlayerChannelLevel(void *player, s32 level, s32 duration) {
 /* Move the voice attached to `player` to pitch `value` over `duration` frames
  * (ARM7 player parameter 0xC); a detached handle is left alone. */
 void Sound_SetPlayerPitch(void *player, s32 value, s32 duration) {
-    M2C_UNK func_02008c68(u8, s32, s32);
+    M2C_UNK Sound_SendPlayerPitch(u8, s32, s32);
     if (M2C_FIELD(player, s32 *, 0) == 0) return;
-    func_02008c68(M2C_FIELD(M2C_FIELD(player, void **, 0), u8 *, SOUND_VOICE_CHANNEL), value, duration);
+    Sound_SendPlayerPitch(M2C_FIELD(M2C_FIELD(player, void **, 0), u8 *, SOUND_VOICE_CHANNEL), value, duration);
 }
 
 /* Set the stereo pan of the voice attached to `player` (ARM7 player parameter 9):

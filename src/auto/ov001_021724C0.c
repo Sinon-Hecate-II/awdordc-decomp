@@ -133,10 +133,11 @@ void Ov001_SetKeyboardCanAdd(s8 arg0) {
  M2C_FIELD(gOv001MenuState, s8 *, 0x124) = arg0;
 }
 
+/* True while the ov001 on-screen keyboard is up (gOv001MenuState holds its state). */
 s32 Ov001_IsMenuActive(void) {
- extern void *gOv001MenuState;
- if (gOv001MenuState != 0) return 1;
- return 0;
+    extern void *gOv001MenuState;
+    if (gOv001MenuState != 0) return 1;
+    return 0;
 }
 
 #pragma opt_common_subs off

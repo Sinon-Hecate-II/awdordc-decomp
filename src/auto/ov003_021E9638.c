@@ -65,11 +65,13 @@ void func_ov003_021e9818(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg1 << 0x18) >> 6));
 }
 
-void func_ov003_021e9830(void *arg0, s16 arg1) {
-    M2C_FIELD(arg0, s16 *, 0xE) = arg1;
-    M2C_FIELD(arg0, s16 *, 0x10) = arg1;
-    M2C_FIELD(arg0, s16 *, 0xC) = 0;
-    M2C_FIELD(arg0, u16 *, 2) = (u16) M2C_FIELD(arg0, u16 *, 4);
+/* Put the sprite tween at rest at `value`: both its ends are set to the value,
+ * its duration cleared, and its current frame restarted from the start value. */
+void SetSpriteTweenValue(SpriteTween *tween, s16 value) {
+    tween->from = value;
+    tween->to = value;
+    tween->duration = 0;
+    tween->current = tween->start;
 }
 
 #pragma opt_common_subs off
@@ -272,15 +274,17 @@ void SetWaypointPanelMode(void *panel, s32 layout)
   SetTextById(M2C_FIELD(panelBytes, s32 *, WAYPOINT_PANEL_TEXT), WAYPOINT_TEXT_CONFIRM_COMPACT);
 }
 #pragma opt_common_subs reset
-u8 func_ov003_021e9c08(void *arg0) {
-    u8 var_r0;
+/* Whether the waypoint panel is in its wide layout: bits 2-3 of the panel flag
+ * byte hold WAYPOINT_PANEL_LAYOUT_WIDE. */
+u8 IsWaypointPanelWide(void *panel) {
+    u8 wide;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1C) >> 0x1E) == 0) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(panel, u8 *, WAYPOINT_PANEL_FLAGS) << 0x1C) >> 0x1E) == WAYPOINT_PANEL_LAYOUT_WIDE) {
+        wide = 1;
     } else {
-        var_r0 = 0;
+        wide = 0;
     }
-    return var_r0;
+    return wide;
 }
 
 s8 func_ov003_021e9c24(void *arg0) {
@@ -315,15 +319,17 @@ u8 func_ov003_021e9cd0(void *arg0) {
     return (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 0xE0), u16 *, 0x2E);
 }
 
-u8 func_ov003_021e9ce0(void *arg0) {
-    u8 var_r0;
+/* Whether the waypoint panel's map is not a two-player map: the inverse of the
+ * WAYPOINT_PANEL_TWO_PLAYER flag in the packed panel flags. */
+u8 IsWaypointPanelNotTwoPlayer(void *panel) {
+    u8 notTwoPlayer;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1F) >> 0x1F) == 0) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(panel, u8 *, WAYPOINT_PANEL_FLAGS) << 0x1F) >> 0x1F) == 0) {
+        notTwoPlayer = 1;
     } else {
-        var_r0 = 0;
+        notTwoPlayer = 0;
     }
-    return var_r0;
+    return notTwoPlayer;
 }
 
 /* Switches the waypoint panel to a state (0 idle, 1..3 animations): stores the
@@ -492,16 +498,16 @@ void Reset3DSpriteBankDisplay(void) {
  * spend the rest of the frame stepping slot turns, then finish with the
  * overlay's post-sync hook. */
 void Ov003_SyncLinkSlots(void *p) {
-s32 func_020cfb94(void); s32 Link_ReceivePacket(void*,s32); void Link_SendPacket(void*,s32); void Link_FlushSend(void); void Sprite_ResumeAnimation(void*); s32 GetSessionPlayerCount(void); s32 GetSceneEntryOffset(void);
+s32 GetCurrentMapPlayerCount(void); s32 Link_ReceivePacket(void*,s32); void Link_SendPacket(void*,s32); void Link_FlushSend(void); void Sprite_ResumeAnimation(void*); s32 GetSessionPlayerCount(void); s32 GetSceneEntryOffset(void);
 u32 buf[9]; u8 flag, n, start;
-if(func_020cfb94()==2) M2C_FIELD(p,u8*,0x39)=(M2C_FIELD(p,u8*,0x39)&~1)|1;
+if(GetCurrentMapPlayerCount()==2) M2C_FIELD(p,u8*,0x39)=(M2C_FIELD(p,u8*,0x39)&~1)|1;
 if(!Link_ReceivePacket(buf,0x24))return;
 flag=(((u32)(M2C_FIELD(p,u8*,0x39)<<31)>>31)==0);
 if(flag && GetSceneEntryOffset()==-256) M2C_FIELD(buf,u8*,8)=1;
 else {M2C_FIELD(buf,u8*,8)=0;buf[6]=0;}
 buf[0]=0;buf[1]=0;
 start=GetSessionPlayerCount(); n=0;
-if(func_020cfb94()-start>0)do{n++;}while(n<func_020cfb94()-start);
+if(GetCurrentMapPlayerCount()-start>0)do{n++;}while(n<GetCurrentMapPlayerCount()-start);
 Link_SendPacket(buf,0x24);Link_FlushSend();Sprite_ResumeAnimation(p);
 }
 

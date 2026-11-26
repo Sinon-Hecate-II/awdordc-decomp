@@ -48,11 +48,13 @@ void StartCoVictoryQuote(M2C_UNK screen) {
     M2C_FIELD(sprite, u8 *, 0x5C) |= 4;
 }
 
-M2C_UNK func_ov005_0221bc28(void) {
+/* Duplicate of RefreshResultPageSprite (ov005_0221ABF8.c): rebuild the results
+ * screen's page sprite cell list from the page sprite's position and size. */
+M2C_UNK RefreshResultPageSpriteCopy(void) {
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_020aad18(s32);
     extern M2C_UNK gResultsScreenClass;
-    func_020aad18(M2C_FIELD(FindObjectByClass(&gResultsScreenClass), s32 *, 0x38));
+    func_020aad18(M2C_FIELD(FindObjectByClass(&gResultsScreenClass), s32 *, RESULTS_SCREEN_PAGE));
 }
 
 /* Duplicate of ResultScreenDismissStep (ov005_0221ABF8.c): once the player presses
@@ -174,7 +176,7 @@ DeleteSpriteObject(arg0);
 int func_ov005_0221c150(void *arg0) {
 void AddFaceSpriteTile(s32,s16,s16,u16,s32,s32);
 void AddSprite(u16,u8,u16,void *,s32);
-extern M2C_UNK gCoState,gCoPlayerSlots,gBattleResults,data_02101f4c,data_02101f1c;
+extern M2C_UNK gCoState,gCoPlayerSlots,gBattleResults,data_02101f4c,gSpriteDesc64x16;
 extern void *gCur3DSpriteEngine;
 extern void **gCurrentMap;
 s32 enabled;
@@ -208,7 +210,7 @@ rowY=(u8)(y+18);
 AddSprite((u16)x,(u8)(rowY+1),(u16)(0x7000|(((M2C_FIELD((u8 *)*gCurrentMap + offset,u8 *,0x684d)*12+0x1d8)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
 if(M2C_FIELD((u8 *)*gCurrentMap + offset,u8 *,0x684e)==2)id=4;
 spriteY=(u8)(rowY+1);
-AddSprite((u16)((x&0xfe00)|((x-10)&511)),spriteY,(u16)(0x8000|(((id*16+0x220)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f1c,5);
+AddSprite((u16)((x&0xfe00)|((x-10)&511)),spriteY,(u16)(0x8000|(((id*16+0x220)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&gSpriteDesc64x16,5);
 id=M2C_FIELD(p++,s8 *,0)-1;
 x2=(coords[0x1d+i]+183)&511;
 AddFaceSpriteTile(0,(s16)x2,(s16)rowY,(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
@@ -233,7 +235,7 @@ rowY=(u8)(y+18);
 AddSprite((u16)x,(u8)(rowY+1),(u16)(0x7000|(((M2C_FIELD((u8 *)*gCurrentMap + offset,u8 *,0x684d)*12+0x1d8)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
 if(M2C_FIELD((u8 *)*gCurrentMap + offset,u8 *,0x684e)==2)id=4;
 spriteY=(u8)(rowY+1);
-AddSprite((u16)((x&0xfe00)|((x-10)&511)),spriteY,(u16)(0x8000|(((id*16+0x220)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f1c,5);
+AddSprite((u16)((x&0xfe00)|((x-10)&511)),spriteY,(u16)(0x8000|(((id*16+0x220)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&gSpriteDesc64x16,5);
 id=M2C_FIELD(p,s8 *,8)-1;
 x2=(coords[0x1d+i]+183)&511;
 AddFaceSpriteTile(0,(s16)x2,(s16)rowY,(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
@@ -258,7 +260,7 @@ rowY=(u8)(y);
 AddSprite((u16)x,(u8)(rowY+1),(u16)(0x7000|(((M2C_FIELD((u8 *)*gCurrentMap + offset,u8 *,0x684d)*12+0x1d8)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
 if(M2C_FIELD((u8 *)*gCurrentMap + offset,u8 *,0x684e)==2)id=4;
 spriteY=(u8)(rowY+1);
-AddSprite((u16)((x&0xfe00)|((x-10)&511)),spriteY,(u16)(0x8000|(((id*16+0x220)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f1c,5);
+AddSprite((u16)((x&0xfe00)|((x-10)&511)),spriteY,(u16)(0x8000|(((id*16+0x220)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&gSpriteDesc64x16,5);
 id=M2C_FIELD(p,s8 *,4)-1;
 x2=(coords[0x1d+i]+183)&511;
 AddFaceSpriteTile(0,(s16)x2,(s16)rowY,(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
@@ -326,8 +328,8 @@ void CreateResultSlideSprite(void *owner) {
 }
 
 void func_ov005_0221ca70(void) {
-    M2C_UNK func_ov005_0221bc28();
-    func_ov005_0221bc28();
+    M2C_UNK RefreshResultPageSpriteCopy();
+    RefreshResultPageSpriteCopy();
 }
 
 void func_ov005_0221ca7c(void) {

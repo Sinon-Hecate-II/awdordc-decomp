@@ -367,7 +367,7 @@ end:
 #pragma push
 void func_0209583c(void *arg0){
 u8 Get3DSpriteScreenMode(s32);s32 GetOther3DSpriteScreenMode(s32);
-M2C_UNK func_020943f4(s32);
+M2C_UNK StoreOtherScreenMode(s32);
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
 s32 old,newv;s32 saved,engine;s32 i;
 old=Get3DSpriteScreenMode(M2C_FIELD(arg0,s32 *,0x5c));
@@ -395,7 +395,7 @@ M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x52)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x53)=0;
 }
 gCur3DSpriteEngine=saved;
-func_020943f4(M2C_FIELD(arg0,s32 *,0x5c));
+StoreOtherScreenMode(M2C_FIELD(arg0,s32 *,0x5c));
 }
 #pragma pop
 /* Advances a 3D sprite screen split by one frame: eases the two halves apart,

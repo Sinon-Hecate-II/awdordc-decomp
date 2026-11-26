@@ -19,9 +19,11 @@ void DrawMapPreview(s32 layerVram, M2C_UNK layerTiles, s32 tile, M2C_UNK palette
     DrawMapPreviewLayerCore(layerVram, layerTiles, tile, palette);
 }
 
+/* Take the map view's sprites down: stop the cursor colour animation, then
+ * delete the preview layer and the frame-rectangle sprites. */
 void RemoveMapViewSprites(void) {
- void DeleteFrameCallbackTask(void (*)(void)); void func_020c121c(void); void func_020c1d98(void); void AnimateMapPreviewCursorColor(void);
- DeleteFrameCallbackTask(AnimateMapPreviewCursorColor); func_020c121c(); func_020c1d98();
+ void DeleteFrameCallbackTask(void (*)(void)); void RemoveMapPreviewLayerSprite(void); void RemoveFrameRectSprites(void); void AnimateMapPreviewCursorColor(void);
+ DeleteFrameCallbackTask(AnimateMapPreviewCursorColor); RemoveMapPreviewLayerSprite(); RemoveFrameRectSprites();
 }
 
 /* Draw the current map into one VRAM layer of the map preview: refresh the player
@@ -263,16 +265,12 @@ s32 GetPropertyCountColumn(s32 terrain) {
     }
 }
 
-u8 IsDestroyedPipeTile(void) {
-    s32 GetPropertyCountColumn();
-    u8 var_r0;
+/* TRUE when `terrain` has one of the tallied property/feature terrain kinds, i.e.
+ * one that GetPropertyCountColumn gives a slot in the property tally. */
+u8 IsPropertyTerrainKind(s32 terrain) {
+    s32 GetPropertyCountColumn(s32);
 
-    if (GetPropertyCountColumn() >= 0) {
-        var_r0 = 1;
-    } else {
-        var_r0 = 0;
-    }
-    return var_r0;
+    return GetPropertyCountColumn(terrain) >= 0;
 }
 
 /* Give a frame-rectangle sprite its border pattern: load the frame pattern (block
@@ -349,7 +347,7 @@ void SetFrameRect(s32 left, s32 top, s32 tile, s32 palette) {
     M2C_FIELD(rect, s32 *, FRAME_RECT_SCREEN) = ((u8)(gCur3DSpriteEngine == g3DSpriteEngineMain) != 1);
 }
 
-void func_020c1d98(void) {
+void RemoveFrameRectSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gFrameRectSpriteClass;
     DeleteSpriteObjectsOfClass(&gFrameRectSpriteClass);

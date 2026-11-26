@@ -147,10 +147,12 @@ void Ov000_InfoWindow_OpenCell(void *menuPtr, s32 unit, s32 terrainId) {
     menu->pendingState = OV000_INFO_UNIT_STATS;
 }
 
-void Ov000_InfoWindow_ShowUnitStats(void *window, s32 player, s32 unitKind) {
-    M2C_UNK func_ov000_021755b4(s32, s32, s32);
-    func_ov000_021755b4(M2C_FIELD(window, s32 *, 0), player, unitKind);
-    M2C_FIELD(window, s32 *, 0xC) = 4;
+/* Fill the info window's unit-statistics panel with the stats of a player's
+ * unit kind (the production preview) and request the statistics panel. */
+void Ov000_InfoWindow_ShowUnitStats(Ov000InfoMenu *menu, s32 player, s32 unitKind) {
+    void FillUnitKindInfo(void *, s32, s32);
+    FillUnitKindInfo(menu->statsWindow, player, unitKind);
+    menu->pendingState = OV000_INFO_UNIT_STATS;
 }
 
 /* Show the terrain panel for `terrainId`, or ask for the panel with nothing

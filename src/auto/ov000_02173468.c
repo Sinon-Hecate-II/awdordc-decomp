@@ -23,7 +23,7 @@ void func_ov000_02174da4(s32,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;
 extern void **gCurrentMap;
 extern u8 gMapConfig[];
-extern u8 data_ov000_021b8dfc[],gSpriteDesc32x8[],gSpriteDesc8x8[],data_02101f0c[],gSpriteDesc16x16[],data_02101f3c[],gSpriteDesc16x8[];
+extern u8 data_ov000_021b8dfc[],gSpriteDesc32x8[],gSpriteDesc8x8[],gSpriteDesc64x8[],gSpriteDesc16x16[],data_02101f3c[],gSpriteDesc16x8[];
 extern s8 data_ov000_021b56a0[],data_ov000_021b5600[],data_ov000_021b5680[],data_ov000_021b56e0[];
 
 StatsOrder1734 order;
@@ -59,10 +59,10 @@ AddSprite(147,(u16)line,(u16)(((digit+128)&1023)|0x8000),gSpriteDesc8x8,1);
 }
 }
 if(Ov000_InfoPanel_ShouldShowHints(arg0)){
-AddSprite(128,176,0x6100,data_02101f0c,1);
-AddSprite(192,176,0x6108,data_02101f0c,1);
-AddSprite(128,184,0x6110,data_02101f0c,1);
-AddSprite(192,184,0x6118,data_02101f0c,1);
+AddSprite(128,176,0x6100,gSpriteDesc64x8,1);
+AddSprite(192,176,0x6108,gSpriteDesc64x8,1);
+AddSprite(128,184,0x6110,gSpriteDesc64x8,1);
+AddSprite(192,184,0x6118,gSpriteDesc64x8,1);
 AddSprite(114,178,0xb140,gSpriteDesc16x16,1);
 }}
 counter=0;recordOffset=0;mapOffset=0;

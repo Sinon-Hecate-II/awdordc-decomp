@@ -83,7 +83,7 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
     void Ov010Online_OnTransferStart(void);
     void func_ov010_02227954(void);
     void Ov010Online_OnPeerConnectionLost(void);
-    void func_ov010_02227c3c(void);
+    void Ov010Online_OnPlayerSlotChanged(void);
     void func_ov010_02227c5c(void);
     void Ov010Online_OnMatchmakingStarted(void);
     void func_ov010_02227d34(s32, void *, char *, s32);
@@ -110,7 +110,7 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
     Transfer_SetSentCallback((s32)Ov010Online_OnTransferStart);
     Transfer_SetReceiveCallback((s32)func_ov010_02227954);
     SetNetPeerCallback((s32)Ov010Online_OnPeerConnectionLost, 0);
-    SetMatchSessionSlotCallback((s32)func_ov010_02227c3c, 0);
+    SetMatchSessionSlotCallback((s32)Ov010Online_OnPlayerSlotChanged, 0);
 
     StartMatchMaking(0, (s32)Ov010Online_OnMatchmakingStarted, 0, (s32)func_ov010_02227d34, 0,
                    (s32)func_ov010_02227c5c, 0);
@@ -276,10 +276,15 @@ callback_call:
     )(arg0, arg1, arg2, arg3, arg4, arg5);
 }
 
-void func_ov010_0222815c(s32 a,s32 b) {
- extern M2C_UNK gOv010OnlineSession;
- void (*cb)(s32,s32)=M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32),0x44);
- if(!cb)return; cb(a,b);
+/* Peer-joined callback of the ov010 connection layer: forward the joining
+ * peer's `slot` and `data` to the handler the online session installed at
+ * OV010_SESSION_PEER_JOINED_CALLBACK, if any. */
+void Ov010Online_OnPeerJoined(s32 slot, s32 data) {
+    extern M2C_UNK gOv010OnlineSession;
+    void (*callback)(s32, s32) = M2C_FIELD(&gOv010OnlineSession, void (**)(s32, s32), OV010_SESSION_PEER_JOINED_CALLBACK);
+
+    if (!callback) return;
+    callback(slot, data);
 }
 
 void Ov010Online_MatchStartNoop(void) {
@@ -358,13 +363,15 @@ void SetOnlineSessionFlag(s32 arg0) {
         (M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) | (1 << arg0));
 }
 
-s32 IsOnlineSessionFlagSet(s32 arg0) {
+/* Returns 1 when step flag `flag` (OV010_FLAG_*) of the ov010 online session
+ * is set, 0 otherwise. */
+s32 IsOnlineSessionFlagSet(s32 flag) {
     extern M2C_UNK gOv010OnlineSession;
-    s32 var_r2 = 1;
-    if (!(M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) & (1 << arg0))) {
-        var_r2 = 0;
+    s32 isSet = 1;
+    if (!(M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_STEP_FLAGS) & (1 << flag))) {
+        isSet = 0;
     }
-    return var_r2;
+    return isSet;
 }
 
 /* Clear step-flag bit `flagIndex` (an OV010_FLAG_* index) in the online session's
@@ -605,7 +612,7 @@ extern "C" void Ov010Online_InitSession(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f
 
 
     void *GetLocalPlayerName(void);
-    void func_ov010_022269dc(void *, void *);
+    void CopyPlayerNameToStatus(void *, void *);
     void MI_CpuFill32(s32, void *, s32);
     void func_ov010_02228a38(void *);
     void *FreePacketAssemblySlot(void *);
@@ -653,7 +660,7 @@ extern "C" void Ov010Online_InitSession(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f
         (((Ov010Callback *)p)->*cc)();
     }
     dd=cc;
-    func_ov010_022269dc(&gLocalPlayerStatus,GetLocalPlayerName());
+    CopyPlayerNameToStatus(&gLocalPlayerStatus,GetLocalPlayerName());
     GetEarnedRecordTierTotal();
     M2C_FIELD(&gOv010OnlineSession,u8 *,0x104)=GetRecordRank();
     M2C_FIELD(&gOv010OnlineSession,u8 *,0x105)=GetFavouriteRecordGroup();

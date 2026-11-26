@@ -46,6 +46,8 @@ void StepMapCursorAndNotifyOffset(s32 arg0, s32 arg1) {
     cb(sp6, sp4, arg1 + 8);
 }
 
+/* Per-frame map cursor input: while the cursor is idle, move its target tile by
+ * the held D-pad direction and then by the stylus position. */
 void UpdateMapCursorInput(void) {
     M2C_UNK MoveMapCursorWithKeys();
     M2C_UNK UpdateMapCursorFromTouch();
@@ -169,14 +171,18 @@ void FreeMapTileData(void) {
     gMapData = 0;
 }
 
-s32 GetCurrentMapName(void) {
+/* The current map's display name (MAP_NAME), the text used on the battle map
+ * and in its save record. */
+char *GetCurrentMapName(void) {
     extern s32 *gCurrentMap;
-    return *gCurrentMap + 0x5120;
+
+    return (char *)(*gCurrentMap + MAP_NAME);
 }
 
-u8 func_020cfb94(void) {
- extern s32 *gCurrentMap;
- return M2C_FIELD((void *)*gCurrentMap,u8 *,0x5141);
+/* The number of players the current map is set up for (MAP_PLAYER_COUNT). */
+u8 GetCurrentMapPlayerCount(void) {
+    extern s32 *gCurrentMap;
+    return M2C_FIELD((void *)*gCurrentMap, u8 *, MAP_PLAYER_COUNT);
 }
 
 /* The number of armies the map `mapId` is played with: campaign maps take it

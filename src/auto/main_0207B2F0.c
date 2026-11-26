@@ -355,7 +355,7 @@ void SetCurrentSpriteBatch(s32 arg0) {
  * points the batch at the first layer's VRAM address, clears the placed-sprite
  * list and sets the batch's default tile stride. */
 void InitSpriteBatch(s32 layer, s32 layer2, s32 tileOffset, s32 paletteBase) {
-    void func_0207bc94(s32, s32);
+    void SetSpriteBatchLimits(s32, s32);
     void func_0207bcb0(s32);
     extern s32 gSpriteBatch;
     extern u16 **gCur3DSpriteEngine;
@@ -369,7 +369,7 @@ void InitSpriteBatch(s32 layer, s32 layer2, s32 tileOffset, s32 paletteBase) {
     SPRITE_BATCH->field64 = 0;
     SPRITE_BATCH->baseX = 0;
     SPRITE_BATCH->baseY = 0;
-    func_0207bc94(10, 2);
+    SetSpriteBatchLimits(10, 2);
     func_0207bcb0(0x20);
     for (i = 0; i < 10; i++) {
         SPRITE_BATCH->kind[i] = 0;
@@ -381,10 +381,12 @@ void SetSpriteBatchHighlightKind(s32 arg0) {
     M2C_FIELD((void *)gSpriteBatch, s32 *, 0x64) = arg0;
 }
 
-void func_0207bc94(s32 arg0, s32 arg1) {
+/* Set the current 3D sprite batch's two setup limits; InitSpriteBatch always
+ * passes 10 (the batch's sprite capacity) and 2. */
+void SetSpriteBatchLimits(s32 spriteLimit, s32 secondLimit) {
     extern s32 gSpriteBatch;
-    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x58) = arg0;
-    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x5C) = arg1;
+    SPRITE_BATCH->field58 = spriteLimit;
+    SPRITE_BATCH->field5C = secondLimit;
 }
 
 void func_0207bcb0(s32 arg0) {

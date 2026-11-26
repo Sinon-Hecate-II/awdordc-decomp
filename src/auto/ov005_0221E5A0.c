@@ -30,7 +30,7 @@ extern u8 data_ov005_02220eec[];
 void func_ov005_0221e5a0(M2C_UNK parent) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     s32 GetLocalizedFileName(M2C_UNK *);
-    s32 func_020cfb94(void);
+    s32 GetCurrentMapPlayerCount(void);
     extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
     extern M2C_UNK data_ov005_02220c88[], data_ov005_02220f68[], data_ov005_02220a3c[];
     extern M2C_UNK data_ov005_02220f2c[], data_ov005_02220e7c[], data_ov005_02220a84[];
@@ -83,7 +83,7 @@ void func_ov005_0221e5a0(M2C_UNK parent) {
     engine = gCur3DSpriteEngine;
     LoadSpriteResource(5, 2, 0, (u8 *)DS3D_ENGINE(engine)->oamBuffer + 0x300);
     i = 0;
-    if (func_020cfb94() > 0) {
+    if (GetCurrentMapPlayerCount() > 0) {
         s32 tile = 0x270;
         u8 *co = gCoState;
         do {
@@ -91,7 +91,7 @@ void func_ov005_0221e5a0(M2C_UNK parent) {
             i++;
             tile += 0x18;
             co += 0xc;
-        } while (i < func_020cfb94());
+        } while (i < GetCurrentMapPlayerCount());
     }
     gCur3DSpriteEngine = saved;
     slot = 0;
@@ -117,7 +117,7 @@ void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
 void *MemAlloc(s32);
 void *HeapAllocBlock(s32);
 s32 GetLocalizedFileName(M2C_UNK *);
-s32 func_020cfb94(void);
+s32 GetCurrentMapPlayerCount(void);
 s32 GetCurrentMapName(void);
 s32 IsCampaignBattleRules(void);
 s32 GetLanguage(void);
@@ -175,12 +175,12 @@ M2C_FIELD(p,s32 *,0x40)=192; M2C_FIELD(p,s32 *,0x48)=192;
 M2C_FIELD(p,s32 *,0x44)=-32; M2C_FIELD(p,s32 *,0x4c)=-32;
 saved2=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
 i=0;
-if(func_020cfb94()>0) { j=0x388; k=0; do {
+if(GetCurrentMapPlayerCount()>0) { j=0x388; k=0; do {
 dst=M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+((volatile s32)j<<5);
 MI_CpuCopy32(GetArmyStateTiles(M2C_FIELD((u8 *)*gCurrentMap+k,u8 *,0x6857)),dst,0x80);
 CopyToObjPaletteShadow(GetArmyIconPalette(M2C_FIELD((u8 *)*gCurrentMap+k,u8 *,0x684d)),(i+24)<<5,32);
 i++; j+=4; k+=0x8c;
-} while(i<func_020cfb94()); }
+} while(i<GetCurrentMapPlayerCount()); }
 gCur3DSpriteEngine=*(void ***)&g3DSpriteEngineMain;
 k=func_020a7290()<<5; saved=(void **) (M2C_FIELD(gCur3DSpriteEngine,u8 *volatile *,28)+0x3580);
 MI_CpuCopy32(func_020a7278(),(u8 *)saved+0x4000,k);

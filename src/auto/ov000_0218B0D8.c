@@ -124,7 +124,7 @@ int SelectDirectAttackAction(void *arg0) {
  n=((u16 *)(map+0x3758))[y];
  p=(u8 *)((UnkStruct_ov000_021A860C *)(map+0x59a4)+(map+x)[n]);
  if(!((UnkStruct_ov000_021A860C *)p)->unk0) continue;
- if(func_020d27a4(map[0x52d4],p ? (p-(map+0x59a4))/14:0)==1) continue;
+ if(AreUnitIdsOnSameTeam(map[0x52d4],p ? (p-(map+0x59a4))/14:0)==1) continue;
  if(!IsCellVisibleToCurrentTeam((s16)x,sy)) continue;
  if(!func_ov000_02177f24(x,y,pos)) continue;
  extra=zero;
@@ -139,7 +139,7 @@ int SelectDirectAttackAction(void *arg0) {
  if(tile[0x2840]>=gAiUnitTypeTuning[1] && M2C_FIELD(map,UnkStruct_ov000_021A860C **,0x52d0)->unk0==16 && (gUnitKindStats[((UnkStruct_ov000_021A860C *)p)->unk0*112+19]&7)) extra=0x80000; }
  n=((u16 *)(map+0x3758))[y];
  extra |= (map+x)[n];
- score=func_ov000_02176e28(flags | extra,pos);
+ score=GetAiTargetScore(flags | extra,pos);
  if(!score || score<best) continue;
  if(HasBetterAttackerNearby(p)==1) {
  int px=p[1];

@@ -109,4 +109,12 @@ typedef struct UnitRemoveEffect {
 #define RANGE_EFFECT_TILE_Y 0x5C /* s32 map tile y */
 #define RANGE_EFFECT_DAMAGE 0x60 /* s32 damage dealt to the unit on the tile */
 
+/* A fuel-crash effect: the sprite a unit that ran out of fuel plays while the
+ * map view pans to its tile; once the pan is done the unit explodes.  Its only
+ * own field is the starving unit record (a BattleMapUnit). */
+typedef struct FuelCrashEffect {
+    u8  pad00[0x34];
+    void *unit;     /* +0x34 the unit that ran out of fuel */
+} FuelCrashEffect;
+
 #endif

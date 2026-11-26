@@ -1,11 +1,18 @@
 #include "common.h"
 typedef struct {s32 function,argument;} Callback518;
 typedef struct {char token[21], hash[33], name[82], buf[512];} Response518;
-extern M2C_UNK data_020fe564,data_020fe56c,data_020fe574,data_020fe57c,data_020fe488,data_020fe5ac,data_020fe4bc,data_020fe5b4,data_020fe4c8,data_020fe5e4,data_020fe5ec,gGsKeyUniqueNick,data_020fe5f8,data_020fe434,data_020fe43c,data_020fe44c,data_020fe600,data_020fe608,data_020fe424;
+extern M2C_UNK gGpiConnectPidKey,gGpiConnectFatalKey,gGpiConnectChallengeTag,gGpiConnectMsgBadResponse,gGpiConnectChallengeKey,gGpiConnectNewUserTag,gGpiConnectUserIdKey,gGpiConnectMsgMissingField,gGpiConnectProfileIdKey,gGpiConnectLoginReplyTag,gGpiConnectSessKey,gGsKeyUniqueNick,data_020fe5f8,gGpiConnectIdentityFormat,gGpiConnectProofFormat,gGpiConnectProofSpaces,gGpiConnectProofKey,gGpiConnectMsgBadProof,gGpiConnectMsgOutOfMemory;
 
 
 #pragma opt_strength_reduction off
-s32 gpiProcessConnect(void **a, void *b, char *text) {
+/* Handle one server reply of the gpi connect handshake.  A server error reply
+ * ends the operation, fatal when it carries a \fatal\ field.  Otherwise the
+ * operation state picks the step: 1 is the login challenge, 3 the new-user
+ * reply and 2 the login reply.  Each step stores the reply's ids on the
+ * connection and sends the next request; the login reply also rebuilds the
+ * login proof, verifies the server's copy, marks the connection as logged in
+ * and queues the operation's completion callback. */
+s32 gpiProcessConnect(void **connectionRef, void *operation, char *message) {
 s32 gpiProcessErrorReply(void **,char *,s32);
 s32 gpiValueForKey(char *,M2C_UNK *,void *,s32);
 s32 ParseInt(char *);
@@ -27,74 +34,74 @@ void StringCopyN(void *,void *,s32);
 s32 gpiAddCallback(void **,Callback518,void *,void *,s32);
 M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *);
 M2C_UNK gpiRemoveOperation();
-Response518 work;
-void *q;
-void *p=*a;
-char *chosen;
-s32 *record;
+Response518 scratch;
+void *payload;
+void *connection=*connectionRef;
+char *identity;
+s32 *buddyRecord;
 s32 result;
 Callback518 callback;
-if(gpiProcessErrorReply(a,text,0)){
-if(M2C_FIELD(p,s32 *,0x418)==0x106 && M2C_FIELD(p,s32 *,0x1a0)){
-gpiRemoveBuddyStatus(a,M2C_FIELD(p,s32 *,0x1a0));
-M2C_FIELD(p,s32 *,0x19c)=0;M2C_FIELD(p,s32 *,0x1a0)=0;
-}else if(M2C_FIELD(p,s32 *,0x418)==0x201){
-if(gpiValueForKey(text,&data_020fe564,work.buf,512))M2C_FIELD(p,s32 *,0x1a0)=ParseInt(work.buf);
+if(gpiProcessErrorReply(connectionRef,message,0)){
+if(M2C_FIELD(connection,s32 *,GPI_CONN_ERROR_CODE)==0x106 && M2C_FIELD(connection,s32 *,GPI_CONN_PROFILE_ID)){
+gpiRemoveBuddyStatus(connectionRef,M2C_FIELD(connection,s32 *,GPI_CONN_PROFILE_ID));
+M2C_FIELD(connection,s32 *,GPI_CONN_USER_ID)=0;M2C_FIELD(connection,s32 *,GPI_CONN_PROFILE_ID)=0;
+}else if(M2C_FIELD(connection,s32 *,GPI_CONN_ERROR_CODE)==0x201){
+if(gpiValueForKey(message,&gGpiConnectPidKey,scratch.buf,512))M2C_FIELD(connection,s32 *,GPI_CONN_PROFILE_ID)=ParseInt(scratch.buf);
 }
-if(StringFind(text,&data_020fe56c)){gpiSetError(a,M2C_FIELD(p,s32 *,0x418),p);gpiCallErrorCallback(a,4,1);return 4;}
-else {gpiSetError(a,M2C_FIELD(p,s32 *,0x418),p);gpiCallErrorCallback(a,4,0);return 4;}
+if(StringFind(message,&gGpiConnectFatalKey)){gpiSetError(connectionRef,M2C_FIELD(connection,s32 *,GPI_CONN_ERROR_CODE),connection);gpiCallErrorCallback(connectionRef,4,1);return 4;}
+else {gpiSetError(connectionRef,M2C_FIELD(connection,s32 *,GPI_CONN_ERROR_CODE),connection);gpiCallErrorCallback(connectionRef,4,0);return 4;}
 }
-q=M2C_FIELD(b,void **,4);
-switch(M2C_FIELD(b,s32 *,20)){
+payload=M2C_FIELD(operation,void **,4);
+switch(M2C_FIELD(operation,s32 *,20)){
 case 1:
-if(StringCompareN(text,&data_020fe574,5)){gpiSetError(a,1,&data_020fe57c);gpiCallErrorCallback(a,3,1);return 3;}
-if(!gpiValueForKey(text,&data_020fe488,q,128)){gpiSetError(a,1,&data_020fe57c);gpiCallErrorCallback(a,3,1);return 3;}
-if(M2C_FIELD(q,s32 *,0x304)){
-result=SendNewUserProfile(a,q);if(result)return result;
-M2C_FIELD(b,s32 *,20)=3;
+if(StringCompareN(message,&gGpiConnectChallengeTag,5)){gpiSetError(connectionRef,1,&gGpiConnectMsgBadResponse);gpiCallErrorCallback(connectionRef,3,1);return 3;}
+if(!gpiValueForKey(message,&gGpiConnectChallengeKey,payload,128)){gpiSetError(connectionRef,1,&gGpiConnectMsgBadResponse);gpiCallErrorCallback(connectionRef,3,1);return 3;}
+if(M2C_FIELD(payload,s32 *,0x304)){
+result=SendNewUserProfile(connectionRef,payload);if(result)return result;
+M2C_FIELD(operation,s32 *,20)=3;
 }else{
-result=func_020511dc(a,q);if(result)return result;
-M2C_FIELD(b,s32 *,20)=2;
+result=func_020511dc(connectionRef,payload);if(result)return result;
+M2C_FIELD(operation,s32 *,20)=2;
 }
 break;
 case 3:
-if(StringCompareN(text,&data_020fe5ac,5)){gpiSetError(a,1,&data_020fe57c);gpiCallErrorCallback(a,3,1);return 3;}
-if(!gpiValueForKey(text,&data_020fe4bc,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
-M2C_FIELD(p,s32 *,0x19c)=ParseInt(work.buf);
-if(!gpiValueForKey(text,&data_020fe4c8,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
-M2C_FIELD(p,s32 *,0x1a0)=ParseInt(work.buf);
-result=func_020511dc(a,q);if(result)return result;
-M2C_FIELD(b,s32 *,20)=2;break;
+if(StringCompareN(message,&gGpiConnectNewUserTag,5)){gpiSetError(connectionRef,1,&gGpiConnectMsgBadResponse);gpiCallErrorCallback(connectionRef,3,1);return 3;}
+if(!gpiValueForKey(message,&gGpiConnectUserIdKey,scratch.buf,512)){gpiSetError(connectionRef,1,&gGpiConnectMsgMissingField);gpiCallErrorCallback(connectionRef,3,1);return 3;}
+M2C_FIELD(connection,s32 *,GPI_CONN_USER_ID)=ParseInt(scratch.buf);
+if(!gpiValueForKey(message,&gGpiConnectProfileIdKey,scratch.buf,512)){gpiSetError(connectionRef,1,&gGpiConnectMsgMissingField);gpiCallErrorCallback(connectionRef,3,1);return 3;}
+M2C_FIELD(connection,s32 *,GPI_CONN_PROFILE_ID)=ParseInt(scratch.buf);
+result=func_020511dc(connectionRef,payload);if(result)return result;
+M2C_FIELD(operation,s32 *,20)=2;break;
 case 2:
-if(StringCompareN(text,&data_020fe5e4,5)){gpiSetError(a,1,&data_020fe57c);gpiCallErrorCallback(a,3,1);return 3;}
-if(!gpiValueForKey(text,&data_020fe5ec,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
-M2C_FIELD(p,s32 *,0x198)=ParseInt(work.buf);
-if(!gpiValueForKey(text,&data_020fe4bc,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
-M2C_FIELD(p,s32 *,0x19c)=ParseInt(work.buf);
-if(!gpiValueForKey(text,&data_020fe4c8,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
-M2C_FIELD(p,s32 *,0x1a0)=ParseInt(work.buf);
-if(!gpiValueForKey(text,&gGsKeyUniqueNick,work.token,21))work.token[0]=0;
-if(!gpiValueForKey(text,&data_020fe5f8,(char *)p+0x474,25))M2C_FIELD(p,s8 *,0x474)=0;
-if(M2C_FIELD(q,s8 *,0xc2))chosen=(char *)q+0xc2;
-else if(M2C_FIELD(p,s8 *,0x12f))chosen=(char *)p+0x12f;
-else {StringFormat(work.name,&data_020fe434,(char *)p+0x110,(char *)p+0x144);chosen=work.name;}
-StringFormat(work.buf,&data_020fe43c,(char *)q+161,&data_020fe44c,chosen,q,(char *)q+128,(char *)q+161);
-Md5Hex(work.buf,StringLength(work.buf),work.hash);
-if(!gpiValueForKey(text,&data_020fe600,work.buf,512)){gpiSetError(a,1,&data_020fe5b4);gpiCallErrorCallback(a,3,1);return 3;}
-if(ByteCompareN(work.hash,work.buf,32)){gpiSetError(a,0x108,&data_020fe608);gpiCallErrorCallback(a,3,1);return 3;}
-if(M2C_FIELD(p,s32 *,0x100)){record=func_02055aa0(a,M2C_FIELD(p,s32 *,0x1a0));record[0]=M2C_FIELD(p,s32 *,0x1a0);record[1]=M2C_FIELD(p,s32 *,0x19c);}
-M2C_FIELD(p,s32 *,0x1d8)=3;
-callback=*(Callback518 *)((char *)b+12);
+if(StringCompareN(message,&gGpiConnectLoginReplyTag,5)){gpiSetError(connectionRef,1,&gGpiConnectMsgBadResponse);gpiCallErrorCallback(connectionRef,3,1);return 3;}
+if(!gpiValueForKey(message,&gGpiConnectSessKey,scratch.buf,512)){gpiSetError(connectionRef,1,&gGpiConnectMsgMissingField);gpiCallErrorCallback(connectionRef,3,1);return 3;}
+M2C_FIELD(connection,s32 *,GPI_CONN_SESSION_KEY)=ParseInt(scratch.buf);
+if(!gpiValueForKey(message,&gGpiConnectUserIdKey,scratch.buf,512)){gpiSetError(connectionRef,1,&gGpiConnectMsgMissingField);gpiCallErrorCallback(connectionRef,3,1);return 3;}
+M2C_FIELD(connection,s32 *,GPI_CONN_USER_ID)=ParseInt(scratch.buf);
+if(!gpiValueForKey(message,&gGpiConnectProfileIdKey,scratch.buf,512)){gpiSetError(connectionRef,1,&gGpiConnectMsgMissingField);gpiCallErrorCallback(connectionRef,3,1);return 3;}
+M2C_FIELD(connection,s32 *,GPI_CONN_PROFILE_ID)=ParseInt(scratch.buf);
+if(!gpiValueForKey(message,&gGsKeyUniqueNick,scratch.token,21))scratch.token[0]=0;
+if(!gpiValueForKey(message,&data_020fe5f8,(char *)connection+0x474,25))M2C_FIELD(connection,s8 *,0x474)=0;
+if(M2C_FIELD(payload,s8 *,0xc2))identity=(char *)payload+0xc2;
+else if(M2C_FIELD(connection,s8 *,0x12f))identity=(char *)connection+0x12f;
+else {StringFormat(scratch.name,&gGpiConnectIdentityFormat,(char *)connection+0x110,(char *)connection+0x144);identity=scratch.name;}
+StringFormat(scratch.buf,&gGpiConnectProofFormat,(char *)payload+161,&gGpiConnectProofSpaces,identity,payload,(char *)payload+128,(char *)payload+161);
+Md5Hex(scratch.buf,StringLength(scratch.buf),scratch.hash);
+if(!gpiValueForKey(message,&gGpiConnectProofKey,scratch.buf,512)){gpiSetError(connectionRef,1,&gGpiConnectMsgMissingField);gpiCallErrorCallback(connectionRef,3,1);return 3;}
+if(ByteCompareN(scratch.hash,scratch.buf,32)){gpiSetError(connectionRef,0x108,&gGpiConnectMsgBadProof);gpiCallErrorCallback(connectionRef,3,1);return 3;}
+if(M2C_FIELD(connection,s32 *,0x100)){buddyRecord=func_02055aa0(connectionRef,M2C_FIELD(connection,s32 *,GPI_CONN_PROFILE_ID));buddyRecord[0]=M2C_FIELD(connection,s32 *,GPI_CONN_PROFILE_ID);buddyRecord[1]=M2C_FIELD(connection,s32 *,GPI_CONN_USER_ID);}
+M2C_FIELD(connection,s32 *,GPI_CONN_STATE)=GPI_STATE_LOGGED_IN;
+callback=*(Callback518 *)((char *)operation+12);
 if(callback.function){
-q=gpiMalloc(32);
-if(!q){gpiSetErrorString((M2C_UNK)a,&data_020fe424);return 1;}
-MemSet(q,0,32);
-M2C_FIELD(q,s32 *,4)=M2C_FIELD(p,s32 *,0x1a0);M2C_FIELD(q,s32 *,0)=0;
-StringCopyN((char *)q+8,work.token,21);
-result=gpiAddCallback(a,callback,q,b,0);
+payload=gpiMalloc(32);
+if(!payload){gpiSetErrorString((M2C_UNK)connectionRef,&gGpiConnectMsgOutOfMemory);return 1;}
+MemSet(payload,0,32);
+M2C_FIELD(payload,s32 *,4)=M2C_FIELD(connection,s32 *,GPI_CONN_PROFILE_ID);M2C_FIELD(payload,s32 *,0)=0;
+StringCopyN((char *)payload+8,scratch.token,21);
+result=gpiAddCallback(connectionRef,callback,payload,operation,0);
 if(result)return result;
 }
-gpiRemoveOperation(a,b);
+gpiRemoveOperation(connectionRef,operation);
 break;
 }
 return 0;

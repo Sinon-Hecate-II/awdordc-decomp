@@ -299,7 +299,7 @@ outer_done:
 
 void func_ov000_0218f0ec(void) {
 extern void **gCurrentMap; extern void *gAiCommandState;
-s32 IsFootUnitKind(u32); void BuildUnitMoveRange(void *); void MarkAdjacentCells(s8); s32 IsPropertyOwnedByTeam(s32,s32,s32); s32 func_020d27a4(s32,s32); s32 WillCaptureCompleteThisTurn(void *); s32 IsCellVisibleToCurrentTeam(s16,s16); s32 FindBestAdjacentTile(s32,s32,s16 *); void func_ov000_02199f38(void); void ClearUnitMoveTarget(void); void SetMapCursor(u32,u32,u32,u32,u32);
+s32 IsFootUnitKind(u32); void BuildUnitMoveRange(void *); void MarkAdjacentCells(s8); s32 IsPropertyOwnedByTeam(s32,s32,s32); s32 AreUnitIdsOnSameTeam(s32,s32); s32 WillCaptureCompleteThisTurn(void *); s32 IsCellVisibleToCurrentTeam(s16,s16); s32 FindBestAdjacentTile(s32,s32,s16 *); void func_ov000_02199f38(void); void ClearUnitMoveTarget(void); void SetMapCursor(u32,u32,u32,u32,u32);
 u8 *unit; s32 x; s16 out[2]; s32 y;
 if(!IsFootUnitKind((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26))return;
 BuildUnitMoveRange(M2C_FIELD(*gCurrentMap,void **,0x52d0));
@@ -314,7 +314,7 @@ if((tile>>5)!=0){if(!IsPropertyOwnedByTeam(M2C_FIELD(map,u16 *,0x52a4),x,y))cont
 map=*gCurrentMap;
 unit=map+0x59a4+14*M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
 if(!IsFootUnitKind((u32)(unit[0]<<26)>>26))continue;
-if(func_020d27a4(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),unit?((s32)unit-(s32)((u8 *)*gCurrentMap+0x59a4))/14:0)==1)continue;
+if(AreUnitIdsOnSameTeam(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),unit?((s32)unit-(s32)((u8 *)*gCurrentMap+0x59a4))/14:0)==1)continue;
 if(!WillCaptureCompleteThisTurn(unit))continue;
 if(!IsCellVisibleToCurrentTeam((s16)x,(s16)y))continue;
 if(!FindBestAdjacentTile(x,y,out))continue;

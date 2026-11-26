@@ -1,8 +1,11 @@
 /* 9 functions from 0x0219694C to 0x02197814 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct MapScan96 { u8 pad[0x24]; u16 width, height; } MapScan96;
 typedef struct KindScan96 { u8 pad[12]; u8 minRange; u8 rest[99]; } KindScan96;
+/* A unit record's combat fields: the low four bits of the word at +6 (= the
+   `status` member, actually the ammo count) follow the health points. */
 typedef struct UnitScan96 { u8 kind:6; u8 owner:2; u8 x,y,pad; u16 flags; u16 health:7; u16 status:4; u16 rest:5; } UnitScan96;
 
 typedef struct Map972e0 { u8 pad[0x5144]; volatile u16 width; u16 height; } Map972e0;
@@ -96,6 +99,10 @@ u32 ScoreMapCellNear(s32 xOrig, s32 yOrig) {
 }
 #pragma opt_strength_reduction reset
 
+/* Mark the cells the current player's healthy indirect units can hit enemy
+ * tanks (kind 7), and the enemy-owned airports they can hit, in the map grid.
+ * Then aim the kind-5 unit under the cursor at the best-scored cell within
+ * AI_FLARE_TARGET_RADIUS tiles of it: give that unit AI command 21 there. */
 void TagAiKind5TargetCells(void) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
@@ -108,45 +115,45 @@ s32 GetUnitDamagePercent(s32,s32);
 s32 GetUnitAttackRangeMax(void *);
 u32 ScoreMapCellNear(s32,s32);
 void SetMapCursor(s32,s32,s32,s32,s32);
-u8 *m,*u; MapScan96 *bounds; s32 bx,by,i,off,l,b,l2,b2,l3,x,y,t,r,d,z; u32 best,v;
-m=*gCurrentMap; u=M2C_FIELD(m,u8 **,0x52d0);
-if(!((UnitScan96 *)u)->status)return;
-if(!func_ov000_02178e84(u[1],u[2]))return;
+u8 *map,*unit; MapScan96 *bounds; s32 bestX,bestY,unitId,unitOffset,minX,maxY,minX2,maxY2,minScanX,cellX,cellY,minY,maxX,distance,unused; u32 unusedScore,score;
+map=*gCurrentMap; unit=M2C_FIELD(map,u8 **,MAP_CURSOR_UNIT);
+if(!((UnitScan96 *)unit)->status)return;
+if(!func_ov000_02178e84(unit[MAP_UNIT_X],unit[MAP_UNIT_Y]))return;
 FillMapLayer(0);
-i=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+1;
-if(i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51){off=i*14;do{
-u=(u8 *)*gCurrentMap+0x59a4+off;
-if(!((u32)(u[0]<<26)>>26)||((UnitScan96 *)u)->health<=70||!((UnitScan96 *)u)->status||(M2C_FIELD(u,u16 *,4)&8)||GetUnitAttackClass((u32)(u[0]<<26)>>26)!=1)goto nextUnit;
-if(GetUnitDamagePercent((u32)(u[0]<<26)>>26,7)){
-l=u[1]-GetUnitAttackRangeMax(u)<0?0:u[1]-GetUnitAttackRangeMax(u);
-t=u[2]-GetUnitAttackRangeMax(u)<0?0:u[2]-GetUnitAttackRangeMax(u);
-bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);r=u[1]+GetUnitAttackRangeMax(u)>=bounds->width-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5144)-1:u[1]+GetUnitAttackRangeMax(u);
-bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);b=u[2]+GetUnitAttackRangeMax(u)>=bounds->height-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5146)-1:u[2]+GetUnitAttackRangeMax(u);
-z=0;for(y=t;y<=b;y++)for(x=l;x<=r;x++){
-d=0; if(u[1]-x>0)d+=u[1]-x;else d+=x-u[1]; if(u[2]-y>0)d+=u[2]-y;else d+=y-u[2];
-if(d<gUnitKindStats[(u32)(u[0]<<26)>>26].minRange||d>GetUnitAttackRangeMax(u))continue;
-m=*gCurrentMap; v=M2C_FIELD((u32)m+(y<<1),u16 *,0x3758)+x;
-if((u8)(m[0x5160+(v>>3)]&(1<<(v&7))))continue;
+unitId=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+1;
+if(unitId<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+MAP_UNIT_GROUP_SCAN){unitOffset=unitId*MAP_UNIT_STRIDE;do{
+unit=(u8 *)*gCurrentMap+MAP_UNIT_RECORDS+unitOffset;
+if(!((u32)(unit[MAP_UNIT_KIND]<<26)>>26)||((UnitScan96 *)unit)->health<=AI_FLARE_UNIT_MIN_HEALTH||!((UnitScan96 *)unit)->status||(M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&UNIT_FLAG_LOADED)||GetUnitAttackClass((u32)(unit[MAP_UNIT_KIND]<<26)>>26)!=UNIT_ATTACK_INDIRECT)goto nextUnit;
+if(GetUnitDamagePercent((u32)(unit[MAP_UNIT_KIND]<<26)>>26,UNIT_KIND_TANK)){
+minX=unit[MAP_UNIT_X]-GetUnitAttackRangeMax(unit)<0?0:unit[MAP_UNIT_X]-GetUnitAttackRangeMax(unit);
+minY=unit[MAP_UNIT_Y]-GetUnitAttackRangeMax(unit)<0?0:unit[MAP_UNIT_Y]-GetUnitAttackRangeMax(unit);
+bounds=(MapScan96 *)((u8 *)*gCurrentMap+MAP_NAME);maxX=unit[MAP_UNIT_X]+GetUnitAttackRangeMax(unit)>=bounds->width-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,MAP_WIDTH)-1:unit[MAP_UNIT_X]+GetUnitAttackRangeMax(unit);
+bounds=(MapScan96 *)((u8 *)*gCurrentMap+MAP_NAME);maxY=unit[MAP_UNIT_Y]+GetUnitAttackRangeMax(unit)>=bounds->height-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,MAP_HEIGHT)-1:unit[MAP_UNIT_Y]+GetUnitAttackRangeMax(unit);
+unused=0;for(cellY=minY;cellY<=maxY;cellY++)for(cellX=minX;cellX<=maxX;cellX++){
+distance=0; if(unit[MAP_UNIT_X]-cellX>0)distance+=unit[MAP_UNIT_X]-cellX;else distance+=cellX-unit[MAP_UNIT_X]; if(unit[MAP_UNIT_Y]-cellY>0)distance+=unit[MAP_UNIT_Y]-cellY;else distance+=cellY-unit[MAP_UNIT_Y];
+if(distance<gUnitKindStats[(u32)(unit[MAP_UNIT_KIND]<<26)>>26].minRange||distance>GetUnitAttackRangeMax(unit))continue;
+map=*gCurrentMap; score=M2C_FIELD((u32)map+(cellY<<1),u16 *,MAP_ROW_OFFSETS)+cellX;
+if((u8)(map[MAP_CELL_BITMAP_TEAM_A+(score>>3)]&(1<<(score&7))))continue;
 
-M2C_FIELD((u32)m+(y<<2),u8 **,0x52e8)[x]=1;
-}}if(GetUnitDamagePercent((u32)(u[0]<<26)>>26,14)){
-l2=u[1]-GetUnitAttackRangeMax(u)<0?0:u[1]-GetUnitAttackRangeMax(u);
-t=u[2]-GetUnitAttackRangeMax(u)<0?0:u[2]-GetUnitAttackRangeMax(u);
-bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);r=u[1]+GetUnitAttackRangeMax(u)>=bounds->width-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5144)-1:u[1]+GetUnitAttackRangeMax(u);
-bounds=(MapScan96 *)((u8 *)*gCurrentMap+0x5120);b2=u[2]+GetUnitAttackRangeMax(u)>=bounds->height-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,0x5146)-1:u[2]+GetUnitAttackRangeMax(u);
-z=0;for(y=t;y<=b2;y++)for(x=l2;x<=r;x++){
-d=0; if(u[1]-x>0)d+=u[1]-x;else d+=x-u[1]; if(u[2]-y>0)d+=u[2]-y;else d+=y-u[2];
-if(d<gUnitKindStats[(u32)(u[0]<<26)>>26].minRange||d>GetUnitAttackRangeMax(u))continue;
-m=*gCurrentMap; v=M2C_FIELD((u32)m+(y<<1),u16 *,0x3758)+x;
-if((u8)(m[0x5160+(v>>3)]&(1<<(v&7))))continue;
-if((M2C_FIELD((u32)m+x+M2C_FIELD((u32)m+(y<<1),u16 *,0x3758),u8 *,0x1420)&31)!=18||!(M2C_FIELD((u32)m+x+M2C_FIELD((u32)m+(y<<1),u16 *,0x3758),u8 *,0x1420)&224))continue;
-M2C_FIELD((u32)m+(y<<2),u8 **,0x52e8)[x]=1;
-}}nextUnit: i++;off+=14;}while(i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51);}
-{ s32 l3,t3,b3; u32 best3; s32 x3,y3,r3,d3; u8 *u3;
-m=*gCurrentMap; u3=M2C_FIELD(m,u8 **,0x52d0);
-best3=0;l3=u3[1]-5<0?0:u3[1]-5;t3=u3[2]-5;if(t3<0)t3=0;r3=M2C_FIELD(m,u16 *,0x5144)-1;if(u3[1]+5<r3)r3=u3[1]+5;b3=M2C_FIELD(m,u16 *,0x5146)-1;if(u3[2]+5<b3)b3=u3[2]+5;
-z=0;for(y3=t3;y3<=b3;y3++)for(x3=l3;x3<=r3;x3++){u3=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);d3=0; if(u3[1]-x3>0)d3+=u3[1]-x3;else d3+=x3-u3[1]; if(u3[2]-y3>0)d3+=u3[2]-y3;else d3+=y3-u3[2];if(d3<0||d3>5)continue;v=ScoreMapCellNear(x3,y3);if(!v||best3>v)continue;if(best3==v&&gAiCommandState[3]<50)continue;best3=v;bx=x3;by=y3;}
-if(!best3)return;u3=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);SetMapCursor(u3[1],u3[2],21,(u8)bx,(u8)by);
+M2C_FIELD((u32)map+(cellY<<2),u8 **,MAP_GRID)[cellX]=1;
+}}if(GetUnitDamagePercent((u32)(unit[MAP_UNIT_KIND]<<26)>>26,AI_COUNTER_UNIT_KIND)){
+minX2=unit[MAP_UNIT_X]-GetUnitAttackRangeMax(unit)<0?0:unit[MAP_UNIT_X]-GetUnitAttackRangeMax(unit);
+minY=unit[MAP_UNIT_Y]-GetUnitAttackRangeMax(unit)<0?0:unit[MAP_UNIT_Y]-GetUnitAttackRangeMax(unit);
+bounds=(MapScan96 *)((u8 *)*gCurrentMap+MAP_NAME);maxX=unit[MAP_UNIT_X]+GetUnitAttackRangeMax(unit)>=bounds->width-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,MAP_WIDTH)-1:unit[MAP_UNIT_X]+GetUnitAttackRangeMax(unit);
+bounds=(MapScan96 *)((u8 *)*gCurrentMap+MAP_NAME);maxY2=unit[MAP_UNIT_Y]+GetUnitAttackRangeMax(unit)>=bounds->height-1?M2C_FIELD(*(u8 * volatile *)gCurrentMap,u16 *,MAP_HEIGHT)-1:unit[MAP_UNIT_Y]+GetUnitAttackRangeMax(unit);
+unused=0;for(cellY=minY;cellY<=maxY2;cellY++)for(cellX=minX2;cellX<=maxX;cellX++){
+distance=0; if(unit[MAP_UNIT_X]-cellX>0)distance+=unit[MAP_UNIT_X]-cellX;else distance+=cellX-unit[MAP_UNIT_X]; if(unit[MAP_UNIT_Y]-cellY>0)distance+=unit[MAP_UNIT_Y]-cellY;else distance+=cellY-unit[MAP_UNIT_Y];
+if(distance<gUnitKindStats[(u32)(unit[MAP_UNIT_KIND]<<26)>>26].minRange||distance>GetUnitAttackRangeMax(unit))continue;
+map=*gCurrentMap; score=M2C_FIELD((u32)map+(cellY<<1),u16 *,MAP_ROW_OFFSETS)+cellX;
+if((u8)(map[MAP_CELL_BITMAP_TEAM_A+(score>>3)]&(1<<(score&7))))continue;
+if((M2C_FIELD((u32)map+cellX+M2C_FIELD((u32)map+(cellY<<1),u16 *,MAP_ROW_OFFSETS),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK)!=MAP_TERRAIN_AIRPORT||!(M2C_FIELD((u32)map+cellX+M2C_FIELD((u32)map+(cellY<<1),u16 *,MAP_ROW_OFFSETS),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_OWNER_MASK))continue;
+M2C_FIELD((u32)map+(cellY<<2),u8 **,MAP_GRID)[cellX]=1;
+}}nextUnit: unitId++;unitOffset+=MAP_UNIT_STRIDE;}while(unitId<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+MAP_UNIT_GROUP_SCAN);}
+{ s32 minScanX,minScanY,maxScanY; u32 scanBest; s32 scanX,scanY,maxScanX,scanDistance; u8 *scanUnit;
+map=*gCurrentMap; scanUnit=M2C_FIELD(map,u8 **,MAP_CURSOR_UNIT);
+scanBest=0;minScanX=scanUnit[MAP_UNIT_X]-AI_FLARE_TARGET_RADIUS<0?0:scanUnit[MAP_UNIT_X]-AI_FLARE_TARGET_RADIUS;minScanY=scanUnit[MAP_UNIT_Y]-AI_FLARE_TARGET_RADIUS;if(minScanY<0)minScanY=0;maxScanX=M2C_FIELD(map,u16 *,MAP_WIDTH)-1;if(scanUnit[MAP_UNIT_X]+AI_FLARE_TARGET_RADIUS<maxScanX)maxScanX=scanUnit[MAP_UNIT_X]+AI_FLARE_TARGET_RADIUS;maxScanY=M2C_FIELD(map,u16 *,MAP_HEIGHT)-1;if(scanUnit[MAP_UNIT_Y]+AI_FLARE_TARGET_RADIUS<maxScanY)maxScanY=scanUnit[MAP_UNIT_Y]+AI_FLARE_TARGET_RADIUS;
+unused=0;for(scanY=minScanY;scanY<=maxScanY;scanY++)for(scanX=minScanX;scanX<=maxScanX;scanX++){scanUnit=M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT);scanDistance=0; if(scanUnit[MAP_UNIT_X]-scanX>0)scanDistance+=scanUnit[MAP_UNIT_X]-scanX;else scanDistance+=scanX-scanUnit[MAP_UNIT_X]; if(scanUnit[MAP_UNIT_Y]-scanY>0)scanDistance+=scanUnit[MAP_UNIT_Y]-scanY;else scanDistance+=scanY-scanUnit[MAP_UNIT_Y];if(scanDistance<0||scanDistance>AI_FLARE_TARGET_RADIUS)continue;score=ScoreMapCellNear(scanX,scanY);if(!score||scanBest>score)continue;if(scanBest==score&&gAiCommandState[AI_COMMAND_STATE_TIEBREAK]<AI_FLARE_TIEBREAK_CUTOFF)continue;scanBest=score;bestX=scanX;bestY=scanY;}
+if(!scanBest)return;scanUnit=M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT);SetMapCursor(scanUnit[MAP_UNIT_X],scanUnit[MAP_UNIT_Y],21,(u8)bestX,(u8)bestY);
 }}
 #pragma opt_strength_reduction reset
 /* Flood-fill the cursor unit's movement range, then plan a move: prefer the
@@ -287,7 +294,7 @@ s32 ApplyHealthBonus(s32 value, void *unit, s32 healthPercent) {
 }
 
 /* Returns the terrain damage rating for tile (x, y); for most unit kinds it blends the unit's stats through ApplyCoZoneBonus and clamps to the existing tile rating. */
-s32 func_ov000_021976ac(s32 x, s32 y, void *unit, u32 hp) {
+s32 GetTileDamageRating(s32 x, s32 y, void *unit, u32 hp) {
     s32 ApplyCoZoneBonus(s32, void *, void *);
     s32 GetModifiedDamagePercent(s32, s32);
     s32 ApplyAttackBonus(s32, M2C_UNK, M2C_UNK);

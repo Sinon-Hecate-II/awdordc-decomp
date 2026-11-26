@@ -395,8 +395,12 @@ void Sound_ReleaseMemorySource(void) {
 
 }
 
-s32 Sound_ReadMemorySource(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
- MI_CpuCopy8(M2C_FIELD(arg0,s32 *,0xA4)+arg3,arg1,arg2); return arg2;
+/* Copy sample data straight from the loaded archive memory of the sound: the
+ * block at SOUND_HANDLE_SOURCE_BASE, shifted by `sourceOffset`, into the
+ * caller's buffer.  Returns the number of bytes read. */
+s32 Sound_ReadMemorySource(void *player, s32 destination, s32 byteCount, s32 sourceOffset) {
+    MI_CpuCopy8(M2C_FIELD(player, s32 *, SOUND_HANDLE_SOURCE_BASE) + sourceOffset, destination, byteCount);
+    return byteCount;
 }
 
 void Sound_CloseMemorySource(void) {

@@ -180,7 +180,7 @@ void func_ov001_0217c8ac(void);
 void TrimCodeEntryDigits(void);
 s32 Ov001_GetKeypadCode(void);
 s32 IsCodeGroupComplete(s32);
-void func_ov001_0217c66c(void);
+void Ov001_DelayCodeEntryClose(void);
 s32 code=Ov001_GetKeypadCode();u8 *p; s32 i,a,b;
 if(code==0)return;
 switch(code){
@@ -199,7 +199,7 @@ Ov001_PlaySound(1);M2C_FIELD(gOv001FriendCodeState,u8 *,20)++;Ov001_SetKeypadNex
 }break;
 case 18:
 M2C_FIELD(gOv001FriendCodeState,u8 *,21)=0;
-Ov001_PlaySound(7);Ov001_SetStepCallback((s32 *)&func_ov001_0217c66c);return;
+Ov001_PlaySound(7);Ov001_SetStepCallback((s32 *)&Ov001_DelayCodeEntryClose);return;
 case 19:
 if(IsCodeEntryValid()){
 Ov001_PlaySound(6);M2C_FIELD(gOv001FriendCodeState,u8 *,21)=1;
@@ -209,7 +209,7 @@ M2C_FIELD(gOv001FriendCodeState,u8 *,21)=2;Ov001_PlaySound(9);
 M2C_FIELD(gOv001FriendCodeState,u8 *,20)=3;
 p=M2C_FIELD(gOv001FriendCodeState,u8 **,4);
 *(u32 *)p=(*(u32 *)p&0xc1fffcff)|512;
-func_ov001_0217c8ac();TrimCodeEntryDigits();Ov001_SetStepCallback((s32 *)&func_ov001_0217c66c);return;
+func_ov001_0217c8ac();TrimCodeEntryDigits();Ov001_SetStepCallback((s32 *)&Ov001_DelayCodeEntryClose);return;
 default:
 if(M2C_FIELD(gOv001FriendCodeState,u8 *,20)==3 && IsCodeGroupComplete(26))break;
 Ov001_PlaySound(1);
@@ -266,7 +266,9 @@ void func_ov001_0217c668(void) {
 
 }
 
-void func_ov001_0217c66c(void) {
+/* Step run after the friend code is confirmed or cancelled: wait 8 frames, then
+ * hand over to Ov001_CloseCodeEntryKeypad, which closes the keypad. */
+void Ov001_DelayCodeEntryClose(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_CloseCodeEntryKeypad;
@@ -461,6 +463,8 @@ void Ov001_OpenKeypadAfterRegionMenu(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenCodeEntryKeypad);
 }
 
+/* Step that opens the ov001 Wi-Fi error screen: load its background map, draw
+ * the error text panel and hand over to the step that fades the screen in. */
 void Ov001_ShowWfcErrorScreen(void) {
     void Ov001_LoadWfcErrorBackground(void);
     M2C_UNK DrawWfcErrorPanel();

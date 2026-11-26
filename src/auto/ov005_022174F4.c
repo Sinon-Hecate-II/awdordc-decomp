@@ -4,7 +4,7 @@
 #include "sound.h"
 #include "sound.h"
 extern void *gOv005MenuState, *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
-extern u8 data_02101f0c[];
+extern u8 gSpriteDesc64x8[];
 #define STATE gOv005MenuState
 #define ENGINE M2C_FIELD(gCur3DSpriteEngine,void**,0)
 #define SIZE ((u32)(M2C_FIELD(ENGINE,u16*,0)<<17)>>30)
@@ -62,8 +62,8 @@ if(M2C_FIELD(STATE,s16*,0x16)>12)M2C_FIELD(STATE,s16*,0x16)=12;
 for(i=0;i<12;tile+=24,i++){
 x=M2C_FIELD(STATE,s16*,8)+((i%4)*50+30);y=(i/4)*18+87;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-AddSprite((u16)((x+2)&511),(u8)(y+1),ATTR(0x40c,0x7800),data_02101f0c,0);
-AddSprite((u16)((x+2)&511),(u8)(y+9),ATTR(0x414,0x7800),data_02101f0c,0);
+AddSprite((u16)((x+2)&511),(u8)(y+1),ATTR(0x40c,0x7800),gSpriteDesc64x8,0);
+AddSprite((u16)((x+2)&511),(u8)(y+9),ATTR(0x414,0x7800),gSpriteDesc64x8,0);
 if(IsCoUnlocked(i+1))AddFaceSpriteTile(0,x,y,(u16)(((i<<12)&0xffff)|0x400|((tile)>>SIZE&0x3ff)),0,0);
 gCur3DSpriteEngine=saved;
 }
@@ -85,15 +85,15 @@ if(M2C_FIELD(STATE,s16*,0x16)<=0)Ov005RefreshNameGraphic();
 {
 s16 pos=EaseInterpolate(4,-240,8,M2C_FIELD(STATE,s16*,0x16),12);
 u32 left=pos&511; u32 right;
-AddSprite((u16)left,24,ATTR(320,0x6000),data_02101f0c,0);
+AddSprite((u16)left,24,ATTR(320,0x6000),gSpriteDesc64x8,0);
 right=(pos+64)&511;
-AddSprite((u16)right,24,ATTR(328,0x6000),data_02101f0c,0);
-AddSprite((u16)left,32,ATTR(336,0x6000),data_02101f0c,0);
-AddSprite((u16)right,32,ATTR(344,0x6000),data_02101f0c,0);
-AddSprite((u16)left,40,ATTR(352,0x6000),data_02101f0c,0);
-AddSprite((u16)right,40,ATTR(360,0x6000),data_02101f0c,0);
-AddSprite((u16)left,48,ATTR(368,0x6000),data_02101f0c,0);
-AddSprite((u16)right,48,ATTR(376,0x6000),data_02101f0c,0);
+AddSprite((u16)right,24,ATTR(328,0x6000),gSpriteDesc64x8,0);
+AddSprite((u16)left,32,ATTR(336,0x6000),gSpriteDesc64x8,0);
+AddSprite((u16)right,32,ATTR(344,0x6000),gSpriteDesc64x8,0);
+AddSprite((u16)left,40,ATTR(352,0x6000),gSpriteDesc64x8,0);
+AddSprite((u16)right,40,ATTR(360,0x6000),gSpriteDesc64x8,0);
+AddSprite((u16)left,48,ATTR(368,0x6000),gSpriteDesc64x8,0);
+AddSprite((u16)right,48,ATTR(376,0x6000),gSpriteDesc64x8,0);
 }
 gCur3DSpriteEngine=saved;
 if(M2C_FIELD(STATE,s16*,0x16)<=0){M2C_FIELD(STATE,s16*,0x18)=1;Ov005RefreshEntryFace();}

@@ -57,8 +57,8 @@ void SetScreenTransitionDirectory(void) {
 
 /* Which half of the screen the running split transition slides (0 or 1). */
 s32 GetScreenTransitionSide(void) {
-    extern s16 *gScreenTransition;
-    return ((ScreenTransition *)gScreenTransition)->side != 0;
+    extern ScreenTransition *gScreenTransition;
+    return gScreenTransition->side != 0;
 }
 
 /* Return the selected screen engine's destination for the transition character graphics. */
@@ -68,24 +68,32 @@ s32 GetScreenTransitionCharacterTarget(void) {
     return M2C_FIELD(g3DSpriteEngineSub + side * 4, s32 *, DS3D_ENGINE_LAYER_VRAM);
 }
 
+/* Return the sub 3D-sprite engine's RAM tile buffer for the sliding half of the
+ * running transition: the destination DrawScreenTransition loads the .sc screen
+ * data into. */
 s32 GetScreenTransitionScTarget(void) {
     extern s32 g3DSpriteEngineSub;
     s32 side = GetScreenTransitionSide();
-    return M2C_FIELD(g3DSpriteEngineSub + side * 4, s32 *, 0x20);
+    return M2C_FIELD(g3DSpriteEngineSub + side * 4, s32 *, DS3D_ENGINE_LAYER_TILES);
 }
 
+/* Mark the running screen-change split transition as finished, so its update
+ * stops and the new screen mode is applied. */
 void SetScreenTransitionDone(void) {
-    extern s16 *gScreenTransition;
-    *gScreenTransition |= 1;
+    extern ScreenTransition *gScreenTransition;
+    gScreenTransition->flags |= TRANSITION_DONE;
 }
 
+/* Clear the running transition's finished mark, so its update runs again (used
+ * when a transition is restarted). */
 void ClearScreenTransitionDone(void) {
-extern s16 *gScreenTransition;
-*gScreenTransition &= ~1;
+    extern ScreenTransition *gScreenTransition;
+    gScreenTransition->flags &= ~TRANSITION_DONE;
 }
 
 /* TRUE once the running screen transition has finished (or been applied at once). */
 u8 IsScreenTransitionDone(void) {
-    extern s16 *gScreenTransition;
-    return (((ScreenTransition *)gScreenTransition)->flags & TRANSITION_DONE) != 0;
+    extern ScreenTransition *gScreenTransition;
+    return (gScreenTransition->flags & TRANSITION_DONE) != 0;
 }
+

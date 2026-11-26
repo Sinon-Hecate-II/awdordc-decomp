@@ -50,6 +50,7 @@ typedef struct Ov003HelpPanel {
 #define MENU_FLAG_SPLIT_SELECT 0x80 /* set while the split-row unit selection is active (mode 0) */
 
 #define MENU_MODE          0x36 /* u8: MENU_MODE_FIRST/SECOND, the idle value 0xFF, or MENU_MODE_SHIFTed modes */
+#define MENU_MODE_HI       0x37 /* u8 high byte of the shifted mode word (MENU_MODE + 1) */
 #define MENU_MODE_SHIFT    4    /* RequestMenuMode stores the mode shifted left by this (bytes 0x36..0x37) */
 #define MENU_MODE_FIRST    1    /* modes 1 and 2 confirm the menu instead of running its action */
 #define MENU_MODE_SECOND   2
@@ -91,6 +92,11 @@ typedef struct Ov003ModeTexture {
  * pick those rows out. */
 #define MENU_SELECT_MODE_SPLIT_ROWS 8
 
+/* Mode 9 is the campaign save-slot list: its rows are the campaign save slots,
+ * each row draws a save-slot icon (an empty one for a slot with no save) and
+ * confirming a used slot opens its save-slot panel (CreateCampaignSaveSlotPanel). */
+#define MENU_SELECT_MODE_CAMPAIGN_SAVE 9
+
 /* The three split option rows (2, 3 and 4) of the split-row unit list, the rows
  * the split-option-row predicate picks out. */
 #define MENU_SPLIT_ROW_FIRST 2
@@ -121,6 +127,7 @@ typedef struct MenuRowGroup {
     u8 rowCount;  /* +0x0 number of rows the menu lists */
     u8 unk_01[4]; /* +0x1 row layout data, unused by the menu code */
 } MenuRowGroup;   /* 0x5 bytes, one per menu (gUnitListRowGroups) */
+#define MENU_ROW_GROUP_COUNT 0x00 /* u8 MenuRowGroup.rowCount */
 
 #define MENU_ROW_GROUP 0x44 /* const MenuRowGroup *: the menu's row group */
 

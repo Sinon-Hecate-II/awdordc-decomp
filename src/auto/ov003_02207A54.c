@@ -23,26 +23,30 @@ M2C_FIELD(p,u8 *,15)=M2C_FIELD(p,u8 *,14);
 extern u8 data_ov003_02210ac4[];
 extern u8 data_ov003_02210c44[];
 
-u8 func_ov003_02207a54(void *arg0) {
-    u8 var_r0;
+/* Whether the unit-list menu is at its root mode: the low nibble of the pending
+ * mode word in MENU_MODE is 0, so no submenu is open and back/close may act. */
+u8 IsMenuAtRootMode(void *menu) {
+    u8 atRoot;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x36) << 0x18) >> 0x1C) == 0) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(menu, u8 *, MENU_MODE) << 0x18) >> 0x1C) == 0) {
+        atRoot = 1;
     } else {
-        var_r0 = 0;
+        atRoot = 0;
     }
-    return var_r0;
+    return atRoot;
 }
 
-u8 func_ov003_02207a70(void *arg0) {
-    u8 var_r0;
+/* Whether the ov003 menu's selection context is in the split-row unit-list mode,
+ * whose rows 2..4 are the three split option rows. */
+u8 Ov003_IsSplitRowMode(void *menu) {
+    u8 isSplit;
 
-    if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) {
-        var_r0 = 1;
+    if (M2C_FIELD(M2C_FIELD(menu, void **, MENU_SELECTION), u8 *, MENU_SELECTION_MODE) == MENU_SELECT_MODE_SPLIT_ROWS) {
+        isSplit = 1;
     } else {
-        var_r0 = 0;
+        isSplit = 0;
     }
-    return var_r0;
+    return isSplit;
 }
 
 /* Reset the 6 child slots of the given structure to their initial state. */

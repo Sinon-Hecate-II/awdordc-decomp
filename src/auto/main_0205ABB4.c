@@ -214,9 +214,13 @@ s32 gt2GetConnectionData(void *connection) {
     return M2C_FIELD(connection, s32 *, GT2_CONNECTION_USER_DATA);
 }
 
-s32 Gt2ReadShort(u8 *a,s32 b) {u16 n=(a[b]<<8)&0xff00;return (u16)n|a[b+1];}
+/* Read the 16-bit big-endian (network order) value at `offset` in `data`. */
+s32 Gt2ReadShort(u8 *data, s32 offset) {
+    u16 value = (data[offset] << 8) & 0xff00;
+    return (u16)value | data[offset + 1];
+}
 
-void func_0205b0ec(u8 *a,s32 b,s32 c){a[b]=c>>8;a[b+1]=c;}
+void Gt2WriteShort(u8 *a,s32 b,s32 c){a[b]=c>>8;a[b+1]=c;}
 
 s16 Gt2CompareSequence(s32 arg0, s32 arg1) {
     return (s16) (arg0 - arg1);

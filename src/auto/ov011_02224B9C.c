@@ -33,7 +33,7 @@ void func_ov011_02224b9c(M2C_UNK arg0, u32 arg1) {
     M2C_UNK LoadOpeningScreenAssets(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK LoadOpeningAssetSet(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s16 EaseInterpolate(M2C_UNK, M2C_UNK, s16, u32, s32);
-    M2C_UNK func_ov011_02222830(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK Set3DSpriteBlendLayers(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void G3_SubmitSpriteQuad(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s16);
     void func_ov011_02224e04(M2C_UNK, s32, s32, s32, s32);
     extern M2C_UNK data_ov011_02227f08;
@@ -64,9 +64,9 @@ void func_ov011_02224b9c(M2C_UNK arg0, u32 arg1) {
         if ((u32) M2C_FIELD(&gIntroAnimState, u8 *, 0) <= 4U) {
             u8 temp_ip = states[M2C_FIELD(&gIntroAnimState, u8 *, 0)];
             if ((s32)M2C_FIELD(&gIntroAnimState,u8 *,0) % 2 != 0) {
-                func_ov011_02222830(arg0, 2, 3, 2, (u16) EaseInterpolate(0, 0, (s16)0x10, M2C_FIELD(&gIntroAnimState, volatile u16 *, 2), (s32) temp_ip));
+                Set3DSpriteBlendLayers(arg0, 2, 3, 2, (u16) EaseInterpolate(0, 0, (s16)0x10, M2C_FIELD(&gIntroAnimState, volatile u16 *, 2), (s32) temp_ip));
             } else {
-                func_ov011_02222830(arg0, 2, 3, 2, (u16) EaseInterpolate(0, (s16)0x10, 0, M2C_FIELD(&gIntroAnimState, volatile u16 *, 2), (s32) temp_ip));
+                Set3DSpriteBlendLayers(arg0, 2, 3, 2, (u16) EaseInterpolate(0, (s16)0x10, 0, M2C_FIELD(&gIntroAnimState, volatile u16 *, 2), (s32) temp_ip));
             }
         }
         M2C_FIELD(&gIntroAnimState, volatile u16 *, 2) = (u16) (M2C_FIELD(&gIntroAnimState, volatile u16 *, 2) + 1);

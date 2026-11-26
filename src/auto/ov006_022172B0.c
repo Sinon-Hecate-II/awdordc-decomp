@@ -168,12 +168,15 @@ void InitMapOfferPlayerList(void *offer) {
                                (s32 *) ((u8 *) offer + MAP_OFFER_PLAYER_COUNT), offer);
 }
 
-void func_ov006_02217588(void *arg0) {
+/* Map-offer step: once the link match request has reported result flags,
+ * advance the offer sprite to its label 1 so the search moves on to the
+ * player it found. */
+void AdvanceMapOfferMatchResult(void *offer) {
     M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
-    if (M2C_FIELD(arg0, s32 *, 0x44) == 0) {
+    if (M2C_FIELD(offer, s32 *, MAP_OFFER_FLAGS) == 0) {
         return;
     }
-    GotoSpriteAnimationLabel(arg0, 1);
+    GotoSpriteAnimationLabel(offer, 1);
 }
 
 /* Finish the search for a player to exchange the offered map with: when the
@@ -267,9 +270,11 @@ void CancelMapOfferSearch(void *offer) {
     GotoSpriteAnimationLabel(offer, 2);
 }
 
-void func_ov006_022177c8(s32 arg0) {
-    extern M2C_UNK data_ov006_02218aa8;
-    M2C_FIELD(CreateSpriteObject(&data_ov006_02218aa8), s32 *, 0x34) = arg0;
+/* Create the map-offer object that searches for another linked player to
+ * exchange the given campaign map with, attached to `parent`. */
+void CreateMapOfferObject(s32 mapId, void *parent) {
+    extern M2C_UNK gMapOfferObjectClass;
+    M2C_FIELD(CreateSpriteObject(&gMapOfferObjectClass, parent), s32 *, MAP_OFFER_MAP_ID) = mapId;
 }
 
 /* Campaign map menu UI object init: load the UI graphics bank and hide the frame
@@ -440,11 +445,14 @@ done:
     GotoSpriteAnimationLabel(arg0, 3);
 }
 
-void func_ov006_02217b08(void *arg0) {
-    M2C_UNK func_020c9100();
+/* Queue the map record received in a transfer: create the campaign map load
+ * queue and append the transfer's chosen map id and record, which the queue's
+ * per-frame step expands into the campaign map headers. */
+void QueueTransferredMapRecord(void *transfer) {
+    M2C_UNK CreateCampaignMapLoadQueue();
     M2C_UNK AppendCampaignMapLoadEntry(s32, s32);
-    func_020c9100();
-    AppendCampaignMapLoadEntry(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x54));
+    CreateCampaignMapLoadQueue();
+    AppendCampaignMapLoadEntry(M2C_FIELD(transfer, s32 *, MAP_TRANSFER_MAP_ID), M2C_FIELD(transfer, s32 *, MAP_TRANSFER_CHOSEN));
 }
 
 /* Show the map-transfer screen's chosen map: create a text layer with the
@@ -497,10 +505,12 @@ void CreateMapTransferTargetIdDisplay(s32 transfer) {
     M2C_FIELD(display, s16 *, SPRITE_ACTOR_Y) = 0x58;
 }
 
-void func_ov006_02217bf0(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0x3C) = 1;
-    M2C_FIELD(arg0, s32 *, 0x48) = (s32) M2C_FIELD(arg0, s32 *, 0x40);
-    M2C_FIELD(arg0, s32 *, 0x38) = 2;
+/* Start the transfer to the single player whose id the target-id display
+ * entered: ids mode with one collected player, named in the source slot. */
+void BeginMapTransferToTargetPlayer(void *transfer) {
+    M2C_FIELD(transfer, s32 *, MAP_TRANSFER_COUNT) = 1;
+    M2C_FIELD(transfer, s32 *, MAP_TRANSFER_SOURCE) = (s32) M2C_FIELD(transfer, s32 *, MAP_TRANSFER_TARGET_ID);
+    M2C_FIELD(transfer, s32 *, MAP_TRANSFER_MODE) = MAP_TRANSFER_MODE_IDS;
 }
 
 /* Open the map-transfer screen for campaign map `mapId` in transfer mode 0: build
@@ -560,12 +570,17 @@ void ShowMapPickHint7(M2C_UNK owner) {
     CreateSpriteObject(&gMapPickHintClass, owner);
 }
 
-void func_ov006_02217cfc(s32 arg0) {
-    extern s32 data_ov006_02218e2c;
-    data_ov006_02218e2c = arg0;
+void SetReceivedMapValue(s32 arg0) {
+    extern s32 gReceivedMapValue;
+    gReceivedMapValue = arg0;
 }
 
-s32 func_ov006_02217d0c(void) {extern s32 data_ov006_02218e2c;return (data_ov006_02218e2c*10)>>8;}
+/* The received map's value gReceivedMapValue scaled to tenths (value * 10 / 256),
+ * the number the map panel shows. */
+s32 GetReceivedMapDisplayValue(void) {
+    extern s32 gReceivedMapValue;
+    return (gReceivedMapValue * 10) >> 8;
+}
 
 /* Sets up the online map-list screen object: allocates its ten received player
  * entries and the per-candidate player-id, map-id, status and joinable-id
@@ -581,7 +596,7 @@ void InitMapListObject(void *object) {
     func_020e36dc(object);
     LoadUiGraphicsBank(4);
     HideFrameBorderSprite();
-    func_ov006_02217cfc(0);
+    SetReceivedMapValue(0);
     DisableMapConfirm();
 }
 

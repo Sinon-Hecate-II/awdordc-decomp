@@ -311,7 +311,7 @@ s32 CancelJoinRequest(s32 peerId) {
 }
 
 #pragma opt_strength_reduction off
-s32 func_02040e1c(M2C_UNK arg0) {
+s32 AdvancePeerConnection(M2C_UNK arg0) {
     u64 GetSystemTick(void);
     M2C_UNK TryConnectToPeer(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK RefreshConnection(M2C_UNK);

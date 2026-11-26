@@ -67,7 +67,7 @@ void ConfirmMapSelection(void *);void ToggleFirstSideMapPick(void *,u16);void To
 void SetTileRectPalette(void *,s32,s32,s32);void SetMenuPanelState(void *,s32);
 void SetTextById(void *,s32);
 void Hide3DSpriteSlide(void *);void Show3DSpriteSlide(void *);s32 GetUiColor(s32);void SetFrameBorderSpritePattern(void *,s32,s32,s32);
-void func_020c9190(u16,void *);void DrawMapCode(u16,s32,void *);void func_ov003_021fbd48(void *,s32);void Ov003_ScrollMapList(void *,s32,u8);s32 GetSpriteAnimValue(void *);void func_020ab3b0(void *,s16,s32);s32 Ov003_IsLinkSessionHost(void);void Ov003_SendLocalMapSelectState(void *);
+void OpenCampaignMapEraseDialog(u16,void *);void DrawMapCode(u16,s32,void *);void func_ov003_021fbd48(void *,s32);void Ov003_ScrollMapList(void *,s32,u8);s32 GetSpriteAnimValue(void *);void func_020ab3b0(void *,s16,s32);s32 Ov003_IsLinkSessionHost(void);void Ov003_SendLocalMapSelectState(void *);
 u8 *p=arg0;void **buttons;void *list,*button,*context;u16 held,down,selection;register u32 repeat;s32 active;u8 enable; s32 keyx,keyy,i,inputFlag;u32 mode; 
 if(ov003_menu_kind(p,1))return;
 if(ov003_menu_kind(p,5))return;
@@ -149,7 +149,7 @@ active=0;
 }else if(active){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,32);
 if((u8)ov003_button_pressed(button)&&ov003_menu_kind(p,2)&&ov003_button_ready(button)&&ov003_menu_positioned(p)){
-SetMenuPanelState(p,0);func_020c9190(selection,p);PlaySoundEffect(0x1000d);active=0;
+SetMenuPanelState(p,0);OpenCampaignMapEraseDialog(selection,p);PlaySoundEffect(0x1000d);active=0;
 }
 }
 }
@@ -212,7 +212,7 @@ active=0;
 if(active&&(held&4)&&ov003_menu_kind(p,2)){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,32);
 if(ov003_button_ready(button)&&ov003_menu_positioned(p)&&!(held&0xf0)){
-ov003_animate_button(button);SetMenuPanelState(p,0);func_020c9190(selection,p);PlaySoundEffect(0x1000d);active=0;
+ov003_animate_button(button);SetMenuPanelState(p,0);OpenCampaignMapEraseDialog(selection,p);PlaySoundEffect(0x1000d);active=0;
 }
 }
 if(active){

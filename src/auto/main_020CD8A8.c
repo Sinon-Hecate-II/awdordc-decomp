@@ -153,7 +153,7 @@ player++;recordOffset+=MAP_PLAYER_STRIDE;
  * map's overlay grid (0 marks a reachable attack tile, -1 the dead zone closer
  * than an indirect unit's minimum range). */
 void MarkAttackRangeCells(s32 originX,s32 originY,s16 radius,s32 gridValue){
-extern void **gCurrentMap;s32 GetTileTargetKind(s32,s32);void func_020d1690(s32,s32,void *);s32 func_020d27a4(s32,s32);void func_020d166c(s32,s32,void *);
+extern void **gCurrentMap;s32 GetTileTargetKind(s32,s32);void func_020d1690(s32,s32,void *);s32 AreUnitIdsOnSameTeam(s32,s32);void func_020d166c(s32,s32,void *);
 s32 negDy,y,dy,x;s32 targetId;void *map;
 for(dy=(s16)-radius,y=(s16)(originY-radius);y<=originY+radius;y=(s16)(y+1),dy=(s16)(dy+1)){
 if(y<0||y>=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT))continue;
@@ -165,7 +165,7 @@ if(M2C_FIELD(*gCurrentMap,s16 *,MAP_BATTLE_WINNER))M2C_FIELD(*gCurrentMap+y*4,s8
 }else{
 map=*gCurrentMap;
 targetId=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS),u8 *,0);
-if(targetId&&func_020d27a4(M2C_FIELD(map,u8 *,MAP_CURSOR_UNIT_ID),targetId)!=1){
+if(targetId&&AreUnitIdsOnSameTeam(M2C_FIELD(map,u8 *,MAP_CURSOR_UNIT_ID),targetId)!=1){
 map=*gCurrentMap;func_020d166c(M2C_FIELD(map,u8 *,MAP_CURSOR_UNIT_ID),targetId,map+MAP_CURSOR_X);
 if(M2C_FIELD(*gCurrentMap,s16 *,MAP_BATTLE_WINNER))M2C_FIELD(*gCurrentMap+y*4,s8 **,MAP_GRID)[x]=(s8)gridValue;
 }

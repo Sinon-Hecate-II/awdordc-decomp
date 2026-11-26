@@ -326,7 +326,16 @@ s32 RegisterWebRequest(s32 requestStr, s32 context) {
     return 0;
 }
 
-s32 FinishWebRequest(void){void ResetWebRequest(void);extern s32 gWebTransaction;ResetWebRequest();return gWebTransaction=0;}
+/* Finish the current web transaction: release the request's buffers and put the
+ * transaction back to idle so the next request may be sent. */
+s32 FinishWebRequest(void) {
+    void ResetWebRequest(void);
+    extern s32 gWebTransaction;
+
+    ResetWebRequest();
+    ((WebRequest *)&gWebTransaction)->status = WEB_TXN_IDLE;
+    return 0;
+}
 
 /* Validate and send a put.asp web request: the record count and payload size
  * must be in range (a payload needs a size), then the put request is built and

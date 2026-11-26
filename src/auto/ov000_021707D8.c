@@ -13,7 +13,7 @@ extern u8 gMapConfig[];
 s32 IsCampaignBattleRules(void);s32 func_020a8a84(u16);void *GetCurrentMapName(void);
 void DrawTilemapNumber(s16,s16,void *,s32,s32,s32);
 void DrawTextToTilemap(s16,s16,void *,void *,s32,s32);
-s32 GetLanguage(void);s32 GetDigitCount(s32);s32 func_020cfb94(void);
+s32 GetLanguage(void);s32 GetDigitCount(s32);s32 GetCurrentMapPlayerCount(void);
 s32 CountPlayerUnitsBuilt(s32);s32 CountPlayerUnitsLost(s32);
 void *func_020a8bc0(void);void *func_020a8bcc(void);
 volatile s32 e;
@@ -31,7 +31,7 @@ if(!GetLanguage()) x=26;
 else x=30-(3-GetDigitCount(M2C_FIELD(*gCurrentMap,u16 *,0x52a2)));
 DrawTilemapNumber((s16)x,1,dst,M2C_FIELD(*gCurrentMap,u16 *,0x52a2),0,0);
 {s32 i=0;
-if(func_020cfb94()>0){y=6;do{
+if(GetCurrentMapPlayerCount()>0){y=6;do{
 x=i+1;p=(u8 *)*gCurrentMap+0x67a4+x*140;
 if(p[0x1e] && !p[0x19]){
 a=CountPlayerUnitsBuilt(x);if(a>999)a=999;
@@ -61,7 +61,7 @@ DrawTextToTilemap(23,(s16)y,dst,func_020a8bcc(),0,color);
 DrawTextToTilemap(30,(s16)y,dst,func_020a8bcc(),0,color);
 }}
 y+=3;
-}i++;}while(i<func_020cfb94());}}
+}i++;}while(i<GetCurrentMapPlayerCount());}}
 map=*gCurrentMap;
 if((!map[0x5156] && map[0x5158]!=2)||gMapConfig[2]){
 a=map[0x67bc];if(a>999)a=999;
@@ -89,7 +89,7 @@ void ResumeSituationScreenAnimation(void) {
 void LoadSituationScreen(void *object){
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;
 extern M2C_UNK sSituationDir,sSituationNarcName,sSituationCgName,sSituationScName,sSituationClName;
-void ResetTextTiles(s32);M2C_UNK Clear3DSpriteLayer(M2C_UNK);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void AddTileRectPalette(void *,s32,s32,s32);void CloseNarcArchive(void);void LoadFileToSpriteBuffer(void *,s32,s32);void CreateMenuUnitSprite(void *);s32 func_020cfb94(void);void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);void MI_CpuCopy32(void *,void *,s32);void CopyToObjPaletteShadow(void *,s32,s32);void DimPalette(void *);void func_ov000_021707d8(void);
+void ResetTextTiles(s32);M2C_UNK Clear3DSpriteLayer(M2C_UNK);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void AddTileRectPalette(void *,s32,s32,s32);void CloseNarcArchive(void);void LoadFileToSpriteBuffer(void *,s32,s32);void CreateMenuUnitSprite(void *);s32 GetCurrentMapPlayerCount(void);void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);void MI_CpuCopy32(void *,void *,s32);void CopyToObjPaletteShadow(void *,s32,s32);void DimPalette(void *);void func_ov000_021707d8(void);
 void *oldEngine=gCur3DSpriteEngine;s32 i;void *dest;u8 *player;s32 tile,paletteOff;
 gCur3DSpriteEngine=g3DSpriteEngineMain;ResetTextTiles(0);Clear3DSpriteLayer(1);Clear3DSpriteLayer(2);
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x3a)=0;
@@ -98,12 +98,12 @@ SetFileDirectory(&sSituationDir);OpenNarcArchive(GetLocalizedFileName(&sSituatio
 LoadNarcFileDecompressed(GetLocalizedFileName(&sSituationCgName),M2C_FIELD(g3DSpriteEngineMain,void **,0x14));
 LoadNarcFileDecompressed(GetLocalizedFileName(&sSituationScName),M2C_FIELD(gCur3DSpriteEngine,void **,0x28));
 AddTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),32,24,6);CloseNarcArchive();LoadFileToSpriteBuffer(&sSituationClName,192,32);CreateMenuUnitSprite(object);
-i=0;if(func_020cfb94()>0){tile=0x35c;do{
+i=0;if(GetCurrentMapPlayerCount()>0){tile=0x35c;do{
 player=(u8 *)*gCurrentMap+MAP_PLAYER_STATES+(i+1)*MAP_PLAYER_STRIDE;dest=(u8 *)M2C_FIELD(g3DSpriteEngineMain,void * volatile *,0x1c)+(tile<<5);
 MI_CpuCopy32(GetArmyStateTiles(player[PLAYER_REC_ARMY_STATE]),dest,128);
 paletteOff=(i+27)<<5;CopyToObjPaletteShadow(GetArmyIconPalette(player[PLAYER_REC_ARMY_INDEX]),paletteOff,32);
 if(player[0x1c])DimPalette((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(paletteOff&~1));
-i++;tile+=4;}while(i<func_020cfb94());}
+i++;tile+=4;}while(i<GetCurrentMapPlayerCount());}
 func_ov000_021707d8();M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;gCur3DSpriteEngine=oldEngine;
 }
 #pragma opt_strength_reduction reset
@@ -112,7 +112,7 @@ void func_ov000_02170ea4(void) {
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain;
     extern void **gCurrentMap;
     extern M2C_UNK gSpriteDesc16x16;
-    s32 func_020cfb94(void);
+    s32 GetCurrentMapPlayerCount(void);
     void AddSprite(s32,s32,u16,void *,s32);
     void *old;
     s32 i, offset, tile, x;
@@ -125,7 +125,7 @@ void func_ov000_02170ea4(void) {
     old = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     i = 0;
-    if (func_020cfb94() > 0) {
+    if (GetCurrentMapPlayerCount() > 0) {
         offset = 0;
         tile = 0x35c;
         x = 46;
@@ -142,7 +142,7 @@ void func_ov000_02170ea4(void) {
         x += 24;
         offset += 140;
         tile += 4;
-            if (i >= func_020cfb94()) break;
+            if (i >= GetCurrentMapPlayerCount()) break;
         }
     }
     gCur3DSpriteEngine = old;

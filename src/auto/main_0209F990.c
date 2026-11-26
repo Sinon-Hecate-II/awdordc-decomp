@@ -13,7 +13,7 @@ s32 func_0209f990(void) {
     void AppendTargetEntry(s32, s32, s32, s32);
     s32 GetTileTargetKind(s32, s32);
     void *FindMapOrderAtTile(s32, s32);
-    u8 func_020d27a4(s32, s32);
+    u8 AreUnitIdsOnSameTeam(s32, s32);
     void func_020d166c(s32, s32, void *);
     u8 IsSameTeam(s32, s32);
     void func_020d1690(s32, s32, void *);
@@ -40,7 +40,7 @@ s32 func_0209f990(void) {
                         id = M2C_FIELD(obj, u8 *, x + M2C_FIELD(obj + y * 2, u16 *, 0x3758));
                         visible = GetTileTargetKind(x, y);
                         if (id != 0) {
-                            if (func_020d27a4(M2C_FIELD((u8 *)*gCurrentMap, u8 *, 0x52d4), id) == 0) {
+                            if (AreUnitIdsOnSameTeam(M2C_FIELD((u8 *)*gCurrentMap, u8 *, 0x52d4), id) == 0) {
                                 func_020d166c(M2C_FIELD((u8 *)*gCurrentMap, u8 *, 0x52d4), id, (void *)((u8 *)*gCurrentMap + 0x52dc));
                                 if (M2C_FIELD((u8 *)*gCurrentMap, s16 *, 0x6ed6) != 0) {
                                     AppendTargetEntry(x, y, id, 0);
@@ -80,7 +80,7 @@ s32 func_0209fb70(void) {
     void AppendTargetEntry(s32, s32, s32, s32);
     s32 GetTileTargetKind(s32, s32);
     void *FindMapOrderAtTile(s32, s32);
-    u8 func_020d27a4(s32, s32);
+    u8 AreUnitIdsOnSameTeam(s32, s32);
     s32 func_020d0a08(M2C_UNK, void *);
     s32 CanUnitDamageKind(u8 *, M2C_UNK);
     u8 IsSameTeam(s32, s32);
@@ -107,7 +107,7 @@ s32 func_0209fb70(void) {
             id = M2C_FIELD(obj, u8 *, x + M2C_FIELD((u8 *)obj + y * 2, u16 *, 0x3758));
             visible = GetTileTargetKind(x, y);
             if (id != 0) {
-                if (func_020d27a4(M2C_FIELD((M2C_UNK *)*gCurrentMap, u8 *, 0x52d4), id) == 0) {
+                if (AreUnitIdsOnSameTeam(M2C_FIELD((M2C_UNK *)*gCurrentMap, u8 *, 0x52d4), id) == 0) {
                     if (func_020d0a08(M2C_FIELD((M2C_UNK *)*gCurrentMap, M2C_UNK *, 0x52d0), (u8 *)(M2C_UNK *)*gCurrentMap + 0x59a4 + id * 14) != 0) {
                         AppendTargetEntry(x, y, id, 0);
                     }
@@ -262,10 +262,11 @@ s32 CollectReachableMissileSilos(void) {
     return count;
 }
 
-void SetUnitPathCursor(u16 arg0, u16 arg1) {
+/* Set the cell (x, y) the pending unit move path was last drawn from. */
+void SetUnitPathCursor(u16 x, u16 y) {
     extern void *gUnitMovePath;
-    M2C_FIELD(gUnitMovePath, s8 *, 0x34) = arg0;
-    M2C_FIELD(gUnitMovePath, s8 *, 0x35) = arg1;
+    M2C_FIELD(gUnitMovePath, s8 *, UNIT_PATH_CURSOR_X) = x;
+    M2C_FIELD(gUnitMovePath, s8 *, UNIT_PATH_CURSOR_Y) = y;
 }
 
 #pragma optimization_level 3
@@ -492,7 +493,7 @@ void StartUnitMovePath(s32 followInput) {
     extern s32 *gCurrentMap;
     s32 GetUnitRemainingMoveRange(s32);
     void AppendMovePathStep(s32, s32);
-    M2C_UNK func_020a0d18();
+    M2C_UNK UpdateUnitMovePathForCursor();
     void SetUnitPathCursor(u16, u16);
     void *unit;
     M2C_FIELD(gUnitMovePath, s8 *, UNIT_PATH_START_COST) = GetUnitRemainingMoveRange(M2C_FIELD((void *)*gCurrentMap, s32 *, MAP_CURSOR_UNIT));
@@ -503,7 +504,7 @@ void StartUnitMovePath(s32 followInput) {
     M2C_FIELD(gUnitMovePath, s8 *, UNIT_PATH_STEP_COST) = M2C_FIELD(gUnitMovePath, s8 *, UNIT_PATH_START_COST);
     if (followInput != 0) ReplayCursorPathSteps();
     M2C_FIELD((void *)*gCurrentMap, u8 *, MAP_CURSOR_PATH) = MOVE_DIR_STOP;
-    SetUnitPathCursor(0xffff, 0xffff); func_020a0d18();
+    SetUnitPathCursor(0xffff, 0xffff); UpdateUnitMovePathForCursor();
 }
 
 /* Score a cell as an AI move destination: 0 when the cell is invalid or has a unit,

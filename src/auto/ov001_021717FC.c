@@ -265,7 +265,9 @@ s32 Ov001_GetTextFontId(void) {
     return data_ov001_0218f2c0[index];
 }
 
-void func_ov001_02171fa0(void) {
+/* Allocate the ov001 choice frame's sprite handle array: 16 bytes for the four
+ * 32-bit handles of Ov001_LayoutChoiceFrame's corner sprites. */
+void Ov001_AllocChoiceFrameSprites(void) {
  s32 Ov001_Alloc(s32,s32);
  gOv001ChoiceFrameSprites=Ov001_Alloc(16,4);
 }

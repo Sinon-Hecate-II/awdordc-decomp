@@ -158,9 +158,11 @@ void *Ov001_QueueCreateFromRange(s32 count, s32 first, s32 stride) {
     return queue;
 }
 
-void Ov001_FreeBlock(s32 arg0, ...) {
- M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
- Ov001_FreeAlloc(&arg0);
+/* Free the queue block `queue` created by Ov001_QueueCreate; the trailing
+ * arguments keep the original's argument-register save (it is variadic). */
+void Ov001_QueueDestroy(s32 queue, ...) {
+    s32 Ov001_FreeAlloc(s32 *);
+    Ov001_FreeAlloc(&queue);
 }
 
 /* Push a value into a fixed-size ring queue with interrupts masked; when the
@@ -413,14 +415,14 @@ void Ov001_CreateTextContext(void) {
  * files, its queue of pooled text panels and the context allocation itself. */
 void Ov001_FreeTextContext(void) {
  void Ov001_FreeFile(s32);
- void Ov001_FreeBlock(s32,...);
+ void Ov001_QueueDestroy(s32,...);
  M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
  extern M2C_UNK gOv001TextContext;
  extern M2C_UNK gOv001Heap;
  M2C_UNK *contextSlot=&gOv001TextContext;
  s32 i;
  for(i=0;i<2;i++)Ov001_FreeFile(((s32 *)((u8 *)*contextSlot+OV001_CTX_FONT_FILES))[i]);
- Ov001_FreeBlock(*((s32 *)((u8 *)gOv001TextContext+OV001_CTX_PANEL_QUEUE)));
+ Ov001_QueueDestroy(*((s32 *)((u8 *)gOv001TextContext+OV001_CTX_PANEL_QUEUE)));
  Ov001_FreeAlloc(&gOv001Heap-1); /* &gOv001TextContext, spelled apart so the pool keeps two words */
 }
 

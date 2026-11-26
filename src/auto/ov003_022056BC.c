@@ -944,14 +944,18 @@ s32 func_ov003_022065a0(s32 arg0) {
     return arg0;
 }
 
-void func_ov003_022065b4(s32 arg0_unused, s8 arg1) {
+/* Store the battle-settings fog-of-war choice on the current map: a nonzero
+ * `enabled` turns fog of war on (see IsMapFogEnabled). */
+void SetMapFogEnabled(s32 self, u8 enabled) {
     extern void **gCurrentMap;
-    M2C_FIELD(*gCurrentMap, s8 *, 0x5156) = arg1;
+
+    M2C_FIELD(*gCurrentMap, s8 *, MAP_FOG) = enabled;
 }
 
-u8 func_ov003_022065d0(void) {
+/* Whether the current map has fog of war enabled (MAP_FOG). */
+u8 IsMapFogEnabled(void) {
     extern void **gCurrentMap;
-    return M2C_FIELD(*gCurrentMap, u8 *, 0x5156);
+    return M2C_FIELD(*gCurrentMap, u8 *, MAP_FOG);
 }
 
 s32 func_ov003_022065ec(void) {

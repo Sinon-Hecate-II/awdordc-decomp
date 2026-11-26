@@ -23,14 +23,14 @@ typedef struct SystemUserProfile {
  * overflow interrupt enabled, whose handler (SystemTickOverflowHandler) extends
  * the 16-bit counter to the 64-bit tick SystemTickState.overflows holds. */
 void InitSystemTick(void) {
-    void func_02006ef8(s32);
+    void SetSystemTickFlag(s32);
     void OS_SetIrqHandler(u32, void (*)(void));
     void OS_EnableIrqMask(u32);
     void SystemTickOverflowHandler(void);
     extern u16 gSystemTickState;
     if (M2C_FIELD(&gSystemTickState, u16 *, SYSTEM_TICK_INITIALIZED) != 0) return;
     M2C_FIELD(&gSystemTickState, u16 *, SYSTEM_TICK_INITIALIZED) = 1;
-    func_02006ef8(0);
+    SetSystemTickFlag(0);
     M2C_FIELD(&gSystemTickState, u64 *, SYSTEM_TICK_OVERFLOW) = 0;
     *(volatile u16 *)REG_TM0CNT = 0;
     *(volatile u16 *)REG_TM0D = 0;
@@ -101,12 +101,12 @@ OS_EnableIrqMask(0x10);
  * that drives it, clear the head and tail, and leave the TIMER1 IRQ masked
  * until an armed timer re-enables it. */
 void InitTimerQueue(void) {
- void func_02006ef8(s32);
+ void SetSystemTickFlag(s32);
  M2C_UNK OS_DisableIrqMask(M2C_UNK);
  extern u16 gTimerQueue;
  if (M2C_FIELD(&gTimerQueue, u16 *, TIMER_QUEUE_READY) != 0) return;
  M2C_FIELD(&gTimerQueue, u16 *, TIMER_QUEUE_READY) = 1;
- func_02006ef8(1);
+ SetSystemTickFlag(1);
  M2C_FIELD(&gTimerQueue, s32 *, TIMER_QUEUE_HEAD) = 0;
  M2C_FIELD(&gTimerQueue, s32 *, TIMER_QUEUE_TAIL) = 0;
  OS_DisableIrqMask(IRQ_TIMER1);
@@ -337,11 +337,13 @@ void WaitCycles(unsigned int value)
         return func_00000678(value - 4);
 }
 
+/* Busy-wait one iteration, then block until the next VBlank interrupt. */
 void WaitForVBlank(void) {
     M2C_UNK WaitByLoop(M2C_UNK);
     M2C_UNK OS_WaitIrq(M2C_UNK, M2C_UNK);
+
     WaitByLoop(1);
-    OS_WaitIrq(1, 1);
+    OS_WaitIrq(1, OS_EVENT_VBLANK);
 }
 
 /* Install the ARM7 boot handshake once: initialise PXI, wait for FIFO channel 12
@@ -411,9 +413,11 @@ void ResetSystem(s32 arg0) {
     RebootFromCardImage();
 }
 
-void GetMacAddress(M2C_UNK arg0) {
+/* Copy the console's six-byte MAC address from the shared work area to `mac`. */
+void GetMacAddress(u8 *mac) {
     M2C_UNK MI_CpuCopy8(s32, M2C_UNK, M2C_UNK);
-    MI_CpuCopy8(0x027FFCF4, arg0, 6);
+
+    MI_CpuCopy8(SHARED_MAC_ADDRESS, mac, 6);
 }
 
 /* Copy the DS firmware's user settings into the game's user profile record:

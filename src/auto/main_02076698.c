@@ -332,8 +332,11 @@ void func_02076980(s32 x0, s32 y, s32 x1, s32 y1)
 }
 #pragma opt_common_subs reset
 #pragma opt_lifetimes reset
-void func_02077480(void){extern M2C_UNK gMapHighlightState;
-if(M2C_FIELD(&gMapHighlightState,s32*,12)==0)M2C_FIELD(&gMapHighlightState,s32*,12)=1;
+/* Start the map view's cell-raise animation: set the raise timer to 1 unless it
+ * is already running. */
+void StartMapViewRaiseTimer(void){
+ extern M2C_UNK gMapHighlightState;
+ if(M2C_FIELD(&gMapHighlightState,s32*,MAP_VIEW_RAISE_TIMER)==0)M2C_FIELD(&gMapHighlightState,s32*,MAP_VIEW_RAISE_TIMER)=1;
 }
 
 void ResetMapViewRaiseTimer(void) {
@@ -341,10 +344,11 @@ void ResetMapViewRaiseTimer(void) {
     M2C_FIELD(&gMapHighlightState, s32 *, 0xC) = 0;
 }
 
-void func_020774b0(void) {
+/* Advance the map view's cell-raise animation by one frame, capping the timer at 8. */
+void AdvanceMapViewRaiseTimer(void) {
  extern M2C_UNK gMapHighlightState;
- s32 n=M2C_FIELD(&gMapHighlightState,s32 *,12);
- if(n<8) M2C_FIELD(&gMapHighlightState,s32 *,12)=n+1;
+ s32 n=M2C_FIELD(&gMapHighlightState,s32 *,MAP_VIEW_RAISE_TIMER);
+ if(n<8) M2C_FIELD(&gMapHighlightState,s32 *,MAP_VIEW_RAISE_TIMER)=n+1;
 }
 
 /* True while the map view shows a map order's effect highlight: the view has the

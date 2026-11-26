@@ -240,7 +240,7 @@ void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
     s32 IsUnitLowOnAmmo(void *);
     s32 UnitKindCanSupply(s32);
     s32 IsUnitSubmerged(void *);
-    s32 UnitHasFacing(void *);
+    s32 UnitHasCapturePoints(void *);
     s32 UnitHasCargo(void *);
     s32 Map_ShowsCargoForUnit(s32, u16, s32);
     s32 HasUnitActed(void *);
@@ -275,7 +275,7 @@ void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
         u8 side = *(u8 *)((u8 *)*gCurrentMap + (player) * MAP_PLAYER_STRIDE + PLAYER_SIDE_OFF);
         if (!(side & SIDE_TEAM_B)) flags |= 0x1;
     }
-    if (UnitHasFacing((void *)unit)) flags |= 0x40;
+    if (UnitHasCapturePoints((void *)unit)) flags |= 0x40;
     if (UnitHasCargo((void *)unit)) flags |= 0x80;
     {
         kind = ((RenderUnit *)unit)->kind;

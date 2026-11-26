@@ -245,17 +245,19 @@ s32 GetMenuTopY(void) {
     return 0x10;
 }
 
-s32 ClampInt(s32 arg0, s32 arg1, s32 arg2) {
-    s32 var_r2;
+/* Clamp a value to the range [min, max]: values below min return min, values
+ * above max return max, and anything in between is returned unchanged. */
+s32 ClampInt(s32 value, s32 min, s32 max) {
+    s32 result;
 
-    var_r2 = arg2;
-    if (arg0 < arg1) {
-        return arg1;
+    result = max;
+    if (value < min) {
+        return min;
     }
-    if (arg0 <= var_r2) {
-        var_r2 = arg0;
+    if (value <= result) {
+        result = value;
     }
-    return var_r2;
+    return result;
 }
 
 /* Screen position for the cursor sprite over the targeted map tile: project the

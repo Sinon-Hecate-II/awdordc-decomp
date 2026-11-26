@@ -539,30 +539,34 @@ block_121:
 }
 #pragma opt_propagation reset
 
-u8 func_ov003_021ed8a8(void *arg0) {
-    u8 var_r0;
+/* Whether a waypoint-list slot was clicked this frame: WAYPOINT_LIST_CLICKED
+ * holds the clicked slot, or -1 when none was clicked. */
+u8 IsWaypointSlotClicked(void *waypointList) {
+    u8 clicked;
 
-    if (M2C_FIELD(arg0, s8 *, 5) != -1) {
-        var_r0 = 1;
+    if (M2C_FIELD(waypointList, s8 *, WAYPOINT_LIST_CLICKED) != -1) {
+        clicked = 1;
     } else {
-        var_r0 = 0;
+        clicked = 0;
     }
-    return var_r0;
+    return clicked;
 }
 
 s8 func_ov003_021ed8c4(void *arg0) {
     return M2C_FIELD(arg0, s8 *, 5);
 }
 
-u8 func_ov003_021ed8cc(void *arg0) {
-    u8 var_r0;
+/* Return 1 when a waypoint-list slot is showing its pressed frame: the list's
+ * WAYPOINT_LIST_PRESSED field is a slot index, or -1 when none is pressed. */
+u8 IsWaypointSlotPressed(void *waypointList) {
+    u8 pressed;
 
-    if (M2C_FIELD(arg0, s8 *, 6) != -1) {
-        var_r0 = 1;
+    if (M2C_FIELD(waypointList, s8 *, WAYPOINT_LIST_PRESSED) != -1) {
+        pressed = 1;
     } else {
-        var_r0 = 0;
+        pressed = 0;
     }
-    return var_r0;
+    return pressed;
 }
 
 s8 func_ov003_021ed8e8(void *arg0) {

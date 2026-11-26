@@ -452,7 +452,15 @@ void CreateSleepScreenSprites(void) {
     CreateSpriteFromClass(&gSleepScreenSpriteClass, 7);
 }
 
-void DeleteSleepScreenSprites(void){extern M2C_UNK gSleepScreenSpriteClass;M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);M2C_UNK SetLcdEnabled(s32);DeleteSpriteObjectsOfClass(&gSleepScreenSpriteClass);SetLcdEnabled(0);}
+/* Tear down the sleep screen: delete its sprite objects and switch the LCD off. */
+void DeleteSleepScreenSprites(void) {
+    extern M2C_UNK gSleepScreenSpriteClass;
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
+    M2C_UNK SetLcdEnabled(s32);
+
+    DeleteSpriteObjectsOfClass(&gSleepScreenSpriteClass);
+    SetLcdEnabled(0);
+}
 
 /* Put the display to sleep: turn the display off, switch the sub engine's display
  * mode from graphics to off, delete the sleep screen's sprites and shut the LCD
@@ -536,10 +544,11 @@ void UpdateSleepScreen(void *screen) {
     Sprite_ResumeAnimationRepeat(screen);
 }
 
-void func_02081ec8(void *arg0) {
-    void ExitDisplaySleep(void);
+/* Wake the mic test screen: leave display sleep if this screen had put the
+ * console to sleep, then start (or continue) the microphone measurement. */
+void ResumeMicTestScreen(void *screen) {
     M2C_UNK StartMicTestMeasurement();
-    if (M2C_FIELD(arg0, s16 *, 0x56) != 0) {
+    if (M2C_FIELD(screen, s16 *, DS3D_SPRITE_SLEEP_FLAG) != 0) {
         ExitDisplaySleep();
     }
     StartMicTestMeasurement();

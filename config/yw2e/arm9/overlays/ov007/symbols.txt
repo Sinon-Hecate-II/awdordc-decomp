@@ -38,7 +38,7 @@ MapEditor_PlayerHasTeam kind:function(arm,size=0x44) addr:0x0221216c
 RefreshMapEditor kind:function(arm,size=0x14) addr:0x022121b0
 MapEditor_IsMapModified kind:function(arm,size=0x10) addr:0x022121c4
 MapEditor_SetMapModified kind:function(arm,size=0x10) addr:0x022121d4
-func_ov007_022121e4 kind:function(arm,size=0x1c) addr:0x022121e4
+MapEditor_LoadExplosionSprite kind:function(arm,size=0x1c) addr:0x022121e4
 func_ov007_02212200 kind:function(arm,size=0xabc) addr:0x02212200
 func_ov007_02212cbc kind:function(arm,size=0xc) addr:0x02212cbc
 func_ov007_02212cc8 kind:function(arm,size=0xd8) addr:0x02212cc8
@@ -76,9 +76,9 @@ OpenMapEditListMenu kind:function(arm,size=0x40) addr:0x02214354
 func_ov007_02214394 kind:function(arm,size=0x14) addr:0x02214394
 func_ov007_022143a8 kind:function(arm,size=0x14) addr:0x022143a8
 MapEditor_ConfirmMapSettings kind:function(arm,size=0x34) addr:0x022143bc
-func_ov007_022143f0 kind:function(arm,size=0x1c) addr:0x022143f0
+OpenMapEditorConfirmSettingsDialog kind:function(arm,size=0x1c) addr:0x022143f0
 MapEditor_ResetMapSettings kind:function(arm,size=0x20) addr:0x0221440c
-func_ov007_0221442c kind:function(arm,size=0x1c) addr:0x0221442c
+OpenMapEditorResetSettingsDialog kind:function(arm,size=0x1c) addr:0x0221442c
 IsMapConfigLimitClear kind:function(arm,size=0x24) addr:0x02214448
 OpenMapEditorMenu kind:function(arm,size=0x68) addr:0x0221446c
 func_ov007_022144d4 kind:function(arm,size=0xc) addr:0x022144d4
@@ -165,16 +165,16 @@ BeginPanelClose kind:function(arm,size=0xc8) addr:0x0221970c
 UpdatePanelClose kind:function(arm,size=0x128) addr:0x022197d4
 UpdatePanelDisplay kind:function(arm,size=0x1b8) addr:0x022198fc
 func_ov007_02219ab4 kind:function(arm,size=0x18) addr:0x02219ab4
-func_ov007_02219acc kind:function(arm,size=0x1c) addr:0x02219acc
+MapEditor_BeginPalettePageAnimation kind:function(arm,size=0x1c) addr:0x02219acc
 UpdatePanelRowCollapse kind:function(arm,size=0x50) addr:0x02219ae8
 MapEditor_ApplyPaletteColorStep kind:function(arm,size=0x2c) addr:0x02219b38
 MapEditor_PaletteOpenStep kind:function(arm,size=0x50) addr:0x02219b64
 CreatePaletteColorDriver kind:function(arm,size=0x24) addr:0x02219bb4
 MapEditor_LoadPlayerPalettes kind:function(arm,size=0x80) addr:0x02219bd8
 MapEditor_DrawCatalogueCell kind:function(arm,size=0xb8) addr:0x02219c58
-func_ov007_02219d10 kind:function(arm,size=0x23c) addr:0x02219d10
+MapEditor_DrawCatalogueGrid kind:function(arm,size=0x23c) addr:0x02219d10
 MapEditor_LoadTerrainBrushGraphics kind:function(arm,size=0xcc) addr:0x02219f4c
-func_ov007_0221a018 kind:function(arm,size=0xec) addr:0x0221a018
+MapEditor_LoadUnitBrushGraphics kind:function(arm,size=0xec) addr:0x0221a018
 MapEditor_RenderMapName kind:function(arm,size=0x5c) addr:0x0221a104
 func_ov007_0221a160 kind:function(arm,size=0x408) addr:0x0221a160
 MapEditor_ClearSceneSprites kind:function(arm,size=0x34) addr:0x0221a568
@@ -235,7 +235,7 @@ MapEditorTypeCharacter kind:function(arm,size=0x558) addr:0x0221e010
 func_ov007_0221e568 kind:function(arm,size=0x154) addr:0x0221e568
 func_ov007_0221e6bc kind:function(arm,size=0x14) addr:0x0221e6bc
 MapEditorInitGlyphKeyboard kind:function(arm,size=0x18c) addr:0x0221e6d0
-func_ov007_0221e85c kind:function(arm,size=0x1c) addr:0x0221e85c
+MapEditorFreeGlyphKeyboard kind:function(arm,size=0x1c) addr:0x0221e85c
 MapEditorInitScreen kind:function(arm,size=0x3bc) addr:0x0221e878
 func_ov007_0221ec34 kind:function(arm,size=0xc) addr:0x0221ec34
 DrawMapEditList kind:function(arm,size=0x168) addr:0x0221ec40
@@ -261,7 +261,7 @@ gMapEditorClass kind:data(any) addr:0x0221f5f8
 gMapNameFormat kind:data(any) addr:0x0221f678
 gUnitEraseEffect kind:data(any) addr:0x0221f680
 data_ov007_0221f690 kind:data(any) addr:0x0221f690
-data_ov007_0221f6a0 kind:data(any) addr:0x0221f6a0
+gMapEditorExplosionName kind:data(any) addr:0x0221f6a0
 data_ov007_0221f6b0 kind:data(any) addr:0x0221f6b0
 data_ov007_0221f6e8 kind:data(any) addr:0x0221f6e8
 gMapResizeSpriteClass kind:data(any) addr:0x0221f740
@@ -269,8 +269,8 @@ gMapEditorMenuClass kind:data(any) addr:0x0221f780
 gMapEditorFillDialogClass kind:data(any) addr:0x0221f7c0
 gMapEditListMenuClass kind:data(any) addr:0x0221f820
 gMapEditCursorClass kind:data(any) addr:0x0221f890
-data_ov007_0221f918 kind:data(any) addr:0x0221f918
-data_ov007_0221f9a8 kind:data(any) addr:0x0221f9a8
+gMapEditorResetSettingsClass kind:data(any) addr:0x0221f918
+gMapEditorConfirmSettingsClass kind:data(any) addr:0x0221f9a8
 data_ov007_0221fa00 kind:data(any) addr:0x0221fa00 ambiguous
 gMapEditorFillMenuEntries kind:data(any) addr:0x0221fa40
 data_ov007_0221fb30 kind:data(any) addr:0x0221fb30

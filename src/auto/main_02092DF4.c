@@ -275,10 +275,12 @@ s32 MapScriptFadeOutMusic(void *state) {
     return 0;
 }
 
-void WaitForMusicFadeoutDone(void *arg0) {
+/* Map-script wait callback used while the music fades out: once the fadeout has
+ * finished, clear MAP_SCRIPT_STATE_WAIT so the script runs its next command. */
+void WaitForMusicFadeoutDone(void *state) {
     s32 IsMusicFadingOut();
     if (IsMusicFadingOut() == 0) {
-        M2C_FIELD(arg0, s32 *, 8) = 0;
+        M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_WAIT) = 0;
     }
 }
 
@@ -517,10 +519,13 @@ if(found)MoveUnitToTile(found,a,b);
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
-void WaitForUnitMoveDone(void *arg0) {
+/* Map-script wait callback used while a unit move plays: once the unit-move
+ * controller is no longer active, clear MAP_SCRIPT_STATE_WAIT so the script runs
+ * its next command. */
+void WaitForUnitMoveDone(void *state) {
     s32 IsUnitMoveControllerActive();
     if (IsUnitMoveControllerActive() == 0) {
-        M2C_FIELD(arg0, s32 *, 8) = 0;
+        M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_WAIT) = 0;
     }
 }
 
@@ -585,10 +590,13 @@ s32 MapScriptRemoveUnitAtCell(void *script) {
     return 1;
 }
 
-void MapScriptWaitForBattleEffectDone(void *arg0) {
+/* Map-script wait callback: once no battle effect is playing, clear the
+ * command's wait callback (MAP_SCRIPT_STATE_WAIT) to let the script run on; until
+ * then the script stays on the command. */
+void MapScriptWaitForBattleEffectDone(void *state) {
     s32 IsBattleEffectActive();
     if (IsBattleEffectActive() == 0) {
-        M2C_FIELD(arg0, s32 *, 8) = 0;
+        M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_WAIT) = 0;
     }
 }
 
@@ -656,10 +664,13 @@ s32 MapScriptStartScreenTransition(void *script) {
     return 1;
 }
 
-void WaitForScreenTransitionSpriteGone(void *arg0) {
+/* Map-script wait callback: once the screen-transition wait sprite has gone, clear
+ * the command's wait callback (MAP_SCRIPT_STATE_WAIT) to let the script run on;
+ * until then the script stays on the command. */
+void WaitForScreenTransitionSpriteGone(void *state) {
     s32 IsScreenTransitionWaitSpriteActive();
     if (IsScreenTransitionWaitSpriteActive() == 0) {
-        M2C_FIELD(arg0, s32 *, 8) = 0;
+        M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_WAIT) = 0;
     }
 }
 

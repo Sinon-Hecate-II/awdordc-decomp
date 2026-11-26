@@ -19,9 +19,9 @@ static inline u8 AtStart2e98(void *p) {
 static inline s32 BlockNext2e98(void *p) {if(AtEnd2e98(p))return 1; return IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)+1]);}
 static inline s32 BlockPrev2e98(void *p) {if(AtStart2e98(p))return 1; return IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)-1]);}
 static inline void AdvanceState2e98(s32 a) {
- s32 func_ov003_021f1448(void); void Ov003_CreateScreenTransition(void);
+ s32 IsOv003SceneActive(void); void Ov003_CreateScreenTransition(void);
  if(M2C_FIELD(a,u8 *,0x44)) {M2C_FIELD(a,u8 *,0x34)=2; return;}
- if(func_ov003_021f1448()) {Ov003_CreateScreenTransition(); M2C_FIELD(a,u8 *,0x44)=1;M2C_FIELD(a,u8 *,0x34)=2;}
+ if(IsOv003SceneActive()) {Ov003_CreateScreenTransition(); M2C_FIELD(a,u8 *,0x44)=1;M2C_FIELD(a,u8 *,0x34)=2;}
 }
 /* True while the map-select list's current category (gMapCategory) is one that
  * lists the campaign map records (ids 225..424): the story and the trial-map
@@ -89,16 +89,19 @@ s32 CountMapPicks(s32 unused, u16 *picks) {
     return count;
 }
 
-u8 IsMapPickListFull(s32 arg0, s32 arg1) {
+/* True when a side's five-slot map-pick list already holds MAP_PICK_SLOTS maps,
+ * so no further map can be picked.  `block` and `picks` are passed straight
+ * through to CountMapPicks by its old-style declaration. */
+u8 IsMapPickListFull(s32 block, s32 picks) {
     s32 CountMapPicks();
-    u8 var_r0;
+    u8 full;
 
-    if (CountMapPicks() == 5) {
-        var_r0 = 1;
+    if (CountMapPicks() == MAP_PICK_SLOTS) {
+        full = 1;
     } else {
-        var_r0 = 0;
+        full = 0;
     }
-    return var_r0;
+    return full;
 }
 
 /* Return the first free (MAP_PICK_EMPTY) slot of a side's five-slot map-pick
@@ -381,17 +384,17 @@ void InitMapSelectScreen(s32 arg0) {
 
 /* Advance the cursor/movement state machine for the current entry. */
 void func_ov003_021f2e98(s32 entry) {
- M2C_UNK func_ov003_021f17e0(); M2C_UNK GotoSpriteAnimationLabel(M2C_UNK,M2C_UNK);
- void Sprite_ResumeAnimation(s32); s32 func_ov003_021f1448(void); void Ov003_CreateScreenTransition(void);
+ M2C_UNK AddSceneObjectChild(); M2C_UNK GotoSpriteAnimationLabel(M2C_UNK,M2C_UNK);
+ void Sprite_ResumeAnimation(s32); s32 IsOv003SceneActive(void); void Ov003_CreateScreenTransition(void);
  s32 GetMapConfirmState(void); void EnableMapConfirm(void); void DisableMapConfirm(void);
  void DeleteVoiceChatWidgets(void); void CreateMatchNameLabel(s32,s32,s32);
  void SetOv003SceneState(s32); s32 GetSceneSlideOffset(void);
  void Ov003_StartScreenFade(void); void func_ov003_021f18a4(void);
- s32 func_ov003_021f142c(void); void Ov003_StartBattleScene(s32,s32,s32,s32,s32);
+ s32 IsOv003SceneClosed(void); void Ov003_StartBattleScene(s32,s32,s32,s32,s32);
  s32 direction; u8 next; s32 prev; void *p;
  func_ov003_021f2878(entry);
  if(ShowLinkResultPanel(entry)||ShowMapUnavailableMessage(entry)) {
- func_ov003_021f17e0(); GotoSpriteAnimationLabel(entry,5); return;
+ AddSceneObjectChild(); GotoSpriteAnimationLabel(entry,5); return;
  }
  if(M2C_FIELD(entry,u8 *,0x45)||M2C_FIELD(entry,u8 *,0x46)) return;
  switch(M2C_FIELD(entry,u8 *,0x34)) {
@@ -402,7 +405,7 @@ void func_ov003_021f2e98(s32 entry) {
  case 1:
  if(M2C_FIELD(entry,u8 *,0x44)) {M2C_FIELD(entry,u8 *,0x34)=2;return;}
  if(M2C_FIELD(entry,u8 *,0x44)) return;
- if(!func_ov003_021f1448()) return;
+ if(!IsOv003SceneActive()) return;
  Ov003_CreateScreenTransition(); M2C_FIELD(entry,u8 *,0x44)=1; M2C_FIELD(entry,u8 *,0x34)=2;
  return;
  case 2:
@@ -424,7 +427,7 @@ void func_ov003_021f2e98(s32 entry) {
  p=M2C_FIELD(entry,void **,0x40);M2C_FIELD(p,s8 *,5)--;return;
  }
  case 3:
- if(!func_ov003_021f142c()) return;
+ if(!IsOv003SceneClosed()) return;
  p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])){GotoSpriteAnimationLabel(entry,3);return;}
  M2C_FIELD(entry,u8 *,0x34)=1;
@@ -475,7 +478,7 @@ void ApplyMapConfirmState(void *entry) {
  * refusal animation (5). */
 void RefreshMapSelectLinkState(s32 entry) {
     M2C_UNK GotoSpriteAnimationLabel(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov003_021f17e0();
+    M2C_UNK AddSceneObjectChild();
     void func_ov003_021f2878();
     s32 ShowLinkResultPanel(M2C_UNK);
     s32 ShowMapUnavailableMessage(M2C_UNK);
@@ -483,7 +486,7 @@ void RefreshMapSelectLinkState(s32 entry) {
     if ((ShowLinkResultPanel(entry) == 0) && (ShowMapUnavailableMessage(entry) == 0)) {
         return;
     }
-    func_ov003_021f17e0();
+    AddSceneObjectChild();
     GotoSpriteAnimationLabel(entry, 5);
 }
 

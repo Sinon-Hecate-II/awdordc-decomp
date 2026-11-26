@@ -78,16 +78,19 @@ void func_ov007_0221ab38(void) {
     DeleteSpriteObjectsOfClass(&data_ov007_022200b0);
 }
 
+/* Rebuild the map editor's graphics after the map or the editor selection
+ * changed: reload the terrain and unit brush graphics and the player palettes,
+ * redraw the catalogue grid, then the map name. */
 void MapEditor_RefreshGraphics(void) {
     M2C_UNK MapEditor_LoadPlayerPalettes();
-    M2C_UNK func_ov007_02219d10();
+    M2C_UNK MapEditor_DrawCatalogueGrid();
     M2C_UNK MapEditor_LoadTerrainBrushGraphics();
-    M2C_UNK func_ov007_0221a018();
+    M2C_UNK MapEditor_LoadUnitBrushGraphics();
     M2C_UNK MapEditor_RenderMapName();
     MapEditor_LoadTerrainBrushGraphics();
-    func_ov007_0221a018();
+    MapEditor_LoadUnitBrushGraphics();
     MapEditor_LoadPlayerPalettes();
-    func_ov007_02219d10();
+    MapEditor_DrawCatalogueGrid();
     MapEditor_RenderMapName();
 }
 
@@ -214,11 +217,11 @@ s32 Map_IsTerrainKindPlaceable(s32 x,s32 y,s32 kind) {
  * already has one; and once the map holds the property maximum (99) a new
  * property may only replace an existing property tile.  Returns 0 when refused. */
 s32 MapEditor_CheckPlacementLimits(s32 x, s32 y, s32 kind, s32 owner) {
-    s32 IsDestroyedPipeTile(s32);
+    s32 IsPropertyTerrainKind(s32);
     s32 Map_GetCellTerrainKind(s32, s32);
     s32 GetEditorUnitCategoryCount(s32, s32);
     s32 MapEditor_GetPropertyCount(void);
-    if (IsDestroyedPipeTile(kind) == 0) {
+    if (IsPropertyTerrainKind(kind) == 0) {
         goto ret1;
     }
     if (kind == 0xF) {
@@ -229,7 +232,7 @@ s32 MapEditor_CheckPlacementLimits(s32 x, s32 y, s32 kind, s32 owner) {
     if (MapEditor_GetPropertyCount() < 0x63) {
         goto ret1;
     }
-    if (IsDestroyedPipeTile(Map_GetCellTerrainKind(x, y)) == 0) {
+    if (IsPropertyTerrainKind(Map_GetCellTerrainKind(x, y)) == 0) {
         return 0;
     }
 ret1:

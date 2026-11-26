@@ -103,9 +103,11 @@ void *InitLinkPlayerRecord(void *record) {
     return record;
 }
 
-void func_ov009_022213f0(M2C_UNK arg0, M2C_UNK arg1) {
+/* Copy the console's nickname (10 UTF-16 characters, the DS profile's name size)
+ * into the local player's link record, gLinkLocalPlayerInfo. */
+void SetLocalPlayerInfoName(s32 record, s32 name) {
     M2C_UNK CopyU16(M2C_UNK, M2C_UNK, M2C_UNK);
-    CopyU16(arg1, arg0, 0x14);
+    CopyU16(name, record, 0x14);
 }
 
 void CopyLinkPlayerRecordPayload(s32 arg0, M2C_UNK arg1, s32 arg2) {

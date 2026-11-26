@@ -158,7 +158,7 @@ void InitUnitSprite(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK Set3DSpriteSlideBackLength(void *, M2C_UNK);
     M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, u32, s32);
     void func_020aad18(void *);
-    s32 func_020aae78(void *);
+    s32 GetUnitSpriteGfx(void *);
     s32 HeapAllocBlock(M2C_UNK);
     extern void *gCur3DSpriteEngine;
     void *temp_r0;
@@ -194,7 +194,7 @@ void InitUnitSprite(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
         resource = M2C_FIELD(engine, volatile s32 *, 0x30) + ((style + 16) << 5);
         LoadSpriteResource(0, 2, kind >> 0x19, resource);
     }
-    M2C_FIELD(arg0, s32 *, 0x44) = func_020aae78(arg0);
+    M2C_FIELD(arg0, s32 *, 0x44) = GetUnitSpriteGfx(arg0);
     M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg2 & ~0xF8000000);
     M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (((u32) (M2C_FIELD(arg0, u8 *, 0x59) << 0x1C) >> 0x1C) << 0x18) >> 6));
     M2C_FIELD(arg0, s16 *, 0x3C) = 0;
@@ -242,7 +242,7 @@ void func_020aad18(void *unit) {
     void SpriteCellListSetCellRect(void *, s32, s32, s32, u16, u16);
     u32 GetUnitSpriteWidth(void *);
     u32 GetUnitSpriteHeight(void *);
-    s32 func_020aae94(void *);
+    s32 GetUnitSpriteFlags(void *);
     u8 entry_count;
     s16 y;
     s16 x;
@@ -269,7 +269,7 @@ void func_020aad18(void *unit) {
     x = M2C_FIELD(unit, s16 *, 0x50);
     width = GetUnitSpriteWidth(unit);
     height = GetUnitSpriteHeight(unit);
-    extra = func_020aae94(unit);
+    extra = GetUnitSpriteFlags(unit);
     AddSpriteCell(M2C_FIELD(unit, void **, 0x64), x, y, width, height, 1, (u16)extra);
 }
 
@@ -300,14 +300,19 @@ u32 GetUnitSpriteHeight(void *unit) {
  if(height==0){return M2C_FIELD(unit,UnkAAFields *,0x40).y;} return height;
 }
 
-s32 func_020aae78(void *arg0) {
+/* Graphics/frame data pointer of a unit sprite's unit-kind record (UnitSpriteDef
+ * +0x04), picked from the low seven bits of the object's kind byte. */
+s32 GetUnitSpriteGfx(void *unit) {
     void *GetUnitSpriteDef(u32);
-    return M2C_FIELD(GetUnitSpriteDef((u32)(M2C_FIELD(arg0, u8 *, 0x58) << 0x19) >> 0x19), s32 *, 4);
+    return M2C_FIELD(GetUnitSpriteDef((u32)(M2C_FIELD(unit, u8 *, 0x58) << 0x19) >> 0x19), s32 *, 4);
 }
 
-s32 func_020aae94(void *arg0) {
+/* Flags word (UnitSpriteDef +0x08) of the sprite record for a unit sprite's
+ * unit kind, picked from the low seven bits of the object's kind byte (+0x58).
+ * Its bit 4 makes the sprite read the other screen's key state. */
+s32 GetUnitSpriteFlags(void *unit) {
     void *GetUnitSpriteDef(u32);
-    return M2C_FIELD(GetUnitSpriteDef((u32)(M2C_FIELD(arg0, u8 *, 0x58) << 0x19) >> 0x19), s32 *, 8);
+    return M2C_FIELD(GetUnitSpriteDef((u32)(M2C_FIELD(unit, u8 *, 0x58) << 0x19) >> 0x19), s32 *, 8);
 }
 
 #pragma opt_common_subs off
@@ -436,8 +441,8 @@ void func_020ab1a8(void *arg0) {
 }
 
 void func_020ab1b8(void) {
-    M2C_UNK func_020892f0();
-    func_020892f0();
+    M2C_UNK UpdateAndDraw3DSpriteActor();
+    UpdateAndDraw3DSpriteActor();
 }
 
 /* Create a unit sprite on `layer`: allocate it from the unit sprite class, run the
@@ -494,9 +499,11 @@ void ReleaseUnitSpriteHold(void) {
  gUnitSpriteInput -= 1;
 }
 
+/* Whether the unit sprites are held: the shared hold counter is nonzero, which
+ * pauses their per-frame animation updates. */
 u8 IsUnitSpriteHeld(void) {
     extern u8 gUnitSpriteInput;
-    return gUnitSpriteInput != 0;
+    return *(&gUnitSpriteInput + UNIT_SPRITE_HOLD_COUNT) != 0;
 }
 
 /* Step the three tweens an animated menu object runs: while the first tween's

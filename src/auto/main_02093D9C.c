@@ -227,8 +227,8 @@ s32 MapScriptDeleteTelopWindow(void *state) {
  * already active; then advance the script. */
 s32 ScriptCmd_ShowMessage(void *script) {
     M2C_UNK ShowUiMessage(s32);
-    M2C_UNK func_02096b6c(s32);
-    M2C_UNK func_02096b88(s32);
+    M2C_UNK ShowUiMessageStyle1(s32);
+    M2C_UNK ShowUiMessageStyle2(s32);
     s16 style;
     void *command;
 
@@ -240,10 +240,10 @@ s32 ScriptCmd_ShowMessage(void *script) {
             ShowUiMessage(M2C_FIELD(command, s32 *, 0xC));
             break;
         case 1:
-            func_02096b6c(M2C_FIELD(command, s32 *, 0xC));
+            ShowUiMessageStyle1(M2C_FIELD(command, s32 *, 0xC));
             break;
         case 2:
-            func_02096b88(M2C_FIELD(command, s32 *, 0xC));
+            ShowUiMessageStyle2(M2C_FIELD(command, s32 *, 0xC));
             break;
         }
     }
@@ -371,7 +371,13 @@ void func_020943e0(s8 arg0) {
     M2C_FIELD(Get3DSpriteManager(), s8 *, 0x48) = arg0;
 }
 
-void func_020943f4(s32 arg0,s8 arg1) { void *Get3DSpriteManager(); M2C_FIELD(Get3DSpriteManager()+arg0,s8 *,0x44)=arg1; }
+/* Remember the screen mode the other screen shows for 3D sprite engine `engine`
+ * in the manager's per-engine DS3D_MANAGER_OTHER_SCREEN_MODE bytes. */
+void StoreOtherScreenMode(s32 engine, s8 mode) {
+    void *Get3DSpriteManager();
+
+    M2C_FIELD(Get3DSpriteManager() + engine, s8 *, DS3D_MANAGER_OTHER_SCREEN_MODE) = mode;
+}
 
 void func_02094410(s8 arg0) { void *Get3DSpriteManager(); M2C_FIELD(Get3DSpriteManager(),s8 *,0x4E)=arg0; }
 
@@ -462,7 +468,7 @@ void ResetDialogUI(void) {
  for(i=0;i<8;) { ptr=Get3DSpriteManager(); ptr+=(u32)i*4; i++; M2C_FIELD(ptr,s32*,0x24)=0; }
  ClearEventFlagsLow();EnableTouchInput();ClearMessageBoxState();
  for(i=0;i<3;i++)M2C_FIELD(GetScenePanelState(i),s16*,8)=0;
- for(i=0;i<2;i++)func_020943f4(i,2);
+ for(i=0;i<2;i++)StoreOtherScreenMode(i,2);
  SetMenuCursor(-1);Set3DSpriteTargetMode(3);func_020943e0(0);func_02094410(0);Reset3DSpriteEngines();
 }
 

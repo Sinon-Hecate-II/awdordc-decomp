@@ -302,12 +302,14 @@ void ResetCurrentConnection(void) {
     M2C_FIELD(connection, s32 *, SOCKET_DATA_CB) = 0;
 }
 
+/* Detach the current raw connection from its owning socket object by clearing the
+ * connection's owner field. */
 void CloseRawConnection(void) {
     extern M2C_UNK gSocketManager;
-    void *x = M2C_FIELD(&gSocketManager, void **, 4);
-    s32 *q = M2C_FIELD(x, s32 **, 0xa4);
-    if (q != 0) {
-        *q = 0;
+    void *socketObject = M2C_FIELD(&gSocketManager, void **, SOCKMGR_RUNNING_THREAD);
+    s32 *connection = M2C_FIELD(socketObject, s32 **, SOCK_OBJECT_RAW);
+    if (connection != 0) {
+        M2C_FIELD(connection, s32 *, SOCKET_OWNER) = 0;
     }
 }
 

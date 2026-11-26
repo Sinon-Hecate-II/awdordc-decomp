@@ -191,14 +191,16 @@ values[i]=ParseInt(digits);
 }
 }
 
-s32 HexCharValue(u32 arg0) {
-    if (arg0 <= 0x39U) {
-        return arg0 - 0x30;
+/* Value (0..15) of a hexadecimal digit character: '0'..'9', then 'A'..'F' or
+ * 'a'..'f' (the caller only passes valid digits). */
+s32 HexCharValue(u32 hexChar) {
+    if (hexChar <= '9') {
+        return hexChar - '0';
     }
-    if (arg0 <= 0x46U) {
-        return arg0 - 0x37;
+    if (hexChar <= 'F') {
+        return hexChar - 'A' + 10;
     }
-    return arg0 - 0x57;
+    return hexChar - 'a' + 10;
 }
 
 /* Start the ov001 sound system: load the sound archive file, initialise the
@@ -251,7 +253,13 @@ void Ov001_SetScrollDragSoundPitch(s32 value, s32 duration) {
     Sound_SetPlayerPitch(gOv001SoundState + OV001_SOUND_PLAYER, value, duration);
 }
 
-void Ov001_StopSound(void) {M2C_UNK func_0202ac60(s32,s32);extern s32 gOv001SoundState;func_0202ac60(gOv001SoundState+0x90,0);}
+/* Stop the ov001 sound player's voice: fade it out over 0 frames, which ends it
+ * at once.  The menu code calls it when it leaves a screen that played a jingle. */
+void Ov001_StopSound(void) {
+    M2C_UNK Sound_FadeOutPlayerVoice(s32, s32);
+    extern s32 gOv001SoundState;
+    Sound_FadeOutPlayerVoice(gOv001SoundState + OV001_SOUND_PLAYER, 0);
+}
 
 void func_ov001_021850ac(void) {
     M2C_UNK Sound_UpdateDriver();

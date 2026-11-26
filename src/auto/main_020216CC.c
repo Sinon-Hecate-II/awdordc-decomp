@@ -230,11 +230,13 @@ MI_CpuCopy8(address,&value,4);IpToBytes(value,octets);
 StringFormatN(buffer,16,&sIpAddressFormat,octets[3],octets[2],octets[1],octets[0]);return (M2C_UNK)buffer;
 }
 
-void IpToBytes(u32 arg0, void *arg1) {
-M2C_FIELD(arg1,u8 *,0)=arg0>>24;
-M2C_FIELD(arg1,u8 *,1)=arg0>>16;
-M2C_FIELD(arg1,u8 *,2)=arg0>>8;
-M2C_FIELD(arg1,u8 *,3)=arg0;
+/* Write the four bytes of the network-order IPv4 `address` into `buffer`, most
+ * significant byte first. */
+void IpToBytes(u32 address, void *buffer) {
+    M2C_FIELD(buffer, u8 *, 0) = address >> 24;
+    M2C_FIELD(buffer, u8 *, 1) = address >> 16;
+    M2C_FIELD(buffer, u8 *, 2) = address >> 8;
+    M2C_FIELD(buffer, u8 *, 3) = address;
 }
 
 /* Waits until one of the `count` sockets in `fds` is ready or `timeout` timer

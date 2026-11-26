@@ -35,8 +35,10 @@ s32 Wfc_GetLinkError(void) {
     return -6;
 }
 
-s32 Wfc_GetNoFriendError(void *arg0) {
-    if (M2C_FIELD(arg0, u8 *, 0xB) == 0) {
+/* Error code reported for a connection attempt that ended without a friend:
+ * when the control block's byte 0xB is 0 report -50099, otherwise -51099. */
+s32 Wfc_GetNoFriendError(void *control) {
+    if (M2C_FIELD(control, u8 *, 0xB) == 0) {
         return 0xFFFF3C4D;
     }
     return 0xFFFF3865;

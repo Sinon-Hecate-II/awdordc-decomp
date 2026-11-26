@@ -44,7 +44,7 @@ s32 SBServerListCompareInt(s32 *serverA, s32 *serverB) {
  * ascending. */
 s32 SBServerListCompareFloat(s32 *serverA, s32 *serverB) {
     double SBServerGetFloatValue(void *, s32, double);
-    double func_02070b70(double, double);
+    double RuntimeDoubleSubtract(double, double);
     extern void *gSBServerListSorting;
     double valueA;
     double valueB;
@@ -55,9 +55,9 @@ s32 SBServerListCompareFloat(s32 *serverA, s32 *serverB) {
     server = *serverB;
     valueA = SBServerGetFloatValue((void *) *serverA, M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_FIELD), 0.0);
     valueB = SBServerGetFloatValue((void *) server, M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_FIELD), 0.0);
-    diff = func_02070b70(valueA, valueB);
+    diff = RuntimeDoubleSubtract(valueA, valueB);
     if (M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_DESC) == 0) {
-        diff = func_02070b70(0.0, diff);
+        diff = RuntimeDoubleSubtract(0.0, diff);
     }
     if ((float)diff > 0.0f) return 1;
     return -((float)diff < 0.0f);

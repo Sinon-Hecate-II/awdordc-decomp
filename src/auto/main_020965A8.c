@@ -110,23 +110,28 @@ void func_02096b3c(void) {
     IsDialogSequenceActive(&data_02102e14);
 }
 
-void ShowUiMessage(void) {
+/* Show the UI message `textId` and create its message sprite. */
+void ShowUiMessage(s32 textId) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02102dbc;
-    SetUiMessageText();
-    CreateSpriteFromClass(&data_02102dbc, 7);
+    extern M2C_UNK gUiMessageSpriteClass;
+    SetUiMessageText(textId);
+    CreateSpriteFromClass(&gUiMessageSpriteClass, 7);
 }
 
-void func_02096b6c(void) {
-    extern M2C_UNK data_02102d4c;
-    SetUiMessageText();
-    CreateSpriteFromClass(&data_02102d4c, 7);
+/* Show the UI message `textId` in the message command's style-1 message box and
+ * create its message sprite. */
+void ShowUiMessageStyle1(s32 textId) {
+    extern M2C_UNK gUiMessageStyle1SpriteClass;
+    SetUiMessageText(textId);
+    CreateSpriteFromClass(&gUiMessageStyle1SpriteClass, 7);
 }
 
-void func_02096b88(void) {
-    extern M2C_UNK data_02102d84;
-    SetUiMessageText();
-    CreateSpriteFromClass(&data_02102d84, 7);
+/* Show the UI message `textId` in the message command's style-2 message box and
+ * create its message sprite. */
+void ShowUiMessageStyle2(s32 textId) {
+    extern M2C_UNK gUiMessageStyle2SpriteClass;
+    SetUiMessageText(textId);
+    CreateSpriteFromClass(&gUiMessageStyle2SpriteClass, 7);
 }
 
 /* Refresh the map records for `player`'s team when the view switches to it: count

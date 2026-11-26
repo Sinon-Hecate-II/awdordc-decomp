@@ -105,11 +105,14 @@ enum {
 #define WH_DS_PLAYERS   0x1c00 /* u16 player mask, u16 known mask, then the players' 0x200-byte data blocks */
 #define WH_KEY_CHANNEL  0x1e00 /* channel state object the key-sharing step runs on (see wfc_channel.h) */
 #define WH_KEY_CHANNEL_INDEX 13 /* WFC channel index the key-sharing channel is opened on */
+#define WH_KEY_CHANNEL_MASK 0xFFFF /* every player slot takes part in the key exchange */
+#define WH_KEY_CHANNEL_PAYLOAD 2 /* bytes per player the key channel transfers: one 16-bit key */
 /* Fields of the WH_DS_PLAYERS block, relative to its base. */
 #define WH_DS_PLAYER_MASK 0x00 /* u16: bit per player taking part in the exchange */
 #define WH_DS_KNOWN_MASK  0x02 /* u16: bit per player whose data block has been received */
 #define WH_DS_DATA        0x04 /* the players' data blocks, one per connected player */
 #define WH_LINK_STATUS  0x40 /* s32: WH_STATUS_* */
+#define WH_CONN_ERROR   0x54 /* s32: code of the last failed WH step, kept unless the failure was already reported */
 #define WH_CONN_USER_INFO_CB 0x13AC /* s32 (*)(void *userInfo, void *connection): fills the user-info block and returns the WFC user type */
 #define WH_CONN_USER_INFO    0x13C0 /* user-info block handed to WFC_SubmitUserInfo */
 #define WH_CHILD_PICKED 0x5c /* u16: child picked, one-based, 0 = none */

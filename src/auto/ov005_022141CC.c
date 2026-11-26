@@ -6,7 +6,7 @@ static inline s32 Mul1425c(s32 a,s32 b){return ((s64)a*b+2048)>>12;}
 typedef struct {s16 vals[8];} ShakeList1425c;
 typedef struct {u16 pad:13,shift:2,last:1;} Mode1425c;
 extern void *g3DSpriteEngineSub;
-extern u8 data_02101f0c[],gSpriteDesc8x8[],data_ov005_02220486[];
+extern u8 gSpriteDesc64x8[],gSpriteDesc8x8[],data_ov005_02220486[];
 extern s16 data_ov005_02220048[8],data_ov005_02220484,gSinCosTable[];
 #define RECORDS_SCREEN ((RecordsScreen *)M2C_FIELD(&gRecordsMenuState, void **, 8))
 
@@ -53,11 +53,11 @@ a=h>>12;if(a>96)a=96;else if(a<1)a=1;
 DrawFrameBorder(248,(z>>12)+25,2,a,(u16)(((0x140>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),0,2);
 }
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-AddSprite(120,176,(u16)(((0x140>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_02101f0c,0);
-AddSprite(184,176,(u16)(((0x148>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_02101f0c,0);
+AddSprite(120,176,(u16)(((0x140>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),gSpriteDesc64x8,0);
+AddSprite(184,176,(u16)(((0x148>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),gSpriteDesc64x8,0);
 AddSprite(248,176,(u16)(((0x150>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),gSpriteDesc8x8,0);
-AddSprite(120,184,(u16)(((0x151>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_02101f0c,0);
-AddSprite(184,184,(u16)(((0x159>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),data_02101f0c,0);
+AddSprite(120,184,(u16)(((0x151>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),gSpriteDesc64x8,0);
+AddSprite(184,184,(u16)(((0x159>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),gSpriteDesc64x8,0);
 AddSprite(248,184,(u16)(((0x161>>((*(Mode1425c **)gCur3DSpriteEngine)->shift))&1023)|0x6000),gSpriteDesc8x8,0);
 if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)!=-1){
 list=*(ShakeList1425c *)data_ov005_02220048;

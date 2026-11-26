@@ -378,7 +378,14 @@ s32 WFC_GetInfoBlock(void) {
     return M2C_FIELD(&gWfcChannelState, s32 *, 4);
 }
 
-s32 WFC_CheckReady(void) { extern M2C_UNK gWfcChannelState; if(M2C_FIELD(&gWfcChannelState,u16 *,0))return 0;return 3; }
+/* Whether the WFC command channel can take commands: returns 0 once the channel
+ * is initialized, or WFC_CMD_NOT_READY while it is not. */
+s32 WFC_CheckReady(void) {
+    extern M2C_UNK gWfcChannelState;
+
+    if (M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_READY)) return 0;
+    return WFC_CMD_NOT_READY;
+}
 
 /* Whether the WFC command channel is open: 0 once the link has left its initial
  * states, otherwise the not-ready result (3).  Flushes the firmware-written link
@@ -532,12 +539,14 @@ void WFC_CommandHandler(u32 fifoTag, void *packet, u32 error) {
     }
 }
 
+/* Clear the WFC command channel's handshake flag in the ARM7 shared work area once
+ * the ARM9 has handled a packet. */
 void WFC_ClearSharedFlag(void) {
-    u16 temp_r0;
+    u16 flagWord;
 
-    temp_r0 = *(u16 *)0x027FFF96;
-    if (temp_r0 & 1) {
-        *(u16 *)0x027FFF96 = temp_r0 & ~1;
+    flagWord = *(u16 *)WFC_SHARED_FLAG_WORD;
+    if (flagWord & WFC_SHARED_FLAG_HANDSHAKE) {
+        *(u16 *)WFC_SHARED_FLAG_WORD = flagWord & ~WFC_SHARED_FLAG_HANDSHAKE;
     }
 }
 

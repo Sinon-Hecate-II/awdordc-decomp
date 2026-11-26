@@ -103,7 +103,7 @@ void func_0201a134(s32 arg0) {
     extern M2C_UNK data_021375b8;
     void MI_CpuFill8(void *, s32, s32);
     void TaskWake(s32);
-    void func_02025298(void);
+    void ClearTlsSessionCache(void);
     s32 old;
     void *node;
     void *sub;
@@ -153,7 +153,7 @@ void func_0201a134(s32 arg0) {
             M2C_FIELD(p, u16 *, 0x04) = 0;
         }
     }
-    func_02025298();
+    ClearTlsSessionCache();
 }
 
 /* Wait between network-stack polls: sleep for the stack's configured poll
@@ -334,18 +334,23 @@ void SetNetworkThreadPriority(s32 priority) {
  * the high half of a last word. */
 u32 ChecksumAccumulate(u8 *data,u32 length,u32 sum){u32 folded;if((u32)data&1){while(length>1){sum+=(u16)((data[0]<<8)|data[1]);length-=2;data+=2;}}else{folded=(u16)sum;sum=(u16)(((s32)folded>>8)|(folded<<8));while(length>1){sum+=*(u16 *)data;data+=2;length-=2;}folded=((sum>>8)&0x00ff00ff)|((sum<<8)&0xff00ff00);sum=(folded>>16)|(folded<<16);}if(length)sum+=*data<<8;folded=(u16)sum+(sum>>16);folded+=folded>>16;return (u16)folded;}
 
-s32 ChecksumFinalize(s32 arg0) {
-    u16 var_r0;
+/* Complement a running one's-complement checksum sum: returns ~sum, mapping a
+ * zero result to 0xFFFF so a correct message still sums to CHECKSUM_VALID. */
+s32 ChecksumFinalize(s32 sum) {
+    u16 checksum;
 
-    var_r0 = arg0 ^ 0xFFFF;
-    if (var_r0 == 0) {
-        var_r0 = 0xFFFF;
+    checksum = sum ^ 0xFFFF;
+    if (checksum == 0) {
+        checksum = 0xFFFF;
     }
-    return (s32) var_r0;
+    return (s32) checksum;
 }
 
-void Checksum(M2C_UNK arg0, M2C_UNK arg1) {
-    ChecksumFinalize((u16)ChecksumAccumulate((u8 *)arg0, (u32)arg1, 0));
+/* Compute the 16-bit one's-complement internet checksum of the `length` bytes at
+ * `data` (RFC 1071): accumulate the words, then complement the sum, as a message
+ * header's checksum field expects it. */
+s32 Checksum(u8 *data, s32 length) {
+    ChecksumFinalize((u16)ChecksumAccumulate(data, (u32)length, 0));
 }
 
 /* True when the one's-complement checksum of a TCP/UDP segment plus its IPv4

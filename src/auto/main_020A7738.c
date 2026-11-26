@@ -191,8 +191,8 @@ s32 ComputeUnitMoveRange(s32 kind, s32 weather, s32 player, s32 bonusType, u8 ap
 }
 
 u16 GetUnitKindBuildCost(s32 arg0) {
- extern u8 data_ov000_021b5c00[];
- return *(u16 *)(data_ov000_021b5c00 + arg0 * 0x70);
+ extern u8 gUnitKindBuildCosts[];
+ return *(u16 *)(gUnitKindBuildCosts + arg0 * 0x70);
 }
 
 u8 GetUnitKindMaxAttackRange(s32 arg0) {
@@ -257,15 +257,17 @@ u8 HasUnitActed(void *arg0) {
     return var_r0;
 }
 
-u8 UnitHasFacing(void *arg0) {
-    u8 var_r0;
+/* Nonzero when the unit has capture points: it is part-way through capturing the
+ * property it stands on (MAP_UNIT_CAPTURE; 20 points completes the capture). */
+u8 UnitHasCapturePoints(void *unit) {
+    u8 hasPoints;
 
-    if (((u32) (M2C_FIELD(arg0, u16 *, 6) << 0x10) >> 0x1B) != 0) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) << 0x10) >> 0x1B) != 0) {
+        hasPoints = 1;
     } else {
-        var_r0 = 0;
+        hasPoints = 0;
     }
-    return var_r0;
+    return hasPoints;
 }
 
 u8 UnitHasCargo(void *arg0) {

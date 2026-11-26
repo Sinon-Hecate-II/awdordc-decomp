@@ -135,6 +135,7 @@ enum {
 #define MAP_CURRENT_OWNER   0x52a6 /* u16 the current player's owner bits (MAP_CURRENT_PLAYER << 5) */
 #define MAP_VIEW_HOLD       0x52aa /* s8 holds taken on the map view; map input is blocked while it is nonzero */
 #define MAP_UNIT_MOVE_ACTIVE 0x52ab /* u8 nonzero while a unit move is running; the battle loop waits on it (IsUnitMoveActive) */
+#define MAP_COMMAND_PENDING 0x52ac /* u8 nonzero while a map command is pending (IsMapCommandPending); the cursor cancels it instead of opening the action menu */
 #define MAP_ACTIVE_PLAYER   0x52b6 /* u16 player whose units are being processed, saved and restored around influence builds */
 #define MAP_CURSOR_UNIT     0x52d0 /* BattleMapUnit * of the unit under the cursor */
 #define MAP_CURSOR_UNIT_ID  0x52d4 /* u8 id of the unit under the cursor */
@@ -693,6 +694,12 @@ typedef struct MapTargetList {
 #define MAP_BATTLE_STRIDE   0x20
 #define MAP_BATTLE_WINNER   0x6ed6 /* s16: side that wins the previewed battle, 0 = no preview */
 #define MAP_BATTLE_DAMAGE   0x6ed4 /* s16: damage the previewed attacker deals to its target */
+/* The BattleUnit::health words of the two previewed sides (the AI target score
+ * reads them to price the health each side loses). */
+#define MAP_BATTLE_ATTACKER_HEALTH (MAP_BATTLE_ATTACKER + 0x0E) /* s16 attacker health after the preview */
+#define MAP_BATTLE_DEFENDER_HEALTH (MAP_BATTLE_DEFENDER + 0x0E) /* s16 defender health after the preview */
+#define MAP_BATTLE_ATTACKER_UNK1A  (MAP_BATTLE_ATTACKER + 0x1A) /* s16 BattleUnit::unk1A of the attacker */
+#define MAP_BATTLE_DEFENDER_UNK1A  (MAP_BATTLE_DEFENDER + 0x1A) /* s16 BattleUnit::unk1A of the defender */
 #define MAP_GRID            0x52e8 /* s8 *rows[64]: per-cell grid value; <0 impassable, >110 holds a unit */
 #define MAP_GRID_ROW_INDEX  0x14ba /* MAP_GRID seen as an s8 * array: index of row y (MAP_GRID / 4) */
 #define MAP_GRID_NO_UNIT_MAX 0x6E  /* largest MAP_GRID value of a cell that holds no unit */
@@ -758,6 +765,7 @@ enum {
     MAP_INPUT_BLOCKED   = 3  /* a dialog, or any other state, blocks map input */
 };
 #define MAP_CURSOR_OWNER    0x52a8 /* u16 owner mask the unit under the cursor must match */
+#define MAP_COMMAND_PENDING 0x52ac /* u8 nonzero while a map command is queued to run (Set/ClearMapCommandPending) */
 #define MAP_CONFIRM_ENABLED 0x52ad /* u8 nonzero while the current map/choice is confirmed (IsMapConfirmEnabled) */
 #define MAP_CURSOR_TARGET_X 0x52c2 /* s16 tile the cursor is aimed at */
 #define MAP_CURSOR_TARGET_Y 0x52c4 /* s16 tile the cursor is aimed at */
@@ -1018,6 +1026,7 @@ typedef struct PlayerRecordSprite {
 #define CO_ZONE_RANGE_PCT     0x04 /* s8 maximum attack range bonus, for kinds with range 2 or more */
 #define CO_ZONE_ATTACK_PCT    0x06 /* s16 attack percent, damage scales by (100 + n) / 100 */
 #define CO_ZONE_DEFENSE_PCT   0x08 /* s16 defense percent, damage scales by 100 / (100 + n) */
+#define CO_ZONE_BASE_MOVE     0x0A /* s8 base move range the commander's zone grants (before the charged meter levels) */
 #define CO_ZONE_KIND_ENABLED  0x0F /* s8[CO_ZONE_KIND_COUNT]: nonzero when the kind receives the zone bonus */
 
 /* gCurrentMap[2] points to the three-slot pool of active unit-move controllers:
@@ -1128,6 +1137,9 @@ enum {
 /* Field of the frame-callback task that removes the battle-end sprites: the Z of
  * the sprites it deletes (main_020D4430.c). */
 #define BATTLE_END_TASK_Z  0x5C /* s32 */
+/* Field of the battle map view's sprite object: nonzero while the map has a
+ * frame waiting to be drawn (IsBattleMapFramePending, main_020D4430.c). */
+#define BATTLE_MAP_FRAME_PENDING 0x5C /* s32 */
 
 /* The battle-preview panel sprite (gBattlePreviewPanelDef, the class function
  * func_0209eaf4 creates) and the preview sprite built under it: the feature it
@@ -1195,8 +1207,10 @@ enum {
  * map id falls in, (id - MAP_ID_CAMPAIGN_FIRST) / MAP_ID_CAMPAIGN_PER_PLAYER,
  * is the slot of the player who owns it. */
 #define MAP_ID_CAMPAIGN_PER_PLAYER 50
+/* All campaign map headers: one MAP_ID_CAMPAIGN_PER_PLAYER block per player slot. */
+#define CAMPAIGN_MAP_COUNT (MAP_ID_CAMPAIGN_END - MAP_ID_CAMPAIGN_FIRST)
 
-/* The campaign map list's erase dialog (class data_0212b114): a modal panel
+/* The campaign map list's erase dialog (class gCampaignErasePanelClass): a modal panel
  * opened for the map chosen in the list; it clears that map's progress flags and
  * deletes its saved record. */
 #define CAMPAIGN_ERASE_PANEL_MAP_ID 0x34 /* s32 campaign map id to erase */
@@ -1255,6 +1269,9 @@ typedef struct MapRecordStamp {
 #define MAP_DATA_VALUE_LIMIT_LOW  0x0E /* u8 low bound of the map's value, in MAP_DATA_VALUE_LIMIT_UNITs (MapData_GetValueLimitLow) */
 #define MAP_DATA_VALUE_LIMIT_HIGH 0x0F /* u8 high bound of the map's value (MapData_GetValueLimitHigh) */
 #define MAP_DATA_VALUE_LIMIT_UNIT 100  /* the value bounds are stored in units of 100 */
+#define MAP_DATA_PLAYER_STATE  0x38 /* u8[4] per-player state used by campaign battles */
+#define MAP_DATA_PLAYER_ARMY   0x24 /* u8[4] army (nation) id assigned to each player slot (GetMapPlayerArmyId) */
+#define MAP_DATA_PLAYER_MUSIC  0x28 /* s32[4] music track overriding the army's for each player slot, 0 = none (MapData_GetPlayerTrack) */
 #define MAP_DATA_FOLLOWUP_MAPS 0x14 /* u16[4] map ids a cleared battle on this map unlocks, per player count slot */
 #define MAP_DATA_EVENT_SCRIPT  0x44 /* void *the map's event-script block (GetMapEventScript) */
 

@@ -175,6 +175,15 @@ typedef struct GxViewport {
 #define REG_GX_BEGIN_VTXS (*(volatile u32 *)0x04000500)
 #define REG_GX_END_VTXS   (*(volatile u32 *)0x04000504)
 
+/* Matrix commands queued through the FIFO port: the command word followed by
+ * 12 (4x3) or 16 (4x4) 20.12 parameter words. */
+enum {
+    GX_MTX_CMD_LOAD_4X4 = 0x16,
+    GX_MTX_CMD_LOAD_4X3 = 0x17,
+    GX_MTX_CMD_MULT_4X4 = 0x18,
+    GX_MTX_CMD_MULT_4X3 = 0x19
+};
+
 /* GX_BEGIN_VTXS primitive types. */
 enum {
     GX_PRIM_TRIANGLES = 0,
@@ -350,6 +359,7 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define GX_DEFAULT_LIGHT_VECTOR     0x1FF00000 /* (0, 0, 511) */
 #define GX_DEFAULT_LIGHT_COLOR      0x7FFF     /* white */
 #define GX_MAP_VIEW_LIGHT_VECTOR    0x20000000 /* the battle map's own light, along +Z */
+#define GX_MAP_VIEW_MATERIAL_SPE_EMI 0x7FFF4210 /* the map's specular colour (a dim grey) and white emission */
 
 /* Table blocks of the geometry engine; G3X_InitTable clears them at start-up. */
 #define G3X_EDGE_TABLE_ADDR     0x04000330 /* 8 edge colours of 16 bits */

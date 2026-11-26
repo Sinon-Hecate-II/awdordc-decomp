@@ -291,11 +291,12 @@ void CreateTextLayer(s32 owner) {
     M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) = (M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) & ~TEXT_LAYER_PANEL_NESTED) | ((u32)(nested << 31) >> 18);
 }
 
+/* True when a text-layer sprite is currently on screen. */
 u8 IsTextLayerActive(void) {
-    u8 var_r0;
-    if (FindTextLayer() != 0) var_r0 = 1;
-    else var_r0 = 0;
-    return var_r0;
+    u8 active;
+    if (FindTextLayer() != 0) active = 1;
+    else active = 0;
+    return active;
 }
 
 /* True when a text-layer panel is on screen and still animating: FindTextLayer's

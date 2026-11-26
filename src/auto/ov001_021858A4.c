@@ -490,12 +490,10 @@ s8 Ov001_GetRegionMenuSelection(void) {
     return M2C_FIELD(gOv001RegionMenu, s8 *, 0x1B);
 }
 
+/* Whether the ov001 region-column menu is open: its column is built. */
 s32 Ov001_IsRegionMenuActive(void) {
     extern void *gOv001RegionMenu;
-    if (gOv001RegionMenu != 0) {
-        return 1;
-    }
-    return 0;
+    return gOv001RegionMenu != 0;
 }
 
 /* First step of opening the region column menu when it will later fade out:

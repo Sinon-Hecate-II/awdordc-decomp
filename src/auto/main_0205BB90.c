@@ -586,7 +586,7 @@ s32 gti2SendDelayedAck(void *p){
     u8 a=g[0], b=g[1];
     u8 buf[5];
     buf[2]=0x64; buf[0]=a; buf[1]=b;
-    func_0205b0ec(buf,3,M2C_FIELD(q,u16 *,0x66));
+    Gt2WriteShort(buf,3,M2C_FIELD(q,u16 *,0x66));
     if(gti2SendRaw(q,buf,5)){M2C_FIELD(q,s32 *,0x90)=0;return 1;}
     return 0;
 }
@@ -596,15 +596,19 @@ extern M2C_UNK gGt2Magic;
 u8 buf[8]; u32 n=0; u8 *q=buf;
 *(Unk05Bytes *)buf=*(Unk05Bytes *)&gGt2Magic;
 buf[2]=0x65;
-func_0205b0ec(buf, n+3, arg1); n+=5;
-if((u32)arg2!=(u32)arg1){func_0205b0ec(buf,n,arg2); n+=2;}
+Gt2WriteShort(buf, n+3, arg1); n+=5;
+if((u32)arg2!=(u32)arg1){Gt2WriteShort(buf,n,arg2); n+=2;}
 if(gti2SendRaw(p,buf,n)==0)return 0; return 1;
 }
 
 s32 func_0205cb38(s32 a,void *b,s32 c) { s32 gti2SendRaw(s32,void *,s32); M2C_FIELD(b,u8 *,2)=103; return gti2SendRaw(a,b,c); }
 
-void gti2SendClosed(void *arg0) {
+/* Send a "connection closed" control message to a peer the connection has,
+ * through its socket at the connection's remote address and port. */
+void gti2SendClosed(void *connection) {
     M2C_UNK gti2SendClosedOnSocket(s32, s32, u16);
-    gti2SendClosedOnSocket(M2C_FIELD(arg0, s32 *, 8), M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg0, u16 *, 4));
+    gti2SendClosedOnSocket(M2C_FIELD(connection, s32 *, GT2_CONNECTION_SOCKET),
+                            M2C_FIELD(connection, s32 *, GT2_CONNECTION_IP),
+                            M2C_FIELD(connection, u16 *, GT2_CONNECTION_PORT));
 }
 

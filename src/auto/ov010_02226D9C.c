@@ -447,11 +447,15 @@ void Ov010Online_OnPeerConnectionLost(s32 error, s32 wasConnected, s32 pending, 
     cb(error,wasConnected,pending,playerId,playerSlot,arg);
 }
 #pragma opt_common_subs reset
-void func_ov010_02227c3c(s32 a,s32 b) {
-extern M2C_UNK gOv010OnlineSession;
-void (*cb)(s32,s32)=M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32),0x10);
-if (!cb) return;
-cb(a,b);
+/* Forward a match session's player-slot change to the app's callback, which the
+ * middleware calls through the slot callback registered at session start with the
+ * changed slot and the data registered with it. */
+void Ov010Online_OnPlayerSlotChanged(s32 slot, s32 data) {
+    extern M2C_UNK gOv010OnlineSession;
+    void (*callback)(s32, s32) = M2C_FIELD(&gOv010OnlineSession, void (**)(s32, s32), OV010_SESSION_SLOT_CALLBACK);
+
+    if (!callback) return;
+    callback(slot, data);
 }
 
 #pragma opt_common_subs on

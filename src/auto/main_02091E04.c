@@ -94,24 +94,32 @@ s32 GetScenePanelState(s32 panelIndex) {
     return (panel * (s32) sizeof(ScenePanelState)) + Get3DSpriteManager();
 }
 
+/* Flag layer 0 of the current 3D sprite engine as changed, so the engine rebuilds
+ * its tile data before the next draw. */
 void Mark3DSpriteLayer0Dirty(void) {
     extern void *gCur3DSpriteEngine;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER0);
 }
 
+/* Flag layer 1 of the current 3D sprite engine as changed, so the engine
+ * rebuilds that layer's tile data before the next draw. */
 void Mark3DSpriteLayer1Dirty(void) {
     extern void *gCur3DSpriteEngine;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER1);
 }
 
+/* Flag layer 2 of the current 3D sprite engine as changed, so the engine
+ * rebuilds that layer's tile data before the next draw. */
 void Mark3DSpriteLayer2Dirty(void) {
     extern void *gCur3DSpriteEngine;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER2);
 }
 
+/* Flag layer 3 of the current 3D sprite engine as changed, so the engine rebuilds
+ * its tile data before the next draw. */
 void Mark3DSpriteLayer3Dirty(void) {
     extern void *gCur3DSpriteEngine;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER3);
 }
 
 void Mark3DSpriteLayerNoneDirty(void) {
@@ -317,10 +325,13 @@ s32 MapScriptCopyDwordIndirect(void *state) {
     return 1;
 }
 
-void OnMapScrollDone(void *arg0) {
-    s32 IsMapViewScrolling();
+/* Map-script wait callback: clear the command's wait callback
+ * (MAP_SCRIPT_STATE_WAIT) once the map view has finished scrolling, so the
+ * script can run on; until then the script stays on the command. */
+void OnMapScrollDone(void *state) {
+    u8 IsMapViewScrolling(void);
     if (IsMapViewScrolling() == 0) {
-        M2C_FIELD(arg0, s32 *, 8) = 0;
+        M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_WAIT) = 0;
     }
 }
 
@@ -590,10 +601,13 @@ void SpawnMessageTextSprite(M2C_UNK arg0) {
     CreateSpriteObject(&gMessageTextSpriteClass, arg0);
 }
 
-void WaitForMessageTextGone(void *arg0) {
+/* Map-script wait callback: once the message text sprites have gone, clear the
+ * command's wait callback (MAP_SCRIPT_STATE_WAIT) to let the script run on; until
+ * then the script stays on the command. */
+void WaitForMessageTextGone(void *state) {
     s32 IsTextSpriteActive();
     if (IsTextSpriteActive() == 0) {
-        M2C_FIELD(arg0, s32 *, 8) = 0;
+        M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_WAIT) = 0;
     }
 }
 

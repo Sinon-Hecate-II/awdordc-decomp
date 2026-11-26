@@ -3,6 +3,7 @@
 #include "ds3dsprite.h"
 #include "sound.h"
 #include "ds3dsprite.h"
+#include "waypoint_panel.h"
 
 
 #pragma push
@@ -10,24 +11,24 @@
 void func_ov003_021eaed0(void *arg0) {
 s32 Link_ReceivePacket(void *,s32);void *GetLocalNetworkPlayerRecord();s32 GetLocalPlayerIdForOverlay();
 s8 func_ov003_021e9c24(void *);void func_ov003_021ea4a8(void *,s32);
-s32 func_ov003_021e9c08(void *),IsWaypointPanelCompact(void *);
-u8 GetLocalPlayerWaypointSlot(void *);u8 func_ov003_021e82fc(s32,s32);s32 func_ov003_021e73c8(s32,s32);
+s32 IsWaypointPanelWide(void *),IsWaypointPanelCompact(void *);
+u8 GetLocalPlayerWaypointSlot(void *);u8 func_ov003_021e82fc(s32,s32);s32 IsWaypointSlotEmpty(s32,s32);
 s32 AreNetworkPlayerRecordsReady(void);s32 IsWaypointPanelTwoPlayerMap(void *);
 u8 IsMenuEnabled(void *);void DisableMenuSprite(void *),EnableMenuSprite(void *),PressWaypointSprite(void *);
 u8 IsWaypointPanelIdle(void *);s32 IsWaypointPanelOptionsOpen(void *);
 void SetWaypointPanelMode(void *,s32);void Link_SendPacket(void *,s32);
 u8 func_ov003_021ebc88(void *);void func_ov003_021e9e4c(void *);
 u8 func_ov003_021ebc90(s32,s32);void func_ov003_021ebca4(s32,s32,s32);
-s32 func_ov003_021e73bc(s32,s32);s8 GetWaypointSlotCoIcon(void *,s32);
+s32 GetWaypointSlotOwner(s32,s32);s8 GetWaypointSlotCoIcon(void *,s32);
 void func_ov003_021e82f0(s32,s32,s32);u8 GetWaypointSlotIndex(s32);
 void func_ov003_021ebde8(void *,s8,s8);
 void func_ov003_021e9804(void *),UpdateWaypointSelectSprites(void *);
 s32 MenuSpriteIsClicked(void *);u8 func_ov003_021e9cd0(s32);
 void HandleWaypointPanelCancel(void *,s32);s32 func_ov003_021e74a4(s32);
-void func_ov003_021ec780(s32,s32);void StepCounterDown(s32,s32,s32);
+void ToggleWaypointSlotVariant(s32,s32);void StepCounterDown(s32,s32,s32);
 s32 IsWaypointPanelAdjustingCounter(void *);void ApplyWaypointMenuAction(void *,u32),func_ov003_021ed27c(void *,u8);
 void StepCounterUp(s32,s32,s32);
-void Ov003_UpdateWaypointSlotButtons(s32);s32 func_ov003_021ed8a8(s32),func_ov003_021ed8c4(s32),func_ov003_021ed8cc(s32),func_ov003_021ed8e8(s32);
+void Ov003_UpdateWaypointSlotButtons(s32);s32 IsWaypointSlotClicked(s32),func_ov003_021ed8c4(s32),IsWaypointSlotPressed(s32),func_ov003_021ed8e8(s32);
 void UpdateWaypointSelection(void *,u8),SetWaypointPanelState(void *,s32),func_ov003_021eccd4(void *),func_ov003_021ed8f0(void *,s32,u8);
 s32 InRange(s32,s32,s32);s32 func_0208eb68(void *);
 extern void *gTouchState;extern u16 *gKeyState;
@@ -39,10 +40,10 @@ remote=GetLocalNetworkPlayerRecord();if(!remote)return;
 player=GetLocalPlayerIdForOverlay();
 count=func_ov003_021e9c24(arg0);
 func_ov003_021ea4a8(arg0,(u32)(M2C_FIELD(arg0,u8 *,0x3a)<<31)>>31);
-if(func_ov003_021e9c08(arg0)){
+if(IsWaypointPanelWide(arg0)){
 packet[13]=func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),GetLocalPlayerWaypointSlot(M2C_FIELD(arg0,void **,0x6c)));
 if(IsSessionHost()){
-for(j=0;j<count;j++){if(func_ov003_021e73c8(M2C_FIELD(arg0,s32 *,0x6c),j))packet[j+18]=func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),j);}
+for(j=0;j<count;j++){if(IsWaypointSlotEmpty(M2C_FIELD(arg0,s32 *,0x6c),j))packet[j+18]=func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),j);}
 if(((s32(*)(void *))AreNetworkPlayerRecordsReady)(arg0)){
 if(IsWaypointPanelTwoPlayerMap(arg0)){M2C_FIELD(*(void **)arg0,s32 (**)(void *),0x1c)(arg0);return;}
 packet[8]=1;
@@ -77,8 +78,8 @@ if(IsSessionGuest()){
 current=func_ov003_021ebc90(M2C_FIELD(arg0,s32 *,0x6c),i);desired=M2C_FIELD((u8 *)remote+i,u8 *,14);
 if(current!=desired){PlaySoundEffect(0x10011);func_ov003_021ebca4(M2C_FIELD(arg0,s32 *,0x6c),i,desired);}
 }
-if(player==func_ov003_021e73bc(M2C_FIELD(arg0,s32 *,0x6c),i))continue;
-if(IsSessionHost() && func_ov003_021e73c8(M2C_FIELD(arg0,s32 *,0x6c),i))continue;
+if(player==GetWaypointSlotOwner(M2C_FIELD(arg0,s32 *,0x6c),i))continue;
+if(IsSessionHost() && IsWaypointSlotEmpty(M2C_FIELD(arg0,s32 *,0x6c),i))continue;
 {s32 co=(s8)func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),i);
 desired=GetWaypointSlotCoIcon(arg0,i);
 if(co!=desired){
@@ -92,7 +93,7 @@ if(i==GetWaypointSlotIndex(M2C_FIELD(arg0,s32 *,0x6c)))((void (*)(void *,s32,s32
 if(M2C_FIELD(remote,s32 *,0)){M2C_FIELD(*(void **)arg0,s32 (**)(void *),0x1c)(arg0);return;}
 if(M2C_FIELD(remote,s32 *,4)){M2C_FIELD(*(void **)arg0,s32 (**)(void *),0x20)(arg0);return;}
 if((u32)(M2C_FIELD(arg0,u8 *,0x39)<<30)>>31)return;
-if(func_ov003_021e9c08(arg0) && M2C_FIELD(packet,s32 *,24)){
+if(IsWaypointPanelWide(arg0) && M2C_FIELD(packet,s32 *,24)){
 if(!IsMenuEnabled(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))EnableMenuSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
 if(func_ov003_021ebc88(M2C_FIELD(arg0,void **,0x58)))func_ov003_021e9804(M2C_FIELD(arg0,void **,0x58));
 UpdateWaypointSelectSprites(M2C_FIELD(arg0,void **,0x64));
@@ -109,9 +110,9 @@ PressWaypointSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));HandleWay
 }
 for(i=0;i<func_ov003_021e74a4(M2C_FIELD(arg0,s32 *,0x6c));i++){
 if(ready && MenuSpriteIsClicked(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,8))){
-func_ov003_021ec780(M2C_FIELD(arg0,s32 *,0x6c),i);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,8));PlaySoundEffect(0x10011);ready=0;
+ToggleWaypointSlotVariant(M2C_FIELD(arg0,s32 *,0x6c),i);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,8));PlaySoundEffect(0x10011);ready=0;
 }else if(ready && MenuSpriteIsClicked(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,24))){
-func_ov003_021ec780(M2C_FIELD(arg0,s32 *,0x6c),i);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,24));PlaySoundEffect(0x10011);ready=0;
+ToggleWaypointSlotVariant(M2C_FIELD(arg0,s32 *,0x6c),i);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,24));PlaySoundEffect(0x10011);ready=0;
 }else if(ready && MenuSpriteIsClicked(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,40))){
 StepCounterDown(M2C_FIELD(arg0,s32 *,0x6c),i,1);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,40));
 if(IsWaypointPanelAdjustingCounter(arg0))ApplyWaypointMenuAction(arg0,(u8)(i+21));else func_ov003_021ed27c(arg0,(u8)(i+21));
@@ -126,10 +127,10 @@ PlaySoundEffect(0x10011);ready=0;
 Ov003_UpdateWaypointSlotButtons(M2C_FIELD(arg0,s32 *,0x6c));
 action=func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c));
 slot=GetWaypointSlotIndex(M2C_FIELD(arg0,s32 *,0x6c));
-if(ready && func_ov003_021ed8a8(M2C_FIELD(arg0,s32 *,0x6c))){
+if(ready && IsWaypointSlotClicked(M2C_FIELD(arg0,s32 *,0x6c))){
 ApplyWaypointMenuAction(arg0,(u8)func_ov003_021ed8c4(M2C_FIELD(arg0,s32 *,0x6c)));ready=0;
 }else{
-if(func_ov003_021ed8cc(M2C_FIELD(arg0,s32 *,0x6c)))func_ov003_021ed27c(arg0,(u8)func_ov003_021ed8e8(M2C_FIELD(arg0,s32 *,0x6c)));
+if(IsWaypointSlotPressed(M2C_FIELD(arg0,s32 *,0x6c)))func_ov003_021ed27c(arg0,(u8)func_ov003_021ed8e8(M2C_FIELD(arg0,s32 *,0x6c)));
 }
 if(!touch){
 if(ready && (keys&1)){ApplyWaypointMenuAction(arg0,func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c)));ready=0;}
@@ -143,11 +144,11 @@ if(held&32)func_ov003_021ed8f0(arg0,32,keys&32);
 if(held&16)func_ov003_021ed8f0(arg0,16,keys&16);
 if(ready && (keys&512)){
 action=(s16)action;
-if(InRange(action,4,7)){func_ov003_021ec780(M2C_FIELD(arg0,s32 *,0x6c),slot);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,8));PlaySoundEffect(0x10011);}
+if(InRange(action,4,7)){ToggleWaypointSlotVariant(M2C_FIELD(arg0,s32 *,0x6c),slot);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,8));PlaySoundEffect(0x10011);}
 else if(InRange(action,21,24)){StepCounterDown(M2C_FIELD(arg0,s32 *,0x6c),slot,1);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,56));PlaySoundEffect(0x10011);}
 }else if(ready && (keys&256)){
 action=(s16)action;
-if(InRange(action,4,7)){func_ov003_021ec780(M2C_FIELD(arg0,s32 *,0x6c),slot);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,24));PlaySoundEffect(0x10011);}
+if(InRange(action,4,7)){ToggleWaypointSlotVariant(M2C_FIELD(arg0,s32 *,0x6c),slot);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,24));PlaySoundEffect(0x10011);}
 else if(InRange(action,21,24)){StepCounterUp(M2C_FIELD(arg0,s32 *,0x6c),slot,1);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,40));PlaySoundEffect(0x10011);}
 }
 }
@@ -262,15 +263,18 @@ void DisableMenuSprite(void *sprite) {
     M2C_FIELD(sprite, s8 *, MENU_SPRITE_TIMER) = 0;
 }
 
-u8 IsWaypointPanelIdle(void *arg0) {
-    u8 var_r0;
+/* Return 1 while the waypoint panel is idle: its state nibble
+ * (WAYPOINT_PANEL_STATE_MASK of WAYPOINT_PANEL_FLAGS) is WAYPOINT_PANEL_IDLE,
+ * which means no menu is open. */
+u8 IsWaypointPanelIdle(void *panel) {
+    u8 idle;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x18) >> 0x1C) == 0) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(panel, u8 *, WAYPOINT_PANEL_FLAGS) << 0x18) >> 0x1C) == WAYPOINT_PANEL_IDLE) {
+        idle = 1;
     } else {
-        var_r0 = 0;
+        idle = 0;
     }
-    return var_r0;
+    return idle;
 }
 
 /* Put a menu sprite back into its enabled frame - the base frame - and clear its

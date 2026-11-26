@@ -3,7 +3,7 @@
 #include "ds3dsprite.h"
 extern u16 gIntroRevealedTiles[];
 extern u16 gIntroStateDurations[];
-extern u8 data_02101f5c[],data_02101f0c[];
+extern u8 data_02101f5c[],gSpriteDesc64x8[];
 extern DS3DSpriteTransform data_ov011_02227f28;
 extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
 
@@ -60,7 +60,7 @@ for(tileIndex=0;tileIndex<gIntroRevealedTiles[0];tileIndex++){
 baseY=position+tileIndex*18;tileNum=tileIndex*64;
 AddSpriteToMainEngine(0,tileAttr[tileIndex]|((baseY+tileOffsets[tileIndex])&255),(tileNum)&1023,data_02101f5c,0);
 AddSpriteToMainEngine(128,tileAttr[tileIndex]|((baseY+tileOffsets[tileIndex])&255),(tileNum+32)&1023,data_02101f5c,0);
-if(GetLanguage()==4 && entry[57]>=8)AddSpriteToMainEngine(0,tileAttr[0]|74,128,data_02101f0c,0);
+if(GetLanguage()==4 && entry[57]>=8)AddSpriteToMainEngine(0,tileAttr[0]|74,128,gSpriteDesc64x8,0);
 }
 gIntroAnimState[3]++;
 if(gIntroAnimState[3]>(duration&32767)){

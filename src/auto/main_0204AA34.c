@@ -102,7 +102,7 @@ s32 ghiFreeConnection(void *connection) {
     M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
     M2C_UNK func_020496cc(s32, M2C_UNK); M2C_UNK ghiCloseSocket(s32);
     void ghiFreeBuffer(void *); void ghiPostCleanup(void *);
-    s32 func_0204b688(void *); void ghiPostFree(s32 *);
+          s32 func_0204b688(void *); void ghiPostFree();
     GHIConnection *conn = (GHIConnection *)connection;
 
     if (!connection) AssertFailed(&data_020fd0a4, &ghiAssertFile, &data_020fd024, 0xb3);
@@ -403,11 +403,13 @@ s32 func_0204b688(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x10);
 }
 
-void ghiPostFree(s32 *arg0) {
-    M2C_UNK gpiFree(s32 *);
+/* Free a POST source: release the vector holding its multipart parts, then the
+ * source record itself. */
+void ghiPostFree(GHIPost *post) {
     M2C_UNK Vector_Free(s32);
-    Vector_Free(*arg0);
-    gpiFree(arg0);
+    M2C_UNK gpiFree(void *);
+    Vector_Free(post->items);
+    gpiFree(post);
 }
 
 /* The Content-Type a POST request needs: multipart/form-data when its source

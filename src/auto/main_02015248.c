@@ -161,7 +161,7 @@ s32 Mb_RegisterProgram(s32 arg0, s32 arg1) {
     s32 Mb_BuildChunkIndex(void *, void *);
     M2C_UNK func_02015f94(void *, s32, void *);
     M2C_UNK DownloadQueueFile(void *);
-    s32 func_02018418();
+    s32 MultiBoot_IsLinkStarted();
     M2C_UNK Mb_StartWorkerTask(void *, M2C_UNK);
     s32 Mb_IsTaskCreated();
     M2C_UNK MbWorker_ClearJob(void *);
@@ -176,7 +176,7 @@ s32 Mb_RegisterProgram(s32 arg0, s32 arg1) {
 
     var_r4 = 0xFF;
     temp_r5 = OS_DisableInterrupts();
-    if (func_02018418() == 0) {
+    if (MultiBoot_IsLinkStarted() == 0) {
         OS_RestoreInterrupts(temp_r5);
         return 0;
     }

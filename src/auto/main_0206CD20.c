@@ -21,17 +21,18 @@ s32 StringFormatWideToBuffer(u16 *buffer, u32 bufferCapacity, M2C_UNK format, M2
     return -1;
 }
 
-s32 StringLengthWide(u16 *arg0) {
-    s32 var_r2;
-    u16 *var_r0;
-    u16 temp_r1;
-    var_r0 = arg0;
-    var_r2 = -1;
+/* Length of the UTF-16 string `str` in characters, not counting its terminator. */
+s32 StringLengthWide(u16 *str) {
+    s32 length;
+    u16 *cursor;
+    u16 c;
+    cursor = str;
+    length = -1;
     do {
-        temp_r1 = *var_r0++;
-        var_r2 += 1;
-    } while (temp_r1 != 0);
-    return var_r2;
+        c = *cursor++;
+        length += 1;
+    } while (c != 0);
+    return length;
 }
 
 /* Copy the UTF-16 string `src` into `dest`, terminator included; returns `dest`. */

@@ -376,28 +376,34 @@ s32 func_02074254(s32 arg0) {
     return arg0;
 }
 
-s32 func_02074268(s32 arg0) {
+/* CodeWarrior's deleting-destructor helper for an empty class: run the class's
+ * (empty) destructor, free the object and leave its address in r0, which is what
+ * a delete expression expects back. */
+s32 func_02074268(s32 object) {
     func_02074220();
-    MemFree(arg0);
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
-s32 func_02074284(s32 arg0) {
+s32 DestroyEmptyObject(s32 arg0) {
     func_02074220();
     return arg0;
 }
 
 s32 func_02074298(s32 arg0) {
-    M2C_UNK func_02074284();
-    func_02074284();
+    M2C_UNK DestroyEmptyObject();
+    DestroyEmptyObject();
     return arg0;
 }
 
-s32 func_020742ac(s32 arg0) {
-    M2C_UNK func_02074284();
-    func_02074284();
-    MemFree(arg0);
-    return arg0;
+/* Deleting destructor of an object whose class has an empty destructor: run the
+ * class's destructor (DestroyEmptyObject), free the object and return its
+ * address, which is what the caller's delete expression expects back. */
+s32 DeleteEmptyObject(s32 object) {
+    M2C_UNK DestroyEmptyObject();
+    DestroyEmptyObject();
+    MemFree(object);
+    return object;
 }
 
 void func_020742c8(void) {

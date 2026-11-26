@@ -233,20 +233,22 @@ void func_ov007_022143a8(void) {
  * map editor's resource. */
 void MapEditor_ConfirmMapSettings(void) {
     M2C_UNK MapSettings_Capture(M2C_UNK);
-    M2C_UNK func_02088624();
+    M2C_UNK UnloadUnitGraphics();
     extern u16 gMapConfig;
     if (IsMapConfirmEnabled() != 0) {
         gMapConfig = (u16) (gMapConfig | MAPCONFIG_LIMIT_FLAG);
         MapSettings_Capture(0);
     }
-    func_02088624();
+    UnloadUnitGraphics();
 }
 
-void func_ov007_022143f0(void) {
+/* Remove the map editor's current menu sprites and recreate them from menu class
+ * gMapEditorConfirmSettingsClass on sprite layer 7. */
+void OpenMapEditorConfirmSettingsDialog(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_0221f9a8;
+    extern M2C_UNK gMapEditorConfirmSettingsClass;
     DeleteMapMenuSprites();
-    CreateSpriteFromClass(&data_ov007_0221f9a8, 7);
+    CreateSpriteFromClass(&gMapEditorConfirmSettingsClass, 7);
 }
 
 /* Restore the default map settings, apply them to the battle and mark the map
@@ -258,11 +260,13 @@ void MapEditor_ResetMapSettings(void) {
     MapEditor_SetMapModified(1);
 }
 
-void func_ov007_0221442c(void) {
+/* Open the map editor's reset-settings confirmation dialog: remove the current
+ * menu sprites and create the dialog sprite on layer 7. */
+void OpenMapEditorResetSettingsDialog(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_0221f918;
+    extern M2C_UNK gMapEditorResetSettingsClass;
     DeleteMapMenuSprites();
-    CreateSpriteFromClass(&data_ov007_0221f918, 7);
+    CreateSpriteFromClass(&gMapEditorResetSettingsClass, 7);
 }
 
 /* Whether the map configuration's second-value-limit flag (MAPCONFIG_LIMIT_FLAG,

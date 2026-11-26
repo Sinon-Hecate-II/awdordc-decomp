@@ -138,13 +138,15 @@ if(result==WH_DS_STEP_PROGRESS)return 1;
 SetWhError();return 0;
 }
 
-void func_ov001_02188b04(void) {
+/* Fallback of the WH teardown steps: queue the WH stop command and, when it
+ * cannot be queued, put the session into its error state. */
+void Ov001_AbortWhSession(void) {
     M2C_UNK SetWhStatus(M2C_UNK);
     s32 QueueWhStopCommand();
     if (QueueWhStopCommand() != 0) {
         return;
     }
-    SetWhStatus(0xA);
+    SetWhStatus(WH_STATUS_ERROR);
 }
 
 void func_ov001_02188b20(void) {
@@ -157,13 +159,13 @@ void (*cb1)(s32,void *)=M2C_FIELD(&gWhWork,void (* volatile *)(s32,void *),0); i
 } else {
 void (*cb2)(s32,void *)=M2C_FIELD(&gWhWork,void (* volatile *)(s32,void *),0); if(cb2) cb2(0x8000000,&data_ov001_02191770);
 state=M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x40);
-if(state!=6 && state!=5 && state!=4){SetWhStatus(3);func_ov001_02188b04();return;}
+if(state!=6 && state!=5 && state!=4){SetWhStatus(3);Ov001_AbortWhSession();return;}
 SetWhStatus(3);
 switch(M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u32 *,0x44)){
-case 3: if(!Ov001_EndKeySharing())func_ov001_02188b04();break;
-case 1:case 5: if(!Ov001_TeardownAndQueueSetup())func_ov001_02188b04();break;
-case 2: if(!Ov001_CloseKeySharingChannel())func_ov001_02188b04();break;
-case 0:case 4: if(!Ov001_ResetWhHostSession())func_ov001_02188b04();break;
+case 3: if(!Ov001_EndKeySharing())Ov001_AbortWhSession();break;
+case 1:case 5: if(!Ov001_TeardownAndQueueSetup())Ov001_AbortWhSession();break;
+case 2: if(!Ov001_CloseKeySharingChannel())Ov001_AbortWhSession();break;
+case 0:case 4: if(!Ov001_ResetWhHostSession())Ov001_AbortWhSession();break;
 }
 }
 }
@@ -446,7 +448,7 @@ void Ov001_UpdateChildSearch(void) {
         M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) = 3;
         return;
     case WH_STATUS_PARENT_START:
-        func_ov001_02188b04();
+        Ov001_AbortWhSession();
         return;
     case WH_STATUS_BUSY:
         break;

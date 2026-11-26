@@ -177,7 +177,7 @@ gCur3DSpriteEngine=saved;
 }
 #pragma opt_peephole reset
 #pragma opt_common_subs reset
-s32 func_ov003_02209cc8(void *arg0) {
+s32 ScrollBar_IsGrabbed(void *arg0) {
     return M2C_FIELD(M2C_FIELD(arg0, void **, 0x1C), u8 *, 6) | M2C_FIELD(arg0, u8 *, 6);
 }
 

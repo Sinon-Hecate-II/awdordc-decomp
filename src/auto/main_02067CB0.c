@@ -13,7 +13,7 @@ u64 func_0206a76c(int,int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *,s32 *);
 f64 ScanFloatStrtod(int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *);
 f64 _f2d(f32);
 f32 _d2f(f64);
-int func_02065020(void *,const char *,int);
+int MultibyteCharToWideChar(void *,const char *,int);
 #pragma opt_peephole off
 s32 ScanFormatted(s32 (*get)(void *,s32,s32),void *ctx,s32 arg2,s32 arg3,s32 safe){
 char *fmt=(char *)arg2;u32 *args=(u32 *)arg3;void *dst;
@@ -134,7 +134,7 @@ out=dst;original=out;
 while(spec.width--!=0 && (!safe || (valid=size>(u32)used)) && (raw=get(ctx,0,0))!=-1){
 ch=raw;
 if(spec.length!=10)*out++=ch;
-else {func_02065020(out,&ch,1);out++;}
+else {MultibyteCharToWideChar(out,&ch,1);out++;}
 used++;
 }
 ch=raw;
@@ -179,7 +179,7 @@ while(spec.width--!=0 && (!safe || (valid=size>=(u32)used)) && (raw=get(ctx,0,0)
 ch=raw;
 if(!(spec.set[(u8)ch>>3]&(1<<(ch&7))))break;
 if(spec.length!=10)*out++=ch;
-else {func_02065020(out,&ch,1);out+=2;}
+else {MultibyteCharToWideChar(out,&ch,1);out+=2;}
 used++;
 }
 ch=raw;
@@ -317,17 +317,18 @@ cb(id);
 return 0;
 }
 
-s32 StringLength(s8 *arg0) {
-    s32 var_r2;
-    s8 *var_r0;
-    s8 temp_r1;
+/* Return the number of bytes before the NUL terminator of the string at `str`. */
+s32 StringLength(s8 *str) {
+    s32 length;
+    s8 *p;
+    s8 c;
 
-    var_r0 = arg0;
-    var_r2 = -1;
+    p = str;
+    length = -1;
     do {
-        temp_r1 = *var_r0;
-        var_r0 += 1;
-        var_r2 += 1;
-    } while (temp_r1 != 0);
-    return var_r2;
+        c = *p;
+        p += 1;
+        length += 1;
+    } while (c != 0);
+    return length;
 }

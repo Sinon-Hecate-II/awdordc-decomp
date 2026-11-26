@@ -388,7 +388,7 @@ sx+=x; sy+=y; n++;
 }
 CreateScreenOffsetEffect(1,20,0); CreateScreenFlash(4,0,2,0);
 if(n>0) PlaySoundAtTile(0x6d,Divide(sx,n),Divide(sy,n));
-else func_0208facc(0x6d);
+else PlaySoundAtCurrentVolume(0x6d);
 }
 
 /* Centres the map view on the average tile of the battle targets from index
@@ -576,10 +576,12 @@ void CreateAuroraStrikeEffect(s32 x, s32 y, s16 firstTarget, M2C_UNK parent) {
     PanMapViewToTargetCenter(firstTarget);
 }
 
-void func_020b6fd8(void *arg0) {
+/* Start handler of a map-view pan effect task: clear the effect sprite pool,
+ * then pan the view onto the tile stored at +0x34/+0x38 of the task. */
+void StartMapViewPanEffect(void *task) {
     M2C_UNK PanMapViewToTile(s32, s32);
     ResetEffectSpritePool();
-    PanMapViewToTile(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
+    PanMapViewToTile(M2C_FIELD(task, s32 *, 0x34), M2C_FIELD(task, s32 *, 0x38));
 }
 
 /* Spawn the "gas_ball_up" gas effect over the task's tile: load its sprite sheet,

@@ -455,6 +455,12 @@ typedef struct SoundChannelRecord {
 #define SOUND_MENU_SELECT  0x10019 /* the highlighted list entry changed or was chosen */
 #define SOUND_MENU_TAB     0x10020 /* the active tab changed */
 #define SOUND_MENU_CLOSE   0x10022 /* the screen's close/back action was taken */
+#define SOUND_MENU_CHANGE  0x10011 /* an option value or slider changed */
+#define SOUND_MENU_DENIED  0x1001D /* the action is not possible (a slot or map is unavailable) */
+
+/* Parameters Sound_SetPlayerParameter hands the ARM7 driver (command 7). */
+#define SOUND_PLAYER_PARAM_PAN  9 /* the sequence player's pan */
+#define SOUND_PLAYER_PARAM_PITCH 0xC /* the sequence player's pitch: Sound_SetPlayerPitch, Ov001_SetScrollDragSoundPitch */
 
 /* The text window's sounds: the open one plays from NotifyWindowOpened, the
  * close one from NotifyWindowClosed; a window opened during a link session plays

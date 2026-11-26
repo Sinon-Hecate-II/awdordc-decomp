@@ -53,7 +53,7 @@ s32 func_ov009_022242c8(void) {
     s32 IsLinkResultFlagSet(s32);
     M2C_UNK ResetLinkQueues(void);
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
-    void func_ov009_022213f0(M2C_UNK, M2C_UNK);
+    void SetLocalPlayerInfoName(M2C_UNK, M2C_UNK);
     void *GetLocalPlayerName(void);
     M2C_UNK GetEarnedRecordTierTotal(void);
     M2C_UNK GetRecordRank(void);
@@ -142,7 +142,7 @@ s32 func_ov009_022242c8(void) {
     stk[0] = stk[6];
     stk[1] = stk[7];
 
-    func_ov009_022213f0((s32)&gLinkLocalPlayerInfo, (s32)GetLocalPlayerName());
+    SetLocalPlayerInfoName((s32)&gLinkLocalPlayerInfo, (s32)GetLocalPlayerName());
 
     GetEarnedRecordTierTotal();
     M2C_FIELD(&gLinkState, s8 *, 0x158) = (u8)GetRecordRank();

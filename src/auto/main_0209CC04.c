@@ -49,20 +49,24 @@ void func_0209cca8(void *arg0) {
  M2C_FIELD(arg0, void (**)(void *), 0x34)(arg0);
 }
 
-void CreateQueuedSpriteTask(s32 arg0) {
+/* Create a queued 3D sprite task of class g3DSpriteTaskClass and record
+ * `callback` as the function the engine runs at DS3D_TASK_CALLBACK. */
+void CreateQueuedSpriteTask(void *callback) {
     void *CreateSpriteFromClass(M2C_UNK *);
-    extern M2C_UNK data_0211e010;
-    M2C_FIELD(CreateSpriteFromClass(&data_0211e010), s32 *, 0x34) = arg0;
+    extern M2C_UNK g3DSpriteTaskClass;
+    M2C_FIELD(CreateSpriteFromClass(&g3DSpriteTaskClass), void **, DS3D_TASK_CALLBACK) = callback;
 }
 
 void func_0209ccd4(void *arg0) {
  M2C_FIELD(arg0, void (**)(void *), 0x34)(arg0);
 }
 
-void CreateFrameCallbackTask(s32 arg0) {
+/* Create a 3D sprite of the frame-callback task class and register `callback`
+ * as the function it runs on every frame. */
+void CreateFrameCallbackTask(s32 callback) {
     void *CreateSpriteFromClass(M2C_UNK *);
     extern M2C_UNK gFrameCallbackTaskClass;
-    M2C_FIELD(CreateSpriteFromClass(&gFrameCallbackTaskClass), s32 *, 0x34) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&gFrameCallbackTaskClass), s32 *, DS3D_TASK_CALLBACK) = callback;
 }
 
 /* Destroy every frame-callback task sprite whose registered callback is
@@ -865,9 +869,11 @@ void UpdateTimedSprite(void *sprite) {
     DeleteSpriteObject(sprite);
 }
 
-void CreateTimedSprite(s32 arg0) {
+/* Create a sprite of the timed-sprite class that deletes itself once it has
+ * lived for `frames` frames. */
+void CreateTimedSprite(s32 frames) {
     extern M2C_UNK gTimedSpriteClass;
-    M2C_FIELD(CreateSpriteFromClass(&gTimedSpriteClass), s32 *, 0x60) = arg0;
+    M2C_FIELD(CreateSpriteFromClass(&gTimedSpriteClass), s32 *, DS3D_SPRITE_LIFETIME_FRAMES) = frames;
 }
 
 void func_0209dad8(void **arg0) {

@@ -237,8 +237,8 @@ void func_ov007_0221f238(void) {
 }
 
 void func_ov007_0221f244(void) {
-    M2C_UNK func_ov007_0221e85c();
-    func_ov007_0221e85c();
+    M2C_UNK MapEditorFreeGlyphKeyboard();
+    MapEditorFreeGlyphKeyboard();
 }
 
 void func_ov007_0221f250(void **arg0) {

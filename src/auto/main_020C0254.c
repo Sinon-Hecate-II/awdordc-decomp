@@ -733,7 +733,7 @@ s32 CreateMapPreviewLayerSprite(s32 vram) {
     return 1;
 }
 
-void func_020c121c(void) {
+void RemoveMapPreviewLayerSprite(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02129690;
     DeleteSpriteObjectsOfClass(&data_02129690);

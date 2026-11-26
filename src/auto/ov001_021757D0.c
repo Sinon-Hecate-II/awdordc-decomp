@@ -298,9 +298,12 @@ s32 Ov001_GetScreenLayout(void) {
     return ((S *)&gOv001ScreenState)->val;
 }
 
-s32 Ov001_HasOptionFlag(s32 arg0) {
+/* Whether any of the screen options in `optionMask` is set: the screen options
+ * word keeps option n at bit 4+n, so shifting it down aligns mask bit n. */
+s32 Ov001_HasScreenOption(s32 optionMask) {
     extern u8 gOv001ScreenState;
-    if (arg0 & ((u32)M2C_FIELD(&gOv001ScreenState, s32 *, 8) >> 4)) {
+
+    if (optionMask & ((u32)M2C_FIELD(&gOv001ScreenState, s32 *, OV001_SCREEN_OPTIONS) >> 4)) {
         return 1;
     }
     return 0;

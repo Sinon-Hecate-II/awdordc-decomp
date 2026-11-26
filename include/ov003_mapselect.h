@@ -41,6 +41,17 @@
  * object of that class, or returns 0 before a class has been set. */
 #define SCENE_STATE_CLASS 0x0C /* s32 class descriptor */
 
+/* gOv003SceneState+5: the scene's lifecycle state: 0 while the scene is being
+ * built, 1 once it is up and taking input (IsOv003SceneActive), 2 once the
+ * player's choice has been confirmed, 3 once the screen starts fading out for
+ * the battle, and 4 after the scene view's destructor has closed it
+ * (IsOv003SceneClosed). */
+#define SCENE_STATE_CREATING  0
+#define SCENE_STATE_ACTIVE    1
+#define SCENE_STATE_CONFIRMED 2
+#define SCENE_STATE_BATTLE    3
+#define SCENE_STATE_CLOSED    4
+
 /* A scene sprite definition (one screen object keeps it at +0x3C): the engine
  * it is drawn on and the sprite sheet tiles and palette its 3D sprite loads.
  * The scene's 3D sprite is built from it. */

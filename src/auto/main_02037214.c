@@ -186,9 +186,11 @@ void ClearNetError(void) {
     }
 }
 
+/* Whether the network error record holds an error (any code but NET_ERROR_NONE). */
 s32 HasNetError(void) {
-    extern s32 gNetError;
-    if (gNetError != 0) {
+    extern M2C_UNK gNetError;
+
+    if (gNetError != NET_ERROR_NONE) {
         return 1;
     }
     return 0;
@@ -255,7 +257,7 @@ void HeapFree(M2C_UNK heap, M2C_UNK block, M2C_UNK size) {
         heap, GetHeapBlockHeader(block), size);
 }
 
-M2C_UNK func_02037714(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+M2C_UNK HeapRealloc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     M2C_UNK HeapReallocAligned(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 dummy = 0;
     (void)dummy;
@@ -284,9 +286,12 @@ void gpiMalloc(M2C_UNK arg0) {
     HeapAlloc(5, arg0);
 }
 
-void gpiRealloc(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02037714(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_02037714(5, arg0, arg1, arg1);
+/* Grow or shrink the GPI allocation `block` to `size` bytes; the GPI library
+ * allocates from heap 5.  The new block's address is left in the return register
+ * for the callers that use gpiRealloc's result. */
+void gpiRealloc(M2C_UNK block, M2C_UNK size) {
+    M2C_UNK HeapRealloc(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    HeapRealloc(GPI_HEAP_ID, block, size, size);
 }
 
 void gpiFree(M2C_UNK arg0) {

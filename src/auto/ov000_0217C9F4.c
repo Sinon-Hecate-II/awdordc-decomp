@@ -1,6 +1,7 @@
 /* 7 functions from 0x0217C9F4 to 0x0217D86C (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 extern void **gCurrentMap;
 static inline s32 UnitIndexC9f4(void *p) { s32 n; if(p)n=((u8 *)p-((u8 *)*gCurrentMap+0x59a4))/14;else n=0;return n; }
 static inline s32 UnitOwnerC9f4(void *p) { if(p)return (UnitIndexC9f4(p)>>6)+1;return 0; }
@@ -19,7 +20,7 @@ unit->targetX=x;unit->targetY=y;
 }
 
 #pragma opt_strength_reduction off
-s32 func_ov000_0217c9f4(Unit0217d428 *unit) {
+s32 CountThreateningEnemies(Unit0217d428 *unit) {
 s32 GetUnitAttackClass(u32);
 s32 func_ov000_0217c4c8(void *);
 s32 GetUnitMoveRange(s32,u32);
@@ -136,7 +137,7 @@ rowOffset=M2C_FIELD(map+row*2,u16 *,MAP_ROW_OFFSETS);
 candidate=unitsBase+M2C_FIELD(rowOffset,u8 *,map+col)*14;
 if(!((u32)(candidate[0]<<26)>>26)||candidate==M2C_FIELD(map,u8 **,MAP_CURSOR_UNIT))goto next;
 unitIndex=candidate ? (candidate-unitsBase)/14:0;
-if(!func_020d27a4(M2C_FIELD(map,u8 *,MAP_CURSOR_UNIT_ID),unitIndex))goto next;
+if(!AreUnitIdsOnSameTeam(M2C_FIELD(map,u8 *,MAP_CURSOR_UNIT_ID),unitIndex))goto next;
 if(!GetUnitDamagePercent((u32)(candidate[0]<<26)>>26,(u32)(target[0]<<26)>>26))goto next;
 if(GetKindAttackClass((u32)(candidate[0]<<26)>>26))goto next;
 if(IsFootUnitKind((u32)(candidate[0]<<26)>>26))goto next;
@@ -280,7 +281,11 @@ loopinc:
     }
 }
 #pragma opt_strength_reduction on
+/* Drop the action flag BeginAiTurn raises (bit 3 of the AI command state's
+ * flags) once the AI starts picking its units' actions for the turn. */
 void ClearAiActionFlags(void) {
     extern void *gAiCommandState;
-    M2C_FIELD(gAiCommandState, u8 *, 7) = (u8) (M2C_FIELD(gAiCommandState, u8 *, 7) & ~8);
+
+    M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_FLAGS) =
+        (u8)(M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_FLAGS) & ~8);
 }

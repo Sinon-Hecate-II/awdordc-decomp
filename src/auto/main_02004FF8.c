@@ -169,20 +169,20 @@ void func_02005254(void) {
 #pragma opt_propagation reset
 void func_02005288(void) {
 extern s32 data_0212dc7c;
-void WaitByLoop(s32); void func_020053a0(s32,s32,s32);void func_02005424(s32,s32,s32);void CpuFill(s32,void *,s32);
+void WaitByLoop(s32); void OS_LockByWordNoFiq(s32,s32,s32);void OS_UnlockByWordNoFiq(s32,s32,s32);void CpuFill(s32,void *,s32);
 volatile u8 *p=(volatile u8 *)0x027ffff0;
 if(data_0212dc7c)return;
 *(volatile s32 *)p=0;
 *(s32 *)&data_0212dc7c=1;
-func_020053a0(0x7e,0x027ffff0,0);
+OS_LockByWordNoFiq(0x7e,0x027ffff0,0);
 while(*(volatile u16 *)(p+6))WaitByLoop(0x400);
 *(volatile s32 *)0x027fffb0=-1;
 *(volatile s32 *)0x027fffb4=0xffff0000;
 CpuFill(0,(void *)0x027fffc0,0x28);
 *(volatile u16 *)0x04000204|=0x800;
 *(volatile u16 *)0x04000204|=0x80;
-func_02005424(0x7e,0x027ffff0,0);
-func_020053a0(0x7f,0x027ffff0,0);
+OS_UnlockByWordNoFiq(0x7e,0x027ffff0,0);
+OS_LockByWordNoFiq(0x7f,0x027ffff0,0);
 }
 
 /* Block until the lock word at `lockAddress` is taken for `lockId`: retry
@@ -199,7 +199,7 @@ M2C_UNK OS_LockByWord(M2C_UNK lockId, M2C_UNK lockAddress, M2C_UNK onLock, M2C_U
     } while (OSi_DoLockByWord(lockId, lockAddress, onLock, maskFiq) > 0);
 }
 
-void func_020053a0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void OS_LockByWordNoFiq(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK OS_LockByWord(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     OS_LockByWord(arg0, arg1, arg2, 0);
 }
@@ -233,7 +233,7 @@ s32 OSi_DoUnlockByWord(s32 lockId, s32 lockAddress, s32 onUnlock, s32 maskFiq) {
     return 0;
 }
 
-void func_02005424(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void OS_UnlockByWordNoFiq(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK OSi_DoUnlockByWord(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     OSi_DoUnlockByWord(arg0, arg1, arg2, 0);
 }
@@ -297,21 +297,25 @@ void OSi_EnableFIQ(void) {
     *(u16 *)0x04000204 |= 0x80;
 }
 
-void func_0200551c(M2C_UNK arg0) {
-    void func_02005554(void);
-    func_020053a0(arg0, 0x027FFFE0, (M2C_UNK)func_02005554);
+/* Take the game card's shared OS lock word for `lockId`; OSi_DisableCardInterrupt
+ * masks the card interrupt until OSi_UnlockCard frees the word again. */
+void OSi_LockCard(M2C_UNK lockId) {
+    void OSi_DisableCardInterrupt(void);
+    OS_LockByWordNoFiq(lockId, CARD_LOCK_WORD_ADDR, (M2C_UNK)OSi_DisableCardInterrupt);
 }
 
-void func_02005538(M2C_UNK arg0) {
-    void func_0200556c(void);
-    func_02005424(arg0, 0x027FFFE0, (M2C_UNK)func_0200556c);
+/* Release the game card's shared OS lock word for `lockId`; OSi_EnableCardInterrupt
+ * re-enables the CARD interrupt once the word is free.  Core of OS_UnlockCard. */
+void OSi_UnlockCard(M2C_UNK lockId) {
+    void OSi_EnableCardInterrupt(void);
+    OS_UnlockByWordNoFiq(lockId, CARD_LOCK_WORD_ADDR, (M2C_UNK)OSi_EnableCardInterrupt);
 }
 
-void func_02005554(void) {
+void OSi_DisableCardInterrupt(void) {
     *(u16 *)0x04000204 &= ~0x800;
 }
 
-void func_0200556c(void) {
+void OSi_EnableCardInterrupt(void) {
     *(u16 *)0x04000204 |= 0x800;
 }
 
@@ -737,15 +741,17 @@ void *FindNextReadyThread(void) {
     return thread;
 }
 
+/* Yield the CPU at a scheduler switch point: mask interrupts, pick the next
+ * runnable thread and switch to it, then restore the interrupt state. */
 void OS_Reschedule(void) {
 
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    s32 temp_r4;
+    s32 irqState;
 
-    temp_r4 = OS_DisableInterrupts();
+    irqState = OS_DisableInterrupts();
     RescheduleThreads();
-    OS_RestoreInterrupts(temp_r4);
+    OS_RestoreInterrupts(irqState);
 }
 
 /* Round-robin between the ready threads of the running thread's priority: the

@@ -49,13 +49,17 @@ void TcpReadPeerMss(const TcpSegment *segment, void *connection) {
     }
 }
 
-s32 CanSendToNextHop(s32 arg0) {
-    s32 GetIpNextHop();
-    s32 FindArpMacAddress();
-    if (GetIpNextHop() == 0) {
+/* True when a frame for IPv4 address `destIp` can be sent right away: there is
+ * no next hop to reach, or the next hop's MAC address is already in the ARP
+ * cache (otherwise the caller has to resolve it first). */
+s32 CanSendToNextHop(s32 destIp) {
+    M2C_UNK GetIpNextHop(s32);
+    M2C_UNK FindArpMacAddress(s32);
+    s32 nextHop = GetIpNextHop(destIp);
+    if (nextHop == 0) {
         return 1;
     }
-    return FindArpMacAddress();
+    return FindArpMacAddress(nextHop);
 }
 
 /* Send a TCP control segment (no payload) for `conn` with the given flags.  On

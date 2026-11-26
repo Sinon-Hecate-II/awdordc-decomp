@@ -172,10 +172,14 @@ void func_020c4764(M2C_UNK arg0) {
     CreateSpriteObject(&data_0212a3cc, arg0);
 }
 
-s32 GetRecordProfileId(s32 arg0) {
- M2C_UNK *GetProfileSaveBlock(void);
- s32 GetPlayerRecordId(void *,s32);
- return GetPlayerRecordId((u8 *)GetProfileSaveBlock()+4,arg0);
+/* Resolve the GameSpy profile id behind a 12-byte match player record, through
+ * the local profile-id block: 0 when the record has none, -1 while it is still
+ * unresolved, otherwise the record's profile id. */
+s32 GetRecordProfileId(s32 playerRecord) {
+    M2C_UNK *GetProfileSaveBlock(void);
+    s32 GetPlayerRecordId(void *, s32);
+
+    return GetPlayerRecordId((u8 *)GetProfileSaveBlock() + PROFILE_ID_BLOCK, playerRecord);
 }
 
 /* Return the index of the first battle-save slot whose summary names no player,
@@ -376,59 +380,70 @@ M2C_UNK *GetBattleSaveBlock(void) {
     return &gBattleSaveBlock;
 }
 
-s32 IsProfileIdBlockValid(s32 arg0) {
+/* Check the profile-id block of save block `profile` (or of the local profile
+ * save block when it is null) with its CRC; nonzero when the block is intact. */
+s32 IsProfileIdBlockValid(s32 profile) {
     M2C_UNK VerifyProfileIdBlockCrc(s32);
-    s32 var_r0;
+    s32 block;
 
-    var_r0 = arg0;
-    if (var_r0 == 0) {
-        var_r0 = GetProfileSaveBlock();
+    block = profile;
+    if (block == 0) {
+        block = GetProfileSaveBlock();
     }
-    VerifyProfileIdBlockCrc(var_r0 + 4);
+    VerifyProfileIdBlockCrc(block + PROFILE_ID_BLOCK);
 }
 
-void func_020c4b88(s32 arg0) {
+/* Check whether the profile-id block of save block `profile` (or of the local
+ * profile save block when it is null) records the local player. */
+s32 IsProfileIdBlockLocalRecord(s32 profile) {
     M2C_UNK IsLocalProfileRecord(s32);
-    s32 var_r0;
+    s32 block;
 
-    var_r0 = arg0;
-    if (var_r0 == 0) {
-        var_r0 = GetProfileSaveBlock();
+    block = profile;
+    if (block == 0) {
+        block = GetProfileSaveBlock();
     }
-    IsLocalProfileRecord(var_r0 + 4);
+    IsLocalProfileRecord(block + PROFILE_ID_BLOCK);
 }
 
-void func_020c4ba4(s32 arg0) {
+/* Whether the NAS player key of profile save record `profile` (NULL for the local
+ * profile) has been resolved; the key lives in the record's profile-id block. */
+s32 IsProfileNasKeyResolved(s32 profile) {
     M2C_UNK HasResolvedNasProfileKey(s32);
-    s32 var_r0;
+    s32 block;
 
-    var_r0 = arg0;
-    if (var_r0 == 0) {
-        var_r0 = GetProfileSaveBlock();
+    block = profile;
+    if (block == 0) {
+        block = GetProfileSaveBlock();
     }
-    HasResolvedNasProfileKey(var_r0 + 4);
+    return HasResolvedNasProfileKey(block + PROFILE_ID_BLOCK);
 }
 
-void IsProfileKeySet(s32 arg0) {
-    M2C_UNK func_020324e4(s32);
-    s32 var_r0;
+/* Check the NAS-key-set flag of the profile-id block of save block `profile` (or
+ * of the local profile save block when it is null). */
+s32 IsProfileKeySet(s32 profile) {
+    M2C_UNK IsNasProfileKeySetVeneer(s32);
+    s32 block;
 
-    var_r0 = arg0;
-    if (var_r0 == 0) {
-        var_r0 = GetProfileSaveBlock();
+    block = profile;
+    if (block == 0) {
+        block = GetProfileSaveBlock();
     }
-    func_020324e4(var_r0 + 4);
+    IsNasProfileKeySetVeneer(block + PROFILE_ID_BLOCK);
 }
 
-void ClearProfileNasKey(s32 arg0) {
-    M2C_UNK func_02032508(s32);
-    s32 var_r0;
+/* Clear the NAS key stored in the profile-id block of `profileBlock`, defaulting
+ * to the global profile save block when none is given. */
+void ClearProfileNasKey(void *profileBlock) {
+    M2C_UNK *GetProfileSaveBlock(void);
+    M2C_UNK ClearNasProfileKeyVeneer(void *);
+    void *block;
 
-    var_r0 = arg0;
-    if (var_r0 == 0) {
-        var_r0 = GetProfileSaveBlock();
+    block = profileBlock;
+    if (block == 0) {
+        block = GetProfileSaveBlock();
     }
-    func_02032508(var_r0 + 4);
+    ClearNasProfileKeyVeneer((u8 *)block + PROFILE_ID_BLOCK);
 }
 
 /* Save a profile-save sprite's local-play user data: clear the profile's NAS key,

@@ -287,10 +287,12 @@ M2C_FIELD(gSpriteSlotManager,s16 *,SPRITE_SLOT_MGR_FRAME_BR_X)=right;
 M2C_FIELD(gSpriteSlotManager,s16 *,SPRITE_SLOT_MGR_FRAME_BR_Y)=bottom;
 }
 
-void SetSpriteSlotScroll(s16 a,s16 b) {
-extern void *gSpriteSlotManager;
-M2C_FIELD(gSpriteSlotManager,s16 *,0x20)=a;
-M2C_FIELD(gSpriteSlotManager,s16 *,0x22)=b;
+/* Set the offsets the sprite-slot focus frame is drawn at, from the top-left
+ * corner of its slot (used to scroll a slot's contents in and out). */
+void SetSpriteSlotScroll(s16 offsetX, s16 offsetY) {
+    extern void *gSpriteSlotManager;
+    M2C_FIELD(gSpriteSlotManager, s16 *, SPRITE_SLOT_MGR_FRAME_OFF_X) = offsetX;
+    M2C_FIELD(gSpriteSlotManager, s16 *, SPRITE_SLOT_MGR_FRAME_OFF_Y) = offsetY;
 }
 
 s32 FocusSpriteSlotById(s32 arg0) {
@@ -437,7 +439,7 @@ u8 func_020b212c(void) {
     return M2C_FIELD(gSpriteSlotManager, u8 *, 8);
 }
 
-void func_020b2140(void) {
+void ClearSpriteSlotFocusFlag(void) {
 extern void *gSpriteSlotManager;
 M2C_FIELD(gSpriteSlotManager,u8 *,0x25)=0;
 }

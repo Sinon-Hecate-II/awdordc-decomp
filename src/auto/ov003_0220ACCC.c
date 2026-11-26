@@ -1,6 +1,7 @@
 /* 13 functions from 0x0220ACCC to 0x0220BCAC (ov003), found by ds-decomp. */
 #include "common.h"
 #include "ov003_menu.h"
+#include "sound.h"
 
 /* Configures the path entries for the selected table index, using the simple path for 0/1 entries. */
 void func_ov003_0220accc(void *obj, s32 index) {
@@ -48,11 +49,14 @@ void func_ov003_0220accc(void *obj, s32 index) {
     M2C_FIELD(M2C_FIELD(obj, void **, 0x58), s16 *, 6) = -4;
 }
 
-void Ov003_HandleMenuInput(void *a) {
+/* Handle one frame of the unit-list menu's input (up/down pick a row, left/right
+ * step its option, A/Start confirms, B backs out, Y resets), pass touches to the
+ * two scroll bars and the list, and start the row animation for the new row. */
+void Ov003_HandleMenuInput(void *menu) {
 #pragma opt_common_subs off
 extern void *gKeyState,*gTouchState;
 u8 Ov003_GetSelectedRowIndex(void *);
-s16 func_ov003_0220b7b8(void *);
+s16 ScrollBar_GetValue(void *);
 void Ov003_AnimateUnitListButtons(void *);
 u8 IsMenuSplitPairRow0(void *,s32);
 u8 IsMenuSplitPairRow1(void *,s32);
@@ -63,88 +67,88 @@ void Ov003_StepOptionCounter1(void *,s32);
 void ScrollA9SliderBy(void *,s32);
 void MarkMenuSplitSelection(void *);
 void func_ov003_0220bbcc(void *);
-s32 i,left,right,active,pos,old;u16 held,press;
-if(!((u32)(M2C_FIELD(a,u8 *,0x38)<<31)>>31))return;
-i=Ov003_GetSelectedRowIndex(a);
-left=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x60));
-right=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x64));
+s32 row,musicStart,sfxStart,active,touchRow,oldRow;u16 repeat,pressed;
+if(!((u32)(M2C_FIELD(menu,u8 *,MENU_FLAGS)<<31)>>31))return;
+row=Ov003_GetSelectedRowIndex(menu);
+musicStart=ScrollBar_GetValue(M2C_FIELD(menu,void **,MENU_MUSIC_SLIDER));
+sfxStart=ScrollBar_GetValue(M2C_FIELD(menu,void **,MENU_SFX_SLIDER));
 active=1;
-Ov003_AnimateUnitListButtons(M2C_FIELD(a,void **,0x68));
-held=M2C_FIELD(gKeyState,u16 *,2);press=M2C_FIELD(gKeyState,u16 *,0);
-if((((held&64)&&i!=0)||(press&64))&&!M2C_FIELD(gTouchState,u8 *,0x12)) {
-if(i==0){if(press&64)i=M2C_FIELD(M2C_FIELD(a,void **,0x44),u8 *,0)-1;else i=Ov003_GetSelectedRowIndex(a);}else i--;
-}else if((((held&128)&&i!=M2C_FIELD(M2C_FIELD(a,void **,0x44),u8 *,0)-1)||(press&128))&&!M2C_FIELD(gTouchState,u8 *,0x12)){
-if(i==M2C_FIELD(M2C_FIELD(a,void **,0x44),u8 *,0)-1){if(press&128)i=0;else i=Ov003_GetSelectedRowIndex(a);}else i++;
+Ov003_AnimateUnitListButtons(M2C_FIELD(menu,void **,MENU_BUTTONS));
+repeat=M2C_FIELD(gKeyState,u16 *,2);pressed=M2C_FIELD(gKeyState,u16 *,0);
+if((((repeat&KEY_UP)&&row!=0)||(pressed&KEY_UP))&&!M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE)) {
+if(row==0){if(pressed&KEY_UP)row=M2C_FIELD(M2C_FIELD(menu,void **,MENU_ROW_GROUP),u8 *,MENU_ROW_GROUP_COUNT)-1;else row=Ov003_GetSelectedRowIndex(menu);}else row--;
+}else if((((repeat&KEY_DOWN)&&row!=M2C_FIELD(M2C_FIELD(menu,void **,MENU_ROW_GROUP),u8 *,MENU_ROW_GROUP_COUNT)-1)||(pressed&KEY_DOWN))&&!M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE)){
+if(row==M2C_FIELD(M2C_FIELD(menu,void **,MENU_ROW_GROUP),u8 *,MENU_ROW_GROUP_COUNT)-1){if(pressed&KEY_DOWN)row=0;else row=Ov003_GetSelectedRowIndex(menu);}else row++;
 }
-held=M2C_FIELD(gKeyState,u16 *,2);
-if((held&32)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
-if(IsMenuSplitPairRow0(a,(u8)i))ScrollBar_ScrollBy(M2C_FIELD(a,void **,0x60),-8);
-if(IsMenuSplitPairRow1(a,(u8)i))ScrollBar_ScrollBy(M2C_FIELD(a,void **,0x64),-8);
-if(Ov003_IsSplitRow(a,(u8)i)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));if(IsMenuSplitCounter0Row(a,(u8)i))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),-1);if(IsMenuSplitCounter1Row(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(IsMenuSplitCounter2Row(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);}
-if(IsMenuSplitOptionRow(a,(u8)i))PlaySoundEffect(0x10011);
-MarkMenuSplitSelection(a);
+repeat=M2C_FIELD(gKeyState,u16 *,2);
+if((repeat&KEY_LEFT)&&!M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE)){
+if(IsMenuSplitPairRow0(menu,(u8)row))ScrollBar_ScrollBy(M2C_FIELD(menu,void **,MENU_MUSIC_SLIDER),-8);
+if(IsMenuSplitPairRow1(menu,(u8)row))ScrollBar_ScrollBy(M2C_FIELD(menu,void **,MENU_SFX_SLIDER),-8);
+if(Ov003_IsSplitRow(menu,(u8)row)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_STEP_LEFT));if(IsMenuSplitCounter0Row(menu,(u8)row))Ov003_StepOptionCounter0(M2C_FIELD(menu,void **,MENU_OPTION_COUNTERS),-1);if(IsMenuSplitCounter1Row(menu,(u8)row))Ov003_StepOptionCounter1(M2C_FIELD(menu,void **,MENU_OPTION_COUNTERS),-1);if(IsMenuSplitCounter2Row(menu,(u8)row))ScrollA9SliderBy(M2C_FIELD(menu,void **,MENU_OPTION_COUNTERS),-1);}
+if(IsMenuSplitOptionRow(menu,(u8)row))PlaySoundEffect(SOUND_MENU_CHANGE);
+MarkMenuSplitSelection(menu);
 }
-else if((held&16)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
-if(IsMenuSplitPairRow0(a,(u8)i))ScrollBar_ScrollBy(M2C_FIELD(a,void **,0x60),8);
-if(IsMenuSplitPairRow1(a,(u8)i))ScrollBar_ScrollBy(M2C_FIELD(a,void **,0x64),8);
-if(Ov003_IsSplitRow(a,(u8)i)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));if(IsMenuSplitCounter0Row(a,(u8)i))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),1);if(IsMenuSplitCounter1Row(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(IsMenuSplitCounter2Row(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);}
-if(IsMenuSplitOptionRow(a,(u8)i))PlaySoundEffect(0x10011);
-MarkMenuSplitSelection(a);
+else if((repeat&KEY_RIGHT)&&!M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE)){
+if(IsMenuSplitPairRow0(menu,(u8)row))ScrollBar_ScrollBy(M2C_FIELD(menu,void **,MENU_MUSIC_SLIDER),8);
+if(IsMenuSplitPairRow1(menu,(u8)row))ScrollBar_ScrollBy(M2C_FIELD(menu,void **,MENU_SFX_SLIDER),8);
+if(Ov003_IsSplitRow(menu,(u8)row)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_STEP_RIGHT));if(IsMenuSplitCounter0Row(menu,(u8)row))Ov003_StepOptionCounter0(M2C_FIELD(menu,void **,MENU_OPTION_COUNTERS),1);if(IsMenuSplitCounter1Row(menu,(u8)row))Ov003_StepOptionCounter1(M2C_FIELD(menu,void **,MENU_OPTION_COUNTERS),1);if(IsMenuSplitCounter2Row(menu,(u8)row))ScrollA9SliderBy(M2C_FIELD(menu,void **,MENU_OPTION_COUNTERS),1);}
+if(IsMenuSplitOptionRow(menu,(u8)row))PlaySoundEffect(SOUND_MENU_CHANGE);
+MarkMenuSplitSelection(menu);
 }
 
-if((M2C_FIELD(gKeyState,u16 *,0)&0x800)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
-if(func_ov003_02207a70(a)&&func_ov003_02207a54(a))func_ov003_0220bbcc(a);active=0;
+if((M2C_FIELD(gKeyState,u16 *,0)&KEY_Y)&&!M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE)){
+if(Ov003_IsSplitRowMode(menu)&&IsMenuAtRootMode(menu))func_ov003_0220bbcc(menu);active=0;
 }
-if(active&&(M2C_FIELD(gKeyState,u16 *,0)&4)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
-if(func_ov003_02207a70(a)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12));func_ov003_0220bcac(a);PlaySoundEffect(0x1000d);MarkMenuSplitSelection(a);}
-if(func_ov003_02209258(a)){
-if(CampaignSaveSlotInUse(i)){RequestMenuMode(a,2);PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));func_020b4df4(i,a);PlaySoundEffect(0x1000d);}
-else PlaySoundEffect(0x1001d);
+if(active&&(M2C_FIELD(gKeyState,u16 *,0)&KEY_SELECT)&&!M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE)){
+if(Ov003_IsSplitRowMode(menu)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_RESET));func_ov003_0220bcac(menu);PlaySoundEffect(SOUND_MENU_CONFIRM);MarkMenuSplitSelection(menu);}
+if(Ov003_IsCampaignSaveSlotMode(menu)){
+if(CampaignSaveSlotInUse(row)){RequestMenuMode(menu,2);PressWaypointSprite(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_SUBMENU));CreateCampaignSaveSlotPanel(row,menu);PlaySoundEffect(SOUND_MENU_CONFIRM);}
+else PlaySoundEffect(SOUND_MENU_DENIED);
 } active=0;
 }
-if(i!=Ov003_GetSelectedRowIndex(a)){SpriteCellListSelectTile(M2C_FIELD(a,void **,0x5c),(s16)(i+11));PlaySoundEffect(0x10010);}
-ScrollBar_HandleTouch(M2C_FIELD(a,void **,0x60));
-if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60)))ScrollBar_HandleTouch(M2C_FIELD(a,void **,0x64));
-if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!IsMenuSplitPairRow0(a,Ov003_GetSelectedRowIndex(a)))SpriteCellListSelectTile(M2C_FIELD(a,void **,0x5c),11);
-if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x64))&&!IsMenuSplitPairRow1(a,Ov003_GetSelectedRowIndex(a)))SpriteCellListSelectTile(M2C_FIELD(a,void **,0x5c),12);
-if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_02209cc8(M2C_FIELD(a,void **,0x64)))SpriteCellListUpdateTouch(M2C_FIELD(a,void **,0x5c));
-old=Ov003_GetSelectedRowIndex(a);pos=func_ov003_0220bf68(M2C_FIELD(a,void **,0x5c));
-if((active&&(M2C_FIELD(gKeyState,u16 *,0)&9)&&!M2C_FIELD(gTouchState,u8 *,0x12))||old==pos-11){Ov003_ActivateUnitListEntry(a,(u16)old);active=0;}
-else if((active&&(M2C_FIELD(gKeyState,u16 *,0)&2)&&!M2C_FIELD(gTouchState,u8 *,0x12))||MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0))){
-PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));Ov003_ConfirmRowValue(a,(u16)old);PlaySoundEffect(0x1000f);active=0;
-}else if(active&&func_ov003_02207a54(a)&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,20))){
-if(func_ov003_02207a70(a))func_ov003_0220bbcc(a);active=0;
-}else if(active&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12))){
-if(func_ov003_02207a70(a)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12));func_ov003_0220bcac(a);PlaySoundEffect(0x1000d);MarkMenuSplitSelection(a);}active=0;
+if(row!=Ov003_GetSelectedRowIndex(menu)){SpriteCellListSelectTile(M2C_FIELD(menu,void **,MENU_SELECTED_UNIT),(s16)(row+11));PlaySoundEffect(SOUND_MENU_MOVE);}
+ScrollBar_HandleTouch(M2C_FIELD(menu,void **,MENU_MUSIC_SLIDER));
+if(!ScrollBar_IsGrabbed(M2C_FIELD(menu,void **,MENU_MUSIC_SLIDER)))ScrollBar_HandleTouch(M2C_FIELD(menu,void **,MENU_SFX_SLIDER));
+if(ScrollBar_IsGrabbed(M2C_FIELD(menu,void **,MENU_MUSIC_SLIDER))&&!IsMenuSplitPairRow0(menu,Ov003_GetSelectedRowIndex(menu)))SpriteCellListSelectTile(M2C_FIELD(menu,void **,MENU_SELECTED_UNIT),11);
+if(ScrollBar_IsGrabbed(M2C_FIELD(menu,void **,MENU_SFX_SLIDER))&&!IsMenuSplitPairRow1(menu,Ov003_GetSelectedRowIndex(menu)))SpriteCellListSelectTile(M2C_FIELD(menu,void **,MENU_SELECTED_UNIT),12);
+if(!ScrollBar_IsGrabbed(M2C_FIELD(menu,void **,MENU_MUSIC_SLIDER))&&!ScrollBar_IsGrabbed(M2C_FIELD(menu,void **,MENU_SFX_SLIDER)))SpriteCellListUpdateTouch(M2C_FIELD(menu,void **,MENU_SELECTED_UNIT));
+oldRow=Ov003_GetSelectedRowIndex(menu);touchRow=func_ov003_0220bf68(M2C_FIELD(menu,void **,MENU_SELECTED_UNIT));
+if((active&&(M2C_FIELD(gKeyState,u16 *,0)&(KEY_A|KEY_START))&&!M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE))||oldRow==touchRow-11){Ov003_ActivateUnitListEntry(menu,(u16)oldRow);active=0;}
+else if((active&&(M2C_FIELD(gKeyState,u16 *,0)&KEY_B)&&!M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE))||MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_CONFIRM))){
+PressWaypointSprite(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_CONFIRM));Ov003_ConfirmRowValue(menu,(u16)oldRow);PlaySoundEffect(SOUND_MENU_CANCEL);active=0;
+}else if(active&&IsMenuAtRootMode(menu)&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_BACK))){
+if(Ov003_IsSplitRowMode(menu))func_ov003_0220bbcc(menu);active=0;
+}else if(active&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_RESET))){
+if(Ov003_IsSplitRowMode(menu)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_RESET));func_ov003_0220bcac(menu);PlaySoundEffect(SOUND_MENU_CONFIRM);MarkMenuSplitSelection(menu);}active=0;
 }
-if(func_ov003_02209258(a)){if(CampaignSaveSlotInUse(old))EnableMenuSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));else DisableMenuSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));}
-if(active&&IsMenuEnabled(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16))&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16))){
-if(func_ov003_02209258(a)){RequestMenuMode(a,2);PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));func_020b4df4(old,a);PlaySoundEffect(0x1000d);}active=0;
+if(Ov003_IsCampaignSaveSlotMode(menu)){if(CampaignSaveSlotInUse(oldRow))EnableMenuSprite(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_SUBMENU));else DisableMenuSprite(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_SUBMENU));}
+if(active&&IsMenuEnabled(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_SUBMENU))&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_SUBMENU))){
+if(Ov003_IsCampaignSaveSlotMode(menu)){RequestMenuMode(menu,2);PressWaypointSprite(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_SUBMENU));CreateCampaignSaveSlotPanel(oldRow,menu);PlaySoundEffect(SOUND_MENU_CONFIRM);}active=0;
 }
-if(active&&pos>=3&&pos<=M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)+2){
-Ov003_SetRowAnimation(a,M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void **,0x58)+(pos-3)*4,void **,12),u8 *,4));
-M2C_FIELD(a,u8 *,0x34)=30;Ov003_RefreshListRowAnimations(a,5,255);Ov003_ClearSubSpriteLayer1(a);PlaySoundEffect(0x1000f);active=0;
+if(active&&touchRow>=3&&touchRow<=M2C_FIELD(M2C_FIELD(menu,void **,OV003_MENU_HELP_PANEL),u8 *,8)+2){
+Ov003_SetRowAnimation(menu,M2C_FIELD(M2C_FIELD(M2C_FIELD(menu,void **,OV003_MENU_HELP_PANEL)+(touchRow-3)*4,void **,12),u8 *,4));
+M2C_FIELD(menu,u8 *,MENU_ACTION)=30;Ov003_RefreshListRowAnimations(menu,5,255);Ov003_ClearSubSpriteLayer1(menu);PlaySoundEffect(SOUND_MENU_CANCEL);active=0;
 }
-if(active&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4))){
-PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));
-if(IsMenuSplitCounter0Row(a,(u8)old))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),-1);if(IsMenuSplitCounter1Row(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(IsMenuSplitCounter2Row(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);if(IsMenuSplitOptionRow(a,(u8)old))PlaySoundEffect(0x10011);MarkMenuSplitSelection(a);}
-if(active&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8))){
-PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));
-if(IsMenuSplitCounter0Row(a,(u8)old))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),1);if(IsMenuSplitCounter1Row(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(IsMenuSplitCounter2Row(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);if(IsMenuSplitOptionRow(a,(u8)old))PlaySoundEffect(0x10011);MarkMenuSplitSelection(a);}
+if(active&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_STEP_LEFT))){
+PressWaypointSprite(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_STEP_LEFT));
+if(IsMenuSplitCounter0Row(menu,(u8)oldRow))Ov003_StepOptionCounter0(M2C_FIELD(menu,void **,MENU_OPTION_COUNTERS),-1);if(IsMenuSplitCounter1Row(menu,(u8)oldRow))Ov003_StepOptionCounter1(M2C_FIELD(menu,void **,MENU_OPTION_COUNTERS),-1);if(IsMenuSplitCounter2Row(menu,(u8)oldRow))ScrollA9SliderBy(M2C_FIELD(menu,void **,MENU_OPTION_COUNTERS),-1);if(IsMenuSplitOptionRow(menu,(u8)oldRow))PlaySoundEffect(SOUND_MENU_CHANGE);MarkMenuSplitSelection(menu);}
+if(active&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_STEP_RIGHT))){
+PressWaypointSprite(M2C_FIELD(M2C_FIELD(menu,void **,MENU_BUTTONS),void **,MENU_BUTTON_STEP_RIGHT));
+if(IsMenuSplitCounter0Row(menu,(u8)oldRow))Ov003_StepOptionCounter0(M2C_FIELD(menu,void **,MENU_OPTION_COUNTERS),1);if(IsMenuSplitCounter1Row(menu,(u8)oldRow))Ov003_StepOptionCounter1(M2C_FIELD(menu,void **,MENU_OPTION_COUNTERS),1);if(IsMenuSplitCounter2Row(menu,(u8)oldRow))ScrollA9SliderBy(M2C_FIELD(menu,void **,MENU_OPTION_COUNTERS),1);if(IsMenuSplitOptionRow(menu,(u8)oldRow))PlaySoundEffect(SOUND_MENU_CHANGE);MarkMenuSplitSelection(menu);}
 
-if(left!=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x60))){PlaySoundEffect(0x10011);MarkMenuSplitSelection(a);}
-if(right!=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x64))){PlaySoundEffect(0x10011);MarkMenuSplitSelection(a);}
-M2C_FIELD(a,u8 *,0x37)=(M2C_FIELD(a,u8 *,0x37)&~0xf0)|((u32)((u8)old<<28)>>24);
-if(!((u32)(M2C_FIELD(a,u8 *,0x38)<<26)>>31)){
-if(((u32)(M2C_FIELD(a,u8 *,0x37)<<28)>>28)==((u32)(M2C_FIELD(a,u8 *,0x37)<<24)>>28))return;
+if(musicStart!=ScrollBar_GetValue(M2C_FIELD(menu,void **,MENU_MUSIC_SLIDER))){PlaySoundEffect(SOUND_MENU_CHANGE);MarkMenuSplitSelection(menu);}
+if(sfxStart!=ScrollBar_GetValue(M2C_FIELD(menu,void **,MENU_SFX_SLIDER))){PlaySoundEffect(SOUND_MENU_CHANGE);MarkMenuSplitSelection(menu);}
+M2C_FIELD(menu,u8 *,MENU_MODE_HI)=(M2C_FIELD(menu,u8 *,MENU_MODE_HI)&~0xf0)|((u32)((u8)oldRow<<28)>>24);
+if(!((u32)(M2C_FIELD(menu,u8 *,MENU_FLAGS)<<26)>>31)){
+if(((u32)(M2C_FIELD(menu,u8 *,MENU_MODE_HI)<<28)>>28)==((u32)(M2C_FIELD(menu,u8 *,MENU_MODE_HI)<<24)>>28))return;
 }
-Ov003_ApplyRowSelectionAnimations(a);
-M2C_FIELD(a,u8 *,0x37)=(M2C_FIELD(a,u8 *,0x37)&~15)|(((u32)(M2C_FIELD(a,u8 *,0x37)<<24)>>28)&15);
-if(!func_ov003_0220801c(a)&&M2C_FIELD(gTouchState,u8 *,0x12))PlaySoundEffect(0x10010);
-M2C_FIELD(a,u8 *,0x38)&=~32;
+Ov003_ApplyRowSelectionAnimations(menu);
+M2C_FIELD(menu,u8 *,MENU_MODE_HI)=(M2C_FIELD(menu,u8 *,MENU_MODE_HI)&~15)|(((u32)(M2C_FIELD(menu,u8 *,MENU_MODE_HI)<<24)>>28)&15);
+if(!func_ov003_0220801c(menu)&&M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE))PlaySoundEffect(SOUND_MENU_MOVE);
+M2C_FIELD(menu,u8 *,MENU_FLAGS)&=~32;
 }
 #pragma opt_common_subs reset
-s16 func_ov003_0220b7b8(void *arg0) {
+s16 ScrollBar_GetValue(void *arg0) {
     return M2C_FIELD(arg0, s16 *, 0x12);
 }
 

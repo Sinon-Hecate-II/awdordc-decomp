@@ -110,7 +110,16 @@
 #define AI_COMMAND_PRODUCE_CARGO 22 /* make the cursor unit produce its kind-17 cargo unit (AiProduceCargoUnit) */
 #define AI_COMMAND_CAPTURE      7 /* capture the property on the cursor unit's tile (func_020bb110) */
 #define AI_COMMAND_SET_AI_MODE  24 /* set player AI_COMMAND_UNIT's AI behaviour mode to AI_COMMAND_ARG_Y */
-#define AI_COMMAND_DESTROY_UNIT 17 /* destroy the unit under the map cursor */
+#define AI_COMMAND_DESTROY_UNIT 17
+
+/* The AI's flare action (RunAiKind5Action): only the current player's indirect
+ * units above AI_FLARE_UNIT_MIN_HEALTH health are considered, and the flare is
+ * aimed at the best-scored cell within AI_FLARE_TARGET_RADIUS tiles of the
+ * kind-5 unit under the cursor.  A cell that merely ties the best score wins
+ * only when the command state's tie-break value reaches AI_FLARE_TIEBREAK_CUTOFF. */
+#define AI_FLARE_UNIT_MIN_HEALTH 70
+#define AI_FLARE_TARGET_RADIUS   5
+#define AI_FLARE_TIEBREAK_CUTOFF 50 /* destroy the unit under the map cursor */
 
 enum AiCargoDropDirection {
     AI_CARGO_DROP_NONE = 0,
@@ -189,6 +198,7 @@ enum AiCargoDropDirection {
 /* Unit kinds the battle and AI code names directly. */
 #define UNIT_KIND_INFANTRY  1
 #define UNIT_KIND_MECH      2
+#define UNIT_KIND_BIKE      3 /* Bike: the third infantry-class foot kind (IsFootUnitKind); it cannot capture */
 #define UNIT_KIND_TANK      7
 
 /* The AI's counter-unit kind (BuildAiCounterUnit builds one when an enemy has
@@ -294,5 +304,28 @@ enum AiCargoDropDirection {
 /* Bit 0x100 of the capture-target evaluation result: the group holds a kind-24/25
  * production site (a base or port), so its tile is not a capture target. */
 #define AI_CAPTURE_EVAL_PRODUCTION_SITE 0x100
+
+/* Situation flags of GetAiTargetScore's first argument (bits 16 and up; the
+ * callers OR them onto the target cell's value byte).  Each one turns on a group
+ * of checks the score applies to the candidate. */
+#define AI_TARGET_FLAG_CAPTURE        0x010000 /* the tile is a capture/repair destination */
+#define AI_TARGET_FLAG_UNIT           0x020000 /* the tile's unit is a battle target (its preview is set up) */
+#define AI_TARGET_FLAG_FROM_BASE      0x040000 /* the actor attacks from its own base */
+#define AI_TARGET_FLAG_CHASE_INDIRECT 0x080000 /* the enemy indirect unit cannot be attacked from a safe cell */
+#define AI_TARGET_FLAG_REACH_SUBMARINE 0x100000 /* an enemy submarine can be reached from the tile */
+#define AI_TARGET_FLAG_MANY_HITS      0x200000 /* enough friendly units can hit the tile */
+#define AI_TARGET_FLAG_ACTOR_SELECTED 0x400000 /* the actor is the selected unit */
+#define AI_TARGET_FLAG_ACTOR_KIND21   0x800000 /* the actor is unit kind 21 */
+
+/* The AI's full-action step (RunAiRole4Or6Step10Action): the unit plans and carries
+ * out its whole action in one step. */
+#define AI_STEP_FULL_ACTION 10
+
+/* gAiTargetValueTable is a per-unit-kind record table (UNIT_KIND_STATS_SIZE-byte
+ * records) holding the AI's target-value thresholds.  The target score reads the
+ * u16 at +0x14 of the first record and the u16 at +0xF4 (both 6) as the minimum
+ * damage value a candidate must reach. */
+#define AI_TARGET_VALUE_BASE  0x14 /* u16 record field: base minimum damage value */
+#define AI_TARGET_VALUE_CHASE 0xF4 /* u16 the same field in the record the chase check uses */
 
 #endif

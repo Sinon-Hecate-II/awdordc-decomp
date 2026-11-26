@@ -652,6 +652,9 @@ void Ov001_CloseWirelessScreen(void) {
     }
 }
 
+/* Per-frame task of the local wireless (multi-card) setup screen: refresh the
+ * screen's input and task groups, then read the icon row's input and cancel the
+ * setup when the player picks the back icon. */
 void Ov001_WirelessSetupFrameTask(void) {
     void Ov001_HandleWirelessSetupInput(void);
     void Ov001_CancelWirelessSetupTask(void);

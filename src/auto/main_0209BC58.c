@@ -335,12 +335,14 @@ s32 MeasureStringWidth(u8 *text) {
     return width;
 }
 
-s32 func_0209c2a8(void) {
-    s32 MeasureMessageWidth();
-    s32 temp_r1;
+/* Width of the message string `text` in 8-pixel text cells: its pixel width,
+ * plus 6, divided by 8 and rounded toward zero. */
+s32 MeasureMessageCellWidth(u8 *text) {
+    s32 MeasureMessageWidth(u8 *);
+    s32 pixels;
 
-    temp_r1 = MeasureMessageWidth() + 6;
-    return (s32) (temp_r1 + ((u32) (temp_r1 >> 2) >> 0x1D)) >> 3;
+    pixels = MeasureMessageWidth(text) + 6;
+    return (s32) (pixels + ((u32) (pixels >> 2) >> 0x1D)) >> 3;
 }
 
 /* Pixel width of a message string: walks it, honouring the message control

@@ -47,7 +47,7 @@ void func_ov006_02218200(void *entity) {
         GotoSpriteAnimationLabel(entity, 3);
         return;
     }
-    func_ov006_02217cfc(M2C_FIELD(sub, s32 *, 8));
+    SetReceivedMapValue(M2C_FIELD(sub, s32 *, 8));
     MI_CpuCopy32(curId, prevId, 0x54);
     EnableMapConfirm();
 }
@@ -63,8 +63,8 @@ void CancelMapReceiveOnSessionError(void *sprite) {
     GotoSpriteAnimationLabel(sprite, 3);
 }
 
-void func_ov006_02218328(M2C_UNK arg0) {
+void CreateMapListObject(M2C_UNK arg0) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov006_02218cdc;
-    CreateSpriteObject(&data_ov006_02218cdc, arg0);
+    extern M2C_UNK gMapListClass;
+    CreateSpriteObject(&gMapListClass, arg0);
 }

@@ -100,9 +100,12 @@ void AddSprite32x16(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     AddSprite(arg0, arg1, arg2, &gSpriteDesc32x16, arg3);
 }
 
-s32 GetRecordDefinition(s32 arg0, s32 arg1) {
+/* The records-table entry for index `index` in `group`: gRecordTable is
+ * RECORD_GROUP_COUNT groups of RECORD_GROUP_STRIDE bytes, each a run of
+ * RECORD_DEFINITION_SIZE-byte RecordDefinition records. */
+s32 GetRecordDefinition(s32 group, s32 index) {
     extern M2C_UNK gRecordTable;
-    return (arg1 * 0x30) + ((arg0 * 0x750) + (s32) &gRecordTable);
+    return (index * RECORD_DEFINITION_SIZE) + ((group * RECORD_GROUP_STRIDE) + (s32)&gRecordTable);
 }
 
 /* The value the player has accumulated for record (group, index): the record

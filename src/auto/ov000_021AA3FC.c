@@ -14,12 +14,12 @@
  * when the effect kind cannot attack. */
 s32 CalcAreaEffectDamage(UnkStruct_ov000_021A860C *unit,s32 power,s32 isEnemy){
 s32 GetKindAttackClass(u32);
-extern u16 data_ov000_021b5c00;
+extern u16 gUnitKindBuildCosts;
 s32 damage;u32 hp;u16 hits;u32 kind;
 if(unit->unk6<=10)return 2;
 if(GetKindAttackClass(unit->unk0)==UNIT_ATTACK_NONE && isEnemy==1)return 2;
 kind=unit->unk0;
-damage=M2C_FIELD(&data_ov000_021b5c00,u16 *,kind*0x70);
+damage=M2C_FIELD(&gUnitKindBuildCosts,u16 *,kind*0x70);
 hp=unit->unk6;
 if(power<(s32)hp)hits=power;else hits=hp-1;
 damage*=hits;

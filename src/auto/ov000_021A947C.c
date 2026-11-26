@@ -150,8 +150,9 @@ s32 IsPropertyCell(s32 x, s32 y) {
     return GetTerrainPropertyFlagsAt(x, y);
 }
 
-s32 IsFootUnitKind(s32 a) {
- switch(a){case 1:case 2:case 3:return 1;default:return 0;}
+/* Whether `kind` is one of the infantry-class foot kinds: Infantry, Mech or Bike. */
+s32 IsFootUnitKind(s32 kind) {
+ switch(kind){case UNIT_KIND_INFANTRY:case UNIT_KIND_MECH:case UNIT_KIND_BIKE:return 1;default:return 0;}
 }
 
 s32 IsCaptureKind(s32 a) {

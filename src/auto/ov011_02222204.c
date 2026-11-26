@@ -1,5 +1,6 @@
 /* 3 functions from 0x02222204 to 0x022231F8 (ov011), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 #define ROTATE_RIGHT(x,n) (((x)>>(n)) | ((x)<<(32-(n))))
 
 #pragma push
@@ -206,236 +207,242 @@ void func_ov011_022224a8(void *arg0) {
 }
 
 #pragma pop
-void func_ov011_02222830(void *arg0,u32 mode,u32 first,u32 second,u32 amount) {
+/* Blend the 3D sprite's layers: on the selected engine(s) set the bank's blend
+ * word to source layer `sourceLayer` and target layer `targetLayer` with the
+ * alpha effect, and set the two blend weights to 16-blendAmount (source) and
+ * blendAmount (target).  `engineSelect` is 0 for the main engine, 1 for the sub
+ * engine, 3 for whichever engine is already current, and anything else (2 at the
+ * call sites) for both engines. */
+void Set3DSpriteBlendLayers(void *unused,u32 engineSelect,u32 sourceLayer,u32 targetLayer,u32 blendAmount) {
 extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
-u8 b,a;
-u16 **saved,**engine;
+u8 rowsBelow,rowsAbove;
+u16 **savedEngine,**engine;
 s32 i;
-u16 *volatile p0;
-u16 *volatile p1;
-u16 *volatile p2;
-u16 *volatile p3;
-u16 *volatile p4;
-u16 *volatile p5;
-u16 *volatile p6;
-u16 *volatile p7;
-u16 *volatile p8;
-u16 *volatile p9;
-u16 *volatile p10;
-u16 *volatile p11;
-u16 *volatile p12;
-u16 *volatile p13;
-u16 *volatile p14;
-u16 *volatile p15;
-u16 *volatile p16;
-u16 *volatile p17;
-u16 *volatile p18;
-u16 *volatile p19;
-u16 *volatile p20;
-u16 *volatile p21;
-u16 *volatile p22;
-u16 *volatile p23;
-u16 *volatile p24;
-u16 *volatile p25;
-u16 *volatile p26;
-u16 *volatile p27;
-u16 *volatile p28;
-u16 *volatile p29;
-u16 *volatile p30;
-u16 *volatile p31;
-u16 *volatile p32;
-u16 *volatile p33;
-u16 *volatile p34;
-u16 *volatile p35;
-u16 *volatile p36;
-u16 *volatile p37;
-u16 *volatile p38;
-u16 *volatile p39;
-u16 *volatile p40;
-u16 *volatile p41;
-u16 *volatile p42;
-u16 *volatile p43;
-u16 *volatile p44;
-u16 *volatile p45;
-u16 *volatile p46;
-u16 *volatile p47;
-u16 *volatile p48;
-u16 *volatile p49;
-u16 *volatile p50;
-u16 *volatile p51;
-u16 *volatile p52;
-u16 *volatile p53;
-u16 *volatile p54;
-u16 *volatile p55;
-u16 *volatile p56;
-u16 *volatile p57;
-u16 *volatile p58;
-u16 *volatile p59;
-u16 *volatile p60;
+u16 *volatile blendWord0;
+u16 *volatile blendWord1;
+u16 *volatile blendWord2;
+u16 *volatile blendWord3;
+u16 *volatile blendWord4;
+u16 *volatile blendWord5;
+u16 *volatile blendWord6;
+u16 *volatile blendWord7;
+u16 *volatile blendWord8;
+u16 *volatile blendWord9;
+u16 *volatile blendWord10;
+u16 *volatile blendWord11;
+u16 *volatile blendWord12;
+u16 *volatile blendWord13;
+u16 *volatile blendWord14;
+u16 *volatile blendWord15;
+u16 *volatile blendWord16;
+u16 *volatile blendWord17;
+u16 *volatile blendWord18;
+u16 *volatile blendWord19;
+u16 *volatile blendWord20;
+u16 *volatile blendWord21;
+u16 *volatile blendWord22;
+u16 *volatile blendWord23;
+u16 *volatile blendWord24;
+u16 *volatile blendWord25;
+u16 *volatile blendWord26;
+u16 *volatile blendWord27;
+u16 *volatile blendWord28;
+u16 *volatile blendWord29;
+u16 *volatile blendWord30;
+u16 *volatile blendWord31;
+u16 *volatile blendWord32;
+u16 *volatile blendWord33;
+u16 *volatile blendWord34;
+u16 *volatile blendWord35;
+u16 *volatile blendWord36;
+u16 *volatile blendWord37;
+u16 *volatile blendWord38;
+u16 *volatile blendWord39;
+u16 *volatile blendWord40;
+u16 *volatile blendWord41;
+u16 *volatile blendWord42;
+u16 *volatile blendWord43;
+u16 *volatile blendWord44;
+u16 *volatile blendWord45;
+u16 *volatile blendWord46;
+u16 *volatile blendWord47;
+u16 *volatile blendWord48;
+u16 *volatile blendWord49;
+u16 *volatile blendWord50;
+u16 *volatile blendWord51;
+u16 *volatile blendWord52;
+u16 *volatile blendWord53;
+u16 *volatile blendWord54;
+u16 *volatile blendWord55;
+u16 *volatile blendWord56;
+u16 *volatile blendWord57;
+u16 *volatile blendWord58;
+u16 *volatile blendWord59;
+u16 *volatile blendWord60;
 i=0;
-if(amount>16)amount=16;
-a=16-amount;b=amount;
-saved=gCur3DSpriteEngine;
+if(blendAmount>16)blendAmount=16;
+rowsAbove=16-blendAmount;rowsBelow=blendAmount;
+savedEngine=gCur3DSpriteEngine;
 for(;i<2;i++){
 engine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
 gCur3DSpriteEngine=engine;
-if(mode==0&&engine!=g3DSpriteEngineMain)continue;
-if(mode==1&&engine!=g3DSpriteEngineSub)continue;
-if(mode==3&&engine!=saved)continue;
-switch(first){
-case 0:
-p0=(u16 *)((u8 *)*engine+0x12);
-*p0=(*p0&~1)|1;
-p1=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p1=*p1&~2;
-p2=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p2=*p2&~4;
-p3=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p3=*p3&~8;
-p4=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p4=*p4&~16;
+if(engineSelect==0&&engine!=g3DSpriteEngineMain)continue;
+if(engineSelect==1&&engine!=g3DSpriteEngineSub)continue;
+if(engineSelect==3&&engine!=savedEngine)continue;
+switch(sourceLayer){
+case DS3D_BLEND_LAYER_BG0:
+blendWord0=(u16 *)((u8 *)*engine+DS3D_BANK_OAMATTR);
+*blendWord0=(*blendWord0&~DS3D_BLEND_SRC_BG0)|DS3D_BLEND_SRC_BG0;
+blendWord1=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord1=*blendWord1&~DS3D_BLEND_SRC_BG1;
+blendWord2=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord2=*blendWord2&~DS3D_BLEND_SRC_BG2;
+blendWord3=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord3=*blendWord3&~DS3D_BLEND_SRC_BG3;
+blendWord4=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord4=*blendWord4&~DS3D_BLEND_SRC_OBJ;
 break;
-case 1:
-p5=(u16 *)((u8 *)*engine+0x12);
-*p5=*p5&~1;
-p6=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p6=*p6|2;
-p7=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p7=*p7&~4;
-p8=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p8=*p8&~8;
-p9=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p9=*p9&~16;
+case DS3D_BLEND_LAYER_BG1:
+blendWord5=(u16 *)((u8 *)*engine+DS3D_BANK_OAMATTR);
+*blendWord5=*blendWord5&~DS3D_BLEND_SRC_BG0;
+blendWord6=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord6=*blendWord6|DS3D_BLEND_SRC_BG1;
+blendWord7=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord7=*blendWord7&~DS3D_BLEND_SRC_BG2;
+blendWord8=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord8=*blendWord8&~DS3D_BLEND_SRC_BG3;
+blendWord9=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord9=*blendWord9&~DS3D_BLEND_SRC_OBJ;
 break;
-case 2:
-p10=(u16 *)((u8 *)*engine+0x12);
-*p10=*p10&~1;
-p11=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p11=*p11&~2;
-p12=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p12=*p12|4;
-p13=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p13=*p13&~8;
-p14=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p14=*p14&~16;
+case DS3D_BLEND_LAYER_BG2:
+blendWord10=(u16 *)((u8 *)*engine+DS3D_BANK_OAMATTR);
+*blendWord10=*blendWord10&~DS3D_BLEND_SRC_BG0;
+blendWord11=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord11=*blendWord11&~DS3D_BLEND_SRC_BG1;
+blendWord12=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord12=*blendWord12|DS3D_BLEND_SRC_BG2;
+blendWord13=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord13=*blendWord13&~DS3D_BLEND_SRC_BG3;
+blendWord14=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord14=*blendWord14&~DS3D_BLEND_SRC_OBJ;
 break;
-case 3:
-p15=(u16 *)((u8 *)*engine+0x12);
-*p15=*p15&~1;
-p16=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p16=*p16&~2;
-p17=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p17=*p17&~4;
-p18=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p18=*p18|8;
-p19=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p19=*p19&~16;
+case DS3D_BLEND_LAYER_BG3:
+blendWord15=(u16 *)((u8 *)*engine+DS3D_BANK_OAMATTR);
+*blendWord15=*blendWord15&~DS3D_BLEND_SRC_BG0;
+blendWord16=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord16=*blendWord16&~DS3D_BLEND_SRC_BG1;
+blendWord17=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord17=*blendWord17&~DS3D_BLEND_SRC_BG2;
+blendWord18=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord18=*blendWord18|DS3D_BLEND_SRC_BG3;
+blendWord19=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord19=*blendWord19&~DS3D_BLEND_SRC_OBJ;
 break;
-case 8:
-p20=(u16 *)((u8 *)*engine+0x12);
-*p20=*p20&~1;
-p21=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p21=*p21&~2;
-p22=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p22=*p22&~4;
-p23=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p23=*p23&~8;
-p24=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p24=*p24|16;
-break;
-default:
-p25=(u16 *)((u8 *)*engine+0x12);
-*p25=*p25&~1;
-p26=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p26=*p26&~2;
-p27=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p27=*p27&~4;
-p28=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p28=*p28&~8;
-p29=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p29=*p29&~16;
-break;
-}
-switch(second){
-case 0:
-p30=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p30=*p30|256;
-p31=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p31=*p31&~512;
-p32=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p32=*p32&~1024;
-p33=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p33=*p33&~2048;
-p34=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p34=*p34&~4096;
-break;
-case 1:
-p35=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p35=*p35&~256;
-p36=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p36=*p36|512;
-p37=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p37=*p37&~1024;
-p38=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p38=*p38&~2048;
-p39=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p39=*p39&~4096;
-break;
-case 2:
-p40=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p40=*p40&~256;
-p41=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p41=*p41&~512;
-p42=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p42=*p42|1024;
-p43=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p43=*p43&~2048;
-p44=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p44=*p44&~4096;
-break;
-case 3:
-p45=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p45=*p45&~256;
-p46=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p46=*p46&~512;
-p47=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p47=*p47&~1024;
-p48=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p48=*p48|2048;
-p49=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p49=*p49&~4096;
-break;
-case 8:
-p50=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p50=*p50&~256;
-p51=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p51=*p51&~512;
-p52=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p52=*p52&~1024;
-p53=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p53=*p53&~2048;
-p54=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p54=*p54|4096;
+case DS3D_BLEND_LAYER_OBJ:
+blendWord20=(u16 *)((u8 *)*engine+DS3D_BANK_OAMATTR);
+*blendWord20=*blendWord20&~DS3D_BLEND_SRC_BG0;
+blendWord21=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord21=*blendWord21&~DS3D_BLEND_SRC_BG1;
+blendWord22=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord22=*blendWord22&~DS3D_BLEND_SRC_BG2;
+blendWord23=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord23=*blendWord23&~DS3D_BLEND_SRC_BG3;
+blendWord24=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord24=*blendWord24|DS3D_BLEND_SRC_OBJ;
 break;
 default:
-p55=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p55=*p55&~256;
-p56=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p56=*p56&~512;
-p57=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p57=*p57&~1024;
-p58=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p58=*p58&~2048;
-p59=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p59=*p59&~4096;
+blendWord25=(u16 *)((u8 *)*engine+DS3D_BANK_OAMATTR);
+*blendWord25=*blendWord25&~DS3D_BLEND_SRC_BG0;
+blendWord26=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord26=*blendWord26&~DS3D_BLEND_SRC_BG1;
+blendWord27=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord27=*blendWord27&~DS3D_BLEND_SRC_BG2;
+blendWord28=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord28=*blendWord28&~DS3D_BLEND_SRC_BG3;
+blendWord29=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord29=*blendWord29&~DS3D_BLEND_SRC_OBJ;
 break;
 }
-p60=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);
-*p60=(*p60&~0xc0)|0x40;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x51)=a;
-M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x52)=b;
+switch(targetLayer){
+case DS3D_BLEND_LAYER_BG0:
+blendWord30=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord30=*blendWord30|DS3D_BLEND_DST_BG0;
+blendWord31=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord31=*blendWord31&~DS3D_BLEND_DST_BG1;
+blendWord32=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord32=*blendWord32&~DS3D_BLEND_DST_BG2;
+blendWord33=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord33=*blendWord33&~DS3D_BLEND_DST_BG3;
+blendWord34=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord34=*blendWord34&~DS3D_BLEND_DST_OBJ;
+break;
+case DS3D_BLEND_LAYER_BG1:
+blendWord35=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord35=*blendWord35&~DS3D_BLEND_DST_BG0;
+blendWord36=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord36=*blendWord36|DS3D_BLEND_DST_BG1;
+blendWord37=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord37=*blendWord37&~DS3D_BLEND_DST_BG2;
+blendWord38=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord38=*blendWord38&~DS3D_BLEND_DST_BG3;
+blendWord39=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord39=*blendWord39&~DS3D_BLEND_DST_OBJ;
+break;
+case DS3D_BLEND_LAYER_BG2:
+blendWord40=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord40=*blendWord40&~DS3D_BLEND_DST_BG0;
+blendWord41=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord41=*blendWord41&~DS3D_BLEND_DST_BG1;
+blendWord42=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord42=*blendWord42|DS3D_BLEND_DST_BG2;
+blendWord43=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord43=*blendWord43&~DS3D_BLEND_DST_BG3;
+blendWord44=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord44=*blendWord44&~DS3D_BLEND_DST_OBJ;
+break;
+case DS3D_BLEND_LAYER_BG3:
+blendWord45=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord45=*blendWord45&~DS3D_BLEND_DST_BG0;
+blendWord46=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord46=*blendWord46&~DS3D_BLEND_DST_BG1;
+blendWord47=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord47=*blendWord47&~DS3D_BLEND_DST_BG2;
+blendWord48=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord48=*blendWord48|DS3D_BLEND_DST_BG3;
+blendWord49=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord49=*blendWord49&~DS3D_BLEND_DST_OBJ;
+break;
+case DS3D_BLEND_LAYER_OBJ:
+blendWord50=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord50=*blendWord50&~DS3D_BLEND_DST_BG0;
+blendWord51=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord51=*blendWord51&~DS3D_BLEND_DST_BG1;
+blendWord52=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord52=*blendWord52&~DS3D_BLEND_DST_BG2;
+blendWord53=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord53=*blendWord53&~DS3D_BLEND_DST_BG3;
+blendWord54=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord54=*blendWord54|DS3D_BLEND_DST_OBJ;
+break;
+default:
+blendWord55=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord55=*blendWord55&~DS3D_BLEND_DST_BG0;
+blendWord56=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord56=*blendWord56&~DS3D_BLEND_DST_BG1;
+blendWord57=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord57=*blendWord57&~DS3D_BLEND_DST_BG2;
+blendWord58=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord58=*blendWord58&~DS3D_BLEND_DST_BG3;
+blendWord59=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord59=*blendWord59&~DS3D_BLEND_DST_OBJ;
+break;
 }
-gCur3DSpriteEngine=saved;
+blendWord60=(u16 *)((u8 *)*gCur3DSpriteEngine+DS3D_BANK_OAMATTR);
+*blendWord60=(*blendWord60&~DS3D_BANK_BLEND_EFFECT_MASK)|DS3D_BANK_BLEND_EFFECT_ALPHA;
+M2C_FIELD(*gCur3DSpriteEngine,u8 *,DS3D_BANK_ROWS_ABOVE)=rowsAbove;
+M2C_FIELD(*gCur3DSpriteEngine,u8 *,DS3D_BANK_ROWS_BELOW)=rowsBelow;
+}
+gCur3DSpriteEngine=savedEngine;
 }
 #pragma opt_common_subs reset
 

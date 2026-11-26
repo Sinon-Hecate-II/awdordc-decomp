@@ -81,11 +81,13 @@ s32 GetCampaignMapHeader(s32 arg0) {
     return (0x54 * arg0) + (s32) &gCampaignMapHeaders;
 }
 
-s32 GetMapRecord(a)
-s32 a;
+/* Return the campaign map's header record for a campaign map id: the
+ * MapRecordHeader at the map's index in the gCampaignMapHeaders table. */
+s32 GetMapRecord(mapId)
+s32 mapId;
 {
  extern M2C_UNK gCampaignMapHeaders;
- return (s32)&gCampaignMapHeaders+0x54*GetCampaignMapIndex(a);
+ return (s32)&gCampaignMapHeaders+sizeof(MapRecordHeader)*GetCampaignMapIndex(mapId);
 }
 
 s32 GetMapRecordStamp(a)

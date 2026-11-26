@@ -155,154 +155,183 @@ void AdvanceIntroLogo(void *logo) {
     GotoSpriteAnimationLabel(logo, 4);
 }
 
-void LoadOpeningAssetSet(void *arg0, void *arg1, s32 arg2, s32 arg3) {
+/* Load one opening-sequence image set from its NARC archives into the 3D
+ * sprite engines' texture and palette banks.  The asset id picks the archives
+ * and the files inside them; the screen argument limits the load to the main
+ * engine (0), the sub engine (1) or the engine already selected (3), and any
+ * other value loads both.  slot selects the engine's image slot and palette
+ * destination.  Both engines are walked, and the engine's asset-loaded bit for
+ * the slot is set afterwards. */
+void LoadOpeningAssetSet(void *unused, u32 asset, s32 screen, s32 slot) {
 M2C_UNK SetFileDirectory(M2C_UNK *); M2C_UNK OpenNarcArchive(M2C_UNK *); M2C_UNK LoadNarcFileDecompressed(M2C_UNK *,s32); M2C_UNK LoadNarcFileToSpriteBuffer(M2C_UNK *,s32,s32); M2C_UNK LoadNarcFileToBGExtPltt(M2C_UNK *,s32,s32,s32); M2C_UNK QueueNarcFileToBGExtPltt(M2C_UNK *,s32,s32,s32); M2C_UNK CloseNarcArchive(void); s32 GetLanguage(void); M2C_UNK *GetLocalizedFileName(M2C_UNK *);
 extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
 extern M2C_UNK data_ov011_022282a0, data_ov011_022282ac, data_ov011_022282bc, data_ov011_022282c8, data_ov011_022282d4, data_ov011_022282e0, data_ov011_022282f4, data_ov011_02228308, data_ov011_0222831c, data_ov011_02228330, data_ov011_02228344, data_ov011_02228358, data_ov011_0222836c, data_ov011_02228380, data_ov011_02228398, data_ov011_022283ac, data_ov011_022283c0, data_ov011_022283d4, data_ov011_022283e4, data_ov011_022283f0, data_ov011_022283fc, data_ov011_0222840c, data_ov011_02228418, data_ov011_02228424, data_ov011_02228438, data_ov011_0222844c, data_ov011_02228460, data_ov011_02228474, data_ov011_02228488, data_ov011_0222849c, data_ov011_022284b0, data_ov011_022284c4, data_ov011_022284dc, data_ov011_022284f0, data_ov011_02228504, data_ov011_02228518, data_ov011_0222852c, data_ov011_02228540, data_ov011_02228554, data_ov011_02228568, data_ov011_02228580, data_ov011_02228594, data_ov011_022285a8, data_ov011_022285bc, data_ov011_022285d0, data_ov011_022285e4, data_ov011_022285f8, data_ov011_0222860c, data_ov011_02228624, data_ov011_02228638, data_ov011_0222864c, data_ov011_02228660, data_ov011_02228674, data_ov011_02228688, data_ov011_0222869c, data_ov011_022286b0, data_ov011_022286c8, data_ov011_022286dc, data_ov011_022286f0, data_ov011_02228704, data_ov011_02228718, data_ov011_0222872c, data_ov011_02228740, data_ov011_02228754, data_ov011_0222876c, data_ov011_02228780, data_ov011_02228794, data_ov011_022287a8, data_ov011_022287bc, data_ov011_022287d0, data_ov011_022287e4, data_ov011_022287f8, data_ov011_02228804, data_ov011_0222880c, data_ov011_02228814, data_ov011_0222881c, data_ov011_02228838, data_ov011_02228850, data_ov011_02228868, data_ov011_02228880, data_ov011_02228898, data_ov011_022288b0, data_ov011_022288c8, data_ov011_022288e0, data_ov011_022288ec, data_ov011_022288f4, data_ov011_022288fc, data_ov011_02228904, data_ov011_02228910, data_ov011_0222891c, data_ov011_02228928;
-s32 saved,i,engine,lang;
-SetFileDirectory(&data_ov011_022282a0); saved=gCur3DSpriteEngine; i=0;
-do { if(i==0) engine=g3DSpriteEngineMain; else engine=g3DSpriteEngineSub;
+s32 savedEngine, engineIndex, engine, language;
+SetFileDirectory(&data_ov011_022282a0); savedEngine=gCur3DSpriteEngine; engineIndex=0;
+do { if(engineIndex==0) engine=g3DSpriteEngineMain; else engine=g3DSpriteEngineSub;
 gCur3DSpriteEngine=engine;
-if(arg2==0 && engine!=g3DSpriteEngineMain) goto inc;
-if(arg2==1 && engine!=g3DSpriteEngineSub) goto inc;
-if(arg2==3 && engine!=saved) goto inc;
-switch((u32)arg1) {
+if(screen==0 && engine!=g3DSpriteEngineMain) goto inc;
+if(screen==1 && engine!=g3DSpriteEngineSub) goto inc;
+if(screen==3 && engine!=savedEngine) goto inc;
+switch((u32)asset) {
+/* logo_is: uncompressed .cg and .sc images, .cl palette to the sprite buffer. */
 case 0:
 OpenNarcArchive(&data_ov011_022282ac);
-LoadNarcFileDecompressed(&data_ov011_022282bc,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_022282c8,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
+LoadNarcFileDecompressed(&data_ov011_022282bc,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_022282c8,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
 LoadNarcFileToSpriteBuffer(&data_ov011_022282d4,0,32);CloseNarcArchive(); break;
 
+/* logo_nintendo: uncompressed .cg and .sc images, .cl palette to the sprite buffer. */
 case 1:
 OpenNarcArchive(&data_ov011_022282e0);
-LoadNarcFileDecompressed(&data_ov011_022282f4,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_02228308,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
+LoadNarcFileDecompressed(&data_ov011_022282f4,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_02228308,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
 LoadNarcFileToSpriteBuffer(&data_ov011_0222831c,0,32);CloseNarcArchive(); break;
 
+/* title main background: .cg and .sc images, .cl palette to BG extended palette. */
 case 3:
 OpenNarcArchive(&data_ov011_02228330);
-LoadNarcFileDecompressed(&data_ov011_02228344,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_02228358,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-LoadNarcFileToBGExtPltt(&data_ov011_0222836c,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_02228344,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_02228358,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+LoadNarcFileToBGExtPltt(&data_ov011_0222836c,slot,0,512);CloseNarcArchive(); break;
 
+/* title sub background: .cg and .sc images, .cl palette to BG extended palette. */
 case 4:
 OpenNarcArchive(&data_ov011_02228380);
-LoadNarcFileDecompressed(&data_ov011_02228398,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_022283ac,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-LoadNarcFileToBGExtPltt(&data_ov011_022283c0,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_02228398,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_022283ac,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+LoadNarcFileToBGExtPltt(&data_ov011_022283c0,slot,0,512);CloseNarcArchive(); break;
 
+/* meteor01: .cg image and .cl palette to BG extended palette. */
 case 5:
 OpenNarcArchive(&data_ov011_022283d4);
-LoadNarcFileDecompressed(&data_ov011_022283e4,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileToBGExtPltt(&data_ov011_022283f0,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_022283e4,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileToBGExtPltt(&data_ov011_022283f0,slot,0,512);CloseNarcArchive(); break;
 
+/* meteor01 again: .cg image and .cl palette to BG extended palette. */
 case 6:
 OpenNarcArchive(&data_ov011_022283fc);
-LoadNarcFileDecompressed(&data_ov011_0222840c,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileToBGExtPltt(&data_ov011_02228418,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_0222840c,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileToBGExtPltt(&data_ov011_02228418,slot,0,512);CloseNarcArchive(); break;
 
+/* BG_meteor_main: .cg and .sc images, .cl palette to BG extended palette. */
 case 11:
 OpenNarcArchive(&data_ov011_02228424);
-LoadNarcFileDecompressed(&data_ov011_02228438,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_0222844c,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-LoadNarcFileToBGExtPltt(&data_ov011_02228460,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_02228438,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_0222844c,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+LoadNarcFileToBGExtPltt(&data_ov011_02228460,slot,0,512);CloseNarcArchive(); break;
 
+/* BG_meteor_sub: .cg and .sc images, .cl palette to BG extended palette. */
 case 12:
 OpenNarcArchive(&data_ov011_02228474);
-LoadNarcFileDecompressed(&data_ov011_02228488,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_0222849c,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-LoadNarcFileToBGExtPltt(&data_ov011_022284b0,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_02228488,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_0222849c,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+LoadNarcFileToBGExtPltt(&data_ov011_022284b0,slot,0,512);CloseNarcArchive(); break;
 
+/* OP_2_meteor_down: .cg and .sc images, .cl palette to BG extended palette. */
 case 7:
 OpenNarcArchive(&data_ov011_022284c4);
-LoadNarcFileDecompressed(&data_ov011_022284dc,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_022284f0,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-LoadNarcFileToBGExtPltt(&data_ov011_02228504,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_022284dc,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_022284f0,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+LoadNarcFileToBGExtPltt(&data_ov011_02228504,slot,0,512);CloseNarcArchive(); break;
 
+/* OP_2_meteor_up: .cg and .sc images, .cl palette to BG extended palette. */
 case 8:
 OpenNarcArchive(&data_ov011_02228518);
-LoadNarcFileDecompressed(&data_ov011_0222852c,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_02228540,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-LoadNarcFileToBGExtPltt(&data_ov011_02228554,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_0222852c,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_02228540,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+LoadNarcFileToBGExtPltt(&data_ov011_02228554,slot,0,512);CloseNarcArchive(); break;
 
+/* OP_3_city_down1: .cg and .sc images, .cl palette to BG extended palette. */
 case 9:
 OpenNarcArchive(&data_ov011_02228568);
-LoadNarcFileDecompressed(&data_ov011_02228580,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_02228594,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-LoadNarcFileToBGExtPltt(&data_ov011_022285a8,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_02228580,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_02228594,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+LoadNarcFileToBGExtPltt(&data_ov011_022285a8,slot,0,512);CloseNarcArchive(); break;
 
+/* OP_3_city_up1: .cg and .sc images, .cl palette to BG extended palette. */
 case 10:
 OpenNarcArchive(&data_ov011_022285bc);
-LoadNarcFileDecompressed(&data_ov011_022285d0,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_022285e4,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-LoadNarcFileToBGExtPltt(&data_ov011_022285f8,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_022285d0,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_022285e4,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+LoadNarcFileToBGExtPltt(&data_ov011_022285f8,slot,0,512);CloseNarcArchive(); break;
 
+/* OP_3_city_down2: .cg and .sc images, .cl palette to BG extended palette. */
 case 13:
 OpenNarcArchive(&data_ov011_0222860c);
-LoadNarcFileDecompressed(&data_ov011_02228624,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_02228638,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-LoadNarcFileToBGExtPltt(&data_ov011_0222864c,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_02228624,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_02228638,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+LoadNarcFileToBGExtPltt(&data_ov011_0222864c,slot,0,512);CloseNarcArchive(); break;
 
+/* OP_3_city_up (screen 2): .cg and .sc images, .cl palette to BG extended palette. */
 case 14:
 OpenNarcArchive(&data_ov011_02228660);
-LoadNarcFileDecompressed(&data_ov011_02228674,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_02228688,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-LoadNarcFileToBGExtPltt(&data_ov011_0222869c,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_02228674,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_02228688,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+LoadNarcFileToBGExtPltt(&data_ov011_0222869c,slot,0,512);CloseNarcArchive(); break;
 
+/* OP_3_down_flash: .cg and .sc images, .cl palette queued to BG extended palette. */
 case 15:
 OpenNarcArchive(&data_ov011_022286b0);
-LoadNarcFileDecompressed(&data_ov011_022286c8,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_022286dc,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-QueueNarcFileToBGExtPltt(&data_ov011_022286f0,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_022286c8,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_022286dc,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+QueueNarcFileToBGExtPltt(&data_ov011_022286f0,slot,0,512);CloseNarcArchive(); break;
 
+/* OP_3_up_flash: .cg and .sc images, .cl palette queued to BG extended palette. */
 case 16:
 OpenNarcArchive(&data_ov011_02228704);
-LoadNarcFileDecompressed(&data_ov011_02228718,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_0222872c,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-QueueNarcFileToBGExtPltt(&data_ov011_02228740,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_02228718,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_0222872c,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+QueueNarcFileToBGExtPltt(&data_ov011_02228740,slot,0,512);CloseNarcArchive(); break;
 
+/* BG_meteor2_main: .cg and .sc images, .cl palette to BG extended palette. */
 case 17:
 OpenNarcArchive(&data_ov011_02228754);
-LoadNarcFileDecompressed(&data_ov011_0222876c,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_02228780,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-LoadNarcFileToBGExtPltt(&data_ov011_02228794,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_0222876c,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_02228780,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+LoadNarcFileToBGExtPltt(&data_ov011_02228794,slot,0,512);CloseNarcArchive(); break;
 
+/* BG_meteor2_sub: .cg and .sc images, .cl palette to BG extended palette. */
 case 18:
 OpenNarcArchive(&data_ov011_022287a8);
-LoadNarcFileDecompressed(&data_ov011_022287bc,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_022287d0,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-LoadNarcFileToBGExtPltt(&data_ov011_022287e4,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_022287bc,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_022287d0,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+LoadNarcFileToBGExtPltt(&data_ov011_022287e4,slot,0,512);CloseNarcArchive(); break;
 
+/* kumo: .cg and .sc images, .cl palette to the sprite buffer. */
 case 19:
 OpenNarcArchive(&data_ov011_022287f8);
-LoadNarcFileDecompressed(&data_ov011_02228804,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_0222880c,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
+LoadNarcFileDecompressed(&data_ov011_02228804,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_0222880c,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
 LoadNarcFileToSpriteBuffer(&data_ov011_02228814,0,32);CloseNarcArchive(); break;
 
+/* BG_title_main_flash: .cg and .sc images, .cl palette queued to BG extended palette. */
 case 20:
 OpenNarcArchive(&data_ov011_0222881c);
-LoadNarcFileDecompressed(&data_ov011_02228838,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_02228850,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-QueueNarcFileToBGExtPltt(&data_ov011_02228868,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_02228838,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_02228850,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+QueueNarcFileToBGExtPltt(&data_ov011_02228868,slot,0,512);CloseNarcArchive(); break;
 
+/* BG_title_sub_flash: .cg and .sc images, .cl palette queued to BG extended palette. */
 case 21:
 OpenNarcArchive(&data_ov011_02228880);
-LoadNarcFileDecompressed(&data_ov011_02228898,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_022288b0,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
-QueueNarcFileToBGExtPltt(&data_ov011_022288c8,arg3,0,512);CloseNarcArchive(); break;
+LoadNarcFileDecompressed(&data_ov011_02228898,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_022288b0,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
+QueueNarcFileToBGExtPltt(&data_ov011_022288c8,slot,0,512);CloseNarcArchive(); break;
 
+/* ESRB screen: localized ESRB archive in English, French or Spanish, else e_ESRB. */
 case 22:
-lang=GetLanguage(); if(lang==1||lang==2||lang==5) {
+language=GetLanguage(); if(language==1||language==2||language==5) {
 OpenNarcArchive(GetLocalizedFileName(&data_ov011_022288e0));
-LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov011_022288ec), M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov011_022288f4), M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
+LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov011_022288ec), M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov011_022288f4), M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
 LoadNarcFileToSpriteBuffer(GetLocalizedFileName(&data_ov011_022288fc),0,32); CloseNarcArchive(); break; }
 OpenNarcArchive(&data_ov011_02228904);
-LoadNarcFileDecompressed(&data_ov011_02228910,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,12));
-LoadNarcFileDecompressed(&data_ov011_0222891c,M2C_FIELD(gCur3DSpriteEngine+arg3*4,s32 *,32));
+LoadNarcFileDecompressed(&data_ov011_02228910,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,12));
+LoadNarcFileDecompressed(&data_ov011_0222891c,M2C_FIELD(gCur3DSpriteEngine+slot*4,s32 *,32));
 LoadNarcFileToSpriteBuffer(&data_ov011_02228928,0,32);CloseNarcArchive(); break;
-} M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46) |= 1<<arg3;
-inc: i++; }while(i<2); gCur3DSpriteEngine=saved;
+} M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46) |= 1<<slot;
+inc: engineIndex++; }while(engineIndex<2); gCur3DSpriteEngine=savedEngine;
 }
 
 void LoadOpeningScreenAssets(s32 unused, u32 asset, s32 screen) {

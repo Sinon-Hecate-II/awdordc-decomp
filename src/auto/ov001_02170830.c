@@ -64,7 +64,15 @@ void Ov001_MD5Digest(u8 *digest, s32 data, u32 length) {
     Ov001_MD5_Final(digest, &context);
 }
 
-void WhGetTime(void){u64 GetSystemTick(void);void U64Divide(u64,u64);U64Divide(GetSystemTick()<<6,0x82ea);}
+/* Current time in milliseconds since the console booted: the 64-bit system tick
+ * counter scaled by the tick-to-millisecond divisor. */
+s32 WhGetTime(void) {
+    u64 GetSystemTick(void);
+    u64 U64Divide(u64, u64);
+    u64 ticks = GetSystemTick();
+
+    return (s32)U64Divide(ticks << 6, TICKS_TO_MS_DIVISOR);
+}
 
 #pragma thumb on
 s32 Ov001_FormatHexByte(s8 *a, s32 b) {

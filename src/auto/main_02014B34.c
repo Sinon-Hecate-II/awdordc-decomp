@@ -197,8 +197,10 @@ u32 func_02015204(u32 arg0, u32 arg1) {
     return var_r1;
 }
 
-s32 Mb_IsValidPlayer(u32 arg0) {
-    if ((arg0 >= 1U) && (arg0 <= 0xFU)) {
+/* Whether `player` is a multiboot player number (1..MB_PLAYER_MAX); 0 is the
+ * local console and higher values are unused slots. */
+s32 Mb_IsValidPlayer(u32 player) {
+    if ((player >= 1U) && (player <= MB_PLAYER_MAX)) {
         return 1;
     }
     return 0;

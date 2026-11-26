@@ -2,50 +2,59 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ov000_ai.h"
+#include "ds3dsprite.h"
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
-static inline void Clear129(s32 off,u32 mask){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+off);*p=*p&~mask;}
-static inline void Set129(s32 off,u32 mask){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+off);*p=*p|mask;}
-static inline void Blend129(s32 n){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+18);*p=(*p&~0xc0)|(n<<6);}
-static inline void Store129(s32 off,u16 n){M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,off)=n;}
+/* Clear/set bits of a u16 word of the current 3D sprite bank: DS3D_BANK_FLAGS
+ * selects its flags word, DS3D_BANK_OAMATTR the 3D sprite's OBJ attributes. */
+static inline void SpriteBankClearBits(s32 off,u32 mask){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+off);*p=*p&~mask;}
+static inline void SpriteBankSetBits(s32 off,u32 mask){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+off);*p=*p|mask;}
+/* Set the current 3D sprite's OBJ priority (DS3D_BANK_OAMATTR_PRIORITY). */
+static inline void SpriteBankSetPriority(s32 n){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+DS3D_BANK_OAMATTR);*p=(*p&~DS3D_BANK_OAMATTR_PRIORITY)|(n<<6);}
+/* Store a u16 into the current 3D sprite bank (the per-layer corner offsets). */
+static inline void SpriteBankStore(s32 off,u16 n){M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,off)=n;}
 
-void func_ov004_02212918(void *state){
+/* Step the battle-start window on both screens: on the sub screen run the
+ * opening's phases (split the sprite bank's cell rows apart, scroll its layers,
+ * fade the palettes out and back in), and on both screens draw the day counter
+ * and the top and bottom bars of the opening frame. */
+void Ov004_UpdateBattleStartWindow(void *state){
 s32 EaseInterpolate(s32,s16,s16,u16,s32);void StartPaletteFade(void *,s32);void StartPaletteFadeIn(void *,s32);void func_ov004_022124e0(s32,s32,s32,s32);void DrawWindowFrameBar(s32,s32,s32);
 s32 saved,screen,engine,value;
 saved=gCur3DSpriteEngine;
 for(screen=0;screen<2;screen++){
 engine=screen==0?g3DSpriteEngineMain:g3DSpriteEngineSub;gCur3DSpriteEngine=engine;
 if(engine==g3DSpriteEngineSub){
-if(M2C_FIELD(state,u8 *,0x3d)!=0)M2C_FIELD(state,u8 *,0x3d)--;
-else switch(M2C_FIELD(state,u8 *,0x3b)){
+if(M2C_FIELD(state,u8 *,OV004_START_WINDOW_FADE_DELAY)!=0)M2C_FIELD(state,u8 *,OV004_START_WINDOW_FADE_DELAY)--;
+else switch(M2C_FIELD(state,u8 *,OV004_START_WINDOW_PHASE)){
 case 0:
-Blend129(1);M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=16;
-Clear129(18,1);Clear129(18,2);Clear129(18,4);Clear129(18,8);Set129(18,16);Clear129(18,32);Clear129(18,256);Clear129(18,512);Clear129(18,1024);Set129(18,2048);Clear129(18,4096);Clear129(18,8192);
-Clear129(0,16);Clear129(0,32);Clear129(0,64);Set129(0,128);Set129(0,256);
-M2C_FIELD(state,u16 *,0x34)=0;M2C_FIELD(state,u8 *,0x3b)++;break;
+SpriteBankSetPriority(1);M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,DS3D_BANK_ROWS_ABOVE)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,DS3D_BANK_ROWS_BELOW)=OV004_START_WINDOW_ROWS;
+SpriteBankClearBits(DS3D_BANK_OAMATTR,1);SpriteBankClearBits(DS3D_BANK_OAMATTR,2);SpriteBankClearBits(DS3D_BANK_OAMATTR,4);SpriteBankClearBits(DS3D_BANK_OAMATTR,8);SpriteBankSetBits(DS3D_BANK_OAMATTR,16);SpriteBankClearBits(DS3D_BANK_OAMATTR,32);SpriteBankClearBits(DS3D_BANK_OAMATTR,256);SpriteBankClearBits(DS3D_BANK_OAMATTR,512);SpriteBankClearBits(DS3D_BANK_OAMATTR,1024);SpriteBankSetBits(DS3D_BANK_OAMATTR,2048);SpriteBankClearBits(DS3D_BANK_OAMATTR,4096);SpriteBankClearBits(DS3D_BANK_OAMATTR,8192);
+SpriteBankClearBits(DS3D_BANK_FLAGS,DS3D_BANK_MODE0);SpriteBankClearBits(DS3D_BANK_FLAGS,DS3D_BANK_MODE1);SpriteBankClearBits(DS3D_BANK_FLAGS,DS3D_BANK_MODE2);SpriteBankSetBits(DS3D_BANK_FLAGS,DS3D_BANK_MODE3);SpriteBankSetBits(DS3D_BANK_FLAGS,DS3D_BANK_MODE4);
+M2C_FIELD(state,u16 *,OV004_START_WINDOW_OPEN_FRAME)=0;M2C_FIELD(state,u8 *,OV004_START_WINDOW_PHASE)++;break;
 case 1:
-M2C_FIELD(state,u16 *,0x34)++;
-value=EaseInterpolate(0,0,16,M2C_FIELD(state,u16 *,0x34),16);
-M2C_FIELD(state,u8 *,0x3c)=EaseInterpolate(0,0,20,M2C_FIELD(state,u16 *,0x34),16);
-Blend129(1);M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=value;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=16-value;
-if(M2C_FIELD(state,u16 *,0x34)>=16){
-Blend129(0);M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x53)=0;M2C_FIELD(state,u8 *,0x3b)++;
+M2C_FIELD(state,u16 *,OV004_START_WINDOW_OPEN_FRAME)++;
+value=EaseInterpolate(EASE_LINEAR,0,OV004_START_WINDOW_ROWS,M2C_FIELD(state,u16 *,OV004_START_WINDOW_OPEN_FRAME),OV004_START_WINDOW_EASE_FRAMES);
+M2C_FIELD(state,u8 *,OV004_START_WINDOW_SLIT)=EaseInterpolate(EASE_LINEAR,0,OV004_START_WINDOW_SLIT_MAX,M2C_FIELD(state,u16 *,OV004_START_WINDOW_OPEN_FRAME),OV004_START_WINDOW_EASE_FRAMES);
+SpriteBankSetPriority(1);M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,DS3D_BANK_ROWS_ABOVE)=value;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,DS3D_BANK_ROWS_BELOW)=OV004_START_WINDOW_ROWS-value;
+if(M2C_FIELD(state,u16 *,OV004_START_WINDOW_OPEN_FRAME)>=OV004_START_WINDOW_EASE_FRAMES){
+SpriteBankSetPriority(0);M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,DS3D_BANK_ROWS_ABOVE)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,DS3D_BANK_ROWS_BELOW)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,DS3D_BANK_BLEND)=0;M2C_FIELD(state,u8 *,OV004_START_WINDOW_PHASE)++;
 }break;
 case 2:
-Clear129(0,16);Set129(0,32);Set129(0,64);Set129(0,128);Set129(0,256);
-Blend129(1);M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=16;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=16;
-Clear129(18,1);Clear129(18,2);Set129(18,4);Clear129(18,8);Clear129(18,16);Clear129(18,32);Clear129(18,256);Set129(18,512);Clear129(18,1024);Clear129(18,2048);Clear129(18,4096);Clear129(18,8192);
-StartPaletteFade(M2C_FIELD(state,void **,0x44),32);M2C_FIELD(state,u8 *,0x3d)=16;M2C_FIELD(state,u8 *,0x3b)++;break;
+SpriteBankClearBits(DS3D_BANK_FLAGS,DS3D_BANK_MODE0);SpriteBankSetBits(DS3D_BANK_FLAGS,DS3D_BANK_MODE1);SpriteBankSetBits(DS3D_BANK_FLAGS,DS3D_BANK_MODE2);SpriteBankSetBits(DS3D_BANK_FLAGS,DS3D_BANK_MODE3);SpriteBankSetBits(DS3D_BANK_FLAGS,DS3D_BANK_MODE4);
+SpriteBankSetPriority(1);M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,DS3D_BANK_ROWS_ABOVE)=OV004_START_WINDOW_ROWS;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,DS3D_BANK_ROWS_BELOW)=OV004_START_WINDOW_ROWS;
+SpriteBankClearBits(DS3D_BANK_OAMATTR,1);SpriteBankClearBits(DS3D_BANK_OAMATTR,2);SpriteBankSetBits(DS3D_BANK_OAMATTR,4);SpriteBankClearBits(DS3D_BANK_OAMATTR,8);SpriteBankClearBits(DS3D_BANK_OAMATTR,16);SpriteBankClearBits(DS3D_BANK_OAMATTR,32);SpriteBankClearBits(DS3D_BANK_OAMATTR,256);SpriteBankSetBits(DS3D_BANK_OAMATTR,512);SpriteBankClearBits(DS3D_BANK_OAMATTR,1024);SpriteBankClearBits(DS3D_BANK_OAMATTR,2048);SpriteBankClearBits(DS3D_BANK_OAMATTR,4096);SpriteBankClearBits(DS3D_BANK_OAMATTR,8192);
+StartPaletteFade(M2C_FIELD(state,void **,OV004_START_WINDOW_FADE_SUB),OV004_START_WINDOW_PALETTE_FRAMES);M2C_FIELD(state,u8 *,OV004_START_WINDOW_FADE_DELAY)=OV004_START_WINDOW_EASE_FRAMES;M2C_FIELD(state,u8 *,OV004_START_WINDOW_PHASE)++;break;
 case 3:
-StartPaletteFade(M2C_FIELD(state,void **,0x40),32);M2C_FIELD(state,u8 *,0x3d)=16;M2C_FIELD(state,u8 *,0x3b)++;break;
+StartPaletteFade(M2C_FIELD(state,void **,OV004_START_WINDOW_FADE_MAIN),OV004_START_WINDOW_PALETTE_FRAMES);M2C_FIELD(state,u8 *,OV004_START_WINDOW_FADE_DELAY)=OV004_START_WINDOW_EASE_FRAMES;M2C_FIELD(state,u8 *,OV004_START_WINDOW_PHASE)++;break;
 case 4:
-StartPaletteFadeIn(M2C_FIELD(state,void **,0x44),32);M2C_FIELD(state,u8 *,0x3b)++;break;
+StartPaletteFadeIn(M2C_FIELD(state,void **,OV004_START_WINDOW_FADE_SUB),OV004_START_WINDOW_PALETTE_FRAMES);M2C_FIELD(state,u8 *,OV004_START_WINDOW_PHASE)++;break;
 }
-Store129(0x3a,0);Store129(0x42,0xffb0);Store129(0x3c,0);Store129(0x44,0xffb0);
-Store129(0x3e,(u8)(M2C_FIELD(state,u16 *,0x36)>>1));Store129(0x46,0);
-func_ov004_022124e0(80,56,0,M2C_FIELD(state,u8 *,0x3a));
-DrawWindowFrameBar(32,96-M2C_FIELD(state,u8 *,0x3c),0);DrawWindowFrameBar(32,96+M2C_FIELD(state,u8 *,0x3c),0);
+SpriteBankStore(DS3D_BANK_CORNER_Y(0),0);SpriteBankStore(DS3D_BANK_CORNER_Y(2),0xffb0);SpriteBankStore(DS3D_BANK_CORNER_X(1),0);SpriteBankStore(DS3D_BANK_CORNER_X(3),0xffb0);
+SpriteBankStore(DS3D_BANK_CORNER_Y(1),(u8)(M2C_FIELD(state,u16 *,OV004_START_WINDOW_FRAME)>>1));SpriteBankStore(DS3D_BANK_CORNER_Y(3),0);
+func_ov004_022124e0(80,56,0,M2C_FIELD(state,u8 *,OV004_START_WINDOW_DAY));
+DrawWindowFrameBar(32,96-M2C_FIELD(state,u8 *,OV004_START_WINDOW_SLIT),0);DrawWindowFrameBar(32,96+M2C_FIELD(state,u8 *,OV004_START_WINDOW_SLIT),0);
 }}
-gCur3DSpriteEngine=saved;M2C_FIELD(state,u16 *,0x36)++;
+gCur3DSpriteEngine=saved;M2C_FIELD(state,u16 *,OV004_START_WINDOW_FRAME)++;
 }
 
 void func_ov004_022130f4(void) {
@@ -59,8 +68,8 @@ void func_ov004_02213100(void) {
 }
 
 void func_ov004_0221310c(void) {
-    void func_ov004_02212918();
-    func_ov004_02212918();
+    void Ov004_UpdateBattleStartWindow();
+    Ov004_UpdateBattleStartWindow();
 }
 
 void func_ov004_02213118(void) {

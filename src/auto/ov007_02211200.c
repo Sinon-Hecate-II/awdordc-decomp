@@ -11,7 +11,7 @@ void MapEditor_StartMap(void *editor) {
  extern u8 gMapNameFormat[];
  void SetMapEditorMode(s32);void SetMapEditorTool(s32);
  void SetMapEditorUnitKind(s32);void SetMapEditorUnitOwner(s32);void SetMapEditorUnitFlags(s32);void SetMapEditorTerrainKind(s32);void SetMapEditorTerrainOwner(s32);
- void RefreshMapEditor(void);void MapEditor_SetMapModified(s32);void func_ov007_022121e4(void);
+ void RefreshMapEditor(void);void MapEditor_SetMapModified(s32);void MapEditor_LoadExplosionSprite(void);
  void SetMapCursorTargetTile(s16,s16);
  void *map;
  s32 text;
@@ -45,7 +45,7 @@ void MapEditor_StartMap(void *editor) {
  SetMapEditorMode(0);SetMapEditorTool(0);SetMapEditorUnitKind(1);SetMapEditorUnitOwner(1);SetMapEditorUnitFlags(0);SetMapEditorTerrainKind(1);SetMapEditorTerrainOwner(0);
  RefreshMapEditor();func_ov007_02212da0();func_ov007_02213150();func_ov007_0221ab20();MapEditor_SetMapModified(0);
  M2C_FIELD(editor,u8*,MAP_EDITOR_INPUT_LATCH)=1;
-func_ov007_022121e4();
+MapEditor_LoadExplosionSprite();
 }
 
 /* Map editor entry: the first time the editor opens (event flag 0x20), create a
@@ -310,7 +310,7 @@ s32 MapEditor_GetCursorType(s32 x, s32 y) {
     s32 GetMapEditorUnitKind(void); s32 GetMapEditorUnitOwner(void); s32 GetMapEditorUnitFlags(void);
     u8 GetMapEditorTerrainKind(void); u8 GetMapEditorTerrainOwner(void);
     s32 MapEditor_CanPlaceUnit(s32, s32, s32, s32, s32);
-    s32 Map_CanPlaceTile(s32, s32, s32, s32); s32 IsDestroyedPipeTile(s32);
+    s32 Map_CanPlaceTile(s32, s32, s32, s32); s32 IsPropertyTerrainKind(s32);
     s32 a, b; void *p;
     switch (GetMapEditorMode()) {
     case 1:
@@ -345,7 +345,7 @@ s32 MapEditor_GetCursorType(s32 x, s32 y) {
             a = GetMapEditorTerrainKind();
             if (!Map_CanPlaceTile(x, y, a, GetMapEditorTerrainOwner()))
                 return 5;
-            if (IsDestroyedPipeTile(GetMapEditorTerrainKind()))
+            if (IsPropertyTerrainKind(GetMapEditorTerrainKind()))
                 return 5;
             break;
         }
@@ -698,11 +698,14 @@ void MapEditor_SetMapModified(s32 arg0) {
     M2C_FIELD(&gMapEditorState, u8 *, 5) = arg0;
 }
 
-void func_ov007_022121e4(void) {
-    M2C_UNK ResetEffectSpritePool();
-    M2C_UNK LoadEffectSpriteSheet(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_0221f6a0;
+/* Load the map editor's explosion sprite sheet: reset the effect sprite pool,
+ * then load the "bakuhatu_edit" sheet into palette slot 0. */
+void MapEditor_LoadExplosionSprite(void) {
+    void ResetEffectSpritePool(void);
+    void LoadEffectSpriteSheet(void *sheetName, s32 paletteSlot);
+    extern u8 gMapEditorExplosionName[];
+
     ResetEffectSpritePool();
-    LoadEffectSpriteSheet(&data_ov007_0221f6a0, 0);
+    LoadEffectSpriteSheet(gMapEditorExplosionName, 0);
 }
 

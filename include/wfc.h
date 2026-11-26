@@ -238,6 +238,14 @@ WFC_SESSION_STATE_WIRELESS   = 4,  /* the wireless start command was queued and 
 #define WFC_SESSION_STATE_HTTP        14 /* the DWC HTTP matchmaking session is open */
 #define WFC_SESSION_STATE_ENDED       18 /* the session is over; Wfc_ProcessStep frees the work blocks */
 #define WFC_SESSION_STATUS   0x2264 /* u32 status bits, set by WFC_SetStatusBits */
+/* Connection status bits of WFC_SESSION_STATUS that WFC_SetStatusBits (main_020270B4)
+ * maintains in pairs: writing the first bit of a pair clears the second, writing
+ * both sets both.  They record that the friend connection is under way and that
+ * the friend's record has been validated. */
+#define WFC_STATUS_CONNECT          0x20000 /* a friend connection is under way */
+#define WFC_STATUS_CONNECT_VALID    0x10000 /* its friend record has been validated */
+#define WFC_STATUS_MODE             0x80000 /* a connection mode is under way */
+#define WFC_STATUS_MODE_VALID       0x40000 /* its record has been validated */
 /* The status word WFC_InitSessionStatus gives a brand-new WFC session: the
  * library's starting link state, before any player slot or connection flag has
  * been reported. */
@@ -394,6 +402,7 @@ typedef struct WfcMeasureChannelRequest {
 /* u16 the ARM7 firmware keeps in the shared work area; its bit 0 is the command
  * channel's handshake flag, which the ARM9 clears once it has handled a packet. */
 #define WFC_SHARED_FLAG_WORD 0x027FFF96
+#define WFC_SHARED_FLAG_HANDSHAKE 0x0001 /* bit 0: the command channel's handshake flag */
 /* u16 player bitmask the ARM7 firmware keeps in the shared work area (bit n-1
  * set for player slot n); WFC_GetPlayerMask reads it. */
 #define WFC_SHARED_PLAYER_MASK 0x027FFCFA
@@ -760,6 +769,7 @@ typedef struct NasRequest {
 } NasRequest;          /* 0x48 bytes */
 
 /* GpiInfoRecord fields used by the NAS login (the record is 0x204 bytes). */
+#define GPI_HEAP_ID             5 /* heap the GPI library allocates its blocks from (gpiMalloc/gpiFree/gpiRealloc) */
 #define GPI_INFO_PROFILE_ID     0x004 /* s32 profile id echo */
 #define GPI_INFO_LASTNAME       0x08E /* char[31], also carries the game's id */
 #define GPI_INFO_FIELD_LASTNAME 0x705 /* gpiSetInfoString: 0x700 + field 5, \lastname\ */
@@ -839,6 +849,7 @@ enum {
 #define WFC_RECORD_STRIDE      0xC0
 #define WFC_RECORD_CODE_LEN    0x0A /* u16 length of the record's code */
 #define WFC_RECORD_CODE        0x0C /* u8[] code bytes */
+#define WFC_RECORD_CODE_BYTES  0x20 /* the record's 32-byte code area */
 #define WFC_RECORD_FLAGS       0x2C /* u16 just after a 32-byte code: WFC_RECORD_FLAG_CONNECTION marks a built-in connection code */
 #define WFC_RECORD_FLAG_CONNECTION 0x10 /* bit 4 of WFC_RECORD_FLAGS */
 #define WFC_RECORD_CODE_ALT    0x04 /* u8[] the record's other code, compared for duplicate friends */

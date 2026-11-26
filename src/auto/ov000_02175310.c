@@ -68,7 +68,7 @@ void FillUnitInfo(void *arg0, void *arg1) {
     }
 }
 #pragma pop
-void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
+void FillUnitKindInfo(void *entry, s32 templateIndex, s32 statIndex) {
     s32 GetUnitKindByte0(s32);
     s32 GetUnitKindMoveRange(s32);
     s32 func_020a7bec(s32);

@@ -204,12 +204,14 @@ void func_ov011_022273c8(void *arg0) {
     M2C_FIELD(arg0, u16 *, 0x3A) = (u16) (M2C_FIELD(arg0, u16 *, 0x3A) + 1);
 }
 #pragma opt_instruction_scheduling reset
-void func_ov011_02227e88(void *arg0) {
+/* Once the intro menu has been shown for more than 0x2A80 frames, switch its
+ * menu sprite to animation label 1 (its idle animation). */
+void IntroMenu_StartIdleAnimation(IntroMenu011 *menu) {
     M2C_UNK GotoSpriteAnimationLabel(void *, M2C_UNK);
-    if ((u32) M2C_FIELD(arg0, u16 *, 0x3A) <= 0x2A80U) {
+    if ((u32) menu->timer <= 0x2A80U) {
         return;
     }
-    GotoSpriteAnimationLabel(arg0, 1);
+    GotoSpriteAnimationLabel(menu, 1);
 }
 
 /* Create one intro-menu entry sprite (a MenuEntry011) owned by `owner` and install

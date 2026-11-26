@@ -345,24 +345,37 @@ void Ov003_DecreaseSelectedEntry(void *menu, s32 row) {
  #undef F
 }
 #pragma opt_common_subs off
-u8 func_ov003_022036c8(void *arg0) {
-    u8 var_r0;
+/* True when a setup menu's entry was clicked this frame: SETUP_MENU_CLICKED is
+ * the clicked entry, or -1 when none was clicked. */
+u8 SetupMenuHasClickedEntry(void *menu) {
+    u8 clicked;
 
-    if (M2C_FIELD(arg0, s8 *, 4) != -1) {
-        var_r0 = 1;
+    if (M2C_FIELD(menu, s8 *, SETUP_MENU_CLICKED) != -1) {
+        clicked = 1;
     } else {
-        var_r0 = 0;
+        clicked = 0;
     }
-    return var_r0;
+    return clicked;
 }
 
-s8 func_ov003_022036e4(void *arg0) {
+s8 GetSetupMenuClickedEntry(void *arg0) {
     return M2C_FIELD(arg0, s8 *, 4);
 }
 
-u8 func_ov003_022036ec(void *arg0) { u8 var_r0; if (M2C_FIELD(arg0, s8 *, 5) != -1) { var_r0 = 1; } else { var_r0 = 0; } return var_r0; }
+/* Whether the setup menu has an entry showing its pressed frame (its
+ * SETUP_MENU_PRESSED entry index is not "none"). */
+u8 SetupMenuHasPressedEntry(void *menu) {
+    u8 hasPressed;
 
-s8 func_ov003_02203708(void *arg0) {
+    if (M2C_FIELD(menu, s8 *, SETUP_MENU_PRESSED) != -1) {
+        hasPressed = 1;
+    } else {
+        hasPressed = 0;
+    }
+    return hasPressed;
+}
+
+s8 GetSetupMenuPressedEntry(void *arg0) {
     return M2C_FIELD(arg0, s8 *, 5);
 }
 

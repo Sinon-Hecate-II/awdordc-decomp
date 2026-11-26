@@ -144,7 +144,7 @@ void SendWaypointPanelClosed(void) {
 void func_ov003_021e8958(void *arg0) {
     void func_ov003_021e8f80(void *, s32);
     void func_ov003_021e8f98(void *, s32);
-    s32 func_020cfb94(void *);
+    s32 GetCurrentMapPlayerCount(void *);
     void SetSceneLayerOverrideMain(s32, void *);
     void SetSceneLayerOverrideSub(s32, void *);
     void Apply3DSpriteBanks(void);
@@ -165,11 +165,11 @@ void func_ov003_021e8958(void *arg0) {
     void SetTimerDisplayGraphics(void *, s32, s32);
     void func_0208eb60(void *, s32);
     s32 GetSceneEntryOffset(void);
-    void func_ov003_021e9830(void *, s32);
+    void SetSpriteTweenValue(void *, s32);
     s32 IsLinkSessionActive(void);
     void *GetLocalNetworkPlayerRecord(void);
     void SetWaypointPanelMode(void *, s32);
-    s32 func_ov003_021e9ce0(void *);
+    s32 IsWaypointPanelNotTwoPlayer(void *);
     void SetWaypointPanelState(void *, s32);
     void PlaceWaypointPanelCursor(void *);
     s32 GetWaypointSlotIndex(void *);
@@ -203,7 +203,7 @@ void func_ov003_021e8958(void *arg0) {
     u8 i;
     u8 *h;
 
-    if (func_020cfb94(arg0) == 2) func_ov003_021e8f80(arg0, 1);
+    if (GetCurrentMapPlayerCount(arg0) == 2) func_ov003_021e8f80(arg0, 1);
     SetSceneLayerOverrideMain(3, &data_ov003_0220f890);
     SetSceneLayerOverrideMain(0, &data_ov003_0220f892);
     SetSceneLayerOverrideMain(1, &data_ov003_0220f88e);
@@ -243,14 +243,14 @@ void func_ov003_021e8958(void *arg0) {
         gCur3DSpriteEngine = t2;
     }
     v = GetSceneEntryOffset();
-    func_ov003_021e9830(M2C_FIELD(arg0, s32 *, 0x48), v);
-    func_ov003_021e9830(M2C_FIELD(arg0, s32 *, 0x50), v);
-    func_ov003_021e9830(M2C_FIELD(arg0, s32 *, 0x4c), 0xc0);
+    SetSpriteTweenValue(M2C_FIELD(arg0, s32 *, 0x48), v);
+    SetSpriteTweenValue(M2C_FIELD(arg0, s32 *, 0x50), v);
+    SetSpriteTweenValue(M2C_FIELD(arg0, s32 *, 0x4c), 0xc0);
     if (IsLinkSessionActive()) {
         p = GetLocalNetworkPlayerRecord();
         if (p == 0) return;
         SetWaypointPanelMode(arg0, M2C_FIELD(p, u8 *, 8));
-    } else if (func_ov003_021e9ce0(arg0) && v == (s32) 0xFFFFFF00) {
+    } else if (IsWaypointPanelNotTwoPlayer(arg0) && v == (s32) 0xFFFFFF00) {
         SetWaypointPanelMode(arg0, 1);
     } else {
         SetWaypointPanelMode(arg0, 0);

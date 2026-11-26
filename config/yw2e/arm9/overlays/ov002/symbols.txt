@@ -1,6 +1,6 @@
 SetBattleSceneVramBanks kind:function(arm,size=0x2c) addr:0x021e1500
 SetupBattleScene kind:function(arm,size=0x50) addr:0x021e152c
-func_ov002_021e157c kind:function(arm,size=0x1c) addr:0x021e157c
+UpdateAndDrawBattleScene kind:function(arm,size=0x1c) addr:0x021e157c
 func_ov002_021e1598 kind:function(arm,size=0x14) addr:0x021e1598
 TeardownBattleScreen kind:function(arm,size=0x34) addr:0x021e15ac
 func_ov002_021e15e0 kind:function(arm,size=0x14) addr:0x021e15e0

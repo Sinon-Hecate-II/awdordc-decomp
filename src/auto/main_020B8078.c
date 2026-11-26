@@ -237,11 +237,13 @@ void RedrawListRows(s32 offset) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-s32 ScrollListUp(void *arg0) {
-    s16 n = M2C_FIELD(arg0, s16 *, 0x40);
+/* Move the menu list's window up one row (its first visible row back by one),
+ * reporting 1 when it moved and 0 when already at the first row. */
+s32 ScrollListUp(void *list) {
+    s16 firstRow = M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW);
 
-    if (n != 0) {
-        M2C_FIELD(arg0, s16 *, 0x40) = n - 1;
+    if (firstRow != 0) {
+        M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW) = firstRow - 1;
         return 1;
     }
     return 0;

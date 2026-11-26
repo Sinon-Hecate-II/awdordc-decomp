@@ -83,12 +83,14 @@ void BeginCargoDrop(void *option) {
     M2C_FIELD(option, s16 *, MAP_OPTION_SELECTED) = NextMapCursorOption(M2C_FIELD(option, s16 *, MAP_OPTION_SELECTED), mask);
 }
 
-void func_020cad00(s32 arg0) {
-    M2C_UNK PlaySoundAtTile(M2C_UNK);
-    if ((arg0 != 1) && (arg0 != 2)) {
+/* Play the unloading sound of a dropped unit, but only for the foot units
+ * (infantry and mech); other unit kinds drop silently. */
+void PlayUnitDropSound(s32 unitKind, s32 tileX, s32 tileY) {
+    void PlaySoundAtTile(s32, s32, s32);
+    if ((unitKind != UNIT_KIND_INFANTRY) && (unitKind != UNIT_KIND_MECH)) {
         return;
     }
-    PlaySoundAtTile(0x7C);
+    PlaySoundAtTile(0x7C, tileX, tileY);
 }
 
 /* One frame of the map's directional cursor: cycle the selected option among
@@ -162,7 +164,7 @@ units=(u8*)map+0x59a4;
 index=(s32)unit[12]*14;
 SetHeldDirection((u8)selector,(u8)(M2C_FIELD(p,s16 *,0x6e)+1));
 map=*gCurrentMap;
-((void(*)(s32,s32,s32))func_020cad00)(((u32)(units[index]<<26)>>26),M2C_FIELD(map,s16 *,0x52dc),M2C_FIELD(map,s16 *,0x52de));
+((void(*)(s32,s32,s32))PlayUnitDropSound)(((u32)(units[index]<<26)>>26),M2C_FIELD(map,s16 *,0x52dc),M2C_FIELD(map,s16 *,0x52de));
 Sprite_ResumeAnimation(p);
 }
 

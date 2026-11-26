@@ -306,8 +306,11 @@ s32 gpiFindBuddyByNickEmail(void **connection, s32 nick, s32 email, s32 *result)
     return 0;
 }
 
-void gpiWalkBuddyTableCallback(M2C_UNK arg0, void *arg1) {
-    M2C_FIELD(arg1, M2C_UNK (**)(s32, M2C_UNK, s32), 4)(M2C_FIELD(arg1, s32 *, 0), arg0, M2C_FIELD(arg1, s32 *, 8));
+/* TableMapSafe2 callback of gpiWalkBuddyTable: hand the buddy record `buddy` to
+ * the walk's callback as (connection, buddy, userData), where `walk` holds the
+ * connection at +0, the callback at +4 and its user data at +8. */
+void gpiWalkBuddyTableCallback(M2C_UNK buddy, void *walk) {
+    M2C_FIELD(walk, M2C_UNK (**)(s32, M2C_UNK, s32), 4)(M2C_FIELD(walk, s32 *, 0), buddy, M2C_FIELD(walk, s32 *, 8));
 }
 
 /* Run `callback` over every buddy-status record of the connection's buddy

@@ -66,7 +66,7 @@ AddSprite((u16)((x+4)&511),(u16)((y+4)&255),(u16)((0x3ff & (0x218 >> ((u32)(M2C_
  * terrain), and the terrain's tile graphics and owner-army palette. */
 void DrawTerrainStatus(s32 x,s32 y,s32 tx,s32 ty,s32 side,void *unit) {
 extern void **gCurrentMap;extern void *gCur3DSpriteEngine;
-extern u8 gSpriteDesc32x8[],gSpriteDesc16x16[],gSpriteDesc8x8[],data_02101f1c[],gSpriteDesc16x32[];extern s8 gTerrainPropertyFlags[];
+extern u8 gSpriteDesc32x8[],gSpriteDesc16x16[],gSpriteDesc8x8[],gSpriteDesc64x16[],gSpriteDesc16x32[];extern s8 gTerrainPropertyFlags[];
 s32 GetCellTerrainKind(s32,s32);s32 GetCellTerrainId(s32,s32);s32 GetCellPropertyArmy(s32,s32);s32 GetCellTerrainDefense(s32,s32);
 void *FindMapFeatureAtTile(s32,s32);s32 GetTerrainTileBase(s32);s32 GetTerrainTileData(s32);s32 GetTerrainPalette(s32,s32);
 s32 value; u8 screenY; s32 terrainId,armyVariant,defense;void *feature;void *map;u32 cellIndex;s32 terrainKind;
@@ -85,7 +85,7 @@ AddSprite((u16)((x+60)&511),TerrainSpriteY(screenY),(u16)(((0x3ff & (0x150 >> DS
 DrawDecimalNumber((x+78)&511,screenY,value);
 }}
 QueueMemoryCopy(GetTerrainTileBase(terrainId),M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x4580,512,0);
-AddSprite((u16)((x+20)&511),(u16)((y+26)&255),(u16)((0x3ff&(0x22c>>DS3D_BOUNDARY_SHIFT))+0x9000),data_02101f1c,8);
+AddSprite((u16)((x+20)&511),(u16)((y+26)&255),(u16)((0x3ff&(0x22c>>DS3D_BOUNDARY_SHIFT))+0x9000),gSpriteDesc64x16,8);
 map=*gCurrentMap;cellIndex=tx+M2C_FIELD((u8*)map+ty*2,u16*,MAP_ROW_OFFSETS);
 if(!((u8)(M2C_FIELD((u8*)map+(cellIndex>>3),u8*,MAP_CELL_BITMAP)&(1<<(cellIndex&7)))))if(terrainKind!=MAP_TERRAIN_HQ)armyVariant=0;
 QueueMemoryCopy(GetTerrainTileData(terrainId),M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x4200,256,0);

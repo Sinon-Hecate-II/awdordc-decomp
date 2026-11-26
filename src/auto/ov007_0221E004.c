@@ -213,13 +213,16 @@ void MapEditorInitGlyphKeyboard(void *editor) {
         AddSpriteCell(M2C_FIELD(editor, s32 *, 0x38), (s16)(i * 8 + 16), 16, 8, 16, i, 14);
 }
 
-void func_ov007_0221e85c(void *arg0) {
-    M2C_UNK SpriteCellListClear(s32);
-    M2C_UNK func_020b2140();
-    M2C_UNK HideAllSpriteSlots();
+/* Tear down the map editor's glyph keyboard: hide its sprite slots, clear the
+ * 17-cell text line's sprite cell list and drop the focused slot. */
+void MapEditorFreeGlyphKeyboard(void *editor) {
+    void HideAllSpriteSlots(void);
+    void SpriteCellListClear(void *cellList);
+    void ClearSpriteSlotFocusFlag(void);
+
     HideAllSpriteSlots();
-    SpriteCellListClear(M2C_FIELD(arg0, s32 *, 0x38));
-    func_020b2140();
+    SpriteCellListClear(M2C_FIELD(editor, s32 *, MAPEDIT_TEXT_CELLS));
+    ClearSpriteSlotFocusFlag();
 }
 
 /* Set up the map editor's entry-list screen: style the panel's text sprite, put

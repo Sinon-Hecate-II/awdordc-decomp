@@ -777,13 +777,13 @@ void func_02085ea4(void *arg0) {
 
 #pragma optimization_level 3
 void func_02085ebc(void *arg0) {
- s32 IsWfcLinkActive(); s32 func_ov002_021e1624(); s32 func_ov010_02225d8c(); s32 func_ov010_02225d9c();
+ s32 IsWfcLinkActive(); s32 func_ov002_021e1624(); s32 func_ov010_02225d8c(); s32 VoiceActivity_IsSpeaking();
  extern M2C_UNK gSpriteDesc16x16; extern u16 **g3DSpriteEngineMain; extern u16 **gCur3DSpriteEngine;
  s32 flag; u16 **saved; u16 v; u16 state=3;
  if(IsWfcLinkActive() && M2C_FIELD(arg0,s32 *,0x38) && M2C_FIELD(arg0,s32 *,0x3c)){
  if(IsSpriteReady(arg0)){
  if(func_ov010_02225d8c()){
- v=func_ov010_02225d9c()?2:1; state=v;
+ v=VoiceActivity_IsSpeaking()?2:1; state=v;
  }else state=0;
  }}
  if(M2C_FIELD(arg0,u8 *,0x4c)){

@@ -163,9 +163,18 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
 #pragma opt_propagation reset
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
-s32 func_ov005_0221174c(void) {
-s32 FreeUiGraphicsBank(s32); s32 DeleteWallpaperSpritesOnAllEngines(); s32 Ov003_ResumeMapPanelAnimation(); s32 func_02088624();
-FreeUiGraphicsBank(4); DeleteWallpaperSpritesOnAllEngines(); Ov003_ResumeMapPanelAnimation(); func_02088624();
+/* Close the history menu's map-preview scene: free the UI graphics bank, delete
+ * the wallpaper sprites, resume the map panel animation and unload the unit
+ * graphics the scene loaded. */
+s32 Ov005_CloseHistoryScene(void) {
+    s32 FreeUiGraphicsBank(s32);
+    s32 DeleteWallpaperSpritesOnAllEngines();
+    s32 Ov003_ResumeMapPanelAnimation();
+    s32 UnloadUnitGraphics();
+    FreeUiGraphicsBank(4);
+    DeleteWallpaperSpritesOnAllEngines();
+    Ov003_ResumeMapPanelAnimation();
+    UnloadUnitGraphics();
 }
 
 #pragma opt_strength_reduction off
@@ -274,8 +283,8 @@ void func_ov005_022119b4(void) {
 }
 
 void func_ov005_022119c0(void) {
-    M2C_UNK func_ov005_0221174c();
-    func_ov005_0221174c();
+    M2C_UNK Ov005_CloseHistoryScene();
+    Ov005_CloseHistoryScene();
 }
 
 void func_ov005_022119cc(void *arg0) {
@@ -306,9 +315,11 @@ void CreateHistoryMenuPanel(M2C_UNK parent) {
     CreateSpriteObject(&gHistoryMenuPanelClass, parent);
 }
 
-s32 HistoryTabAt(s32 arg0) {
+/* Address of the shared records menu's tab `tab` (the HistoryMenu.tabs array). */
+s32 HistoryTabAt(s32 tab) {
     extern s32 gHistoryMenu;
-    return (0xA * arg0) + (gHistoryMenu + 0x10);
+
+    return (s32)&((HistoryMenu *)gHistoryMenu)->tabs[tab];
 }
 
 /* Whether the records menu shows record (group, index) as blank: true when the

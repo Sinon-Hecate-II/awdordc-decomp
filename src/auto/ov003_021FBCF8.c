@@ -254,7 +254,7 @@ void func_ov003_021fc26c(void *arg0) {
  u32 GetMapCategory(void);
  M2C_UNK Ov003_RefreshMapPreview(void *,s32);
  void Ov003_SetMapConfirmEnabled(void);
- void func_020d8ccc(u16);
+ void SetCurrentMapId(u16);
  void EnableMapConfirm(void);
  void func_ov003_021f2848(void *);
  s32 Ov003_IsLinkSessionHost(void);
@@ -340,7 +340,7 @@ void func_ov003_021fc26c(void *arg0) {
  }
  Ov003_SetMapConfirmEnabled();
  Ov003_CloseMapPanel(arg0);
- func_020d8ccc(selected);
+ SetCurrentMapId(selected);
  EnableMapConfirm();
  if(PanelModeIs(arg0,4)||PanelModeIs(arg0,2)) PlaySoundEffect(0x1000e);
  else PlaySoundEffect(0x1000d);

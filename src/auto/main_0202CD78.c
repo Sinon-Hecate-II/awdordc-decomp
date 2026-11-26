@@ -87,7 +87,7 @@ s32 LoadWaveArchiveFile(s32 fileId, s32 pool, s32 cache) {
  * is already cached.  The file's header sizes the two tables the block keeps: a
  * table of per-entry data pointers (cleared so the entries load lazily) followed by
  * the entry-offset table copied out of the file.  The block is freed by
- * func_0202d0a4 and, when `cache` is set, owned by and registered with the current
+ * FreeWaveArchiveEntryTableBlock and, when `cache` is set, owned by and registered with the current
  * archive.  Returns the block, or 0 when it could not be loaded. */
 M2C_UNK *LoadWaveArchiveFileWithEntryTable(s32 fileId, s32 pool, s32 cache) {
     void *Sound_AllocDataBlock(s32 *, s32, s32, s32, s32);
@@ -98,7 +98,7 @@ M2C_UNK *LoadWaveArchiveFileWithEntryTable(s32 fileId, s32 pool, s32 cache) {
     M2C_UNK SetLoadedArchiveFile(M2C_UNK, M2C_UNK);
     s32 GetLoadedArchiveFile(s32);
     static s32 header[WAVE_ARCHIVE_ENTRIES / sizeof(s32)];
-    extern M2C_UNK func_0202d0a4;
+    extern M2C_UNK FreeWaveArchiveEntryTableBlock;
     s32 bothTablesBytes;
     M2C_UNK *block;
     s32 tableBytes;
@@ -119,7 +119,7 @@ M2C_UNK *LoadWaveArchiveFileWithEntryTable(s32 fileId, s32 pool, s32 cache) {
         } else {
             owner = Sound_GetCurrentArchive();
         }
-        block = (M2C_UNK *)Sound_AllocDataBlock((s32 *)pool, bothTablesBytes + 0x5C, (s32)&func_0202d0a4, owner, fileId);
+        block = (M2C_UNK *)Sound_AllocDataBlock((s32 *)pool, bothTablesBytes + 0x5C, (s32)&FreeWaveArchiveEntryTableBlock, owner, fileId);
         if (block == NULL) {
             return NULL;
         }
@@ -194,10 +194,15 @@ void FreeWaveArchiveFile(s32 block, s32 size, M2C_UNK owner, M2C_UNK fileId) {
     Link_ClearSlotChain(block);
 }
 
-void func_0202d0a4(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
-s32 Link_ClearSlotChain(s32);
-Sound_UntrackArchiveFile(arg0,arg2,arg3);
-Link_ClearSlotChain(arg0);
+/* Free a wave-archive data block loaded together with its entry table: untrack
+ * it from the owner archive's file table and clear the link slots pointing into
+ * it.  The block's own memory belongs to the sound heap's block list, so the
+ * payload size is unused here. */
+void FreeWaveArchiveEntryTableBlock(s32 dataBlock, s32 size, s32 owner, s32 fileId) {
+    s32 Sound_UntrackArchiveFile(s32, s32, s32);
+    s32 Link_ClearSlotChain(s32);
+    Sound_UntrackArchiveFile(dataBlock, owner, fileId);
+    Link_ClearSlotChain(dataBlock);
 }
 
 /* Free a wave-archive entry block: clear its packed-table slot when the table
@@ -294,7 +299,7 @@ return 1;
  * from `pool`.  Returns 0 if a heap cannot be allocated. */
 s32 Sound_InitArchiveChannels(s32 pool) {
 void *GetSoundArchiveChannelRecord(s32);
-void func_0202ab94(s32,u8);
+void Sound_SetChannelVoiceLimit(s32,u8);
 void func_0202abb4(s32,u16);
 s32 Sound_CreateChannelHeap(s32,s32,s32);
 s32 i; SoundChannelRecord *rec; s32 j; s32 saved=pool;
@@ -302,7 +307,7 @@ Sound_GetCurrentArchive();
 for(i=0;i<32;i++) {
 rec=GetSoundArchiveChannelRecord(i);
 if(rec) {
-func_0202ab94(i,rec->count);
+Sound_SetChannelVoiceLimit(i,rec->count);
 func_0202abb4(i,rec->volume);
 if(rec->heapSize && saved)
 for(j=0;j<rec->count;j++)
@@ -604,10 +609,13 @@ s32 Sound_StartArchiveSound(s32 handle, s32 soundId, s32 lengthMs) {
     return 1;
 }
 
-void func_0202d944(volatile s32 *arg0,s32 arg1) {
-void Sound_FadeOutPlayer(s32,s32);
-if(*arg0==0)return;
-Sound_FadeOutPlayer(*arg0,arg1);
+/* Fade the sound player named by the handle variable at `handle` out over `frames`
+ * frames; nothing happens when the handle is empty. */
+void Sound_FadeOutPlayerHandle(volatile s32 *handle, s32 frames) {
+    void Sound_FadeOutPlayer(s32, s32);
+
+    if (*handle == 0) return;
+    Sound_FadeOutPlayer(*handle, frames);
 }
 
 void func_0202d960(void *volatile *a,s32 b){void Sound_StartFade(void *,s32);void *p;if(!*a)return;p=*a;if(((s32)(M2C_FIELD(p,u32 *,0x110)<<28)>>31)!=0)return;Sound_StartFade(p+0xe8,b<<8);}

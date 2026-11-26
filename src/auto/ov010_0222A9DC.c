@@ -6,7 +6,7 @@
    the entity asks for (0 = main engine, 1 = sub engine, 3 = the engine that is active), and
    then moves the entity on to the matching next state. */
 void UpdateEntityCursor(void *arg0){
-M2C_UNK func_ov010_02228180(void *);M2C_UNK GotoSpriteAnimationLabel(void *,s32);M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK SetPanelChoice(void *,s32);s32 func_020c4ba4(s32);s32 func_020c4b88(s32);M2C_UNK CreateNetErrorReporter(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
+M2C_UNK func_ov010_02228180(void *);M2C_UNK GotoSpriteAnimationLabel(void *,s32);M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK SetPanelChoice(void *,s32);s32 IsProfileNasKeyResolved(s32);s32 IsProfileIdBlockLocalRecord(s32);M2C_UNK CreateNetErrorReporter(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 if(func_ov010_02228180(arg0)==3){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
@@ -22,7 +22,7 @@ M2C_FIELD(created,u32 *,0x58)|=0x1000;
 
 }while(++i<2);gCur3DSpriteEngine=savedBank;}GotoSpriteAnimationLabel(arg0,8);return;}
 CreateNetErrorReporter((M2C_UNK *)func_ov010_0222ad50,(M2C_UNK)arg0);
-if(!func_020c4ba4(0)){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
+if(!IsProfileNasKeyResolved(0)){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 savedBank=gCur3DSpriteEngine;i=0;do{
 if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
@@ -34,7 +34,7 @@ created=CreateTextLayer(arg0);RenderTextLayerMessage(created,3,M2C_FIELD(arg0,u1
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 SetPanelChoice(created,1);
 }while(++i<2);gCur3DSpriteEngine=savedBank;}GotoSpriteAnimationLabel(arg0,10);return;}
-if(!func_020c4b88(0)){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
+if(!IsProfileIdBlockLocalRecord(0)){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 savedBank=gCur3DSpriteEngine;i=0;do{
 if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
@@ -542,14 +542,18 @@ void StartOnlineMatchLabelSplitTransitions(void *label) {
     M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) = (u8) (M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) | ONLINE_LABEL_FLAG_SPLIT_SUB);
 }
 
-void func_ov010_0222b998(void) {
-    M2C_UNK CreateSubScreenLinkIndicator();
-    M2C_UNK DisableMapConfirm();
+/* Leave the online screen's network-error state: drop the reported error,
+ * clear OV010_FLAG_ERROR so later errors are reported again, block map
+ * confirmation and restore the sub-screen link indicator. */
+void Ov010Online_DismissNetError(void) {
+    void DisableMapConfirm(void);
+    void ClearNetError(void);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
-    M2C_UNK func_ov010_02228320();
+    void CreateSubScreenLinkIndicator(void);
+
     DisableMapConfirm();
-    func_ov010_02228320();
-    Ov010Online_ClearStepFlag(6);
+    ClearNetError();
+    Ov010Online_ClearStepFlag(OV010_FLAG_ERROR);
     CreateSubScreenLinkIndicator();
 }
 

@@ -66,20 +66,51 @@ void BattleFinishStep(void) {
     M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = MAP_STATE_NONE;
 }
 
-void ResumeMapInputMode(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b0)=20;}
-
-void func_020d466c(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b0)=13;}
-
-void SetMapCommandPending(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ac)=1;}
-
-void ClearMapCommandPending(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ac)=0;}
-
-u8 IsMapCommandPending(void) {
+/* Put the battle map back into the input-mode state so the player's cursor and
+ * menus become active again (MAP_STATE_RESUME_INPUT). */
+void ResumeMapInputMode(void) {
     extern void **gCurrentMap;
-    return M2C_FIELD(*gCurrentMap, u8 *, 0x52AC);
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = MAP_STATE_RESUME_INPUT;
 }
 
-s32 GetMapViewHoldCount(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,s8*,MAP_VIEW_HOLD);}
+/* MAP_STATE_RESUME_INPUT step: hand the battle map back to the normal map-input
+ * state once the interruption is over. */
+void ResumeMapInputStep(void) {
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = MAP_STATE_MAP_INPUT;
+}
+
+/* Mark that a map command is waiting to run: the battle loop picks it up on its
+ * next step. */
+void SetMapCommandPending(void) {
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_COMMAND_PENDING) = 1;
+}
+
+/* Clear the battle map's pending-command flag: the next cursor press opens the
+ * action menu instead of cancelling the pending command. */
+void ClearMapCommandPending(void) {
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_COMMAND_PENDING) = 0;
+}
+
+/* Whether a map command is queued: nonzero while the map loop still has to run
+ * the command the cursor issued, so the cursor cancels it instead of opening the
+ * action menu. */
+u8 IsMapCommandPending(void) {
+    extern void **gCurrentMap;
+
+    return M2C_FIELD(*gCurrentMap, u8 *, MAP_COMMAND_PENDING);
+}
+
+/* How many holds map input currently has on the battle map view; the map ignores
+ * cursor input while the count is nonzero. */
+s32 GetMapViewHoldCount(void) {
+    extern void **gCurrentMap;
+    void *map = *gCurrentMap;
+
+    return M2C_FIELD(map, s8 *, MAP_VIEW_HOLD);
+}
 
 /* Take a hold on the map view: map input stays blocked while any hold is held. */
 void AcquireMapViewHold(void) {
@@ -94,19 +125,55 @@ void ReleaseMapViewHold(void) {
     M2C_FIELD(*gCurrentMap, s8 *, MAP_VIEW_HOLD)--;
 }
 
-void ResetMapViewHold(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,s8*,MAP_VIEW_HOLD)=0;}
+/* Drop every hold on the map view at once, so map input becomes unblocked. */
+void ResetMapViewHold(void) {
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, s8 *, MAP_VIEW_HOLD) = 0;
+}
 
-u8 IsUnitMoveActive(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,u8*,0x52ab);}
+/* Whether a unit move is running: the battle loop waits for it to finish before
+ * the next step. */
+u8 IsUnitMoveActive(void) {
+    extern void **gCurrentMap;
+    void *map = *gCurrentMap;
 
-void SetUnitMoveActiveFlag(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ab)=1;}
+    return M2C_FIELD(map, u8 *, MAP_UNIT_MOVE_ACTIVE);
+}
 
-void ClearUnitMoveActiveFlag(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ab)=0;}
+/* Mark a unit move as running: the battle loop waits on MAP_UNIT_MOVE_ACTIVE. */
+void SetUnitMoveActiveFlag(void) {
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_UNIT_MOVE_ACTIVE) = 1;
+}
 
-void EnableMapConfirm(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ad)=1;}
+/* Clear the map's unit-move-active flag, letting the battle loop proceed. */
+void ClearUnitMoveActiveFlag(void) {
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_UNIT_MOVE_ACTIVE) = 0;
+}
 
-void DisableMapConfirm(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ad)=0;}
+/* Turn on the battle map's confirm flag, so the current map/choice may be
+ * confirmed (see MAP_CONFIRM_ENABLED). */
+void EnableMapConfirm(void) {
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_CONFIRM_ENABLED) = 1;
+}
 
-u8 IsMapConfirmEnabled(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,u8*,0x52ad);}
+/* Clear the map-confirm flag, so the current map or choice is no longer
+ * confirmed. */
+void DisableMapConfirm(void) {
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_CONFIRM_ENABLED) = 0;
+}
+
+/* Whether the map cursor's confirm (A) press acts as a command confirm right now;
+ * some map states handle the press themselves and switch this off. */
+u8 IsMapConfirmEnabled(void) {
+    extern void **gCurrentMap;
+    void *map = *gCurrentMap;
+
+    return M2C_FIELD(map, u8 *, MAP_CONFIRM_ENABLED);
+}
 
 /* Normalize the current map/arena id into the base slot (225), copying its
    entry there when it falls in the arena range [225,425). */
@@ -346,8 +413,8 @@ void func_020d4c18(void) {
     CreateSubScreenUi();
 }
 
-void func_020d4ca4(void *);
-void func_020d4c28(void *arg0){G3X_Reset();UpdateMapView();func_020d4ca4(arg0);}
+void SetBattleMapFramePending(void *);
+void func_020d4c28(void *arg0){G3X_Reset();UpdateMapView();SetBattleMapFramePending(arg0);}
 
 void func_020d4c44(void) {
     M2C_UNK StepBattleMap();
@@ -378,7 +445,7 @@ void RemoveBattleEndSpritesTask(void *task) {
     Sprite_ResumeAnimation(task);
 }
 
-void func_020d4ca4(void *arg0) {
+void SetBattleMapFramePending(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x5C) = 1;
 }
 
@@ -397,10 +464,12 @@ void ClearBattleMapFramePending(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x5C) = 0;
 }
 
+/* The battle map view's map sprite object (the one drawn at the battle-end Z
+ * marker), or NULL when the map view has not been created. */
 void *FindBattleMapObject(void) {
-    void *Find3DSpriteByClassAndZ(M2C_UNK *, s32);
-    extern M2C_UNK data_0212bd84;
-    return Find3DSpriteByClassAndZ(&data_0212bd84, 0xFF03);
+    void *Find3DSpriteByClassAndZ(M2C_UNK *, u16);
+    extern M2C_UNK gBattleMapSpriteClass;
+    return Find3DSpriteByClassAndZ(&gBattleMapSpriteClass, BATTLE_END_SPRITE_Z);
 }
 
 /* Create the battle map view's three sprite objects (the map itself and its two
@@ -412,12 +481,12 @@ void CreateBattleMapViewSprites(void) {
     s32 CreateSpriteFromClass(void *, s32);
     void SetSpriteZ(s32, s32);
     void ClearBattleMapFramePending(void *);
-    extern M2C_UNK data_0212bd84, data_0212bdb4, data_0212bd9c;
+    extern M2C_UNK gBattleMapSpriteClass, data_0212bdb4, data_0212bd9c;
     extern M2C_UNK gBattleEndState;
     s32 map;
 
     if (FindObjectByZ(BATTLE_END_SPRITE_Z)) return;
-    map = CreateSpriteFromClass(&data_0212bd84, 4);
+    map = CreateSpriteFromClass(&gBattleMapSpriteClass, 4);
     SetSpriteZ(map, BATTLE_END_SPRITE_Z);
     ClearBattleMapFramePending((void *)map);
     SetSpriteZ(CreateSpriteFromClass(&data_0212bdb4, 6), BATTLE_END_SPRITE_Z);
@@ -454,14 +523,14 @@ u8 IsMapCursorIdle(void) {
     return (M2C_FIELD(*gCurrentMap, u8 *, MAP_VIEW_SCROLL_STATE) & 15) == 0;
 }
 
-void func_020d5068(void);
+void ResetMapInputMode(void);
 /* Runs the per-frame update handler of the battle map's current input mode
    (MAP_MODE): normal cursor, aiming, unit selection, touch selection, etc. */
 void UpdateMapMode(void){
 extern void **gCurrentMap;
 switch(M2C_FIELD(*gCurrentMap,u16*,MAP_MODE)){
 case 0:UpdateMapCursor();break;
-case 1:func_020d5068();break;
+case 1:ResetMapInputMode();break;
 case 2:UpdateAimingCursor();break;
 case 3:UpdateUnitSelectCursor();break;
 case 4:OpenMapActionMenuAtCursor();break;
@@ -528,7 +597,12 @@ if(!hadSelection) return;
 func_020be044();
 }
 
-void func_020d5068(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b4)=0;}
+/* Battle-map input mode 1 handler: end that mode straight away and go back to
+ * the normal cursor mode, so the next frame runs UpdateMapCursor. */
+void ResetMapInputMode(void) {
+    extern void **gCurrentMap;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_MODE) = MAP_MODE_CURSOR;
+}
 
 /* Whether the unit under the cursor is a mobile indirect unit that still has ammo
  * (so the aiming cursor cycles tiles by its attack range). */

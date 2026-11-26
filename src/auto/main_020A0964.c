@@ -156,7 +156,7 @@ void ChooseAttackPosition(s16 targetX, s16 targetY, s16 *out)
 
 #pragma push
 #pragma opt_common_subs off
-void func_020a0d18(void) {
+void UpdateUnitMovePathForCursor(void) {
     M2C_UNK SetUnitPathCursor(M2C_UNK, M2C_UNK);
     M2C_UNK SelectMapLayer(M2C_UNK);
     M2C_UNK BuildMoveRangeFromPathEnd(void);
@@ -336,18 +336,21 @@ s32 UnitPath_GetOutgoingDir(s32 step) {
 }
 
 void func_020a12c0(void *arg0) {
-    M2C_UNK func_02077480();
-    func_02077480();
+    M2C_UNK StartMapViewRaiseTimer();
+    StartMapViewRaiseTimer();
     M2C_FIELD(arg0, s32 *, 0x5C) = 0;
 }
 
-void func_020a12d8(void) {
-    M2C_UNK func_020774b0();
+/* Per-frame refresh of the selected unit's move-path preview: advance the
+ * cell-raise animation, rebuild the path to follow the cursor, then redraw the
+ * path arrows. */
+void UpdateMovePathPreview(void) {
+    M2C_UNK AdvanceMapViewRaiseTimer();
     void DrawUnitMovePath(M2C_UNK, M2C_UNK);
-      func_020774b0();
-      func_020a0d18();
-      DrawUnitMovePath(0, 0);
-  }
+    AdvanceMapViewRaiseTimer();
+    UpdateUnitMovePathForCursor();
+    DrawUnitMovePath(0, 0);
+}
 
   void func_020a12f4(void) {
       M2C_UNK ResetMapViewRaiseTimer();

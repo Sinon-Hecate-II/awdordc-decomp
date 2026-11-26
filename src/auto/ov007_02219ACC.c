@@ -3,15 +3,18 @@
 #include "ds3dsprite.h"
 #include "battle_map.h"
 #include "ov007_map_editor.h"
+#include "sound.h"
 
 void *GetPanelObject();
 M2C_UNK Sprite_ResumeAnimation(void *);
 s16 EaseInterpolate(s32, s32, s32, s16, s32);
 
-void func_ov007_02219acc(void *arg0) {
+/* Start the palette panel's page-change animation: reset the animation driver's
+ * frame counter and play the tab-change sound. */
+void MapEditor_BeginPalettePageAnimation(void *driver) {
     M2C_UNK PlaySoundEffect(s32);
-    M2C_FIELD(arg0, s16 *, 0x54) = 0;
-    PlaySoundEffect(0x10020);
+    M2C_FIELD(driver, s16 *, OV007_PANEL_ANIM_FRAME) = 0;
+    PlaySoundEffect(SOUND_MENU_TAB);
 }
 
 /* Collapse step of an ov007 panel row animation: advance the driver's frame
@@ -109,7 +112,7 @@ SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x24)+x*2+y*64,2,3,(u16)ro
 }
 
 #pragma opt_strength_reduction off
-void func_ov007_02219d10(void){
+void MapEditor_DrawCatalogueGrid(void){
  /* Stage the B-layer grid: 10 columns x 5 rows of 2x2 cells, each cell cleared,
     given its digits (tile-sum table) and stamped into the tile buffer, then two
     8x4 palette blocks placed per the row-0 table byte; flags the layer engine's
@@ -183,7 +186,7 @@ void MapEditor_LoadTerrainBrushGraphics(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_ov007_0221a018(void) {
+void MapEditor_LoadUnitBrushGraphics(void) {
     /* Prepare the tile graphics and schedule DMA transfers into the back buffer bank. */
     u8 GetMapEditorUnitKind(void);
     u8 GetMapEditorUnitOwner(void);

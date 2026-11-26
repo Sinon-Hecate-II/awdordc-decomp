@@ -21,7 +21,7 @@ void func_ov000_0216d2b4(void *arg0) {
 extern void *gArmyInfoState;extern void **gCurrentMap;
 extern const u8 data_ov000_021adcfc[];
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
-extern u8 gSpriteDesc16x16[],gSpriteDesc8x8[],gSpriteDesc16x8[],data_02101f0c[];
+extern u8 gSpriteDesc16x16[],gSpriteDesc8x8[],gSpriteDesc16x8[],gSpriteDesc64x8[];
 s32 GetPlayerArmyVariantIfSet(s32);void AddSprite(u16,u16,u16,void *,s32);
 s32 y,v,topIndex,topX,x,unit,owner,i,palette,tile,t,colorIndex;void *old,*p; u8 colors[6]; u8 c0,c1,c2,c3,c4,c5;
 p=gArmyInfoState;unit=M2C_FIELD(p,u8 *,M2C_FIELD(p,u8 *,13));owner=GetPlayerArmyVariantIfSet(unit);
@@ -77,14 +77,14 @@ x=EaseInterpolate(4,-214,34,M2C_FIELD(gArmyInfoState,s16 *,18),12);
 DrawTileRow((u16)(x&511),8,128,(u16)(((388>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&1023)|0x2000),0);
 if(M2C_FIELD(gArmyInfoState,s16 *,18)<=0)ArmyInfo_RefreshNameGraphic();
 x=EaseInterpolate(4,-240,8,M2C_FIELD(gArmyInfoState,s16 *,18),12);
-AddSprite((u16)((x)&511),(u8)(24),(u16)(((320)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),data_02101f0c,0);
-AddSprite((u16)((x+64)&511),(u8)(24),(u16)(((328)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),data_02101f0c,0);
-AddSprite((u16)((x)&511),(u8)(32),(u16)(((336)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),data_02101f0c,0);
-AddSprite((u16)((x+64)&511),(u8)(32),(u16)(((344)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),data_02101f0c,0);
-AddSprite((u16)((x)&511),(u8)(40),(u16)(((352)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),data_02101f0c,0);
-AddSprite((u16)((x+64)&511),(u8)(40),(u16)(((360)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),data_02101f0c,0);
-AddSprite((u16)((x)&511),(u8)(48),(u16)(((368)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),data_02101f0c,0);
-AddSprite((u16)((x+64)&511),(u8)(48),(u16)(((376)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),data_02101f0c,0);
+AddSprite((u16)((x)&511),(u8)(24),(u16)(((320)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),gSpriteDesc64x8,0);
+AddSprite((u16)((x+64)&511),(u8)(24),(u16)(((328)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),gSpriteDesc64x8,0);
+AddSprite((u16)((x)&511),(u8)(32),(u16)(((336)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),gSpriteDesc64x8,0);
+AddSprite((u16)((x+64)&511),(u8)(32),(u16)(((344)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),gSpriteDesc64x8,0);
+AddSprite((u16)((x)&511),(u8)(40),(u16)(((352)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),gSpriteDesc64x8,0);
+AddSprite((u16)((x+64)&511),(u8)(40),(u16)(((360)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),gSpriteDesc64x8,0);
+AddSprite((u16)((x)&511),(u8)(48),(u16)(((368)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),gSpriteDesc64x8,0);
+AddSprite((u16)((x+64)&511),(u8)(48),(u16)(((376)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x6000),gSpriteDesc64x8,0);
 
 gCur3DSpriteEngine=old;
 p=gArmyInfoState;if(M2C_FIELD(p,s16 *,18)<=0){M2C_FIELD(p,s16 *,20)=1;ArmyInfo_DrawFaceSub();}

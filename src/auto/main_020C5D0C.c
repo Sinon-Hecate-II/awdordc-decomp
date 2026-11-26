@@ -75,7 +75,10 @@ void func_020c5db4(void) {
     func_ov000_02171214();
 }
 
-void func_020c5dc4(void) {
+/* Map-menu command "Unit List": save the carried-unit menu state, close the map
+ * menu, return the map to its input mode and open the scrollable unit list in
+ * layer 7. */
+void OpenUnitListCommand(void) {
     M2C_UNK CreateMenuList(M2C_UNK);
     PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
@@ -171,10 +174,13 @@ s32 CurrentPlayerHasNoUnits(void) {
     return 0;
 }
 
-s32 func_020c5f94(void) {
-    s32 func_020c5cd4();
+/* Availability of an after-battle-end map-menu command that needs the current
+ * player to still have units: hidden (2) while the battle is still running,
+ * disabled (1) when the player's unit group is empty, available (0) otherwise. */
+s32 CanUseAfterBattleEndCommandWithUnits(void) {
+    s32 CanUseAfterBattleEndCommand();
     s32 CurrentPlayerHasNoUnits();
-    if (func_020c5cd4() == 2) {
+    if (CanUseAfterBattleEndCommand() == 2) {
         return 2;
     }
     return CurrentPlayerHasNoUnits();
@@ -205,9 +211,14 @@ s32 IsCurrentPlayerOutOfUnits(void) {
     return 0;
 }
 
-s32 func_020c606c(void) {
-    s32 IsCurrentPlayerOutOfUnits();
-    if (func_020c5cd4() == 2) {
+/* Availability of a post-battle command that needs the current player to still have
+ * units: hidden (2) while the battle is running, otherwise the rout-aware
+ * out-of-units state (0 available, 1 disabled). */
+s32 CanUseAfterBattleUnitsCommand(void) {
+    s32 CanUseAfterBattleEndCommand(void);
+    s32 IsCurrentPlayerOutOfUnits(void);
+
+    if (CanUseAfterBattleEndCommand() == 2) {
         return 2;
     }
     return IsCurrentPlayerOutOfUnits();
@@ -619,11 +630,14 @@ void ConfirmEndTurnCommand(void) {
     SendTurnEndPacket();
 }
 
-void func_020c6a38(void) {
+/* Map-menu command "Options": close the map menu and create the battle map's
+ * options screen (gOptionsScreenClass), whose callbacks build the option rows and
+ * the volume sliders once the map menu sprites are gone. */
+void OpenOptionsCommand(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212a714;
+    extern M2C_UNK gOptionsScreenClass;
     DeleteMapMenuSprites();
-    CreateSpriteFromClass(&data_0212a714, 7);
+    CreateSpriteFromClass(&gOptionsScreenClass, 7);
 }
 
 void func_020c6a54(void) {

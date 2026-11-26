@@ -186,7 +186,7 @@ void func_ov000_0218dda4(void) {
 void func_ov000_0218df00(void){
 #pragma opt_strength_reduction off
 
-M2C_UNK BuildUnitMoveRange(s32);void MarkAdjacentCells(s8);s32 GetUnitAttackClass(s32);s32 func_020d27a4(s32,s32);s32 IsCellVisibleToCurrentTeam(s16,s16);s32 FindBestAdjacentTile(s32,s32,s16 *);s32 func_ov000_02176e28(s32,void *);s32 HasBetterAttackerNearby(void *);s32 SetMapCursor(s16,s16,s32,u8,s32);
+M2C_UNK BuildUnitMoveRange(s32);void MarkAdjacentCells(s8);s32 GetUnitAttackClass(s32);s32 AreUnitIdsOnSameTeam(s32,s32);s32 IsCellVisibleToCurrentTeam(s16,s16);s32 FindBestAdjacentTile(s32,s32,s16 *);s32 GetAiTargetScore(s32,void *);s32 HasBetterAttackerNearby(void *);s32 SetMapCursor(s16,s16,s32,u8,s32);
 extern void **gCurrentMap;extern void *gAiCommandState;
 s32 bestY,bestX,bestScore,score,temp,y,x; s32 count,index;u8 *map,*unit,*selected;s16 position[2];
 bestY=-1;bestScore=0;bestX=-1;temp=0;
@@ -200,11 +200,11 @@ if(M2C_FIELD(M2C_FIELD(map+y*4,s8 **,0x52e8),s8 *,x)<0)goto next_cell;
 index=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
 unit=map+0x59a4+(s16)index*(s16)14;
 if(((u32)(unit[0]<<26)>>26)==0)goto next_cell;
-if(func_020d27a4(M2C_FIELD(map,u8 *,0x52d4),unit?(s32)(unit-(map+0x59a4))/14:0)==1)goto next_cell;
+if(AreUnitIdsOnSameTeam(M2C_FIELD(map,u8 *,0x52d4),unit?(s32)(unit-(map+0x59a4))/14:0)==1)goto next_cell;
 if(!IsCellVisibleToCurrentTeam(x,y))goto next_cell;
 if(!FindBestAdjacentTile(x,y,position))goto next_cell;
 map=*gCurrentMap;index=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0);
-score=func_ov000_02176e28(index|0x10000,position);
+score=GetAiTargetScore(index|0x10000,position);
 if(!score||score<bestScore)goto next_cell;
 if(HasBetterAttackerNearby(unit)==1){count=ScanAdjacentCount(unit);if(count<=1)goto next_cell;}
 bestScore=score;bestY=position[0];bestX=position[1];map=*gCurrentMap;

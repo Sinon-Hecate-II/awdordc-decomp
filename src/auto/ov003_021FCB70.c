@@ -7,7 +7,7 @@
  * the menu kind, starts it or plays the unavailable-map sound. */
 void ConfirmMapSelection(void *entity) {
 M2C_UNK PlaySoundEffect(s32);s32 IsCampaignMapAvailable(u16);
-M2C_UNK func_ov006_022177c8(u16,void *);M2C_UNK CreateMapTransferObjectMode0(u16,void *);M2C_UNK CreateMapTransferObjectMode1(u16,void *);
+M2C_UNK CreateMapOfferObject(u16,void *);M2C_UNK CreateMapTransferObjectMode0(u16,void *);M2C_UNK CreateMapTransferObjectMode1(u16,void *);
 u16 mapId;s16 cursorRow;u8 pageIndex;u8 *pageBase;u32 menuKind=(u32)(M2C_FIELD(entity,u8 *,MENU_ENTITY_MODE)<<28)>>28;
 if((u8)(menuKind==0)||(u8)(menuKind==2)||(u8)(menuKind==3)||(u8)(menuKind==4)||(u8)(menuKind==6)||(u8)(menuKind==7)||(u8)(menuKind==8)){
 cursorRow=M2C_FIELD(M2C_FIELD(entity,void **,MENU_ENTITY_CURSOR),s32 *,0x14);pageIndex=M2C_FIELD(M2C_FIELD(entity,void **,MENU_ENTITY_PAGER),s32 *,4);
@@ -15,7 +15,7 @@ pageBase=M2C_FIELD(entity,u8 **,MENU_ENTITY_MAP_LIST)+(pageIndex<<9);
 mapId=((u16 *)(pageBase+MENU_MAP_ENTRY_OFFSET))[(u16)cursorRow];
 }else mapId=M2C_FIELD(entity,u16 *,MENU_ENTITY_MAP_ID);
 if((u8)(menuKind==6)){
-if(IsCampaignMapAvailable(mapId)){SetMenuPanelState(entity,1);func_ov006_022177c8(mapId,entity);PlaySoundEffect(0x1000d);return;}
+if(IsCampaignMapAvailable(mapId)){SetMenuPanelState(entity,1);CreateMapOfferObject(mapId,entity);PlaySoundEffect(0x1000d);return;}
 PlaySoundEffect(0x1001d);return;
 }
 if((u8)(menuKind==7)){SetMenuPanelState(entity,2);CreateMapTransferObjectMode1(mapId,entity);PlaySoundEffect(0x1000d);return;}

@@ -108,6 +108,6 @@ void MapView_Destroy(void *view) {
     if (M2C_FIELD(view, s32 *, 0x40) == 0x800) gSaveSlotSummary = (gSaveSlotSummary & 0xffffff) | 0x1000000;
     if (M2C_FIELD(view, s32 *, 0x5c)) MemFree(M2C_FIELD(view, s32 *, 0x5c));
     M2C_FIELD(view, s32 *, 0x5c) = 0;
-    func_02088624();
+    UnloadUnitGraphics();
 }
 

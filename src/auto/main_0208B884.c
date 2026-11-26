@@ -519,10 +519,12 @@ void CapturePaletteFadeTarget(void *arg0, s32 palette) {
     }
 }
 
-void func_0208c79c(void *arg0, s16 arg1) {
+/* Fill a palette fade's `from` palette (15 colours, colour 0 skipped) with one
+ * colour, so the fade starts from a solid colour. */
+void FillPaletteFadeFrom(DS3DSpritePaletteFade *fade, u16 color) {
     s32 i;
     for (i = 0; i < 15; i++) {
-        ((s16 *)arg0)[i + 0x1C] = arg1;
+        fade->from[i] = color;
     }
 }
 

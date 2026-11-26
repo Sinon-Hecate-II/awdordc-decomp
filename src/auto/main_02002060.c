@@ -166,8 +166,9 @@ void GX_ConfigureDisplay(u32 displayMode, u32 videoMode, u32 bg0Enable) {
     if (!*(u16 *)&gGxDisplayStatus) gGxDisplayConfig = 0;
 }
 
-void GX_SetSubBgMode(s32 arg0) {
-    *(s32 *)0x04001000 = (*(s32 *)0x04001000 & ~7) | arg0;
+/* Set the sub screen's background mode (the low three bits of DISPCNT_SUB). */
+void GX_SetSubBgMode(s32 bgMode) {
+    REG_DISPCNT_SUB = (REG_DISPCNT_SUB & ~DISPCNT_MODE_MASK) | bgMode;
 }
 
 /* Write master brightness `level` to the master-brightness register of a display

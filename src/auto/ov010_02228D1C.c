@@ -257,7 +257,7 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  M2C_UNK PublishPlayerStatusLocation(M2C_UNK *,s32);
  void StartServingMatchSession(s32,void *,s32,void *,s32);
  void func_ov010_0222807c(void);
- void func_ov010_0222815c(void);
+ void Ov010Online_OnPeerJoined(void);
  extern Ov010Member data_ov010_0222c128;
  extern M2C_UNK gOv010PlayerRecords;
  extern u8 data_ov010_0222f1dc[];
@@ -288,7 +288,7 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  M2C_FIELD(&gOv010OnlineSession,s32 *,0x100)=M2C_FIELD(GetProfileSaveBlock(),s32 *,0x54);
  M2C_FIELD(&gOv010OnlineSession,u8 *,0xfa)=2 | M2C_FIELD(&gOv010OnlineSession,u8 *,0xfa);
  PublishPlayerStatusLocation(&gLocalPlayerStatus,0x6c);
- StartServingMatchSession(arg1&255,func_ov010_0222807c,arg3,func_ov010_0222815c,arg5);
+ StartServingMatchSession(arg1&255,func_ov010_0222807c,arg3,Ov010Online_OnPeerJoined,arg5);
 }
 #pragma opt_dead_assignments reset
 extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5) {
@@ -305,7 +305,7 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  M2C_UNK PublishPlayerStatusLocation(M2C_UNK *,s32);
  void StartMatch(s32,void *,s32,void *,s32);
  void func_ov010_0222807c(void);
- void func_ov010_0222815c(void);
+ void Ov010Online_OnPeerJoined(void);
  extern Ov010Member data_ov010_0222c128;
  extern M2C_UNK gOv010PlayerRecords;
  extern u8 data_ov010_0222f1dc[];
@@ -335,7 +335,7 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  M2C_FIELD(&gOv010OnlineSession,s32 *,0x100)=M2C_FIELD(GetProfileSaveBlock(),s32 *,0x54);
 M2C_FIELD(&gOv010OnlineSession,u8 *,0xfa)=2|M2C_FIELD(&gOv010OnlineSession,u8 *,0xfa);
 PublishPlayerStatusLocation(&gLocalPlayerStatus,0x6c);
-StartMatch(arg1,(void *)func_ov010_0222807c,arg3,(void *)func_ov010_0222815c,arg5);
+StartMatch(arg1,(void *)func_ov010_0222807c,arg3,(void *)Ov010Online_OnPeerJoined,arg5);
 }
 #pragma cplusplus off
 
@@ -435,9 +435,11 @@ void func_ov010_02229568(M2C_UNK arg0) {
     func_ov010_022268f4(0, arg0, 0x20);
 }
 
-void Ov010Online_FreePacket(void *arg0) {
+/* Free a queued online packet: its payload bytes plus the 12-byte header. */
+void Ov010Online_FreePacket(Ov010Packet *packet) {
     M2C_UNK Ov010_FreeBlock(M2C_UNK, void *, s32);
-    Ov010_FreeBlock(0, arg0, M2C_FIELD(arg0, s32 *, 8) + 0xC);
+
+    Ov010_FreeBlock(0, packet, packet->size + ONLINE_PACKET_HEADER_SIZE);
 }
 
 /* Write a queued online packet's 12-byte header (magic, kind, channel/flags

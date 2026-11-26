@@ -526,10 +526,12 @@ s32 MapTileToSoundPan(s32 tileX,s32 tileY){
  return EaseInterpolate(0,-32,32,screen[0],256);
 }
 
-void func_0208facc(M2C_UNK arg0) {
+/* Play sound effect `soundId` at the map's current zoom-based effect volume,
+ * without panning it (used when it has no map tile to play at). */
+void PlaySoundAtCurrentVolume(s32 soundId) {
     s32 GetSoundEffectVolume();
     M2C_UNK Sound_PlayEffectAtVolume(M2C_UNK, s32);
-    Sound_PlayEffectAtVolume(arg0, GetSoundEffectVolume());
+    Sound_PlayEffectAtVolume(soundId, GetSoundEffectVolume());
 }
 
 /* Play the packed sound effect `packedSoundId` on scripted sound slot 0 (any
@@ -599,7 +601,7 @@ void InitSound(void) {
     } while (i < SOUND_PLAYED_MAX);
     OpenSoundPlayer();
     func_0208fc4c();
-    func_020903d4();
+    LoadMainSoundData();
     func_0208fc4c();
     Sound_InitVolumes();
     Sound_PushPlayerHeapSection();
@@ -657,8 +659,8 @@ void Sound_PlayPackedId(M2C_UNK *player,s32 channel,u32 packedId){
 }
 
 void Sound_StopPlayerVoice(void) {
-    M2C_UNK func_0202ac60();
-    func_0202ac60();
+    M2C_UNK Sound_FadeOutPlayerVoice();
+    Sound_FadeOutPlayerVoice();
 }
 
 #pragma opt_strength_reduction off

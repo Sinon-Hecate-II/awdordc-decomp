@@ -124,11 +124,16 @@ void FreeBuffer(s32 arg0) {
     HeapFreeBlock();
 }
 
-M2C_UNK SetWebRequestError(M2C_UNK arg0) {
+/* Store `error` as the last web request error and return the error recorded
+ * before it (the accessor is read first by the original). */
+s32 SetWebRequestError(s32 error) {
+    s32 previous;
     s32 GetWebRequestError(void);
     extern s32 gWebRequestError;
-    GetWebRequestError();
-    gWebRequestError = arg0;
+
+    previous = GetWebRequestError();
+    gWebRequestError = error;
+    return previous;
 }
 
 void func_ov010_02226130(void) {
@@ -631,9 +636,11 @@ void *InitOnlinePlayerRecord(void *record) {
     return record;
 }
 
-void func_ov010_022269dc(M2C_UNK arg0, M2C_UNK arg1) {
+/* Copy the local player's name into the online local-player status record,
+ * ahead of the status flags the session fills in. */
+void CopyPlayerNameToStatus(void *status, void *name) {
     M2C_UNK CopyU16(M2C_UNK, M2C_UNK, M2C_UNK);
-    CopyU16(arg1, arg0, 0x18);
+    CopyU16(name, status, ONLINE_PLAYER_STATUS_NAME_SIZE);
 }
 
 void CopyLocalPlayerPanel(s32 a,s32 b,s32 c){MI_CpuCopy8(b,a+44,c);}

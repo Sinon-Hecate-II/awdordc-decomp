@@ -344,7 +344,7 @@ void StepBattleMap(void) {
     void UpdateLinkAiCommand();
     void MapStateReturnStep();
     M2C_UNK BattleFinishStep();
-    M2C_UNK func_020d466c();
+    M2C_UNK ResumeMapInputStep();
     void StartEndTurn();
     void EndPlayerTurnStep();
     void func_020d3830();
@@ -418,7 +418,7 @@ void StepBattleMap(void) {
         case MAP_STATE_LINK_TURN: UpdateLinkAiCommand(); return;
         case MAP_STATE_RETURN: MapStateReturnStep(); return;
         case MAP_STATE_BATTLE_FINISH: BattleFinishStep(); return;
-        case MAP_STATE_RESUME_INPUT: func_020d466c(); return;
+        case MAP_STATE_RESUME_INPUT: ResumeMapInputStep(); return;
         case MAP_STATE_END_TURN: StartEndTurn(); return;
         case MAP_STATE_END_TURN_STEP: EndPlayerTurnStep(); return;
         case MAP_STATE_OVERLAY_RESULT: func_020d3830(); return;

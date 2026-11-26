@@ -300,7 +300,17 @@ s32 Sound_ReadArchiveFile(u32 index, void *buffer, u32 size, u32 offset) {
     return FileRead(archive + SOUND_ARCHIVE_FILE_REQUEST, buffer, size);
 }
 
-void Sound_GetArchiveFileRange(volatile u32 *p) {extern s32 gCurrentArchive;u32 a=M2C_FIELD(gCurrentArchive,volatile u32 *,0x7c),b=M2C_FIELD(gCurrentArchive,volatile u32 *,0x80);p[0]=a;p[1]=b;}
+/* Store the current archive's resolved file range (SOUND_ARCHIVE_FILE_RANGE):
+ * the archive file's first byte and one past its last, which Sound_OpenFileSource
+ * reuses to open the file. */
+void Sound_GetArchiveFileRange(FSFileRange *range) {
+    extern s32 gCurrentArchive;
+    u32 start = M2C_FIELD(gCurrentArchive, volatile u32 *, SOUND_ARCHIVE_FILE_RANGE);
+    u32 end = M2C_FIELD(gCurrentArchive, volatile u32 *, SOUND_ARCHIVE_FILE_RANGE + 4);
+
+    range->start = start;
+    range->end = end;
+}
 
 /* Return the loaded data pointer of sound-archive file `index`, or NULL when the
  * archive has no such file. */

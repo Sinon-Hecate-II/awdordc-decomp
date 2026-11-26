@@ -195,10 +195,12 @@ s32 gpiInitializeConnection(void **out, s32 peerCallback, s32 peerCallbackData) 
     return gpiInitialize(out, peerCallback, peerCallbackData);
 }
 
-void func_0204db34(s32 *arg0) {
- void gpiFreeConnection(s32 *);
- if (arg0==0 || *arg0==0) return;
- gpiFreeConnection(arg0);
+/* Free the gpi connection held in `connection` unless the slot or the connection
+ * itself is null, then clear the slot. */
+void gpiFreeConnectionIfPresent(void **connection) {
+    void gpiFreeConnection(void **);
+    if (connection == NULL || *connection == NULL) return;
+    gpiFreeConnection(connection);
 }
 
 /* Pump one GameSpy connection: 2 for a missing connection, 0 in simulation mode

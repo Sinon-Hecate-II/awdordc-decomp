@@ -151,7 +151,7 @@ s32 func_ov001_0216a33c(u32 a,u32 b) {
 }
 #pragma intrinsic on
 s32 Ov001_FillTileRect(void *dst,s32 w,s32 h,s32 x,s32 y,s32 mode,s32 tile,s32 shift){
-extern u8 data_ov001_0218c9e4[];s32 func_ov001_02169494(void *);
+extern u8 data_ov001_0218c9e4[];s32 Ov001_GetTileBlockAttr(void *);
 s32 sx,sy,wx,hy,n,i,nx,area,rowY;
 u32 aw,ah;
 s32 count,ny,j,step;
@@ -159,7 +159,7 @@ u8 *p;
 wx=w<8?31-__CLZ(w):3;hy=h<8?31-__CLZ(h):3;
 p=data_ov001_0218c9e4+hy*8+wx*2;sx=p[0];sy=p[1];
 aw=w&(-1U<<sx);ah=h&(-1U<<sy);step=mode==0?1:2;count=0;
-n=func_ov001_02169494(p);nx=w>>sx;ny=h>>sy;area=(step<<sx)<<sy;
+n=Ov001_GetTileBlockAttr(p);nx=w>>sx;ny=h>>sy;area=(step<<sx)<<sy;
 j=0;
 goto checkRow;
 row:

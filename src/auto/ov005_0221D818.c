@@ -11,7 +11,7 @@ extern u8 gSpriteDesc32x16[],data_02101f4c[],gSpriteDesc16x16[],gSpriteDesc8x8[]
 extern u8 data_0215c34a[],gCoState[],data_ov005_02220a1c[],data_ov005_02220a24[];
 void AddSprite(u16,u16,u16,void *,s32);
 void AddFaceSpriteTile(s32,s16,s16,u16,s32,s32);
-s32 func_020cfb94(void);
+s32 GetCurrentMapPlayerCount(void);
 void DivMod(s32,s32,s32 *,s32 *);
 s32 Modulo(s32,s32);
 void *GetDisplayUnitKind(s32);
@@ -32,7 +32,7 @@ i=M2C_FIELD(arg0,s32 *,0x50);
 y=(169-M2C_FIELD(arg0,s32 *,0x44))&255;
 AddFaceSpriteTile(0,7,y,RESULT_ATTR(i*24+0x270,(u32)(i<<28)>>16),1,5);
 AddSprite(5,(u16)((y&0xff00)|((y+1)&255)),RESULT_ATTR(0x1d8,0x7000),data_02101f4c,6);
-for(loop=0;loop<func_020cfb94();loop++){
+for(loop=0;loop<GetCurrentMapPlayerCount();loop++){
 AddSprite((u16)((79+20*loop)&511),(170-M2C_FIELD(arg0,s32 *,0x44))&255,RESULT_ATTR(0x388+4*loop,(u32)((loop+8)<<28)>>16),gSpriteDesc16x16,8);
 }
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x42)=M2C_FIELD(arg0,s32 *,0x44);

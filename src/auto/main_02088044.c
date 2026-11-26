@@ -280,7 +280,7 @@ void LoadUnitGraphics(void) {
     LoadResource(3);
 }
 
-void func_02088624(void) {
+void UnloadUnitGraphics(void) {
     UnloadResource(3);
 }
 

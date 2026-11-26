@@ -373,16 +373,17 @@ void DeleteNetErrorReporter(void) {
     DeleteSpriteObject(reporter);
 }
 
-u8 func_ov010_0222a298(void) {
+/* Whether a screen fade is currently running, as a plain 0/1 result. */
+u8 Ov010_IsScreenFadeActive(void) {
     s32 IsScreenFadeActive();
-    u8 var_r0;
+    u8 active;
 
     if (IsScreenFadeActive() != 0) {
-        var_r0 = 1;
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 /* Online match screen update: start the split-screen fade on each screen whose

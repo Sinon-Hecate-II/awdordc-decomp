@@ -210,24 +210,34 @@ void PlaySlotStopSound(s32 slot) {
     PlaySlotPhaseSound(slot);
 }
 
-void func_020afbcc(void) {
+/* Duplicate of Mark3DSpriteLayer1Dirty (main_02091E04.c): flag layer 1 of the
+ * current 3D sprite engine as changed, so the engine rebuilds its tile data
+ * before the next draw. */
+void Mark3DSpriteLayer1DirtyAlt(void) {
     extern void *gCur3DSpriteEngine;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER1);
 }
 
-void func_020afbe8(void) {
+/* Duplicate of Mark3DSpriteLayer3Dirty (main_02091E04.c): flag layer 3 of the
+ * current 3D sprite engine as changed, so the engine rebuilds its tile data
+ * before the next draw. */
+void Mark3DSpriteLayer3DirtyAlt(void) {
     extern void *gCur3DSpriteEngine;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER3);
 }
 
-void func_020afc04(void) {
+/* Flag layer 2 of the current 3D sprite engine as changed, so the engine
+ * rebuilds that layer's tile data before the next draw. */
+void Mark3DSpriteLayer2DirtyAlt(void) {
     extern void *gCur3DSpriteEngine;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER2);
 }
 
-void func_020afc20(void) {
+/* Flag layer 0 of the current 3D sprite engine as changed, so the engine
+ * rebuilds its tile data before the next draw. */
+void Mark3DSpriteLayer0DirtyAlt(void) {
     extern void *gCur3DSpriteEngine;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER0);
 }
 
 void func_020afc3c(void) {

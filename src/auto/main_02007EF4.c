@@ -1,5 +1,6 @@
 /* 41 functions from 0x02007EF4 to 0x02008EF0 (main), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 
 typedef struct { u32 v[8]; } Copy32;
 typedef struct { u32 v[1]; } Copy4;
@@ -692,17 +693,22 @@ void func_02008c38(M2C_UNK arg0, M2C_UNK arg1) {
     Sound_SetChannelParameter(arg0, 6, arg1, 2);
 }
 
-void func_02008c50(M2C_UNK arg0, M2C_UNK arg1) {
+void Sound_SendChannelPan(M2C_UNK arg0, M2C_UNK arg1) {
     Sound_SetChannelParameter(arg0, 4, arg1, 1);
 }
 
-void func_02008c68(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Send ARM7 sound command 7 for `channel`: move the voice playing on it to
+ * pitch `value` over `duration` frames (player parameter 0xC, with mode 2).
+ * Sound_SetPlayerPitch and the ov001 scroll-drag tick are its callers. */
+void Sound_SendPlayerPitch(u8 channel, s32 value, s32 duration) {
     M2C_UNK Sound_SetPlayerParameter(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    Sound_SetPlayerParameter(arg0, arg1, 0xC, arg2, 2);
+    Sound_SetPlayerParameter(channel, value, SOUND_PLAYER_PARAM_PITCH, duration, 2);
 }
 
-void Sound_SendPlayerPan(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    Sound_SetPlayerParameter(arg0, arg1, 9, arg2, 1);
+/* Set sequence player `player`'s pan to `value`, easing to it over `duration`
+ * frames (ARM7 sound player parameter 9, pan). */
+void Sound_SendPlayerPan(M2C_UNK player, M2C_UNK value, M2C_UNK duration) {
+    Sound_SetPlayerParameter(player, value, 9, duration, 1);
 }
 
 /* Send ARM7 sound command 9 for hardware `channel` with two values and no
@@ -755,8 +761,11 @@ void Sound_SetChannelLevel(M2C_UNK channel, M2C_UNK value, M2C_UNK duration) {
     SendArm7Message(8, channel, value, duration, 0);
 }
 
-void Sound_Arm7ReserveChannels(M2C_UNK arg0, M2C_UNK arg1) {
-    SendArm7Message(0x1A, arg0, arg1, 0, 0);
+/* Send ARM7 sound command 0x1A: tell the sound driver to reserve the hardware
+ * channels selected by `channelMask` (one bit per channel).  The second command
+ * word is passed along as it comes (0 at the only caller, Sound_ReserveChannels). */
+void Sound_Arm7ReserveChannels(s32 channelMask, s32 arg1) {
+    SendArm7Message(0x1A, channelMask, arg1, 0, 0);
 }
 
 /* Send ARM7 sound command 0x1B: tell the sound driver to release the hardware

@@ -717,8 +717,11 @@ s32 GetGxTextureSizeCode4(s32 size) {
     }
 }
 
-void SetGxPolygonAttr(s32 arg0, s32 arg1) {
-    *(s32 *)0x040004A4 = (arg0 << 0x18) | 0x81 | (arg1 << 0x10);
+/* Set the GX polygon attribute register for a polygon of id `polygonId`
+ * (0..63) with translucency `alpha` (0..31; 31 is opaque), with light 0
+ * enabled and the game's default polygon mode bits. */
+void SetGxPolygonAttr(s32 polygonId, s32 alpha) {
+    *(s32 *)0x040004A4 = (polygonId << 0x18) | 0x81 | (alpha << 0x10);
 }
 
 /* Program the GX texture registers for one texture: TEXIMAGE_PARAM gets the
@@ -743,8 +746,10 @@ void func_020870dc(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,u8 arg5,u8 arg6,
  *(volatile u32 *)0x040004AC=(u32)(arg4<<5)>>(4-var_r0);
 }
 
+/* Reset the GX texture registers: TEXIMAGE_PARAM keeps only its always-set flag
+ * bit (no texture format, size or VRAM offset) and TEXPLTT_BASE is cleared. */
 void ResetGxTextureParams(void) {
-    M2C_FIELD((void *)0x040004A8, s32 *, 0) = 0x20000000;
-    M2C_FIELD((void *)0x040004A8, s32 *, 4) = 0;
+    REG_GX_TEXIMAGE_PARAM = 0x20000000;
+    REG_GX_TEXPLTT_BASE = 0;
 }
 

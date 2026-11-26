@@ -2,6 +2,7 @@
 #include "common.h"
 #include "ds3dsprite.h"
 #include "sound.h"
+#include "battle_map.h"
 typedef struct { u16 values[6]; } SetupParams12;
 
 /* A UI screen sprite object: it plays its own sprite animation once the slide
@@ -56,9 +57,11 @@ void func_020d8cc8(void) {
 
 }
 
-void func_020d8ccc(s16 arg0) {
+/* Selects the map the battle map uses: stores `mapId` as the current map
+ * data's map id (the key into the per-map records). */
+void SetCurrentMapId(s16 mapId) {
     extern void **gCurrentMap;
-    M2C_FIELD(*gCurrentMap, s16 *, 0x5142) = arg0;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_ID) = mapId;
 }
 
 void SetUiModeParameter(s32 arg0) {
@@ -334,7 +337,13 @@ void func_020d9290(void) {
     Ov000_InfoWindow_Destroy();
 }
 
-void func_020d929c(void){void CreateScreenChangeSprite(s32);extern void *gUiMode;CreateScreenChangeSprite(M2C_FIELD(gUiMode,s32 *,8));}
+/* Create the screen-change sprite for the current UI mode, handing it the mode's
+ * parameter (the chosen list row for the modes that take one). */
+void CreateUiModeScreenChange(void) {
+    void CreateScreenChangeSprite(s32);
+    extern void *gUiMode;
+    CreateScreenChangeSprite(((UiModeState *) gUiMode)->param);
+}
 
 void func_020d92b8(void) {
     M2C_UNK DeleteScreenChangeSprite();

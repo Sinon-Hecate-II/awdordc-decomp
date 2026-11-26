@@ -331,17 +331,17 @@ s32 IsValidMoveCell(s32 x, s32 y) {
     s32 IsUnitProductionTerrain(s32);
     extern void **gCurrentMap;
     extern u8 gUnitKindFlags[];
-    extern u8 data_ov000_021df9bc[];
-    extern u8 data_ov000_021dfc4c[];
+    extern u8 gAiSafeDirectRangeBitmap[];
+    extern u8 gAiSafeIndirectRangeBitmap[];
     extern u8 *gAiUnitTypeTuning;
 
     if (!GetUnitAttackClass(((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0) && !IsUnitSelected(*(void **)((u8 *)*gCurrentMap+0x52d0))) {
 u8 attr=gUnitKindFlags[((UnkStruct_ov000_02189A08 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->unk0*0x70];
 if(attr&7) {u32 idx=y*(*(u16 *)((u8 *)*gCurrentMap+0x5144))+x;
-if((u8)((1<<(idx&7)) & data_ov000_021df9bc[idx>>3])) goto valid;
+if((u8)((1<<(idx&7)) & gAiSafeDirectRangeBitmap[idx>>3])) goto valid;
 }
 if(attr&0x10) {u32 idx=y*(*(u16 *)((u8 *)*gCurrentMap+0x5144))+x;
-if((u8)((1<<(idx&7)) & data_ov000_021dfc4c[idx>>3])) goto valid;
+if((u8)((1<<(idx&7)) & gAiSafeIndirectRangeBitmap[idx>>3])) goto valid;
 }
 }
     {

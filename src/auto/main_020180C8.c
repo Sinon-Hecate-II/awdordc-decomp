@@ -14,12 +14,12 @@ typedef struct MbCartridgeState {
 #pragma optimization_level 2
 void Mb_RemovePlayer(s32 arg0) {
 extern M2C_UNK gMbState;
-void func_02016934(void *);
+void Mb_HandleWfcEvent(void *);
 void MultiBoot_ClearRecordSlot(s32);
 M2C_UNK MI_CpuFill8(M2C_UNK,M2C_UNK,M2C_UNK);
 s32 func_0201280c(void (*)(void *),s32);
 s32 i,temp,off;u16 v1,v2;u8 *q;
-func_0201280c(func_02016934,arg0);
+func_0201280c(Mb_HandleWfcEvent,arg0);
 if(arg0==0||(u32)arg0>=16)return;
 i=arg0-1;
 M2C_FIELD((u8*)M2C_FIELD(&gMbState,void**,12)+i*2+0x1400,u16*,0x8a)=0;
@@ -71,7 +71,7 @@ s32 Mb_SendChannelPacket(M2C_UNK callback, M2C_UNK data, M2C_UNK length, M2C_UNK
  * queued, so the pending flag is set and 0 is returned. */
 s32 Mb_SendMatchPacket(s32 arg0, s32 arg1, s32 arg2) {
 extern M2C_UNK gMbState;
-void func_02017158(void);
+void Mb_HandleMatchCommand(void);
 void *p;
 s32 result;
 u16 a = arg1;
@@ -85,7 +85,7 @@ if (result == 2) M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u8 *,0x50c)=1;
 if (result == 2) return 0;
 return result;
 case 2:
-result = Mb_SendChannelPacket((s32)func_02017158,arg0,a,0,b);
+result = Mb_SendChannelPacket((s32)Mb_HandleMatchCommand,arg0,a,0,b);
 if (result == 2) M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u8 *,0x50c)=1;
 if (result == 2) return 0;
 return result;
@@ -115,9 +115,11 @@ u8 Mb_GetDownloadSendFlags(void) {
     return (u8)(((status0 | status1) | status2) | status3);
 }
 
-s32 func_02018418(void) {
+/* Whether the multiboot link has started: the parent context's MB_LINK_STARTED
+ * flag is set to exactly 1 once the link is up. */
+s32 MultiBoot_IsLinkStarted(void) {
     extern M2C_UNK gMbState;
-    return M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u8 *, 0x50d) == 1;
+    return M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u8 *, MB_LINK_STARTED) == 1;
 }
 
 void Mb_ReportPacketResult(s32 arg0, s32 arg1) {
@@ -280,6 +282,8 @@ void Mb_StartWorkerTask(M2C_UNK task, s32 workSize) {
     OS_RestoreInterrupts(saved);
 }
 
+/* Whether the multiboot worker thread has been created: Mb_StartWorkerTask has
+ * run and the worker has not been stopped again. */
 s32 Mb_IsTaskCreated(void) {
     extern s32 gMbWorkerTask;
     if (gMbWorkerTask != 0) {

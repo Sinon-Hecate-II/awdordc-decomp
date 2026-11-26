@@ -13,6 +13,9 @@
 #define ONLINE_PACKET_DEPARTURE     9 /* broadcast that the sender is leaving the match */
 #define ONLINE_HEARTBEAT_INTERVAL_MS 4000
 #define ONLINE_PEER_TIMEOUT_NUMERATOR 1800000
+/* Bytes of the local player's name (GetLocalPlayerName) copied into the online
+ * local-player status record by CopyPlayerNameToStatus. */
+#define ONLINE_PLAYER_STATUS_NAME_SIZE 0x18
 #define ONLINE_MILLISECONDS_PER_SECOND 1000
 #define ONLINE_TICK_RATE_FX12 0x3C000 /* 60 updates per second, 20.12 fixed point */
 #define ONLINE_MS_PER_SECOND_FX12 0x3E8000

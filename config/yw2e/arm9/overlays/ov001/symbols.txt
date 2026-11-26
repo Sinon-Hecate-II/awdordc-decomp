@@ -7,7 +7,7 @@ GetTextLineWidth kind:function(arm,size=0xac) addr:0x021691e8
 GetTextBlockHeight kind:function(arm,size=0x74) addr:0x02169294
 GetTextBlockSize kind:function(arm,size=0x94) addr:0x02169308
 func_ov001_0216939c kind:function(arm,size=0xf8) addr:0x0216939c
-func_ov001_02169494 kind:function(arm,size=0x1c) addr:0x02169494
+Ov001_GetTileBlockAttr kind:function(arm,size=0x1c) addr:0x02169494
 func_ov001_021694b0 kind:function(arm,size=0x138) addr:0x021694b0
 func_ov001_021695e8 kind:function(arm,size=0x240) addr:0x021695e8
 func_ov001_02169828 kind:function(arm,size=0x198) addr:0x02169828
@@ -84,7 +84,7 @@ Ov001_SwapHalves kind:function(thumb,size=0x2e) addr:0x0216cce0
 func_ov001_0216cd10 kind:function(thumb,size=0x18) addr:0x0216cd10
 func_ov001_0216cd28 kind:function(thumb,size=0x10) addr:0x0216cd28
 WhInitNetwork kind:function(thumb,size=0x58) addr:0x0216cd38
-func_ov001_0216cd90 kind:function(thumb,size=0x22) addr:0x0216cd90
+WhConnTaskShutdown kind:function(thumb,size=0x22) addr:0x0216cd90
 Ov001CompareBytes kind:function(thumb,size=0x20) addr:0x0216cdb4
 Ov001MemCopy kind:function(thumb,size=0x10) addr:0x0216cdd4
 Ov001MemClear kind:function(thumb,size=0xc) addr:0x0216cde4
@@ -104,7 +104,7 @@ Ov001GetRandomSeed kind:function(thumb,size=0x70) addr:0x0216cf1c
 func_ov001_0216cf8c kind:function(thumb,size=0xa) addr:0x0216cf8c
 func_ov001_0216cf98 kind:function(thumb,size=0x8) addr:0x0216cf98
 func_ov001_0216cfa0 kind:function(thumb,size=0x8c) addr:0x0216cfa0
-func_ov001_0216d02c kind:function(thumb,size=0x22) addr:0x0216d02c
+Ov001_SetConnectionCode kind:function(thumb,size=0x22) addr:0x0216d02c
 func_ov001_0216d050 kind:function(thumb,size=0x10) addr:0x0216d050
 func_ov001_0216d060 kind:function(thumb,size=0x14) addr:0x0216d060
 func_ov001_0216d074 kind:function(thumb,size=0x14) addr:0x0216d074
@@ -218,7 +218,7 @@ Ov001_CreateMenuIconRow kind:function(arm,size=0x38) addr:0x02171e20
 Ov001_ShowMessageBox kind:function(arm,size=0x74) addr:0x02171e58
 Ov001_ShowMessageWithName kind:function(arm,size=0xbc) addr:0x02171ecc
 Ov001_GetTextFontId kind:function(arm,size=0x18) addr:0x02171f88
-func_ov001_02171fa0 kind:function(arm,size=0x20) addr:0x02171fa0
+Ov001_AllocChoiceFrameSprites kind:function(arm,size=0x20) addr:0x02171fa0
 Ov001_FreeChoiceFrame kind:function(arm,size=0x18) addr:0x02171fc0
 Ov001_LayoutChoiceFrameRow kind:function(arm,size=0xbc) addr:0x02171fd8
 Ov001_LayoutChoiceFrame kind:function(arm,size=0xf0) addr:0x02172094
@@ -307,7 +307,7 @@ Ov001_SetNameEntryMode kind:function(arm,size=0x14) addr:0x02175da0
 Ov001_GetNameEntryMode kind:function(arm,size=0x28) addr:0x02175db4
 Ov001_GetLanguage kind:function(arm,size=0x10) addr:0x02175ddc
 Ov001_GetScreenLayout kind:function(arm,size=0x18) addr:0x02175dec
-Ov001_HasOptionFlag kind:function(arm,size=0x1c) addr:0x02175e04
+Ov001_HasScreenOption kind:function(arm,size=0x1c) addr:0x02175e04
 Ov001_RequestScreenExit kind:function(arm,size=0x14) addr:0x02175e20
 Ov001_GetConnectEntryId kind:function(arm,size=0x40) addr:0x02175e34
 Ov001_InitMessageArchiveQueue kind:function(arm,size=0x3c) addr:0x02175e74
@@ -559,7 +559,7 @@ Ov001_WaitKeyboardFirstKey kind:function(arm,size=0x20) addr:0x0217b704
 Ov001_KeyboardInputStep kind:function(arm,size=0x10) addr:0x0217b724
 HandleNameEntryInput kind:function(arm,size=0x1c0) addr:0x0217b734
 func_ov001_0217b8f4 kind:function(arm,size=0x4) addr:0x0217b8f4
-func_ov001_0217b8f8 kind:function(arm,size=0x1c) addr:0x0217b8f8
+Ov001_PrepareFinishNameEntryKeyboard kind:function(arm,size=0x1c) addr:0x0217b8f8
 Ov001_FinishNameEntryKeyboard kind:function(arm,size=0x30) addr:0x0217b914
 Ov001_HandleNameEntryResult kind:function(arm,size=0xd8) addr:0x0217b944
 Ov001_CloseNameEntryScreen kind:function(arm,size=0x104) addr:0x0217ba1c
@@ -579,7 +579,7 @@ Ov001_CodeEntryKeyStep kind:function(arm,size=0x10) addr:0x0217c2b4
 func_ov001_0217c2c4 kind:function(arm,size=0x310) addr:0x0217c2c4
 IsCodeGroupComplete kind:function(arm,size=0x94) addr:0x0217c5d4
 func_ov001_0217c668 kind:function(arm,size=0x4) addr:0x0217c668
-func_ov001_0217c66c kind:function(arm,size=0x1c) addr:0x0217c66c
+Ov001_DelayCodeEntryClose kind:function(arm,size=0x1c) addr:0x0217c66c
 Ov001_CloseCodeEntryKeypad kind:function(arm,size=0x30) addr:0x0217c688
 Ov001_HandleCodeEntryResult kind:function(arm,size=0x8c) addr:0x0217c6b8
 Ov001_LeaveCodeEntry kind:function(arm,size=0xa4) addr:0x0217c744
@@ -871,11 +871,11 @@ Ov001_SetSaveExtraEmptyA kind:function(arm,size=0x14) addr:0x02184470
 Ov001_SetSaveExtraEmptyB kind:function(arm,size=0x14) addr:0x02184484
 Ov001_SetSaveMapName kind:function(arm,size=0x30) addr:0x02184498
 StorePlayerName kind:function(arm,size=0x198) addr:0x021844c8
-func_ov001_02184660 kind:function(arm,size=0x1c) addr:0x02184660
-func_ov001_0218467c kind:function(arm,size=0x1c) addr:0x0218467c
-func_ov001_02184698 kind:function(arm,size=0x20) addr:0x02184698
-func_ov001_021846b8 kind:function(arm,size=0x20) addr:0x021846b8
-func_ov001_021846d8 kind:function(arm,size=0x20) addr:0x021846d8
+Ov001_ParseSavePlayerCode1 kind:function(arm,size=0x1c) addr:0x02184660
+Ov001_ParseSaveCode kind:function(arm,size=0x1c) addr:0x0218467c
+Ov001_ParseSavePlayerCode2 kind:function(arm,size=0x20) addr:0x02184698
+Ov001_ParseSavePlayerCode3 kind:function(arm,size=0x20) addr:0x021846b8
+Ov001_ParseSavePlayerCode4 kind:function(arm,size=0x20) addr:0x021846d8
 Ov001_LoadSavedMapName kind:function(arm,size=0x24) addr:0x021846f8
 Ov001_FormatSavePlayerCode1 kind:function(arm,size=0x40) addr:0x0218471c
 Ov001_FormatSaveCode kind:function(arm,size=0x40) addr:0x0218475c
@@ -1002,7 +1002,7 @@ func_ov001_021888a8 kind:function(arm,size=0x178) addr:0x021888a8
 Ov001_SetChildIndicateCallback kind:function(arm,size=0x14) addr:0x02188a20
 Ov001_GetPlayerData kind:function(arm,size=0x28) addr:0x02188a34
 DWCi_MOV_WH_StepDataSharing kind:function(arm,size=0xa8) addr:0x02188a5c
-func_ov001_02188b04 kind:function(arm,size=0x1c) addr:0x02188b04
+Ov001_AbortWhSession kind:function(arm,size=0x1c) addr:0x02188b04
 func_ov001_02188b20 kind:function(arm,size=0x108) addr:0x02188b20
 Ov001_EndLink kind:function(arm,size=0x50) addr:0x02188c28
 func_ov001_02188c78 kind:function(arm,size=0xf0) addr:0x02188c78
@@ -1052,7 +1052,7 @@ Ov001_CreateSpriteFromLayout kind:function(arm,size=0x2c) addr:0x0218a5f0
 Ov001_CreateSprite kind:function(arm,size=0x48) addr:0x0218a61c
 Ov001_QueueCreate kind:function(arm,size=0x34) addr:0x0218a664
 Ov001_QueueCreateFromRange kind:function(arm,size=0x40) addr:0x0218a698
-Ov001_FreeBlock kind:function(arm,size=0x1c) addr:0x0218a6d8
+Ov001_QueueDestroy kind:function(arm,size=0x1c) addr:0x0218a6d8
 Ov001_QueuePush kind:function(arm,size=0x58) addr:0x0218a6f4
 Ov001_QueuePop kind:function(arm,size=0x58) addr:0x0218a74c
 Ov001_InitFades kind:function(arm,size=0x48) addr:0x0218a7a4
@@ -1109,7 +1109,7 @@ Ov001_InstallVBlankHandler kind:function(arm,size=0x74) addr:0x0218be2c
 Ov001_RemoveVBlankHandler kind:function(arm,size=0x3c) addr:0x0218bea0
 Ov001_VBlankHandler kind:function(arm,size=0x28) addr:0x0218bedc
 Ov001_ListCreate kind:function(arm,size=0x2c) addr:0x0218bf04
-func_ov001_0218bf30 kind:function(arm,size=0x1c) addr:0x0218bf30
+Ov001_ListDestroy kind:function(arm,size=0x1c) addr:0x0218bf30
 Ov001_ListRemove kind:function(arm,size=0x38) addr:0x0218bf4c
 Ov001_ListInsertBefore kind:function(arm,size=0x30) addr:0x0218bf84
 Ov001_ListPushBack kind:function(arm,size=0x10) addr:0x0218bfb4
@@ -1142,7 +1142,7 @@ Ov001_SetTaskGroupEnabled kind:function(arm,size=0x18) addr:0x0218c99c
 gTextOpsLinear kind:data(any) addr:0x0218c9cc
 gTextOpsPooled kind:data(any) addr:0x0218c9d8
 data_ov001_0218c9e4 kind:data(any) addr:0x0218c9e4
-data_ov001_0218ca04 kind:data(any) addr:0x0218ca04
+gOv001TileBlockAttrs kind:data(any) addr:0x0218ca04
 data_ov001_0218ca44 kind:data(any) addr:0x0218ca44
 data_ov001_0218ca48 kind:data(any) addr:0x0218ca48
 gAesRcon kind:data(any) addr:0x0218ca50
@@ -1590,7 +1590,7 @@ data_ov001_021925e0 kind:bss addr:0x021925e0
 data_ov001_021925ec kind:bss addr:0x021925ec
 data_ov001_021925f0 kind:bss addr:0x021925f0
 gWhConnTaskQueue kind:bss addr:0x02192600
-data_ov001_02192620 kind:bss addr:0x02192620
+gWhConnRecord kind:bss addr:0x02192620
 data_ov001_021926e0 kind:bss addr:0x021926e0
 gWhConnTaskState kind:bss addr:0x02192740
 data_ov001_02192768 kind:bss addr:0x02192768

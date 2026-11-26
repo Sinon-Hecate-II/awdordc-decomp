@@ -261,14 +261,17 @@ void UpdateMirroredTimedEffectSprite(TimedEffectSprite *sprite) {
 }
 
 void func_02079c3c(M2C_UNK arg0) {
-    M2C_UNK func_02079c50(M2C_UNK, M2C_UNK);
-    func_02079c50(0x10, arg0);
+    M2C_UNK CreateMirroredTimedEffectSprite(M2C_UNK, M2C_UNK);
+    CreateMirroredTimedEffectSprite(0x10, arg0);
 }
 
-M2C_UNK func_02079c50(M2C_UNK arg0, M2C_UNK arg1) {
+/* Spawn a mirrored timed effect sprite under `owner` and hold its animation for
+ * `holdFrames` frames (the sprite's update counts them at +0x6C, then resumes
+ * the animation).  Unlike CreateTimedEffectSprite it plays no sound. */
+M2C_UNK CreateMirroredTimedEffectSprite(M2C_UNK holdFrames, M2C_UNK owner) {
     void *CreateSpriteObject();
-    extern M2C_UNK data_02100a88;
-    M2C_FIELD(CreateSpriteObject(&data_02100a88, arg1), s16 *, 0x6E) = arg0;
+    extern M2C_UNK gMirroredTimedEffectSpriteClass;
+    M2C_FIELD(CreateSpriteObject(&gMirroredTimedEffectSpriteClass, owner), s16 *, 0x6E) = holdFrames;
 }
 
 /* Project the centre of map tile (tileX, tileY) into screen coordinates (`screen`):

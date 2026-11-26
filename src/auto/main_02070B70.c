@@ -1,7 +1,7 @@
 /* 16 functions from 0x02070B70 to 0x02071A64 (main), found by ds-decomp. */
 #include "common.h"
 
-double func_02070b70(double arg0, double arg1) { return 0.0; }
+double RuntimeDoubleSubtract(double arg0, double arg1) { return 0.0; }
 
 float _fadd(float a, float b) { return a + b; }
 

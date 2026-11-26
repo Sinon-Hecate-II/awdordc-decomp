@@ -20,12 +20,12 @@ s32 GetUnitAttackClass(u32);
 extern s32 *gCurrentMap;
 extern s8 data_ov000_021dee08;
 extern s8 data_ov000_021dee10;
-extern u8 data_ov000_021df918;
-extern u8 data_ov000_021df9bc;
+extern u8 gAiProductionSiteAreaBitmap;
+extern u8 gAiSafeDirectRangeBitmap;
 extern u8 data_ov000_021dfa60;
 extern u8 data_ov000_021dfb04;
 extern u8 gAiIndirectRangeBitmap;
-extern u8 data_ov000_021dfc4c;
+extern u8 gAiSafeIndirectRangeBitmap;
 extern u8 gAiRangeBitmap;
 extern u8 gAiRangeLayer;
 typedef struct { u8 kind:6; u8 flags:2; } Unk02181C88Kind;
@@ -275,11 +275,11 @@ void func_ov000_02181c88(void) {
     
     MI_CpuFill8(&gAiRangeBitmap, 0, 0xA1);
     MI_CpuFill8(&gAiIndirectRangeBitmap, 0, 0xA1);
-    MI_CpuFill8(&data_ov000_021df918, 0, 0xA1);
+    MI_CpuFill8(&gAiProductionSiteAreaBitmap, 0, 0xA1);
     MI_CpuFill8(&data_ov000_021dfb04, 0, 0xA1);
     MI_CpuFill8(&data_ov000_021dfa60, 0, 0xA1);
-    MI_CpuFill8(&data_ov000_021df9bc, 0, 0xA1);
-    MI_CpuFill8(&data_ov000_021dfc4c, 0, 0xA1);
+    MI_CpuFill8(&gAiSafeDirectRangeBitmap, 0, 0xA1);
+    MI_CpuFill8(&gAiSafeIndirectRangeBitmap, 0, 0xA1);
     MI_CpuFill8(&gAiRangeLayer, 0, 0x508);
     func_020d0164(*gCurrentMap + 0x2338, 0);
     FillMapCellLayer(*gCurrentMap + 0x2840, 0);
@@ -924,7 +924,7 @@ void func_ov000_02181c88(void) {
                                         }
                                         if ((var_r0_30 >= 0) && (var_r0_30 <= 5)) {
                                             temp_r0_15 = (var_r8_3 * M2C_FIELD((*gCurrentMap), u16 *, 0x5144)) + var_r1_6;
-                                            M2C_FIELD((&data_ov000_021df918 + (temp_r0_15 >> 3)), u8 *, 0) = M2C_FIELD((&data_ov000_021df918 + (temp_r0_15 >> 3)), u8 *, 0) | (1 << (temp_r0_15 & 7));
+                                            M2C_FIELD((&gAiProductionSiteAreaBitmap + (temp_r0_15 >> 3)), u8 *, 0) = M2C_FIELD((&gAiProductionSiteAreaBitmap + (temp_r0_15 >> 3)), u8 *, 0) | (1 << (temp_r0_15 & 7));
                                         }
                                         var_r1_6 += 1;
                                     } while (var_r1_6 <= var_r9_6);
@@ -997,7 +997,7 @@ void func_ov000_02181c88(void) {
                                                 temp_r2_19 = M2C_FIELD((var_r5 + (var_r9_7 * 4)), s32 *, 0x52E8);
                                                 M2C_FIELD((temp_r2_19 + var_r5_2), s8 *, 0) = M2C_FIELD((temp_r2_19 + var_r5_2), s8 *, 0) + 1;
                                                 temp_ip = (var_r9_7 * M2C_FIELD((*gCurrentMap), u16 *, 0x5144)) + var_r5_2;
-                                                M2C_FIELD((&data_ov000_021df918 + (temp_ip >> 3)), u8 *, 0) = M2C_FIELD((&data_ov000_021df918 + (temp_ip >> 3)), u8 *, 0) | (1 << (temp_ip & 7));
+                                                M2C_FIELD((&gAiProductionSiteAreaBitmap + (temp_ip >> 3)), u8 *, 0) = M2C_FIELD((&gAiProductionSiteAreaBitmap + (temp_ip >> 3)), u8 *, 0) | (1 << (temp_ip & 7));
                                             }
                                             var_r5_2 += 1;
                                         } while (var_r5_2 <= var_r10_5);

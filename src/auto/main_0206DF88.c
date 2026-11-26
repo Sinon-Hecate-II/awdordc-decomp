@@ -16,24 +16,24 @@ double Fabs(double x) { ((u32 *)&x)[1] &= 0x7fffffff; return x; }
  * come back unchanged with exponent 0; a subnormal is first scaled up by 2^54
  * (18014398509481984.0) and its exponent corrected by -54. */
 double Frexp(double value,s32 *exponent) {
- double func_02070658(double,double);
+ double RuntimeDoubleMultiply(double,double);
  s32 absHigh,highWord,lowWord;
  highWord=((s32 *)&value)[1]; absHigh=highWord & 0x7fffffff; *exponent=0; lowWord=((s32 *)&value)[0];
  if(absHigh>=0x7ff00000 || (absHigh|lowWord)==0) return value;
- if(absHigh<0x100000) { value=func_02070658(value,18014398509481984.0); *exponent=-54; highWord=((s32 *)&value)[1]; absHigh=highWord & 0x7fffffff; }
+ if(absHigh<0x100000) { value=RuntimeDoubleMultiply(value,18014398509481984.0); *exponent=-54; highWord=((s32 *)&value)[1]; absHigh=highWord & 0x7fffffff; }
  *exponent += (absHigh>>20)-1022;
  ((u32 *)&value)[1]=(highWord & 0x800fffff) | 0x3fe00000;
  return value;
 }
 
-double func_02070134(double,double);
+double RuntimeDoubleAdd(double,double);
 s32 ClassifyDouble(double);
 /* scalbn: return x * 2^scale, splitting the scaling into two steps and going
    through the soft-float multiply/copysign helpers at the overflow and
    underflow limits (2^54 steps for subnormals). */
 double ScaleDoubleByExp(double x, s32 scale) {
-    double func_02070658(double, double);
-    double func_02070134(double, double);
+    double RuntimeDoubleMultiply(double, double);
+    double RuntimeDoubleAdd(double, double);
     s32 ClassifyDouble(double);
     s32 exponent, hiWord, loWord;
 
@@ -43,29 +43,29 @@ double ScaleDoubleByExp(double x, s32 scale) {
     exponent = (hiWord & 0x7ff00000) >> 20;
     if (exponent == 0) {
         if ((loWord | (hiWord & 0x7fffffff)) == 0) return x;
-        x = func_02070658(x, 18014398509481984.0);
+        x = RuntimeDoubleMultiply(x, 18014398509481984.0);
         hiWord = ((s32 *)&x)[1];
         exponent = ((hiWord & 0x7ff00000) >> 20) - 54;
-        if (scale < -50000) return func_02070658(1.0e-300, x);
+        if (scale < -50000) return RuntimeDoubleMultiply(1.0e-300, x);
     }
-    if (exponent == 0x7ff) return func_02070134(x, x);
+    if (exponent == 0x7ff) return RuntimeDoubleAdd(x, x);
     exponent = exponent + scale;
-    if (exponent > 0x7fe) return func_02070658(1.0e300, Copysign(1.0e300, x));
+    if (exponent > 0x7fe) return RuntimeDoubleMultiply(1.0e300, Copysign(1.0e300, x));
     if (exponent > 0) {
         ((s32 *)&x)[1] = (hiWord & 0x800fffff) | (exponent << 20);
         return x;
     }
     if (exponent <= -54) {
-        if (scale > 50000) return func_02070658(1.0e300, Copysign(1.0e300, x));
-        return func_02070658(1.0e-300, Copysign(1.0e-300, x));
+        if (scale > 50000) return RuntimeDoubleMultiply(1.0e300, Copysign(1.0e300, x));
+        return RuntimeDoubleMultiply(1.0e-300, Copysign(1.0e-300, x));
     }
     ((s32 *)&x)[1] = (hiWord & 0x800fffff) | ((exponent + 54) << 20);
-    return func_02070658(5.551115123125783e-17, x);
+    return RuntimeDoubleMultiply(5.551115123125783e-17, x);
 }
 
 void func_0206e2d8(void) {
-    M2C_UNK func_0206ce00();
-    func_0206ce00();
+    M2C_UNK RuntimeDoublePow();
+    RuntimeDoublePow();
 }
 
 /* Decide whether rounding a DecimalNumber at digit `i` rounds up (1) or down

@@ -5,12 +5,12 @@ extern void **gCurrentMap;
 extern u8 *gAiCommandState;
 void BuildUnitMoveRange(void *);
 void MarkAdjacentCells(int);
-int func_020d27a4(int,int);
+int AreUnitIdsOnSameTeam(int,int);
 int IsFootUnitKind(int);int GetUnitAttackClass(int);
 int WillCaptureCompleteThisTurn(void *);
 int IsCellVisibleToCurrentTeam(s16,s16);
 int FindBestAdjacentTile(int,int,s16 *);
-int func_ov000_02176e28(int,s16 *);
+int GetAiTargetScore(int,s16 *);
 int HasBetterAttackerNearby(void *);
 int SelectAreaEffectTargetForMode(s16 *,u16,int,int);
 void SetMapCursor(s16,s16,int,int,int);
@@ -149,7 +149,7 @@ void func_ov000_0219137c(void){
  }
  unit=(Unit1911 *)((u8 *)map+0x59a4)+((u8 *)map)[x+map->rows[y]];
  if(unit->kind==0)continue;
- if(func_020d27a4(M2C_FIELD(map,u8 *,0x52d4),unit?unit-(Unit1911 *)((u8 *)map+0x59a4):0)==1)continue;
+ if(AreUnitIdsOnSameTeam(M2C_FIELD(map,u8 *,0x52d4),unit?unit-(Unit1911 *)((u8 *)map+0x59a4):0)==1)continue;
  if(!IsFootUnitKind(unit->kind)){
  if(GetUnitAttackClass(unit->kind)==1)goto candidate_checks;
  if(!IsFootUnitKind(((Map1911 *)*gCurrentMap)->selected->kind))goto candidate_checks;
@@ -162,7 +162,7 @@ void func_ov000_0219137c(void){
  if(!IsCellVisibleToCurrentTeam((s16)x,(s16)y))continue;
  if(!FindBestAdjacentTile(x,y,position))continue;
  map=*gCurrentMap;
- score=func_ov000_02176e28(((u8 *)map)[x+map->rows[y]],position);
+ score=GetAiTargetScore(((u8 *)map)[x+map->rows[y]],position);
  if(!score)continue;
  if(((Map1911 *)*gCurrentMap)->selected->kind==1 && !IsFootUnitKind(unit->kind) && M2C_FIELD(*gCurrentMap,s16 *,0x6ee6)!=0 && M2C_FIELD(*gCurrentMap,s16 *,0x6ef2)<15)continue;
  if(score<best)continue;

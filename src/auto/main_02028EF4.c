@@ -545,13 +545,15 @@ void *Wfc_GetConnectionCode(u16 *codeLength) {
     return code;
 }
 
-void WFC_SetSendCallback(s32 arg0) {
-s32 OS_DisableInterrupts(void);
-void OS_RestoreInterrupts(s32);
-extern M2C_UNK gWfcSendState;
-s32 state=OS_DisableInterrupts();
-M2C_FIELD(&gWfcSendState,s32 *,0x28)=arg0;
-OS_RestoreInterrupts(state);
+/* Install the callback the WFC send path calls to queue a received link block
+ * (NULL clears it), with interrupts disabled. */
+void WFC_SetSendCallback(s32 callback) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    extern M2C_UNK gWfcSendState;
+    s32 state = OS_DisableInterrupts();
+    ((WfcSendState *)&gWfcSendState)->callback = (void (*)(void *, void *, void *, u16))callback;
+    OS_RestoreInterrupts(state);
 }
 
 #pragma opt_if-conversion off

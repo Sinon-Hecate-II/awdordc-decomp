@@ -101,7 +101,10 @@ void Ov004_InitUraPlaneEffect(void *sprite) {
     PlaySlotPendingSound(0, -1, OV004_URA_PLANE_START_SOUND);
 }
 
-void func_ov004_02211358(void) {
+/* Tear down the ura_plane/ura_side aircraft effect: delete all sprite
+ * wrappers and the 3D-sprite offset tracks, then fade out the effect's
+ * sound (slot 0) over 30 frames. */
+void Ov004_DestroyUraPlaneEffect(void) {
     M2C_UNK DeleteAllSpriteWrappers();
     M2C_UNK Delete3DSpriteOffsetTracks();
     M2C_UNK StopSlotSound(s32, s32);
@@ -492,8 +495,8 @@ void func_ov004_02211ee8(void) {
 }
 
 void func_ov004_02211ef4(void) {
-    void func_ov004_02211358();
-    func_ov004_02211358();
+    void Ov004_DestroyUraPlaneEffect();
+    Ov004_DestroyUraPlaneEffect();
 }
 
 void func_ov004_02211f00(void) {

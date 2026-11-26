@@ -83,8 +83,8 @@ VoiceActivity_InitWindow kind:function(arm,size=0x28) addr:0x02225174
 func_ov010_0222519c kind:function(arm,size=0xec) addr:0x0222519c
 VoiceCodec_ResetState kind:function(arm,size=0x7c) addr:0x02225288
 func_ov010_02225304 kind:function(arm,size=0x18) addr:0x02225304
-func_ov010_0222531c kind:function(arm,size=0x21c) addr:0x0222531c
-func_ov010_02225538 kind:function(arm,size=0x20) addr:0x02225538
+VoiceCodec_ProcessFrame kind:function(arm,size=0x21c) addr:0x0222531c
+VoiceCodec_NormalizePayload kind:function(arm,size=0x20) addr:0x02225538
 func_ov010_02225558 kind:function(arm,size=0xe8) addr:0x02225558
 func_ov010_02225640 kind:function(arm,size=0x138) addr:0x02225640
 VoiceChat_ResetSession kind:function(arm,size=0x28) addr:0x02225778
@@ -92,7 +92,7 @@ VoiceChat_Tick kind:function(arm,size=0x44) addr:0x022257a0
 VoiceChat_ReceivePacket kind:function(arm,size=0x74) addr:0x022257e4
 VoiceChat_DispatchPacket kind:function(arm,size=0xdc) addr:0x02225858
 func_ov010_02225934 kind:function(arm,size=0x14) addr:0x02225934
-func_ov010_02225948 kind:function(arm,size=0x1c) addr:0x02225948
+StreamedVoice_TransferEnded kind:function(arm,size=0x1c) addr:0x02225948
 RefillStreamedVoiceSegment kind:function(arm,size=0x140) addr:0x02225964
 StartStreamedVoice kind:function(arm,size=0x234) addr:0x02225aa4
 func_ov010_02225cd8 kind:function(arm,size=0x18) addr:0x02225cd8
@@ -102,7 +102,7 @@ VoiceChat_StopStreamSound kind:function(arm,size=0x18) addr:0x02225d38
 EnableVoiceStream kind:function(arm,size=0x14) addr:0x02225d50
 DisableVoiceStream kind:function(arm,size=0x28) addr:0x02225d64
 func_ov010_02225d8c kind:function(arm,size=0x10) addr:0x02225d8c
-func_ov010_02225d9c kind:function(arm,size=0x1c) addr:0x02225d9c
+VoiceActivity_IsSpeaking kind:function(arm,size=0x1c) addr:0x02225d9c
 StopStreamedVoice kind:function(arm,size=0x58) addr:0x02225db8
 VoiceChat_DetachContext kind:function(arm,size=0x40) addr:0x02225e10
 VoiceLink_HandleEvent kind:function(arm,size=0x104) addr:0x02225e50
@@ -141,7 +141,7 @@ func_ov010_022268f4 kind:function(arm,size=0x14) addr:0x022268f4
 Ov010_FreeBlock kind:function(arm,size=0x18) addr:0x02226908
 ResetOnlinePlayerRecord kind:function(arm,size=0x5c) addr:0x02226920
 InitOnlinePlayerRecord kind:function(arm,size=0x60) addr:0x0222697c
-func_ov010_022269dc kind:function(arm,size=0x1c) addr:0x022269dc
+CopyPlayerNameToStatus kind:function(arm,size=0x1c) addr:0x022269dc
 CopyLocalPlayerPanel kind:function(arm,size=0x18) addr:0x022269f8
 FreeOnlinePacketQueue kind:function(arm,size=0x78) addr:0x02226a10
 func_ov010_02226a88 kind:function(arm,size=0x160) addr:0x02226a88
@@ -156,7 +156,7 @@ Ov010Online_OnTransferStart kind:function(arm,size=0x20) addr:0x02227934
 func_ov010_02227954 kind:function(arm,size=0x274) addr:0x02227954
 DisconnectOnlinePeer kind:function(arm,size=0xc) addr:0x02227bc8
 Ov010Online_OnPeerConnectionLost kind:function(arm,size=0x68) addr:0x02227bd4
-func_ov010_02227c3c kind:function(arm,size=0x20) addr:0x02227c3c
+Ov010Online_OnPlayerSlotChanged kind:function(arm,size=0x20) addr:0x02227c3c
 func_ov010_02227c5c kind:function(arm,size=0xd8) addr:0x02227c5c
 func_ov010_02227d34 kind:function(arm,size=0xc4) addr:0x02227d34
 Ov010Online_OnMatchmakingStarted kind:function(arm,size=0x28) addr:0x02227df8
@@ -166,7 +166,7 @@ SetOnlinePlayerRecord kind:function(arm,size=0x24) addr:0x02227f88
 Ov010Online_OnHostJoinEvent kind:function(arm,size=0xa4) addr:0x02227fac
 Ov010Online_ScoreMatch kind:function(arm,size=0x2c) addr:0x02228050
 func_ov010_0222807c kind:function(arm,size=0xe0) addr:0x0222807c
-func_ov010_0222815c kind:function(arm,size=0x20) addr:0x0222815c
+Ov010Online_OnPeerJoined kind:function(arm,size=0x20) addr:0x0222815c
 Ov010Online_MatchStartNoop kind:function(arm,size=0x4) addr:0x0222817c
 func_ov010_02228180 kind:function(arm,size=0xec) addr:0x02228180
 Ov010Online_ResetStepFlags kind:function(arm,size=0x14) addr:0x0222826c
@@ -283,7 +283,7 @@ CreateNetErrorReporter kind:function(arm,size=0x2c) addr:0x0222a20c
 Ov010Online_RetainTextLayer kind:function(arm,size=0x20) addr:0x0222a238
 Ov010Online_ReleaseTextLayer kind:function(arm,size=0x20) addr:0x0222a258
 DeleteNetErrorReporter kind:function(arm,size=0x20) addr:0x0222a278
-func_ov010_0222a298 kind:function(arm,size=0x1c) addr:0x0222a298
+Ov010_IsScreenFadeActive kind:function(arm,size=0x1c) addr:0x0222a298
 StartOnlineMatchSplitFades kind:function(arm,size=0x6c) addr:0x0222a2b4
 func_ov010_0222a320 kind:function(arm,size=0x374) addr:0x0222a320
 Ov010Online_ReleaseNetErrorText kind:function(arm,size=0x50) addr:0x0222a694
@@ -322,7 +322,7 @@ Ov010_ConfirmMapChoiceLabel kind:function(arm,size=0x40) addr:0x0222b8ac
 Ov010_PlayMapChoiceLabel kind:function(arm,size=0x30) addr:0x0222b8ec
 func_ov010_0222b91c kind:function(arm,size=0x10) addr:0x0222b91c
 StartOnlineMatchLabelSplitTransitions kind:function(arm,size=0x6c) addr:0x0222b92c
-func_ov010_0222b998 kind:function(arm,size=0x1c) addr:0x0222b998
+Ov010Online_DismissNetError kind:function(arm,size=0x1c) addr:0x0222b998
 Ov010_SyncSubScreenLinkIndicator kind:function(arm,size=0x28) addr:0x0222b9b4
 func_ov010_0222b9dc kind:function(arm,size=0xc) addr:0x0222b9dc
 Ov010_ExitSubScreenLinkIndicator kind:function(arm,size=0x28) addr:0x0222b9e8
@@ -435,7 +435,7 @@ data_ov010_0222d920 kind:bss addr:0x0222d920
 data_ov010_0222d930 kind:bss addr:0x0222d930
 data_ov010_0222d944 kind:bss addr:0x0222d944
 data_ov010_0222d95c kind:bss addr:0x0222d95c
-data_ov010_0222d974 kind:bss addr:0x0222d974
+gVoiceCodecSampleBuffer kind:bss addr:0x0222d974
 data_ov010_0222ddb4 kind:bss addr:0x0222ddb4
 data_ov010_0222e544 kind:bss addr:0x0222e544 ambiguous
 gVoiceChatSession kind:bss addr:0x0222edb4

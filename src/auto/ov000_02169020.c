@@ -10,17 +10,21 @@ static inline s8 ReadMovementCommand(void *p) {
     return ((s8 *)p + 0x58)[M2C_FIELD(p,u8*,0x40)++];
 }
 
-void func_ov000_02169020(void *arg0) {
+/* Unit-move state handler (UNIT_MOVE_STATE_WAIT_ATTACK): once the attack effect
+ * on the unit's cell has finished, go back to holding for the step timer. */
+void UnitMove_WaitForAttack(void *move) {
     s32 IsMapActionEffectActive();
     if (IsMapActionEffectActive() == 0) {
-        M2C_FIELD(arg0, s8 *, 0x41) = 3;
+        M2C_FIELD(move, u8 *, UNIT_MOVE_STATE) = UNIT_MOVE_STATE_HOLD;
     }
 }
 
-void func_ov000_0216903c(void *arg0) {
+/* Unit-move state handler for UNIT_MOVE_STATE_WAIT_SCROLL: once the map view has
+ * stopped scrolling, go back to walking to the next tile. */
+void UnitMove_WaitForScroll(void *move) {
     s32 IsMapViewScrolling();
     if (IsMapViewScrolling() == 0) {
-        M2C_FIELD(arg0, s8 *, 0x41) = 2;
+        M2C_FIELD(move, u8 *, UNIT_MOVE_STATE) = UNIT_MOVE_STATE_WALK;
     }
 }
 
@@ -61,7 +65,7 @@ void UnitMove_ReadCommand(void *move) {
 void func_020c98d8(s32,s32,s32);
 s32 IsPlayerHuman(u32);
 void AddRecordValue(s32,s32);
-void func_ov000_02169740(void *);
+void UnitMove_Stop(void *);
 void DeleteUnitMoveObject(void *);
 void RefreshMapView(void);
 void StepUnitMoveSound(void *);
@@ -81,7 +85,7 @@ M2C_FIELD(move,u8*,UNIT_MOVE_STATE)=UNIT_MOVE_STATE_WAIT_ATTACK;
 func_020c98d8(M2C_FIELD(move,s16*,UNIT_MOVE_X)>>4,M2C_FIELD(move,s16*,UNIT_MOVE_Y)>>4,0);
 if(IsPlayerHuman(M2C_FIELD((void*)*gCurrentMap,u16*,MAP_CURRENT_PLAYER)))AddRecordValue(14,1);
 return;
-case MOVE_DIR_STOP:func_ov000_02169740(move);return;
+case MOVE_DIR_STOP:UnitMove_Stop(move);return;
 case MOVE_DIR_NONE:DeleteUnitMoveObject(move);RefreshMapView();return;
 case MOVE_DIR_LEFT:case MOVE_DIR_RIGHT:case MOVE_DIR_DOWN:case MOVE_DIR_UP:
 StepUnitMoveSound(move);
@@ -306,11 +310,13 @@ u8 IsUnitMoveControllerActive(void) {
     return active;
 }
 
-void func_ov000_02169740(void *arg0) {
+/* End of a unit's move (MOVE_DIR_STOP): play the move sound, park the controller
+ * in its idle state and clear the map's unit-move-active flag. */
+void UnitMove_Stop(void *move) {
     M2C_UNK ClearUnitMoveActiveFlag();
     M2C_UNK PlayUnitMoveSound();
-    PlayUnitMoveSound();
-    M2C_FIELD(arg0, s8 *, 0x41) = 1;
+    PlayUnitMoveSound(move);
+    M2C_FIELD(move, u8 *, UNIT_MOVE_STATE) = UNIT_MOVE_STATE_IDLE;
     ClearUnitMoveActiveFlag();
 }
 

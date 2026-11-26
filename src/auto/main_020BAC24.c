@@ -89,11 +89,13 @@ void MoveUnitToCursor(void) {
     RefreshMapView();
 }
 
-void func_020bb0d0(M2C_UNK arg0) {
+/* Move the cursor's unit onto the cursor tile, then show the battle preview of
+ * its attack on the unit at map unit index `targetUnit`. */
+void StartBattlePreviewOnTargetUnit(s32 targetUnit) {
     M2C_UNK func_0209ecf0(M2C_UNK, M2C_UNK);
     void MoveUnitToCursor(void);
     MoveUnitToCursor();
-    func_0209ecf0(arg0, 0);
+    func_0209ecf0(targetUnit, 0);
 }
 
 /* Move the cursor's unit to the cursor tile, then show the battle preview of

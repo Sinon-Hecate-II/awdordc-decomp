@@ -129,19 +129,19 @@ void func_020b0ab4(void) {
 }
 
 void func_020b0ac4(void *arg0) {
-    M2C_UNK func_02077480();
+    M2C_UNK StartMapViewRaiseTimer();
     if (M2C_FIELD(arg0, s16 *, 0x6C) == 0) {
         return;
     }
-    func_02077480();
+    StartMapViewRaiseTimer();
 }
 
 void func_020b0adc(void *arg0) {
-    M2C_UNK func_020774b0();
+    M2C_UNK AdvanceMapViewRaiseTimer();
     if (M2C_FIELD(arg0, s16 *, 0x6C) == 0) {
         return;
     }
-    func_020774b0();
+    AdvanceMapViewRaiseTimer();
 }
 
 void func_020b0af4(void *arg0) {
@@ -218,7 +218,7 @@ void func_020b0ccc(void) {
 }
 
 /* Configures the audio/channel mix for a sound playback: picks amplitude and delegates to the audio driver helpers. */
-void func_020b0cd0(M2C_UNK channel, M2C_UNK sound, s32 duration, u32 mode) {
+void LoadMapThemeFile(M2C_UNK channel, M2C_UNK sound, s32 duration, u32 mode) {
     M2C_UNK QueueMainOBJExtPaletteCopy(s32, M2C_UNK, s32, M2C_UNK);
     s32 func_020815bc(M2C_UNK, s32);
     M2C_UNK LoadNarcFileToObjExtPalette();
@@ -248,7 +248,12 @@ void func_020b0cd0(M2C_UNK channel, M2C_UNK sound, s32 duration, u32 mode) {
 }
 
 #pragma scheduling off
-void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
+/* Load the map graphics archive for battle theme `theme` (0 normal, 1 snow,
+ * 2 desert, 3 kouhai, 4 doom, 5 cliff, 6 ruin, 7 flower, 8 ura, 9 owl): point
+ * the file system at the map directory, open the theme's NARC archive, load
+ * its .tex texture and its seven .cl layer files at fixed offsets, then close
+ * the archive.  `paletteMode` selects the palette blend applied to each file. */
+void LoadMapTheme(M2C_UNK paletteMode, u32 theme) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK OpenNarcArchive(M2C_UNK *);
     M2C_UNK CloseNarcArchive();
@@ -345,128 +350,128 @@ void func_020b0dc4(M2C_UNK arg0, u32 arg1) {
     extern M2C_UNK data_02128660;
     extern M2C_UNK data_02128670;
     extern M2C_UNK data_02128680;
-    u32 mode = arg0;
+    u32 mode = paletteMode;
     ApplyWeatherEffects();
     SetFileDirectory(&data_02128064);
-    switch (arg1) {
+    switch (theme) {
     case 0:
         OpenNarcArchive(&data_02128070);
         func_0208168c(&data_02128080, 0);
-        func_020b0cd0((s32)&data_02128090, 0, 0x400, mode);
-        func_020b0cd0((s32)&data_021280a0, 0x400, 0x200, mode);
-        func_020b0cd0((s32)&data_021280b4, 0x600, 0x200, mode);
-        func_020b0cd0((s32)&data_021280c8, 0x800, 0x200, mode);
-        func_020b0cd0((s32)&data_021280dc, 0xA00, 0x200, mode);
-        func_020b0cd0((s32)&data_021280f0, 0xC00, 0x400, mode);
-        func_020b0cd0((s32)&data_02128104, 0x1000, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128090, 0, 0x400, mode);
+        LoadMapThemeFile((s32)&data_021280a0, 0x400, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021280b4, 0x600, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021280c8, 0x800, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021280dc, 0xA00, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021280f0, 0xC00, 0x400, mode);
+        LoadMapThemeFile((s32)&data_02128104, 0x1000, 0x200, mode);
         CloseNarcArchive();
         return;
     case 3:
         OpenNarcArchive(&data_02128118);
         func_0208168c(&data_02128128, 0);
-        func_020b0cd0((s32)&data_02128138, 0, 0x400, mode);
-        func_020b0cd0((s32)&data_02128148, 0x400, 0x200, mode);
-        func_020b0cd0((s32)&data_0212815c, 0x600, 0x200, mode);
-        func_020b0cd0((s32)&data_02128170, 0x800, 0x200, mode);
-        func_020b0cd0((s32)&data_02128184, 0xA00, 0x200, mode);
-        func_020b0cd0((s32)&data_02128198, 0xC00, 0x400, mode);
-        func_020b0cd0((s32)&data_021281ac, 0x1000, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128138, 0, 0x400, mode);
+        LoadMapThemeFile((s32)&data_02128148, 0x400, 0x200, mode);
+        LoadMapThemeFile((s32)&data_0212815c, 0x600, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128170, 0x800, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128184, 0xA00, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128198, 0xC00, 0x400, mode);
+        LoadMapThemeFile((s32)&data_021281ac, 0x1000, 0x200, mode);
         CloseNarcArchive();
         return;
     case 1:
         OpenNarcArchive(&data_021281c0);
         func_0208168c(&data_021281d0, 0);
-        func_020b0cd0((s32)&data_021281e0, 0, 0x400, mode);
-        func_020b0cd0((s32)&data_021281ec, 0x400, 0x200, mode);
-        func_020b0cd0((s32)&data_021281fc, 0x600, 0x200, mode);
-        func_020b0cd0((s32)&data_0212820c, 0x800, 0x200, mode);
-        func_020b0cd0((s32)&data_02128220, 0xA00, 0x200, mode);
-        func_020b0cd0((s32)&data_02128234, 0xC00, 0x400, mode);
-        func_020b0cd0((s32)&data_02128244, 0x1000, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021281e0, 0, 0x400, mode);
+        LoadMapThemeFile((s32)&data_021281ec, 0x400, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021281fc, 0x600, 0x200, mode);
+        LoadMapThemeFile((s32)&data_0212820c, 0x800, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128220, 0xA00, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128234, 0xC00, 0x400, mode);
+        LoadMapThemeFile((s32)&data_02128244, 0x1000, 0x200, mode);
         CloseNarcArchive();
         return;
     case 2:
         OpenNarcArchive(&data_02128258);
         func_0208168c(&data_02128268, 0);
-        func_020b0cd0((s32)&data_02128278, 0, 0x400, mode);
-        func_020b0cd0((s32)&data_02128288, 0x400, 0x200, mode);
-        func_020b0cd0((s32)&data_0212829c, 0x600, 0x200, mode);
-        func_020b0cd0((s32)&data_021282b0, 0x800, 0x200, mode);
-        func_020b0cd0((s32)&data_021282c4, 0xA00, 0x200, mode);
-        func_020b0cd0((s32)&data_021282d8, 0xC00, 0x400, mode);
-        func_020b0cd0((s32)&data_021282ec, 0x1000, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128278, 0, 0x400, mode);
+        LoadMapThemeFile((s32)&data_02128288, 0x400, 0x200, mode);
+        LoadMapThemeFile((s32)&data_0212829c, 0x600, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021282b0, 0x800, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021282c4, 0xA00, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021282d8, 0xC00, 0x400, mode);
+        LoadMapThemeFile((s32)&data_021282ec, 0x1000, 0x200, mode);
         CloseNarcArchive();
         return;
     case 4:
         OpenNarcArchive(&data_02128300);
         func_0208168c(&data_02128310, 0);
-        func_020b0cd0((s32)&data_02128320, 0, 0x400, mode);
-        func_020b0cd0((s32)&data_0212832c, 0x400, 0x200, mode);
-        func_020b0cd0((s32)&data_0212833c, 0x600, 0x200, mode);
-        func_020b0cd0((s32)&data_0212834c, 0x800, 0x200, mode);
-        func_020b0cd0((s32)&data_02128360, 0xA00, 0x200, mode);
-        func_020b0cd0((s32)&data_02128374, 0xC00, 0x400, mode);
-        func_020b0cd0((s32)&data_02128384, 0x1000, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128320, 0, 0x400, mode);
+        LoadMapThemeFile((s32)&data_0212832c, 0x400, 0x200, mode);
+        LoadMapThemeFile((s32)&data_0212833c, 0x600, 0x200, mode);
+        LoadMapThemeFile((s32)&data_0212834c, 0x800, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128360, 0xA00, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128374, 0xC00, 0x400, mode);
+        LoadMapThemeFile((s32)&data_02128384, 0x1000, 0x200, mode);
         CloseNarcArchive();
         return;
     case 5:
         OpenNarcArchive(&data_02128398);
         func_0208168c(&data_021283a8, 0);
-        func_020b0cd0((s32)&data_021283b8, 0, 0x400, mode);
-        func_020b0cd0((s32)&data_021283c8, 0x400, 0x200, mode);
-        func_020b0cd0((s32)&data_021283dc, 0x600, 0x200, mode);
-        func_020b0cd0((s32)&data_021283f0, 0x800, 0x200, mode);
-        func_020b0cd0((s32)&data_02128404, 0xA00, 0x200, mode);
-        func_020b0cd0((s32)&data_02128418, 0xC00, 0x400, mode);
-        func_020b0cd0((s32)&data_0212842c, 0x1000, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021283b8, 0, 0x400, mode);
+        LoadMapThemeFile((s32)&data_021283c8, 0x400, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021283dc, 0x600, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021283f0, 0x800, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128404, 0xA00, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128418, 0xC00, 0x400, mode);
+        LoadMapThemeFile((s32)&data_0212842c, 0x1000, 0x200, mode);
         CloseNarcArchive();
         return;
     case 6:
         OpenNarcArchive(&data_02128440);
         func_0208168c(&data_02128450, 0);
-        func_020b0cd0((s32)&data_02128460, 0, 0x400, mode);
-        func_020b0cd0((s32)&data_0212846c, 0x400, 0x200, mode);
-        func_020b0cd0((s32)&data_0212847c, 0x600, 0x200, mode);
-        func_020b0cd0((s32)&data_0212848c, 0x800, 0x200, mode);
-        func_020b0cd0((s32)&data_021284a0, 0xA00, 0x200, mode);
-        func_020b0cd0((s32)&data_021284b4, 0xC00, 0x400, mode);
-        func_020b0cd0((s32)&data_021284c4, 0x1000, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128460, 0, 0x400, mode);
+        LoadMapThemeFile((s32)&data_0212846c, 0x400, 0x200, mode);
+        LoadMapThemeFile((s32)&data_0212847c, 0x600, 0x200, mode);
+        LoadMapThemeFile((s32)&data_0212848c, 0x800, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021284a0, 0xA00, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021284b4, 0xC00, 0x400, mode);
+        LoadMapThemeFile((s32)&data_021284c4, 0x1000, 0x200, mode);
         CloseNarcArchive();
         return;
     case 7:
         OpenNarcArchive(&data_021284d8);
         func_0208168c(&data_021284e8, 0);
-        func_020b0cd0((s32)&data_021284f8, 0, 0x400, mode);
-        func_020b0cd0((s32)&data_02128508, 0x400, 0x200, mode);
-        func_020b0cd0((s32)&data_0212851c, 0x600, 0x200, mode);
-        func_020b0cd0((s32)&data_02128530, 0x800, 0x200, mode);
-        func_020b0cd0((s32)&data_02128544, 0xA00, 0x200, mode);
-        func_020b0cd0((s32)&data_02128558, 0xC00, 0x400, mode);
-        func_020b0cd0((s32)&data_0212856c, 0x1000, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021284f8, 0, 0x400, mode);
+        LoadMapThemeFile((s32)&data_02128508, 0x400, 0x200, mode);
+        LoadMapThemeFile((s32)&data_0212851c, 0x600, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128530, 0x800, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128544, 0xA00, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128558, 0xC00, 0x400, mode);
+        LoadMapThemeFile((s32)&data_0212856c, 0x1000, 0x200, mode);
         CloseNarcArchive();
         return;
     case 8:
         OpenNarcArchive(&data_02128580);
         func_0208168c(&data_02128590, 0);
-        func_020b0cd0((s32)&data_0212859c, 0, 0x400, mode);
-        func_020b0cd0((s32)&data_021285a8, 0x400, 0x200, mode);
-        func_020b0cd0((s32)&data_021285b8, 0x600, 0x200, mode);
-        func_020b0cd0((s32)&data_021285c8, 0x800, 0x200, mode);
-        func_020b0cd0((s32)&data_021285d8, 0xA00, 0x200, mode);
-        func_020b0cd0((s32)&data_021285e8, 0xC00, 0x400, mode);
-        func_020b0cd0((s32)&data_021285f8, 0x1000, 0x200, mode);
+        LoadMapThemeFile((s32)&data_0212859c, 0, 0x400, mode);
+        LoadMapThemeFile((s32)&data_021285a8, 0x400, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021285b8, 0x600, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021285c8, 0x800, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021285d8, 0xA00, 0x200, mode);
+        LoadMapThemeFile((s32)&data_021285e8, 0xC00, 0x400, mode);
+        LoadMapThemeFile((s32)&data_021285f8, 0x1000, 0x200, mode);
         CloseNarcArchive();
         return;
     case 9:
         OpenNarcArchive(&data_02128608);
         func_0208168c(&data_02128618, 0);
-        func_020b0cd0((s32)&data_02128624, 0, 0x400, mode);
-        func_020b0cd0((s32)&data_02128630, 0x400, 0x200, mode);
-        func_020b0cd0((s32)&data_02128640, 0x600, 0x200, mode);
-        func_020b0cd0((s32)&data_02128650, 0x800, 0x200, mode);
-        func_020b0cd0((s32)&data_02128660, 0xA00, 0x200, mode);
-        func_020b0cd0((s32)&data_02128670, 0xC00, 0x400, mode);
-        func_020b0cd0((s32)&data_02128680, 0x1000, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128624, 0, 0x400, mode);
+        LoadMapThemeFile((s32)&data_02128630, 0x400, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128640, 0x600, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128650, 0x800, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128660, 0xA00, 0x200, mode);
+        LoadMapThemeFile((s32)&data_02128670, 0xC00, 0x400, mode);
+        LoadMapThemeFile((s32)&data_02128680, 0x1000, 0x200, mode);
         CloseNarcArchive();
         break;
     default: break;

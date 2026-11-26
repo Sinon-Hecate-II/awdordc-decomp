@@ -250,16 +250,16 @@ void Ov001_InitTasks(void) {
 /* Tear down the cooperative task system: free every task group's pending-callback
  * list and free-node queue, then the group array itself. */
 void Ov001_FreeTasks(void) {
-    void func_ov001_0218bf30(s32);
-    void Ov001_FreeBlock(s32);
+    void Ov001_ListDestroy(s32);
+    void Ov001_QueueDestroy(s32);
     void Ov001_FreeAlloc(void *);
     extern s32 gOv001Tasks;
     extern s32 gVramBankGrants[];
     s32 i;
 
     for (i = 0; i < OV001_TASK_GROUP_COUNT; i++) {
-        func_ov001_0218bf30((s32)OV001_TASKS[i].list);
-        Ov001_FreeBlock(OV001_TASKS[i].freeNodes);
+        Ov001_ListDestroy((s32)OV001_TASKS[i].list);
+        Ov001_QueueDestroy(OV001_TASKS[i].freeNodes);
     }
     /* The group array (the word right after gVramBankGrants); spelled through the
      * neighbouring symbol so the pool keeps the original's two literal words. */

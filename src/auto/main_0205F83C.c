@@ -245,10 +245,13 @@ void Qr2_SendState(void *qr2, s32 state) {
     }
 }
 
-void Qr2_SetKeyName(s32 arg0, s32 arg1) {
+/* Register the name pointer for QR2 game key `keyId`; ids from
+ * QR2_GAMEKEY_QR2_PARAM up to QR2_GAMEKEY_TABLE_END (inclusive) are accepted,
+ * anything else is ignored. */
+void Qr2_SetKeyName(s32 keyId, s32 name) {
     extern s32 gQr2KeyNames[];
-    if (arg0 < 50 || arg0 > 254) return;
-    gQr2KeyNames[arg0] = arg1;
+    if (keyId < QR2_GAMEKEY_QR2_PARAM || keyId > QR2_GAMEKEY_TABLE_END) return;
+    gQr2KeyNames[keyId] = name;
 }
 
 /* One step of the GameSpy stream cipher's key setup (gs_crypt_init_step): mixes a
@@ -462,9 +465,11 @@ void func_0206040c(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x28) = arg1;
 }
 
-void Qr2Query_ResetQueues(s32 arg0) {
-    QueryQueue_Reset(arg0 + 0x14);
-    QueryQueue_Reset(arg0 + 8);
+/* Empty both query queues of a server-browser list: the detail queries still
+ * awaiting a reply and the ones that have not been sent yet. */
+void Qr2Query_ResetQueues(void *list) {
+    QueryQueue_Reset((u8 *)list + SB_LIST_WAITING);
+    QueryQueue_Reset((u8 *)list + SB_LIST_REQUESTS);
 }
 
 /* Tear down the server browser's QR2 query socket: close it, mark it invalid and

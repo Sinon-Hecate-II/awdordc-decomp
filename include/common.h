@@ -136,6 +136,10 @@ typedef struct OSLockWord {
  * it lives in the ARM9's DTCM. */
 #define OS_LOCK_WORD_ADDR 0x027FFFE8
 
+/* The lock word the card ROM/archive lock helpers use, next to the OS lock word
+ * (CARD_LockRom/CARD_UnlockRom guard the ROM access with it). */
+#define CARD_LOCK_WORD_ADDR 0x027FFFE0
+
 enum { OS_UNLOCK_NOT_OWNER = -2 };
 typedef s8 M2C_UNK8;
 typedef s16 M2C_UNK16;
@@ -315,6 +319,12 @@ typedef struct HashDescriptor {
 } HashDescriptor;
 
 #define SHA1_DIGEST_SIZE 20 /* bytes of a SHA1 digest */
+
+/* The four SHA-1 round constants, one per 20 steps of a block compression. */
+#define SHA1_K_STEPS_0_19  0x5A827999
+#define SHA1_K_STEPS_20_39 0x6ED9EBA1
+#define SHA1_K_STEPS_40_59 0x8F1BBCDC
+#define SHA1_K_STEPS_60_79 0xCA62C1D6
 
 /* A fixed HMAC key: the key bytes and their length.  gHmacSha1Key is the 64-byte
  * archive-signing key HmacSha1Verify uses. */
@@ -606,6 +616,7 @@ typedef struct MapSelectScreen {
 #define WAYPOINT_LIST_OPTION  0x08 /* u8: the selected slot's option, what the list shows and plays with */
 #define WAYPOINT_LIST_PENDING_OPTION 0x09 /* u8: option the player-option menu is editing; RestoreWaypointOption puts it back */
 #define WAYPOINT_LIST_SLOT_OPTIONS 0x0A /* u8[4]: per-slot option, one byte per slot */
+#define WAYPOINT_LIST_SLOT_VARIANTS 0x0E /* u8[4]: per-slot two-state variant toggled by clicking the slot's option cell; 2 draws the alternate option-cell tile */
 #define WAYPOINT_LIST_OPTION_COUNTERS 0x14 /* OptionCounter[4]: per-slot option counters */
 #define WAYPOINT_LIST_IDS     0x74 /* u8[4]: player id of each slot, 0xFF = no player yet */
 #define WAYPOINT_NO_PLAYER    0xFF /* WAYPOINT_LIST_IDS: the slot has no player yet */
@@ -1459,6 +1470,14 @@ enum {
     GPI_BUCKET_STRING = 2  /* bt_string */
 };
 
+/* The gbucket.c module's scratch state (gGpiBucketScratchState): BucketIntValue
+ * and BucketDoubleValue assemble a temporary value here for BucketSetValue, and
+ * the bucket store used when a caller passes NULL is kept at +4.  The temporary
+ * double (gGpiBucketTmpDouble) is the second half of the same block. */
+#define GPI_BUCKET_SCRATCH_INT    0x00 /* s32: temporary integer value */
+#define GPI_BUCKET_SCRATCH_STORE  0x04 /* void *: default bucket store */
+#define GPI_BUCKET_SCRATCH_DOUBLE 0x08 /* double: temporary double value */
+
 /* A queued GameSpy gpi callback (gpiCallback.c).  gpiCallCallback invokes
  * callback.callback(connection, arg, callback.param) and then frees arg
  * according to type. */
@@ -1671,6 +1690,7 @@ enum {
 #define CONN_SESSION_PLAYER_COUNT 0x0D  /* u8  number of connected peers */
 #define CONN_SESSION_ACTIVE_MAX   0x0E  /* u8  number of set bits in CONN_SESSION_PLAYER_MASK minus 1, 0 when none */
 #define CONN_SESSION_PEER_IDS     0xF4  /* s32 peer ids, 4 bytes per slot */
+#define CONN_SESSION_READY_MASK   0x1D4 /* u32 bitmask of peers that sent the ready packet (connection packet type 3) */
 #define CONN_SESSION_SYNC_ACKS    0x1D8 /* u32 bitmask of peers that answered */
 #define CONN_SESSION_SYNC_SENT    0x1E8 /* u64 time the last sync notice was sent */
 #define CONN_SESSION_SYNC_EXCESS  0x1B2 /* u16 worst overrun of the sync deadline */
@@ -1691,7 +1711,9 @@ enum {
 #define CONN_SESSION_STORED_COMMAND_PEER 0x34C /* s32: peer id the stored command came from */
 #define CONN_SESSION_STORED_COMMAND_DATA 0x350 /* s32[]: the stored command's payload words */
 #define CONN_SESSION_MODE         0x15  /* u8 connection mode (0/1 joining, 2/3 serving) */
+#define CONN_SESSION_JOIN_SLOT    0x1A4 /* u8 highest peer slot whose join has been set up; the join chain fills slots 1..PLAYER_COUNT-1 */
 #define CONN_SESSION_JOIN_FLAG    0x1A6 /* u8 flag StartJoinMatch was opened with: sends command 6 on the binary path and lets the peer-list membership checks pass while the join settles */
+#define CONN_SESSION_JOIN_ACK_MASK 0x1DC /* u32 bitmask of peers that acknowledged the join (command 32) */
 #define CONN_SESSION_BUSY         0x1A9 /* u8 nonzero while a connection change is in progress */
 #define CONN_SESSION_TEARDOWN     0x1A8 /* u8 nonzero while peers are being removed or the session torn down */
 #define CONN_TEARDOWN_IN_PROGRESS 2    /* CONN_SESSION_TEARDOWN value while the peer list is being changed */
@@ -1712,6 +1734,8 @@ enum {
 #define CONN_MODE_SERVE          2 /* serving a match */
 #define CONN_MODE_SERVE_NO_RETRY 3 /* serving mode that reports the failure immediately */
 #define CONN_ERROR_MATCH_FAILED 6
+#define CONN_DETAIL_JOIN_FAILED   ((s32)0xFFFEC5D2) /* join retries exhausted */
+#define CONN_DETAIL_BROWSE_FAILED ((s32)0xFFFEB3EE) /* server browse deadline passed */
 #define CONN_DETAIL_PEER_CONNECT_FAILED ((s32)0xFFFEAE6C)
 #define CONN_SESSION_TARGET_NOTICES  0x17C /* u8 QR2 state notices seen from the connect target */
 #define CONN_SESSION_CONNECT_TARGET  0x180 /* s32 peer id the outstanding connect targets */
@@ -1728,6 +1752,16 @@ enum {
 #define CONN_SESSION_LAST_COMMAND_TRIES  0x3CD /* u8 times the last command has been repeated */
 #define CONN_SESSION_NO_COMMAND          0xFF  /* CONN_SESSION_LAST_COMMAND value when no command is remembered */
 #define CONN_SESSION_CLOSED              0x18  /* u8 set once the session has been torn down, cleared when it is reset */
+#define CONN_SESSION_JOIN_RETRIES         0x1AA /* u8 join attempts made */
+#define CONN_SESSION_JOIN_PENDING         0x1BC /* s32 1 while a join request waits for its timeout */
+#define CONN_SESSION_JOIN_REQUEST_TICK    0x1C0 /* u64 time the join request was sent */
+#define CONN_SESSION_MATCHMAKING_TICK     0x1F0 /* u64 time the state-18 matchmaking wait started */
+#define CONN_SESSION_COMMAND_PORT          0x3CE /* u16 port of the last command sent */
+#define CONN_SESSION_COMMAND_ADDRESS       0x3D0 /* s32 address of the last command sent */
+#define CONN_SESSION_COMMAND_DATA          0x3D4 /* s32[] payload of the last command sent */
+#define CONN_SESSION_COMMAND_PEER          0x454 /* s32 peer of the last command sent */
+#define CONN_SESSION_COMMAND_COUNT         0x458 /* s32 payload words of the last command sent */
+#define CONN_SESSION_COMMAND_TICK          0x45C /* u64 time the last command was sent */
 
 /* Matchmaking states taken by CONN_SESSION_STATE before the synchronization
  * handshake (CONN_STATE_SYNC_* above): a host is set up by StartHostMatch, a
@@ -1831,6 +1865,7 @@ typedef struct PeerAddress {
 #define PLAYER_RECORD_JOINED     0x4 /* bit 2 of a record's type word (PLAYER_RECORD_TYPE >> 11): a profile record whose player joined the match */
 #define PLAYER_RECORD_CODE       0x04 /* u64 player code of a PLAYER_RECORD_KIND_CODE record */
 #define PLAYER_RECORD_ID         0x04 /* s32 GameSpy profile id of a PLAYER_RECORD_KIND_PROFILE record */
+#define PLAYER_CODE_HIGH_MASK    0x7FF /* low bits of a record's type word (PLAYER_RECORD_TYPE) holding the high 11 bits of a 43-bit player code */
 
 /* PLAYER_RECORD_TYPE values. */
 #define PLAYER_RECORD_KIND_EMPTY      0 /* no player */
@@ -1885,6 +1920,11 @@ typedef struct MbMatchProfile {
     u8  info[6];    /* +0x08 six info bytes of the profile packet */
 } MbMatchProfile;
 
+/* The multiboot state object gMbState: a u16 flag, the top of its task stack and
+ * the two pointers every multiboot routine reaches through. */
+#define MB_STATE_CTX   0x08 /* void *the multiboot context (the front of the work area below) */
+#define MB_STATE_WORK  0x0C /* void *the multiboot match work area (MB_WORK_*) */
+
 /* The multiboot match work area (gMbWork = gMbState.work, 0x7D00 bytes): the
  * buffer commands are serialized into, the per-player slot states and the 16
  * records of players grouped together for one battle. */
@@ -1923,6 +1963,7 @@ typedef struct MbLockState {
 #define MB_GROUP_CHUNK_CURSOR 0x5C0 /* u16 record-relative: chunk transfer the group is sending */
 #define MB_GROUP_CHUNK_GOAL   0x5C2 /* u16 record-relative: newest chunk a member asked for; the cursor advances to it */
 #define MB_PLAYER_FORFEIT   0x1526 /* s8 per-player 1-byte flag, -1 = gave up, indexed from 1 */
+#define MB_PLAYER_MAX       15   /* multiboot player numbers run 1..MB_PLAYER_MAX; 0 is the local console */
 #define MB_PLAYER_INFO       0x1340 /* per-player info block, 22 bytes each, indexed from 1 (the block PlayerData packets carry) */
 #define MB_PLAYER_INFO_SIZE  0x16   /* bytes in one player's info block */
 #define MB_PLAYER_INFO_OUT   0x1772 /* scratch info block MultiBoot_GetPlayerInfo copies a player's block into */
@@ -1980,6 +2021,27 @@ typedef struct MbLockState {
 #define MB_LINK_EXCHANGE    0x528 /* u16 1 while the group match-data exchange is under way */
 #define MB_LINK_PLAYERS     0x52A /* u16 bit per player slot still in the link, 0 when none */
 #define MB_LINK_ALIVE       0x5E4 /* s32 1 while the link keeps running; cleared when it closes */
+#define MB_LINK_ROTATE_PLAYERS 0x5E8 /* s32 1 on the console that cycles the player slot the match profile announces */
+#define MB_MATCH_RECORD_INDEX  0x5EC /* s32 record the last received match packet filled */
+/* Link task fields of the multiboot context. */
+#define MB_CTX_CHANNEL      0x520 /* s32 WFC channel index of the link */
+#define MB_CTX_DATA         0x504 /* void *data buffer handed to the link task */
+#define MB_CTX_DATA_SIZE    0x51A /* u16 bytes of that buffer */
+#define MB_CTX_EXTRA_BUFFER 0x040 /* the extra buffer the link task fills */
+#define MB_CTX_EXTRA_SIZE   0x518 /* u16 bytes of that buffer */
+#define MB_CTX_FLAG         0x52C /* u16 flag carried by a link task request */
+#define MB_CTX_RECV_BUFFER  0x440 /* 0xC0-byte buffer the received match data is assembled into */
+/* The match records at the end of the context: one block per player's match data,
+ * its six-byte id at +0xCA, the value a receive updates at +0xF6 and the 128-byte
+ * payload at +0xF8. */
+#define MB_MATCH_RECORDS       0x600
+#define MB_MATCH_RECORD_SIZE   0x180
+#define MB_MATCH_RECORD_SLOTS  16
+#define MB_MATCH_RECORD_COUNT  0x5E0 /* u16 records in use */
+#define MB_MATCH_RECV_VALUE    0x5E2 /* u16 value carried by the last match packet */
+#define MB_MATCH_RECORD_ID     0xCA  /* u8[6] id matched against a received record */
+#define MB_MATCH_RECORD_VALUE  0xF6  /* u16 value a receive updates */
+#define MB_MATCH_RECORD_BLOCK  0xF8  /* 128-byte payload a receive updates */
 /* The game's link command callback (gMbState+8, the multiboot context): the
  * dispatcher func_020140c4 runs it with a command/event code and its packet. */
 #define MB_CTX_CALLBACK     0x51C /* s32 (*)(s32 event, void *packet) */
@@ -2275,6 +2337,8 @@ typedef struct NetError {
 #define OV010_START_RECORD_ID      0x00 /* s32 match id both sides compare */
 #define OV010_START_RECORD_ACKS    0x04 /* u16 one bit per player that acknowledged the start request */
 #define OV010_SESSION_CALLBACK 0x0c /* void (*)(s32 error, s32 aborted, s32 data): the running match's event callback */
+#define OV010_SESSION_SLOT_CALLBACK 0x10 /* void (*)(s32 slot, s32 data): the app's callback for a changed player slot */
+#define OV010_SESSION_PEER_JOINED_CALLBACK 0x44 /* void (*)(s32 slot, s32 data): the app's callback for a peer joining while serving (Ov010Online_OnPeerJoined) */
 #define OV010_SESSION_VOICE_CALLBACK 0x2c /* void (*)(s32 peerId, void *packet, s32 length): receives each packet for the voice chat, 0 when voice chat is off */
 #define OV010_SESSION_PLAYER   0x24 /* void *: the local player's join record (OV010_PLAYER_*) */
 #define OV010_PLAYER_JOINED    0x00 /* u8 nonzero once the local player joined the session */
@@ -2764,6 +2828,7 @@ typedef struct LinkChannelState {
  * (dakuten) and semi-voiced (handakuten) forms. The line being edited is
  * MAPEDIT_LINE_LENGTH glyph slots long. */
 #define MAPEDIT_TEXT_LAYOUT       0x34  /* u32 **glyph layout: 3 blocks of 75 */
+#define MAPEDIT_TEXT_CELLS        0x38  /* s32 *sprite cell list of the text line */
 #define MAPEDIT_TEXT_INDEX        0x3c  /* s8 cursor into the current line */
 #define MAPEDIT_LINE_LENGTH       17    /* u32 glyphs in gMapEditObjectList */
 #define MAPEDIT_GLYPH_COUNT       75    /* entries per layout block */
@@ -3825,6 +3890,11 @@ typedef struct VoiceLinkReply {
 #define TEXT_CODE_CHOICE_WIDGET     5 /* embeds an interactive two-state choice widget in the text; a plain message box rejects such a text */
 #define TEXT_CODE_CHOICE_WIDGET_ALT 6 /* the same widget, its initial selection on the other half */
 
+/* Bytes IsPrintableString accepts in a player name or room text: 0x20 ' ' up to
+ * 0x7F; anything below or above is rejected. */
+#define TEXT_PRINTABLE_MIN 32
+#define TEXT_PRINTABLE_MAX 127
+
 /* Alignment codes carried by a TEXT_CODE_LINE_ALIGN operand; a text panel's
  * per-line kind (Text_GetLineAlignment) picks how each line is drawn. */
 #define TEXT_LINE_ALIGN_CENTER 0 /* draw the line centred in the block */
@@ -4485,6 +4555,9 @@ typedef struct MicTestScreen {
  * (SetFifoMessageHandler). */
 #define SHARED_WORK_BASE     0x027FFC00
 #define SHARED_FIFO_TAG_WORD 226 /* s32 index: bit per handled FIFO tag */
+/* The console's six-byte MAC address, copied from the firmware header into the
+ * shared work area at boot (GetMacAddress reads it). */
+#define SHARED_MAC_ADDRESS   0x027FFCF4
 /* Reset parameter kept across a soft reset: the boot code reads it back, so the
  * reboot path bounces a value through it. */
 #define SHARED_RESET_PARAMETER 0x027FFC20 /* s32 */
@@ -4628,6 +4701,18 @@ enum {
 #define FILE_STREAM_KIND_MASK   0x380 /* zero for a closed stream */
 #define FILE_STREAM_KIND(mode)  ((u32)((mode) << 22) >> 29)
 #define FILE_STREAM_CLOSE_ERROR(state) ((u32)((state) << 28) >> 31) /* bit 3 forces a close error */
+
+/* The C runtime's multibyte locale (gMultibyteLocale): the character-class
+ * table, the longest multibyte character in bytes (MB_CUR_MAX) and the table of
+ * conversion functions the wide-character helpers dispatch through, so another
+ * locale can swap them. */
+typedef struct MultibyteFunctions {
+    s32 (*mbtowc)(s16 *wideChar, u8 *multibyte, s32 remainingBytes); /* +0x00 */
+    s32 (*wctomb)(s8 *multibyte, u16 wideChar);                       /* +0x04 */
+} MultibyteFunctions;
+#define LOCALE_CLASS_TABLE 0x00 /* void *: character-class table */
+#define LOCALE_MB_CUR_MAX  0x04 /* u32: longest multibyte character in bytes */
+#define LOCALE_FUNCTIONS   0x08 /* MultibyteFunctions *: the conversions */
 
 /* The buffered part of a stream object, shared by the read and write paths
  * (StreamResetBuffer, StreamFillBuffer, StreamFlush).  position is the file
@@ -4935,6 +5020,7 @@ typedef struct DialogSequence {
 #define SOUND_CMD_NODE_ARG2 0x10 /* s32 third command argument */
 #define SOUND_CMD_NODE_ARG3 0x14 /* s32 fourth command argument */
 #define SOUND_CMD_NODE_SIZE 0x18
+#define SOUND_CMD_NODE_COUNT 0x100 /* nodes in the gSoundCommandNodes pool */
 
 /* The ARM9-side ARM7 sound command queue state (gSoundCommandQueueState,
  * 36 bytes), always read and written with interrupts locked: the free command
@@ -4981,6 +5067,23 @@ typedef struct FaceNameFile {
  * standalone .cg files "ter_moji.cg" (terrain glyphs) and "unit_moji.cg" (unit
  * glyphs), then the terrain, unit and weapon name tables of cg_name.narc. */
 #define NAME_GRAPHIC_FILE_COUNT 5
+
+/* The ov004 battle-start window state (the task object func_ov004_022120c0 sets
+ * up and Ov004_UpdateBattleStartWindow steps every frame): the opening animation's frame
+ * counters, the day number the window shows, its phase, the gap between its two
+ * frame bars and the palette fades it starts. */
+#define OV004_START_WINDOW_OPEN_FRAME   0x34 /* u16 frame of the opening ease, 0..OV004_START_WINDOW_EASE_FRAMES */
+#define OV004_START_WINDOW_FRAME        0x36 /* u16 frames the window has been open */
+#define OV004_START_WINDOW_DAY          0x3a /* u8 day number drawn in the window */
+#define OV004_START_WINDOW_PHASE        0x3b /* u8 opening phase, 0..4 */
+#define OV004_START_WINDOW_SLIT         0x3c /* u8 half the gap between the two frame bars */
+#define OV004_START_WINDOW_FADE_DELAY   0x3d /* u8 frames left before the next palette fade */
+#define OV004_START_WINDOW_FADE_MAIN    0x40 /* void *main-screen palette fade */
+#define OV004_START_WINDOW_FADE_SUB     0x44 /* void *sub-screen palette fade */
+#define OV004_START_WINDOW_EASE_FRAMES  16   /* frames the opening ease and each fade hold last */
+#define OV004_START_WINDOW_ROWS         16   /* cell grid rows on each side of the split */
+#define OV004_START_WINDOW_SLIT_MAX     20   /* gap half-width once the window is fully open */
+#define OV004_START_WINDOW_PALETTE_FRAMES 32 /* frames each palette fade lasts */
 
 #endif
 

@@ -136,7 +136,7 @@ s32 WFC_SubmitLinkRequest(s32 requestId) {
 #pragma push
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
-s32 func_02012fac(s32 buffer,s32 channel,s32 flags,s32 count,s32 option) {
+s32 WFC_OpenChannel(s32 buffer,s32 channel,s32 flags,s32 count,s32 option) {
 s32 WFC_CheckChannelState();s32 WFC_GetLocalPlayerIndex(void);s32 WFC_GetConnectedPeerMask(void);
 void MI_CpuFill32(s32,void *,s32);s32 CountBits(s32);s32 WFC_SetChannelHandler(u16,s32,s32);
 void WFC_ParentChannelHandler(void *);void WFC_ChildChannelHandler(void *);void WFC_OnChannelSendComplete(void *);
@@ -449,9 +449,11 @@ s32 WFC_PlayerDataOffset(void *state, s32 playerMask, s32 playerDataBase, s32 pl
     return (M2C_FIELD(state, u16 *, WFC_CH_PAYLOAD_LEN) * CountBits(playerMask & ((1 << playerIndex) - 1))) + playerDataBase;
 }
 
-void WFC_StartChannel(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02012fac(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_02012fac(arg0, arg1, 0xFFFF, 2, 1);
+/* Open the WH key-sharing channel: every player slot takes part, each transfers a
+ * two-byte key, and the channel runs in parent mode. */
+void WFC_StartChannel(M2C_UNK channelState, M2C_UNK channelIndex) {
+    M2C_UNK WFC_OpenChannel(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    WFC_OpenChannel(channelState, channelIndex, WH_KEY_CHANNEL_MASK, WH_KEY_CHANNEL_PAYLOAD, 1);
 }
 
 void WFC_CloseChannelThunk(void) {

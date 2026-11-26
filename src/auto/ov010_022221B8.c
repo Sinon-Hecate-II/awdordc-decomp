@@ -370,7 +370,7 @@ extern s32 data_ov010_0222c000;
 extern M2C_UNK gLinkCodecState;
 extern M2C_UNK gLinkConfig;
 u32 func_ov010_0222519c(void *,u32);
-void func_ov010_02225538(void *,u32,u32);
+void VoiceCodec_NormalizePayload(void *,u32,u32);
 s32 func_ov010_02224f94(u32,u32,s32);
 void VoiceCodec_EncodeMuLaw(void *,void *,u32);
 void VoiceCodec_EncodePcm8(void *,void *,u32);
@@ -392,7 +392,7 @@ energy=func_ov010_0222519c(payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24));
 *(volatile u32 *)0x040002b8=energy;
 while(*(volatile u16 *)0x040002b0&0x8000){}
 energyRoot=*(volatile u32 *)0x040002b4;
-if(M2C_FIELD(&gVoiceChatState,s32 *,0x18))func_ov010_02225538(payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24),energyRoot);
+if(M2C_FIELD(&gVoiceChatState,s32 *,0x18))VoiceCodec_NormalizePayload(payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24),energyRoot);
 packet[5]=mode;
 if(data_ov010_0222c000){
 s32 energyCheck=func_ov010_02224f94(energy,energyRoot,0);

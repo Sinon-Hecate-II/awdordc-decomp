@@ -137,16 +137,18 @@ s32 IsPlayerLocallyControlled(s32 playerId) {
     return 0;
 }
 
-u8 IsPlayerArmyVariantSet(void) {
-    s32 GetPlayerArmyVariantIfSet();
-    u8 var_r0;
+/* True when player `player` has an army variant to show: it has an army and a
+ * non-zero army variant (the CO-power level its army is displaying). */
+u8 IsPlayerArmyVariantSet(s32 player) {
+    s32 GetPlayerArmyVariantIfSet(s32);
+    u8 set;
 
-    if (GetPlayerArmyVariantIfSet() != 0) {
-        var_r0 = 1;
+    if (GetPlayerArmyVariantIfSet(player) != 0) {
+        set = 1;
     } else {
-        var_r0 = 0;
+        set = 0;
     }
-    return var_r0;
+    return set;
 }
 
 /* Return 1 when the turn after the current player's begins a new day.  It scans
@@ -282,7 +284,7 @@ void func_020d1dc8(void) {
     extern void **gCurrentMap;
     extern u8 gMovementCostTable[];
     s32 IsCampaignBattleRules(void);
-    s32 func_020a8ae0(u16, s32);
+    s32 GetMapPlayerState(u16, s32);
     s32 IsMapEditorMode(void);
     s32 i;
     s32 state, flag, other;
@@ -291,7 +293,7 @@ void func_020d1dc8(void) {
         state = 0;
         flag = state;
         other = state;
-        if (IsCampaignBattleRules()) state = func_020a8ae0(M2C_FIELD(*gCurrentMap, u16 *, 0x5142), i);
+        if (IsCampaignBattleRules()) state = GetMapPlayerState(M2C_FIELD(*gCurrentMap, u16 *, 0x5142), i);
         if (state == 0) state = gMovementCostTable[((u32)(M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, s32 *, 0x6810) << 24) >> 24) * 0x9c + 0x23];
         if (IsMapEditorMode()) state = i;
         switch (state) {
@@ -329,7 +331,7 @@ void func_020d1dc8(void) {
 void InitMapPlayers(void) {
     extern void **gCurrentMap;
     extern M2C_UNK gMapData;
-    s32 func_020cfb94(void);
+    s32 GetCurrentMapPlayerCount(void);
     s32 SetPlayerTeam(s32, s32);
     s32 GetPlayerTeam(s32, s32);
     s32 GetPlayerIdForSlot(s32);
@@ -346,7 +348,7 @@ void InitMapPlayers(void) {
 
 
     {
-        s32 r5 = 4 - func_020cfb94();
+        s32 r5 = 4 - GetCurrentMapPlayerCount();
         if (r5 >= 1) {
             do {
                 SetPlayerTeam(5 - r5, 0);

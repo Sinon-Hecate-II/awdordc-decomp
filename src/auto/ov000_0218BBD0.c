@@ -32,7 +32,7 @@ int SelectIndirectAttackAction(void *arg0) {
     s32 IsCellVisibleToCurrentTeam(s16, s16);
     s32 GetKindAttackClass(s32);
     s32 CanAttackUnitFrom(s32, s32, void *);
-    s32 func_ov000_02176e28(s32, s16 *);
+    s32 GetAiTargetScore(s32, s16 *);
     void ClearUnitMoveTarget(void);
     void SetMapCursor(s32, s32, s32, s32, s32);
     s16 position[2];
@@ -114,10 +114,10 @@ int SelectIndirectAttackAction(void *arg0) {
                 s32 id = tile[0];
                 other = base + id * 14;
                 if (((Unit0218C4 *)other)->kind == 0) continue;
-                if (func_020d27a4(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), other ? (s32)((other - base) / 14) : 0) == 1) continue;
+                if (AreUnitIdsOnSameTeam(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), other ? (s32)((other - base) / 14) : 0) == 1) continue;
                 if (IsCellVisibleToCurrentTeam((s16)x, (s16)y) == 0) continue;
                     {
-                    score = func_ov000_02176e28(flags | (terrainFlags | ((u8 *)*gCurrentMap)[other[1] + M2C_FIELD((u8 *)*gCurrentMap + other[2] * 2, u16 *, 0x3758)]), position);
+                    score = GetAiTargetScore(flags | (terrainFlags | ((u8 *)*gCurrentMap)[other[1] + M2C_FIELD((u8 *)*gCurrentMap + other[2] * 2, u16 *, 0x3758)]), position);
                     if (score == 0) continue;
                     if (score < bestScore) continue;
                     bestScore = score;
@@ -160,7 +160,7 @@ s32 SelectMovingIndirectAttackAction(s32 arg0) {
     s32 IsCellVisibleToCurrentTeam(s16, s16);
     s32 GetKindAttackClass(s32);
     s32 CanAttackUnitFrom(s32, s32, void *);
-    s32 func_ov000_02176e28(s32, s16 *);
+    s32 GetAiTargetScore(s32, s16 *);
     void ClearUnitMoveTarget(void);
     void SetMapCursor(s32, s32, s32, s32, s32);
     s16 position[2];
@@ -236,7 +236,7 @@ s32 SelectMovingIndirectAttackAction(s32 arg0) {
                 s32 id = tile[0];
                 other = base + id * 14;
                 if (((Unit0218C4 *)other)->kind == 0) continue;
-                if (func_020d27a4(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), other ? (s32)((other - base) / 14) : 0) == 1) continue;
+                if (AreUnitIdsOnSameTeam(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), other ? (s32)((other - base) / 14) : 0) == 1) continue;
                 if (IsCellVisibleToCurrentTeam((s16)x, (s16)y) == 0) continue;
                 if (func_ov000_02178268(x, y, position) == 0) continue;
                 {
@@ -253,7 +253,7 @@ s32 SelectMovingIndirectAttackAction(s32 arg0) {
                     if (other[0xc] == 0 && GetKindAttackClass(((Unit0218C4 *)other)->kind) == 2 && CanAttackUnitFrom(position[0], position[1], other) == 0)
                         bonus = 0x80000;
                 score:
-                    score = func_ov000_02176e28(flags | (bonus | ((u8 *)*gCurrentMap)[x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758)]), position);
+                    score = GetAiTargetScore(flags | (bonus | ((u8 *)*gCurrentMap)[x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758)]), position);
                     if (score == 0) continue;
                     if (score < bestScore) continue;
                     bestScore = score;

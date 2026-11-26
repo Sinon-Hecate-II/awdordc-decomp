@@ -2,7 +2,7 @@
 #include "common.h"
 extern void **gCurrentMap;
 extern u8 gUnitKindFlags[],gUnitKindStats[];
-extern u8 gAiRangeBitmap[],gAiIndirectRangeBitmap[],gAiRangeLayer[],data_ov000_021df9bc[],data_ov000_021dfc4c[];
+extern u8 gAiRangeBitmap[],gAiIndirectRangeBitmap[],gAiRangeLayer[],gAiSafeDirectRangeBitmap[],gAiSafeIndirectRangeBitmap[];
 extern u8 *gAiCommandState;
 static inline s32 Unk21843Index(u8 *unit) { if(unit==0)return 0;return (s32)(unit-((u8 *)*gCurrentMap+0x59a4))/14; }
 static inline s32 Unk21843Owner(u8 *unit) {if(unit!=0)return (Unk21843Index(unit)>>6)+1;return 0;}
@@ -21,7 +21,7 @@ int GetUnitAttackClass(int);
 int Divide(int,int);
 void FloodFillUnitRange(int,int,int,int,int);
 void MI_CpuFill8(void *,int,int);
-int func_020d27a4(int,int);
+int AreUnitIdsOnSameTeam(int,int);
 int GetUnitMoveRange(int,int);
 void SelectMapLayer(void *);
 void MarkAdjacentCells(s8);
@@ -67,7 +67,7 @@ if(n==0)goto next_unit;
 unit=map+0x59a4 + n*14;
 if(unit==M2C_FIELD(map,u8 **,0x52d0))goto next_unit;
 if(IsFootUnitKind((u32)(unit[0]<<26)>>26))goto next_unit;
-if(func_020d27a4(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),n)){
+if(AreUnitIdsOnSameTeam(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),n)){
 if(attrs[19]&7){
 kind=(u32)(unit[0]<<26)>>26;
 if(!(gUnitKindStats[kind*112+19]&7))goto next_unit;
@@ -143,11 +143,11 @@ hp=M2C_FIELD(((Map843EC *)map)->costs[y],s8 *,x);
 if(hp>=0 && hp<=leader[5] && ally>enemy+dst[y*width]){
 if(postattrs[19]&7){
 idx=y*width+x;
-if((u8)(gAiRangeBitmap[idx>>3]&(1<<(idx&7))))data_ov000_021df9bc[idx>>3]|=1<<(idx&7);
+if((u8)(gAiRangeBitmap[idx>>3]&(1<<(idx&7))))gAiSafeDirectRangeBitmap[idx>>3]|=1<<(idx&7);
 }
 if(postattrs[19]&16){
 idx=y*((Map851B8 *)*gCurrentMap)->width+x;
-if((u8)(gAiIndirectRangeBitmap[idx>>3]&(1<<(idx&7))))data_ov000_021dfc4c[idx>>3]|=1<<(idx&7);
+if((u8)(gAiIndirectRangeBitmap[idx>>3]&(1<<(idx&7))))gAiSafeIndirectRangeBitmap[idx>>3]|=1<<(idx&7);
 }
 }
 map=*gCurrentMap;width=((Map851B8 *)map)->width;

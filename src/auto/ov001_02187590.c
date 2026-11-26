@@ -238,12 +238,18 @@ void SetWhStatus(s32 status) {
     M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), WH_WORK_LOG)(WH_LOG_STATUS, &gWhStatusLineFormat, gWhStatusNames[M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, WH_LINK_STATUS)]);
 }
 
-s32 SetWhError(arg0)
-s32 arg0;
+/* Record the code of a failed WH step on the connection object, unless the
+ * connection already is in the parent-start or error state (the failure was
+ * reported then, so the code is dropped).  Most steps report no code and call
+ * this with no argument. */
+s32 SetWhError(code)
+s32 code;
 {
-extern M2C_UNK gWhWork;
-void *p = M2C_FIELD(&gWhWork, void **, 4);
-if ((u32)(M2C_FIELD(p, s32 *, 0x40) - 9) > 1) M2C_FIELD(p, s32 *, 0x54) = arg0;
+    extern M2C_UNK gWhWork;
+    void *connection = M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION);
+
+    if ((u32)(M2C_FIELD(connection, s32 *, WH_LINK_STATUS) - WH_STATUS_PARENT_START) > 1)
+        M2C_FIELD(connection, s32 *, WH_CONN_ERROR) = code;
 }
 
 /* Start the Download Play session; return 1 if WFC queued the asynchronous start, otherwise record an error and fail the connection. */
@@ -410,7 +416,7 @@ void HandleParentStartResult(void *event) {
     s32 SetWhError();
     void SetWhStatus(s32);
     s32 Ov001_StartKeySharing(void);
-    s32 func_02012fac(void *, s32, s32, s32, s32);
+    s32 WFC_OpenChannel(void *, s32, s32, s32, s32);
     extern M2C_UNK gWhWork;
     extern M2C_UNK data_ov001_02191614;
     extern M2C_UNK data_ov001_021915f4;
@@ -438,7 +444,7 @@ void HandleParentStartResult(void *event) {
             }
             if (M2C_FIELD(connection, s32 *, 0x40) == WH_STATUS_KEYSHARING) return;
         } else if (M2C_FIELD(connection, s32 *, 0x44) == 4) {
-            error = func_02012fac((u8 *)connection + 0x13E0, 13, 7, 0x44, 1);
+            error = WFC_OpenChannel((u8 *)connection + 0x13E0, 13, 7, 0x44, 1);
             if (error != 0) {
                 SetWhError(error);
                 SetWhStatus(WH_STATUS_PARENT_START);
@@ -504,17 +510,17 @@ s32 Ov001_ResetWhHostSession(void) {
 void DWCi_MOV_WH_StateInEndParent(void *event) {
     extern M2C_UNK gWhWork;
     extern M2C_UNK sWhLogEndParentFailed;
-    M2C_UNK func_ov001_02188b04();
+    M2C_UNK Ov001_AbortWhSession();
     if (M2C_FIELD(event, u16 *, WH_EVENT_STATUS)) {
         SetWhError();
-        func_ov001_02188b04();
+        Ov001_AbortWhSession();
         return;
     }
     if (Ov001_SendWhResetCommand()) return;
     if (M2C_FIELD(&gWhWork, void (**)(s32, void *), WH_WORK_LOG)) {
         M2C_FIELD(&gWhWork, void (**)(s32, void *), WH_WORK_LOG)(WH_LOG_STATUS, &sWhLogEndParentFailed);
     }
-    func_ov001_02188b04();
+    Ov001_AbortWhSession();
 }
 
 /* Queue the WH connection's WFC reset command (WFC command 9), whose completion
@@ -593,11 +599,11 @@ void Ov001_HandleTeardownResult(void *event) {
 s32 QueueWhSetupCommand(void) {
     s32 func_0201280c(void (*)(void *), s32);
     void FinishWhSetupCommand(void *);
-    M2C_UNK func_ov001_02188b04();
+    M2C_UNK Ov001_AbortWhSession();
     SetWhStatus(WH_STATUS_BUSY);
     if (func_0201280c(FinishWhSetupCommand, 0) == 2) return 1;
     SetWhError();
-    func_ov001_02188b04();
+    Ov001_AbortWhSession();
     return 0;
 }
 

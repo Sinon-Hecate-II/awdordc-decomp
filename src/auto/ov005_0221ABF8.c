@@ -149,11 +149,13 @@ void ResultScoreRow_CountUp(void *row) {
     Sprite_ResumeAnimation(row);
 }
 
-void func_ov005_0221b000(void) {
+/* Refresh the results screen's page sprite (the screen object's +0x38): rebuild
+ * its cell list from the sprite's position and size. */
+void RefreshResultPageSprite(void) {
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_020aad18(s32);
     extern M2C_UNK gResultsScreenClass;
-    func_020aad18(M2C_FIELD(FindObjectByClass(&gResultsScreenClass), s32 *, 0x38));
+    func_020aad18(M2C_FIELD(FindObjectByClass(&gResultsScreenClass), s32 *, RESULTS_SCREEN_PAGE));
 }
 
 /* Results-screen dismiss step: once the player presses A, play the dismiss
@@ -310,8 +312,8 @@ void CreateResultSlideObject(void *owner) {
 }
 
 void func_ov005_0221b4a8(void) {
-    void func_ov005_0221b000(void);
-    func_ov005_0221b000();
+    void RefreshResultPageSprite(void);
+    RefreshResultPageSprite();
 }
 
 void func_ov005_0221b4b4(void) {

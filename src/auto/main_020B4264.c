@@ -487,9 +487,13 @@ void UpdateNoSaveDataMessage(void) {
     SetUiMessageText(0);
 }
 
-void func_020b4db0(s32 arg0) {
-    extern M2C_UNK data_0212895c;
-    M2C_FIELD(CreateSpriteForOwner(&data_0212895c), s32 *, 0x5C) = arg0;
+/* Create the campaign save panel for save slot `saveSlot` and record that slot
+ * in the panel's +0x5C field; confirming it starts the battle record for the
+ * slot, stores the current progress there and saves the game settings. */
+void CreateCampaignSavePanel(s32 saveSlot) {
+    extern M2C_UNK gCampaignSavePanelClass;
+
+    M2C_FIELD(CreateSpriteForOwner(&gCampaignSavePanelClass), s32 *, 0x5C) = saveSlot;
 }
 
 /* Start a new battle of the save type held in the panel state's +0x5C field:
@@ -509,9 +513,12 @@ void StartNewBattle(void *state) {
     SaveGameSettings();
 }
 
-void func_020b4df4(s32 arg0) {
+/* Confirm a used campaign save slot `saveSlot`: create its panel, owned by the
+ * slot-list menu, and remember the slot in the panel's +0x5C field (its
+ * StartNewBattle action starts a new battle under that save type). */
+void CreateCampaignSaveSlotPanel(s32 saveSlot) {
     extern M2C_UNK data_0212874c;
-    M2C_FIELD(CreateSpriteForOwner(&data_0212874c), s32 *, 0x5C) = arg0;
+    M2C_FIELD(CreateSpriteForOwner(&data_0212874c), s32 *, 0x5C) = saveSlot;
 }
 
 void func_020b4e10(M2C_UNK arg0) {

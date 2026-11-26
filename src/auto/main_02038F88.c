@@ -613,10 +613,12 @@ void func_02039ca0(void) {
     }
 }
 
+/* This console's own server profile record, carried in the NAS login context, or
+ * 0 while there is no login context. */
 s32 GetLocalPlayerInfo(void) {
     extern M2C_UNK gNasLogin;
-    if (M2C_FIELD(&gNasLogin, void **, 4) != NULL) {
-        return M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x1C);
+    if (M2C_FIELD(&gNasLogin, void **, NAS_LOGIN_CONTEXT) != NULL) {
+        return M2C_FIELD(M2C_FIELD(&gNasLogin, void **, NAS_LOGIN_CONTEXT), s32 *, NAS_LOGIN_SESSION);
     }
     return 0;
 }

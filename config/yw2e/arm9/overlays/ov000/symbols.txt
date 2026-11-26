@@ -1,5 +1,5 @@
-func_ov000_02169020 kind:function(arm,size=0x1c) addr:0x02169020
-func_ov000_0216903c kind:function(arm,size=0x1c) addr:0x0216903c
+UnitMove_WaitForAttack kind:function(arm,size=0x1c) addr:0x02169020
+UnitMove_WaitForScroll kind:function(arm,size=0x1c) addr:0x0216903c
 func_ov000_02169058 kind:function(arm,size=0x10) addr:0x02169058
 func_ov000_02169068 kind:function(arm,size=0x4) addr:0x02169068
 func_ov000_0216906c kind:function(arm,size=0x4) addr:0x0216906c
@@ -19,7 +19,7 @@ CreateUnitMoveAndStart kind:function(arm,size=0x24) addr:0x021696b0
 DeleteAllUnitMoveObjects kind:function(arm,size=0x24) addr:0x021696d4
 DeleteUnitMoveObject kind:function(arm,size=0x24) addr:0x021696f8
 IsUnitMoveControllerActive kind:function(arm,size=0x24) addr:0x0216971c
-func_ov000_02169740 kind:function(arm,size=0x1c) addr:0x02169740
+UnitMove_Stop kind:function(arm,size=0x1c) addr:0x02169740
 FindFreeUnitMoveSlot kind:function(arm,size=0x44) addr:0x0216975c
 CountMovePathSteps kind:function(arm,size=0x60) addr:0x021697a0
 func_ov000_02169800 kind:function(arm,size=0x4) addr:0x02169800
@@ -231,7 +231,7 @@ Ov000_StatsWindow_Reset kind:function(arm,size=0x7c) addr:0x021751b4
 func_ov000_02175230 kind:function(arm,size=0x4) addr:0x02175230
 func_ov000_02175234 kind:function(arm,size=0xdc) addr:0x02175234
 FillUnitInfo kind:function(arm,size=0x2a4) addr:0x02175310
-func_ov000_021755b4 kind:function(arm,size=0x18c) addr:0x021755b4
+FillUnitKindInfo kind:function(arm,size=0x18c) addr:0x021755b4
 DrawInfoPanelBackdrop kind:function(arm,size=0x138) addr:0x02175740
 func_ov000_02175878 kind:function(arm,size=0x140) addr:0x02175878
 DrawInfoPanelUnitFrame kind:function(arm,size=0x68) addr:0x021759b8
@@ -244,7 +244,7 @@ Ov000Info_DrawBlinkPanel kind:function(arm,size=0x5c) addr:0x02176a9c
 BuildUnitRecommendations kind:function(arm,size=0x2d4) addr:0x02176af8
 Ov000_StatsWindow_ShouldShowHints kind:function(arm,size=0x3c) addr:0x02176dcc
 IsAiCombatSpecialUnitKind kind:function(arm,size=0x20) addr:0x02176e08
-func_ov000_02176e28 kind:function(arm,size=0xeb8) addr:0x02176e28
+GetAiTargetScore kind:function(arm,size=0xeb8) addr:0x02176e28
 ScoreMoveDestination kind:function(arm,size=0x244) addr:0x02177ce0
 FindBestAdjacentTile kind:function(arm,size=0x15c) addr:0x02177f24
 ScoreMoveTile kind:function(arm,size=0x1e8) addr:0x02178080
@@ -275,7 +275,7 @@ ExpandRangeSearchNode kind:function(arm,size=0x1e8) addr:0x0217b708
 RunMoveRangeSearch kind:function(arm,size=0x344) addr:0x0217b8f0
 CanReachEnemyUnit kind:function(arm,size=0x50) addr:0x0217bc34
 CanReachOwnedBase kind:function(arm,size=0x50) addr:0x0217bc84
-func_ov000_0217bcd4 kind:function(arm,size=0x20) addr:0x0217bcd4
+CanReachAttackableEnemy kind:function(arm,size=0x20) addr:0x0217bcd4
 CanReachProperty kind:function(arm,size=0x50) addr:0x0217bcf4
 GetAiCargoDropDirection kind:function(arm,size=0x70) addr:0x0217bd44
 func_ov000_0217bdb4 kind:function(arm,size=0x2d8) addr:0x0217bdb4
@@ -284,7 +284,7 @@ UnitCanReachPropertyCell kind:function(arm,size=0xd0) addr:0x0217c2d4
 ClearUnitMoveTarget kind:function(arm,size=0x7c) addr:0x0217c3a4
 UnitKindMasksOverlap kind:function(arm,size=0xa8) addr:0x0217c420
 func_ov000_0217c4c8 kind:function(arm,size=0x52c) addr:0x0217c4c8
-func_ov000_0217c9f4 kind:function(arm,size=0x60c) addr:0x0217c9f4
+CountThreateningEnemies kind:function(arm,size=0x60c) addr:0x0217c9f4
 func_ov000_0217d000 kind:function(arm,size=0x150) addr:0x0217d000
 CanAttackUnitFrom kind:function(arm,size=0x268) addr:0x0217d150
 MarkCaptureUnitHasTarget kind:function(arm,size=0x70) addr:0x0217d3b8
@@ -367,8 +367,8 @@ IsWithinAttackRange kind:function(arm,size=0xb8) addr:0x02185fb8
 MarkPlayerThreatsToUnit kind:function(arm,size=0x278) addr:0x02186070
 MarkEnemyThreatsToUnit kind:function(arm,size=0xb4) addr:0x021862e8
 func_ov000_0218639c kind:function(arm,size=0x288) addr:0x0218639c
-func_ov000_02186624 kind:function(arm,size=0x31c) addr:0x02186624
-func_ov000_02186940 kind:function(arm,size=0x1c) addr:0x02186940
+BuildAiRangeLayer kind:function(arm,size=0x31c) addr:0x02186624
+MarkUnitThreatMap kind:function(arm,size=0x1c) addr:0x02186940
 IsAiAttackTarget kind:function(arm,size=0xbc) addr:0x0218695c
 func_ov000_02186a18 kind:function(arm,size=0x37c) addr:0x02186a18
 IsCellEnterableByUnitKind kind:function(arm,size=0xd0) addr:0x02186d94
@@ -496,7 +496,7 @@ GetModifiedDamagePercent kind:function(arm,size=0x3c) addr:0x02197434
 ApplyAttackBonus kind:function(arm,size=0x4c) addr:0x02197470
 ApplyCoZoneBonus kind:function(arm,size=0x180) addr:0x021974bc
 ApplyHealthBonus kind:function(arm,size=0x70) addr:0x0219763c
-func_ov000_021976ac kind:function(arm,size=0x168) addr:0x021976ac
+GetTileDamageRating kind:function(arm,size=0x168) addr:0x021976ac
 func_ov000_02197814 kind:function(arm,size=0x178) addr:0x02197814
 func_ov000_0219798c kind:function(arm,size=0x4) addr:0x0219798c
 func_ov000_02197990 kind:function(arm,size=0xfc) addr:0x02197990
@@ -1467,7 +1467,7 @@ data_ov000_021b5960 kind:data(any) addr:0x021b5960
 data_ov000_021b5aa0 kind:data(any) addr:0x021b5aa0
 gUnitKindTargetClass kind:data(any) addr:0x021b5be0
 gUnitKindStats kind:data(any) addr:0x021b5bfc
-data_ov000_021b5c00 kind:data(any) addr:0x021b5c00
+gUnitKindBuildCosts kind:data(any) addr:0x021b5c00
 data_ov000_021b5c02 kind:data(any) addr:0x021b5c02
 gUnitKindMoveRange kind:data(any) addr:0x021b5c04
 gUnitKindMaxAmmo kind:data(any) addr:0x021b5c05
@@ -1494,7 +1494,7 @@ gUnitKindTable kind:data(any) addr:0x021b5c67
 gUnitKindStatusTile kind:data(any) addr:0x021b5c69
 data_ov000_021b5c6a kind:data(any) addr:0x021b5c6a
 gUnitKindInfo kind:data(any) addr:0x021b5c6c
-data_ov000_021b5efc kind:data(any) addr:0x021b5efc
+gAiTargetValueTable kind:data(any) addr:0x021b5efc
 gRecordRankTable kind:data(any) addr:0x021b67cc
 gRecordTable kind:data(any) addr:0x021b686c
 gRankIconGfxFile kind:data(any) addr:0x021b7e5c
@@ -1982,12 +1982,12 @@ gAiUnitLoadCounts kind:bss addr:0x021df7e4
 gAiUnitList kind:bss addr:0x021df824
 gAiUnitScores kind:bss addr:0x021df868
 gUnitKindScores kind:bss addr:0x021df8ac
-data_ov000_021df918 kind:bss addr:0x021df918
-data_ov000_021df9bc kind:bss addr:0x021df9bc
+gAiProductionSiteAreaBitmap kind:bss addr:0x021df918
+gAiSafeDirectRangeBitmap kind:bss addr:0x021df9bc
 data_ov000_021dfa60 kind:bss addr:0x021dfa60
 data_ov000_021dfb04 kind:bss addr:0x021dfb04
 gAiIndirectRangeBitmap kind:bss addr:0x021dfba8
-data_ov000_021dfc4c kind:bss addr:0x021dfc4c
+gAiSafeIndirectRangeBitmap kind:bss addr:0x021dfc4c
 gAiRangeBitmap kind:bss addr:0x021dfcf0
 gAiTargetGroups kind:bss addr:0x021dfd94
 gAiGroupDirectUnits kind:bss addr:0x021dfd98

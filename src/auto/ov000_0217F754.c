@@ -76,8 +76,8 @@ void SetAiActingUnit(s32 fromUnitId, s32 unitId) {
 void func_ov000_0217f96c(void *arg0) {
 extern void **gCurrentMap;
 void SelectMapLayer(void*); void BuildUnitMoveRangeBlockingUnits(void*); void MarkAdjacentCells(s32);
-s32 func_020d27a4(s32,s32); s32 IsCellVisibleToCurrentTeam(s16,s16); s32 FindBestAdjacentTile(s32,s32,s16*);
-s32 func_ov000_02176e28(s32,s16*); s32 HasBetterAttackerNearby(void*);
+s32 AreUnitIdsOnSameTeam(s32,s32); s32 IsCellVisibleToCurrentTeam(s16,s16); s32 FindBestAdjacentTile(s32,s32,s16*);
+s32 GetAiTargetScore(s32,s16*); s32 HasBetterAttackerNearby(void*);
 void SetMapCursor(s32,s32,s32,s32,s32); void ChooseAiUnitMoveDestination(s32);
 s32 bestX=-1,bestY=-1,best=0,score,id=0;
 s32 x,y; s16 pos[2]; u8 *map,*unit,*other;
@@ -103,11 +103,11 @@ if(M2C_FIELD(map+y*4,s8**,0x52e8)[x]<0)continue;
 unit=map+0x59a4+14*(s16)map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 if(((u32)(unit[0]<<26)>>26)==0)continue;
 index=unit?(unit-(map+0x59a4))/14:0;
-if(func_020d27a4(M2C_FIELD(map,u8*,0x52d4),index)==1)continue;
+if(AreUnitIdsOnSameTeam(M2C_FIELD(map,u8*,0x52d4),index)==1)continue;
 if(!IsCellVisibleToCurrentTeam((s16)x,(s16)y))continue;
 if(!FindBestAdjacentTile(x,y,pos))continue;
 map=*gCurrentMap;
-score=func_ov000_02176e28(map[x+M2C_FIELD(map+y*2,u16*,0x3758)]|0x30000,pos);
+score=GetAiTargetScore(map[x+M2C_FIELD(map+y*2,u16*,0x3758)]|0x30000,pos);
 if(!score || score<best)continue;
 if(HasBetterAttackerNearby(unit)==1){
 u8 *nearMap;
@@ -142,7 +142,7 @@ ChooseAiUnitMoveDestination(1);
 #pragma opt_strength_reduction off
 void func_ov000_0217fe68(void *arg0) {
 extern void **gCurrentMap;extern u8 gUnitKindStats[];
-s32 GetUnitAttackRangeMax(void*); s32 func_020d27a4(s32,s32);s32 IsCellVisibleToCurrentTeam(s16,s16);s32 func_ov000_02176e28(s32,s16*);
+s32 GetUnitAttackRangeMax(void*); s32 AreUnitIdsOnSameTeam(s32,s32);s32 IsCellVisibleToCurrentTeam(s16,s16);s32 GetAiTargetScore(s32,s16*);
 void SetMapCursor(s32,s32,s32,s32,s32);void SelectMapLayer(void*);void BuildUnitMoveRangeBlockingUnits(void*);void ChooseAiUnitMoveDestination(s32);
 s32 best=0,id=0; s16 pos[2];s32 minX,minY,maxX,maxY,x,y,distance,score,index;u8 *unit,*map;
 pos[0]=M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1];pos[1]=M2C_FIELD(*gCurrentMap,u8**,0x52d0)[2];
@@ -158,10 +158,10 @@ if(distance>GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)))continue;
 map=*gCurrentMap;unit=map+0x59a4+14*(s16)map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 if(!((u32)(unit[0]<<26)>>26))continue;
 index=unit?(unit-(map+0x59a4))/14:0;
-if(func_020d27a4(M2C_FIELD(map,u8*,0x52d4),index)==1)continue;
+if(AreUnitIdsOnSameTeam(M2C_FIELD(map,u8*,0x52d4),index)==1)continue;
 if(!IsCellVisibleToCurrentTeam((s16)x,(s16)y))continue;
 map=*gCurrentMap;
-score=func_ov000_02176e28(map[unit[1]+M2C_FIELD(map+unit[2]*2,u16*,0x3758)]|0x30000,pos);
+score=GetAiTargetScore(map[unit[1]+M2C_FIELD(map+unit[2]*2,u16*,0x3758)]|0x30000,pos);
 if(!score||score<best)continue;
 best=score;map=*gCurrentMap;id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 }

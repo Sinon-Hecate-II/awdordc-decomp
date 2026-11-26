@@ -618,9 +618,11 @@ u32 PackArchiveName(u8 *name, s32 length) {
     return id;
 }
 #pragma opt_propagation reset
-s32 ReadArchiveImage(void *arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
+/* Default archive read callback: copy length bytes from the open archive's
+ * in-memory image at byte offset into buffer. */
+s32 ReadArchiveImage(FSArchive *archive, void *buffer, s32 offset, s32 length) {
     M2C_UNK MI_CpuCopy8(s32, M2C_UNK, M2C_UNK);
-    MI_CpuCopy8(M2C_FIELD(arg0, s32 *, 0x28) + arg2, arg1, arg3);
+    MI_CpuCopy8((s32)archive->image + offset, buffer, length);
     return 0;
 }
 

@@ -7,7 +7,7 @@ void func_ov000_02175fb0(void *a) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;
 void AddSprite(u16,u16,u16,void *,s32);
 s32 Divide(s32,s32);
-extern u8 data_ov000_021deb7c[],data_ov000_021deb20[],gSpriteDesc8x8[],data_ov000_021deb10[],data_ov000_021deb18[],gSpriteDesc16x16[],data_02101f0c[];extern s32 data_ov000_021df600;extern s16 gSinCosTable[];
+extern u8 data_ov000_021deb7c[],data_ov000_021deb20[],gSpriteDesc8x8[],data_ov000_021deb10[],data_ov000_021deb18[],gSpriteDesc16x16[],gSpriteDesc64x8[];extern s32 data_ov000_021df600;extern s16 gSinCosTable[];
 s32 GetPlayerUnitSpriteTile(s32,s32);u8 Ov000_StatsWindow_ShouldShowHints(void *);
 void SetSpriteQuad(s32,s16,s16,s16,s16);
 s32 level,n,d,i,ratio,den,sn,cs,aa,bb,cc,dd,x; void *old=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineSub;
@@ -82,10 +82,10 @@ for(index3=0,position3=145;index3<M2C_FIELD(M2C_FIELD(a,void **,16),s32 *,256);i
 }}}
 
 if(Ov000_StatsWindow_ShouldShowHints(a)){
-AddSprite(128,176,0x6120,data_02101f0c,1);
-AddSprite(192,176,0x6128,data_02101f0c,1);
-AddSprite(128,184,0x6130,data_02101f0c,1);
-AddSprite(192,184,0x6138,data_02101f0c,1);
+AddSprite(128,176,0x6120,gSpriteDesc64x8,1);
+AddSprite(192,176,0x6128,gSpriteDesc64x8,1);
+AddSprite(128,184,0x6130,gSpriteDesc64x8,1);
+AddSprite(192,184,0x6138,gSpriteDesc64x8,1);
 AddSprite(114,178,0xb140,gSpriteDesc16x16,1);
 
 func_ov000_02174da4(0,182);

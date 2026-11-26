@@ -481,7 +481,14 @@ M2C_UNK InitScenePanelFaces(void *panel) {
     SetFaceSpriteVariant(M2C_FIELD(panel, void **, SCENE_PANEL_FACE1), 0);
 }
 
-M2C_UNK func_0209e640(void *a){u8 v=M2C_FIELD(a,u32 *,0x40)>>26;if(v==16)return v;return Reset3DSpriteBankState(v);}
+/* Reset the current 3D sprite bank's row split for `sprite`, unless the sprite's
+ * cell grid is not split at all (SPRITE_ACTOR_SPLIT = 16, the whole sprite). */
+M2C_UNK Reset3DSpriteBankSplitForSprite(void *sprite) {
+    u8 splitRow = M2C_FIELD(sprite, u32 *, SPRITE_ACTOR_SPLIT) >> 26;
+
+    if (splitRow == 16) return splitRow;
+    return Reset3DSpriteBankState(splitRow);
+}
 
 /* Per-frame update of a scene panel: advance its fade and slide, re-split the
    sprite bank, bob the panel with the motion table, place its two face children
@@ -555,8 +562,8 @@ void func_0209e980(void) {
 }
 
 void func_0209e98c(void) {
-    M2C_UNK func_0209e640();
-    func_0209e640();
+    M2C_UNK Reset3DSpriteBankSplitForSprite();
+    Reset3DSpriteBankSplitForSprite();
 }
 
 void func_0209e998(void) {

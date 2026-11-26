@@ -485,9 +485,12 @@ kind = kind >> 26;
     return 1;
 }
 #pragma opt_propagation reset
-s32 GetCommanderMoveRange(s32 arg0, s32 arg1) {
- extern M2C_UNK data_0211fbf8;
- return arg1 + M2C_FIELD(&data_0211fbf8, s8 *, arg0 * 0x48);
+/* The move range a commander's CO zone grants: the commander's base zone move
+ * range (CO_ZONE_BASE_MOVE of its zone record) plus the charged power level. */
+s32 GetCommanderMoveRange(s32 commander, s32 powerLevel) {
+    extern s8 gCoZoneBaseMoveRange;
+
+    return powerLevel + M2C_FIELD(&gCoZoneBaseMoveRange, s8 *, commander * CO_ZONE_RECORD_STRIDE);
 }
 
 /* The damage-percentage bonus the stat block of battle-map `unit` at tile (x, y)

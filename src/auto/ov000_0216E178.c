@@ -10,12 +10,12 @@ typedef struct MenuDisplayConfig { u16 fields[6]; } MenuDisplayConfig;
 #pragma opt_lifetimes off
 void func_ov000_0216e178(void *arg0) {
 extern s32 gArmyInfoState; extern void **gCurrentMap; extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain; extern void *g3DSpriteEngineSub; extern u16 data_ov000_021adcfc[];
-s32 HeapAllocBlock(s32); s32 func_020cfb94(void); s32 GetPlayerRecordArmyId(s32);
+s32 HeapAllocBlock(s32); s32 GetCurrentMapPlayerCount(void); s32 GetPlayerRecordArmyId(s32);
 void ArmyInfo_ApplySelection(void);void ArmyInfo_RedrawContents(void);void ArmyInfo_SelectPlayer(s32); void *GetLocalizedFileName(void *); void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);s32 func_020a7290(void);void *func_020a7278(void);void *func_020a72e8(s32);s32 GetUiColor(s32);
 extern u8 data_ov000_021b88e8[];extern u8 data_ov000_021b88fc[];extern u8 data_ov000_021b890c[];extern u8 data_ov000_021b8924[];extern u8 data_ov000_021b8934[];extern u8 data_ov000_021b8948[];extern u8 data_ov000_021b8958[];extern u8 data_ov000_021b896c[];extern u8 data_ov000_021b897c[];extern u8 data_ov000_021b898c[];extern u8 data_ov000_021b89a0[];s32 i,n,t; void *p,*dest,*old; volatile MenuDisplayConfig a,b;
 a=*(MenuDisplayConfig*)&data_ov000_021adcfc[9];b=*(MenuDisplayConfig*)&data_ov000_021adcfc[3];gArmyInfoState=HeapAllocBlock(36);GX_ReleaseBankGrants();GX_SetBankForBG(1);GX_SetBankForOBJ(2);GX_SetBankForSubBG(4);GX_SetBankForSubOBJ(8);GX_SetBankForBGExtPalette(16);GX_SetBankForObjExtPalette(32);GX_SetBankForBGExtPlttSub(128);GX_SetBankForOBJExtPlttSub(256);
 M2C_FIELD(gArmyInfoState,u8*,16)=0;M2C_FIELD(gArmyInfoState,u8*,17)=0;M2C_FIELD(gArmyInfoState,u16*,18)=12;M2C_FIELD(gArmyInfoState,u16*,20)=0;M2C_FIELD(gArmyInfoState,u8*,12)=0;
-n=0;for(i=0;i<func_020cfb94();i++){p=(u8*)*gCurrentMap+0x67a4+(i+1)*140;if(M2C_FIELD(p,u8*,30)&&!M2C_FIELD(p,u8*,25)){M2C_FIELD(gArmyInfoState,u8*,n)=i+1;M2C_FIELD(gArmyInfoState,u8*,n+8)=M2C_FIELD(*gCurrentMap,u8*,0x67c1+(i+1)*140);M2C_FIELD(gArmyInfoState,u8*,n+4)=GetPlayerRecordArmyId(i+1);n++;M2C_FIELD(gArmyInfoState,u8*,12)++;}}
+n=0;for(i=0;i<GetCurrentMapPlayerCount();i++){p=(u8*)*gCurrentMap+0x67a4+(i+1)*140;if(M2C_FIELD(p,u8*,30)&&!M2C_FIELD(p,u8*,25)){M2C_FIELD(gArmyInfoState,u8*,n)=i+1;M2C_FIELD(gArmyInfoState,u8*,n+8)=M2C_FIELD(*gCurrentMap,u8*,0x67c1+(i+1)*140);M2C_FIELD(gArmyInfoState,u8*,n+4)=GetPlayerRecordArmyId(i+1);n++;M2C_FIELD(gArmyInfoState,u8*,12)++;}}
 for(i=0;i<M2C_FIELD(gArmyInfoState,u8*,12);i++)if(M2C_FIELD(arg0,s16*,108)==M2C_FIELD(gArmyInfoState,u8*,i))ArmyInfo_SelectPlayer(i);
 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;Apply3DSpriteLayout(&a);
 {u16 *volatile q00; q00=*(u16**)gCur3DSpriteEngine;*q00=*q00|16;}

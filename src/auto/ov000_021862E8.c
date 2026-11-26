@@ -51,7 +51,7 @@ M2C_FIELD((u8*)*gCurrentMap+tail[0]+M2C_FIELD((u8*)*gCurrentMap+tail[1]*2,u16*,0
 gMoveSearchWrite+=4;gMoveSearchCount++;
 }
 #pragma pop
-void func_ov000_02186624(u8 arg0,u8 arg1) {
+void BuildAiRangeLayer(u8 arg0,u8 arg1) {
  extern s8 gAiRangeLayer[];
  extern u8 *gMoveSearchState;
  extern s32 gMoveSearchCount;
@@ -100,11 +100,15 @@ void func_ov000_02186624(u8 arg0,u8 arg1) {
 }
 
 #pragma opt_strength_reduction on
-void func_ov000_02186940(void *arg0) {
+/* Prepare the AI's threat map for the unit record `unitRecord`: mark the enemy
+ * units that can reach it, then rebuild the AI range layer around its tile. */
+void MarkUnitThreatMap(void *unitRecord) {
     void MarkEnemyThreatsToUnit();
-    void func_ov000_02186624(u8, u8);
+    void BuildAiRangeLayer(u8, u8);
+    BattleMapUnitHead *unit = (BattleMapUnitHead *)unitRecord;
+
     MarkEnemyThreatsToUnit();
-    func_ov000_02186624(M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
+    BuildAiRangeLayer(unit->x, unit->y);
 }
 
 /* Whether the enemy unit is a worthwhile attack target for the AI's selected
@@ -136,7 +140,7 @@ void func_ov000_02186a18(void) {
     s32 GetUnitAttackClass(u32);
     u8 IsAiAttackTarget(void *);
     s32 IsWithinAttackRange(void *, void *, s32);
-    void func_ov000_02186940(void *);
+    void MarkUnitThreatMap(void *);
     void BuildUnitMoveRange(void *);
     u8 IsAllyUnitAtCell(u32, s32);
     s32 IsOwnedProductionSite(s32, s32);
@@ -159,7 +163,7 @@ void func_ov000_02186a18(void) {
         if (((u32)(unit[i * 0xe] << 26) >> 26) == 0) continue;
         if (!IsAiAttackTarget(unit + i * 0xe)) continue;
         if (!IsWithinAttackRange(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), unit + i * 0xe, 0)) continue;
-        func_ov000_02186940(unit + i * 0xe);
+        MarkUnitThreatMap(unit + i * 0xe);
         BuildUnitMoveRange(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0));
         fy = -1;
         fx = -1;

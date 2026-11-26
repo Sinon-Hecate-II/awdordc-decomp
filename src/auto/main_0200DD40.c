@@ -725,8 +725,9 @@ s32 SetLcdEnabled(s32 on) {
     return SetLcdPower(enabled, 0, 0, 1);
 }
 
+/* Return 1 when the LCD is enabled (POWCNT1 bit 0), 0 when it is off. */
 s32 IsLcdEnabled(void) {
-    if (*(u16 *)0x04000304 & 1) {
+    if (*(volatile u16 *)REG_POWCNT1 & POWCNT1_LCD_ENABLE) {
         return 1;
     }
     return 0;

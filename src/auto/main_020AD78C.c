@@ -208,7 +208,7 @@ u8 IsMapCursorInputActive(void) {
    current list's mode bits, then restores the previous display list. */
 void func_020adc78(void) {
     M2C_UNK AddSprite(M2C_UNK, M2C_UNK, u16, M2C_UNK *, s32);
-    extern M2C_UNK data_02101f0c;
+    extern M2C_UNK gSpriteDesc64x8;
     extern u16 **g3DSpriteEngineSub;
     extern u16 **gCur3DSpriteEngine;
     u16 **saved_list;
@@ -216,10 +216,10 @@ void func_020adc78(void) {
     saved_list = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     if (IsMapCursorInputActive() != 0) {
-        AddSprite(0x7C, 0xB0, (u16) ((0x3FF & (0x140 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
-        AddSprite(0xBC, 0xB0, (u16) ((0x3FF & (0x148 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
-        AddSprite(0x7C, 0xB8, (u16) ((0x3FF & (0x150 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
-        AddSprite(0xBC, 0xB8, (u16) ((0x3FF & (0x158 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
+        AddSprite(0x7C, 0xB0, (u16) ((0x3FF & (0x140 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &gSpriteDesc64x8, 0);
+        AddSprite(0xBC, 0xB0, (u16) ((0x3FF & (0x148 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &gSpriteDesc64x8, 0);
+        AddSprite(0x7C, 0xB8, (u16) ((0x3FF & (0x150 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &gSpriteDesc64x8, 0);
+        AddSprite(0xBC, 0xB8, (u16) ((0x3FF & (0x158 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &gSpriteDesc64x8, 0);
     }
     gCur3DSpriteEngine = saved_list;
 }

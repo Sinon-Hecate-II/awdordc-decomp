@@ -29,16 +29,19 @@ u8 func_ov003_021e6e28(s32 arg0) {
     return (u8) (arg0 - GetWaypointGroupFirstSlot());
 }
 
+/* TRUE while the map-select list shows category 3, one of the campaign map groups
+ * (see IsCampaignMapListCategory); the waypoint panel uses it to hide the last
+ * per-CO option in a campaign list. */
 u8 IsMapListCategory3(void) {
     s32 GetMapListCategory();
-    u8 var_r0;
+    u8 isCategory3;
 
     if (GetMapListCategory() == 3) {
-        var_r0 = 1;
+        isCategory3 = 1;
     } else {
-        var_r0 = 0;
+        isCategory3 = 0;
     }
-    return var_r0;
+    return isCategory3;
 }
 
 /* True while the map-select scene's map-list category is one of the campaign
@@ -109,19 +112,21 @@ case 25:M2C_FIELD(M2C_FIELD(list,void **,0xdc),u16 *,0x68)=list[0xe4]+list[7];M2
 M2C_FIELD(list,s32 *,0xe0)=FindObjectByZ(action);
 }
 
-u8 func_ov003_021e73bc(s32 arg0, s32 arg1) {
+u8 GetWaypointSlotOwner(s32 arg0, s32 arg1) {
     return M2C_FIELD((arg0 + arg1), u8 *, 0x74);
 }
 
-u8 func_ov003_021e73c8(s32 arg0, s32 arg1) {
-    u8 var_r0;
+/* Whether waypoint-list slot `slot` has no player assigned to it yet (its owner
+ * byte is WAYPOINT_NO_PLAYER). */
+u8 IsWaypointSlotEmpty(s32 list, s32 slot) {
+    u8 empty;
 
-    if (M2C_FIELD((arg0 + arg1), u8 *, 0x74) == 0xFF) {
-        var_r0 = 1;
+    if (M2C_FIELD((list + slot), u8 *, WAYPOINT_LIST_IDS) == WAYPOINT_NO_PLAYER) {
+        empty = 1;
     } else {
-        var_r0 = 0;
+        empty = 0;
     }
-    return var_r0;
+    return empty;
 }
 
 u8 GetWaypointSlotIndex(void *arg0) {

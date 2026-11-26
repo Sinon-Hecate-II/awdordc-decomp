@@ -383,7 +383,7 @@ extern M2C_UNK data_020fe7ec;
 extern M2C_UNK data_020fe7f4;
 extern M2C_UNK data_020fe7fc;
 extern M2C_UNK data_020fe804;
-extern M2C_UNK data_020fe918;
+extern M2C_UNK gGpiMsgInvalidInfo;
 s8 text[16];
 s32 err;
 switch(fieldId) {
@@ -491,7 +491,7 @@ StringFormat(text,&data_020fe87c,value);
 err=AppendUpdateProField(connection,(s32)&data_020fe804,(s32)text);
 if(err!=0)return err;
 break;
-default:gpiSetErrorString((void **)connection,&data_020fe918);return 2;
+default:gpiSetErrorString((void **)connection,&gGpiMsgInvalidInfo);return 2;
 }
 return 0;
 }

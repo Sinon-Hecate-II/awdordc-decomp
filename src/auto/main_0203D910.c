@@ -6,7 +6,7 @@
 void func_0203d910(s32 a, s32 b)
 {
     s32 GetConnection(void);
-    M2C_UNK func_02040e1c(M2C_UNK);
+    M2C_UNK AdvancePeerConnection(M2C_UNK);
     s32 StringFormatN(void *, s32, void *, s32);
     s32 gt2AddressToString(s32, s32, s32);
     s32 func_0205adcc(s32, s32, s32, void *, s32, s32, s32, s32);
@@ -16,7 +16,7 @@ void func_0203d910(s32 a, s32 b)
     s32 *GetPlayerConnectionSlot(s32);
     u8 *GetPlayerPeer(s32);
     void gt2SetConnectionData(s32, void *);
-    M2C_UNK func_020411dc(M2C_UNK);
+    M2C_UNK ProcessConnectionStateAction(M2C_UNK);
 
     extern M2C_UNK data_020fc908;
 
@@ -46,7 +46,7 @@ void func_0203d910(s32 a, s32 b)
 
                 x = GetConnection();
 
-                func_02040e1c(
+                AdvancePeerConnection(
                     M2C_FIELD(
                         x + M2C_FIELD(GetConnection(), u8 *, 0x14) * 4,
                         s32 *,
@@ -100,7 +100,7 @@ void func_0203d910(s32 a, s32 b)
 
             x = GetConnection();
 
-            if (func_02040e1c(
+            if (AdvancePeerConnection(
                     M2C_FIELD(
                         x + M2C_FIELD(GetConnection(), u8 *, 0x14) * 4,
                         s32 *,
@@ -114,7 +114,7 @@ void func_0203d910(s32 a, s32 b)
 
         x = GetConnection();
 
-        if (func_02040e1c(
+        if (AdvancePeerConnection(
                 M2C_FIELD(
                     x + (M2C_FIELD(GetConnection(), u8 *, 0xd) + 1) * 4,
                     s32 *,
@@ -153,11 +153,11 @@ void func_0203d910(s32 a, s32 b)
         gt2SetConnectionData(a, p);
 
         if (M2C_FIELD(GetConnection(), s32 *, 0x1a0) == 12) {
-            func_020411dc(0);
+            ProcessConnectionStateAction(0);
             return;
         }
 
-        func_020411dc(1);
+        ProcessConnectionStateAction(1);
         return;
     }
 }
@@ -232,7 +232,7 @@ void ResetClientSession(void) {
  * and, once every connected player is ready, tells them type 4 and moves the
  * connection to its running state; type 4 (start) advances the joiner. */
 void ReceiveConnectionPacket(u8 fromPlayer, s32 packetType, void *payload) {
-    M2C_UNK func_020411dc(M2C_UNK);
+    M2C_UNK ProcessConnectionStateAction(M2C_UNK);
     M2C_UNK SendConnectionPacket(u8, M2C_UNK);
     s32 GetConnectedPlayerMask(M2C_UNK);
     M2C_UNK SetConnectionState(M2C_UNK);
@@ -293,7 +293,7 @@ void ReceiveConnectionPacket(u8 fromPlayer, s32 packetType, void *payload) {
         if (M2C_FIELD(GetConnection(), s32 *, 0x1A0) != 9) {
             return;
         }
-        func_020411dc(4);
+        ProcessConnectionStateAction(4);
         return;
     }
 }
@@ -323,11 +323,11 @@ return 1;
  * connecting, or was dropped): start the next handshake step with it.  Once the
  * session is tearing its peers down that work would be undone, so skip it. */
 void ContinueConnectionSession(M2C_UNK playerId) {
-    M2C_UNK func_02040e1c(M2C_UNK);
+    M2C_UNK AdvancePeerConnection(M2C_UNK);
     if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_TEARDOWN) == CONN_TEARDOWN_IN_PROGRESS) {
         return;
     }
-    func_02040e1c(playerId);
+    AdvancePeerConnection(playerId);
 }
 
 #pragma opt_strength_reduction off

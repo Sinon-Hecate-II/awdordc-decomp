@@ -161,7 +161,10 @@ iy=h>=8?3:31-__CLZ(h);
 sx=data_ov001_0218c9e4[iy][ix][0];sy=data_ov001_0218c9e4[iy][ix][1];
 }
 }
-s32 func_ov001_02169494(u8 *a){extern s32 data_ov001_0218ca04[4][4];return data_ov001_0218ca04[a[1]][a[0]];}
+/* Packed sprite attribute word (shape and size) that covers a block of
+ * (1 << shifts[0]) by (1 << shifts[1]) 8-pixel tiles: the table is indexed by
+ * the block's vertical shift, then its horizontal shift. */
+s32 Ov001_GetTileBlockAttr(u8 *shifts){extern s32 gOv001TileBlockAttrs[4][4];return gOv001TileBlockAttrs[shifts[1]][shifts[0]];}
 
 void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color, s32 bpp) {
     M2C_UNK MI_CpuFill32(s32, s32, s32);

@@ -2,7 +2,7 @@
 #include "common.h"
 typedef struct {u8 bytes[25];} IntroColors_022242dc;
 extern const IntroColors_022242dc data_ov011_02227f64;
-extern u8 data_02101f5c[],data_02101f0c[];
+extern u8 data_02101f5c[],gSpriteDesc64x8[];
 void G3_UpdateIntroTiles(void *,u8,s16,u16,void *);
 void func_ov011_02223764(void *,s16,u8,void *);
 void G3_SubmitSpriteQuad(void *,int,int,s16,s16);
@@ -190,7 +190,7 @@ void func_ov011_022242dc(void *p) {
   else if (M2C_FIELD(p, u16 *, 0x34) > 108 && M2C_FIELD(p, u16 *, 0x34) <= 168) {
    AddSpriteToMainEngine(0, 82, 0, data_02101f5c, 0);
    AddSpriteToMainEngine(128, 82, 32, data_02101f5c, 0);
-   if (GetLanguage() == 4) AddSpriteToMainEngine(0, 74, 128, data_02101f0c, 0);
+   if (GetLanguage() == 4) AddSpriteToMainEngine(0, 74, 128, gSpriteDesc64x8, 0);
   } else G3_UpdateIntroTiles(p, 2, 108, 0x8052, colors.bytes + 15);
   break;
  case 9:
@@ -321,7 +321,7 @@ void HandleIntroInput(void *entry) {
 void func_ov011_02224aac(void *entry, s32 command) {
     s32 EaseInterpolate(s32, s32, s32, u16, s32);
     void LoadOpeningAssetSet(void *, s32, s32, s32);
-    void func_ov011_02222830(void *, s32, s32, s32, s32);
+    void Set3DSpriteBlendLayers(void *, s32, s32, s32, s32);
     void G3_SetSpriteTransformScale(void *, s32, s32);
     switch (command) {
     case 0:
@@ -331,7 +331,7 @@ void func_ov011_02224aac(void *entry, s32 command) {
         LoadOpeningAssetSet(entry, 18, 1, 3);
         gIntroAnimState[4] = 1;
     case 2:
-        func_ov011_02222830(entry, 2, 3, 2, (u16)EaseInterpolate(0, 16, 0, M2C_FIELD(entry, u16 *, 0x34), 0x154));
+        Set3DSpriteBlendLayers(entry, 2, 3, 2, (u16)EaseInterpolate(0, 16, 0, M2C_FIELD(entry, u16 *, 0x34), 0x154));
         return;
     case 5:
         G3_SetSpriteTransformScale(entry, 0, 2);

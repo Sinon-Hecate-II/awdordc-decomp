@@ -6,9 +6,15 @@ char *GetLocalizedFileName(void *);s32 StringFormat(char *,const char *,...);
 void LoadFileToAddress(void *,s32);void OpenNarcArchive(void *);void SetFileDirectory(void *);void LoadNarcFileDecompressed(void *,s32);void CloseNarcArchive(void);void LoadDecompressedFileTo(void *,s32);
 
 
-int LoadSpriteResource(int a,int b,int c,int d){char name[256],path[256];char *base=data_02126bf0;u16 size;
-switch(a){
-case 0:base=data_02126c00;switch(b){case 0:switch(c){case 0:StringFormat(name,GetLocalizedFileName(data_02126c18));break;
+/* Load one UI sprite resource into a 3D sprite engine's memory: build its
+ * file name from the resource family (0 buttons, 1 numbers, 2 subtitle bar,
+ * 3 scroll list, 4 players, 5 settings), the kind (0 image, 2 palette) and
+ * the index, then decompress the image there, or copy the palette file to
+ * the destination and mark the engine's palette as loaded.  Returns the
+ * resource's byte size, or 0 for an unknown family/index. */
+int LoadSpriteResource(int family,int kind,int index,int destination){char name[256],path[256];char *directory=data_02126bf0;u16 byteCount;
+switch(family){
+case 0:directory=data_02126c00;switch(kind){case 0:switch(index){case 0:StringFormat(name,GetLocalizedFileName(data_02126c18));break;
 case 1:StringFormat(name,GetLocalizedFileName(data_02126c24));break;
 case 2:StringFormat(name,GetLocalizedFileName(data_02126c34));break;
 case 3:StringFormat(name,GetLocalizedFileName(data_02126c44));break;
@@ -80,15 +86,15 @@ case 68:StringFormat(name,GetLocalizedFileName(data_02127020));break;
 case 69:StringFormat(name,GetLocalizedFileName(data_02127030));break;
 case 70:StringFormat(name,GetLocalizedFileName(data_02127040));break;
 case 71:return 0;}break;case 1:break;case 2:StringFormat(name,data_02127054);break;}break;
-case 1:switch(b){case 0:switch(c){case 0:StringFormat(name,data_0212706c,((u32)(**gCur3DSpriteEngine<<17)>>30)?data_02127060:data_02127068);break;case 1:StringFormat(name,data_02127088,((u32)(**gCur3DSpriteEngine<<17)>>30)?data_0212707c:data_02127084);break;case 2:StringFormat(name,data_021270a4,((u32)(**gCur3DSpriteEngine<<17)>>30)?data_02127098:data_021270a0);break;case 3:StringFormat(name,data_021270b4);break;case 4:StringFormat(name,GetLocalizedFileName(data_021270c4));break;case 5:StringFormat(name,data_021270d8);break;}break;case 1:break;case 2:switch(c){case 0:StringFormat(name,data_021270ec);break;case 1:StringFormat(name,data_021270fc);break;case 2:StringFormat(name,data_0212710c);break;case 3:StringFormat(name,data_0212711c);break;}break;}break;
-case 2:base=data_02127130;switch(b){case 0:switch(c){case 0:StringFormat(name,GetLocalizedFileName(data_0212714c));break;case 1:StringFormat(name,GetLocalizedFileName(data_02127164));break;case 2:StringFormat(name,GetLocalizedFileName(data_0212717c));break;case 3:StringFormat(name,GetLocalizedFileName(data_02127194));break;case 4:StringFormat(name,GetLocalizedFileName(data_021271ac));break;case 5:StringFormat(name,GetLocalizedFileName(data_021271c8));break;case 6:StringFormat(name,GetLocalizedFileName(data_021271e0));break;case 7:StringFormat(name,GetLocalizedFileName(data_021271fc));break;case 8:StringFormat(name,GetLocalizedFileName(data_02127214));break;case 9:StringFormat(name,GetLocalizedFileName(data_0212722c));break;case 10:StringFormat(name,GetLocalizedFileName(data_02127248));break;case 11:StringFormat(name,GetLocalizedFileName(data_02127260));break;case 12:StringFormat(name,GetLocalizedFileName(data_0212727c));break;case 13:StringFormat(name,GetLocalizedFileName(data_02127298));break;case 14:StringFormat(name,GetLocalizedFileName(data_021272b4));break;case 15:StringFormat(name,GetLocalizedFileName(data_021272d0));break;}break;case 1:StringFormat(name,data_021272e8);break;case 2:StringFormat(name,data_021272f8);break;}break;
-case 3:switch(b){case 0:StringFormat(name,data_02127308);break;case 2:StringFormat(name,data_02127318);break;}break;
-case 4:switch(b){case 0:StringFormat(name,GetLocalizedFileName(data_02127328));break;case 2:StringFormat(name,data_02126a90);break;}break;
-case 5:switch(b){case 0:StringFormat(name,GetLocalizedFileName(data_02127334));break;case 2:StringFormat(name,data_02126a90);break;}break;
+case 1:switch(kind){case 0:switch(index){case 0:StringFormat(name,data_0212706c,((u32)(**gCur3DSpriteEngine<<17)>>30)?data_02127060:data_02127068);break;case 1:StringFormat(name,data_02127088,((u32)(**gCur3DSpriteEngine<<17)>>30)?data_0212707c:data_02127084);break;case 2:StringFormat(name,data_021270a4,((u32)(**gCur3DSpriteEngine<<17)>>30)?data_02127098:data_021270a0);break;case 3:StringFormat(name,data_021270b4);break;case 4:StringFormat(name,GetLocalizedFileName(data_021270c4));break;case 5:StringFormat(name,data_021270d8);break;}break;case 1:break;case 2:switch(index){case 0:StringFormat(name,data_021270ec);break;case 1:StringFormat(name,data_021270fc);break;case 2:StringFormat(name,data_0212710c);break;case 3:StringFormat(name,data_0212711c);break;}break;}break;
+case 2:directory=data_02127130;switch(kind){case 0:switch(index){case 0:StringFormat(name,GetLocalizedFileName(data_0212714c));break;case 1:StringFormat(name,GetLocalizedFileName(data_02127164));break;case 2:StringFormat(name,GetLocalizedFileName(data_0212717c));break;case 3:StringFormat(name,GetLocalizedFileName(data_02127194));break;case 4:StringFormat(name,GetLocalizedFileName(data_021271ac));break;case 5:StringFormat(name,GetLocalizedFileName(data_021271c8));break;case 6:StringFormat(name,GetLocalizedFileName(data_021271e0));break;case 7:StringFormat(name,GetLocalizedFileName(data_021271fc));break;case 8:StringFormat(name,GetLocalizedFileName(data_02127214));break;case 9:StringFormat(name,GetLocalizedFileName(data_0212722c));break;case 10:StringFormat(name,GetLocalizedFileName(data_02127248));break;case 11:StringFormat(name,GetLocalizedFileName(data_02127260));break;case 12:StringFormat(name,GetLocalizedFileName(data_0212727c));break;case 13:StringFormat(name,GetLocalizedFileName(data_02127298));break;case 14:StringFormat(name,GetLocalizedFileName(data_021272b4));break;case 15:StringFormat(name,GetLocalizedFileName(data_021272d0));break;}break;case 1:StringFormat(name,data_021272e8);break;case 2:StringFormat(name,data_021272f8);break;}break;
+case 3:switch(kind){case 0:StringFormat(name,data_02127308);break;case 2:StringFormat(name,data_02127318);break;}break;
+case 4:switch(kind){case 0:StringFormat(name,GetLocalizedFileName(data_02127328));break;case 2:StringFormat(name,data_02126a90);break;}break;
+case 5:switch(kind){case 0:StringFormat(name,GetLocalizedFileName(data_02127334));break;case 2:StringFormat(name,data_02126a90);break;}break;
 }
-StringFormat(path,data_02127340,base,name);
-if(b==2){LoadFileToAddress(path,d);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=16;}
-else if(a==2){SetFileDirectory(base);OpenNarcArchive(GetLocalizedFileName(data_02127348));LoadNarcFileDecompressed(name,d);CloseNarcArchive();}
-else LoadDecompressedFileTo(path,d);
-size=0;if(c&1)size+=12;if(c&2)size+=12;if(c&3)size+=44;if(c&4)size+=28;return size;
+StringFormat(path,data_02127340,directory,name);
+if(kind==2){LoadFileToAddress(path,destination);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=16;}
+else if(family==2){SetFileDirectory(directory);OpenNarcArchive(GetLocalizedFileName(data_02127348));LoadNarcFileDecompressed(name,destination);CloseNarcArchive();}
+else LoadDecompressedFileTo(path,destination);
+byteCount=0;if(index&1)byteCount+=12;if(index&2)byteCount+=12;if(index&3)byteCount+=44;if(index&4)byteCount+=28;return byteCount;
 }

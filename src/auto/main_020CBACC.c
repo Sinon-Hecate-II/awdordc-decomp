@@ -2,6 +2,7 @@
 #include "common.h"
 #include "ds3dsprite.h"
 #include "battle_map.h"
+#include "map_effect.h"
 #include "ov000_ai.h"
 static inline s32 visibleCB(void *p,s32 x,s32 y) {
 u32 n;
@@ -84,20 +85,24 @@ void CreateUnitRemovalEffect(void *unit) {
     M2C_FIELD(CreateSpriteObject(&gUnitRemovalSpriteClass), void **, 0x34) = unit;
 }
 
-void func_020cbcc0(void *arg0) {
+void FuelCrashEffect_StepMapViewToUnit(void *arg0) {
     M2C_UNK SpriteState_StepMapViewToTile(s32);
     SpriteState_StepMapViewToTile(M2C_FIELD(arg0, s32 *, 0x34));
 }
 
-void func_020cbcd0(void *arg0) {
+void FuelCrashEffect_ExplodeUnit(void *arg0) {
     M2C_UNK ExplodeUnit(s32);
     ExplodeUnit(M2C_FIELD(arg0, s32 *, 0x34));
 }
 
-void CreateFuelCrashEffect(s32 arg0) {
+/* Create the fuel-crash effect for `unit`: its sprite pans the map view to the
+ * unit's tile and then explodes it.  `task` is the map-action task that spotted
+ * the crash. */
+void CreateFuelCrashEffect(void *unit, void *task) {
     void *CreateSpriteObject(M2C_UNK *);
     extern M2C_UNK gFuelCrashSpriteClass;
-    M2C_FIELD(CreateSpriteObject(&gFuelCrashSpriteClass), s32 *, 0x34) = arg0;
+
+    ((FuelCrashEffect *)CreateSpriteObject(&gFuelCrashSpriteClass))->unit = unit;
 }
 
 void func_020cbcfc(void *arg0) {

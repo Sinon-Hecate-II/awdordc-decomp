@@ -157,7 +157,7 @@ if (!buffer) return;
 M2C_FIELD(*(void **)buffer,void (**)(void *),4)(buffer);
 }
 
-double func_02070134(double a, double b) {
+double RuntimeDoubleAdd(double a, double b) {
     return a + b;
 }
 
@@ -290,11 +290,11 @@ s32 func_0207061c(s32 arg0) {
     return var_r0 << 0x15;
 }
 
-s32 func_02070658(s32 a, s32 b, s32 c, s32 d) {
+s32 RuntimeDoubleMultiply(s32 a, s32 b, s32 c, s32 d) {
     return 0;
 }
 
-double func_020709bc(double x) {
+double RuntimeDoubleSqrt(double x) {
     extern u32 gErrno;
     u32 r0, r1, r2, r3, r4, r5, r6, r12, lr;
     r0 = ((u32 *)&x)[0];

@@ -84,7 +84,10 @@ void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
     }
 }
 
-void func_ov003_021f17e0(void) {
+/* Give the scene's 3D sprite one more child. A sprite that has children stops
+ * running its own animation state (Update3DSpriteState), so the scene object
+ * pauses while the child just created (a link-result panel, say) drives it. */
+void AddSceneObjectChild(void) {
     M2C_UNK GetOv003SceneObject();
     M2C_UNK IncrementSpriteChildCount();
     s32 GetOv003SceneObject();

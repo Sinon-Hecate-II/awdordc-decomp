@@ -37,12 +37,14 @@ void SetupBattleScene(void) {
     InitBattleSpriteScene(&gBattleSpriteState);
 }
 
-void func_ov002_021e157c(void) {
- M2C_UNK UpdateBattleScene(void *);
- M2C_UNK DrawBattleSceneUnitView(void *);
- extern M2C_UNK gBattleSceneState;
- UpdateBattleScene(&gBattleSceneState);
- DrawBattleSceneUnitView(&gBattleSceneState);
+/* The battle screen's per-frame callback: advance the battle scene, then draw
+ * its unit view. */
+void UpdateAndDrawBattleScene(void) {
+    M2C_UNK UpdateBattleScene(void *);
+    M2C_UNK DrawBattleSceneUnitView(void *);
+    extern M2C_UNK gBattleSceneState;
+    UpdateBattleScene(&gBattleSceneState);
+    DrawBattleSceneUnitView(&gBattleSceneState);
 }
 
 void func_ov002_021e1598(void) {

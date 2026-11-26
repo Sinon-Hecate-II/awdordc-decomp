@@ -510,9 +510,11 @@ s32 Ov001_ListCreate(void) {
     return list;
 }
 
-void func_ov001_0218bf30(s32 arg0, ...) {
- M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
- Ov001_FreeAlloc(&arg0);
+/* Free the list block `list` created by Ov001_ListCreate.  The trailing
+ * arguments keep the original's argument-register save (it is variadic). */
+void Ov001_ListDestroy(s32 list, ...) {
+    s32 Ov001_FreeAlloc(s32 *);
+    Ov001_FreeAlloc(&list);
 }
 
 /* Unlink `node` from its circular doubly-linked list with IRQ 1 (DMA0) masked, then
@@ -602,9 +604,12 @@ void Ov001_FreeSpriteObjs(void) {
     Ov001_FreeAlloc(&gOv001TilePools-1);
 }
 #pragma pool_constants reset
-void Ov001_PopFreeSpriteObj(s32 n){
-extern s32 gOv001SpriteArena; void Ov001_QueuePop(s32);
-Ov001_QueuePop(M2C_FIELD(gOv001SpriteArena+(n<<2),s32 *,0x800));
+/* Pop the next free sprite-object entry off the free queue of screen `screen`
+ * (0 = main screen, 1 = sub screen). */
+void Ov001_PopFreeSpriteObj(s32 screen) {
+    extern s32 gOv001SpriteArena;
+    void Ov001_QueuePop(s32);
+    Ov001_QueuePop(M2C_FIELD(gOv001SpriteArena + (screen << 2), s32 *, OV001_SPRITE_OBJ_FREE_QUEUES));
 }
 
 /* Release a sprite object back to its screen: mark its entry word hidden with the

@@ -120,19 +120,19 @@ void SetNasProfileKey(void *block, Unk032Record *key, s32 profileId) {
     M2C_FIELD(block, u32 *, PROFILE_ID_BLOCK_KEY_SET) |= 1;
 }
 
-void func_020324e4(void) {
-    M2C_UNK func_020324f0();
-    func_020324f0();
+void IsNasProfileKeySetVeneer(void) {
+    M2C_UNK IsNasProfileKeySet();
+    IsNasProfileKeySet();
 }
 
-s32 func_020324f0(void *arg0) {
+s32 IsNasProfileKeySet(void *arg0) {
     if ((M2C_FIELD(arg0, s32 *, 0x20) & 1) == 1) {
         return 1;
     }
     return 0;
 }
 
-void func_02032508(void) {
+void ClearNasProfileKeyVeneer(void) {
     M2C_UNK ClearNasProfileKey();
     ClearNasProfileKey();
 }

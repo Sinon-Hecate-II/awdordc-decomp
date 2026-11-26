@@ -93,11 +93,11 @@ u8 IsMapZoomRunning(void) {
  * or more of them the map's hidden terrain is gone, so it must not be saved. */
 s32 CanSaveHiddenTerrainMap(void) {
 extern s32 *gCurrentMap;
-s32 IsDestroyedPipeTile(s32);
+s32 IsPropertyTerrainKind(s32);
 s32 hidden=0,x,y,map=*gCurrentMap;
 for(y=0;y<M2C_FIELD(map,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(map,u16 *,0x5144);x++){
-if(IsDestroyedPipeTile(M2C_FIELD(M2C_FIELD(map+(y<<1),u16 *,0x3758)+(map+x),u8 *,0x1420)&31) || M2C_FIELD(M2C_FIELD(*gCurrentMap+(y<<1),u16 *,0x3758)+(*gCurrentMap+x),u8 *,0x539c))hidden++;
+if(IsPropertyTerrainKind(M2C_FIELD(M2C_FIELD(map+(y<<1),u16 *,0x3758)+(map+x),u8 *,0x1420)&31) || M2C_FIELD(M2C_FIELD(*gCurrentMap+(y<<1),u16 *,0x3758)+(*gCurrentMap+x),u8 *,0x539c))hidden++;
 map=*gCurrentMap;
 }
 }

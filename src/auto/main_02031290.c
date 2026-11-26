@@ -538,10 +538,12 @@ s32 SetPlayerRecordTypeField(M2C_UNK word, M2C_UNK value, M2C_UNK shift, M2C_UNK
     return 1;
 }
 
-u64 GetNasPlayerCode(void *arg0) {
-    u32 hi = M2C_FIELD(arg0, u32 *, 0) & 0x7FF;
-    u32 lo = M2C_FIELD(arg0, u32 *, 4);
-    return ((u64) hi << 32) | lo;
+/* Read the 43-bit player code of a NAS player record: its high 11 bits are the
+ * low field of the record's type word, its low 32 bits the code word at +0x04. */
+u64 GetNasPlayerCode(void *record) {
+    u32 codeHigh = M2C_FIELD(record, u32 *, PLAYER_RECORD_TYPE) & PLAYER_CODE_HIGH_MASK;
+    u32 codeLow = M2C_FIELD(record, u32 *, PLAYER_RECORD_CODE);
+    return ((u64) codeHigh << 32) | codeLow;
 }
 
 s32 GetNasRecordCheckWord(void *arg0) {
@@ -660,9 +662,11 @@ u64 BuildPlayerCode(s32 profileId, s32 gameId) {
     return (u32) profileId | ((u64) (Crc8Block(buf, in, 8) & 0x7f) << 32);
 }
 
-void func_02031f58(void *arg0, u64 arg1) {
-s32 IsPlayerCodeValid(u64,s32);
-IsPlayerCodeValid(arg1,M2C_FIELD(arg0,s32 *,0x24));
+/* Whether `code` is a valid player code for the game id held at +0x24 of the
+ * profile record `profile`; the check itself is IsPlayerCodeValid. */
+s32 IsPlayerCodeValidForGameId(void *profile, u64 code) {
+    s32 IsPlayerCodeValid(u64, s32);
+    return IsPlayerCodeValid(code, M2C_FIELD(profile, s32 *, 0x24));
 }
 /* Whether `code` is a valid player code for game id `gameId`: the code's low word
  * must have bit 31 clear and its high word must hold the 7-bit CRC-8 check of the
@@ -679,11 +683,14 @@ return (s64)check == (code>>32);
 }
 
 #pragma opt_propagation off
-s32 GetPlayerCodeId(u64 arg0,s32 arg2) {
-s32 ok=IsPlayerCodeValid(arg0,arg2);
-s32 mask=0;
-if(ok) {mask--; mask=(u32)arg0 & mask;}
-return mask;
+/* Return the profile id in the low word of player `code` when the code is valid
+ * for `gameId` (see IsPlayerCodeValid), or -1 when it is not. */
+s32 GetPlayerCodeId(u64 code, s32 gameId) {
+    s32 ok = IsPlayerCodeValid(code, gameId);
+    s32 mask = 0;
+
+    if (ok) { mask--; mask = (u32)code & mask; }
+    return mask;
 }
 #pragma opt_propagation reset
 /* Format a player code as its 12-digit zero-padded decimal text at `out` (the

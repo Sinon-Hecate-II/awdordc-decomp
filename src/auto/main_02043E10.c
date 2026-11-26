@@ -7,12 +7,12 @@ void SetConnectionState(s32);
 /* Peer socket-connect callback: event 0 (re)starts the connect to the peer
    described by addr (address at +4, port at +2) and gives it a session slot; a
    nonzero event is the connect's error or timeout code.  On success the session
-   advances (func_02040e1c); otherwise the attempt is retried while its retry
+   advances (AdvancePeerConnection); otherwise the attempt is retried while its retry
    budget lasts, and the peer is dropped when it fails.  attempt is the
    connection's in-flight connect record. */
 void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *attempt)
 {
-    M2C_UNK func_02040e1c(M2C_UNK);
+    M2C_UNK AdvancePeerConnection(M2C_UNK);
     s32 StringFormatN(void *, s32, void *, s32);
     s32 gt2AddressToString(s32, s32, s32);
     s32 func_0205adcc(s32, s32, s32, void *, s32, s32, s32, s32);
@@ -71,7 +71,7 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
             if (res == 0) {
                 return;
             }
-            if (func_02040e1c(M2C_FIELD(GetConnection() + slot * 4, s32 *, CONN_SESSION_PEER_IDS)) == 0) {
+            if (AdvancePeerConnection(M2C_FIELD(GetConnection() + slot * 4, s32 *, CONN_SESSION_PEER_IDS)) == 0) {
                 return;
             }
             return;
@@ -144,7 +144,7 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
         M2C_FIELD(sessionA, s32 *, 0x188) = 0;
         sessionA = GetConnection();
         sessionB = GetConnection();
-        if (func_02040e1c(M2C_FIELD(sessionA + (M2C_FIELD(sessionB, u8 *, CONN_SESSION_PLAYER_COUNT) + 1) * 4, s32 *, CONN_SESSION_PEER_IDS)) == 0) {
+        if (AdvancePeerConnection(M2C_FIELD(sessionA + (M2C_FIELD(sessionB, u8 *, CONN_SESSION_PLAYER_COUNT) + 1) * 4, s32 *, CONN_SESSION_PEER_IDS)) == 0) {
             return;
         }
         return;
@@ -505,9 +505,18 @@ void func_020449dc(void) {
 
 void *GetTransferSlot(s32 a){extern s32 gTransferManager;return (void *)(gTransferManager+0x30*a);}
 
-s32 IsTransferSending(s32 a){extern s32 gTransferManager;return M2C_FIELD(gTransferManager+0x30*a,u8 *,0x1c);}
+/* Whether player `playerId`'s transfer slot has an outgoing transfer in
+ * progress. */
+s32 IsTransferSending(s32 playerId) {
+    extern s32 gTransferManager;
+    return ((TransferSlot *) (gTransferManager + playerId * 0x30))->sending;
+}
 
-s32 GetTransferState(s32 a){extern s32 gTransferManager;return M2C_FIELD(gTransferManager+0x30*a,u8 *,0x1d);}
+/* Returns the transfer state of slot `playerId` (a TRANSFER_STATE_* value). */
+s32 GetTransferState(s32 playerId) {
+    extern s32 gTransferManager;
+    return ((TransferSlot *) (gTransferManager + playerId * 0x30))->state;
+}
 
 /* Send `size` bytes of `data` to player `playerId`'s GameSpy connection,
  * reliable or not (falls through gt2Send with a null connection when the player

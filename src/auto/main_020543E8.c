@@ -616,10 +616,12 @@ void *gpiFindConnectedPeer(void **connectionRef, s32 playerId) {
     return NULL;
 }
 
-void FreeGpiPeerCallbackEntry(s32 *arg0) {
+/* Vector destructor of a gpi peer's queued entries: free the entry's owned
+ * pointer (its first word) and clear it. */
+void FreeGpiPeerCallbackEntry(s32 *entry) {
     M2C_UNK gpiFree(s32);
-    gpiFree(*arg0);
-    *arg0 = 0;
+    gpiFree(*entry);
+    *entry = 0;
 }
 
 /* Allocates a gpi peer record for the given player and links it at the head of

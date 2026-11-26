@@ -7,8 +7,40 @@ static inline void CopyPair534(void *dst, void *src) { *(TextPair534 *)dst = *(T
 typedef struct RequestPair534 { s32 a,b; } RequestPair534;
 typedef struct Unk02053e40 { u32 words[60]; } Unk02053e40;
 
+/* The \field\ names gpiSetInfoField appends for each profile-info field. */
+#define gGsKeyNick        data_020fe72c
+#define gGsKeyUniqueNick  data_020fe734
+#define gGsKeyEmail       data_020fe744
+#define gGsKeyFirstName   data_020fe74c
+#define gGsKeyLastName    data_020fe758
+#define gGsKeyIcqUin      data_020fe764
+#define gGsKeyHomepage    data_020fe770
+#define gGsKeyZipCode     data_020fe77c
+#define gGsKeyCountryCode data_020fe788
+#define gGsKeySex         data_020fe7bc
+#define gGsKeyAim         data_020fe7cc
+#define gGsKeyPic         data_020fe7d4
+#define gGsKeyOccupation  data_020fe7dc
+#define gGsKeyIndustry    data_020fe7e4
+#define gGsKeyIncome      data_020fe7ec
+#define gGsKeyMarital     data_020fe7f4
+#define gGsKeyChildren    data_020fe7fc
+#define gGsKeyInterest1   data_020fe804
+#define gGsKeyVideoCard1  data_020fe95c
+#define gGsKeyVideoCard2  data_020fe970
+#define gGsKeyOsString    data_020fe984
+#define gGsKeyPassword    data_020fe938
+/* \sex\ values: 0 male, 1 female, 2 unspecified. */
+#define gGpiSexMaleCode     data_020fe880
+#define gGpiSexFemaleCode   data_020fe884
+#define gGpiSexUnknownCode  data_020fe888
+
 #pragma opt_propagation off
-s32 gpiSetInfoField(s32 *arg0, s32 arg1, s8 *arg2) {
+/* Set one profile-info field of a GPI connection: `field` is 0x700 + the field
+ * index (nick, uniquenick, email, password, ...), `value` is its text.  The
+ * string is copied into the connection's local profile record and appended to
+ * the outgoing profile-update request, with integer fields parsed instead. */
+s32 gpiSetInfoField(s32 *connection, s32 field, s8 *value) {
     M2C_UNK StringToLower(s8 *);
     s32 AppendUpdateProField(s32 *, M2C_UNK *, s8 *);
     s32 AppendUpdateUiField(s32 *, M2C_UNK *, s8 *);
@@ -16,35 +48,35 @@ s32 gpiSetInfoField(s32 *arg0, s32 arg1, s8 *arg2) {
     M2C_UNK StringCopyN(s8 *, s8 *, M2C_UNK);
     s32 StringLength(s8 *);
     s32 ParseInt(s8 *);
-    extern M2C_UNK data_020fe72c;
-    extern M2C_UNK data_020fe734;
-    extern M2C_UNK data_020fe744;
-    extern M2C_UNK data_020fe74c;
-    extern M2C_UNK data_020fe758;
-    extern M2C_UNK data_020fe764;
-    extern M2C_UNK data_020fe770;
-    extern M2C_UNK data_020fe77c;
-    extern M2C_UNK data_020fe788;
-    extern M2C_UNK data_020fe7bc;
-    extern M2C_UNK data_020fe7cc;
-    extern M2C_UNK data_020fe7d4;
-    extern M2C_UNK data_020fe7dc;
-    extern M2C_UNK data_020fe7e4;
-    extern M2C_UNK data_020fe7ec;
-    extern M2C_UNK data_020fe7f4;
-    extern M2C_UNK data_020fe7fc;
-    extern M2C_UNK data_020fe804;
-    extern M2C_UNK data_020fe880;
-    extern M2C_UNK data_020fe884;
-    extern M2C_UNK data_020fe888;
-    extern M2C_UNK data_020fe918;
-    extern M2C_UNK data_020fe928;
-    extern M2C_UNK data_020fe938;
-    extern M2C_UNK data_020fe944;
-    extern M2C_UNK data_020fe95c;
-    extern M2C_UNK data_020fe970;
-    extern M2C_UNK data_020fe984;
-    s8 sp0[0x100]; TextPair534 *dest;
+    extern M2C_UNK gGsKeyNick;
+    extern M2C_UNK gGsKeyUniqueNick;
+    extern M2C_UNK gGsKeyEmail;
+    extern M2C_UNK gGsKeyFirstName;
+    extern M2C_UNK gGsKeyLastName;
+    extern M2C_UNK gGsKeyIcqUin;
+    extern M2C_UNK gGsKeyHomepage;
+    extern M2C_UNK gGsKeyZipCode;
+    extern M2C_UNK gGsKeyCountryCode;
+    extern M2C_UNK gGsKeySex;
+    extern M2C_UNK gGsKeyAim;
+    extern M2C_UNK gGsKeyPic;
+    extern M2C_UNK gGsKeyOccupation;
+    extern M2C_UNK gGsKeyIndustry;
+    extern M2C_UNK gGsKeyIncome;
+    extern M2C_UNK gGsKeyMarital;
+    extern M2C_UNK gGsKeyChildren;
+    extern M2C_UNK gGsKeyInterest1;
+    extern M2C_UNK gGsKeyVideoCard1;
+    extern M2C_UNK gGsKeyVideoCard2;
+    extern M2C_UNK gGsKeyOsString;
+    extern M2C_UNK gGsKeyPassword;
+    extern M2C_UNK gGpiSexMaleCode;
+    extern M2C_UNK gGpiSexFemaleCode;
+    extern M2C_UNK gGpiSexUnknownCode;
+    extern M2C_UNK gGpiMsgInvalidInfo;
+    extern M2C_UNK gGpiMsgInvalidValue;
+    extern M2C_UNK gGpiMsgInvalidCountryCode;
+    s8 buffer[0x100]; TextPair534 *sexCode;
     s32 temp_r0;
     s32 temp_r0_10;
     s32 temp_r0_11;
@@ -73,236 +105,236 @@ s32 gpiSetInfoField(s32 *arg0, s32 arg1, s8 *arg2) {
     s32 temp_r0_7;
     s32 temp_r0_8;
     s32 temp_r0_9;
-    s32 temp_r4;
-    s8 temp_r0_29;
+    s32 info;
+    s8 sexLetter;
     s32 var_r1;
-    u32 temp_r1;
+    u32 fieldIndex;
 
-    temp_r4 = *arg0;
-    if (arg2 == NULL) {
-        gpiSetErrorString(arg0, &data_020fe928);
+    info = *connection;
+    if (value == NULL) {
+        gpiSetErrorString(connection, &gGpiMsgInvalidValue);
         return 2;
     }
-    temp_r1 = arg1 - 0x700;
-    switch (temp_r1) {
+    fieldIndex = field - 0x700;
+    switch (fieldIndex) {
     case 0:
-        if (*arg2 == 0) {
-            gpiSetErrorString(arg0, &data_020fe928);
+        if (*value == 0) {
+            gpiSetErrorString(connection, &gGpiMsgInvalidValue);
             return 2;
         }
-        StringCopyN(sp0, arg2, 0x1F);
-        StringCopyN(temp_r4 + 0x110, sp0, 0x1F);
-        temp_r0 = AppendUpdateProField(arg0, &data_020fe72c, sp0);
+        StringCopyN(buffer, value, 0x1F);
+        StringCopyN(info + 0x110, buffer, 0x1F);
+        temp_r0 = AppendUpdateProField(connection, &gGsKeyNick, buffer);
         if (temp_r0 != 0) {
             return temp_r0;
         }
         break;
     case 1:
-        if (*arg2 == 0) {
-            gpiSetErrorString(arg0, &data_020fe928);
+        if (*value == 0) {
+            gpiSetErrorString(connection, &gGpiMsgInvalidValue);
             return 2;
         }
-        StringCopyN(sp0, arg2, 0x15);
-        StringCopyN(temp_r4 + 0x12F, sp0, 0x15);
-        temp_r0_2 = AppendUpdateProField(arg0, &data_020fe734, sp0);
+        StringCopyN(buffer, value, 0x15);
+        StringCopyN(info + 0x12F, buffer, 0x15);
+        temp_r0_2 = AppendUpdateProField(connection, &gGsKeyUniqueNick, buffer);
         if (temp_r0_2 != 0) {
             return temp_r0_2;
         }
         break;
     case 2:
-        if (*arg2 == 0) {
-            gpiSetErrorString(arg0, &data_020fe928);
+        if (*value == 0) {
+            gpiSetErrorString(connection, &gGpiMsgInvalidValue);
             return 2;
         }
-        StringCopyN(sp0, arg2, 0x33);
-        StringToLower(sp0);
-        StringCopyN(temp_r4 + 0x144, sp0, 0x33);
-        temp_r0_3 = AppendUpdateUiField(arg0, &data_020fe744, sp0);
+        StringCopyN(buffer, value, 0x33);
+        StringToLower(buffer);
+        StringCopyN(info + 0x144, buffer, 0x33);
+        temp_r0_3 = AppendUpdateUiField(connection, &gGsKeyEmail, buffer);
         if (temp_r0_3 != 0) {
             return temp_r0_3;
         }
         break;
     case 3:
-        if (*arg2 == 0) {
-            gpiSetErrorString(arg0, &data_020fe928);
+        if (*value == 0) {
+            gpiSetErrorString(connection, &gGpiMsgInvalidValue);
             return 2;
         }
-        StringCopyN(sp0, arg2, 0x1F);
-        StringCopyN(temp_r4 + 0x177, sp0, 0x1F);
-        temp_r0_4 = AppendUpdateUiField(arg0, &data_020fe938, sp0);
+        StringCopyN(buffer, value, 0x1F);
+        StringCopyN(info + 0x177, buffer, 0x1F);
+        temp_r0_4 = AppendUpdateUiField(connection, &gGsKeyPassword, buffer);
         if (temp_r0_4 != 0) {
             return temp_r0_4;
         }
         break;
     case 4:
-        StringCopyN(sp0, arg2, 0x1F);
-        temp_r0_5 = AppendUpdateProField(arg0, &data_020fe74c, sp0);
+        StringCopyN(buffer, value, 0x1F);
+        temp_r0_5 = AppendUpdateProField(connection, &gGsKeyFirstName, buffer);
         if (temp_r0_5 != 0) {
             return temp_r0_5;
         }
         break;
     case 5:
-        StringCopyN(sp0, arg2, 0x1F);
-        temp_r0_6 = AppendUpdateProField(arg0, &data_020fe758, sp0);
+        StringCopyN(buffer, value, 0x1F);
+        temp_r0_6 = AppendUpdateProField(connection, &gGsKeyLastName, buffer);
         if (temp_r0_6 != 0) {
             return temp_r0_6;
         }
         break;
     case 7:
-        StringCopyN(sp0, arg2, 0x4C);
-        temp_r0_7 = AppendUpdateProField(arg0, &data_020fe770, sp0);
+        StringCopyN(buffer, value, 0x4C);
+        temp_r0_7 = AppendUpdateProField(connection, &gGsKeyHomepage, buffer);
         if (temp_r0_7 != 0) {
             return temp_r0_7;
         }
         break;
     case 8:
-        StringCopyN(sp0, arg2, 0xB);
-        temp_r0_8 = AppendUpdateProField(arg0, &data_020fe77c, sp0);
+        StringCopyN(buffer, value, 0xB);
+        temp_r0_8 = AppendUpdateProField(connection, &gGsKeyZipCode, buffer);
         if (temp_r0_8 != 0) {
             return temp_r0_8;
         }
         break;
     case 9:
-        if (StringLength(arg2) != 2) {
-            gpiSetErrorString(arg0, &data_020fe944);
+        if (StringLength(value) != 2) {
+            gpiSetErrorString(connection, &gGpiMsgInvalidCountryCode);
             return 2;
         }
-        StringCopyN(sp0, arg2, 3);
-        temp_r0_9 = AppendUpdateProField(arg0, &data_020fe788, sp0);
+        StringCopyN(buffer, value, 3);
+        temp_r0_9 = AppendUpdateProField(connection, &gGsKeyCountryCode, buffer);
         if (temp_r0_9 != 0) {
             return temp_r0_9;
         }
         break;
     case 11:
-        temp_r0_29 = Upper534(*arg2); dest=(TextPair534*)sp0;
-        if (temp_r0_29 == 0x4D) {
-            *dest = *(TextPair534 *)&data_020fe880;
-        } else if (temp_r0_29 == 0x46) {
-            *dest = *(TextPair534 *)&data_020fe884;
+        sexLetter = Upper534(*value); sexCode=(TextPair534*)buffer;
+        if (sexLetter == 0x4D) {
+            *sexCode = *(TextPair534 *)&gGpiSexMaleCode;
+        } else if (sexLetter == 0x46) {
+            *sexCode = *(TextPair534 *)&gGpiSexFemaleCode;
         } else {
-            *dest = *(TextPair534 *)&data_020fe888;
+            *sexCode = *(TextPair534 *)&gGpiSexUnknownCode;
         }
-        temp_r0_10 = AppendUpdateProField(arg0, &data_020fe7bc, sp0);
+        temp_r0_10 = AppendUpdateProField(connection, &gGsKeySex, buffer);
         if (temp_r0_10 != 0) {
             return temp_r0_10;
         }
         break;
     case 6:
-        StringCopyN(sp0, arg2, 0x100);
-        temp_r0_11 = AppendUpdateProField(arg0, &data_020fe764, sp0);
+        StringCopyN(buffer, value, 0x100);
+        temp_r0_11 = AppendUpdateProField(connection, &gGsKeyIcqUin, buffer);
         if (temp_r0_11 != 0) {
             return temp_r0_11;
         }
         break;
     case 13:
-        temp_r0_12 = AppendInfoIntField(arg0, 0x70D, ParseInt(arg2));
+        temp_r0_12 = AppendInfoIntField(connection, 0x70D, ParseInt(value));
         if (temp_r0_12 != 0) {
             return temp_r0_12;
         }
         break;
     case 14:
-        temp_r0_13 = AppendInfoIntField(arg0, 0x70E, ParseInt(arg2));
+        temp_r0_13 = AppendInfoIntField(connection, 0x70E, ParseInt(value));
         if (temp_r0_13 != 0) {
             return temp_r0_13;
         }
         break;
     case 15:
-        StringCopyN(sp0, arg2, 0x100);
-        temp_r0_14 = AppendUpdateProField(arg0, &data_020fe95c, sp0);
+        StringCopyN(buffer, value, 0x100);
+        temp_r0_14 = AppendUpdateProField(connection, &gGsKeyVideoCard1, buffer);
         if (temp_r0_14 != 0) {
             return temp_r0_14;
         }
         break;
     case 16:
-        temp_r0_15 = AppendInfoIntField(arg0, 0x710, ParseInt(arg2));
+        temp_r0_15 = AppendInfoIntField(connection, 0x710, ParseInt(value));
         if (temp_r0_15 != 0) {
             return temp_r0_15;
         }
         break;
     case 17:
-        StringCopyN(sp0, arg2, 0x100);
-        temp_r0_16 = AppendUpdateProField(arg0, &data_020fe970, sp0);
+        StringCopyN(buffer, value, 0x100);
+        temp_r0_16 = AppendUpdateProField(connection, &gGsKeyVideoCard2, buffer);
         if (temp_r0_16 != 0) {
             return temp_r0_16;
         }
         break;
     case 18:
-        temp_r0_17 = AppendInfoIntField(arg0, 0x712, ParseInt(arg2));
+        temp_r0_17 = AppendInfoIntField(connection, 0x712, ParseInt(value));
         if (temp_r0_17 != 0) {
             return temp_r0_17;
         }
         break;
     case 20:
-        temp_r0_18 = AppendInfoIntField(arg0, 0x714, ParseInt(arg2));
+        temp_r0_18 = AppendInfoIntField(connection, 0x714, ParseInt(value));
         if (temp_r0_18 != 0) {
             return temp_r0_18;
         }
         break;
     case 21:
-        temp_r0_19 = AppendInfoIntField(arg0, 0x715, ParseInt(arg2));
+        temp_r0_19 = AppendInfoIntField(connection, 0x715, ParseInt(value));
         if (temp_r0_19 != 0) {
             return temp_r0_19;
         }
         break;
     case 22:
-        StringCopyN(sp0, arg2, 0x100);
-        temp_r0_20 = AppendUpdateProField(arg0, &data_020fe984, sp0);
+        StringCopyN(buffer, value, 0x100);
+        temp_r0_20 = AppendUpdateProField(connection, &gGsKeyOsString, buffer);
         if (temp_r0_20 != 0) {
             return temp_r0_20;
         }
         break;
     case 23:
-        StringCopyN(sp0, arg2, 0x33);
-        temp_r0_21 = AppendUpdateProField(arg0, &data_020fe7cc, sp0);
+        StringCopyN(buffer, value, 0x33);
+        temp_r0_21 = AppendUpdateProField(connection, &gGsKeyAim, buffer);
         if (temp_r0_21 != 0) {
             return temp_r0_21;
         }
         break;
     case 24:
-        StringCopyN(sp0, arg2, 0x100);
-        temp_r0_22 = AppendUpdateProField(arg0, &data_020fe7d4, sp0);
+        StringCopyN(buffer, value, 0x100);
+        temp_r0_22 = AppendUpdateProField(connection, &gGsKeyPic, buffer);
         if (temp_r0_22 != 0) {
             return temp_r0_22;
         }
         break;
     case 25:
-        StringCopyN(sp0, arg2, 0x100);
-        temp_r0_23 = AppendUpdateProField(arg0, &data_020fe7dc, sp0);
+        StringCopyN(buffer, value, 0x100);
+        temp_r0_23 = AppendUpdateProField(connection, &gGsKeyOccupation, buffer);
         if (temp_r0_23 != 0) {
             return temp_r0_23;
         }
         break;
     case 26:
-        StringCopyN(sp0, arg2, 0x100);
-        temp_r0_24 = AppendUpdateProField(arg0, &data_020fe7e4, sp0);
+        StringCopyN(buffer, value, 0x100);
+        temp_r0_24 = AppendUpdateProField(connection, &gGsKeyIndustry, buffer);
         if (temp_r0_24 != 0) {
             return temp_r0_24;
         }
         break;
     case 27:
-        StringCopyN(sp0, arg2, 0x100);
-        temp_r0_25 = AppendUpdateProField(arg0, &data_020fe7ec, sp0);
+        StringCopyN(buffer, value, 0x100);
+        temp_r0_25 = AppendUpdateProField(connection, &gGsKeyIncome, buffer);
         if (temp_r0_25 != 0) {
             return temp_r0_25;
         }
         break;
     case 28:
-        StringCopyN(sp0, arg2, 0x100);
-        temp_r0_26 = AppendUpdateProField(arg0, &data_020fe7f4, sp0);
+        StringCopyN(buffer, value, 0x100);
+        temp_r0_26 = AppendUpdateProField(connection, &gGsKeyMarital, buffer);
         if (temp_r0_26 != 0) {
             return temp_r0_26;
         }
         break;
     case 29:
-        StringCopyN(sp0, arg2, 0x100);
-        temp_r0_27 = AppendUpdateProField(arg0, &data_020fe7fc, sp0);
+        StringCopyN(buffer, value, 0x100);
+        temp_r0_27 = AppendUpdateProField(connection, &gGsKeyChildren, buffer);
         if (temp_r0_27 != 0) {
             return temp_r0_27;
         }
         break;
     case 30:
-        StringCopyN(sp0, arg2, 0x100);
-        temp_r0_28 = AppendUpdateProField(arg0, &data_020fe804, sp0);
+        StringCopyN(buffer, value, 0x100);
+        temp_r0_28 = AppendUpdateProField(connection, &gGsKeyInterest1, buffer);
         if (temp_r0_28 != 0) {
             return temp_r0_28;
         }
@@ -311,7 +343,7 @@ s32 gpiSetInfoField(s32 *arg0, s32 arg1, s8 *arg2) {
     case 10:
     case 12:
     case 19:
-        gpiSetErrorString(arg0, &data_020fe918);
+        gpiSetErrorString(connection, &gGpiMsgInvalidInfo);
         return 2;
     }
     return 0;

@@ -12,7 +12,7 @@ void func_ov001_02181a84(void) {
     M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
-    M2C_UNK Ov001_HasOptionFlag(M2C_UNK);
+    M2C_UNK Ov001_HasScreenOption(M2C_UNK);
     M2C_UNK Ov001_LayoutChoiceFrame(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK);
     extern M2C_UNK gOv001IconMenuState;
@@ -53,10 +53,10 @@ void func_ov001_02181a84(void) {
                           M2C_FIELD((void *)r4, u8 *, 0xF4) + 1);
     Ov001_OpenMenuForMode(1);
 
-    r6 = Ov001_HasOptionFlag(1);
-    r5 = Ov001_HasOptionFlag(1);
-    r4 = Ov001_HasOptionFlag(1);
-    r3 = Ov001_HasOptionFlag(1);
+    r6 = Ov001_HasScreenOption(1);
+    r5 = Ov001_HasScreenOption(1);
+    r4 = Ov001_HasScreenOption(1);
+    r3 = Ov001_HasScreenOption(1);
 
     r12p = (M2C_UNK)((u8 *)&data_ov001_0218fafa + r6 * 32);
     rowByte = (s8)M2C_FIELD(&gOv001IconMenuState, s8 *, 1);
@@ -156,7 +156,7 @@ void Ov001_IconMenuIconRowStep(void) {
 void Ov001_HandleIconMenuInput(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     M2C_UNK Ov001_LayoutChoiceFrame(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_HasOptionFlag(M2C_UNK);
+    M2C_UNK Ov001_HasScreenOption(M2C_UNK);
     void func_ov001_021820f0(M2C_UNK);
     s32 KeyPressed(s32);
     s32 KeyHeld(s32);
@@ -175,14 +175,14 @@ void Ov001_HandleIconMenuInput(void) {
     M2C_UNK r6, r5, r4, r3;
 
     for (index = 0; index < 4; index++) {
-        entry = (u8 *)&data_ov001_0218fab6 + Ov001_HasOptionFlag(1) * 32 + index * 8;
+        entry = (u8 *)&data_ov001_0218fab6 + Ov001_HasScreenOption(1) * 32 + index * 8;
         if (TouchRectPressed(entry) != 0) {
             Ov001_LatchIconRowSelection(1);
             M2C_FIELD(&gOv001IconMenuState, s8 *, 1) = (s8)index;
-            r6 = Ov001_HasOptionFlag(1);
-            r5 = Ov001_HasOptionFlag(1);
-            r4 = Ov001_HasOptionFlag(1);
-            r3 = Ov001_HasOptionFlag(1);
+            r6 = Ov001_HasScreenOption(1);
+            r5 = Ov001_HasScreenOption(1);
+            r4 = Ov001_HasScreenOption(1);
+            r3 = Ov001_HasScreenOption(1);
             r12p = (M2C_UNK)((u8 *)&data_ov001_0218faf6 + r6 * 32);
             rowByte = (s8)M2C_FIELD(&gOv001IconMenuState, s8 *, 1);
             r1p = (M2C_UNK)((u8 *)&data_ov001_0218fafa + r5 * 32);
@@ -286,7 +286,7 @@ case 3:Ov001_SetNextScreenMode(2,0);Ov001_SetNameEntryMode(0,0);SetMapListMode(1
 }
 
 void func_ov001_021820f0(M2C_UNK arg0) {
-    M2C_UNK Ov001_HasOptionFlag(M2C_UNK);
+    M2C_UNK Ov001_HasScreenOption(M2C_UNK);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_LayoutChoiceFrame(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK gOv001IconMenuState;
@@ -305,7 +305,7 @@ void func_ov001_021820f0(M2C_UNK arg0) {
     M2C_UNK a, b, c, d;
 
     temp_r4 = (s8)M2C_FIELD(&gOv001IconMenuState, s8 *, 1);
-    temp_idx = Ov001_HasOptionFlag(1);
+    temp_idx = Ov001_HasScreenOption(1);
     temp_offset = (s32)&data_ov001_0218fa96 + temp_idx * 16 + temp_r4 * 4;
     temp_val = M2C_FIELD(arg0, s8 *, temp_offset);
     if (temp_val == -1) {
@@ -321,10 +321,10 @@ void func_ov001_021820f0(M2C_UNK arg0) {
 
     M2C_FIELD(&gOv001IconMenuState, s8 *, 1) = M2C_FIELD(&gOv001IconMenuState, s8 *, 0);
     Ov001_PlaySound(8);
-    r6 = Ov001_HasOptionFlag(1);
-    r5 = Ov001_HasOptionFlag(1);
-    temp_r4b = Ov001_HasOptionFlag(1);
-    r3 = Ov001_HasOptionFlag(1);
+    r6 = Ov001_HasScreenOption(1);
+    r5 = Ov001_HasScreenOption(1);
+    temp_r4b = Ov001_HasScreenOption(1);
+    r3 = Ov001_HasScreenOption(1);
     row = M2C_FIELD(&gOv001IconMenuState, s8 *, 1) * 8;
 
     a = *(u16 *)((u8 *)&data_ov001_0218faf6 + r6 * 32 + row);

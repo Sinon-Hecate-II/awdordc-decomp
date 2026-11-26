@@ -9,7 +9,7 @@ s32 func_ov003_021e9818();
 s32 CreateMainWallpaperSprite();
 s32 Apply3DSpriteBanks();
 s32 Reset3DSpriteBankDisplay();
-s32 func_ov003_021e9830();
+s32 SetSpriteTweenValue();
 s32 func_ov003_02201e88();
 void *CreateFrameBorderSprite();
 s32 LoadFrameBorderSpritePattern();
@@ -25,7 +25,7 @@ s32 func_ov003_02202390();
 s32 func_ov003_02202398();
 s32 func_ov003_022023a0();
 s32 SetTextSpriteValue();
-s32 func_ov003_022023a8();
+s32 Ov003_SetLabelGlyphPriority();
 s32 func_ov003_022023c4();
 s32 func_ov003_022023cc();
 s32 SetFileDirectory();
@@ -104,7 +104,7 @@ CreateMainWallpaperSprite(2,15,6);
 func_ov003_0220153c(0,0,1,1,1);
 }
 Apply3DSpriteBanks();Reset3DSpriteBankDisplay();
-func_ov003_021e9830(M2C_FIELD(p,void**,0x48),-32);
+SetSpriteTweenValue(M2C_FIELD(p,void**,0x48),-32);
 func_ov003_02201620(M2C_FIELD(p,void**,0x44),p);
 CreatePanelSprites(M2C_FIELD(p,void**,0x40),p);
 if(Ov003_IsSetupPlayerSelectLayout(p))func_ov003_02201e88(M2C_FIELD(p,void**,0x50),p);
@@ -122,7 +122,7 @@ func_ov003_02202390(M2C_FIELD(p,void**,0x54),16);
 func_ov003_02202398(M2C_FIELD(p,void**,0x54),6);
 func_ov003_022023a0(M2C_FIELD(p,void**,0x54),10);
 SetTextSpriteValue(M2C_FIELD(p,void**,0x54),0);
-func_ov003_022023a8(M2C_FIELD(p,void**,0x54),1);
+Ov003_SetLabelGlyphPriority(M2C_FIELD(p,void**,0x54),1);
 func_ov003_022023c4(M2C_FIELD(p,void**,0x54),data_ov003_02210472);
 func_ov003_022023cc(M2C_FIELD(p,void**,0x54),1);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(u16 **)g3DSpriteEngineMain;
@@ -176,15 +176,17 @@ func_ov003_021ea27c(4,0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x3000);
 func_ov003_021ea294(5,0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,0x30)+0x2c0);
 Reset3DSpriteBankDisplay();gCur3DSpriteEngine=saved2;
 }
-u8 Ov003_IsSetupPlayerSelectLayout(void *arg0) {
-    u8 var_r0;
+/* Whether the battle-setup scene object was built with the player-select layout:
+ * the low six bits of its +0x3A flags select the layout (OV003_SETUP_LAYOUT_*). */
+u8 Ov003_IsSetupPlayerSelectLayout(void *scene) {
+    u8 isPlayerSelect;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1A) >> 0x1A) == 0) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(scene, u8 *, 0x3A) << 0x1A) >> 0x1A) == OV003_SETUP_LAYOUT_PLAYER_SELECT) {
+        isPlayerSelect = 1;
     } else {
-        var_r0 = 0;
+        isPlayerSelect = 0;
     }
-    return var_r0;
+    return isPlayerSelect;
 }
 
 /* Whether the battle-setup scene object was built with the wallpaper layout:

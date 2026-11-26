@@ -544,15 +544,21 @@ u8 Wfc_ResolveFriendSelection(void *arg0) {
 }
 
 #pragma dont_inline reset
-s32 Wfc_GetConnectFlags(void *arg0) {
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0xD0B) << 0x1E) >> 0x1E) == 1) {
-        return 0x30000;
+/* Connection flags for WFC_StartConnection: bits 2-3 of WFC_STATE_CONN_FLAGS
+ * say whether the selected friend's record has been validated, in which case the
+ * connection status is also marked valid. */
+s32 Wfc_GetConnectFlags(void *wfc) {
+    if (((u32) (M2C_FIELD(wfc, u8 *, WFC_STATE_CONN_FLAGS) << 0x1E) >> 0x1E) == 1) {
+        return WFC_STATUS_CONNECT | WFC_STATUS_CONNECT_VALID;
     }
-    return 0x20000;
+    return WFC_STATUS_CONNECT;
 }
 
-s32 Wfc_GetConnectModeFlags(void *arg0) {
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0xD0B) << 0x1C) >> 0x1E) == 1) {
+/* The connection-mode flags to hand WFC_StartConnection: when the friend
+ * record has been validated (bits 2-3 of WFC_STATE_CONN_FLAGS are 1) they also
+ * set connection status bit 0x40000, giving 0xC0000; otherwise 0x80000. */
+s32 Wfc_GetConnectModeFlags(void *wfc) {
+    if (((u32) (M2C_FIELD(wfc, u8 *, WFC_STATE_CONN_FLAGS) << 0x1C) >> 0x1E) == 1) {
         return 0xC0000;
     }
     return 0x80000;

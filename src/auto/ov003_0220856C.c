@@ -108,15 +108,17 @@ next:data=M2C_FIELD(arg0,void **,68);originY=(s16)(originY+M2C_FIELD(data,u8 *,4
 func_02086e9c();
 }
 
-u8 func_ov003_02209258(void *arg0) {
-    u8 var_r0;
+/* Whether the ov003 menu's selection context is showing the campaign save-slot
+ * list, whose rows are the campaign's save slots. */
+u8 Ov003_IsCampaignSaveSlotMode(void *menu) {
+    u8 isSaveSlotList;
 
-    if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 9) {
-        var_r0 = 1;
+    if (M2C_FIELD(M2C_FIELD(menu, void **, MENU_SELECTION), u8 *, MENU_SELECTION_MODE) == MENU_SELECT_MODE_CAMPAIGN_SAVE) {
+        isSaveSlotList = 1;
     } else {
-        var_r0 = 0;
+        isSaveSlotList = 0;
     }
-    return var_r0;
+    return isSaveSlotList;
 }
 
 /* True when the unit-list menu is in its split-row mode and `row` is the first

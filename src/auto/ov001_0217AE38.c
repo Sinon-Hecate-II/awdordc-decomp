@@ -350,7 +350,7 @@ void Ov001_KeyboardInputStep(void) {
  * the text is valid, and a character key appends it while the buffer has room. */
 void HandleNameEntryInput(void) {
 extern void *gNameEntryState;
-void func_ov001_0217b8f8(void);
+void Ov001_PrepareFinishNameEntryKeyboard(void);
 s32 key=GetKeyboardKey(); s32 *obj;
 switch(key){
 case KBD_KEY_DELETE:
@@ -364,13 +364,13 @@ Ov001_SetKeyboardCanAdd(1);
 break;
 case 0:break;
 case KBD_KEY_CANCEL:
-Ov001_PlaySound(7);M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_RESULT)=0;Ov001_SetStepCallback(func_ov001_0217b8f8);return;
+Ov001_PlaySound(7);M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_RESULT)=0;Ov001_SetStepCallback(Ov001_PrepareFinishNameEntryKeyboard);return;
 case KBD_KEY_OK:
 if(IsNameEntryValid()){
 Ov001_PlaySound(6);M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_RESULT)=1;
 }else{M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_RESULT)=2;Ov001_PlaySound(9);}
 obj=M2C_FIELD(gNameEntryState,s32 **,NAME_ENTRY_CURSOR);*obj=(*obj&0xc1fffcff)|0x200;
-Ov001_SetStepCallback(func_ov001_0217b8f8);return;
+Ov001_SetStepCallback(Ov001_PrepareFinishNameEntryKeyboard);return;
 case KBD_KEY_SPACE:
 default:
 if(M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)!=32){
@@ -389,7 +389,10 @@ void func_ov001_0217b8f4(void) {
 
 }
 
-void func_ov001_0217b8f8(void) {
+/* Name-entry step run after the player accepts or cancels the entered name:
+ * hold the screen for eight frames, then hand the step to
+ * Ov001_FinishNameEntryKeyboard, which closes the on-screen keyboard. */
+void Ov001_PrepareFinishNameEntryKeyboard(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FinishNameEntryKeyboard;

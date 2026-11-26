@@ -61,7 +61,7 @@ void TeardownNetSession(void) {
     void gpiInfoCloseSocket(void);
     s32 gpiSetPeerCallback(void *channel, s32 a, s32 b, s32 c);
     void gpiThinkConnection(void *channel);
-    void func_0204db34(void *channel);
+    void gpiFreeConnectionIfPresent(void *channel);
     void FreeNasLoginContext(void);
     void func_0203b088(void);
     void ShutdownConnection(void);
@@ -86,7 +86,7 @@ void TeardownNetSession(void) {
         gpiSetPeerCallback(gNetSession + 0x1C, 1, 0, 0);
         gpiSetPeerCallback(gNetSession + 0x1C, 2, 0, 0);
         gpiThinkConnection(gNetSession + 0x1C);
-        func_0204db34(gNetSession + 0x1C);
+        gpiFreeConnectionIfPresent(gNetSession + 0x1C);
         M2C_FIELD(gNetSession, s32 *, 0x1C) = 0;
     }
     FreeNasLoginContext();
@@ -117,7 +117,7 @@ void TickNetSession(void) {
     void func_02039ca0(void);
     void ReportNasLoginError(s32, s32);
     void func_0203aabc(void);
-    void func_0203cb38(s32);
+    void ConnectionThink(s32);
     void UpdateTransferSlots(void);
     s32 gpiInitializeConnection(s32, s32, s32);
     s32 gpiSetPeerCallback(void *, s32, s32, s32);
@@ -152,17 +152,17 @@ void TickNetSession(void) {
     case 3:
     case 4:
         func_0203aabc();
-        func_0203cb38(0);
+        ConnectionThink(0);
         break;
     case 5:
-        func_0203cb38(1);
+        ConnectionThink(1);
         func_0203aabc();
         break;
     case 6:
         UpdateTransferSlots();
         func_0203aabc();
-        if (M2C_FIELD(gNetSession, volatile u8 *, 0x389) == 2 || M2C_FIELD(gNetSession, volatile u8 *, 0x389) == 3) func_0203cb38(1);
-        else if (M2C_FIELD(gNetSession, s32 *, 0) != 0) func_0203cb38(0);
+        if (M2C_FIELD(gNetSession, volatile u8 *, 0x389) == 2 || M2C_FIELD(gNetSession, volatile u8 *, 0x389) == 3) ConnectionThink(1);
+        else if (M2C_FIELD(gNetSession, s32 *, 0) != 0) ConnectionThink(0);
         break;
     }
     if (M2C_FIELD(gNetSession, u8 *, 0x38c) == 1) {
@@ -236,7 +236,7 @@ s32 StartHostingMatch(s32 matchType,s32 playerList,s32 eventCallback,s32 eventDa
    if there is one, otherwise with a shuffled list of every player slot. */
 s32 func_020388d8(s32 playerList, s32 listLength, s32 matchType, s32 flag, s32 eventCallback, s32 eventData, s32 resultCallback, s32 resultData) {
     s32 HasNetError(void); void ResetPlayerSlots(void); void SetNetState(s32);
-    s32 func_0203ae50(void); u32 RandomBelow(u32);
+    s32 GetMatchPlayerCount(void); u32 RandomBelow(u32);
     void StartJoinMatch(s32,s32,u8,s32,void *,s32,s32,s32);
     extern void *gNetSession; extern M2C_UNK DispatchMatchEvent;
     u8 shuffledSlots[64]; u8 slotPool[64];
@@ -250,12 +250,12 @@ s32 func_020388d8(s32 playerList, s32 listLength, s32 matchType, s32 flag, s32 e
     } else {
         u32 pick; u8 *shift; s32 slot, out;
         listLength=0; slot=listLength;
-        while(slot<func_0203ae50()) { slotPool[slot]=(u8)slot; slot=(slot+1)&255; }
+        while(slot<GetMatchPlayerCount()) { slotPool[slot]=(u8)slot; slot=(slot+1)&255; }
         out=0;
-        while(out<func_0203ae50()) {
-            pick=RandomBelow(func_0203ae50()-out);
+        while(out<GetMatchPlayerCount()) {
+            pick=RandomBelow(GetMatchPlayerCount()-out);
             shuffledSlots[out]=slotPool[pick]; shift=&slotPool[pick]; listLength++;
-            while(pick<func_0203ae50()-out-1) { *shift=shift[1]; shift++; pick++; }
+            while(pick<GetMatchPlayerCount()-out-1) { *shift=shift[1]; shift++; pick++; }
             out=(out+1)&255;
         }
         StartJoinMatch((s32)shuffledSlots,listLength,(u8)(matchType-1),flag,&DispatchMatchEvent,0,resultCallback,resultData);
@@ -433,10 +433,11 @@ s32 GetNetSessionPlayerCount(void) {
     return GetConnectionPeerCount() + 1;
 }
 
+/* This console's player id in the WFC session, or 0 while no session is open. */
 u8 GetLocalPlayerId(void) {
     extern void *gNetSession;
     if (gNetSession != NULL) {
-        return M2C_FIELD(gNetSession, u8 *, 0x2C);
+        return M2C_FIELD(gNetSession, u8 *, NET_SESSION_LOCAL_PLAYER_ID);
     }
     return 0U;
 }
@@ -482,10 +483,12 @@ s32 IsConnectionActive(s32 playerId) {
     return HasPlayerConnection(playerId);
 }
 
+/* The WFC session's current NET_STATE_*, or NET_STATE_OFFLINE (0) while no
+ * session is open. */
 s32 GetNetSessionState(void) {
     extern void *gNetSession;
     if (gNetSession != NULL) {
-        return M2C_FIELD(gNetSession, s32 *, 0x24);
+        return M2C_FIELD(gNetSession, s32 *, NET_SESSION_STATE);
     }
     return 0;
 }

@@ -265,7 +265,7 @@ void MoveCursorTo(s32 x, s32 y) {
     M2C_UNK func_0207a768();
     M2C_UNK ChooseAttackPosition();
     M2C_UNK SetMapCommandPending();
-    M2C_UNK func_020a0d18();
+    M2C_UNK UpdateUnitMovePathForCursor();
     M2C_UNK ClearMapCommandPending();
     M2C_UNK BuildMovePathDirections();
     M2C_UNK func_01ffb3d0();
@@ -307,7 +307,7 @@ void MoveCursorTo(s32 x, s32 y) {
         SetMapCommandPending();
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_TARGET_X) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_X);
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_TARGET_Y) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_Y);
-        func_020a0d18();
+        UpdateUnitMovePathForCursor();
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_TARGET_X) = (s16)x;
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_TARGET_Y) = (s16)y;
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = 5;
@@ -315,7 +315,7 @@ void MoveCursorTo(s32 x, s32 y) {
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_X) = (s16)x;
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_Y) = (s16)y;
         ClearMapCommandPending();
-        func_020a0d18();
+        UpdateUnitMovePathForCursor();
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = 4;
     }
     if (M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_OLD_X) != M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_X) ||

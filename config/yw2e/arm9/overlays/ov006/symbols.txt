@@ -2,7 +2,7 @@ func_ov006_02211200 kind:function(arm,size=0x114) addr:0x02211200
 ShowFriendCodePrompt kind:function(arm,size=0x74) addr:0x02211314
 func_ov006_02211388 kind:function(arm,size=0xdfc) addr:0x02211388
 func_ov006_02212184 kind:function(arm,size=0xc78) addr:0x02212184
-func_ov006_02212dfc kind:function(arm,size=0x109c) addr:0x02212dfc
+UpdateBattleSaveScreen kind:function(arm,size=0x109c) addr:0x02212dfc
 func_ov006_02213e98 kind:function(arm,size=0x574) addr:0x02213e98
 OpenMapCodeEntryScreen kind:function(arm,size=0xa0) addr:0x0221440c
 func_ov006_022144ac kind:function(arm,size=0xb64) addr:0x022144ac
@@ -40,7 +40,7 @@ func_ov006_02216188 kind:function(arm,size=0x14) addr:0x02216188
 func_ov006_0221619c kind:function(arm,size=0x158) addr:0x0221619c
 func_ov006_022162f4 kind:function(arm,size=0x328) addr:0x022162f4
 func_ov006_0221661c kind:function(arm,size=0x180) addr:0x0221661c
-func_ov006_0221679c kind:function(arm,size=0x1c) addr:0x0221679c
+HideMapCodeEntryPanel kind:function(arm,size=0x1c) addr:0x0221679c
 func_ov006_022167b8 kind:function(arm,size=0xc) addr:0x022167b8
 func_ov006_022167c4 kind:function(arm,size=0x3e8) addr:0x022167c4
 func_ov006_02216bac kind:function(arm,size=0xc) addr:0x02216bac
@@ -79,11 +79,11 @@ InitMapOfferObject kind:function(arm,size=0x54) addr:0x0221747c
 FreeMapOfferObject kind:function(arm,size=0x34) addr:0x022174d0
 StartMapOfferSearch kind:function(arm,size=0x50) addr:0x02217504
 InitMapOfferPlayerList kind:function(arm,size=0x34) addr:0x02217554
-func_ov006_02217588 kind:function(arm,size=0x1c) addr:0x02217588
+AdvanceMapOfferMatchResult kind:function(arm,size=0x1c) addr:0x02217588
 FinishMapOfferSearch kind:function(arm,size=0x88) addr:0x022175a4
 func_ov006_0221762c kind:function(arm,size=0x168) addr:0x0221762c
 CancelMapOfferSearch kind:function(arm,size=0x34) addr:0x02217794
-func_ov006_022177c8 kind:function(arm,size=0x1c) addr:0x022177c8
+CreateMapOfferObject kind:function(arm,size=0x1c) addr:0x022177c8
 InitCampaignMapMenuUi kind:function(arm,size=0x48) addr:0x022177e4
 ShutdownCampaignMapMenuUi kind:function(arm,size=0x14) addr:0x0221782c
 CreateCampaignMapMenuUi kind:function(arm,size=0x18) addr:0x02217840
@@ -91,19 +91,19 @@ InitMapTransferObject kind:function(arm,size=0xc4) addr:0x02217858
 FreeMapTransferObject kind:function(arm,size=0x2c) addr:0x0221791c
 BuildMapTransferPlayerList kind:function(arm,size=0x6c) addr:0x02217948
 func_ov006_022179b4 kind:function(arm,size=0x154) addr:0x022179b4
-func_ov006_02217b08 kind:function(arm,size=0x1c) addr:0x02217b08
+QueueTransferredMapRecord kind:function(arm,size=0x1c) addr:0x02217b08
 ShowMapTransferChosenName kind:function(arm,size=0x58) addr:0x02217b24
 CancelMapTransferOnSessionError kind:function(arm,size=0x28) addr:0x02217b7c
 CreateMapTransferTargetIdDisplay kind:function(arm,size=0x4c) addr:0x02217ba4
-func_ov006_02217bf0 kind:function(arm,size=0x1c) addr:0x02217bf0
+BeginMapTransferToTargetPlayer kind:function(arm,size=0x1c) addr:0x02217bf0
 CreateMapTransferObjectMode0 kind:function(arm,size=0x24) addr:0x02217c0c
 CreateMapTransferObjectMode1 kind:function(arm,size=0x24) addr:0x02217c30
 func_ov006_02217c54 kind:function(arm,size=0x10) addr:0x02217c54
 func_ov006_02217c64 kind:function(arm,size=0x10) addr:0x02217c64
 ShowMapPickHint8 kind:function(arm,size=0x44) addr:0x02217c74
 ShowMapPickHint7 kind:function(arm,size=0x44) addr:0x02217cb8
-func_ov006_02217cfc kind:function(arm,size=0x10) addr:0x02217cfc
-func_ov006_02217d0c kind:function(arm,size=0x1c) addr:0x02217d0c
+SetReceivedMapValue kind:function(arm,size=0x10) addr:0x02217cfc
+GetReceivedMapDisplayValue kind:function(arm,size=0x1c) addr:0x02217d0c
 InitMapListObject kind:function(arm,size=0x74) addr:0x02217d28
 FreeMapListObject kind:function(arm,size=0x48) addr:0x02217d9c
 func_ov006_02217de4 kind:function(arm,size=0x94) addr:0x02217de4
@@ -114,7 +114,7 @@ func_ov006_02218128 kind:function(arm,size=0x7c) addr:0x02218128
 ClearListedMapSavedFlags kind:function(arm,size=0x5c) addr:0x022181a4
 func_ov006_02218200 kind:function(arm,size=0x100) addr:0x02218200
 CancelMapReceiveOnSessionError kind:function(arm,size=0x28) addr:0x02218300
-func_ov006_02218328 kind:function(arm,size=0x18) addr:0x02218328
+CreateMapListObject kind:function(arm,size=0x18) addr:0x02218328
 data_ov006_02218340 kind:data(any) addr:0x02218340
 gFriendCodeKeyChars kind:data(any) addr:0x02218345
 data_ov006_0221837c kind:data(any) addr:0x0221837c
@@ -168,15 +168,15 @@ gMapTransferPanelVtable kind:data(any) addr:0x0221890c
 gMapTransferPanelStateClass kind:data(any) addr:0x02218918
 data_ov006_02218a48 kind:data(any) addr:0x02218a48
 data_ov006_02218a78 kind:data(any) addr:0x02218a78
-data_ov006_02218aa8 kind:data(any) addr:0x02218aa8
+gMapOfferObjectClass kind:data(any) addr:0x02218aa8
 data_ov006_02218b94 kind:data(any) addr:0x02218b94 ambiguous
 gMapPickHintClass kind:data(any) addr:0x02218ba8
 gMapTransferClass kind:data(any) addr:0x02218bd8
 sMapTransferNameBreak kind:data(any) addr:0x02218cd8
-data_ov006_02218cdc kind:data(any) addr:0x02218cdc
+gMapListClass kind:data(any) addr:0x02218cdc
 sMapCodeDebugFormat kind:data(any) addr:0x02218dd4
 gMapCodeString kind:bss addr:0x02218e00
 gFriendCodeInput kind:bss addr:0x02218e10
 gMapOfferState kind:bss addr:0x02218e20
-data_ov006_02218e2c kind:bss addr:0x02218e2c
+gReceivedMapValue kind:bss addr:0x02218e2c
 data_ov006_02218e3c kind:bss addr:0x02218e3c ambiguous

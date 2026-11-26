@@ -33,15 +33,16 @@ void Hide3DSpriteSlide(void *sprite) {
     M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) = (u8)((M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) & ~SPRITE_ACTOR_SLIDE_MODE_MASK) | SPRITE_ACTOR_SLIDE_MODE_MASK);
 }
 #pragma opt_common_subs reset
-u8 Is3DSpriteVisible(void *arg0) {
-    u8 var_r0;
+/* Nonzero while the sprite actor's visible bit (SPRITE_ACTOR_STATE bit 0) is set. */
+u8 Is3DSpriteVisible(void *sprite) {
+    u8 result;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x48) << 0x1F) >> 0x1F) != 0) {
-        var_r0 = 1;
+    if (((u32)(M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) << 0x1F) >> 0x1F) != 0) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 /* Nonzero while the sprite actor's visible bit (SPRITE_ACTOR_STATE bit 0) is
@@ -179,16 +180,20 @@ void Init3DSprite(void *arg0)
     M2C_FIELD(arg0, s16 *, 0x3A) = z;
 }
 
-M2C_UNK func_020892f0(void *arg0, s32 arg1) {
- void UpdateSpriteFade(void *,s32);
- M2C_UNK UpdateSpriteSlide(M2C_UNK);
- void DrawSpriteActor(void *);
- UpdateSpriteFade(arg0,arg1);UpdateSpriteSlide((M2C_UNK)arg0);DrawSpriteActor(arg0);
+/* Advance a 3D sprite actor's fade and slide animations, then draw it.  The
+ * second argument is forwarded to the fade step (which ignores it). */
+M2C_UNK UpdateAndDraw3DSpriteActor(void *sprite, s32 fadeArg) {
+    void UpdateSpriteFade(void *, s32);
+    M2C_UNK UpdateSpriteSlide(M2C_UNK);
+    void DrawSpriteActor(void *);
+    UpdateSpriteFade(sprite, fadeArg);
+    UpdateSpriteSlide((M2C_UNK)sprite);
+    DrawSpriteActor(sprite);
 }
 
 void func_02089310(void) {
-    M2C_UNK func_020892f0();
-    func_020892f0();
+    M2C_UNK UpdateAndDraw3DSpriteActor();
+    UpdateAndDraw3DSpriteActor();
 }
 
 

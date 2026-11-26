@@ -169,7 +169,12 @@ u8 func_020a8a30(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p
 
 u8 GetMapPlayerId(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,32);}
 
-u8 func_020a8a68(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,36);}
+/* The army (nation) id the map data record of `mapId` assigns to player slot `player`
+ * (1-based); ARM_* ids. */
+u8 GetMapPlayerArmyId(s32 mapId, s32 player) {
+    u8 *record = (u8 *) MapData_GetRecord(mapId);
+    return M2C_FIELD(record + (player - 1), u8 *, MAP_DATA_PLAYER_ARMY);
+}
 
 u8 func_020a8a84(void) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 0x11);
@@ -179,9 +184,20 @@ s32 func_020a8a94(s32 a){u8 *p=(u8*)MapData_GetRecord(a);return (p[19]<<8)|p[18]
 
 u16 GetMapFollowupMapId(s32 a,s32 b){u16 *p=(u16*)MapData_GetRecord(a);return M2C_FIELD(p+b,u16 *,20);}
 
-s32 func_020a8ac4(s32 a,s32 b){s32 *p=MapData_GetRecord(a);return M2C_FIELD(p+(b-1),s32 *,40);}
+/* Music track that the map data of `mapId` assigns to player slot `player`
+ * (1-based), 0 when the map leaves the army's track in place. */
+s32 MapData_GetPlayerTrack(s32 mapId, s32 player) {
+    s32 *record = MapData_GetRecord(mapId);
 
-u8 func_020a8ae0(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,56);}
+    return M2C_FIELD(record + (player - 1), s32 *, MAP_DATA_PLAYER_MUSIC);
+}
+
+/* The per-player state byte of the map data record of `mapId` for player slot
+ * `player` (1-based), used to set up the campaign unit icons. */
+u8 GetMapPlayerState(s32 mapId, s32 player) {
+    u8 *record = (u8 *) MapData_GetRecord(mapId);
+    return M2C_FIELD(record + (player - 1), u8 *, MAP_DATA_PLAYER_STATE);
+}
 
 s32 MapData_GetWinRuleTextId(void) {
     return M2C_FIELD(MapData_GetRecord(), s32 *, 0x40);

@@ -658,12 +658,12 @@ void GX_EndLoadTexPltt(void) {
 
 typedef u32 Block3[3];
 #pragma opt_common_subs off
-void func_02004e20(FuncCopyV3 *src, FuncCopyV3 *dst) {
+void GX_SendMatrix4x3(FuncCopyV3 *src, FuncCopyV3 *dst) {
 volatile FuncCopyV3 *d=dst;
 *d=*src++; *d=*src++; *d=*src++; *d=*src++;
 }
 #pragma opt_common_subs reset
-void func_02004e44(void *arg0, void *arg1) {
+void GX_SendMatrix4x4(void *arg0, void *arg1) {
     u32 *s = arg0;
     u32 *d = arg1;
     s32 i;

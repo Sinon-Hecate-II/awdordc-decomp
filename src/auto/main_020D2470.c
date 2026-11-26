@@ -120,9 +120,11 @@ u8 AreUnitsOnSameTeam(s32 unit, s32 other) {
     return IsSameTeam(owner, GetUnitOwner(other));
 }
 
-void func_020d27a4(s32 arg0, s32 arg1) {
+/* Whether the units with the given ids belong to the same team: a unit id stores
+ * its owner group in bits 6..7, which plus one is the player number. */
+void AreUnitIdsOnSameTeam(s32 unitId, s32 otherUnitId) {
     u8 IsSameTeam(s32, s32);
-    IsSameTeam((arg0 >> 6) + 1, (arg1 >> 6) + 1);
+    IsSameTeam((unitId >> 6) + 1, (otherUnitId >> 6) + 1);
 }
 
 /* Whether unit `unitId` belongs to the map's current player's team: the player
@@ -135,12 +137,15 @@ u8 IsUnitOnCurrentTeam(s32 unitId) {
                       (unitId >> MAP_UNIT_OWNER_SHIFT) + 1);
 }
 
-s32 IsTerrainOnUnitTeam(s32 arg0, s32 arg1) {
-    s32 temp = arg0 >> 6;
-    if ((arg1 >> 5) == 0) {
+/* Whether the terrain cell `terrain` belongs to a player on the same team as the
+ * unit/owner group `owner`: the cell's owner is in bits
+ * MAP_PROPERTY_TILE_OWNER_SHIFT and up, 0 when the property is unowned. */
+s32 IsTerrainOnUnitTeam(s32 owner, s32 terrain) {
+    s32 player = owner >> MAP_UNIT_OWNER_SHIFT;
+    if ((terrain >> MAP_PROPERTY_TILE_OWNER_SHIFT) == 0) {
         return 0;
     }
-    return IsSameTeam(temp + 1, arg1 >> 5);
+    return IsSameTeam(player + 1, terrain >> MAP_PROPERTY_TILE_OWNER_SHIFT);
 }
 
 /* Whether the property at tile (x, y) belongs to a player on `player`'s team:
@@ -369,16 +374,18 @@ s32 GetPlayerCoZoneMoveRange(s32 player) {
     return GetCommanderMoveRange(commander, GetCoPowerMeterLevel(player));
 }
 
-s32 GetUnitBuildCost(arg0, arg1)
-    u16 arg0;
-    s32 arg1;
+/* Build cost of unit kind `unitKind` for `player`: the unit-kind table's
+ * price, scaled by a whole-price percentage (100/100, so no rounding). */
+s32 GetUnitBuildCost(player, unitKind)
+    u16 player;
+    s32 unitKind;
 {
     s32 GetUnitKindBuildCost(s32);
     s32 Divide(s32, s32);
-    s32 t;
+    s32 cost;
 
-    t = GetUnitKindBuildCost(arg1);
-    return Divide(t * 0x64, 0x64);
+    cost = GetUnitKindBuildCost(unitKind);
+    return Divide(cost * 0x64, 0x64);
 }
 
 s32 GetUnitBuildCostTimes10(void) {

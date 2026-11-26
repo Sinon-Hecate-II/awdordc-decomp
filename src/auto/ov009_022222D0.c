@@ -573,7 +573,7 @@ void HandleLinkConnectTaskEvent(void *event) {
 
 #pragma scheduling off
 s32 func_ov009_02222f84(void) {
-s32 func_02011d58(void); s32 func_02011e98(void); s32 func_020124c4(void *,void *);
+s32 func_02011d58(void); s32 func_02011e98(void); s32 Mb_SendMatchProfile(void *,void *);
 extern M2C_UNK data_ov009_022268e0; extern M2C_UNK gLinkConnectionData; extern M2C_UNK data_ov009_02226960; extern M2C_UNK func_ov009_02223078;
 s32 mask; s32 result;
 mask=func_02011d58();
@@ -587,7 +587,7 @@ if(M2C_FIELD(&data_ov009_022268e0,u16 *,0x84)>14) M2C_FIELD(&data_ov009_022268e0
 } else M2C_FIELD(&data_ov009_022268e0,u16 *,0x84)=M2C_FIELD(&data_ov009_022268e0,u16 *,6);
 M2C_FIELD(&data_ov009_022268e0,u16 *,0x86)=func_02011e98();
 M2C_FIELD(&data_ov009_022268e0,void **,0x80)=&gLinkConnectionData;
-result=func_020124c4(&func_ov009_02223078,&data_ov009_02226960);
+result=Mb_SendMatchProfile(&func_ov009_02223078,&data_ov009_02226960);
 if(result==2) return 1;
 func_ov009_022227d4(result);
 return 0;

@@ -188,7 +188,7 @@ if((u8)(unitId-11)==1 && !IsUnitAvailable(8)){type=MENU_ENTRY_INFO;value=5;}
 switch(type){
 case MENU_ENTRY_UNIT:menu[MENU_ACTION]=49;Ov003_SetRowAnimation(menu,value);Ov003_RefreshListRowAnimations(menu,0,(u8)index);Clear3DSpriteLayerSub(1);M2C_FIELD(g3DSpriteEngineSub,u8*,0x46)|=2;PlaySoundEffect(0x1000d);break;
 case MENU_ENTRY_INFO:EnableMapConfirm();SetMapCategory(value);Ov003_RefreshListRowAnimations(menu,0,(u8)index);Sprite_ResumeAnimation(menu);PlaySoundEffect(0x1000e);break;
-case MENU_ENTRY_SUBMENU:switch(desc[MENU_DESC_VALUE]){case 0:case 1:case 2:PlaySoundEffect(0x1000d);RequestMenuMode(menu,1);func_020b4db0(value,menu);break;case 3:PlaySoundEffect(0x1000d);RequestMenuMode(menu,3);func_020b4e10(menu);break;}break;
+case MENU_ENTRY_SUBMENU:switch(desc[MENU_DESC_VALUE]){case 0:case 1:case 2:PlaySoundEffect(0x1000d);RequestMenuMode(menu,1);CreateCampaignSavePanel(value,menu);break;case 3:PlaySoundEffect(0x1000d);RequestMenuMode(menu,3);func_020b4e10(menu);break;}break;
 }
 }
 

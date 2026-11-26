@@ -2,7 +2,13 @@
 #include "common.h"
 #include "mapedit.h"
 
-void MapEditTextDeleteAccentAction(u8 *arg0) {
+/* Softkey handler for the map editor's text-entry delete and accent buttons.
+ * Action 0x67 deletes the glyph before the cursor and closes up the line.
+ * Action 0x68 switches the dakuten/handakuten accent on the glyph before the
+ * cursor when the Japanese key layout is in use, and otherwise just plays the
+ * error sound; no room for the accented glyph, or a line wider than 64 pixels,
+ * plays the error animation instead. */
+void MapEditTextDeleteAccentAction(u8 *softkey) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK MI_CpuCopy32(s32 *, s8 *, M2C_UNK);
     M2C_UNK Mb_StringCopy(s32 *, M2C_UNK);
@@ -22,24 +28,24 @@ void MapEditTextDeleteAccentAction(u8 *arg0) {
     extern s32 gSoftKeyLayoutJp[];
     extern s32 gMapEditRecords;
     extern s32 gMapEditObjectList;
-    s32 padding[17];
-    s32 scratch[17];
-    void *ctx;
-    s8 *phase;
-    ctx = *(void **)(arg0 + 0x10);
-    phase = (s8 *)ctx + 0x3c;
-    switch (arg0[0]) {
+    s32 lineBufferAlt[17];
+    s32 lineBuffer[17];
+    void *editor;
+    s8 *glyphCursor;
+    editor = *(void **)(softkey + 0x10);
+    glyphCursor = (s8 *)editor + 0x3c;
+    switch (softkey[0]) {
     case 0x67: {
         s32 index;
         s32 i;
-        if (*phase > 0) {
-            index = (s8)(*phase - 1);
+        if (*glyphCursor > 0) {
+            index = (s8)(*glyphCursor - 1);
             if (index < 0 || index >= 17) goto shift_67;
             if (!(index < 17 && ((s32 *)&gMapEditObjectList)[index] != 0) &&
                 (index <= 0 || ((s32 *)&gMapEditObjectList)[index - 1] == 0)) goto shift_67;
-            *phase = (s8)index;
+            *glyphCursor = (s8)index;
         shift_67:
-            i = *phase;
+            i = *glyphCursor;
             while (i < 16) {
                 ((s32 *)&gMapEditObjectList)[i] = ((s32 *)&gMapEditObjectList)[i + 1];
                 i++;
@@ -48,7 +54,7 @@ void MapEditTextDeleteAccentAction(u8 *arg0) {
             PlaySoundEffect(0x1000d);
             return;
         }
-        index = *phase;
+        index = *glyphCursor;
         if (index != 0 || ((s32 *)&gMapEditObjectList)[index] == 0) goto no_move_67;
         for (i = index; i < 16; i++) {
             ((s32 *)&gMapEditObjectList)[i] = ((s32 *)&gMapEditObjectList)[i + 1];
@@ -60,57 +66,57 @@ void MapEditTextDeleteAccentAction(u8 *arg0) {
         PlaySoundEffect(0x1001d);
         return;
     }
-case 0x68: if((s32)&gSoftKeyLayoutJp[0]==*(s32 *)((u8 *)ctx+0x34)){
-s32 old=*phase;
-s32 *value=&data_ov007_02220960;
-if(Mb_StringCompare(value,&gGlyphDakuten)==0) {
-s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(Mb_StringCompare(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
-if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
-if(Mb_StringCompare(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
-value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c);
+case 0x68: if((s32)&gSoftKeyLayoutJp[0]==*(s32 *)((u8 *)editor+0x34)){
+s32 oldCursor=*glyphCursor;
+s32 *glyph=&data_ov007_02220960;
+if(Mb_StringCompare(glyph,&gGlyphDakuten)==0) {
+s32 glyphIndex; if(*glyphCursor==0) glyphIndex=-1; else{s32 *items=*(s32 **)((u8 *)editor+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*glyphCursor-1]; glyphIndex=-1; for(i=0;i<75;i++){if(Mb_StringCompare(entry,(M2C_UNK *)items[i])==0){glyphIndex=i;break;}}}
+if(glyphIndex>=0){s8 next=(s8)(*glyphCursor-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *glyphCursor = next;
+if(Mb_StringCompare(&((s32 *)&gMapEditObjectList)[*glyphCursor],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)editor+0x34)+glyphIndex,s32 *,0x12c))==0){if ((s8)oldCursor >= 0 && (s8)oldCursor < 17 && (((s8)oldCursor < 17 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor] != 0) || ((s8)oldCursor > 0 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor-1] != 0))) *glyphCursor = (s8)oldCursor;PlaySoundEffect(0x1001d);return;}
+glyph=(s32 *)M2C_FIELD(*(s32 **)((u8 *)editor+0x34)+glyphIndex,s32 *,0x12c);
 }else {PlaySoundEffect(0x1001d);return;}
-} else if(Mb_StringCompare(value,&gGlyphHandakuten)==0) {
-s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(Mb_StringCompare(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
-if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
-if(Mb_StringCompare(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
-value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258);
+} else if(Mb_StringCompare(glyph,&gGlyphHandakuten)==0) {
+s32 glyphIndex; if(*glyphCursor==0) glyphIndex=-1; else{s32 *items=*(s32 **)((u8 *)editor+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*glyphCursor-1]; glyphIndex=-1; for(i=0;i<75;i++){if(Mb_StringCompare(entry,(M2C_UNK *)items[i])==0){glyphIndex=i;break;}}}
+if(glyphIndex>=0){s8 next=(s8)(*glyphCursor-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *glyphCursor = next;
+if(Mb_StringCompare(&((s32 *)&gMapEditObjectList)[*glyphCursor],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)editor+0x34)+glyphIndex,s32 *,0x258))==0){if ((s8)oldCursor >= 0 && (s8)oldCursor < 17 && (((s8)oldCursor < 17 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor] != 0) || ((s8)oldCursor > 0 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor-1] != 0))) *glyphCursor = (s8)oldCursor;PlaySoundEffect(0x1001d);return;}
+glyph=(s32 *)M2C_FIELD(*(s32 **)((u8 *)editor+0x34)+glyphIndex,s32 *,0x258);
 }else {PlaySoundEffect(0x1001d);return;}
 }
-if(*phase>=16){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; PauseSpriteUpdate(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=CreateTextLayer((s32)ctx); RenderTextLayerMessage(sprite,2,0x2800,0x46000012); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; GotoSpriteAnimationLabel((s32)ctx,5); } PlaySoundEffect(0x1001d); return;}
-MI_CpuCopy32(&gMapEditObjectList,(s8 *)scratch,0x44);
-scratch[*phase]=0;
-Mb_StringCopy(&scratch[*phase],(s32)value);
-{s32 *node; u32 count=0; node=scratch; if(*node){do{if(IsLeadByte(node)==0){if(count)count++;} count+=MeasureStringWidth(node);}while(*++node);}
-if(count>64){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; PauseSpriteUpdate(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=CreateTextLayer((s32)ctx); RenderTextLayerMessage(sprite,2,0x2800,0x46000013); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; GotoSpriteAnimationLabel((s32)ctx,5); } PlaySoundEffect(0x1001d); return;}
+if(*glyphCursor>=16){if ((s8)oldCursor >= 0 && (s8)oldCursor < 17 && (((s8)oldCursor < 17 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor] != 0) || ((s8)oldCursor > 0 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor-1] != 0))) *glyphCursor = (s8)oldCursor; PauseSpriteUpdate(); { s32 previousEngine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=CreateTextLayer((s32)editor); RenderTextLayerMessage(sprite,2,0x2800,0x46000012); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=previousEngine; GotoSpriteAnimationLabel((s32)editor,5); } PlaySoundEffect(0x1001d); return;}
+MI_CpuCopy32(&gMapEditObjectList,(s8 *)lineBuffer,0x44);
+lineBuffer[*glyphCursor]=0;
+Mb_StringCopy(&lineBuffer[*glyphCursor],(s32)glyph);
+{s32 *node; u32 count=0; node=lineBuffer; if(*node){do{if(IsLeadByte(node)==0){if(count)count++;} count+=MeasureStringWidth(node);}while(*++node);}
+if(count>64){if ((s8)oldCursor >= 0 && (s8)oldCursor < 17 && (((s8)oldCursor < 17 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor] != 0) || ((s8)oldCursor > 0 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor-1] != 0))) *glyphCursor = (s8)oldCursor; PauseSpriteUpdate(); { s32 previousEngine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=CreateTextLayer((s32)editor); RenderTextLayerMessage(sprite,2,0x2800,0x46000013); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=previousEngine; GotoSpriteAnimationLabel((s32)editor,5); } PlaySoundEffect(0x1001d); return;}
 }
-MI_CpuCopy32(scratch,(s8 *)&gMapEditObjectList,0x44);
-{ s8 next=(s8)(*phase+1); if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next; }
+MI_CpuCopy32(lineBuffer,(s8 *)&gMapEditObjectList,0x44);
+{ s8 next=(s8)(*glyphCursor+1); if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *glyphCursor = next; }
 PlaySoundEffect(0x1000d);return;
 }else {
-s32 old=*phase;
-s32 *value=&data_ov007_022205c0;
-if(Mb_StringCompare(value,&gGlyphDakuten)==0) {
-s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(Mb_StringCompare(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
-if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
-if(Mb_StringCompare(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
-value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c);
+s32 oldCursor=*glyphCursor;
+s32 *glyph=&data_ov007_022205c0;
+if(Mb_StringCompare(glyph,&gGlyphDakuten)==0) {
+s32 glyphIndex; if(*glyphCursor==0) glyphIndex=-1; else{s32 *items=*(s32 **)((u8 *)editor+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*glyphCursor-1]; glyphIndex=-1; for(i=0;i<75;i++){if(Mb_StringCompare(entry,(M2C_UNK *)items[i])==0){glyphIndex=i;break;}}}
+if(glyphIndex>=0){s8 next=(s8)(*glyphCursor-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *glyphCursor = next;
+if(Mb_StringCompare(&((s32 *)&gMapEditObjectList)[*glyphCursor],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)editor+0x34)+glyphIndex,s32 *,0x12c))==0){if ((s8)oldCursor >= 0 && (s8)oldCursor < 17 && (((s8)oldCursor < 17 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor] != 0) || ((s8)oldCursor > 0 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor-1] != 0))) *glyphCursor = (s8)oldCursor;PlaySoundEffect(0x1001d);return;}
+glyph=(s32 *)M2C_FIELD(*(s32 **)((u8 *)editor+0x34)+glyphIndex,s32 *,0x12c);
 }else {PlaySoundEffect(0x1001d);return;}
-} else if(Mb_StringCompare(value,&gGlyphHandakuten)==0) {
-s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(Mb_StringCompare(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
-if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
-if(Mb_StringCompare(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
-value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258);
+} else if(Mb_StringCompare(glyph,&gGlyphHandakuten)==0) {
+s32 glyphIndex; if(*glyphCursor==0) glyphIndex=-1; else{s32 *items=*(s32 **)((u8 *)editor+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*glyphCursor-1]; glyphIndex=-1; for(i=0;i<75;i++){if(Mb_StringCompare(entry,(M2C_UNK *)items[i])==0){glyphIndex=i;break;}}}
+if(glyphIndex>=0){s8 next=(s8)(*glyphCursor-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *glyphCursor = next;
+if(Mb_StringCompare(&((s32 *)&gMapEditObjectList)[*glyphCursor],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)editor+0x34)+glyphIndex,s32 *,0x258))==0){if ((s8)oldCursor >= 0 && (s8)oldCursor < 17 && (((s8)oldCursor < 17 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor] != 0) || ((s8)oldCursor > 0 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor-1] != 0))) *glyphCursor = (s8)oldCursor;PlaySoundEffect(0x1001d);return;}
+glyph=(s32 *)M2C_FIELD(*(s32 **)((u8 *)editor+0x34)+glyphIndex,s32 *,0x258);
 }else {PlaySoundEffect(0x1001d);return;}
 }
-if(*phase>=16){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; PauseSpriteUpdate(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=CreateTextLayer((s32)ctx); RenderTextLayerMessage(sprite,2,0x2800,0x46000012); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; GotoSpriteAnimationLabel((s32)ctx,5); } PlaySoundEffect(0x1001d); return;}
-MI_CpuCopy32(&gMapEditObjectList,(s8 *)padding,0x44);
-padding[*phase]=0;
-Mb_StringCopy(&padding[*phase],(s32)value);
-{s32 *node; u32 count=0; node=padding; if(*node){do{if(IsLeadByte(node)==0){if(count)count++;} count+=MeasureStringWidth(node);}while(*++node);}
-if(count>64){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old; PauseSpriteUpdate(); { s32 engine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=CreateTextLayer((s32)ctx); RenderTextLayerMessage(sprite,2,0x2800,0x46000013); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=engine; GotoSpriteAnimationLabel((s32)ctx,5); } PlaySoundEffect(0x1001d); return;}
+if(*glyphCursor>=16){if ((s8)oldCursor >= 0 && (s8)oldCursor < 17 && (((s8)oldCursor < 17 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor] != 0) || ((s8)oldCursor > 0 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor-1] != 0))) *glyphCursor = (s8)oldCursor; PauseSpriteUpdate(); { s32 previousEngine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=CreateTextLayer((s32)editor); RenderTextLayerMessage(sprite,2,0x2800,0x46000012); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=previousEngine; GotoSpriteAnimationLabel((s32)editor,5); } PlaySoundEffect(0x1001d); return;}
+MI_CpuCopy32(&gMapEditObjectList,(s8 *)lineBufferAlt,0x44);
+lineBufferAlt[*glyphCursor]=0;
+Mb_StringCopy(&lineBufferAlt[*glyphCursor],(s32)glyph);
+{s32 *node; u32 count=0; node=lineBufferAlt; if(*node){do{if(IsLeadByte(node)==0){if(count)count++;} count+=MeasureStringWidth(node);}while(*++node);}
+if(count>64){if ((s8)oldCursor >= 0 && (s8)oldCursor < 17 && (((s8)oldCursor < 17 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor] != 0) || ((s8)oldCursor > 0 && ((s32 *)&gMapEditObjectList)[(s8)oldCursor-1] != 0))) *glyphCursor = (s8)oldCursor; PauseSpriteUpdate(); { s32 previousEngine=gCur3DSpriteEngine; void *sprite; gCur3DSpriteEngine=g3DSpriteEngineMain; sprite=CreateTextLayer((s32)editor); RenderTextLayerMessage(sprite,2,0x2800,0x46000013); M2C_FIELD(sprite,s32 *,0x58) |= 0x1000; gCur3DSpriteEngine=previousEngine; GotoSpriteAnimationLabel((s32)editor,5); } PlaySoundEffect(0x1001d); return;}
 }
-MI_CpuCopy32(padding,(s8 *)&gMapEditObjectList,0x44);
-{ s8 next=(s8)(*phase+1); if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next; }
+MI_CpuCopy32(lineBufferAlt,(s8 *)&gMapEditObjectList,0x44);
+{ s8 next=(s8)(*glyphCursor+1); if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *glyphCursor = next; }
 PlaySoundEffect(0x1000d);return;
 } default:return;}}
 

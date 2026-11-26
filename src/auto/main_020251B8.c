@@ -24,10 +24,12 @@ node=M2C_FIELD(node,void **,0x68);
 }
 }
 
-void func_02025298(void) {
-    M2C_UNK MI_CpuFill8(M2C_UNK *, M2C_UNK, M2C_UNK);
+/* Clear the TLS client's session-resumption cache so no cached session is
+ * restored after the network stack is reset. */
+void ClearTlsSessionCache(void) {
+    void MI_CpuFill8(void *, s32, s32);
     extern M2C_UNK gTlsSessionCache;
-    MI_CpuFill8(&gTlsSessionCache, 0, 0x170);
+    MI_CpuFill8(&gTlsSessionCache, 0, TLS_CACHE_SIZE);
 }
 
 void CopyDigestBytes(M2C_UNK *arg0, void *arg1, u32 arg2) {
@@ -190,7 +192,7 @@ void StoreWordsBigEndian(void *dest, u32 *words, u32 count) {
 }
 
 #pragma opt_peephole off
-void func_020258f0(u32 *arg0,u8 *arg1,u32 arg2) {
+void LoadWordsBigEndian(u32 *arg0,u8 *arg1,u32 arg2) {
 u32 i=0,value;
 if(i>=arg2)return;
 do {
@@ -200,77 +202,103 @@ i+=4;
 }while(i<arg2);
 }
 #pragma opt_peephole reset
-void SHA1_Transform(void *state,s32 block){
-u32 a,b,c,d,e; s32 n,i;u32 w[16];
-a=((u32 *)state)[0];b=((u32 *)state)[1];c=((u32 *)state)[2];d=((u32 *)state)[3];e=((u32 *)state)[4];
-func_020258f0(w,(u8 *)block,64);n=0;
-for(i=0;i<3;i++){
-e += ((((a << 5) | (a >> 27)) + (d ^ (b & (c ^ d)))) + w[n+0]) + 0x5a827999;
-b = (b << 30) | (b >> 2);
-d += ((((e << 5) | (e >> 27)) + (c ^ (a & (b ^ c)))) + w[n+1]) + 0x5a827999;
-a = (a << 30) | (a >> 2);
-c += ((((d << 5) | (d >> 27)) + (b ^ (e & (a ^ b)))) + w[n+2]) + 0x5a827999;
-e = (e << 30) | (e >> 2);
-b += ((((c << 5) | (c >> 27)) + (a ^ (d & (e ^ a)))) + w[n+3]) + 0x5a827999;
-d = (d << 30) | (d >> 2);
-a += ((((b << 5) | (b >> 27)) + (e ^ (c & (d ^ e)))) + w[n+4]) + 0x5a827999;
-c = (c << 30) | (c >> 2);
-n+=5;
-}
-e += ((((a << 5) | (a >> 27)) + (d ^ (b & (c ^ d)))) + w[15]) + 0x5a827999;
-b = (b << 30) | (b >> 2);
-d += ((((e << 5) | (e >> 27)) + (c ^ (a & (b ^ c)))) + SHA1_ExpandWord(0,w)) + 0x5a827999;
-a = (a << 30) | (a >> 2);
-c += ((((d << 5) | (d >> 27)) + (b ^ (e & (a ^ b)))) + SHA1_ExpandWord(1,w)) + 0x5a827999;
-e = (e << 30) | (e >> 2);
-b += ((((c << 5) | (c >> 27)) + (a ^ (d & (e ^ a)))) + SHA1_ExpandWord(2,w)) + 0x5a827999;
-d = (d << 30) | (d >> 2);
-a += ((((b << 5) | (b >> 27)) + (e ^ (c & (d ^ e)))) + SHA1_ExpandWord(3,w)) + 0x5a827999;
-c = (c << 30) | (c >> 2);
-n=4;
-for(i=0;i<4;i++){
-e += ((((a << 5) | (a >> 27)) + (d ^ (b ^ c))) + SHA1_ExpandWord(n,w)) + 0x6ed9eba1;
-b = (b << 30) | (b >> 2);
-d += ((((e << 5) | (e >> 27)) + (c ^ (a ^ b))) + SHA1_ExpandWord(n+1,w)) + 0x6ed9eba1;
-a = (a << 30) | (a >> 2);
-n=(n+2)&15;
-c += ((((d << 5) | (d >> 27)) + (b ^ (e ^ a))) + SHA1_ExpandWord(n,w)) + 0x6ed9eba1;
-e = (e << 30) | (e >> 2);
-b += ((((c << 5) | (c >> 27)) + (a ^ (d ^ e))) + SHA1_ExpandWord(n+1,w)) + 0x6ed9eba1;
-d = (d << 30) | (d >> 2);
-a += ((((b << 5) | (b >> 27)) + (e ^ (c ^ d))) + SHA1_ExpandWord(n+2,w)) + 0x6ed9eba1;
-c = (c << 30) | (c >> 2);
-n+=3;
-}
-for(i=0;i<4;i++){
-e += ((((a << 5) | (a >> 27)) + ((b & (c | d)) | (c & d))) + SHA1_ExpandWord(n,w)) + 0x8f1bbcdc;
-b = (b << 30) | (b >> 2);
-d += ((((e << 5) | (e >> 27)) + ((a & (b | c)) | (b & c))) + SHA1_ExpandWord(n+1,w)) + 0x8f1bbcdc;
-a = (a << 30) | (a >> 2);
-c += ((((d << 5) | (d >> 27)) + ((e & (a | b)) | (a & b))) + SHA1_ExpandWord(n+2,w)) + 0x8f1bbcdc;
-e = (e << 30) | (e >> 2);
-n=(n+3)&15;
-b += ((((c << 5) | (c >> 27)) + ((d & (e | a)) | (e & a))) + SHA1_ExpandWord(n,w)) + 0x8f1bbcdc;
-d = (d << 30) | (d >> 2);
-a += ((((b << 5) | (b >> 27)) + ((c & (d | e)) | (d & e))) + SHA1_ExpandWord(n+1,w)) + 0x8f1bbcdc;
-c = (c << 30) | (c >> 2);
-n+=2;
-}
-for(i=0;i<4;i++){
-e += ((((a << 5) | (a >> 27)) + (d ^ (b ^ c))) + SHA1_ExpandWord(n,w)) + 0xca62c1d6;
-b = (b << 30) | (b >> 2);
-d += ((((e << 5) | (e >> 27)) + (c ^ (a ^ b))) + SHA1_ExpandWord(n+1,w)) + 0xca62c1d6;
-a = (a << 30) | (a >> 2);
-c += ((((d << 5) | (d >> 27)) + (b ^ (e ^ a))) + SHA1_ExpandWord(n+2,w)) + 0xca62c1d6;
-e = (e << 30) | (e >> 2);
-b += ((((c << 5) | (c >> 27)) + (a ^ (d ^ e))) + SHA1_ExpandWord(n+3,w)) + 0xca62c1d6;
-d = (d << 30) | (d >> 2);
-n=(n+4)&15;
-a += ((((b << 5) | (b >> 27)) + (e ^ (c ^ d))) + SHA1_ExpandWord(n,w)) + 0xca62c1d6;
-c = (c << 30) | (c >> 2);
-n+=1;
-}
-((u32 *)state)[0]+=a;((u32 *)state)[1]+=b;((u32 *)state)[2]+=c;((u32 *)state)[3]+=d;((u32 *)state)[4]+=e;
+/* SHA-1 block compression: load one 64-byte message block as sixteen
+ * big-endian words, run the four 20-step rounds over the five working words
+ * (each round with its own choice function and round constant), then add the
+ * result back into the chaining state. */
+void SHA1_Transform(void *state, s32 block) {
+    u32 a, b, c, d, e;
+    s32 scheduleIndex, i;
+    u32 schedule[16];
+
+    a = ((u32 *)state)[0];
+    b = ((u32 *)state)[1];
+    c = ((u32 *)state)[2];
+    d = ((u32 *)state)[3];
+    e = ((u32 *)state)[4];
+
+    LoadWordsBigEndian(schedule, (u8 *)block, 64);
+    scheduleIndex = 0;
+
+    /* Steps 0..19: choice (b & c) | (~b & d). */
+    for (i = 0; i < 3; i++) {
+        e += ((((a << 5) | (a >> 27)) + (d ^ (b & (c ^ d)))) + schedule[scheduleIndex + 0]) + SHA1_K_STEPS_0_19;
+        b = (b << 30) | (b >> 2);
+        d += ((((e << 5) | (e >> 27)) + (c ^ (a & (b ^ c)))) + schedule[scheduleIndex + 1]) + SHA1_K_STEPS_0_19;
+        a = (a << 30) | (a >> 2);
+        c += ((((d << 5) | (d >> 27)) + (b ^ (e & (a ^ b)))) + schedule[scheduleIndex + 2]) + SHA1_K_STEPS_0_19;
+        e = (e << 30) | (e >> 2);
+        b += ((((c << 5) | (c >> 27)) + (a ^ (d & (e ^ a)))) + schedule[scheduleIndex + 3]) + SHA1_K_STEPS_0_19;
+        d = (d << 30) | (d >> 2);
+        a += ((((b << 5) | (b >> 27)) + (e ^ (c & (d ^ e)))) + schedule[scheduleIndex + 4]) + SHA1_K_STEPS_0_19;
+        c = (c << 30) | (c >> 2);
+        scheduleIndex += 5;
+    }
+    e += ((((a << 5) | (a >> 27)) + (d ^ (b & (c ^ d)))) + schedule[15]) + SHA1_K_STEPS_0_19;
+    b = (b << 30) | (b >> 2);
+    d += ((((e << 5) | (e >> 27)) + (c ^ (a & (b ^ c)))) + SHA1_ExpandWord(0, schedule)) + SHA1_K_STEPS_0_19;
+    a = (a << 30) | (a >> 2);
+    c += ((((d << 5) | (d >> 27)) + (b ^ (e & (a ^ b)))) + SHA1_ExpandWord(1, schedule)) + SHA1_K_STEPS_0_19;
+    e = (e << 30) | (e >> 2);
+    b += ((((c << 5) | (c >> 27)) + (a ^ (d & (e ^ a)))) + SHA1_ExpandWord(2, schedule)) + SHA1_K_STEPS_0_19;
+    d = (d << 30) | (d >> 2);
+    a += ((((b << 5) | (b >> 27)) + (e ^ (c & (d ^ e)))) + SHA1_ExpandWord(3, schedule)) + SHA1_K_STEPS_0_19;
+    c = (c << 30) | (c >> 2);
+    scheduleIndex = 4;
+
+    /* Steps 20..39: parity b ^ c ^ d, with the schedule expanded in place. */
+    for (i = 0; i < 4; i++) {
+        e += ((((a << 5) | (a >> 27)) + (d ^ (b ^ c))) + SHA1_ExpandWord(scheduleIndex, schedule)) + SHA1_K_STEPS_20_39;
+        b = (b << 30) | (b >> 2);
+        d += ((((e << 5) | (e >> 27)) + (c ^ (a ^ b))) + SHA1_ExpandWord(scheduleIndex + 1, schedule)) + SHA1_K_STEPS_20_39;
+        a = (a << 30) | (a >> 2);
+        scheduleIndex = (scheduleIndex + 2) & 15;
+        c += ((((d << 5) | (d >> 27)) + (b ^ (e ^ a))) + SHA1_ExpandWord(scheduleIndex, schedule)) + SHA1_K_STEPS_20_39;
+        e = (e << 30) | (e >> 2);
+        b += ((((c << 5) | (c >> 27)) + (a ^ (d ^ e))) + SHA1_ExpandWord(scheduleIndex + 1, schedule)) + SHA1_K_STEPS_20_39;
+        d = (d << 30) | (d >> 2);
+        a += ((((b << 5) | (b >> 27)) + (e ^ (c ^ d))) + SHA1_ExpandWord(scheduleIndex + 2, schedule)) + SHA1_K_STEPS_20_39;
+        c = (c << 30) | (c >> 2);
+        scheduleIndex += 3;
+    }
+
+    /* Steps 40..59: majority (b & c) | (c & d) | (b & d). */
+    for (i = 0; i < 4; i++) {
+        e += ((((a << 5) | (a >> 27)) + ((b & (c | d)) | (c & d))) + SHA1_ExpandWord(scheduleIndex, schedule)) + SHA1_K_STEPS_40_59;
+        b = (b << 30) | (b >> 2);
+        d += ((((e << 5) | (e >> 27)) + ((a & (b | c)) | (b & c))) + SHA1_ExpandWord(scheduleIndex + 1, schedule)) + SHA1_K_STEPS_40_59;
+        a = (a << 30) | (a >> 2);
+        c += ((((d << 5) | (d >> 27)) + ((e & (a | b)) | (a & b))) + SHA1_ExpandWord(scheduleIndex + 2, schedule)) + SHA1_K_STEPS_40_59;
+        e = (e << 30) | (e >> 2);
+        scheduleIndex = (scheduleIndex + 3) & 15;
+        b += ((((c << 5) | (c >> 27)) + ((d & (e | a)) | (e & a))) + SHA1_ExpandWord(scheduleIndex, schedule)) + SHA1_K_STEPS_40_59;
+        d = (d << 30) | (d >> 2);
+        a += ((((b << 5) | (b >> 27)) + ((c & (d | e)) | (d & e))) + SHA1_ExpandWord(scheduleIndex + 1, schedule)) + SHA1_K_STEPS_40_59;
+        c = (c << 30) | (c >> 2);
+        scheduleIndex += 2;
+    }
+
+    /* Steps 60..79: parity b ^ c ^ d. */
+    for (i = 0; i < 4; i++) {
+        e += ((((a << 5) | (a >> 27)) + (d ^ (b ^ c))) + SHA1_ExpandWord(scheduleIndex, schedule)) + SHA1_K_STEPS_60_79;
+        b = (b << 30) | (b >> 2);
+        d += ((((e << 5) | (e >> 27)) + (c ^ (a ^ b))) + SHA1_ExpandWord(scheduleIndex + 1, schedule)) + SHA1_K_STEPS_60_79;
+        a = (a << 30) | (a >> 2);
+        c += ((((d << 5) | (d >> 27)) + (b ^ (e ^ a))) + SHA1_ExpandWord(scheduleIndex + 2, schedule)) + SHA1_K_STEPS_60_79;
+        e = (e << 30) | (e >> 2);
+        b += ((((c << 5) | (c >> 27)) + (a ^ (d ^ e))) + SHA1_ExpandWord(scheduleIndex + 3, schedule)) + SHA1_K_STEPS_60_79;
+        d = (d << 30) | (d >> 2);
+        scheduleIndex = (scheduleIndex + 4) & 15;
+        a += ((((b << 5) | (b >> 27)) + (e ^ (c ^ d))) + SHA1_ExpandWord(scheduleIndex, schedule)) + SHA1_K_STEPS_60_79;
+        c = (c << 30) | (c >> 2);
+        scheduleIndex += 1;
+    }
+
+    ((u32 *)state)[0] += a;
+    ((u32 *)state)[1] += b;
+    ((u32 *)state)[2] += c;
+    ((u32 *)state)[3] += d;
+    ((u32 *)state)[4] += e;
 }
 
 /* Initialise a compact SHA1 context to the standard SHA1 initial state. */

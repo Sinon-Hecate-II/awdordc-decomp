@@ -20,9 +20,12 @@ s32 Sound_PlayEffectAtVolume(s32 soundId, s32 volume) {
     return 1;
 }
 
-s32 SetSoundEffectVolume(M2C_UNK arg0) {
+/* Set the current sound-effect player's volume at once, without a fade (the
+ * shortcut Sound_PlayEffectAtVolume uses after starting a sound); it reports
+ * success even when the sound system is off. */
+s32 SetSoundEffectVolume(s32 volume) {
     M2C_UNK Sound_FadeEffectVolume(M2C_UNK, M2C_UNK, M2C_UNK);
-    Sound_FadeEffectVolume(-1, arg0, 0);
+    Sound_FadeEffectVolume(-1, volume, 0);
     return 1;
 }
 
@@ -136,16 +139,18 @@ s32 StopSlotSound(s32 slot, s32 fadeFrames) {
     return 1;
 }
 
-u8 IsSlotSoundActive(s32 arg0) {
+/* Returns 1 while sound effect slot `slot` has a live player handle, 0 once the
+ * slot is silent. */
+u8 IsSlotSoundActive(s32 slot) {
     extern M2C_UNK gSoundEffectSlotHandles;
-    u8 var_r0;
+    u8 active;
 
-    if ((&gSoundEffectSlotHandles)[arg0] != 0) {
-        var_r0 = 1;
+    if ((&gSoundEffectSlotHandles)[slot] != 0) {
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 /* Hand a pending volume change for slot `slot` to the sound driver, but only
@@ -255,11 +260,11 @@ s32 FadeOutMusic(s32 frames) {
     extern M2C_UNK gSoundDriverState, gMusicSequencePlayer, gMusicSoundPlayer;
     u8 IsMusicSequencePlayerActive(void);
     u8 IsMusicSoundPlayerActive(void);
-    M2C_UNK func_0202ac60(M2C_UNK, M2C_UNK);
-    void func_0202d944(M2C_UNK, s32);
+    M2C_UNK Sound_FadeOutPlayerVoice(M2C_UNK, M2C_UNK);
+    void Sound_FadeOutPlayerHandle(M2C_UNK, s32);
     if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) return 0;
-    if (IsMusicSequencePlayerActive() != 0) func_0202ac60(&gMusicSequencePlayer, frames);
-    if (IsMusicSoundPlayerActive() != 0) func_0202d944(&gMusicSoundPlayer, frames);
+    if (IsMusicSequencePlayerActive() != 0) Sound_FadeOutPlayerVoice(&gMusicSequencePlayer, frames);
+    if (IsMusicSoundPlayerActive() != 0) Sound_FadeOutPlayerHandle(&gMusicSoundPlayer, frames);
     return 1;
 }
 
@@ -293,35 +298,42 @@ s32 Sound_FadeVolume(s32 snapVolume, s32 targetVolume, s32 frames) {
     return 1;
 }
 
+/* True while the game's music sequence player is running, i.e. the sound driver
+ * has SOUND_STATE_SEQUENCE_ACTIVE set. */
 u8 IsMusicSequencePlayerActive(void) {
     extern M2C_UNK gSoundDriverState;
-    u8 var_r0;
+    u8 active;
 
-    if (M2C_FIELD(&gSoundDriverState, s32 *, 0xC) != 0) {
-        var_r0 = 1;
+    if (M2C_FIELD(&gSoundDriverState, s32 *, SOUND_STATE_SEQUENCE_ACTIVE) != 0) {
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
+/* True while the game's streamed music sound player is running, i.e. the sound
+ * driver has SOUND_STATE_SOUND_ACTIVE set. */
 u8 IsMusicSoundPlayerActive(void) {
     extern M2C_UNK gSoundDriverState;
-    u8 var_r0;
+    u8 active;
 
-    if (M2C_FIELD(&gSoundDriverState, s32 *, 0x8) != 0) {
-        var_r0 = 1;
+    if (M2C_FIELD(&gSoundDriverState, s32 *, SOUND_STATE_SOUND_ACTIVE) != 0) {
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
-void func_02090390(void) {
+/* Run one frame of the sound driver, unless the sound system is off
+ * (SOUND_STATE_ENABLED clear).  NitroMain calls it with the per-frame sprite
+ * updates. */
+void Sound_UpdateDriverIfEnabled(void) {
     extern M2C_UNK gSoundDriverState;
     void Sound_UpdateDriver(void);
 
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return;
     }
     Sound_UpdateDriver();
@@ -339,7 +351,11 @@ void Sound_PushPlayerHeapSection(void) {
     Sound_PushHeapSection(M2C_FIELD(&gSoundDriverState, void **, SOUND_STATE_PLAYER));
 }
 
-void func_020903d4(void) {
+/* Load the game's main sound data into the sound player opened by
+ * OpenSoundPlayer: sequence archive 1 and sound bank 0x24 (the archive that
+ * holds the music and sound effects), then sound group 1, which lists the
+ * resources the game plays from. */
+void LoadMainSoundData(void) {
     void LoadSoundSequenceArchiveAndBank(s32, s32);
     M2C_UNK Sound_LoadGroup(M2C_UNK);
     LoadSoundSequenceArchiveAndBank(1, 0x24);
@@ -460,11 +476,13 @@ void UpdateStreamedMusicVolume(void) {
     }
 }
 
+/* Apply the current effective music volume to the music mix channel, then to the
+ * streamed music player's voices. */
 void Sound_ApplyMusicVolume(void) {
     M2C_UNK Sound_SetChannelMixVolume(M2C_UNK, s32);
     s32 GetMusicVolume();
 
-    Sound_SetChannelMixVolume(0, GetMusicVolume());
+    Sound_SetChannelMixVolume(SOUND_CHANNEL_MUSIC, GetMusicVolume());
     UpdateStreamedMusicVolume();
 }
 
@@ -617,12 +635,13 @@ void SpritePlayer_SpawnChild(void *player, void *parent, s32 slot) {
     M2C_FIELD(tail, void **, SPRITE_PLAYER_NEXT) = player;
 }
 
-void SpritePlayer_SetListPosition(void *arg0, s32 arg1, s32 arg2) {
-    M2C_FIELD(arg0, u16 *, 0x20) = (u16)arg1;
-    M2C_FIELD(arg0, u16 *, 0x22) = (u16)arg2;
-    arg0 = M2C_FIELD(arg0, void **, 0x8);
-    if (arg0 != 0) {
-        SpritePlayer_SetListPosition(arg0, arg1, arg2);
+/* Move `player` and every player linked after it in the list to (x, y). */
+void SpritePlayer_SetListPosition(void *player, s32 x, s32 y) {
+    M2C_FIELD(player, u16 *, SPRITE_PLAYER_X) = (u16)x;
+    M2C_FIELD(player, u16 *, SPRITE_PLAYER_Y) = (u16)y;
+    player = M2C_FIELD(player, void **, SPRITE_PLAYER_NEXT);
+    if (player != 0) {
+        SpritePlayer_SetListPosition(player, x, y);
     }
 }
 

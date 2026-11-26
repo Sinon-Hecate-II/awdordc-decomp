@@ -152,10 +152,12 @@ void ProductionMenu_ConfirmBuild(void *row) {
     M2C_FIELD(*gCurrentMap, s16 *, MAP_MODE) = MAP_MODE_CURSOR;
 }
 
-void CreateProductionMenuRow(s32 arg0, s32 arg1) {
+/* Create the production menu's row object for unit kind `kind` (the row then
+ * counts the kind's cost up on the funds line).  `screen` is not used here. */
+void CreateProductionMenuRow(s32 kind, s32 screen) {
     void *CreateSpriteObject(M2C_UNK *);
-    extern M2C_UNK data_02129178;
-    M2C_FIELD(CreateSpriteObject(&data_02129178), s32 *, 0x5C) = arg0;
+    extern M2C_UNK gProductionRowClass;
+    M2C_FIELD(CreateSpriteObject(&gProductionRowClass), s32 *, PRODUCTION_ROW_KIND) = kind;
 }
 
 /* Draws the selected unit's cost and projected balance, then updates the unit info panel. */
@@ -211,7 +213,7 @@ if(gKeyState[KEY_HELD]&KEY_B)InvokeCancelCallback();
 void ProductionMenu_ConfirmSelection(u8 *selection) {
     s32 FindFreeUnitRecord(s32);
     M2C_UNK PlaySoundEffect(s32);
-    void func_02096b6c(u32);
+    void ShowUiMessageStyle1(u32);
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK HideAllSpriteSlots();
     M2C_UNK ResumeAnimationOfSpriteClass(M2C_UNK *);
@@ -228,7 +230,7 @@ void ProductionMenu_ConfirmSelection(u8 *selection) {
     }
     if (!FindFreeUnitRecord(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
         PlaySoundEffect(0x1001d);
-        func_02096b6c(0xc0000332);
+        ShowUiMessageStyle1(0xc0000332);
     } else {
         void *screen = FindObjectByClass(&gProductionMenuScreenClass);
         CreateProductionMenuRow(gProductionChoices[index * 2], (s32)screen);

@@ -102,11 +102,11 @@ s32 ProcessAiCommandDelay(void) {
  * command's target tile.  Either way the AI then goes back to picking its next
  * action (phase 2, step 0). */
 s32 ResolveAiAttackCommand(void) {
-void func_020bb0d0(u8);
+void StartBattlePreviewOnTargetUnit(u8);
 void StartBattlePreviewOnTile(u8,u8);
 extern u8 gAiCommand[];
 extern void *gAiCommandState;
-if(gAiCommand[AI_COMMAND_KIND] == AI_COMMAND_ATTACK_TARGET) func_020bb0d0(gAiCommand[AI_COMMAND_UNIT]);
+if(gAiCommand[AI_COMMAND_KIND] == AI_COMMAND_ATTACK_TARGET) StartBattlePreviewOnTargetUnit(gAiCommand[AI_COMMAND_UNIT]);
 else StartBattlePreviewOnTile(gAiCommand[AI_COMMAND_UNIT],gAiCommand[AI_COMMAND_ARG_Y]);
 M2C_FIELD(gAiCommandState,s8 *,AI_COMMAND_STATE_PHASE)=AI_COMMAND_PHASE_PICK_ACTION;
 M2C_FIELD(gAiCommandState,s8 *,AI_COMMAND_STATE_STEP)=0;
@@ -197,7 +197,7 @@ extern void **gCurrentMap;
 extern u16 data_ov000_021df58c[],data_ov000_021df584[];
 extern s32 gMapCursorOptionValue;
 void *CreateUnitMoveAndStart(u16,u16,s32,u32,void *);
-void func_020cad00(u32,s32,s32);
+void PlayUnitDropSound(u32,s32,s32);
 void DropCarriedUnit(s32);
 u32 state=data_ov000_021df7d6[n];
 data_ov000_021e146c[n]=0;
@@ -217,7 +217,7 @@ map=*gCurrentMap;unit=M2C_FIELD(map,u8 **,0x52d0);
 entry=unit+n;index=(s16)entry[12]*14;base=map+0x59a4;
 if(unit) player=(BattleMapUnitHead *)unit - (BattleMapUnitHead *)base;
 data_ov000_021e146c[n]=CreateUnitMoveAndStart(M2C_FIELD(map,u16 *,0x52dc),M2C_FIELD(map,u16 *,0x52de),(player>>6)+1,((UnitId6 *)(base+index))->id,data_ov000_021df584+gMapCursorOptionValue);
-func_020cad00(((UnitId6 *)(base+index))->id,M2C_FIELD(*gCurrentMap,s16 *,0x52dc),M2C_FIELD(*gCurrentMap,s16 *,0x52de));
+PlayUnitDropSound(((UnitId6 *)(base+index))->id,M2C_FIELD(*gCurrentMap,s16 *,0x52dc),M2C_FIELD(*gCurrentMap,s16 *,0x52de));
 DropCarriedUnit(n);
 }}
 #pragma opt_common_subs reset

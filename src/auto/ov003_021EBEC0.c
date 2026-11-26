@@ -231,7 +231,13 @@ void UpdateWaypointSelection(void *panel, s32 action) {
     M2C_FIELD(panel,u8 *,0x3a)|=8;
 }
 #pragma pop
-void func_ov003_021ec780(u8 *p,s32 i) {p+=14;p[i]=p[i]==1?2:1;}
+/* Toggle a waypoint slot's two-state variant byte (WAYPOINT_LIST_SLOT_VARIANTS
+ * + slot) between 1 and 2; the slot draws its alternate option-cell tile when
+ * the variant is 2. */
+void ToggleWaypointSlotVariant(u8 *list, s32 slot) {
+    list += WAYPOINT_LIST_SLOT_VARIANTS;
+    list[slot] = list[slot] == 1 ? 2 : 1;
+}
 
 s32 InRange(u8,s32,s32);
 void StepCounter(s32,s32,s32);

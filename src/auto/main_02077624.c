@@ -73,7 +73,12 @@ s32 GetFrameStep(void) {
     return FX_Div(0x60000, M2C_FIELD(&gMapHighlightState, s32 *, 0x18) * 3);
 }
 
-void func_02077720(void) {*(volatile u32 *)0x40004c0=0x7fffffff;*(volatile u32 *)0x40004c4=0x7fff4210;}
+/* Set the battle map's material on the geometry engine: white diffuse (taken
+ * from the vertex colour) and ambient, a dim grey specular and white emission. */
+void SetMapViewMaterial(void) {
+    *(volatile u32 *)0x40004c0 = GX_DEFAULT_MATERIAL_DIF_AMB;
+    *(volatile u32 *)0x40004c4 = GX_MAP_VIEW_MATERIAL_SPE_EMI;
+}
 
 #pragma opt_propagation off
 #pragma opt_cond_exec off
@@ -140,6 +145,8 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  *(volatile u32 *)0x04000448=1;
 }
 #pragma pop
+/* Switch the 3D engine's fog off: GX_SetFog clears DISP3DCNT's fog enable,
+ * blend and density bits. */
 void GX_DisableFog(void) {
     M2C_UNK GX_SetFog(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     GX_SetFog(0, 0, 0, 0);
@@ -241,11 +248,11 @@ void UpdateMapView(void) {
 
 void func_02077c64(void) {
     M2C_UNK G3X_Reset();
-    void func_02077720();
+    void SetMapViewMaterial();
     M2C_UNK func_02078828();
     G3X_Reset();
     func_02078828();
-    func_02077720();
+    SetMapViewMaterial();
 }
 
 void func_02077c78(void) {

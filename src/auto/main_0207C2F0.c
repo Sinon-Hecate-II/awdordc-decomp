@@ -555,13 +555,17 @@ M2C_UNK UpdateMapViewEye(void *view) {
  M2C_FIELD(view,s32 *,0x18) = M2C_FIELD(view,s32 *,8);
 }
 
-void SetViewZoom(void *arg0, s16 arg1) {
+/* Set the map view's zoom fraction `zoom` (0 = zoomed in, 0x80 = zoomed out):
+ * store it, update the zoom-dependent view position and colours, then save it
+ * into the game options. */
+void SetViewZoom(void *view, s16 zoom) {
     void SetViewZoomField(void *, s16);
     M2C_UNK UpdateViewForZoom(M2C_UNK);
     void SaveViewZoomOption(void *);
-    SetViewZoomField(arg0, arg1);
-    UpdateViewForZoom((M2C_UNK)arg0);
-    SaveViewZoomOption(arg0);
+
+    SetViewZoomField(view, zoom);
+    UpdateViewForZoom((M2C_UNK)view);
+    SaveViewZoomOption(view);
 }
 
 /* The map view's tile height at zoom fraction zoom (0 = zoomed in, 0x80 = zoomed
@@ -602,14 +606,14 @@ M2C_UNK UpdateViewForZoom(M2C_UNK arg) {
     M2C_FIELD(p, u8 *, 13) = EaseInterpolate(0, ((u8 *)&colorA)[13], ((u8 *)&colorB)[13], t, 128);
 }
 
+/* Return the width in map cells of the currently visible map view. */
 u8 GetMapViewWidth(void) {
-    extern void **gCurrentMap;
-    return M2C_FIELD(*gCurrentMap, u8 *, 0x6F04);
+    return M2C_FIELD(*gCurrentMap, u8 *, MAP_VIEW_WIDTH_CELLS);
 }
 
+/* Return the height of the visible map view, in map cells. */
 u8 GetMapViewHeight(void) {
- extern void **gCurrentMap;
- return M2C_FIELD(*gCurrentMap, u8 *, 0x6F05);
+ return M2C_FIELD(*gCurrentMap, u8 *, MAP_VIEW_HEIGHT_CELLS);
 }
 
 /* Submit a sprite frame's 3D geometry: draw each quad of the frame's attribute

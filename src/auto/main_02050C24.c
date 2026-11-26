@@ -157,7 +157,7 @@ s32 gpiStartConnection(void **conn, s8 *nick, s8 *uniqnick, s8 *email, s8 *passw
     M2C_UNK MemSet(void *, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_020fe3fc;
     extern M2C_UNK data_020fe410;
-    extern M2C_UNK data_020fe424;
+    extern M2C_UNK gGpiConnectMsgOutOfMemory;
     void *newSession;
     s32 result;
     s32 status;
@@ -190,7 +190,7 @@ s32 gpiStartConnection(void **conn, s8 *nick, s8 *uniqnick, s8 *email, s8 *passw
     StringToLower(session + 0x144);
     peer = gpiMalloc(0x308);
     if (peer == NULL) {
-        gpiSetErrorString(conn, &data_020fe424);
+        gpiSetErrorString(conn, &gGpiConnectMsgOutOfMemory);
         return 1;
     }
     MemSet(peer, 0, 0x308);
@@ -233,7 +233,7 @@ s32 func_020511dc(void *a, void *b) {
     M2C_UNK gpiFindBuddyByNickEmail(void **, M2C_UNK, M2C_UNK, M2C_UNK *);
     M2C_UNK gpiAppendStringField(void **, void *, M2C_UNK *);
     M2C_UNK gpiAppendIntField(void **, void *, M2C_UNK);
-    extern M2C_UNK data_020fe434, data_020fe43c, data_020fe44c, data_020fe480, data_020fe488, data_020fe494, gGsKeyUniqueNick, data_020fe4b0, data_020fe4b8, data_020fe4bc, data_020fe4c8, data_020fe4d4, data_020fe4e0, data_020fe4ec, gGsKeyProductId, gGsKeyGameName, gGsKeyNamespaceId, gGsKeyId1, gGsKeyFinal, gServiceNameBuffer;
+    extern M2C_UNK gGpiConnectIdentityFormat, gGpiConnectProofFormat, gGpiConnectProofSpaces, data_020fe480, gGpiConnectChallengeKey, data_020fe494, gGsKeyUniqueNick, data_020fe4b0, data_020fe4b8, gGpiConnectUserIdKey, gGpiConnectProfileIdKey, data_020fe4d4, data_020fe4e0, data_020fe4ec, gGsKeyProductId, gGsKeyGameName, gGsKeyNamespaceId, gGsKeyId1, gGsKeyFinal, gServiceNameBuffer;
     void **pa = (void **)a;
     void *session = *pa;
     char *r5 = (char *)b;
@@ -253,10 +253,10 @@ s32 func_020511dc(void *a, void *b) {
     } else if (((char *)session)[0x12f]) {
         identity = (char *)session + 0x2f + 0x100;
     } else {
-        StringFormat((M2C_UNK)buf1, (M2C_UNK)&data_020fe434, (char *)session + 0x110, (char *)session + 0x144);
+        StringFormat((M2C_UNK)buf1, (M2C_UNK)&gGpiConnectIdentityFormat, (char *)session + 0x110, (char *)session + 0x144);
         identity = buf1;
     }
-    StringFormat((M2C_UNK)response, (M2C_UNK)&data_020fe43c, r5 + 0xa1, &data_020fe44c, identity, r5 + 0x80, r5, r5 + 0xa1);
+    StringFormat((M2C_UNK)response, (M2C_UNK)&gGpiConnectProofFormat, r5 + 0xa1, &gGpiConnectProofSpaces, identity, r5 + 0x80, r5, r5 + 0xa1);
     length = StringLength(response);
     Md5Hex((M2C_UNK)response, length, (M2C_UNK)digest);
     if (*((M2C_UNK *)((char *)session + 0x100)) != 0) {
@@ -267,7 +267,7 @@ s32 func_020511dc(void *a, void *b) {
         }
     }
     gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe480);
-    gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe488);
+    gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &gGpiConnectChallengeKey);
     gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK *)(r5 + 0x80));
     if ((signed char) r5[0xc2] != 0) {
         gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe494);
@@ -284,11 +284,11 @@ s32 func_020511dc(void *a, void *b) {
         }
     }
     if (M2C_FIELD(session, M2C_UNK *, 0x19c) != 0) {
-        gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe4bc);
+        gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &gGpiConnectUserIdKey);
         gpiAppendIntField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)M2C_FIELD(session, M2C_UNK *, 0x19c));
     }
     if (M2C_FIELD(session, M2C_UNK *, 0x1a0) != 0) {
-        gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe4c8);
+        gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &gGpiConnectProfileIdKey);
         gpiAppendIntField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)M2C_FIELD(session, M2C_UNK *, 0x1a0));
     }
     gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe4d4);

@@ -658,9 +658,11 @@ gExceptionHandlerState[2]=0;
 
 #pragma optimization_level 4
 void func_02006dd8(void) {void func_02006dec(void);void func_02006e7c(void);func_02006dec();func_02006e7c();}
-void func_02006ef8(s32 arg0) {
+/* Set bit `flag` of the system tick module's 16-bit flag word (data_0212dfb0,
+ * which sits just before gSystemTickState); InitSystemTick marks bit 0. */
+void SetSystemTickFlag(s32 flag) {
     extern u16 data_0212dfb0;
-    u16 v = data_0212dfb0;
-    data_0212dfb0 = v | (1u << arg0);
+    u16 flags = data_0212dfb0;
+    data_0212dfb0 = flags | (1u << flag);
 }
 

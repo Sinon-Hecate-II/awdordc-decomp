@@ -173,12 +173,15 @@ void SaveList_QueueDelete(M2C_UNK *manager, s32 id) {
  }
 }
 
+/* Boot task that opens the battle-save archive: check that the save device's
+ * archive is usable, then scan its blocks and index the newest save records. */
 void SaveManager_InitTask(void) {
- M2C_UNK SaveManager_CheckArchive(void *);
- M2C_UNK SaveManager_ScanArchive(void *);
- extern M2C_UNK gSaveManager;
- SaveManager_CheckArchive(&gSaveManager);
- SaveManager_ScanArchive(&gSaveManager);
+    void SaveManager_CheckArchive(void *manager);
+    void SaveManager_ScanArchive(void *manager);
+    extern M2C_UNK gSaveManager;
+
+    SaveManager_CheckArchive(&gSaveManager);
+    SaveManager_ScanArchive(&gSaveManager);
 }
 
 void SaveList_FlushTask(void) {

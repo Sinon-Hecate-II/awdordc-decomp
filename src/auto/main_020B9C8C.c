@@ -93,7 +93,7 @@ s32 CanBuildUnitKindIgnoringMap(s32 player,s32 kind) {
 
 /* Report whether facility type `facility` is available on the current map in
  * mode 0: reject it if the per-facility table (gUnitKindBuildable) marks it
- * invalid (-1) or its attribute word (data_ov000_021b5c00[type*0x70]) is zero;
+ * invalid (-1) or its attribute word (gUnitKindBuildCosts[type*0x70]) is zero;
  * otherwise each facility type is blocked on the special maps whose id lies in
  * [0xa1, limit] (larger limits cover more facilities). */
 s32 CanBuildUnitKindOnMap(s32 unit, s32 facility) {

@@ -487,10 +487,11 @@ session=M2C_FIELD(&gMatchSessionMgr,void **,8);
 M2C_FIELD(session,void (**)(s32,u32,void *,s32),MATCH_SESSION_INFO_CB)(slot,buf[1]&255,out,M2C_FIELD(session,s32 *,MATCH_SESSION_INFO_DATA));
 }
 
-s32 func_0203ae50(void) {
+/* Return the number of players in the live online match, or 0 without a session. */
+s32 GetMatchPlayerCount(void) {
     extern M2C_UNK gMatchSessionMgr;
-    if (M2C_FIELD(&gMatchSessionMgr, void **, 8) != NULL) {
-        return M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), s32 *, 0x14);
+    if (M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION) != NULL) {
+        return M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION), s32 *, MATCH_SESSION_PLAYER_COUNT);
     }
     return 0;
 }

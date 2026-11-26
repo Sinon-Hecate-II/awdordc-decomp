@@ -42,6 +42,46 @@
 #define DS3D_BANK_ROWS_ABOVE 0x51
 #define DS3D_BANK_ROWS_BELOW 0x52
 
+/* The bank's oamAttr word is copied to BLDCNT, the layer blend register
+ * (Apply3DSpriteBankMain): bits 0..4 select the source layers (BG0..BG3, OBJ),
+ * bits 6..7 the blend effect and bits 8..12 the target layers, in the same layer
+ * order.  While a blend runs, rowsAbove/rowsBelow hold its two weights: EVA (the
+ * source weight) and EVB (the target weight), each 0..16. */
+#define DS3D_BANK_BLEND_SRC_MASK     0x001F
+#define DS3D_BANK_BLEND_DST_MASK     0x1F00
+#define DS3D_BANK_BLEND_EFFECT_MASK  0x00C0
+#define DS3D_BANK_BLEND_EFFECT_ALPHA 0x0040 /* plain alpha blending of the two masks */
+
+/* One-hot blend source layers (low bits of the blend word). */
+#define DS3D_BLEND_SRC_BG0 0x0001
+#define DS3D_BLEND_SRC_BG1 0x0002
+#define DS3D_BLEND_SRC_BG2 0x0004
+#define DS3D_BLEND_SRC_BG3 0x0008
+#define DS3D_BLEND_SRC_OBJ 0x0010
+
+/* The matching target layers (high bits of the blend word). */
+#define DS3D_BLEND_DST_BG0 0x0100
+#define DS3D_BLEND_DST_BG1 0x0200
+#define DS3D_BLEND_DST_BG2 0x0400
+#define DS3D_BLEND_DST_BG3 0x0800
+#define DS3D_BLEND_DST_OBJ 0x1000
+
+/* Layer selector the blend helpers take: 0..3 = BG0..BG3, 8 = OBJ. */
+#define DS3D_BLEND_LAYER_BG0 0
+#define DS3D_BLEND_LAYER_BG1 1
+#define DS3D_BLEND_LAYER_BG2 2
+#define DS3D_BLEND_LAYER_BG3 3
+#define DS3D_BLEND_LAYER_OBJ 8
+
+/* The bank's per-layer corner offsets (DS3DSpriteBank::corner): layer n's x is
+ * at DS3D_BANK_CORNER + n*4, its y two bytes later. */
+#define DS3D_BANK_CORNER   0x38
+#define DS3D_BANK_CORNER_X(layer) (DS3D_BANK_CORNER + (layer) * 4)
+#define DS3D_BANK_CORNER_Y(layer) (DS3D_BANK_CORNER + (layer) * 4 + 2)
+
+/* The flags word at the start of the bank (DS3DSpriteBank::flags). */
+#define DS3D_BANK_FLAGS 0x00
+
 /* DS3DSpriteBank::flags bits 4..8 select the active screen mode, one-hot: the
  * mode index Get3DSpriteScreenMode() returns. Reset3DSpriteLayers clears them. */
 #define DS3D_BANK_MODE0 0x0010
@@ -684,6 +724,7 @@ typedef struct ScenePanelState {
 #define DS3D_MANAGER_PANEL_COUNT 3
 #define DS3D_MANAGER_DIALOG_QUEUE 0x24 /* s32[DS3D_DIALOG_QUEUE_COUNT] */
 #define DS3D_DIALOG_QUEUE_COUNT 8
+#define DS3D_MANAGER_OTHER_SCREEN_MODE 0x44 /* u8[2]: the other screen's screen mode, one byte per engine; 2 = DS3D_SCREEN_MODE_2 */
 #define DS3D_MANAGER_PANEL_ROW_PAIRS 0x4A /* u8: text row pairs of the message panels */
 #define DS3D_MANAGER_TARGET_MODE 0x49 /* u8 DS3D_TARGET_* the 3D sprites are created on (Get3DSpriteTargetMode / Set3DSpriteTargetMode) */
 #define DS3D_MANAGER_MENU_CURSOR 0x4D /* s8 index of the message panel the menu cursor is on (GetMenuCursor / SetMenuCursor); 2 while both screens show a panel */

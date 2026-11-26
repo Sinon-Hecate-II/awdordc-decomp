@@ -16,7 +16,7 @@ void func_ov003_021e3500(void *arg0) {
     M2C_UNK SetPanelChoice(void *, M2C_UNK);
     void *CreateTextLayer(void *);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020c9100(void *);
+    M2C_UNK CreateCampaignMapLoadQueue(void *);
     M2C_UNK AppendCampaignMapLoadEntry(u16, s32);
     M2C_UNK func_ov003_021f1894();
     u32 func_ov003_021f2574();
@@ -53,7 +53,7 @@ void func_ov003_021e3500(void *arg0) {
         x = (u32)cnt;
     }
     if (x != 0) {
-        func_020c9100(r5);
+        CreateCampaignMapLoadQueue(r5);
         i = 0;
         goto loop_test;
         do {

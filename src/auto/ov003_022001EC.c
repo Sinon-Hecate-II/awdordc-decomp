@@ -120,16 +120,19 @@ s16 GetWaypointSlotX(M2C_UNK index) {
     return (s16) (base + GetWaypointSlotOffsetX(index));
 }
 
+/* X of the left edge of the waypoint slot row for the current map's player
+ * count: the row's base X, indexed by player count - 1. */
 s16 GetWaypointSlotBaseX(void) {
-    s32 func_020cfb94(void);
-    return sWaypointSlotBaseX[func_020cfb94() - 1];
+    s32 GetCurrentMapPlayerCount(void);
+
+    return sWaypointSlotBaseX[GetCurrentMapPlayerCount() - 1];
 }
 
 /* X offset of waypoint slot `index`: the slot's stride for the current map's
  * player count, times the index. */
 s16 GetWaypointSlotOffsetX(s32 index) {
-    s32 func_020cfb94(void);
-    s32 stride = sWaypointSlotStrideX[func_020cfb94() - 1];
+    s32 GetCurrentMapPlayerCount(void);
+    s32 stride = sWaypointSlotStrideX[GetCurrentMapPlayerCount() - 1];
     s32 offset = index * stride;
     return (s16)offset;
 }

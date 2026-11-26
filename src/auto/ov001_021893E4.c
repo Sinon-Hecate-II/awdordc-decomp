@@ -555,7 +555,7 @@ void Ov001_InitSpritePools(void) {
 }
 
 #pragma opt_propagation off
-void func_ov001_0218a01c(void) { void Ov001_FreeBlock(s32); void Ov001_FreeAlloc(void *); void func_ov001_0218bf30(s32); extern s32 gOv001SpritePools; s32 i,offset; i=0;offset=0;do{func_ov001_0218bf30(M2C_FIELD(gOv001SpritePools+offset,s32*,0x220));Ov001_FreeBlock(M2C_FIELD(gOv001SpritePools+offset,s32*,0x224));i++;offset+=0x228;}while(i<2);Ov001_FreeAlloc(&gOv001SpritePools); }
+void func_ov001_0218a01c(void) { void Ov001_QueueDestroy(s32); void Ov001_FreeAlloc(void *); void Ov001_ListDestroy(s32); extern s32 gOv001SpritePools; s32 i,offset; i=0;offset=0;do{Ov001_ListDestroy(M2C_FIELD(gOv001SpritePools+offset,s32*,0x220));Ov001_QueueDestroy(M2C_FIELD(gOv001SpritePools+offset,s32*,0x224));i++;offset+=0x228;}while(i<2);Ov001_FreeAlloc(&gOv001SpritePools); }
 #pragma opt_propagation reset
 /* Give a free sprite object of pool `pool` the first run of `size` 8-byte entry
  * slots that fits in its arena, searching from the low addresses when `fromHead`

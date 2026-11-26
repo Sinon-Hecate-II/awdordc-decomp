@@ -97,27 +97,35 @@ s32 SaveDevice_WaitForTransfer(void) {
     return *M2C_FIELD(device, s32 **, SAVE_DEVICE_RESPONSE) == 0;
 }
 #pragma optimization_level reset
-s32 func_0200fdec(void) {
- extern void *gSaveDeviceState;
- return (M2C_FIELD(&gSaveDeviceState, u32 *, 0x114) & 4) == 0;
+/* Whether no save-chip transfer is running: the device's busy flag is clear. */
+s32 SaveDevice_IsTransferIdle(void) {
+    extern void *gSaveDeviceState;
+    return (M2C_FIELD(&gSaveDeviceState, u32 *, SAVE_DEVICE_FLAGS) & SAVE_DEVICE_FLAG_BUSY) == 0;
 }
 
+/* Whether the save-chip device has been brought up: SaveDevice_Init sets its flag
+ * word to 1, and the word stays nonzero while the device is in use. */
 s32 SaveDevice_IsReady(void) {
- extern void *gSaveDeviceState;
- return M2C_FIELD(&gSaveDeviceState,u32 *,0x114) != 0;
+    extern void *gSaveDeviceState;
+    return M2C_FIELD(&gSaveDeviceState, u32 *, SAVE_DEVICE_FLAGS) != 0;
 }
 
-void CARD_LockRom(M2C_UNK arg0) {
-    M2C_UNK func_0200551c(M2C_UNK);
-    SaveDevice_Lock(arg0, 1);
-    func_0200551c(arg0);
+/* Take the card's ROM lock for `lockId`: first this lock id's ROM access lock
+ * in the save-device layer, then the card's own lock word (0x027FFFE0), which
+ * nothing else may take until CARD_UnlockRom releases it. */
+void CARD_LockRom(u16 lockId) {
+    M2C_UNK OSi_LockCard(M2C_UNK);
+    SaveDevice_Lock(lockId, SAVE_DEVICE_LOCK_ROM);
+    OSi_LockCard(lockId);
 }
 
-void CARD_UnlockRom(M2C_UNK arg0) {
+/* Release the card ROM/archive lock held by lockId: free the card lock word
+ * through its unlock helper, then unlock the save device's ROM access. */
+void CARD_UnlockRom(M2C_UNK lockId) {
     M2C_UNK func_02005538();
     M2C_UNK SaveDevice_Unlock(M2C_UNK, M2C_UNK);
     func_02005538();
-    SaveDevice_Unlock(arg0, 1);
+    SaveDevice_Unlock(lockId, 1);
 }
 
 void CARD_LockBackup(M2C_UNK arg0) {
@@ -361,8 +369,8 @@ void SaveDevice_WaitForTransferDone(void) {
 }
 
 s32 SaveDevice_IsIdle(void) {
-    M2C_UNK func_0200fdec();
-    return func_0200fdec();
+    M2C_UNK SaveDevice_IsTransferIdle();
+    return SaveDevice_IsTransferIdle();
 }
 
 #pragma optimization_level 3

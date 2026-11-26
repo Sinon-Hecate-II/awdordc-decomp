@@ -105,7 +105,7 @@ u16 *FindFirstWideChar(u16 *,s32,s32);
 char *FindFirstByte(char *,s32,s32);
 s32 StringLength(char *);
 s32 StringToWideString(void *,void *,s32);
-s32 func_02065020(void *,void *,s32);
+s32 MultibyteCharToWideChar(void *,void *,s32);
 extern u16 data_021005b4[];
 extern u8 data_021005b8[];
 s32 func_0206c3c8(s32 (*writer)(void *,const u16 *,s32), void *state, u16 *p, char *args, ...) {
@@ -275,7 +275,7 @@ buffer[0]=*(s32 *)(args-4);
 len=1;
 }else{args+=4;
 narrow=*(s32 *)(args-4);
-len=func_02065020(text,&narrow,1);
+len=MultibyteCharToWideChar(text,&narrow,1);
 }break;
         case '%':buffer[0]='%';
 text=buffer;

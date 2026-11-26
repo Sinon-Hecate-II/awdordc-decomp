@@ -412,9 +412,11 @@ u8 gpiPlayerGetState(void *arg0) {
     return M2C_FIELD(arg0, u8 *, 0x14);
 }
 
-s32 func_02061168(s32 arg0) {
+/* Whether `server` is the server pointer the QR2 reply parser keeps at offset 4
+ * of its shared state. */
+s32 func_02061168(s32 server) {
     extern M2C_UNK gQr2ParseState;
-    if (arg0 == M2C_FIELD(&gQr2ParseState, s32 *, 4)) {
+    if (server == M2C_FIELD(&gQr2ParseState, s32 *, 4)) {
         return 1;
     }
     return 0;
@@ -576,15 +578,20 @@ s32 SBServerListThink(s32 arg0) {
     return SBServerListProcessState(arg0 + 0x4C);
 }
 
-M2C_UNK func_0206171c(void *p){
- M2C_UNK SBServerListDisconnect(void *);M2C_UNK Qr2Query_ResetQueues(void *);
- SBServerListDisconnect((u8 *)p+0x4c);Qr2Query_ResetQueues(p);
+/* Reset a server-browser object: disconnect the QR2 session it holds at
+ * SB_LIST_QUERY and drop the queries still queued in its query queues. */
+M2C_UNK SBServerListReset(void *browser) {
+    M2C_UNK SBServerListDisconnect(void *);
+    M2C_UNK Qr2Query_ResetQueues(void *);
+
+    SBServerListDisconnect((u8 *)browser + SB_LIST_QUERY);
+    Qr2Query_ResetQueues(browser);
 }
 
 void ResetSessionList(s32 arg0) {
-    M2C_UNK func_0206171c();
+    M2C_UNK SBServerListReset();
     M2C_UNK SBServerListClearRemovedServers(s32);
-    func_0206171c();
+    SBServerListReset();
     SBServerListClearRemovedServers(arg0 + 0x4C);
 }
 

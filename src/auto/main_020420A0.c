@@ -18,8 +18,8 @@ s32 UpdateConnectionSyncWait(void) {
  s32 PruneConnectionPeers(s32);
  void CloseGt2Connection(void);
  void RefreshConnection(s32);
- void func_020411dc(s32);
- s32 func_02040e1c(s32);
+ void ProcessConnectionStateAction(s32);
+ s32 AdvancePeerConnection(s32);
  u64 now,elapsed;
  s32 i;
  void *conn;
@@ -53,7 +53,7 @@ s32 UpdateConnectionSyncWait(void) {
  M2C_FIELD(GetConnection(),u8 *,0x1ab)=0;
  M2C_FIELD(GetConnection(),u64 *,0x1e0)=GetSystemTick();
  } else {
- if(func_02040e1c(M2C_FIELD(GetConnection(),s32 *,0x20c))==0) return 0;
+ if(AdvancePeerConnection(M2C_FIELD(GetConnection(),s32 *,0x20c))==0) return 0;
  }
  }
  } else {
@@ -67,7 +67,7 @@ s32 UpdateConnectionSyncWait(void) {
  }
  break;
  case CONN_STATE_WAIT_SYNC_RTT:
- if(elapsed>(u64)(s32)M2C_FIELD((u8 *)GetConnection()+0x100,u16 *,0xb0)) func_020411dc(4);
+ if(elapsed>(u64)(s32)M2C_FIELD((u8 *)GetConnection()+0x100,u16 *,0xb0)) ProcessConnectionStateAction(4);
  break;
  }
  return 1;
@@ -385,7 +385,7 @@ if(M2C_FIELD(mgr,s32*,8)==n) {
 if(M2C_FIELD(mgr,s32*,12)==n) {
 conn=GetConnection(); M2C_FIELD(conn,u8*,0x16)=M2C_FIELD(GetConnection(),u8*,13);
 conn=GetConnection(); M2C_FIELD(conn,u8*,0x1a4)=M2C_FIELD(GetConnection(),u8*,13)-1;
-func_020411dc(0); return;
+ProcessConnectionStateAction(0); return;
 }
 M2C_FIELD(mgr,u64*,24)=GetSystemTick(); M2C_FIELD(mgr,s32*,8)=0;
 if(M2C_FIELD(GetConnection(),u8*,0x15)==0) {

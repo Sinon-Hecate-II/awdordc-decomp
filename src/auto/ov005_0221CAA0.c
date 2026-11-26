@@ -111,17 +111,17 @@ void ResultsScreenAnimate(void *arg0) {
 }
 
 void func_ov005_0221cff8(void *arg0) {
-void *func_01ffa770(void*);void *func_020896f0(void*);s32 func_020cfb94();s32 func_020ae22c();
+void *func_01ffa770(void*);void *func_020896f0(void*);s32 GetCurrentMapPlayerCount();s32 func_020ae22c();
 extern u8 data_ov005_02220d50[];
 s32 i,y;void *sprite,*p;u32 width,height;
 func_020aad18(M2C_FIELD(func_01ffa770(data_ov005_02220d50),s32*,0x38));
 func_020aad18(M2C_FIELD(func_01ffa770(data_ov005_02220d50),s32*,0x3c));
 func_020aad18(M2C_FIELD(func_01ffa770(data_ov005_02220d50),s32*,0x40));
 i=0;
-if(func_020cfb94()>0){y=79;do{
+if(GetCurrentMapPlayerCount()>0){y=79;do{
 func_02087d18(M2C_FIELD(arg0,void**,0x34),(s16)y,170,16,16,(u16)(i+3),12);
 i++;y+=20;
-}while(i<func_020cfb94());}
+}while(i<GetCurrentMapPlayerCount());}
 SpriteCellListSelectTileImmediate(M2C_FIELD(arg0,void**,0x34),3);
 M2C_FIELD(arg0,void**,0x38)=func_020896f0(arg0);
 SetFrameBorderSpritePattern(M2C_FIELD(arg0,void**,0x38),4096,1,func_020ae22c(9));
@@ -142,7 +142,7 @@ void SpriteCellListSelectTile(void *,s16);
 void CopyToObjPaletteShadow(s32,s32,s32);
 s32 func_020a72e8(u8);
 s32 GetTerrainPalette(s32,u8);
-s32 func_020cfb94(void);
+s32 GetCurrentMapPlayerCount(void);
 void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void);
 void LoadNarcFileDecompressed(void *,void *);
@@ -187,7 +187,7 @@ void func_ov005_0221d160(void *arg0){
             if (selection)
                 n = M2C_FIELD(arg0, s32 *, 0x50);
             else
-                n = func_020cfb94();
+                n = GetCurrentMapPlayerCount();
             M2C_FIELD(arg0, s32 *, 0x50) = n - 1;
             SpriteCellListSelectTile(M2C_FIELD(arg0, void **, 0x34), (s16)((s16)M2C_FIELD(arg0, u16 *, 0x50) + 3));
             {
@@ -206,8 +206,8 @@ void func_ov005_0221d160(void *arg0){
                 sound = 0x10010;
             }
         }
-        if ((gKeyState[1] & 16) && (M2C_FIELD(arg0, s32 *, 0x50) < func_020cfb94() - 1 || (gKeyState[0] & 16))) {
-            M2C_FIELD(arg0, s32 *, 0x50) = M2C_FIELD(arg0, s32 *, 0x50) == func_020cfb94() - 1 ? 0 : M2C_FIELD(arg0, s32 *, 0x50) + 1;
+        if ((gKeyState[1] & 16) && (M2C_FIELD(arg0, s32 *, 0x50) < GetCurrentMapPlayerCount() - 1 || (gKeyState[0] & 16))) {
+            M2C_FIELD(arg0, s32 *, 0x50) = M2C_FIELD(arg0, s32 *, 0x50) == GetCurrentMapPlayerCount() - 1 ? 0 : M2C_FIELD(arg0, s32 *, 0x50) + 1;
             SpriteCellListSelectTile(M2C_FIELD(arg0, void **, 0x34), (s16)((s16)M2C_FIELD(arg0, u16 *, 0x50) + 3));
             {
                 void *sprite = M2C_FIELD(arg0, void **, 0x38);

@@ -73,6 +73,8 @@ void Ov001_ExitProfileTask(M2C_UNK task) {
     Ov001_PostTaskMessage(0, task);
 }
 
+/* True once the WFC profile screen's work block is gone: its update task frees
+ * the block at the end (the screen is finished then). */
 s32 Ov001_IsProfileScreenDone(void) {
     extern void *gOv001ProfileBlock;
     return gOv001ProfileBlock == 0;
@@ -299,11 +301,11 @@ void Ov001_ShutdownScreen(void) {
 void Ov001_InitScreen(void) {
     void Ov001_AllocSaveData(void);
     void Ov001_InitMessageArchiveQueue(void);
-    void func_ov001_02171fa0(void);
+    void Ov001_AllocChoiceFrameSprites(void);
     void Ov001_InitHighlightBackground(void);
     void func_ov001_02171c10(void);
     u8 Ov001_GetLanguage(void);
-    s32 Ov001_HasOptionFlag(s32);
+    s32 Ov001_HasScreenOption(s32);
     s32 Ov001_GetScreenLayout(void);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_LoadMessageArchive(M2C_UNK);
@@ -340,11 +342,11 @@ void Ov001_InitScreen(void) {
     /* Bring up the screen's subsystems. */
     Ov001_AllocSaveData();
     Ov001_InitMessageArchiveQueue();
-    func_ov001_02171fa0();
+    Ov001_AllocChoiceFrameSprites();
     Ov001_InitHighlightBackground();
     func_ov001_02171c10();
     /* English has a separate US archive selected by option flag 2. */
-    if (Ov001_GetLanguage() == 1 && Ov001_HasOptionFlag(2) != 0) {
+    if (Ov001_GetLanguage() == 1 && Ov001_HasScreenOption(2) != 0) {
         gOv001MessageArchive = Ov001_LoadMessageArchive((M2C_UNK)&gOv001MessagePathUsa);
     } else {
         gOv001MessageArchive = Ov001_LoadMessageArchive((M2C_UNK)gOv001MessageFilePaths[Ov001_GetLanguage()]);
