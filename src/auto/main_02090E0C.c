@@ -229,9 +229,11 @@ s32 CreateSpriteAnim(M2C_UNK script, M2C_UNK priority, M2C_UNK flags) {
     return sprite;
 }
 
-void Sprite_ClearHandle(s32 *arg0) {
-    if (arg0 != NULL && *arg0 != 0) {
-        *arg0 = 0;
+/* Clear a sprite handle: forget the sprite reference the caller keeps in the
+ * handle slot, when both the slot and the reference are there. */
+void Sprite_ClearHandle(s32 *handle) {
+    if (handle != NULL && *handle != 0) {
+        *handle = 0;
     }
 }
 
@@ -880,21 +882,23 @@ u8 Get3DSpriteCount(void) {
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x48);
 }
 
-u8 Get3DSpriteScreenMode(s32 engine) {
+/* Return the screen mode the other screen shows for 3D sprite engine `engine`
+ * (the manager's per-engine other-screen-mode byte). */
+u8 GetOtherScreenMode(s32 engine) {
     M2C_UNK *Get3DSpriteManager(void);
-    M2C_UNK *base = Get3DSpriteManager();
-    return M2C_FIELD((char *)base + engine, u8 *, 0x44);
+    M2C_UNK *manager = Get3DSpriteManager();
+    return M2C_FIELD((char *)manager + engine, u8 *, DS3D_MANAGER_OTHER_SCREEN_MODE);
 }
 
 /* Return the other of the two 3D-sprite screen modes used by the map background
  * layers: mode 2 becomes 3 and every other mode becomes 2.  The repeated getter
  * call is the original's. */
 s32 GetOther3DSpriteScreenMode(M2C_UNK engine) {
-    u8 Get3DSpriteScreenMode(M2C_UNK);
-    if (Get3DSpriteScreenMode(engine) == DS3D_SCREEN_MODE_2) {
+    u8 GetOtherScreenMode(M2C_UNK);
+    if (GetOtherScreenMode(engine) == DS3D_SCREEN_MODE_2) {
         return DS3D_SCREEN_MODE_3;
     }
-    Get3DSpriteScreenMode(engine);
+    GetOtherScreenMode(engine);
     return DS3D_SCREEN_MODE_2;
 }
 

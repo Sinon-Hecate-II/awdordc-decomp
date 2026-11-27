@@ -131,31 +131,40 @@ void GX_ReleaseBankForBGExtPalette(void) {
  * pending-release path: switch the palette off in DISPCNT and give its bank back
  * to the allocator. */
 void GX_ReleaseBankForObjExtPalette(void) {
-    extern M2C_UNK gVramBankGrantOBJExtPltt;
+    extern M2C_UNK gVramBankGrantObjExtPalette;
 
     REG_DISPCNT &= ~DISPCNT_OBJ_EXT_PALETTE;
-    GX_ReleaseBankForPurpose(&gVramBankGrantOBJExtPltt);
+    GX_ReleaseBankForPurpose(&gVramBankGrantObjExtPalette);
 }
 
-void func_020033b8(void) {
+/* Release the main engine's texture VRAM bank grant and return the banks it held. */
+s32 GX_ReleaseBankForTex(void) {
     M2C_UNK GX_ReleaseBankForPurpose(M2C_UNK *);
-    extern M2C_UNK data_0212dbcc;
-    GX_ReleaseBankForPurpose(&data_0212dbcc);
+    extern M2C_UNK gVramBankGrantTex;
+
+    return GX_ReleaseBankForPurpose(&gVramBankGrantTex);
 }
 
+/* Give the main engine's OBJ (sprite) extended-palette VRAM bank back to the
+ * allocator through the pending-release path. */
 void GX_ReleaseBankForOBJExtPltt(void) {
-    extern M2C_UNK data_0212dbce;
-    GX_ReleaseBankForPurpose(&data_0212dbce);
+    extern M2C_UNK gVramBankForOBJExtPltt;
+    GX_ReleaseBankForPurpose(&gVramBankForOBJExtPltt);
 }
 
-void func_020033e0(void) {
-    extern M2C_UNK data_0212dbd6;
-    GX_ReleaseBankForPurpose(&data_0212dbd6);
+/* Give the sub engine's background VRAM bank grant back to the allocator through
+ * the pending-release path. */
+void GX_ReleaseBankForSubBG(void) {
+    extern M2C_UNK gVramBankGrantSubBG;
+
+    GX_ReleaseBankForPurpose(&gVramBankGrantSubBG);
 }
 
-void func_020033f4(void) {
-    extern M2C_UNK data_0212dbd8;
-    GX_ReleaseBankForPurpose(&data_0212dbd8);
+/* Give the sub engine's OBJ (sprite) VRAM bank grant back to the allocator
+ * through the pending-release path. */
+void GX_ReleaseBankForSubOBJ(void) {
+    extern M2C_UNK gVramBankForSubOBJ;
+    GX_ReleaseBankForPurpose(&gVramBankForSubOBJ);
 }
 
 /* Release the sub engine's background extended-palette VRAM bank: switch the
@@ -192,15 +201,20 @@ s32 GX_ReleaseBankGrant(M2C_UNK *grant) {
     return banks;
 }
 
+/* Give the main engine's background VRAM bank grant back to the allocator
+ * (the grant path resets the bank's control register). */
 void GX_ReleaseBankGrantForBG(void) {
     M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
-    extern M2C_UNK data_0212dbc6;
-    GX_ReleaseBankGrant(&data_0212dbc6);
+    extern M2C_UNK gVramBankGrantBG;
+
+    GX_ReleaseBankGrant(&gVramBankGrantBG);
 }
 
+/* Release the main engine's OBJ (sprite) VRAM bank grant: give the banks the
+ * OBJ area held back to the allocator, resetting their control registers. */
 void GX_ReleaseBankGrantForOBJ(void) {
-    extern M2C_UNK data_0212dbc8;
-    GX_ReleaseBankGrant(&data_0212dbc8);
+    extern M2C_UNK gVramBankGrantOBJ;
+    GX_ReleaseBankGrant(&gVramBankGrantOBJ);
 }
 
 /* Release the main engine's background extended-palette VRAM bank: switch the
@@ -215,49 +229,56 @@ void GX_ReleaseBankGrantForBGExtPalette(void) {
  * switch the extended palette off in DISPCNT, then give the bank back to the
  * VRAM allocator. */
 void GX_ReleaseBankGrantForObjExtPalette(void) {
-    extern M2C_UNK gVramBankGrantOBJExtPltt;
+    extern M2C_UNK gVramBankGrantObjExtPalette;
 
     REG_DISPCNT &= ~DISPCNT_OBJ_EXT_PALETTE;
-    GX_ReleaseBankGrant(&gVramBankGrantOBJExtPltt);
+    GX_ReleaseBankGrant(&gVramBankGrantObjExtPalette);
 }
 
 void GX_ReleaseBankGrantForTex(void) {
     M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
-    extern M2C_UNK data_0212dbcc;
-    GX_ReleaseBankGrant(&data_0212dbcc);
+    extern M2C_UNK gVramBankGrantTex;
+    GX_ReleaseBankGrant(&gVramBankGrantTex);
 }
 
 void GX_ReleaseBankGrantForOBJExtPltt(void) {
     M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
-    extern M2C_UNK data_0212dbce;
-    GX_ReleaseBankGrant(&data_0212dbce);
+    extern M2C_UNK gVramBankForOBJExtPltt;
+    GX_ReleaseBankGrant(&gVramBankForOBJExtPltt);
 }
 
-void func_020035d0(void) {
-    extern M2C_UNK data_0212dbd0;
-    GX_ReleaseBankGrant(&data_0212dbd0);
+/* Release the 3D texture extended-palette VRAM bank grant: reset the control
+ * registers of the banks it held and give them back to the allocator. */
+void GX_ReleaseBankGrantForTexExtPltt(void) {
+    extern M2C_UNK gVramBankGrantTexExtPltt;
+    GX_ReleaseBankGrant(&gVramBankGrantTexExtPltt);
 }
 
-void func_020035e4(void) {
-    extern M2C_UNK data_0212dbca;
-    GX_ReleaseBankGrant(&data_0212dbca);
+/* Release the OBJ area's bank grant for the area built from banks C and D: give
+ * the banks back to the allocator, resetting their control registers. */
+void GX_ReleaseBankGrantForObjCD(void) {
+    extern M2C_UNK gVramBankGrantObjCD;
+    GX_ReleaseBankGrant(&gVramBankGrantObjCD);
 }
 
-void func_020035f8(void) {
+/* Release every VRAM bank on the pending-release mask (the first word of
+ * gVramBankState), i.e. the banks given up by all the purposes so far, and
+ * return them so the second VRAM init pass can give them back. */
+s32 GX_ReleaseBankGrantForAll(void) {
     extern M2C_UNK gVramBankState;
-    GX_ReleaseBankGrant(&gVramBankState);
+    return GX_ReleaseBankGrant(&gVramBankState);
 }
 
 void GX_ReleaseBankGrantForSubBG(void) {
     M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
-    extern M2C_UNK data_0212dbd6;
-    GX_ReleaseBankGrant(&data_0212dbd6);
+    extern M2C_UNK gVramBankGrantSubBG;
+    GX_ReleaseBankGrant(&gVramBankGrantSubBG);
 }
 
 void GX_ReleaseBankGrantForSubOBJ(void) {
     M2C_UNK GX_ReleaseBankGrant(M2C_UNK *);
-    extern M2C_UNK data_0212dbd8;
-    GX_ReleaseBankGrant(&data_0212dbd8);
+    extern M2C_UNK gVramBankForSubOBJ;
+    GX_ReleaseBankGrant(&gVramBankForSubOBJ);
 }
 
 /* Release the sub engine's background extended-palette VRAM bank: switch the

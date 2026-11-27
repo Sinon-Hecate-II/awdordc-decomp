@@ -585,7 +585,9 @@ void Ov004_ZoomOutUraPlane(void) {
     PlaySoundEffect(0x112);
 }
 
-void func_ov004_02212048(void) {
+/* Delete every sprite object of the ura-plane effect class, removing the
+ * effect from both screen engines. */
+void Ov004_DeleteUraPlaneEffectSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gUraPlaneEffectClass;
     DeleteSpriteObjectsOfClass(&gUraPlaneEffectClass);

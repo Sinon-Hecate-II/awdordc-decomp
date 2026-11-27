@@ -458,10 +458,10 @@ void CreateTargetSelectionMenuObject(M2C_UNK owner) {
 #pragma opt_propagation off
 void func_020ca794(void *arg0) {
 extern void **gCurrentMap;
-void func_0209f8c0(void);void FillMapLayer(s32);s32 GetUnitAttackRangeRadius(void *);void AppendTargetEntry(s32,s32,s32,s32);s16 GetTargetCount(void);void PlaySoundEffect(s32);
+void ResetTargetList(void);void FillMapLayer(s32);s32 GetUnitAttackRangeRadius(void *);void AppendTargetEntry(s32,s32,s32,s32);s16 GetTargetCount(void);void PlaySoundEffect(s32);
 s32 y1,x0,x1,dist,v,x,y; void *p; s32 range; void *centre;
 M2C_FIELD(arg0,s16*,0x6c)=0;
-func_0209f8c0();FillMapLayer(-1);
+ResetTargetList();FillMapLayer(-1);
 p=*gCurrentMap;range=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0));
 if(M2C_FIELD(p,s16 *,0x52dc)-range<0)x0=0;
 else {p=*gCurrentMap;range=GetUnitAttackRangeRadius(M2C_FIELD(p,void **,0x52d0));x0=M2C_FIELD(p,s16 *,0x52dc)-range;}

@@ -339,9 +339,10 @@ void StartMapViewRaiseTimer(void){
  if(M2C_FIELD(&gMapHighlightState,s32*,MAP_VIEW_RAISE_TIMER)==0)M2C_FIELD(&gMapHighlightState,s32*,MAP_VIEW_RAISE_TIMER)=1;
 }
 
+/* Stop the map view's cell-raise animation by clearing its raise timer. */
 void ResetMapViewRaiseTimer(void) {
     extern M2C_UNK gMapHighlightState;
-    M2C_FIELD(&gMapHighlightState, s32 *, 0xC) = 0;
+    M2C_FIELD(&gMapHighlightState, s32 *, MAP_VIEW_RAISE_TIMER) = 0;
 }
 
 /* Advance the map view's cell-raise animation by one frame, capping the timer at 8. */

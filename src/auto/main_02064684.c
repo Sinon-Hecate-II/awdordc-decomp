@@ -362,11 +362,13 @@ s32 MultibyteToWideChar(s16 *wideChar, u8 *multibyteChar, s32 remainingBytes) {
     return 1;
 }
 
-s32 func_02065074(s8 *arg0, s8 arg1) {
-    if (arg0 == NULL) {
+/* Single-byte wctomb: store `wideChar` at `multibyte` and report one byte
+ * written, or 0 when there is no buffer to write to. */
+s32 SingleByteWctomb(s8 *multibyte, s8 wideChar) {
+    if (multibyte == NULL) {
         return 0;
     }
-    *arg0 = arg1;
+    *multibyte = wideChar;
     return 1;
 }
 
@@ -448,10 +450,11 @@ void *MemMove(char *dst, char *src, u32 count) {
     return dst;
 }
 
-s32 MemSet(s32 arg0) {
-    M2C_UNK MemFill();
-    MemFill();
-    return arg0;
+/* Fill `n` bytes at `p` with the byte `value` and return `p`. */
+s32 MemSet(void *p, s32 value, u32 n) {
+    M2C_UNK MemFill(u8 *, s32, u32);
+    MemFill((u8 *)p, value, n);
+    return (s32)p;
 }
 
 /* Find the first byte `value` (its low 8 bits) among the first `count` bytes

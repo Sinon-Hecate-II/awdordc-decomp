@@ -348,7 +348,7 @@ for(i=0;i<6;i++) {
     obj = M2C_FIELD(self, void **, 0x40);
     if (obj != NULL) MemFree(obj);
 
-    func_020af71c();
+    DeleteMapSelectScrollSprites();
     MemFree(self);
     return self;
 }

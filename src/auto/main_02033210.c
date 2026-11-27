@@ -30,6 +30,7 @@ extern u8 gHttpLowRecvBufName[], gHttpLowSendBufName[];
 #define HTTP_SEND_BUFFER 0x19f8 /* s32[4] request send buffer: start, current write, end, size; its start holds the request line and headers */
 #define HTTP_SEND_BUFFER_START HTTP_SEND_BUFFER /* char *first byte of the send buffer */
 #define HTTP_USE_TLS   0x1130 /* s32 1 when the URL's scheme is https */
+#define HTTP_HOST_NAME 0x1124 /* char[] host name parsed from the URL, looked up in DNS */
 #define HTTP_ENTROPY   0x19d4 /* u8[0x20] console entropy added to the RNG for the TLS handshake */
 #define HTTP_ENTROPY_SIZE 0x20
 
@@ -362,9 +363,10 @@ void HttpClientInitRawConnection(void *client) {
     SetCurrentRawConnection(client + HTTP_RAW_CONNECTION);
 }
 
-void func_02034068(void *arg0) {
-    M2C_UNK DnsLookupAddress(s32);
-    DnsLookupAddress(M2C_FIELD(arg0, s32 *, 0x1124));
+/* Resolve the client's host name (parsed from its URL) to an IPv4 address. */
+s32 HttpClientResolveHost(void *client) {
+    s32 DnsLookupAddress(s32);
+    return DnsLookupAddress(M2C_FIELD(client, s32 *, HTTP_HOST_NAME));
 }
 
 /* Find where the HTTP response body starts (just past the blank line that ends

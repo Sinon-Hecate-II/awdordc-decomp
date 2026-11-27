@@ -319,9 +319,11 @@ s32 SaveDevice_Transfer(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 ar
     return *M2C_FIELD(p, s32 **, 0) == 0;
 }
 #pragma scheduling reset
+/* The save-chip device's state word: SAVE_DEVICE_STATE_READY once
+ * SaveDevice_Configure has set the chip up, a status/error code before that. */
 s32 SaveDevice_GetState(void) {
     extern void *gSaveDeviceState;
-    return M2C_FIELD(gSaveDeviceState, s32 *, 4);
+    return M2C_FIELD(gSaveDeviceState, s32 *, SAVE_DEVICE_STATE);
 }
 
 s32 func_02010438(void) {

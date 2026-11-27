@@ -200,7 +200,7 @@ void CreateOv003Scene(M2C_UNK arg0) {
     extern M2C_UNK gOv003SceneClass;
     extern M2C_UNK data_ov003_0220f6f8;
     extern M2C_UNK data_ov003_0220f700;
-    extern M2C_UNK data_ov003_0220f710;
+    extern M2C_UNK gOv003SceneChildVTable;
     extern M2C_UNK gOv003SceneVTable;
     extern M2C_UNK gOv003SceneIfaceVTable;
     M2C_UNK **label50Flags2;
@@ -245,7 +245,7 @@ void CreateOv003Scene(M2C_UNK arg0) {
     AcquireUsernameFont();
     mapList = MemAlloc(0x40);
     if (mapList != NULL) {
-        *mapList = &data_ov003_0220f710;
+        *mapList = &gOv003SceneChildVTable;
     }
     M2C_FIELD(scene, M2C_UNK ***, 0x68) = mapList;
     tween3C = MemAlloc(0x12);
@@ -480,10 +480,13 @@ void *Ov003Scene_Destructor(void *scene) {
     return scene;
 }
 
-s32 func_ov003_021e6af0(s32 arg0) {
+/* Deleting destructor of the ov003 scene's +0x68 child object (slot 1 of
+ * gOv003SceneChildVTable): free the object and return it, as a delete
+ * expression expects. */
+s32 Ov003SceneChild_Delete(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 void func_ov003_021e6b04(s32 arg0) {
@@ -559,7 +562,10 @@ void *DestroyOv003Scene(void *scene) {
     return scene;
 }
 
-void func_ov003_021e6c28(void) {
+/* Non-deleting destructor of the ov003 scene's +0x68 child object (slot 0 of
+ * gOv003SceneChildVTable): its class has nothing to tear down, so this only
+ * returns `this`.  Ov003SceneChild_Delete is its deleting twin. */
+void Ov003SceneChild_Destroy(void) {
 
 }
 

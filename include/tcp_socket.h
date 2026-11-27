@@ -86,6 +86,8 @@
 #define IP_LOOPBACK             0x7F000001u /* 127.0.0.1 in host order */
 #define IP_UNSPECIFIED          0           /* 0.0.0.0, the unspecified address */
 #define IP_BROADCAST            (-1)        /* 255.255.255.255, the limited broadcast address */
+#define IP_MULTICAST_MASK       0xF0000000u /* high nibble of an address, the multicast range test */
+#define IP_MULTICAST_PREFIX     0xE0000000u /* 224.0.0.0 in host order: the multicast range (224.0.0.0/4) */
 #define IP_MAX_FRAGMENT_PAYLOAD 1480
 #define IP_FRAGMENT_UNIT        8
 #define IP_FLAG_MOREFRAGMENTS   0x2000

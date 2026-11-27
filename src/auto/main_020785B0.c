@@ -123,7 +123,7 @@ void Map_SubmitTerrainQuads(s32,s32,s32,s32,s32,s32,s32,s32);
 #pragma opt_common_subs off
 #pragma opt_lifetimes off
 #pragma scheduling off
-void func_02078828(void) {
+void DrawMap(void) {
 extern s32 *gCurrentMap;
 extern u16 gMapCellCornerA[],gMapCellCornerB[];
 void ScreenToMapFixedPoint(s32,s32,Vec3*);

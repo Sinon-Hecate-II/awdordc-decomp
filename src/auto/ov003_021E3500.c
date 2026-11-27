@@ -19,7 +19,7 @@ void func_ov003_021e3500(void *arg0) {
     M2C_UNK CreateCampaignMapLoadQueue(void *);
     M2C_UNK AppendCampaignMapLoadEntry(u16, s32);
     M2C_UNK func_ov003_021f1894();
-    u32 func_ov003_021f2574();
+    u32 CountDownloadedMapIds();
     M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK Ov003_SetMapConfirmEnabled();
     void Sprite_ResumeAnimation(void *);
@@ -38,7 +38,7 @@ void func_ov003_021e3500(void *arg0) {
     u8 temp_r1;
 
     r5 = arg0;
-    x = func_ov003_021f2574();
+    x = CountDownloadedMapIds();
     cnt = 0;
     i = 0;
     base = M2C_FIELD(r5, s32 *, 0x6C);
@@ -78,7 +78,7 @@ void func_ov003_021e3500(void *arg0) {
             }
             i = (u8)(i + 1);
         loop_test:
-            x = func_ov003_021f2574();
+            x = CountDownloadedMapIds();
             count2 = 0;
             j = 0;
             base = M2C_FIELD(r5, s32 *, 0x6C);
@@ -418,7 +418,7 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
 #pragma opt_propagation off
 void func_ov003_021e3ff8(void *arg0,s32 arg1,s32 arg2){
 u32 CountMapPicks(s32,s32);
-u32 func_ov003_021f2574(void);
+u32 CountDownloadedMapIds(void);
 s32 GetMapListIconTile(s32,u16);
 s32 Modulo(s32,s32);
 void SetTextSpriteValue(void*,s32);
@@ -441,7 +441,7 @@ u16 tile;
 s16 offset;
 void *p;
 count0=CountMapPicks(M2C_FIELD(arg0,s32*,0x5c)+4,M2C_FIELD(arg0,s32*,0x5c)+8);
-count1=func_ov003_021f2574();
+count1=CountDownloadedMapIds();
 p=M2C_FIELD(arg0,void**,0x6c);
 total=0;
 k=0;do{if(M2C_FIELD((u8*)p+k*0x6f8,u8*,0x27))total++;k++;}while(k<5);
@@ -491,7 +491,7 @@ do {
 switch(h){
 case 0:headerX=(s16)hx0;n=CountMapPicks(M2C_FIELD(arg0,s32*,0x5c)+4,M2C_FIELD(arg0,s32*,0x5c)+8);break;
 case 1:headerX=(s16)hx1;n=5;break;
-case 2:headerX=(s16)hx2;n=func_ov003_021f2574();p=M2C_FIELD(arg0,void**,0x6c);total2=0;k2=0;do{if(M2C_FIELD((u8*)p+k2*0x6f8,u8*,0x27))total2++;k2++;}while(k2<5);if(n>=total2)n=total2;break;
+case 2:headerX=(s16)hx2;n=CountDownloadedMapIds();p=M2C_FIELD(arg0,void**,0x6c);total2=0;k2=0;do{if(M2C_FIELD((u8*)p+k2*0x6f8,u8*,0x27))total2++;k2++;}while(k2<5);if(n>=total2)n=total2;break;
 case 3:headerX=(s16)hx3;n=5;break;
 }
 SetTextSpriteValue(M2C_FIELD(arg0,void**,0x50),n);

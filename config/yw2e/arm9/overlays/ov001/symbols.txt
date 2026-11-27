@@ -1163,7 +1163,7 @@ gOv001IconRowY kind:data(any) addr:0x0218f286
 gOv001IconRowLayout kind:data(any) addr:0x0218f28c
 gOv001IconRowSlot kind:data(any) addr:0x0218f29a
 gOv001IconRowCount kind:data(any) addr:0x0218f2a8
-data_ov001_0218f2c0 kind:data(any) addr:0x0218f2c0
+gOv001TextFontIds kind:data(any) addr:0x0218f2c0
 gOv001NameTextX kind:data(any) addr:0x0218f2dc
 gOv001NameTextY kind:data(any) addr:0x0218f2de
 gOv001LanguageCode kind:data(any) addr:0x0218f2f8

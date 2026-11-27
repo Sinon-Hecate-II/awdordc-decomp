@@ -180,11 +180,13 @@ s32 func_020062b4(void) {
     return 0;
 }
 
-s32 func_020062bc(void) {
-    extern s32 data_020f5218;
-    s32 v = 0x82000001;
-    data_020f5218 = v;
-    return v;
+/* Return this build's console type: the word is cached in gConsoleType and its
+ * low two bits select the arena memory map. */
+s32 OS_GetConsoleType(void) {
+    extern s32 gConsoleType;
+    s32 type = CONSOLE_TYPE_TWL;
+    gConsoleType = type;
+    return type;
 }
 
 /* Initialise a NitroSDK message queue around the caller's `msgArray` of
@@ -557,10 +559,10 @@ s32 GetArenaLo(s32 arg0) {
 }
 
 s32 func_02006a38(s32 arg0) {
-s32 func_020062bc(void); extern M2C_UNK data_0212defc,gOsArea; extern char data_00000000[],data_00000800[];
+s32 OS_GetConsoleType(void); extern M2C_UNK data_0212defc,gOsArea; extern char data_00000000[],data_00000800[];
 switch(arg0) {
 case 0:return 0x23e0000;
-case 2: if(M2C_FIELD(&data_0212defc,s32 *,4)!=0) {if((func_020062bc()&3)==1)return 0;else goto mainram;} else return 0x2700000;
+case 2: if(M2C_FIELD(&data_0212defc,s32 *,4)!=0) {if((OS_GetConsoleType()&3)==1)return 0;else goto mainram;} else return 0x2700000;
 case 3:mainram:return 0x2000000;
 case 4:{s32 a=(s32)&gOsArea; s32 c; s32 e; arg0=(s32)data_00000000; c=(s32)data_00000800; e=a+0x3f80; c=e-c;
 if(arg0==0){if((u32)a<0x27e15e0U)a=0x27e15e0;return a;} if(arg0<0)return 0x27e15e0-arg0;return c-arg0;}
@@ -571,7 +573,7 @@ case 5:return 0x27ff680;case 6:return 0x37f8000;default:return 0;
  * and arena 2's range depends on the boot's extended-memory flag and on the
  * console type. */
 s32 GetArenaBottom(s32 arena) {
-    s32 func_020062bc(void);
+    s32 OS_GetConsoleType(void);
     extern M2C_UNK data_0212defc;
 
     switch (arena) {
@@ -581,7 +583,7 @@ s32 GetArenaBottom(s32 arena) {
         if (M2C_FIELD(&data_0212defc, s32 *, 4) == 0) {
             goto empty;
         }
-        if ((func_020062bc() & 0x3) != 1) {
+        if ((OS_GetConsoleType() & 0x3) != 1) {
             goto extended;
         }
 empty:

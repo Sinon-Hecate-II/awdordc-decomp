@@ -38,7 +38,7 @@ void LoadSpriteResource(s32,s32,u8,void *);
 void SetTextById();
 void Show3DSpriteSlide();
 void SetShogunInfoFileDirectory();
-void SetOv005FileDirectory(void);
+void SetShogunColorFileDirectory(void);
 void *HeapAllocBlock(int);
 void *GetLocalizedFileName(void *);
 void *LoadFileToBuffer(void *,int);
@@ -91,7 +91,7 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,8)=(M2C_FIELD(M2C_FIELD(
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)&~3)|2;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)&~3)|3;
 v5=(u16*)((char*)M2C_FIELD(gCur3DSpriteEngine,void **,0)+18); *v5 = *v5 &~192;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,81)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,82)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,83)=0;
-SetOv005FileDirectory();
+SetShogunColorFileDirectory();
 OpenNarcArchive(GetLocalizedFileName(data_ov005_02220908));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_0222091c),M2C_FIELD(g3DSpriteEngineMain,void * *,20));
 LoadNarcFileDecompressedAndDrawTilemapBlock(GetLocalizedFileName(data_ov005_0222092c),M2C_FIELD(g3DSpriteEngineMain,void * *,40),0,0);CloseNarcArchive();
@@ -99,7 +99,7 @@ LoadFileToSpriteBuffer(data_ov005_02220944,0,32);M2C_FIELD(gCur3DSpriteEngine,u8
 p=LoadFileToBuffer(data_ov005_02220960,1);LoadGraphicsBlock((char*)p+0x460,(char*)M2C_FIELD(g3DSpriteEngineMain,void * *,28)+0x8180);HeapFreeBlock(p);
 LoadFileToSpriteBuffer(data_ov005_02220978,0x2e0,32);
 for(i=0,j=0;i<12;i++,j+=12)LoadFaceTextureAndPaletteAt((s16)(i+1),0,0x9380+(j<<6),(u16)i);
-SetOv005FileDirectory();
+SetShogunColorFileDirectory();
 CreateMenuTextSprite((char*)gOv005MenuState+36,192,160,1,0x35c,3,1,arg0,1);
 CreateMenuTextSprite((char*)gOv005MenuState+40,224,160,2,0x36c,3,2,arg0,0);
 {Pos180 pos={{43,44,45,46}};
@@ -117,7 +117,7 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,8)=(M2C_FIELD(M2C_FIELD(
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)&~3)|2;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)&~3)|3;
 v11=(u16*)((char*)M2C_FIELD(gCur3DSpriteEngine,void **,0)+18); *v11 = *v11 &~192;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,81)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,82)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,83)=0;
-SetOv005FileDirectory();
+SetShogunColorFileDirectory();
 OpenNarcArchive(GetLocalizedFileName(data_ov005_0222098c));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_022209a0),M2C_FIELD(g3DSpriteEngineSub,void * *,20));
 LoadNarcFileDecompressedAndDrawTilemapBlock(GetLocalizedFileName(data_ov005_022209b0),M2C_FIELD(g3DSpriteEngineSub,void * *,40),0,0);CloseNarcArchive();
@@ -127,7 +127,7 @@ LoadSpriteResource(2,0,8,(char*)M2C_FIELD(gCur3DSpriteEngine,void * *,28)+0x3000
 LoadSpriteResource(2,2,8,(char*)M2C_FIELD(gCur3DSpriteEngine,void * *,48)+0x2e0);
 M2C_FIELD(sprite,u32 *,68)=func_020aaf74(sprite);M2C_FIELD(sprite,u16 *,62)=0x180;M2C_FIELD(sprite,u32 *,64)=(M2C_FIELD(sprite,u32 *,64)&~0x3fc0000)|0x5c0000;M2C_FIELD(sprite,u16 *,60)=0xc00;
 M2C_FIELD(gOv005MenuState,void * *,28)=CreateScrollingTextSprite(arg0);M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u16 *,62)=0x200;M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u32 *,64)=(M2C_FIELD(M2C_FIELD(gOv005MenuState,void **,28),u32 *,64)&~0x3fc0000)|0x200000;
-SetTextById(M2C_FIELD(gOv005MenuState,void * *,28),0x40000000);Show3DSpriteSlide(M2C_FIELD(gOv005MenuState,void * *,28));SetShogunInfoFileDirectory();LoadFileToSpriteBuffer(func_020e304c(),0x2c0,32);SetOv005FileDirectory();
+SetTextById(M2C_FIELD(gOv005MenuState,void * *,28),0x40000000);Show3DSpriteSlide(M2C_FIELD(gOv005MenuState,void * *,28));SetShogunInfoFileDirectory();LoadFileToSpriteBuffer(func_020e304c(),0x2c0,32);SetShogunColorFileDirectory();
 Ov005RefreshEntryFace();Ov005RefreshNameGraphic();CreateSubWallpaperSprite(3,15,6);gCur3DSpriteEngine=saved;ResetSpriteSlots();Ov005RefreshEntryLabel();M2C_FIELD(gOv005MenuState,s16 *,24)=0;
 }
 #pragma opt_strength_reduction reset
@@ -152,7 +152,7 @@ void Ov005SyncMenuState(M2C_UNK arg0) {
     void OpenNarcArchive(void *);
     void LoadNarcFileDecompressedAndDrawTilemapBlock(void *,void *,s32,s32);
     void CloseNarcArchive(void);
-    void SetOv005FileDirectory(void);
+    void SetShogunColorFileDirectory(void);
     void Ov005RefreshEntryLabel(void);
     void *savedEngine;
     void *mainEngine;
@@ -167,7 +167,7 @@ void Ov005SyncMenuState(M2C_UNK arg0) {
         gCur3DSpriteEngine=savedEngine;
     }
     if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_PREV_PAGE)!=M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_PAGE)){
-        SetOv005FileDirectory();
+        SetShogunColorFileDirectory();
         savedEngine=gCur3DSpriteEngine;
         gCur3DSpriteEngine=g3DSpriteEngineMain;
         OpenNarcArchive(GetLocalizedFileName(sSyogunColorArchive));

@@ -415,7 +415,7 @@ void UpdateScenePanelPalette(void *arg0) {
     extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
     extern u8 data_020f3a08[],data_020f3a3a[],data_020f3a9e[],data_020f3ad0[],data_020f3a6c[],data_020f39ee[],data_020f39d4[];
     s32 Is3DSpriteVisible(void*);s32 IsFaceSpriteLoaded(void*);s32 BlendRgb555_16(s32,s32,s32,s32);
-    void DimPalette(void*);void *func_0209bfc8(void);void *func_02097e84(u8);
+    void DimPalette(void*);void *FindMessageSprite(void);void *func_02097e84(u8);
     s32 i;
     u8 *pal;
     s32 c0,c1,c2;
@@ -452,7 +452,7 @@ void UpdateScenePanelPalette(void *arg0) {
             p[0x49]=4;break;
         case 1:M2C_FIELD(p,void**,0x60)=data_020f39ee;M2C_FIELD(p,void**,0x64)=data_020f39d4;p[0x49]=7;break;
     }
-    q=func_0209bfc8();
+    q=FindMessageSprite();
     p=GetActivePanelFace((s32)arg0);
     if(q && p)M2C_FIELD(q,void**,0x60)=func_02097e84(p[0x58]);
 }
@@ -597,7 +597,8 @@ s32 FindScenePanel(u16 panelIndex) {
     return Find3DSpriteByClassAndZ(&gScenePanelSpriteClass, panelIndex);
 }
 
-void func_0209e9f4(void) {
+/* Remove every 3D sprite of the scene-panel sprite class (the panels' faces). */
+void DeleteScenePanelSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gScenePanelSpriteClass;
     DeleteSpriteObjectsOfClass(&gScenePanelSpriteClass);
@@ -607,10 +608,13 @@ void func_0209ea08(void) {
 
 }
 
-s32 func_0209ea0c(s32 arg0) {
+/* Deleting destructor of the scene-panel sprite (gScenePanelSpriteVtbl slot 1):
+ * free the object and return it.  The vtable's slot 0 holds the non-deleting
+ * twin. */
+s32 ScenePanelSprite_Delete(s32 sprite) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(sprite);
+    return sprite;
 }
 
 #pragma opt_propagation off

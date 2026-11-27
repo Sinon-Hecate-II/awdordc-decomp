@@ -37,7 +37,7 @@ HistoryMenu_CreateRowSlots kind:function(arm,size=0xa0) addr:0x02213cf4
 HistoryMenu_Update kind:function(arm,size=0x300) addr:0x02213d94
 HistoryMenu_Close kind:function(arm,size=0x38) addr:0x02214094
 HistoryMenu_CreateObject kind:function(arm,size=0x18) addr:0x022140cc
-func_ov005_022140e4 kind:function(arm,size=0x14) addr:0x022140e4
+SetSoundRoomFileDirectory kind:function(arm,size=0x14) addr:0x022140e4
 RecordsMenu_IsRecordAvailable kind:function(arm,size=0x28) addr:0x022140f8
 RecordsMenu_IsSubRecordAvailable kind:function(arm,size=0x28) addr:0x02214120
 RecordsMenu_ScrollUp kind:function(arm,size=0x3c) addr:0x02214148
@@ -73,7 +73,7 @@ RecordsMenu_CreateObject kind:function(arm,size=0x18) addr:0x02217264
 RecordsMenu_ClearHighlight kind:function(arm,size=0x24) addr:0x0221727c
 RecordsMenu_FinishAction kind:function(arm,size=0x38) addr:0x022172a0
 RecordsMenu_BeginAction kind:function(arm,size=0x34) addr:0x022172d8
-SetOv005FileDirectory kind:function(arm,size=0x14) addr:0x0221730c
+SetShogunColorFileDirectory kind:function(arm,size=0x14) addr:0x0221730c
 func_ov005_02217320 kind:function(arm,size=0x14) addr:0x02217320
 Ov005SetDetailSelection kind:function(arm,size=0x80) addr:0x02217334
 Ov005LoadEntryFacePalettes kind:function(arm,size=0x8c) addr:0x022173b4
@@ -259,7 +259,7 @@ data_ov005_022204e0 kind:data(any) addr:0x022204e0
 gRecordsMenuClass kind:data(any) addr:0x02220510
 gRecordSubBgId kind:data(any) addr:0x02220570
 gRecordMainBgId kind:data(any) addr:0x02220572
-data_ov005_02220644 kind:data(any) addr:0x02220644
+gSoundRoomDir kind:data(any) addr:0x02220644
 data_ov005_02220658 kind:data(any) addr:0x02220658
 data_ov005_02220670 kind:data(any) addr:0x02220670
 data_ov005_02220688 kind:data(any) addr:0x02220688
@@ -288,7 +288,7 @@ data_ov005_022207f0 kind:data(any) addr:0x022207f0
 gOv005CoGridSlotDef kind:data(any) addr:0x02220800
 gOv005DetailRowSlotDef kind:data(any) addr:0x02220828
 gOv005MenuClass kind:data(any) addr:0x02220850
-data_ov005_022208e0 kind:data(any) addr:0x022208e0
+sShogunColorDir kind:data(any) addr:0x022208e0
 data_ov005_022208f4 kind:data(any) addr:0x022208f4
 data_ov005_02220908 kind:data(any) addr:0x02220908
 data_ov005_0222091c kind:data(any) addr:0x0222091c

@@ -17,12 +17,12 @@ var_r4=((temp_r6<<24)&0xff000000)|(((temp_r6<<8)&0xff0000)|((u8)(temp_r6>>24)|((
 SocketSendTo(arg0,arg1,arg2,var_r5,var_r4,arg3);
 }
 #pragma scheduling on
-void func_02021750(void) {
+void SocketShutdownVeneer(void) {
     M2C_UNK SocketShutdown();
     SocketShutdown();
 }
 
-void func_0202175c(void) {
+void SocketCloseVeneer(void) {
     M2C_UNK SocketClose();
     SocketClose();
 }
@@ -94,7 +94,7 @@ void SetDnsServerAddressesFromHostOrder(u32 *server0, u32 *server1) {
     SetDnsServerAddresses(((value0 << 0x18) & 0xFF000000) | (((value0 << 8) & 0xFF0000) | ((u8) (value0 >> 0x18) | ((value0 >> 8) & 0xFF00))), ((value1 << 0x18) & 0xFF000000) | (((value1 << 8) & 0xFF0000) | ((u8) (value1 >> 0x18) | ((value1 >> 8) & 0xFF00))));
 }
 
-void func_02021960(void) {
+void SocketCheckReadyVeneer(void) {
     M2C_UNK SocketCheckReady();
     SocketCheckReady();
 }

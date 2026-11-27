@@ -285,7 +285,9 @@ void MapEditor_SpawnButtonScreen(void) {
     CreateSpriteFromClass(&gMapEditorButtonScreenClass, 7);
 }
 
-void func_ov007_02212db8(void) {
+/* Free the map editor's palette button screen: delete every sprite object of
+ * its class (the button sprites MapEditor_SpawnButtonScreen created). */
+void MapEditor_DeleteButtonScreen(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gMapEditorButtonScreenClass;
     DeleteSpriteObjectsOfClass(&gMapEditorButtonScreenClass);

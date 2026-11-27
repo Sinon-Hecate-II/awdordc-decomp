@@ -184,8 +184,9 @@ void SaveManager_InitTask(void) {
     SaveManager_ScanArchive(&gSaveManager);
 }
 
+/* Task-sprite callback (queued by SaveList_StartFlush): flush the global save
+ * manager's queued save-record changes. */
 void SaveList_FlushTask(void) {
-
     extern M2C_UNK gSaveManager;
     SaveList_Flush(&gSaveManager);
 }
@@ -301,7 +302,7 @@ void HaltWithMessage(M2C_UNK arg0) {
     M2C_UNK GX_TurnOnDisplay();
     M2C_UNK Sound_StopAllSound(M2C_UNK);
     M2C_UNK Sound_FlushCommands(M2C_UNK);
-    M2C_UNK func_02081f08();
+    M2C_UNK IncrementInputLockFrames2();
     M2C_UNK Apply3DSpriteDisplayConfig();
     M2C_UNK Set3DSpriteVramBanks();
     M2C_UNK FadeOutMusic(M2C_UNK);
@@ -338,7 +339,7 @@ void HaltWithMessage(M2C_UNK arg0) {
     FadeOutMusic(0);
     Sound_StopAllSound(0);
     Sound_FlushCommands(0);
-    func_02081f08();
+    IncrementInputLockFrames2();
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~1);
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~2);
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~4);

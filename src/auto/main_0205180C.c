@@ -192,13 +192,13 @@ void gpiDisconnect(void **arg0, s32 sendLogout) {
         gpiSendFromBuffer(arg0, *(s32 *)((char *)connection + GPI_CONN_SOCKET), (char *)connection + GPI_CONN_OUTPUT_BUFFER, &closed, 1, &data_020fe67c);
         socket = *(s32 *)((char *)connection + GPI_CONN_SOCKET);
         if (socket != -1) {
-            func_020496cc(socket, 2);
+            ghiSocketShutdown(socket, 2);
             ghiCloseSocket(*(s32 *)((char *)connection + GPI_CONN_SOCKET));
             *(s32 *)((char *)connection + GPI_CONN_SOCKET) = -1;
         }
         localSocket = *(s32 *)((char *)connection + GPI_CONN_LOCAL_SOCKET);
         if (localSocket != -1) {
-            func_020496cc(localSocket, 2);
+            ghiSocketShutdown(localSocket, 2);
             ghiCloseSocket(*(s32 *)((char *)connection + GPI_CONN_LOCAL_SOCKET));
             *(s32 *)((char *)connection + GPI_CONN_LOCAL_SOCKET) = -1;
         }

@@ -99,19 +99,20 @@ M2C_FIELD(*gCurrentMap,u16*,MAP_CURSOR_OWNER)=(M2C_FIELD(*gCurrentMap,u16*,MAP_C
 
 /* Show the player-unit dialog: make `textId` (the army- and variant-specific
  * text ShowPlayerUnitDialog looked up) the UI message text and start the fixed
- * player-unit dialog script data_02102e14. */
+ * player-unit dialog script gPlayerUnitDialogScript. */
 void ShowPlayerUnitDialogSequence(s32 textId) {
     void SetUiMessageText(s32);
-    extern M2C_UNK data_02102e14;
+    extern M2C_UNK gPlayerUnitDialogScript;
     void StartDialogSequence(s32);
     SetUiMessageText(textId);
-    StartDialogSequence(&data_02102e14);
+    StartDialogSequence(&gPlayerUnitDialogScript);
 }
 
-void func_02096b3c(void) {
+/* Whether the player-unit dialog script is running in one of the dialog slots. */
+void IsPlayerUnitDialogActive(void) {
     M2C_UNK IsDialogSequenceActive(M2C_UNK *);
-    extern M2C_UNK data_02102e14;
-    IsDialogSequenceActive(&data_02102e14);
+    extern M2C_UNK gPlayerUnitDialogScript;
+    IsDialogSequenceActive(&gPlayerUnitDialogScript);
 }
 
 /* Show the UI message `textId` and create its message sprite. */

@@ -385,10 +385,12 @@ s32 IsPlayerCodeValidForProfile(u64 code) {
     return IsPlayerCodeValidForGameId(GetProfileSaveBlock() + 4, code);
 }
 
-s32 FormatMapCodeString(s32 arg0) {
-    M2C_UNK FormatPlayerCode();
-    FormatPlayerCode();
-    return arg0;
+/* Format a player (map) code, given as its two 32-bit halves, into `out`, and
+ * return the buffer.  Thin wrapper over FormatPlayerCode for overlay callers. */
+char *FormatMapCodeString(char *out, u32 codeLow, u32 codeHigh) {
+    void FormatPlayerCode(char *, u32, u32);
+    FormatPlayerCode(out, codeLow, codeHigh);
+    return out;
 }
 
 void func_020c54ac(void) {
@@ -590,10 +592,11 @@ void ConvergeSyncedPositions(s32 mode, s32 *first, s32 *second)
     }
 }
 
-s32 func_020c5aac(s32 arg0) {
+/* Deleting destructor of an empty class: free the object, then return it. */
+s32 func_020c5aac(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 void func_020c5ac0(void) {
@@ -604,40 +607,44 @@ void func_020c5ac4(void) {
 
 }
 
-s32 func_020c5ac8(s32 arg0) {
+/* Deleting destructor of an empty class: free the object, then return it. */
+s32 func_020c5ac8(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 void func_020c5adc(void) {
 
 }
 
-s32 func_020c5ae0(s32 arg0) {
+/* Deleting destructor of an empty class: free the object, then return it. */
+s32 func_020c5ae0(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 void func_020c5af4(void) {
 
 }
 
-s32 func_020c5af8(s32 arg0) {
+/* Deleting destructor of an empty class: free the object, then return it. */
+s32 func_020c5af8(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 void func_020c5b0c(void) {
 
 }
 
-s32 func_020c5b10(s32 arg0) {
+/* Deleting destructor of an empty class: free the object, then return it. */
+s32 func_020c5b10(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 /* Remember where the battle cursor was (the map's pre-move cursor position) so

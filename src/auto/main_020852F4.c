@@ -150,9 +150,12 @@ s32 Link_HandleCommandMessage(s32 sender, void *messageData) {
     return 1;
 }
 
+/* Make the command-message handler the link layer's message handler, so incoming
+ * link messages are queued as received game commands. */
 void Link_InstallCommandHandler(void) {
     M2C_UNK Link_SetMessageHandler(M2C_UNK *);
     s32 Link_HandleCommandMessage(M2C_UNK, void *);
+
     Link_SetMessageHandler((M2C_UNK *)&Link_HandleCommandMessage);
 }
 
@@ -693,30 +696,36 @@ void *LinkBlockReceiver_Destroy(void *receiver) {
     return receiver;
 }
 
-s32 func_02085d4c(s32 arg0) {
+/* Deleting destructor of the link block sender (gLinkBlockSenderVtbl slot 1):
+ * free the sender object and return it.  The vtable's slot 0 holds the
+ * non-deleting twin. */
+s32 LinkBlockSender_Delete(s32 sender) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(sender);
+    return sender;
 }
 
 void func_02085d60(void) {
 
 }
 
-s32 func_02085d64(s32 arg0) {
+/* Deleting destructor of the scene base class (gSceneBaseVTable slot 1): free
+ * the object and return it.  The vtable's slot 0 holds the non-deleting twin. */
+s32 SceneBase_Delete(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 void func_02085d78(void) {
 
 }
 
-void func_02085d7c(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 4) = 0;
-    M2C_FIELD(arg0, s32 *, 0) = 0;
-    M2C_FIELD(arg0, s32 *, 8) = 0;
+/* Empty a queue-like object: clear its head, its tail and its count. */
+void ClearQueueState(void *queue) {
+    M2C_FIELD(queue, s32 *, 4) = 0;
+    M2C_FIELD(queue, s32 *, 0) = 0;
+    M2C_FIELD(queue, s32 *, 8) = 0;
 }
 
 /* Append a copy of a command's data (with its extra s16) as a new entry on a
@@ -802,7 +811,7 @@ void StopVoiceChatIfEnabled(VoiceChatWidget *widget) {
 
 #pragma optimization_level 3
 void func_02085ebc(void *arg0) {
- s32 IsWfcLinkActive(); s32 func_ov002_021e1624(); s32 func_ov010_02225d8c(); s32 VoiceActivity_IsSpeaking();
+ s32 IsWfcLinkActive(); s32 Ov002_QueryBattleScreenSwapped(); s32 func_ov010_02225d8c(); s32 VoiceActivity_IsSpeaking();
  extern M2C_UNK gSpriteDesc16x16; extern u16 **g3DSpriteEngineMain; extern u16 **gCur3DSpriteEngine;
  s32 flag; u16 **saved; u16 v; u16 state=3;
  if(IsWfcLinkActive() && M2C_FIELD(arg0,s32 *,0x38) && M2C_FIELD(arg0,s32 *,0x3c)){
@@ -812,7 +821,7 @@ void func_02085ebc(void *arg0) {
  }else state=0;
  }}
  if(M2C_FIELD(arg0,u8 *,0x4c)){
- if(!func_ov002_021e1624())return;
+ if(!Ov002_QueryBattleScreenSwapped())return;
  saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
  {
  DrawStatusIcon(M2C_FIELD(arg0,s16 *,0x34), M2C_FIELD(arg0,s16 *,0x36), state);

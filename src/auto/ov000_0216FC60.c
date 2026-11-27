@@ -184,6 +184,8 @@ void ScrollListCreateButtons(void) {
     SelectSpriteSlot(0);
 }
 
+/* The unit-list menu object the game keeps (singleton of gScrollListClass), or
+ * NULL when that menu is not open. */
 void *GetScrollList(void) {
     void *FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gScrollListClass;

@@ -618,9 +618,12 @@ void SetMapConfigValueFlag(M2C_UNK unused, s32 enabled) {
     M2C_FIELD(&gMapConfig, u16 *, 0) = flags;
 }
 
+/* Whether the battle config's value flag is on: bit 8 of the gMapConfig rule
+ * flags (MAPCONFIG_VALUE_FLAG), the bit MapSettings saves as its value flag. */
 s32 GetMapConfigValueFlag(void) {
     extern M2C_UNK gMapConfig;
-    return (s32) ((u32) (M2C_FIELD(&gMapConfig, u16 *, 0) << 23) >> 31);
+
+    return (s32) ((u32) (M2C_FIELD(&gMapConfig, u16 *, MAPCONFIG_FLAGS) << 23) >> 31);
 }
 
 s32 func_ov003_022061b4(void) {

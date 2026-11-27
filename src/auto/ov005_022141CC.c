@@ -160,7 +160,7 @@ extern void *gCur3DSpriteEngine,*data_027e00c8;
 extern M2C_UNK data_ov005_02221304,data_ov005_02220658,data_ov005_02220670,data_ov005_02220688,data_ov005_022206a0,data_ov005_022206b8;
 extern s16 data_ov005_02220572[];
 void func_020814e4(void *);void func_02081590(void *,s32);void LoadNarcFileAndDrawTilemapBlock(void *,s32,s32,s32);void LoadNarcFileToBGExtPltt(void *,s32,s32,s32);
-void func_02081528(void);void func_0200bc5c(void *);void func_ov005_022140e4(void);
+void func_02081528(void);void func_0200bc5c(void *);void SetSoundRoomFileDirectory(void);
 void *func_020ad460(s32);void *BuildMapBackgroundCgName(s32);void *BuildMapBackgroundScName(s32);void *BuildMapBackgroundClName(s32);
 void *saved=(unsigned short)gCur3DSpriteEngine; void *engine=*(void *volatile *)&data_027e00c8; void *p=M2C_FIELD(&data_ov005_02221304,void **,8);s32 id;
 gCur3DSpriteEngine=engine;
@@ -175,7 +175,7 @@ func_020814e4(func_020ad460(id));
 func_02081590(BuildMapBackgroundCgName(id),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x18));
 func_02081590(BuildMapBackgroundScName(id),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c));
 LoadNarcFileToBGExtPltt(BuildMapBackgroundClName(id),3,0,0x200);func_02081528();
-func_ov005_022140e4();
+SetSoundRoomFileDirectory();
 }
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;
 gCur3DSpriteEngine=saved;
@@ -219,7 +219,7 @@ void func_ov005_02214cdc(void) {
         LoadNarcFileDecompressed(BuildMapBackgroundScName(id), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
         LoadNarcFileToBGExtPltt(BuildMapBackgroundClName(id), 3, 0, 512);
         CloseNarcArchive();
-        func_ov005_022140e4();
+        SetSoundRoomFileDirectory();
     }
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 8;
     gCur3DSpriteEngine = saved;

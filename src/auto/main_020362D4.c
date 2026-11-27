@@ -14,7 +14,7 @@ extern u8 sWfcMatchPath[], sWfcProfilePath[], sWfcParamRegion[], sWfcParamEncodi
  * give-up timeout in ms (0 or less uses the default). Returns 0 if the socket
  * could not be set up, 1 once the connection attempt is under way. */
 s32 OpenWfcHttpConnection(s32 timeout){
-M2C_UNK HeapAlloc();void MI_CpuFill8(void *,s32,s32);s32 SocketCreate(s32,s32,s32);s32 SocketFcntl(s32,s32,s32);s32 SocketConnectAddress(s32,void *);s32 func_02021750(s32,s32);s32 func_0202175c(s32);M2C_UNK HeapFree();u64 GetSystemTick(void);extern M2C_UNK gWfcNet;
+M2C_UNK HeapAlloc();void MI_CpuFill8(void *,s32,s32);s32 SocketCreate(s32,s32,s32);s32 SocketFcntl(s32,s32,s32);s32 SocketConnectAddress(s32,void *);s32 SocketShutdownVeneer(s32,s32);s32 SocketCloseVeneer(s32);M2C_UNK HeapFree();u64 GetSystemTick(void);extern M2C_UNK gWfcNet;
 s32 r;u32 ip;
 if(M2C_FIELD(&gWfcNet,void **,16)||!M2C_FIELD(&gWfcNet,u32 *,8))return 0;
 M2C_FIELD(&gWfcNet,void **,16)=HeapAlloc(0,72);
@@ -34,7 +34,7 @@ r=SocketConnectAddress(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->so
 if(r<0&&r!=-26){
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->result=3;
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->state=3;
-func_02021750(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,2);func_0202175c(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket);return 1;}
+SocketShutdownVeneer(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,2);SocketCloseVeneer(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket);return 1;}
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->state=1;
 if(timeout>0)((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->deadline=GetSystemTick()+((u64)((s64)timeout*0x82ea)>>6);
 else ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->deadline=GetSystemTick()+0x17f898;
@@ -47,8 +47,8 @@ return 1;}
 s32 UpdateWfcHttpConnection(void) {
     u64 GetSystemTick(void);
     s32 SocketConnectAddress(M2C_UNK, void *);
-    M2C_UNK func_02021750(s32, s32);
-    M2C_UNK func_0202175c(s32);
+    M2C_UNK SocketShutdownVeneer(s32, s32);
+    M2C_UNK SocketCloseVeneer(s32);
     void SendWfcHttpRequest(void);
     void ReceiveWfcHttpResponse(void);
     M2C_UNK HeapFree(s32, M2C_UNK *, s32);
@@ -66,8 +66,8 @@ s32 UpdateWfcHttpConnection(void) {
         if (p->deadline != 0 && p->deadline < GetSystemTick()) {
             p->result = 2;
             ((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->state = WFC_HTTP_DONE;
-            func_02021750(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket, 2);
-            func_0202175c(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket);
+            SocketShutdownVeneer(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket, 2);
+            SocketCloseVeneer(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket);
         }
     }
 
@@ -78,8 +78,8 @@ s32 UpdateWfcHttpConnection(void) {
         if (r < 0 && r != -26) {
             ((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->result = 3;
             ((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->state = WFC_HTTP_DONE;
-            func_02021750(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket, 2);
-            func_0202175c(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket);
+            SocketShutdownVeneer(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket, 2);
+            SocketCloseVeneer(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket);
             return 0;
         }
         SendWfcHttpRequest();
@@ -95,8 +95,8 @@ s32 UpdateWfcHttpConnection(void) {
     default:
         ((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->result = 3;
         ((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->state = WFC_HTTP_DONE;
-        func_02021750(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket, 2);
-        func_0202175c(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket);
+        SocketShutdownVeneer(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket, 2);
+        SocketCloseVeneer(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket);
         return 0;
     }
 }
@@ -107,8 +107,8 @@ s32 UpdateWfcHttpConnection(void) {
  * the connection on to reading the response. */
 void SendWfcHttpRequest(void) {
     s32 SocketSend(s32, M2C_UNK *, s32);
-    M2C_UNK func_02021750(s32, s32);
-    M2C_UNK func_0202175c(s32);
+    M2C_UNK SocketShutdownVeneer(s32, s32);
+    M2C_UNK SocketCloseVeneer(s32);
     s32 StringLength(M2C_UNK *);
     extern M2C_UNK sWfcConnTestRequest;
     extern M2C_UNK gWfcNet;
@@ -120,8 +120,8 @@ void SendWfcHttpRequest(void) {
     if (sent <= 0) {
         M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0x3C) = WFC_HTTP_RESULT_ERROR;
         M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0x38) = WFC_HTTP_DONE;
-        func_02021750(M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0), 2);
-        func_0202175c(M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0));
+        SocketShutdownVeneer(M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0), 2);
+        SocketCloseVeneer(M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0));
         return;
     }
     M2C_FIELD(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10), s32 *, 0x38) = WFC_HTTP_RECEIVING;
@@ -135,8 +135,8 @@ void SendWfcHttpRequest(void) {
  * A recv result of -6 (would block) just waits for the next poll. */
 void ReceiveWfcHttpResponse(void) {
     s32 SocketReceive(s32, void *, s32);
-    M2C_UNK func_02021750(s32, s32);
-    M2C_UNK func_0202175c(s32);
+    M2C_UNK SocketShutdownVeneer(s32, s32);
+    M2C_UNK SocketCloseVeneer(s32);
     s32 StringCompareN(void *, void *, s32);
     extern M2C_UNK gWfcNet, sWfcHttpOkStatus;
     WfcHttpConnection *conn;
@@ -158,14 +158,14 @@ void ReceiveWfcHttpResponse(void) {
             else if (StringCompareN(conn->response + index, &sWfcHttpOkStatus, 3) != 0) conn->result = WFC_HTTP_RESULT_ERROR;
             else conn->result = WFC_HTTP_RESULT_OK;
             M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->state = WFC_HTTP_DONE;
-            func_02021750(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->socket, 2);
-            func_0202175c(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->socket);
+            SocketShutdownVeneer(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->socket, 2);
+            SocketCloseVeneer(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->socket);
         }
     } else {
         M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->result = WFC_HTTP_RESULT_ERROR;
         M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->state = WFC_HTTP_DONE;
-        func_02021750(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->socket, 2);
-        func_0202175c(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->socket);
+        SocketShutdownVeneer(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->socket, 2);
+        SocketCloseVeneer(M2C_FIELD(&gWfcNet, WfcHttpConnection **, 0x10)->socket);
     }
 }
 

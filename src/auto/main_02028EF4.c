@@ -652,6 +652,8 @@ void WFC_OnSendComplete(void *event) {
     OS_WakeupThread(&gWfcSendThread);
 }
 
+/* IP-stack completion callback of an asynchronous WFC send: release the send
+ * lock so the next queued connection-data frame can go out. */
 void WFC_OnSendRequestComplete(void) {
     M2C_UNK WFC_UnlockSend(M2C_UNK *);
     extern M2C_UNK gWfcSendLock;

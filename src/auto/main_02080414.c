@@ -140,6 +140,8 @@ M2C_UNK Create3DSpriteOffsetTrack(s32 target, s32 pathIndex, s32 steps, s32 scal
     return (M2C_UNK)object;
 }
 
+/* Free every screen-offset track sprite: all objects of
+ * g3DSpriteOffsetTrackClass (see Create3DSpriteOffsetTrack). */
 void Delete3DSpriteOffsetTracks(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK g3DSpriteOffsetTrackClass;

@@ -397,6 +397,8 @@ void CreateWeatherEffectSprite(void) {
     CreateSpriteFromClass(&gWeatherEffectSpriteClass, 1);
 }
 
+/* Remove the battlefield weather effect: delete the sprite CreateWeatherEffectSprite
+ * created (every object of gWeatherEffectSpriteClass). */
 void DeleteWeatherEffectSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gWeatherEffectSpriteClass;

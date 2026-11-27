@@ -309,6 +309,8 @@ s32 IsTextLayerAnimating(void) {
     return 0;
 }
 
+/* The first object of the text-layer sprite class, or NULL when no text-layer
+ * panel is on screen. */
 s32 FindTextLayer(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gTextLayerSpriteClass;

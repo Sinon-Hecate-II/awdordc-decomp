@@ -268,9 +268,12 @@ void gpiRemoveBuddyStatus(void **connection, s32 profileId) {
     TableRemove(gpi->buddyTable, record);
 }
 
-void gpiFreeBuddyList(void **arg0) {
-    M2C_UNK TableRemove(s32);
-    TableRemove(M2C_FIELD(*arg0, s32 *, 0x428));
+/* Remove the buddy status record `buddy` from `connection`'s buddy table, the
+ * table gpiCreateBuddyTable fills. */
+void gpiFreeBuddyList(void **connection, void *buddy) {
+    M2C_UNK TableRemove(M2C_UNK, M2C_UNK);
+
+    TableRemove(((GpiConnectionHead *)*connection)->buddyTable, buddy);
 }
 
 /* Table-walk callback of gpiFindBuddyByNickEmail: when this buddy record has a

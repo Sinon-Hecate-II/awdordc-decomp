@@ -389,9 +389,11 @@ u32 AllocFromFrameHeapTail(void *heapPtr, s32 size, s32 alignment) {
     return aligned;
 }
 
-void FreeFrameHeapToHead(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0x24) = (s32) M2C_FIELD(arg0, s32 *, 0x18);
-    M2C_FIELD(arg0, s32 *, 0x2C) = 0;
+/* Free everything the frame heap allocated from its head: point the frame's head
+ * back at the start of the heap's area and clear its recorded-state list. */
+void FreeFrameHeapToHead(void *heap) {
+    M2C_FIELD(heap, s32 *, FRAME_HEAP_HEAD) = (s32) M2C_FIELD(heap, s32 *, HEAP_AREA_START);
+    M2C_FIELD(heap, s32 *, FRAME_HEAP_STATE_LIST) = 0;
 }
 
 /* Free everything the frame heap allocated from its tail: point the heap's tail

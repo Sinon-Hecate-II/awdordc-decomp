@@ -125,6 +125,8 @@ void SpawnOnlinePlayerAnnounceRefresher(M2C_UNK owner) {
     }
 }
 
+/* Delete every online player-announce refresher sprite, stopping the online
+ * engine re-announcing the local player. */
 void DeleteOnlineAnnounceRefreshers(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gOnlineAnnounceRefresherClass;

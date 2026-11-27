@@ -255,9 +255,11 @@ s32 gti2CloseConnection(M2C_UNK connection, M2C_UNK connectEvent, M2C_UNK closeR
     return 1;
 }
 
-s32 Gt2CloseConnection(M2C_UNK arg0) {
-    M2C_UNK gti2CloseConnection(M2C_UNK, M2C_UNK, M2C_UNK);
-    return gti2CloseConnection(arg0, 7, 2);
+/* Close GT2 connection `connection` on request: gti2CloseConnection tears it
+ * down, failing a handshake in progress with connect event 7 and reporting close
+ * reason 2 (a local close) to a live connection's closed callback. */
+s32 Gt2CloseConnection(void *connection) {
+    return gti2CloseConnection(connection, 7, 2);
 }
 
 /* Send the CLOSED message on a connection and then close it, reporting connect
@@ -446,8 +448,10 @@ s32 Gt2DispatchCommand(void *object, s32 command, s32 param_a, s32 param_b) {
     return 1;
 }
 
-void func_0205b89c(void *arg0, void *arg1) {
-    Gt2CompareSequence(M2C_FIELD(arg0, u16 *, 0xC), M2C_FIELD(arg1, u16 *, 0xC));
+/* Compare two queued received commands by their sequence numbers, the order
+ * Vector_InsertSorted keeps GT2_CONNECTION_PENDING_QUEUE in. */
+s16 ComparePendingCommands(Gt2PendingCommand *command, Gt2PendingCommand *other) {
+    return Gt2CompareSequence(command->sequence, other->sequence);
 }
 
 /* Enqueue an outgoing command: insert a header record (offset/size/command/
@@ -461,7 +465,7 @@ s32 count=Vector_GetCount(M2C_FIELD(session,s32 *,0x5c));s32 i;Gt2PendingCommand
 for(i=0;i<count;i++){u16 queued=M2C_FIELD(Vector_GetItem(M2C_FIELD(session,s32 *,0x5c),i),u16 *,12);if(queued==sequence){*error=0;return 1;}if(Gt2CompareSequence(queued,sequence)>0)break;}
 if(gti2GetBufferFreeSpace(session+0x44)<size){*error=1;return 1;}
 record.offset=M2C_FIELD(session,s32 *,0x4c);record.size=size;record.kind=command;record.sequence=sequence;
-Vector_InsertSorted(M2C_FIELD(session,s32 *,0x5c),&record,func_0205b89c);
+Vector_InsertSorted(M2C_FIELD(session,s32 *,0x5c),&record,ComparePendingCommands);
 if(count+1!=Vector_GetCount(M2C_FIELD(session,s32 *,0x5c))){*error=1;return 1;}
 gti2BufferWriteData(session+0x44,data,size);
 if(count==0){if(!func_0205caac(session,M2C_FIELD(session,u16 *,0x66),(u16)(sequence-1)))return 0;}

@@ -686,8 +686,10 @@ void OS_JoinThread(Thread *thread) {
     OS_RestoreInterrupts(irqState);
 }
 
-s32 TaskIsFinished(void *arg0) {
-    if (M2C_FIELD(arg0, s32 *, 0x64) == 2) {
+/* True when task (thread) `thread` has finished: its state is
+ * THREAD_STATE_FINISHED.  Callers use it to wait for a worker task. */
+s32 TaskIsFinished(Thread *thread) {
+    if (thread->state == THREAD_STATE_FINISHED) {
         return 1;
     }
     return 0;

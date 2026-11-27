@@ -111,9 +111,12 @@ void SetMapCursorVisible(s16 visible) {
     M2C_FIELD(CreateSpriteFromClass(&gMapCursorClass, 7), s16 *, 0x6C) = visible;
 }
 
+/* Delete every sprite object of the map cursor's class (the tile cursor the
+ * player moves around the map). */
 void DeleteMapCursorSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gMapCursorClass;
+
     DeleteSpriteObjectsOfClass(&gMapCursorClass);
 }
 

@@ -498,7 +498,9 @@ void ResetTransferSlot(s32 playerId) {
     ((TransferSlot *)(gTransferManager + playerId * 0x30))->kind = 0;
 }
 
-void func_020449dc(void) {
+/* Detach the multiplayer data-transfer manager (gTransferManager = NULL); part of
+ * shutting the network session down. */
+void ClearTransferManager(void) {
     extern s32 gTransferManager;
     gTransferManager = 0;
 }

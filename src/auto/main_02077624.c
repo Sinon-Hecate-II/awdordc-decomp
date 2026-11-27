@@ -246,17 +246,20 @@ void UpdateMapView(void) {
     ApplyMapViewProjection(view + 0x6C00);
 }
 
-void func_02077c64(void) {
+/* Render one frame of the battle map: reset the 3D geometry engine, draw the map
+ * and install the map view's material. */
+void DrawBattleMapView(void) {
     M2C_UNK G3X_Reset();
     void SetMapViewMaterial();
-    M2C_UNK func_02078828();
+    M2C_UNK DrawMap();
     G3X_Reset();
-    func_02078828();
+    DrawMap();
     SetMapViewMaterial();
 }
 
-void func_02077c78(void) {
-    *(s32 *)0x04000540 = 0;
+/* Cancel the 3D engine's buffer swap for this frame. */
+void DisableGxBufferSwap(void) {
+    REG_GX_SWAP_BUFFERS = 0;
 }
 
 /* Set up a map frame: configure the 3D sprite bank's layer modes, let the active map view claim

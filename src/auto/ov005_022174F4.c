@@ -24,7 +24,7 @@ LoadFaceTexture(coId, 8, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xc) + 0x40);
 LoadFacePalette(coId, 8, 2, 0, 0);
 FillFaceTileMap(8, 12, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 1, 0, 0);
 M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
-SetOv005FileDirectory();
+SetShogunColorFileDirectory();
 } else {
 ClearTileRect(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20) + 0x18, 0x14, 0x18);
 M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;

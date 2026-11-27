@@ -74,14 +74,18 @@ M2C_UNK TcpTransmitSegment(M2C_UNK conn, M2C_UNK flags, M2C_UNK reserved) {
     SendArpRequest(GetIpNextHop(M2C_FIELD(conn, s32 *, SOCKET_PEER_ADDR)));
 }
 
-void TcpSendAck(M2C_UNK arg0, M2C_UNK arg1) {
+/* Send a bare ACK segment (no payload) on connection `conn`; `reserved` is
+ * passed through to the segment builder's extra argument. */
+void TcpSendAck(M2C_UNK conn, M2C_UNK reserved) {
     M2C_UNK TcpTransmitSegment(M2C_UNK, M2C_UNK, M2C_UNK);
-    TcpTransmitSegment(arg0, 0x10, arg1);
+    TcpTransmitSegment(conn, TCP_FLAG_ACK, reserved);
 }
 
-void TcpSendFinAck(M2C_UNK arg0, M2C_UNK arg1) {
+/* Send a FIN|ACK control segment for `conn`: close the local direction and
+ * acknowledge the peer's data. `reserved` is passed through to TcpTransmitSegment. */
+void TcpSendFinAck(M2C_UNK conn, M2C_UNK reserved) {
     M2C_UNK TcpTransmitSegment(M2C_UNK, M2C_UNK, M2C_UNK);
-    TcpTransmitSegment(arg0, 0x11, arg1);
+    TcpTransmitSegment(conn, TCP_FLAG_FIN | TCP_FLAG_ACK, reserved);
 }
 
 /* Reply to an unacceptable TCP segment with a reset.  The reset is built in the

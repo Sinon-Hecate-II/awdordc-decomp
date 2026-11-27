@@ -76,12 +76,12 @@ void MapEditor_EndMap(void) {
     M2C_UNK HideAllSpriteSlots();
     M2C_UNK MapSettings_CopyFromGameSettings(M2C_UNK);
     M2C_UNK func_020d4c08();
-    M2C_UNK func_ov007_02212db8();
-    M2C_UNK func_ov007_0221ab38();
+    M2C_UNK MapEditor_DeleteButtonScreen();
+    M2C_UNK MapEditor_DespawnScene();
     FreeUiGraphicsBank(4);
-    func_ov007_02212db8();
+    MapEditor_DeleteButtonScreen();
     HideAllSpriteSlots();
-    func_ov007_0221ab38();
+    MapEditor_DespawnScene();
     func_020d4c08();
     func_0208c748();
     MapSettings_CopyFromGameSettings(0);

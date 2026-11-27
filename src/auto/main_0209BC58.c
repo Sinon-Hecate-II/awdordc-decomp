@@ -199,10 +199,11 @@ void DeleteTextLineSprites(void) {
     DeleteSpriteObjectsOfClass(&gScreenTextLineSpriteClass);
 }
 
-void func_0209bfc8(void) {
-    M2C_UNK FindObjectByClass(M2C_UNK *);
+/* The first live message-box sprite, or NULL when no message is on screen. */
+s32 FindMessageSprite(void) {
+    s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gMessageSpriteClass;
-    FindObjectByClass(&gMessageSpriteClass);
+    return FindObjectByClass(&gMessageSpriteClass);
 }
 
 /* Draw the localized text whose id is `textId` into the tilemap at `tiles`,

@@ -49,10 +49,12 @@ s32 *RecordsMenu_GetRecord(s32);
  * each engine in turn and creates the fade on the selected ones, then puts the
  * previous engine back. */
 
+/* Point the file archive at the screen transition's graphics directory
+ * ("/tutorial/tutcard"), the one DrawScreenTransition reads its .narc from. */
 void SetScreenTransitionDirectory(void) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    extern M2C_UNK data_02127d78;
-    SetFileDirectory(&data_02127d78);
+    extern M2C_UNK sScreenTransitionDirectory;
+    SetFileDirectory(&sScreenTransitionDirectory);
 }
 
 /* Which half of the screen the running split transition slides (0 or 1). */

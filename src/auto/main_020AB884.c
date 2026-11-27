@@ -230,10 +230,13 @@ void func_020abe24(void) {
 
 }
 
-s32 func_020abe28(s32 arg0) {
+/* Deleting destructor of the unit sprite's button task (gUnitSpriteButtonTaskVtbl
+ * slot 1): free the task and return it.  The vtable's slot 0 holds the
+ * non-deleting twin. */
+s32 UnitSpriteButtonTask_Delete(s32 task) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(task);
+    return task;
 }
 
 /* Set the per-screen enabled flag: screen 0 or 1, or SCREEN_CURRENT, which

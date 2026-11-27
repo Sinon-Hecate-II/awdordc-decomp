@@ -98,9 +98,11 @@ void HashInternedString(s8 **arg0, s32 arg1) {
     func_02060fe8(*arg0, arg1);
 }
 
-void CompareInternedStrings(s32 *arg0, s32 *arg1) {
+/* String-intern table comparison callback: compare the key strings of two
+ * interned entries case-insensitively. */
+void CompareInternedStrings(s32 *keyA, s32 *keyB) {
     M2C_UNK StringCompareNoCase(s32, s32);
-    StringCompareNoCase(*arg0, *arg1);
+    StringCompareNoCase(*keyA, *keyB);
 }
 
 void FreeInternedString(s32 *arg0) {
@@ -369,8 +371,12 @@ void HashServerKey(s8 **arg0, s32 arg1) {
     func_02060fe8(*arg0, arg1);
 }
 
-void CompareServerKeys(s32 *arg0, s32 *arg1) {
-    StringCompareNoCase(*arg0, *arg1);
+/* Key/value table comparison callback: compare the key strings of two server
+ * key/value entries case-insensitively. */
+void CompareServerKeys(s32 *keyA, s32 *keyB) {
+    M2C_UNK StringCompareNoCase(s32, s32);
+
+    StringCompareNoCase(*keyA, *keyB);
 }
 
 s32 SBServerGetPing(void *arg0) {

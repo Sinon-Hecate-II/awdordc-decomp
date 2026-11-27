@@ -31,7 +31,7 @@ void func_020b6168(void *arg0) {
     s32 SetAnimatedSpriteFrame(void *, s32);
     void CreateScreenOffsetEffect(s32, s32, s32);
     void CreateScreenFlash(s32, s32, s32, s32);
-    M2C_UNK CancelMapCursorAnimation(void);
+    M2C_UNK DeleteTargetCursor(void);
     void ApplyAreaDamageTile(void *);
 
     u8 *core;
@@ -93,7 +93,7 @@ void func_020b6168(void *arg0) {
     CreateScreenOffsetEffect(2, 0x3C, 0);
     CreateScreenFlash(4, 0, 2, 0);
     PlaySoundAtTile(0x93, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
-    CancelMapCursorAnimation();
+    DeleteTargetCursor();
 }
 
 /* Step the screen-transition down-counter (func_020b524c -> CloseEffectNarcArchive, which
@@ -287,7 +287,7 @@ void CreateFallingFlareSprite(void *task) {
 void CreateSmallFlareSprite(void *task) {
     M2C_UNK SetAnimatedSpriteFrame(void *, M2C_UNK);
     void *CreateEffectMapSprite(M2C_UNK *, s32, s32, M2C_UNK, s32, s32, void *);
-    M2C_UNK CancelMapCursorAnimation();
+    M2C_UNK DeleteTargetCursor();
     extern M2C_UNK gSmallFlareName;
     extern M2C_UNK gSmallFlareSprite;
     void UpdateSmallFlareSprite(void *);
@@ -298,7 +298,7 @@ void CreateSmallFlareSprite(void *task) {
     flare = CreateEffectMapSprite(&gSmallFlareSprite, M2C_FIELD(task, s16 *, 0x44), M2C_FIELD(task, s16 *, 0x46), 0x10, 0, 0, task);
     SetAnimatedSpriteFrame(flare, 0);
     M2C_FIELD(flare, void (**)(void *), 0x6C) = UpdateSmallFlareSprite;
-    CancelMapCursorAnimation();
+    DeleteTargetCursor();
     PlaySoundAtTile(0x131, M2C_FIELD(task, s16 *, 0x44), M2C_FIELD(task, s16 *, 0x46));
 }
 

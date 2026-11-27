@@ -256,6 +256,8 @@ void CloseCarriedUnitListMenu(void *menu) {
     ReleaseMapViewHold();
 }
 
+/* Return the carried-unit list menu object while it is open (the sprite object
+ * of gCarriedUnitListMenuClass), or NULL when the menu is not on screen. */
 s32 GetCarriedUnitMenu(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gCarriedUnitListMenuClass;
@@ -729,22 +731,24 @@ void UpdateMapPreviewLayer(void *sprite) {
  * sprite's per-frame step copies the map's tiles to that VRAM offset.  Returns 1
  * when it was created, 0 when a preview layer is already up. */
 s32 CreateMapPreviewLayerSprite(s32 vram) {
-    extern M2C_UNK data_02129690;
+    extern M2C_UNK gMapPreviewLayerSpriteClass;
     s32 FindObjectByClass(M2C_UNK *);
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *sprite;
 
-    if (FindObjectByClass(&data_02129690)) {
+    if (FindObjectByClass(&gMapPreviewLayerSpriteClass)) {
         return 0;
     }
-    sprite = (void *)CreateSpriteFromClass(&data_02129690, 7);
+    sprite = (void *)CreateSpriteFromClass(&gMapPreviewLayerSpriteClass, 7);
     M2C_FIELD(sprite, s32 *, MAP_PREVIEW_SPRITE_VRAM) = vram;
     return 1;
 }
 
+/* Remove the map-preview layer sprite: delete the sprite objects of
+ * gMapPreviewLayerSpriteClass, if the preview is up. */
 void RemoveMapPreviewLayerSprite(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02129690;
-    DeleteSpriteObjectsOfClass(&data_02129690);
+    extern M2C_UNK gMapPreviewLayerSpriteClass;
+    DeleteSpriteObjectsOfClass(&gMapPreviewLayerSpriteClass);
 }
 

@@ -26,7 +26,7 @@ s32 EnterAiCommandDelayAlt(void) {
 }
 
 s32 ProcessAiCommandDelay(void) {
-    void CancelMapCursorAnimation(void);
+    void DeleteTargetCursor(void);
     s32 IsPlayerHuman(u16);
     void MapCursor_StepTowardTarget(s32);
     s32 IsFastAnimation(void);
@@ -58,7 +58,7 @@ s32 ProcessAiCommandDelay(void) {
             } else {
                 M2C_FIELD(gAiCommandState, u8 *, 1) = 6;
             }
-            CancelMapCursorAnimation();
+            DeleteTargetCursor();
             return 1;
         }
     }

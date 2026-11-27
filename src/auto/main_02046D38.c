@@ -250,9 +250,11 @@ error:
     M2C_FIELD(&gWebRequestState,s32 *,4)=1;
 }
 #pragma pop
-void WebPrngSeed(s32 arg0) {
+/* Seed the WFC request-body obfuscation PRNG with the body's byte-sum
+ * `checksum`, repeating it in both 16-bit halves of the state. */
+void WebPrngSeed(s32 checksum) {
     extern s32 sWebPrngState;
-    sWebPrngState = arg0 | (arg0 << 0x10);
+    sWebPrngState = checksum | (checksum << 0x10);
 }
 
 /* Advance the WFC request-body obfuscation PRNG (a linear congruential

@@ -535,13 +535,13 @@ void GX_EndLoadOBJExtPlttSub(void) {
 }
 
 void GX_BeginLoadTex(void) {
-    s32 func_020033b8(void);
+    s32 GX_ReleaseBankForTex(void);
     extern u8 data_020e9b40[], data_020e9b42[], data_020e9b44[];
     extern M2C_UNK gGxTexLoad;
     s32 idx;
     u32 a, b, c;
 
-    idx = func_020033b8();
+    idx = GX_ReleaseBankForTex();
     a = *(volatile u16 *)(data_020e9b40 + idx * 6);
     b = *(volatile u16 *)(data_020e9b42 + idx * 6);
     c = *(volatile u16 *)(data_020e9b44 + idx * 6);

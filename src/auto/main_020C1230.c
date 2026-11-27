@@ -349,6 +349,8 @@ void SetFrameRect(s32 left, s32 top, s32 tile, s32 palette) {
     M2C_FIELD(rect, s32 *, FRAME_RECT_SCREEN) = ((u8)(gCur3DSpriteEngine == g3DSpriteEngineMain) != 1);
 }
 
+/* Delete every sprite object of the frame-rectangle class (the border sprites
+ * that SetFrameRect creates and DrawFrameRectSprite draws around a map frame). */
 void RemoveFrameRectSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gFrameRectSpriteClass;

@@ -632,8 +632,11 @@ s32 CreateEffectMapSprite(M2C_UNK name, M2C_UNK tileX, M2C_UNK tileY, s32 rawFla
     return sprite;
 }
 
+/* Empty the battle-effect sprite texture pool: the next sheet LoadEffectSpriteSheet
+ * loads goes back to the start of the pool (offset 0). */
 void ResetEffectSpritePool(void) {
     extern s32 gEffectSpritePoolOffset;
+
     gEffectSpritePoolOffset = 0;
 }
 

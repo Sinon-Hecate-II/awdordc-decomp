@@ -27,7 +27,7 @@ Pair02034164 headers[32];     /* +0x1A38: parsed response header name/value pair
 
 void HttpClientTask(Unk02034164 *client) {
     void HttpClientInitRawConnection(Unk02034164 *);
-    s32 func_02034068(Unk02034164 *);
+    s32 HttpClientResolveHost(Unk02034164 *);
     void ResetCurrentConnection(void);
     M2C_UNK MI_CpuFill8(void *, s32, s32);
     void SetTlsKeyList(void *, s32);
@@ -78,7 +78,7 @@ void HttpClientTask(Unk02034164 *client) {
 
     if (timeout <= 0) timeout = 60000;
     HttpClientInitRawConnection(client);
-    host = func_02034068(client);
+    host = HttpClientResolveHost(client);
     if (host == 0) {
         M2C_FIELD(client, s32 *, 0x1020) = 2;
         return;

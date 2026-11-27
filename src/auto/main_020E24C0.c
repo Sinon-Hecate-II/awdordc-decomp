@@ -187,10 +187,12 @@ void *PlayerLabel_Destroy(void *label) {
     return label;
 }
 
+/* Point the file loader at the shogun (CO) info archive's directory,
+ * "/info/syogun_info", before its localized NARC is opened. */
 void SetShogunInfoFileDirectory(void) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    extern M2C_UNK data_0212d678;
-    SetFileDirectory(&data_0212d678);
+    extern M2C_UNK sShogunInfoDir;
+    SetFileDirectory(&sShogunInfoDir);
 }
 
 /* Returns the name-graphic file (.cg) of the CO whose face id is `faceId`, or

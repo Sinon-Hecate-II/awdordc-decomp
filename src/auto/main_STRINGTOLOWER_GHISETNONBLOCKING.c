@@ -163,20 +163,29 @@ s32 ghiRecordSocketError(s32 result, s32 error) {
     return result;
 }
 
-void ghiSocket(void) {
-    s32 SocketCreate();
-    M2C_UNK ghiRecordSocketError(s32, M2C_UNK);
-    ghiRecordSocketError(SocketCreate(), -1);
+/* GameSpy ghi socket(): create a socket for `domain` (AF_INET), `type`
+ * (SOCK_STREAM/SOCK_DGRAM) and `protocol` through the DS socket layer, record a
+ * failure as the last socket error and return the socket (or -1). */
+void ghiSocket(s32 domain, s32 type, s32 protocol) {
+    s32 SocketCreate(s32, s32, s32);
+    ghiRecordSocketError(SocketCreate(domain, type, protocol), -1);
 }
 
-void ghiCloseSocket(void) {
-    s32 func_0202175c();
-    ghiRecordSocketError(func_0202175c(), -1);
+/* GameSpy ghi close(): close socket `socket` through the NitroSDK wrapper,
+ * record a failure as the stack's last socket error and return the result, or
+ * -1 when the close failed. */
+s32 ghiCloseSocket(s32 socket) {
+    s32 SocketCloseVeneer(s32);
+
+    return ghiRecordSocketError(SocketCloseVeneer(socket), -1);
 }
 
-void func_020496cc(void) {
-    s32 func_02021750();
-    ghiRecordSocketError(func_02021750(), -1);
+/* GameSpy ghi socket shutdown: shut `socket` down for `how` (SHUT_RD, SHUT_WR or
+ * SHUT_RDWR) through the SDK's SocketShutdown veneer, recording a failure as the
+ * last socket error and returning its result (or -1). */
+void ghiSocketShutdown(s32 socket, s32 how) {
+    s32 SocketShutdownVeneer(s32, s32);
+    ghiRecordSocketError(SocketShutdownVeneer(socket, how), -1);
 }
 
 /* ghiBind: binds `socket` to `address`, whose length byte is replaced with the
@@ -201,9 +210,13 @@ s32 ghiConnect(int socket, UnkSocketAddress *address, u8 length) {
     return ghiRecordSocketError(SocketConnectAddress(socket, &addr), -1);
 }
 
-void ghiListen(void) {
-    s32 func_02021960();
-    ghiRecordSocketError(func_02021960(), -1);
+/* GameSpy ghi listen(): check listening socket `socket` for an incoming
+ * connection through the NitroSDK wrapper, record a failure as the stack's last
+ * socket error and return the result, or -1 when the check failed. */
+s32 ghiListen(s32 socket) {
+    s32 SocketCheckReadyVeneer(s32);
+
+    return ghiRecordSocketError(SocketCheckReadyVeneer(socket), -1);
 }
 
 /* GameSpy ghi accept: accept a connection on `socket` and report the peer in
@@ -221,9 +234,14 @@ void ghiAccept(M2C_UNK socket, u8 *address, s32 *addressLength) {
     ghiRecordSocketError(acceptedSocket, -1);
 }
 
-void ghiRecv(void) {
-    s32 SocketRecvFlags();
-    ghiRecordSocketError(SocketRecvFlags(), -1);
+/* ghi recv: receive up to `length` bytes from `socket` into `data` with `flags`
+ * through the DS socket layer, record a failure as the stack's last socket error
+ * and return the number of bytes received, or -1 when the receive failed. */
+s32 ghiRecv(s32 socket, void *data, s32 length, s32 flags) {
+    s32 SocketRecvFlags(s32, void *, s32, s32);
+    M2C_UNK ghiRecordSocketError(s32, M2C_UNK);
+
+    return ghiRecordSocketError(SocketRecvFlags(socket, data, length, flags), -1);
 }
 
 /* ghi recvfrom: receive up to `len` bytes from `socket` into `buf` with `flags`
@@ -240,10 +258,14 @@ void ghiRecvFrom(s32 socket, void *buf, s32 len, s32 flags, UnkSocketAddress *ad
     ghiRecordSocketError(result, -1);
 }
 
-void ghiSend(void) {
-    s32 SocketSendFlags();
+/* ghi send: send up to `length` bytes of `data` on `socket` with `flags`
+ * through the DS socket layer, record a failure as the stack's last socket error
+ * and return the number of bytes sent, or -1 when the send failed. */
+s32 ghiSend(s32 socket, const void *data, s32 length, s32 flags) {
+    s32 SocketSendFlags(s32, const void *, s32, s32);
     M2C_UNK ghiRecordSocketError(s32, M2C_UNK);
-    ghiRecordSocketError(SocketSendFlags(), -1);
+
+    return ghiRecordSocketError(SocketSendFlags(socket, data, length, flags), -1);
 }
 
 s32 ghiSendTo(int a,int b,int c,int d,UnkSocketAddress *e,int f) {

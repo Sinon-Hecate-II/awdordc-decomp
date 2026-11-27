@@ -472,6 +472,8 @@ DirectionMarker *CreateDirectionMarker(s32 x, s32 y, s16 direction) {
     marker->direction = direction;
 }
 
+/* Remove the cursor direction markers: every arrow sprite of
+ * gDirectionMarkerSpriteClass that shows a picked attack direction. */
 void DeleteDirectionMarkerSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gDirectionMarkerSpriteClass;

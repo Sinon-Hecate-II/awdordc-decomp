@@ -63,9 +63,9 @@ void TeardownNetSession(void) {
     void gpiThinkConnection(void *channel);
     void gpiFreeConnectionIfPresent(void *channel);
     void FreeNasLoginContext(void);
-    void func_0203b088(void);
+    void ClearMatchSession(void);
     void ShutdownConnection(void);
-    void func_020449dc(void);
+    void ClearTransferManager(void);
     void GT2CloseSocket(void *resource);
 
     if (!gNetSession) return;
@@ -90,9 +90,9 @@ void TeardownNetSession(void) {
         M2C_FIELD(gNetSession, s32 *, 0x1C) = 0;
     }
     FreeNasLoginContext();
-    func_0203b088();
+    ClearMatchSession();
     ShutdownConnection();
-    func_020449dc();
+    ClearTransferManager();
     if (M2C_FIELD(gNetSession, void **, 0)) {
         GT2CloseSocket(M2C_FIELD(gNetSession, void **, 0));
         M2C_FIELD(gNetSession, void **, 0) = 0;

@@ -145,40 +145,44 @@ void func_0208f478(void) {
 
 }
 
-s32 func_0208f47c(s32 arg0) {
+/* Deleting destructor of an empty class: free the object, then return it. */
+s32 func_0208f47c(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 void func_0208f490(void) {
 
 }
 
-s32 func_0208f494(s32 arg0) {
+/* Deleting destructor of an empty class: free the object, then return it. */
+s32 func_0208f494(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 void func_0208f4a8(void) {
 
 }
 
-s32 func_0208f4ac(s32 arg0) {
+/* Deleting destructor of an empty class: free the object, then return it. */
+s32 func_0208f4ac(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 void func_0208f4c0(void) {
 
 }
 
-s32 func_0208f4c4(s32 arg0) {
+/* Deleting destructor of an empty class: free the object, then return it. */
+s32 func_0208f4c4(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 /* Capture the hardware tick at the start of a frame for the sound timer. */
@@ -306,10 +310,11 @@ void func_0208f758(void) {
 
 }
 
-s32 func_0208f75c(s32 arg0) {
+/* Deleting destructor of an empty class: free the object, then return it. */
+s32 func_0208f75c(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 s32 GetCurrentMusicTrack(void) {
@@ -498,9 +503,12 @@ void StartLoopingSoundEffect(s32 effect, s32 interval) {
     M2C_FIELD(sprite, s16 *, SOUND_LOOP_INTERVAL) = interval;
 }
 
+/* Stop every looping sound effect by deleting the loop sprite objects (the ones
+ * StartLoopingSoundEffect spawned). */
 void StopLoopingSoundEffects(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gLoopingSoundEffectClass;
+
     DeleteSpriteObjectsOfClass(&gLoopingSoundEffectClass);
 }
 

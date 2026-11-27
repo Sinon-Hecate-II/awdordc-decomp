@@ -510,16 +510,20 @@ M2C_UNK CountMapIds(M2C_UNK *mapIds) {
     return count;
 }
 
-void func_ov003_021f2560(void) {
-    M2C_UNK CountMapIds(M2C_UNK *);
+/* Number of maps picked in the shared selected-map list (its empty slots are
+ * not counted). */
+s32 CountSelectedMapIds(void) {
+    s32 CountMapIds(s32 *);
     extern M2C_UNK gSelectedMapIds;
-    CountMapIds(&gSelectedMapIds);
+    return CountMapIds(&gSelectedMapIds);
 }
 
-void func_ov003_021f2574(void) {
-    M2C_UNK CountMapIds(M2C_UNK *);
+/* Number of maps picked in the shared downloaded-map list (its empty slots are
+ * not counted). */
+s32 CountDownloadedMapIds(void) {
+    s32 CountMapIds(s32 *);
     extern M2C_UNK gDownloadedMapIds;
-    CountMapIds(&gDownloadedMapIds);
+    return CountMapIds(&gDownloadedMapIds);
 }
 
 /* Remove a downloaded map ID from the five-slot list, then keep the remaining IDs sorted. */

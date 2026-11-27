@@ -274,10 +274,13 @@ void *DeleteOccupationEffect(void *arg0) {
     return arg0;
 }
 
-s32 func_020c3360(s32 arg0) {
+/* Deleting destructor of the bare heap object (gHeapObjectVTable slot 1): free
+ * the object and return it.  The vtable's slot 0 holds the non-deleting twin,
+ * which does nothing. */
+s32 HeapObject_Delete(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 /* Release an occupation cut-in effect's sub-objects (CO data, panel sprite,
@@ -306,7 +309,7 @@ void *DestroyOccupationEffect(void *arg0) {
     return arg0;
 }
 
-void func_020c33e8(void) {
+void HeapObject_Destroy(void) {
 
 }
 

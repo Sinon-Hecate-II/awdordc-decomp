@@ -447,7 +447,7 @@ void func_020d2168(void) {
  * the per-unit-kind counters, then builds the derived per-player data. */
 void InitPlayerStates(void){
 extern void **gCurrentMap;extern M2C_UNK gMapData;
-void SetPlayerArmyVariant(s32,s32);void SetPlayerSpriteSet(s32,s32);void SetPlayerSpriteAuxBits(s32,s32);void SetCoPowerMeterPoints(s32,s32);void SetPlayerSelectedUnit(s32,s32);void SetPlayerGaveUp(s32,u8);void SetPlayerLost(s32,s32);void EnablePlayerSelectionIfNoneSelected(s32);void func_020d33c4(void);
+void SetPlayerArmyVariant(s32,s32);void SetPlayerSpriteSet(s32,s32);void SetPlayerSpriteAuxBits(s32,s32);void SetCoPowerMeterPoints(s32,s32);void SetPlayerSelectedUnit(s32,s32);void SetPlayerGaveUp(s32,u8);void SetPlayerLost(s32,s32);void EnablePlayerSelectionIfNoneSelected(s32);void DisableBattleTurnTimer2(void);
 s32 playerOffset; s32 player;
 s32 unitKind;player=1;playerOffset=140;
 do{
@@ -478,7 +478,7 @@ unitKind=0;do{M2C_FIELD((void *)(unitKind+((s32)playerOffset+(s32)*gCurrentMap))
 EnablePlayerSelectionIfNoneSelected(player);
 M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x6828)=0;M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x682c)=0;
 player++;playerOffset+=140;
-}while(player<5);func_020d33c4();
+}while(player<5);DisableBattleTurnTimer2();
 }
 #pragma pop
 /* Whether player `player` still has a headquarters: the record's HQ tile x byte

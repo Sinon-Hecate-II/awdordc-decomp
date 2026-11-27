@@ -100,7 +100,7 @@ void MapView_Destroy(void *view) {
     DeleteUnitSprites();
     DeleteFrameCallbackTask(InitMapView3DRendering);
     DeleteFrameCallbackTask(func_ov004_02214904);
-    func_0209e9f4();
+    DeleteScenePanelSprites();
     DeleteTextSprites();
     FadeOutMusicDefault();
     AcknowledgeMapProgress();

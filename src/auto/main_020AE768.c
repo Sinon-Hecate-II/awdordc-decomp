@@ -334,6 +334,9 @@ void CreateMapModeWallpaperSprite(M2C_UNK layer, M2C_UNK palette) {
     CreateWallpaperSprite(layer, palette, GetMapModeWallpaperSet());
 }
 
+/* Remove every wallpaper sprite of gWallpaperSpriteClass, on both the main and
+ * the sub screen's 3D sprite engine (DeleteWallpaperSprites handles only the
+ * current one). */
 void DeleteWallpaperSpritesOnAllEngines(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gWallpaperSpriteClass;
@@ -354,6 +357,8 @@ void DeleteMainWallpaperSprites(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
+/* Delete every wallpaper sprite of gWallpaperSpriteClass drawn on the current 3D
+ * sprite engine. */
 void DeleteWallpaperSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClassOnCurrentEngine(M2C_UNK *);
     extern M2C_UNK gWallpaperSpriteClass;
@@ -453,15 +458,15 @@ void func_020af620(void *sprite) {
 /* Creates two 3D sprite objects (primary then secondary engine) carrying a pair of 4-value payloads. */
 void func_020af62c(s32 a, s32 b, s32 c, s32 d, s16 e, u8 f, s16 g, s16 h, s16 i, s16 j) {
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
-    extern M2C_UNK data_02127e7c, data_02127e2c;
+    extern M2C_UNK gMapSelectScrollSpriteClass, gMapSelectScrollSpriteVtbl;
     void *CreateSpriteFromClass(M2C_UNK *, s32);
     void *saved = gCur3DSpriteEngine;
     void *p;
 
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    p = CreateSpriteFromClass(&data_02127e7c, 1);
+    p = CreateSpriteFromClass(&gMapSelectScrollSpriteClass, 1);
     if (p) {
-        M2C_FIELD(p, void **, 0) = &data_02127e2c;
+        M2C_FIELD(p, void **, 0) = &gMapSelectScrollSpriteVtbl;
         M2C_FIELD(p, u8 *, 0x34) = a;
         M2C_FIELD(p, s16 *, 0x36) = 0;
         M2C_FIELD(p, s16 *, 0x38) = 0;
@@ -473,9 +478,9 @@ void func_020af62c(s32 a, s32 b, s32 c, s32 d, s16 e, u8 f, s16 g, s16 h, s16 i,
     }
 
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    p = CreateSpriteFromClass(&data_02127e7c, 1);
+    p = CreateSpriteFromClass(&gMapSelectScrollSpriteClass, 1);
     if (p) {
-        M2C_FIELD(p, void **, 0) = &data_02127e2c;
+        M2C_FIELD(p, void **, 0) = &gMapSelectScrollSpriteVtbl;
         M2C_FIELD(p, u8 *, 0x44) = f;
         M2C_FIELD(p, s16 *, 0x46) = 0;
         M2C_FIELD(p, s16 *, 0x48) = 0;
@@ -489,26 +494,34 @@ void func_020af62c(s32 a, s32 b, s32 c, s32 d, s16 e, u8 f, s16 g, s16 h, s16 i,
     gCur3DSpriteEngine = saved;
 }
 
-void func_020af71c(void) {
+/* Delete the map-select screen's scrolling wallpaper sprites of
+ * gMapSelectScrollSpriteClass (one per engine). */
+void DeleteMapSelectScrollSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02127e7c;
-    DeleteSpriteObjectsOfClass(&data_02127e7c);
+    extern M2C_UNK gMapSelectScrollSpriteClass;
+    DeleteSpriteObjectsOfClass(&gMapSelectScrollSpriteClass);
 }
 
-s32 func_020af730(s32 arg0) {
+/* Deleting destructor of the map-select scroll sprite (gMapSelectScrollSpriteVtbl
+ * slot 1): free the object and return it.  The vtable's slot 0 holds the
+ * non-deleting twin. */
+s32 MapSelectScrollSprite_Delete(s32 sprite) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(sprite);
+    return sprite;
 }
 
 void func_020af744(void) {
 
 }
 
-s32 func_020af748(s32 arg0) {
+/* Deleting destructor of the wallpaper sprite (gWallpaperSpriteVtbl slot 1):
+ * free the object and return it.  The vtable's slot 0 holds the non-deleting
+ * twin. */
+s32 WallpaperSprite_Delete(s32 sprite) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(sprite);
+    return sprite;
 }
 
 void func_020af75c(void) {

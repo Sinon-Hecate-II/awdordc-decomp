@@ -1902,6 +1902,9 @@ typedef struct PeerAddress {
 #define MB_STATUS_BOOT_READY    1    /* the ARM7 is ready for the boot parameters (Mb_BootHandshakeHandler) */
 #define MB_STATUS_BOOT_COMPLETE 17   /* the ARM7 finished booting (Mb_BootCompleteHandler) */
 
+/* Control command the ARM9 posts to abort a multiboot boot (Mb_AbortBoot). */
+#define MB_CMD_ABORT_BOOT       2
+
 /* Multiboot (DS Download Play) boot state (gMbBootState, 0x20 bytes). */
 typedef struct MbBootState {
     s32 paramsSent;  /* +0x00 nonzero once Mb_SendBootParams has run */
@@ -2337,6 +2340,7 @@ typedef struct NetError {
 
 /* Fields of the ov010 online session the match event handlers touch. */
 #define OV010_SESSION_CHANGED_PLAYERS 0x00 /* u16: one bit per player whose connection changed (set when its record's connected flag is cleared) */
+#define OV010_SESSION_RECORD_CALLBACK 0x04 /* void (*)(s32 slot, void *data, char *text, s32 size): the app's handler for a NAS player record, forwarded by func_ov010_02227d34 after it stores the record */
 #define OV010_SESSION_PEER_CALLBACK 0x34 /* void (*)(s32 error, s32 wasConnected, s32 pending, s32 playerId, s32 playerSlot, s32 arg): peer connection event forwarded by the net layer */
 #define OV010_SESSION_START_RECORD 0x18 /* void *: record of the match being started (see OV010_START_RECORD_*) */
 #define OV010_START_RECORD_ID      0x00 /* s32 match id both sides compare */
@@ -4952,6 +4956,12 @@ enum {
     OS_MESSAGE_NOBLOCK = 0,
     OS_MESSAGE_BLOCK   = 1
 };
+
+/* The console-type word OS_GetConsoleType caches in the console-type global and
+ * returns: the arena table sizes the console's memory ranges from it.  0x80000000
+ * marks a DSi (TWL); the low two bits select the memory map and, when they are 1,
+ * the extended-memory arena (arena 2) stays empty. */
+#define CONSOLE_TYPE_TWL 0x82000001
 
 /* ARM processor mode: the low five bits of CPSR (read by the CPSR reader in
  * main_02006F14).  Code that would sleep or take a blocking mutex refuses to

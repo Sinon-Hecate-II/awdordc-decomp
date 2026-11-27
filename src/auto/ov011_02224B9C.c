@@ -193,7 +193,8 @@ void HandleIntroInputAndUpdateSprites(void *intro) {
     func_ov011_022224a8(intro);
 }
 
-void func_ov011_0222508c(void) {
+/* Install the intro's scanline fade as the HBlank (VCOUNT) interrupt handler. */
+void Ov011_InstallIntroFadeScanlineHandler(void) {
     M2C_UNK InstallHBlankIrqHandler(void (*)(void));
     void IntroFadeScanlineHandler(void);
     InstallHBlankIrqHandler(&IntroFadeScanlineHandler);

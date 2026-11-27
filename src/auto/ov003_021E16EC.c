@@ -2,7 +2,7 @@
 #include "common.h"
 extern u16 data_ov003_0220f34a,data_ov003_0220f346,data_ov003_0220f342,data_ov003_0220f344,data_ov003_0220f340,data_ov003_0220f348;
 void SetSceneLayerOverrideMain(s32,void*);void SetSceneLayerOverrideSub(s32,void*);void LoadSavedMapPickLists(void*);
-u32 func_ov003_021f2574(void);u32 func_ov003_021f2560(void);
+u32 CountDownloadedMapIds(void);u32 CountSelectedMapIds(void);
 void *GetCampaignMapHeader(u16);void MI_CpuCopy32(void*,void*,s32);
 void func_ov003_021f14a0(void);void Apply3DSpriteBanks(void);
 void *CreateUnitSprite(void*);void InitUnitSprite(void*,s32,s32,s32,s32);
@@ -17,8 +17,8 @@ if(active){s16 y=M2C_FIELD(sprite,s16*,0x52),x=M2C_FIELD(sprite,s16*,0x50);s32 w
 static inline u8 CountEntries(void *object) {
 u8 n=0;u8 i=0;for(;i<5;i++)if(M2C_FIELD(M2C_FIELD(object,u8**,0x6c)+i*0x6f8,u8*,0x27))n++;return n;
 }
-  static inline u32 VisibleEntries(void *object) { u32 n=func_ov003_021f2574();u8 m=CountEntries(object);return n<m?n:m; }
-  static inline u32 VisibleEntries2(void *object,u8 *cnt,u8 *idx) { u32 n=func_ov003_021f2574();*cnt=0;for(*idx=0;*idx<5;(*idx)++)if(M2C_FIELD(M2C_FIELD(object,u8**,0x6c)+(*idx)*0x6f8,u8*,0x27))(*cnt)++;return n<*cnt?n:*cnt; }
+  static inline u32 VisibleEntries(void *object) { u32 n=CountDownloadedMapIds();u8 m=CountEntries(object);return n<m?n:m; }
+  static inline u32 VisibleEntries2(void *object,u8 *cnt,u8 *idx) { u32 n=CountDownloadedMapIds();*cnt=0;for(*idx=0;*idx<5;(*idx)++)if(M2C_FIELD(M2C_FIELD(object,u8**,0x6c)+(*idx)*0x6f8,u8*,0x27))(*cnt)++;return n<*cnt?n:*cnt; }
 static inline void ResetAnim(void *anim) {M2C_FIELD(anim,u16*,0xe)=0;M2C_FIELD(anim,u16*,0x10)=0;M2C_FIELD(anim,u16*,0xc)=12;M2C_FIELD(anim,u16*,2)=M2C_FIELD(anim,u16*,4);}
 
 
@@ -56,7 +56,7 @@ sprite=M2C_FIELD(q,u8**,4);Set3DSpriteSlideTargetAndStart(sprite,224,160,224,192
 M2C_FIELD(p,void**,0x58)=CreateScrollingTextSprite(p);M2C_FIELD(M2C_FIELD(p,void**,0x58),u16*,0x3e)=876;
 sprite=M2C_FIELD(p,u8**,0x58);M2C_FIELD(sprite,u32*,0x40)=(M2C_FIELD(sprite,u32*,0x40)&~0x3fc0000)|0x300000;
 ResetAnim(M2C_FIELD(p,void**,0x3c));ResetAnim(M2C_FIELD(p,void**,0x40));
-n=VisibleEntries(p);menu=M2C_FIELD(p,u8**,0x48);menu[11]=n;n=func_ov003_021f2560();
+n=VisibleEntries(p);menu=M2C_FIELD(p,u8**,0x48);menu[11]=n;n=CountSelectedMapIds();
 if(menu[11])menu[6]=5;else if(n)menu[6]=0;
 for(i=0;i<11;i++){
 if(i<10){x=(s16)((Divide(i,5)<<7)+6);y=(s16)((Modulo(i,5)<<4)+40);w=116;h=16;}

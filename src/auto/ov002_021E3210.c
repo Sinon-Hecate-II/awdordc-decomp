@@ -311,14 +311,14 @@ M2C_UNK SwapBattleScreenCapture(s32 *phase) {
     u32 capture;
     if (*phase & 1) {
         REG_POWCNT1 |= POWCNT1_LCD_SWAP;
-        func_020033f4();
+        GX_ReleaseBankForSubOBJ();
         GX_SetBankForSubBG(4);
         func_02003104(8);
         capture = DISPCAPCNT_CAPTURE_3D;
         REG_DISPCAPCNT = capture;
     } else {
         REG_POWCNT1 &= ~POWCNT1_LCD_SWAP;
-        func_020033e0();
+        GX_ReleaseBankForSubBG();
         GX_SetBankForSubOBJ(8);
         func_02003104(4);
         capture = DISPCAPCNT_CAPTURE_2D;
@@ -401,9 +401,9 @@ void DrawBattleSpriteGrid(void) {
  * palettes, then install the three per-frame callbacks that swap the two screen
  * halves, reconfigure the layers and draw the sprite grid.  `phase` is the half
  * currently shown. */
-void InitBattleSpriteScene(s32 *phase) {M2C_UNK func_020033e0(void);M2C_UNK func_020033f4(void);void Set3DSpriteLayerPalette(s32,s32);void Set3DSpriteLayerSize(s32,s32);void CreateFrameCallbackTask(s32,s32);
+void InitBattleSpriteScene(s32 *phase) {M2C_UNK GX_ReleaseBankForSubBG(void);M2C_UNK GX_ReleaseBankForSubOBJ(void);void Set3DSpriteLayerPalette(s32,s32);void Set3DSpriteLayerSize(s32,s32);void CreateFrameCallbackTask(s32,s32);
 extern volatile u16 *g3DSpriteBankSub;extern u32 gCur3DSpriteEngine;extern u32 g3DSpriteEngineSub;
-func_020033e0();func_020033f4();
+GX_ReleaseBankForSubBG();GX_ReleaseBankForSubOBJ();
 g3DSpriteBankSub[0]=(u16)((g3DSpriteBankSub[0]&~0x7)|0x3);
 g3DSpriteBankSub[0]=(u16)(g3DSpriteBankSub[0]&~DS3D_BANK_MODE0);
 g3DSpriteBankSub[0]=(u16)(g3DSpriteBankSub[0]&~DS3D_BANK_MODE1);

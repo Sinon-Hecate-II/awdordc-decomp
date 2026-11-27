@@ -83,7 +83,7 @@
 #define DS3D_BANK_FLAGS 0x00
 
 /* DS3DSpriteBank::flags bits 4..8 select the active screen mode, one-hot: the
- * mode index Get3DSpriteScreenMode() returns. Reset3DSpriteLayers clears them. */
+ * mode index GetOtherScreenMode() returns. Reset3DSpriteLayers clears them. */
 #define DS3D_BANK_MODE0 0x0010
 #define DS3D_BANK_MODE1 0x0020
 #define DS3D_BANK_MODE2 0x0040
@@ -95,7 +95,7 @@
 #define DS3D_BANK_MODE6 0x0400
 #define DS3D_BANK_MODE7 0x0800
 
-/* Screen mode index Get3DSpriteScreenMode() returns for a 3D-sprite engine: which
+/* Screen mode index GetOtherScreenMode() returns for a 3D-sprite engine: which
  * of the one-hot DS3D_BANK_MODE* bits the engine currently shows. */
 enum {
     DS3D_SCREEN_MODE_0 = 0,

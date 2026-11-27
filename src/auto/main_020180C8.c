@@ -133,9 +133,11 @@ void Mb_ReportPacketResult(s32 arg0, s32 arg1) {
  M2C_FIELD(p,void (**)(u8,void *),0x51c)((u8)(arg0 | 255),buf);
 }
 
-void Mb_InitLoadQueue(M2C_UNK arg0) {
+/* Clear a multiboot download load queue: no pending reads, no archive name and
+ * every block cache slot empty. */
+void Mb_InitLoadQueue(MbLoadQueue *queue) {
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
-    MI_CpuFill8(arg0, 0, 0x70);
+    MI_CpuFill8(queue, 0, sizeof(MbLoadQueue));
 }
 
 /* Adds a block to a multiboot load queue's block cache under an interrupt
@@ -292,8 +294,11 @@ s32 Mb_IsTaskCreated(void) {
     return 0;
 }
 
-void MbWorker_ClearJob(M2C_UNK arg0) {
-    MI_CpuFill8(arg0, 0, 0x20);
+/* Clear a link worker's own job record: the 0x20 bytes from MB_TASK_JOB_BLOCK
+ * up to where the worker's stack begins (task + 0xE4). */
+void MbWorker_ClearJob(M2C_UNK jobBlock) {
+    M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
+    MI_CpuFill8(jobBlock, 0, 0x20);
 }
 
 /* Whether the multiboot worker request `request` is already on the worker's

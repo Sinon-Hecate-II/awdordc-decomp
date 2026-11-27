@@ -314,12 +314,15 @@ void *InitNumberDisplay(void *display) {
 }
 
 #pragma opt_propagation off
-void *func_0208ee1c(void *arg0) {
-    unsigned long long *p = M2C_FIELD(arg0, unsigned long long **, 0x68);
-    if (p != 0) {
-        *p = M2C_FIELD(arg0, unsigned long long *, 0x60);
+/* Non-deleting destructor of a number display: write the value it displays back
+ * through its source pointer and return the display; DeleteNumberDisplay does
+ * that and then frees it. */
+void *DestroyNumberDisplay(void *display) {
+    u64 *source = M2C_FIELD(display, u64 **, NUMBER_DISPLAY_SOURCE);
+    if (source != 0) {
+        *source = M2C_FIELD(display, u64 *, NUMBER_DISPLAY_VALUE);
     }
-    return arg0;
+    return display;
 }
 #pragma opt_propagation reset
 /* Deleting destructor of a number-display sprite: write the value it displays

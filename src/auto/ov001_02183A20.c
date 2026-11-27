@@ -583,6 +583,7 @@ void Ov001_AllocSaveData(void) {
     FifoReadSaveSlots((M2C_UNK)gSaveData);
 }
 
+/* Free the ov001 save data block allocated by Ov001_AllocSaveData. */
 void Ov001_FreeSaveData(void) {
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern M2C_UNK gSaveData;

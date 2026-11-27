@@ -196,11 +196,14 @@ s32 HasNetError(void) {
     return 0;
 }
 
-void SetNetError(s32 arg0, s32 arg1) {
+/* Record network error `code` with its parameter `detail`; a fatal error already
+ * recorded is never overwritten. */
+void SetNetError(s32 code, s32 detail) {
     extern M2C_UNK gNetError;
-    if (M2C_FIELD(&gNetError, s32 *, 0) != 9) {
-        M2C_FIELD(&gNetError, s32 *, 0) = arg0;
-        M2C_FIELD(&gNetError, s32 *, 4) = arg1;
+
+    if (NET_ERROR->code != NET_ERROR_FATAL) {
+        NET_ERROR->code = code;
+        NET_ERROR->detail = detail;
     }
 }
 
@@ -224,10 +227,13 @@ s32 GetHeapBlockSize(s32 arg0) {
     return p[1];
 }
 
-void func_02037680(s32 arg0, s32 arg1) {
+/* Install the block allocator's callbacks: `allocate` hands out a block and
+ * `freeBlock` takes one back (HeapAllocAligned / HeapFree call them). */
+void SetHeapCallbacks(void *(*allocate)(s32 heap, s32 size, s32 align),
+                      void (*freeBlock)(s32 heap, void *blockHeader, s32 size)) {
     extern M2C_UNK gHeapCallbacks;
-    M2C_FIELD(&gHeapCallbacks, s32 *, 4) = arg0;
-    M2C_FIELD(&gHeapCallbacks, s32 *, 0) = arg1;
+    M2C_FIELD(&gHeapCallbacks, void *(**)(s32, s32, s32), 4) = allocate;
+    M2C_FIELD(&gHeapCallbacks, void (**)(s32, void *, s32), 0) = freeBlock;
 }
 
 void HeapAlloc(M2C_UNK arg0, M2C_UNK arg1) {
@@ -284,8 +290,10 @@ M2C_UNK HeapReallocAligned(M2C_UNK heap, M2C_UNK block, M2C_UNK oldSize, M2C_UNK
     return newBlock;
 }
 
-void gpiMalloc(M2C_UNK arg0) {
-    HeapAlloc(5, arg0);
+/* Allocate `size` bytes from the GPI library's heap; HeapAlloc's result (the new
+ * block) is left in r0 as this function's return value. */
+void gpiMalloc(s32 size) {
+    HeapAlloc(GPI_HEAP_ID, size);
 }
 
 /* Grow or shrink the GPI allocation `block` to `size` bytes; the GPI library

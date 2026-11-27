@@ -37,6 +37,9 @@ void SpawnLinkPlayerAnnounceRefresher(M2C_UNK owner) {
     }
 }
 
+/* Remove every link announce refresher: the sprites of
+ * gLinkAnnounceRefresherClass that re-announce the local player while a link
+ * game is active. */
 void DeleteLinkAnnounceRefreshers(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gLinkAnnounceRefresherClass;

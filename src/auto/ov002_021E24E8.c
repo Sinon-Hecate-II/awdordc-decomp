@@ -427,20 +427,20 @@ s32 IsEffectNodeOffScreen(void *node) {
 void func_ov002_021e2eb8(void *panel, void *slotTable, void *orderSeq) {
 void MI_CpuCopy8(void *, void *, s32);
 s32 RandomIntRange(s32, s32);
-void func_ov002_021e3030(u8 *, u8 *);
+void Ov002_SwapBytes(u8 *, u8 *);
 s32 j, best; void *entry; s32 k, mask, which, i;
 M2C_FIELD(panel, void **, 4) = slotTable;
 if (orderSeq) MI_CpuCopy8(orderSeq, panel + 0x12, 5);
 else {
 for (i = 0; i < 5; i++) M2C_FIELD(panel + i, u8 *, 0x12) = i;
-for (i = 0; i < 5; i++) func_ov002_021e3030(panel + 0x12 + i, panel + 0x12 + RandomIntRange(0, 4));
+for (i = 0; i < 5; i++) Ov002_SwapBytes(panel + 0x12 + i, panel + 0x12 + RandomIntRange(0, 4));
 which = -1;
 if (!M2C_FIELD(panel, u8 *, 0x12)) which = 0;
 if (!M2C_FIELD(panel, u8 *, 0x16)) which = 4;
-if (which != -1) func_ov002_021e3030(panel + 0x12 + which, panel + 0x12 + RandomIntRange(1, 3));
+if (which != -1) Ov002_SwapBytes(panel + 0x12 + which, panel + 0x12 + RandomIntRange(1, 3));
 }
 for (i = 0; i < 5; i++) M2C_FIELD(panel + i, u8 *, 0x17) = i;
-for (i = 0; i < 5; i++) func_ov002_021e3030(panel + 0x17 + i, panel + 0x17 + RandomIntRange(0, 4));
+for (i = 0; i < 5; i++) Ov002_SwapBytes(panel + 0x17 + i, panel + 0x17 + RandomIntRange(0, 4));
 mask = 0;
 for (k = 0; k < 5; k++) {
 entry = panel + k;
@@ -456,12 +456,13 @@ mask |= 1 << M2C_FIELD(entry, u8 *, 0x1c);
 }
 }
 
-void func_ov002_021e3030(u8 *arg0, u8 *arg1) {
-    u8 temp_r3;
+/* Swap the bytes stored at `first` and `second`. */
+void Ov002_SwapBytes(u8 *first, u8 *second) {
+    u8 temp;
 
-    temp_r3 = *arg0;
-    *arg0 = *arg1;
-    *arg1 = temp_r3;
+    temp = *first;
+    *first = *second;
+    *second = temp;
 }
 
 #pragma opt_strength_reduction off

@@ -19,7 +19,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
     extern M2C_UNK gSceneBaseVTable;
     extern M2C_UNK gSceneBaseIfaceVTable;
     extern M2C_UNK data_ov003_0220f8e0;
-    extern M2C_UNK data_ov003_0220faf8;
+    extern M2C_UNK gBattlePanelVTable;
     extern M2C_UNK gWaypointPanelGroupVTable;
     extern M2C_UNK data_ov003_0220fb18;
     extern M2C_UNK data_ov003_0220fb38;
@@ -92,7 +92,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x3C) = temp_r0_2;
         temp_r0_3 = MemAlloc(0x14);
         if (temp_r0_3 != NULL) {
-            M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &data_ov003_0220faf8;
+            M2C_FIELD(temp_r0_3, M2C_UNK **, 0) = &gBattlePanelVTable;
             M2C_FIELD(temp_r0_3, s16 *, 4) = 8;
             M2C_FIELD(temp_r0_3, s16 *, 6) = 4;
             M2C_FIELD(temp_r0_3, s16 *, 8) = 0xA0;
@@ -370,10 +370,12 @@ M2C_UNK ShutdownBattleObject(M2C_UNK obj) {
     return obj;
 }
 
-s32 func_ov003_021f0dcc(s32 arg0) {
+/* Deleting destructor of the battle scene's CO panel record (BATTLE_SCENE_PANEL_INFO,
+ * slot 1 of gBattlePanelVTable): free the record and return it. */
+s32 BattlePanel_Delete(s32 panel) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(panel);
+    return panel;
 }
 
 /* Free the waypoint panel's sprite group: install its class, drop the panel's
@@ -633,14 +635,20 @@ M2C_UNK **ShutdownBattleSetup(M2C_UNK **setup) {
     return setup;
 }
 
-void func_ov003_021f1330(void) {
+/* Non-deleting destructor of the battle scene's CO panel record (slot 0 of
+ * gBattlePanelVTable): its class has nothing to tear down.  BattlePanel_Delete is
+ * its deleting twin. */
+void BattlePanel_Destroy(void) {
 
 }
 
-s32 DestroyOv003OptionValue(s32 arg0) {
+/* Deleting destructor of a bounded option-value record (Ov003OptionValue):
+ * free the record and return it.  Its non-freeing twin is
+ * Ov003OptionValue_Destructor. */
+s32 DestroyOv003OptionValue(s32 value) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(value);
+    return value;
 }
 
 void func_ov003_021f1348(s32 arg0) {

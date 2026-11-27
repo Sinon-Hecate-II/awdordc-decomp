@@ -100,7 +100,7 @@ ghiUnlockMutex();return conn;
 s32 ghiFreeConnection(void *connection) {
     extern M2C_UNK data_020fd0a4, ghiAssertFile, data_020fd024, data_020fd0b0, gGhiConnectionList, data_020fd0cc, data_020fd0f4;
     M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
-    M2C_UNK func_020496cc(s32, M2C_UNK); M2C_UNK ghiCloseSocket(s32);
+    M2C_UNK ghiSocketShutdown(s32, M2C_UNK); M2C_UNK ghiCloseSocket(s32);
     void ghiFreeBuffer(void *); void ghiPostCleanup(void *);
           s32 func_0204b688(void *); void ghiPostFree();
     GHIConnection *conn = (GHIConnection *)connection;
@@ -121,7 +121,7 @@ s32 ghiFreeConnection(void *connection) {
     gpiFree(conn->redirectURL);
     gpiFree(conn->serverOverride);
     if (conn->socket != -1) {
-        func_020496cc(conn->socket, 2);
+        ghiSocketShutdown(conn->socket, 2);
         ghiCloseSocket(conn->socket);
     }
     ghiFreeBuffer(&conn->buffer);
@@ -176,7 +176,7 @@ void ghiForEachConnection(M2C_UNK *callback) {
 /* Reset and release an object's resources and counters, logging if null/empty. */
 void func_0204afd8(void *obj) {
     M2C_UNK ghiCloseSocket(s32);
-    M2C_UNK func_020496cc(s32, M2C_UNK);
+    M2C_UNK ghiSocketShutdown(s32, M2C_UNK);
     M2C_UNK ghiResetBuffer(void *);
     extern M2C_UNK data_020fd038;
     extern M2C_UNK ghiAssertFile;
@@ -198,7 +198,7 @@ void func_0204afd8(void *obj) {
     M2C_FIELD(obj, s16 *, 0x20) = 0;
     gpiFree(M2C_FIELD(obj, s32 *, 0x24));
     M2C_FIELD(obj, s32 *, 0x24) = 0;
-    func_020496cc(M2C_FIELD(obj, s32 *, 0x48), 2);
+    ghiSocketShutdown(M2C_FIELD(obj, s32 *, 0x48), 2);
     ghiCloseSocket(M2C_FIELD(obj, s32 *, 0x48));
     M2C_FIELD(obj, s32 *, 0x48) = -1;
     ghiResetBuffer(obj + 0x50);
@@ -393,6 +393,8 @@ s32 ghttpGetEx(char *url, char *headers, void *buffer, s32 bufferSize, s32 post,
     return M2C_FIELD(connection, s32 *, 4);
 }
 
+/* Tick every live HTTP connection once: ghiForEachConnection runs
+ * ghiPumpConnection on each connection slot that is in use. */
 void ghiPumpConnections(void) {
     void ghiForEachConnection(M2C_UNK *);
     s32 ghiPumpConnection(void *);

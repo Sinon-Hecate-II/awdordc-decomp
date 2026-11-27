@@ -5,7 +5,7 @@ void MemFree(void *arg0);
 void MemFreeArray(void *arg0);
 void HeapFreeBlock(void *arg0);
 void DeleteSpriteObject(void *arg0);
-void func_020af71c(void);
+void DeleteMapSelectScrollSprites(void);
 typedef void (*VFn)(void *);
 static inline void RestoreByte(void *p,u8 v) { M2C_FIELD(p,u8 *,15)=v; }
 static inline void RestoreBits12(u16 x) { extern u8 gOptionBits[8]; M2C_FIELD(gOptionBits,u16 *,6)=(M2C_FIELD(gOptionBits,u16 *,6)&~0x3000)|((x&3)<<12); }
@@ -93,7 +93,7 @@ for(i=0;i<6;i++) {
     obj = M2C_FIELD(self, void **, 0x40);
     if (obj != NULL) MemFree(obj);
 
-    func_020af71c();
+    DeleteMapSelectScrollSprites();
     return self;
 }
 

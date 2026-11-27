@@ -155,12 +155,13 @@ gLocalIpCount=++i;
  * resolver's host record.  Returns 0 when the name does not resolve. */
 s32 ResolveHostAddress(s32 hostname,s32 port,void *addr,void **hostEntryOut){s32 ghiInetAddr(s32);s32 StringCompare(s32,void *);void *ghiResolveHostname(s32);u16 hostPort=port;void *hostEntry=0;M2C_FIELD(addr,u8 *,1)=2;M2C_FIELD(addr,u16 *,2)=((u8)(hostPort>>8))|((hostPort<<8)&0xff00);if(!hostname)M2C_FIELD(addr,s32 *,4)=0;else M2C_FIELD(addr,s32 *,4)=ghiInetAddr(hostname);if(M2C_FIELD(addr,s32 *,4)==-1&&StringCompare(hostname,gBroadcastAddressText)){hostEntry=ghiResolveHostname(hostname);if(!hostEntry)return 0;M2C_FIELD(addr,s32 *,4)=**M2C_FIELD(hostEntry,s32 ***,12);}if(hostEntryOut)*hostEntryOut=hostEntry;return 1;}
 
-void SwapBytes(u8 *arg0, u8 *arg1) {
-    u8 temp_r3;
+/* Swap the two bytes that `first` and `second` point to. */
+void SwapBytes(u8 *first, u8 *second) {
+    u8 saved;
 
-    temp_r3 = *arg0;
-    *arg0 = *arg1;
-    *arg1 = temp_r3;
+    saved = *first;
+    *first = *second;
+    *second = saved;
 }
 
 /* The standard base64 character for the six-bit value `value`: A-Z for 0..25,

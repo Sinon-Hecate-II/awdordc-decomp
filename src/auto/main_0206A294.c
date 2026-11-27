@@ -253,9 +253,9 @@ value=negative?0x80000000:0x7fffffff;gErrno=34;return value;
 return negative?-value:value;
 }
 
-void ParseInt(M2C_UNK arg0) {
-    M2C_UNK strtol(M2C_UNK, M2C_UNK, M2C_UNK);
-    strtol(arg0, 0, 0xA);
+/* Parse a base-10 signed integer from a null-terminated string (the game's atoi). */
+s32 ParseInt(s8 *text) {
+    return strtol(text, 0, 10);
 }
 
 #pragma opt_propagation off

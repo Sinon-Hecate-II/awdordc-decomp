@@ -2,7 +2,7 @@
 #include "common.h"
 extern u8 *gTouchState;extern u16 *gKeyState;
 s32 IsMapConfirmEnabled(void);void Hide3DSprite(void*);void SetOv003SceneState(s32);void Sprite_ResumeAnimation(void*);void Ov003_SetMapConfirmEnabled(void);
-void MenuSpriteUpdate(void*);u32 func_ov003_021f2574(void);void PlaySoundEffect(s32);
+void MenuSpriteUpdate(void*);u32 CountDownloadedMapIds(void);void PlaySoundEffect(s32);
 void *CreateTextLayer(void*);s32 func_ov003_021f1894(void);void RenderTextLayerMessage(void*,s32,s32,s32);void SetPanelChoice(void*,s32);
 void Ov003_UpdateMapGridButtons(void*);void func_ov003_021e1530(void*,u8);void func_ov003_021e3714(void*);
 void *GetUnitSpriteAbove(void*);void *GetUnitSpriteBelow(void*);void *GetUnitSpriteLeft(void*);void *GetUnitSpriteRight(void*);
@@ -15,7 +15,7 @@ static inline void VCall(void *p,s32 slot){((MenuCallback*)*(void**)p)[slot/4](p
 static inline u8 Clicked(void *s){u8 yes=1;u8 *q=M2C_FIELD(s,u8**,0x64);if(M2C_FIELD(q,s8*,11)!=1){if(!((ButtonFlags*)((u8*)s+0x59))->enabled||M2C_FIELD(q,s8*,12)!=1)yes=0;}return yes;}
 static inline void SetButtonTile(void*s,u16 tile){((HandlerGeometry*)((u8*)s+0x40))->tile=tile;}
 static inline void PressButton(void *s){if(M2C_FIELD(s,s8*,0x5a)>=0){SetButtonTile(s,(u16)(((ButtonFlags*)((u8*)s+0x59))->frame+1));M2C_FIELD(s,s8*,0x5a)=12;}}
-static inline u32 Available(void *p){u32 n=func_ov003_021f2574();u8 count=0;u8 i=0;do {if(M2C_FIELD(p,u8**,0x6c)[i*0x6f8+0x27])count++;}while(++i<5);return n<count?n:count;}
+static inline u32 Available(void *p){u32 n=CountDownloadedMapIds();u8 count=0;u8 i=0;do {if(M2C_FIELD(p,u8**,0x6c)[i*0x6f8+0x27])count++;}while(++i<5);return n<count?n:count;}
 static inline void ShowAction(void *p,u8 mode){
 void *dialog;
 ((HandlerFlags*)((u8*)p+0x60))->pending=1;((HandlerFlags*)((u8*)p+0x60))->mode=mode;

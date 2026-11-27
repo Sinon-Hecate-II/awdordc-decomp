@@ -1,6 +1,7 @@
 /* 17 functions from 0x01FF8F90 to 0x01FF9ED0 (itcm), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "gx.h"
 static inline void SetSubWindow9690(volatile u16 *h, volatile u16 *v, s32 left, s32 right, s32 top, s32 bottom) { *h=((left<<8)&0xff00)|top; *v=((right<<8)&0xff00)|bottom; }
 static inline void SetSubScroll9690(volatile u32 *reg, s32 x, s32 y) { s32 mask=0x1ff; *reg=(x&mask)|((mask<<16)&(y<<16)); }
 
@@ -204,13 +205,14 @@ M2C_FIELD(regs,volatile u16 *,0x40)=M2C_FIELD(g3DSpriteBankMain,u16 *,0x12);
  M2C_FIELD(regs,volatile u16 *,0x44)=M2C_FIELD(g3DSpriteBankMain,u8 *,0x53)&31;
  {s32 brightness=M2C_FIELD(g3DSpriteBankMain,s8 *,0x50);GX_SetMasterBrightness((void *)((u8 *)regs+0x5c),brightness);}
 }
-#pragma pop
+#pragma push
+#pragma opt_strength_reduction off
 M2C_UNK Apply3DSpriteBankSub(void) {
  void GX_SetSubBgMode(s32); void GX_SetMasterBrightness(void *,s32);
  extern u16 *g3DSpriteBankSub;
  extern s32 g3DSpriteEngineSub;
  s32 a,b,c,d,e;
-u32 mode;
+ u32 mode;
  u16 f;
  volatile u32 *disp=(volatile u32 *)0x4001000;
  volatile u32 *regs=(volatile u32 *)0x4001010;
@@ -225,12 +227,14 @@ u32 mode;
  b=((u32)(M2C_FIELD(g3DSpriteBankSub,volatile u16 *,0)<<22)>>31)?1:0;
  c=((u32)(M2C_FIELD(g3DSpriteBankSub,volatile u16 *,0)<<20)>>31)?4:0;
  *disp=(*disp&~0xe000)|((c|(b|a))<<13);
- f=M2C_FIELD(g3DSpriteBankSub,volatile u16 *,0);
- mode=(((u32)(f<<17)>>30)<<20)|(((u32)(f<<19)>>31)<<4);
- *disp=(*disp&0xffcfffef)|mode;
+ a=*disp&0xffcfffef;
+ f=M2C_FIELD(g3DSpriteBankSub,u16 *,0);
+ mode=(((u32)(f<<19)>>31)<<4)|(((u32)(f<<17)>>30)<<20);
+ *disp=a|mode;
+ a=*disp&~0x60;
  f=g3DSpriteBankSub[1];
- mode=(((u32)(f<<23)>>31)<<22)|(((u32)(f<<24)>>30)<<5);
- *disp=(*disp&~0x60)|mode;
+ mode=(((u32)(f<<24)>>30)<<5)|(((u32)(f<<23)>>31)<<22);
+ *disp=a|mode;
  if((u32)(M2C_FIELD(g3DSpriteBankSub,volatile u16 *,0)<<16)>>31) *disp &=~0x800000;else *disp|=0x800000;
 {void *engine=(void *)g3DSpriteEngineSub; void *bank=(void *)g3DSpriteBankSub; s32 y=M2C_FIELD(bank,u16 *,64)-M2C_FIELD(engine,s16 *,0x3e); s32 x=M2C_FIELD(bank,u16 *,56)-M2C_FIELD(engine,s16 *,0x3c); regs[0]=(x&0x1ff)|((0x1ff<<16)&(y<<16));}
 {void *engine=(void *)g3DSpriteEngineSub; void *bank=(void *)g3DSpriteBankSub; s32 y=M2C_FIELD(bank,u16 *,66)-M2C_FIELD(engine,s16 *,0x3e); s32 x=M2C_FIELD(bank,u16 *,58)-M2C_FIELD(engine,s16 *,0x3c); regs[1]=(x&0x1ff)|((0x1ff<<16)&(y<<16));}
@@ -261,22 +265,28 @@ M2C_FIELD(regs,volatile u16 *,0x40)=M2C_FIELD(g3DSpriteBankSub,u16 *,0x12);
  M2C_FIELD(regs,volatile u16 *,0x44)=M2C_FIELD(g3DSpriteBankSub,u8 *,0x53)&31;
  {s32 brightness=M2C_FIELD(g3DSpriteBankSub,s8 *,0x50);GX_SetMasterBrightness((void *)((u8 *)regs+0x5c),brightness);}
 }
-
-void func_01ff9ab4(void) {
+#pragma pop
+/* Apply the main 3D-sprite bank's interrupt enables: bit 0 drives the VBlank
+ * interrupt, bit 1 the HBlank interrupt, and bit 2 the display's VCount-match
+ * interrupt. */
+void Apply3DSpriteBankIrqConfig(void) {
     extern u16 *g3DSpriteBankMain;
-    GX_SetVBlankIrq(((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 31) >> 31) != 0);
-    GX_SetHBlankIrq(((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 30) >> 31) != 0);
-    if (((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, 4) << 29) >> 31) != 0) {
-        *(volatile u16 *)0x04000004 |= 0x20;
+    GX_SetVBlankIrq(((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_IRQ_FLAGS) << 31) >> 31) != 0);
+    GX_SetHBlankIrq(((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_IRQ_FLAGS) << 30) >> 31) != 0);
+    if (((u32)(M2C_FIELD(g3DSpriteBankMain, u16 *, DS3D_BANK_IRQ_FLAGS) << 29) >> 31) != 0) {
+        REG_DISPSTAT |= DISPSTAT_VCOUNT_IRQ;
     } else {
-        *(volatile u16 *)0x04000004 &= ~0x20;
+        REG_DISPSTAT &= ~DISPSTAT_VCOUNT_IRQ;
     }
 }
 
+/* Push the 3D-sprite banks to the hardware: apply the main bank's interrupt
+ * enables, then the main and sub bank registers, then the current engine's
+ * blend and display state.  Called after a screen switches banks. */
 void Apply3DSpriteBanks(void) {
     M2C_UNK Apply3DSpriteBankSub();
     void func_0207fafc(void);
-    func_01ff9ab4();
+    Apply3DSpriteBankIrqConfig();
     Apply3DSpriteBankMain();
     Apply3DSpriteBankSub();
     func_0207fafc();

@@ -482,9 +482,9 @@ void DrawBattleSceneUnitView(void) {
 }
 
 void EndBattleScene(void *arg0) {
-    M2C_UNK func_ov002_021e15e0();
+    M2C_UNK ResumeBattleScreenAnimation();
     M2C_FIELD(arg0, s8 *, 9) = 0;
-    func_ov002_021e15e0();
+    ResumeBattleScreenAnimation();
 }
 
 /* Tears the ov002 battle scene down: destroys both sides' battle unit views,

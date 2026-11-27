@@ -374,10 +374,12 @@ void HistoryMenu_CreateObject(M2C_UNK owner) {
     CreateSpriteObject(&gHistoryMenuClass, owner);
 }
 
-void func_ov005_022140e4(void) {
-    M2C_UNK SetFileDirectory(M2C_UNK *);
-    extern M2C_UNK data_ov005_02220644;
-    SetFileDirectory(&data_ov005_02220644);
+/* Restore the records menu's sound-room asset directory ("/record/soundroom")
+ * after the record artwork loader switched the directory to /illust. */
+void SetSoundRoomFileDirectory(void) {
+    s32 SetFileDirectory(void *);
+    extern M2C_UNK gSoundRoomDir;
+    SetFileDirectory(&gSoundRoomDir);
 }
 
 /* A record counts as available once the records menu is unlocked, or else when

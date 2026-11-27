@@ -220,10 +220,12 @@ void *GetArmyIconPalette(u32 armyId) {
  }
 }
 
+/* Point the resource loader back at the army info archive directory
+ * ("/info/syogun_info") after loading a CO face or name file from elsewhere. */
 void SetArmyInfoFileDirectory(void) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    extern M2C_UNK data_ov000_021b8838;
-    SetFileDirectory(&data_ov000_021b8838);
+    extern M2C_UNK sArmyInfoDir;
+    SetFileDirectory(&sArmyInfoDir);
 }
 
 /* Reloads the selected army's CO face on the bottom screen: clears its VRAM

@@ -439,7 +439,9 @@ void CreateTargetCursor(s32 x, s32 y) {
     M2C_FIELD(cursor, s32 *, 0x3c) = y;
 }
 
-void CancelMapCursorAnimation(void) {
+/* Remove the target cursor sprite, if one is on screen (CreateTargetCursor
+ * makes it). */
+void DeleteTargetCursor(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gTargetCursorClass;
     DeleteSpriteObjectsOfClass(&gTargetCursorClass);

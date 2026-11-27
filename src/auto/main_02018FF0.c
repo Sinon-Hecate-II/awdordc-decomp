@@ -117,16 +117,18 @@ return;
 SystemHalt();
 }
 
+/* Abort a multiboot boot: tell the ARM7 to abort and halt this console. */
 void Mb_AbortBoot(void) {
     M2C_UNK SystemHalt();
     M2C_UNK Mb_SendControlMessage(M2C_UNK);
-    Mb_SendControlMessage(2);
+    Mb_SendControlMessage(MB_CMD_ABORT_BOOT);
     SystemHalt();
 }
 
+/* The ARM7 reports it is ready: clear the "remote ready" flag Mb_BootInit set. */
 void Mb_RemoteReadyHandler(void) {
     extern M2C_UNK gMbBootState;
-    M2C_FIELD(&gMbBootState, s32 *, 4) = 0;
+    ((MbBootState *)&gMbBootState)->remoteReady = 0;
 }
 
 /* Start the multiboot worker thread on thread object `task`, once: empty the
@@ -152,9 +154,11 @@ TaskWake(task);
 OS_RestoreInterrupts(saved);
 }
 
-void MbJob_Clear(M2C_UNK arg0) {
+/* Zero a multiboot job record: its first and second callbacks, its result and
+ * the six words after them (MB_JOB_SIZE bytes). */
+void MbJob_Clear(M2C_UNK job) {
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
-    MI_CpuFill8(arg0, 0, 0x24);
+    MI_CpuFill8(job, 0, MB_JOB_SIZE);
 }
 
 void MbWorker_Main(void *arg0) {

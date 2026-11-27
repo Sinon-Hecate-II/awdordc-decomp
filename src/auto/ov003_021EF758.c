@@ -453,7 +453,7 @@ void func_ov003_021f01f0(M2C_UNK arg0) {
     extern M2C_UNK gSceneBaseIfaceVTable;
     extern M2C_UNK data_ov003_0220fb38;
     extern M2C_UNK data_ov003_0220fb64;
-    extern M2C_UNK data_ov003_0220faf8;
+    extern M2C_UNK gBattlePanelVTable;
     extern M2C_UNK gWaypointPanelGroupVTable;
     extern M2C_UNK data_ov003_0220fb18;
     void *temp_r0;
@@ -523,7 +523,7 @@ void func_ov003_021f01f0(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, void **, 0x3C) = temp_r0_2;
     temp_r0_2 = MemAlloc(0x14);
     if (temp_r0_2 != NULL) {
-        M2C_FIELD(temp_r0_2, M2C_UNK **, 0) = &data_ov003_0220faf8;
+        M2C_FIELD(temp_r0_2, M2C_UNK **, 0) = &gBattlePanelVTable;
         M2C_FIELD(temp_r0_2, s16 *, 0x4) = 8;
         M2C_FIELD(temp_r0_2, s16 *, 0x6) = 4;
         M2C_FIELD(temp_r0_2, s16 *, 0x8) = 0xA0;

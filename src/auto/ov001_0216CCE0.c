@@ -122,8 +122,8 @@ void func_ov001_0216ce74(M2C_UNK arg0, void *arg1, u8 arg2) {
 }
 
 void func_ov001_0216ce80(void) {
-    void func_0202175c(void);
-    func_0202175c();
+    void SocketCloseVeneer(void);
+    SocketCloseVeneer();
 }
 
 /* Reverse the byte order of a 32-bit value (big-endian <-> little-endian). */

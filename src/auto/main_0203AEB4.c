@@ -56,9 +56,12 @@ void NotifyPlayerSlotChanged(s32 slot) {
  M2C_FIELD(p,void (**)(s32,s32,void *,s32),MATCH_SESSION_INFO_CB)(slot,status,infoOut+66,M2C_FIELD(p,s32 *,MATCH_SESSION_INFO_DATA));
 }
 
-void func_0203b088(void) {
+/* Drop the registered online-match session: clear the session pointer kept by
+ * gMatchSessionMgr, so no match session is running after this. */
+void ClearMatchSession(void) {
     extern M2C_UNK gMatchSessionMgr;
-    M2C_FIELD(&gMatchSessionMgr, s32 *, 8) = 0;
+
+    M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION) = 0;
 }
 
 /* Paced think of the online match session: once every 300 tick units it bumps the

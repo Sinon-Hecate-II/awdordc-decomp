@@ -280,10 +280,12 @@ void DeleteScopedObject(void *record) {
     }
 }
 
-s32 func_02074028(s32 arg0) {
+/* std::bad_exception deleting destructor (vtable data_02100998): free the
+ * exception object and return it. */
+s32 DeleteBadException(s32 exception) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(exception);
+    return exception;
 }
 
 M2C_UNK *func_0207403c(void) {
@@ -357,7 +359,7 @@ extern "C" void DestroyArray(s32 first, s32 count, s32 stride, M2C_UNK (*destruc
 }
 #pragma exceptions off
 #pragma cplusplus off
-void func_02074220(void) {
+void DestroyEmptyBase(void) {
 
 }
 
@@ -371,23 +373,29 @@ s32 TypeInfoEquals(TypeInfo *typeInfo, TypeInfo *other) {
     return 0;
 }
 
-s32 func_02074254(s32 arg0) {
-    func_02074220();
-    return arg0;
+/* Non-deleting destructor of std::detail::default_delete<char[]> (its RTTI
+ * record's vtable, data_02100a2c): run the class's empty destructor and return
+ * the object still allocated. */
+s32 DestroyDefaultDeleteCharArray(s32 object) {
+    DestroyEmptyBase();
+    return object;
 }
 
 /* CodeWarrior's deleting-destructor helper for an empty class: run the class's
  * (empty) destructor, free the object and leave its address in r0, which is what
  * a delete expression expects back. */
 s32 func_02074268(s32 object) {
-    func_02074220();
+    DestroyEmptyBase();
     MemFree(object);
     return object;
 }
 
-s32 DestroyEmptyObject(s32 arg0) {
-    func_02074220();
-    return arg0;
+/* Non-deleting destructor of a runtime object whose class has an empty
+ * destructor: run the empty base destructor and return the object still
+ * allocated. */
+s32 DestroyEmptyObject(s32 object) {
+    DestroyEmptyBase();
+    return object;
 }
 
 s32 func_02074298(s32 arg0) {

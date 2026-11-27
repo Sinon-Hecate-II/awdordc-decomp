@@ -302,7 +302,7 @@ s32 func_ov010_02228180(void) {
     M2C_UNK Ov010_AllocBlock(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov010_FreeBlock(M2C_UNK, s32, s32);
     s32 CheckSaveAndWfcProfile(M2C_UNK);
-    void func_02037680(s32, s32);
+    void SetHeapCallbacks(s32, s32);
     M2C_UNK DC_InvalidateRange(M2C_UNK, s32);
     M2C_UNK func_ov010_02226a88();
     s32 Transfer_SetChunkSize(u16);
@@ -320,7 +320,7 @@ s32 func_ov010_02228180(void) {
     status = CheckSaveAndWfcProfile(statusBuffer);
     Ov010_FreeBlock(0, statusBuffer, 0x700);
     if (status != 3) {
-        func_02037680((s32)Ov010_AllocBlock, (s32)Ov010_FreeBlock);
+        SetHeapCallbacks((s32)Ov010_AllocBlock, (s32)Ov010_FreeBlock);
         workBlock = Ov010_AllocBlock(0, 0x10e0, 0x20);
         M2C_FIELD(&gOv010OnlineSession, s32 *, 0x3c) = workBlock;
         DC_InvalidateRange(workBlock, 0x10e0);
@@ -605,7 +605,7 @@ extern "C" void Ov010Online_InitSession(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f
     M2C_UNK Ov010_SetPeerCallback(M2C_UNK);
     M2C_UNK Ov010_SetSlotCallback(M2C_UNK);
     M2C_UNK Ov010_SetStatsCallback(M2C_UNK);
-    M2C_UNK func_ov010_02228bb0(M2C_UNK);
+    M2C_UNK Ov010_SetPlayerRecordCallback(M2C_UNK);
     void Ov010_SetSendCallback(M2C_UNK);
     void Ov010_SetReceiveHandler(M2C_UNK);
     void SetOnlineMessageHandler(M2C_UNK);
@@ -643,7 +643,7 @@ extern "C" void Ov010Online_InitSession(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f
     Ov010_SetPeerCallback(d);
     Ov010_SetSlotCallback(e);
     Ov010_SetStatsCallback(f);
-    func_ov010_02228bb0(g);
+    Ov010_SetPlayerRecordCallback(g);
     Ov010_SetSendCallback(h);
     Ov010_SetReceiveHandler(i);
     SetOnlineMessageHandler(j);
@@ -729,7 +729,7 @@ void Ov010Online_EndSession(void) {
     s32 Ov010_SetPeerCallback(M2C_UNK);
     s32 Ov010_SetSlotCallback(M2C_UNK);
     s32 Ov010_SetStatsCallback(M2C_UNK);
-    s32 func_ov010_02228bb0(M2C_UNK);
+    s32 Ov010_SetPlayerRecordCallback(M2C_UNK);
     void SetOnlineScoreCallback(M2C_UNK);
     void Ov010_SetMatchEventCallback(M2C_UNK);
     void Ov010_SetMatchCallback(M2C_UNK);
@@ -752,7 +752,7 @@ void Ov010Online_EndSession(void) {
     Ov010_SetPeerCallback(0);
     Ov010_SetSlotCallback(0);
     Ov010_SetStatsCallback(0);
-    func_ov010_02228bb0(0);
+    Ov010_SetPlayerRecordCallback(0);
     SetOnlineScoreCallback(0);
     Ov010_SetMatchEventCallback(0);
     Ov010_SetMatchCallback(0);
@@ -829,12 +829,16 @@ s32 Ov010_SetStatsCallback(s32 callback) {
     return previous;
 }
 
-s32 func_ov010_02228bb0(s32 arg0) {
+/* Install `callback` as the online session's NAS player-record handler (called
+ * with a player slot, the raw message, its text and its size) and return the
+ * handler it replaces. */
+s32 Ov010_SetPlayerRecordCallback(s32 callback) {
     extern M2C_UNK gOv010OnlineSession;
-    s32 temp_r2;
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x4);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x4) = arg0;
-    return temp_r2;
+    s32 previous;
+
+    previous = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_RECORD_CALLBACK);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_RECORD_CALLBACK) = callback;
+    return previous;
 }
 
 void func_ov010_02228bc8(void) {

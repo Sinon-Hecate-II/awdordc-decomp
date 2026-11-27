@@ -53,6 +53,8 @@ q->from=127;q->to=127;q->duration=0;q->current=q->start;
 gCur3DSpriteEngine=saved;
 }
 
+/* Free every push-to-talk voice-chat widget sprite: all objects of
+ * gVoiceChatWidgetClass (see CreateVoiceChatWidget). */
 void DeleteVoiceChatWidgets(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gVoiceChatWidgetClass;

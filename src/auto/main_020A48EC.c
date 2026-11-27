@@ -124,8 +124,11 @@ void func_020a4d58(void) {
     ClearMapOrders();
 }
 
+/* Empty the selection queue: it holds no entry, so the order-effect sprite's
+ * cursor (ORDER_SPRITE_QUEUE_CURSOR) starts again from the first selection. */
 void ClearSelectionQueue(void) {
     extern s32 gSelectionQueueCount;
+
     gSelectionQueueCount = 0;
 }
 

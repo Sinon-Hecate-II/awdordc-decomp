@@ -397,8 +397,9 @@ s32 IsBroadcastAddress(s32 address) {
     return isBroadcast;
 }
 
-s32 IsMulticastAddress(s32 arg0) {
-    if ((arg0 & 0xF0000000) == 0xE0000000) {
+/* True when `address` (host order) is an IPv4 multicast address (224.0.0.0/4). */
+s32 IsMulticastAddress(u32 address) {
+    if ((address & IP_MULTICAST_MASK) == IP_MULTICAST_PREFIX) {
         return 1;
     }
     return 0;

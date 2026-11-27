@@ -510,9 +510,12 @@ void ResetMapConfig(void) {
     ResetBattleEndState();
 }
 
-void func_0209f8c0(void) {
+/* Empty the shared battle target list before the cursor code rebuilds it: no
+ * entry of gTargetList is in use. */
+void ResetTargetList(void) {
     extern M2C_UNK gTargetList;
-    M2C_FIELD(&gTargetList, s32 *, 8) = 0;
+
+    M2C_FIELD(&gTargetList, s32 *, MAP_TARGET_LIST_COUNT) = 0;
 }
 
 s32 GetTargetCount(void) {

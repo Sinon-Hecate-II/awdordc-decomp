@@ -260,9 +260,11 @@ void UpdateMirroredTimedEffectSprite(TimedEffectSprite *sprite) {
     Sprite_ResumeAnimation(sprite);
 }
 
-void func_02079c3c(M2C_UNK arg0) {
+/* Spawn the mirrored timed effect sprite for `owner` with the default 16-frame
+ * hold (the non-mirrored twin is SpawnTimedEffectSprite). */
+void SpawnMirroredTimedEffectSprite(M2C_UNK owner) {
     M2C_UNK CreateMirroredTimedEffectSprite(M2C_UNK, M2C_UNK);
-    CreateMirroredTimedEffectSprite(0x10, arg0);
+    CreateMirroredTimedEffectSprite(0x10, owner);
 }
 
 /* Spawn a mirrored timed effect sprite under `owner` and hold its animation for

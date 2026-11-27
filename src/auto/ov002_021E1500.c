@@ -65,7 +65,9 @@ void TeardownBattleScreen(void) {
     REG_POWCNT1 &= ~POWCNT1_LCD_SWAP;
 }
 
-void func_ov002_021e15e0(void) {
+/* Resume the battle screen's sprite scene: restart the animation of the sprite
+ * class that drives it. */
+void ResumeBattleScreenAnimation(void) {
     M2C_UNK ResumeAnimationOfSpriteClass(M2C_UNK *);
     extern M2C_UNK gBattleScreenSpriteClass;
     ResumeAnimationOfSpriteClass(&gBattleScreenSpriteClass);
@@ -83,7 +85,9 @@ void CreateBattleSceneSprite(void *owner) {
     CreateSpriteObject(&gBattleScreenSpriteClass,owner);
 }
 
-void func_ov002_021e1624(void) {
+/* Battle-scene step that reads whether the LCD/2D view is the swapped one (bit 0
+ * of the battle sprite state's phase); this step does not use the answer. */
+void Ov002_QueryBattleScreenSwapped(void) {
     M2C_UNK IsBattleScreenSwapped(M2C_UNK *);
     extern M2C_UNK gBattleSpriteState;
     IsBattleScreenSwapped(&gBattleSpriteState);

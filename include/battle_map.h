@@ -670,6 +670,11 @@ typedef struct MapTargetList {
     s32 count;               /* +0x08 number of entries in use */
 } MapTargetList;
 
+/* Offsets inside gTargetList, for the code that addresses it as a byte buffer
+ * (the global is only 4 bytes in config/, so its fields are reached that way). */
+#define MAP_TARGET_LIST_ARRAY  0x04 /* MapTargetList.entries */
+#define MAP_TARGET_LIST_COUNT  0x08 /* MapTargetList.count */
+
 /* Per-unit flag bits in MAP_UNIT_FLAGS. */
 #define UNIT_FLAG_ACTED      0x0001 /* the unit has acted this turn (HasUnitActed) */
 #define UNIT_FLAG_CARRIED    0x0002 /* the unit is carried in a transport: it stands on no map cell */

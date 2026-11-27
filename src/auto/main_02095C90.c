@@ -131,6 +131,8 @@ void ShowTelopText(u8 *text) {
     StringCopy(sprite + TELOP_TEXT, text);
 }
 
+/* Remove the map screen's telop (one-line caption) window: delete every sprite
+ * made from gTelopWindowClass, the window's sprite class. */
 void DeleteTelopWindow(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gTelopWindowClass;

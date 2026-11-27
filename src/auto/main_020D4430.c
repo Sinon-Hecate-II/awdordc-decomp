@@ -441,8 +441,8 @@ void DrawBattleMapFrame(void){
     void *map = FindBattleMapObject();
     if(!map) return;
     if(!IsBattleMapFramePending(map)) return;
-    func_02077c64();
-    func_02077c78();
+    DrawBattleMapView();
+    DisableGxBufferSwap();
     ClearBattleMapFramePending(map);
 }
 

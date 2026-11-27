@@ -246,9 +246,13 @@ void gpiSetError(void **connection, s32 code, M2C_UNK message) {
     M2C_FIELD(p, s32 *, GPI_ERROR_CODE) = code;
 }
 
-void gpiSetErrorString(s32 *arg0, M2C_UNK arg1) {
+/* Copy the GPI error text `message` (a gpi error message string) into the
+ * error-message buffer at the start of the connection *connection (its 256-byte
+ * GPI_ERROR_MESSAGE slot), replacing the text of the previous error. */
+void gpiSetErrorString(s32 *connection, M2C_UNK message) {
     M2C_UNK StringCopyN(s32, M2C_UNK, M2C_UNK);
-    StringCopyN(*arg0, arg1, 0x100);
+
+    StringCopyN(*connection, message, 0x100);
 }
 
 /* gbucket.c BucketNew: add a key/value entry to a bucket store (the module's
@@ -500,8 +504,8 @@ void *BucketFind(void *store, s32 key) {
 /* Closes the GPI info module's connection: shuts the socket down and closes it,
  * then frees the module's profile list and receive buffer. */
 void gpiInfoCloseSocket(void){
-void func_020496cc(s32,s32);void ghiCloseSocket(s32);void gpiInfoFreeProfiles(void);void gpiFree(void *);
-if(gGpiInfoSocket!=-1){func_020496cc(gGpiInfoSocket,2);ghiCloseSocket(gGpiInfoSocket);}
+void ghiSocketShutdown(s32,s32);void ghiCloseSocket(s32);void gpiInfoFreeProfiles(void);void gpiFree(void *);
+if(gGpiInfoSocket!=-1){ghiSocketShutdown(gGpiInfoSocket,2);ghiCloseSocket(gGpiInfoSocket);}
 gGpiInfoSocket=-1;
 gpiInfoFreeProfiles();
 if(M2C_FIELD(&gGpiInfoState,void **,GPI_INFO_RECV_BUFFER)){gpiFree(M2C_FIELD(&gGpiInfoState,void **,GPI_INFO_RECV_BUFFER));M2C_FIELD(&gGpiInfoState,s32 *,GPI_INFO_RECV_BUFFER)=0;M2C_FIELD(&gGpiInfoState,s32 *,GPI_INFO_RECV_CAPACITY)=0;M2C_FIELD(&gGpiInfoState,s32 *,GPI_INFO_USED)=0;}

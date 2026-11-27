@@ -387,14 +387,16 @@ void SocketFreeTask(s32 task) {
     OS_SendMessage(&gSocketTaskQueue, task, 0);
 }
 
-s32 GetSocketConnection(void *arg0) {
-    s32 var_r1;
+/* The raw connection a socket's tasks are posted to: its receive connection
+ * when it has one, otherwise its send connection. */
+s32 GetSocketConnection(void *socket) {
+    s32 connection;
 
-    var_r1 = M2C_FIELD(arg0, s32 *, 0x64);
-    if (var_r1 == 0) {
-        var_r1 = M2C_FIELD(arg0, s32 *, 0x68);
+    connection = M2C_FIELD(socket, s32 *, SOCK_RAW);
+    if (connection == 0) {
+        connection = M2C_FIELD(socket, s32 *, SOCK_TX_CONN);
     }
-    return var_r1;
+    return connection;
 }
 
 /* Post a socket task to a raw connection's task queue: a stop message (no task)

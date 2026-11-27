@@ -48,7 +48,7 @@ void ClearScenePanelHighlight(void) {
 
 #pragma inline_depth(2)
 void func_02094df0(s32 arg0, s32 arg1, s32 arg2) {
-u8 Get3DSpriteScreenMode(s32);
+u8 GetOtherScreenMode(s32);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 extern M2C_UNK data_02102d0c;
 s32 saved, i, bank, engine;
@@ -97,7 +97,7 @@ break;
 M2C_FIELD(*(s32*)gCur3DSpriteEngine+(u8)arg1*2,u16*,0x38)=0;
 M2C_FIELD(*(s32*)gCur3DSpriteEngine+(u8)arg1*2,u16*,0x40)=0;
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1<<arg1;
-switch((u8)Get3DSpriteScreenMode(((u8)(gCur3DSpriteEngine==g3DSpriteEngineMain))!=1)){
+switch((u8)GetOtherScreenMode(((u8)(gCur3DSpriteEngine==g3DSpriteEngineMain))!=1)){
 case 0:p20=*(u16**)gCur3DSpriteEngine;*p20=*p20|0x10;break;
 case 1:p1c=*(u16**)gCur3DSpriteEngine;*p1c=*p1c|0x20;break;
 case 2:p18=*(u16**)gCur3DSpriteEngine;*p18=*p18|0x40;break;
@@ -253,7 +253,7 @@ u8 IsScriptWaitSpriteActive(void) {
 }
 
 void func_02095490(void *arg0) {
-    u8 Get3DSpriteScreenMode(s32);
+    u8 GetOtherScreenMode(s32);
     s32 GetOther3DSpriteScreenMode(s32);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
     unsigned int saved;
@@ -282,7 +282,7 @@ void func_02095490(void *arg0) {
     u16 *volatile sp4;
     u16 *volatile sp0;
 
-    mode = Get3DSpriteScreenMode(M2C_FIELD(arg0, s32 *, 0x5C));
+    mode = GetOtherScreenMode(M2C_FIELD(arg0, s32 *, 0x5C));
     type = (u8)GetOther3DSpriteScreenMode(M2C_FIELD(arg0, s32 *, 0x5C));
     saved = gCur3DSpriteEngine;
     i = 0;
@@ -369,11 +369,11 @@ end:
 
 #pragma push
 void func_0209583c(void *arg0){
-u8 Get3DSpriteScreenMode(s32);s32 GetOther3DSpriteScreenMode(s32);
+u8 GetOtherScreenMode(s32);s32 GetOther3DSpriteScreenMode(s32);
 M2C_UNK StoreOtherScreenMode(s32);
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
 s32 old,newv;s32 saved,engine;s32 i;
-old=Get3DSpriteScreenMode(M2C_FIELD(arg0,s32 *,0x5c));
+old=GetOtherScreenMode(M2C_FIELD(arg0,s32 *,0x5c));
 newv=GetOther3DSpriteScreenMode(M2C_FIELD(arg0,s32 *,0x5c));
 saved=gCur3DSpriteEngine;old=(u8)old;newv=(u8)newv;
 for(i=0;i<2;i++){
@@ -405,7 +405,7 @@ StoreOtherScreenMode(M2C_FIELD(arg0,s32 *,0x5c));
  * writes the split rows into the engine's bank for every screen the object
  * affects, and deletes the object once the split has run its full length. */
 void Update3DSpriteSplit(DS3DSpriteSplit *split) {
-    u8 Get3DSpriteScreenMode(s32);
+    u8 GetOtherScreenMode(s32);
     s32 GetOther3DSpriteScreenMode(s32);
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void DeleteSpriteObject(void *);
@@ -418,7 +418,7 @@ void Update3DSpriteSplit(DS3DSpriteSplit *split) {
     s32 saved, engine;
     s32 i;
 
-    mode = Get3DSpriteScreenMode(split->screen);
+    mode = GetOtherScreenMode(split->screen);
     GetOther3DSpriteScreenMode(split->screen);
     split->elapsed++;
     bottomRows = EaseInterpolate(0, 0, 16, split->elapsed, split->length);

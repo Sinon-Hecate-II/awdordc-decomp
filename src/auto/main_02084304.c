@@ -938,7 +938,7 @@ void func_02085108(void *arg0) {
 
 #pragma optimization_level 3
 void func_02085118(void *p){
-s32 func_ov002_021e1624(void);
+s32 Ov002_QueryBattleScreenSwapped(void);
 void AppendSpriteDescToOam(s32,s32,s32,u16 *);
 extern s32 gCur3DSpriteEngine;
 extern s32 g3DSpriteEngineMain;
@@ -949,7 +949,7 @@ s32 n; s32 saved;
 if(!IsWfcLinkActive())return;
 n=GetLinkStatusLevel();
 if(sprite->mainEngine){
-if(!func_ov002_021e1624())return;
+if(!Ov002_QueryBattleScreenSwapped())return;
 saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 {

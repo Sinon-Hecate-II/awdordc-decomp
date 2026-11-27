@@ -122,9 +122,12 @@ s32 LoadNarcFileDecompressed(void *memberPath, void *dest) {
     return LoadDecompressedFileTo(BuildNarcPath(memberPath), dest);
 }
 
-void LoadNarcMemberToBuffer(void) {
-    M2C_UNK LoadDecompressedFile(s32, M2C_UNK);
-    LoadDecompressedFile(BuildNarcPath(), 1);
+/* Decompress the NARC member at `memberPath` into a newly allocated persistent
+ * buffer and return it. */
+s32 LoadNarcMemberToBuffer(void *memberPath) {
+    s32 BuildNarcPath(M2C_UNK);
+    s32 LoadDecompressedFile(s32, M2C_UNK);
+    return LoadDecompressedFile(BuildNarcPath((M2C_UNK)memberPath), 1);
 }
 
 /* Allocate `size` bytes and load the NARC member at `memberPath` into them,
@@ -575,9 +578,24 @@ void CreateSleepRequestSprite(void) {
     CreateSpriteFromClass(&gSleepRequestSpriteClass, 3);
 }
 
-s8 *func_02081f08(void) { extern M2C_UNK gInputBlockState; volatile s8 *p=(s8 *)&gInputBlockState; p[4]++; return (s8 *)p; }
+/* Add one frame to the second input-lock countdown (the halt screen keeps input
+ * locked by adding a frame every iteration) and return the input-block state. */
+s8 *IncrementInputLockFrames2(void) {
+    extern M2C_UNK gInputBlockState;
+    InputBlockState *state = (InputBlockState *)&gInputBlockState;
 
-s8 *func_02081f20(void) { extern M2C_UNK gInputBlockState; volatile s8 *p=(s8 *)&gInputBlockState; p[0]++; return (s8 *)p; }
+    state->inputLockFrames2++;
+    return (s8 *)state;
+}
+
+/* Add one frame to the main input lock countdown, which makes input be ignored
+ * for one more frame. */
+s8 *IncrementInputLockFrames(void) {
+    extern M2C_UNK gInputBlockState;
+    volatile s8 *state = (s8 *)&gInputBlockState;
+    state[0]++;
+    return (s8 *)state;
+}
 
 /* Ends one frame of the input lock. */
 void DecrementInputLockFrames(void) {
@@ -587,9 +605,11 @@ void DecrementInputLockFrames(void) {
         ((InputBlockState *)&gInputBlockState)->inputLockFrames - 1;
 }
 
-void func_02081f50(void) {
+/* Block InjectKeyPress from injecting virtual key presses (used while the
+ * input-block notice sprite is up). */
+void BlockKeyInjection(void) {
     extern M2C_UNK gInputBlockState;
-    M2C_FIELD(&gInputBlockState, s8 *, 3) = 1;
+    ((InputBlockState *)&gInputBlockState)->keyInjectBlocked = 1;
 }
 
 void func_02081f64(void) {
@@ -623,6 +643,7 @@ void CreateInputBlockSprite(void) {
     CreateSpriteFromClass(&gInputBlockSpriteClass, 3);
 }
 
+/* Remove the input-block notice sprite, releasing the key-press block it holds. */
 void DeleteInputBlockSprite(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gInputBlockSpriteClass;
@@ -795,9 +816,11 @@ M2C_UNK Apply3DSpriteLayout(M2C_UNK *preset) {
     Configure3DSpriteLayout((u8 *)preset);
 }
 
+/* Apply the fixed display layout preset to the current 3D sprite engine: the
+ * plain layer mapping screens use when they reset their sprite engine. */
 void Apply3DSpriteDisplayConfig(void) {
     M2C_UNK Apply3DSpriteLayout(M2C_UNK *);
-    extern M2C_UNK data_02101fb4;
-    Apply3DSpriteLayout(&data_02101fb4);
+    extern M2C_UNK g3DSpriteLayoutDisplay;
+    Apply3DSpriteLayout(&g3DSpriteLayoutDisplay);
 }
 

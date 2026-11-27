@@ -38,7 +38,7 @@ void func_ov003_021e1530(void *state, s32 id) {
         return;
     }
     if (id != 10) return;
-    freeCount = func_ov003_021f2560();
+    freeCount = CountSelectedMapIds();
     count = M2C_FIELD(state, u8 *, 11);
     if (freeCount && M2C_FIELD(state, u8 *, 8) == 0) {
         count = freeCount - 1;

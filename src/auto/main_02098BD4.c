@@ -455,20 +455,25 @@ void func_02099420(void) {
 
 }
 
-s32 func_02099424(s32 arg0) {
+/* Deleting destructor of the linked face-child sprite (gFaceChildSpriteVtbl
+ * slot 1): free the object and return it.  The vtable's slot 0 holds the
+ * non-deleting twin. */
+s32 FaceChildSprite_Delete(s32 child) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(child);
+    return child;
 }
 
 void func_02099438(void) {
 
 }
 
-s32 func_0209943c(s32 arg0) {
+/* Deleting destructor of the CO face sprite (gFaceSpriteVtbl slot 1): free the
+ * object and return it.  The vtable's slot 0 holds the non-deleting twin. */
+s32 FaceSprite_Delete(s32 sprite) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(sprite);
+    return sprite;
 }
 
 /* Set up the current engine's text on `layer`: forget the cached strings, start

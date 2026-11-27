@@ -258,11 +258,12 @@ DrawPanelAnchoredText(panel,gOv001NameTextX[langX*2],gOv001NameTextY[langY*2],2,
 CloseTextPanel(panel);
 }
 
+/* Font resource id the ov001 text panels use for the current language. */
 s32 Ov001_GetTextFontId(void) {
     s32 Ov001_GetLanguage(s32);
-    extern s32 data_ov001_0218f2c0[];
-    s32 index = ((s32 (*)(void))Ov001_GetLanguage)();
-    return data_ov001_0218f2c0[index];
+    extern s32 gOv001TextFontIds[];
+    s32 language = ((s32 (*)(void))Ov001_GetLanguage)();
+    return gOv001TextFontIds[language];
 }
 
 /* Allocate the ov001 choice frame's sprite handle array: 16 bytes for the four
@@ -349,6 +350,8 @@ void Ov001_InitHighlightBackground(void) {
     }
 }
 
+/* Free the highlight tilemap buffer that Ov001_InitHighlightBackground allocated
+ * and Ov001_UploadHighlightTilemap uploads to BG1. */
 void Ov001_FreeHighlightTilemap(void) {
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern M2C_UNK sOv001HighlightTilemapBuffer;

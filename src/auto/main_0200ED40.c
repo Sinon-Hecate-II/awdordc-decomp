@@ -13,10 +13,12 @@ typedef union RTCStatus {
     } bits;
 } RTCStatus;
 
-void CallbackList_Prepend(void **arg0, void *arg1) {
-    if (arg0 != NULL) {
-        M2C_FIELD(arg1, void **, 8) = (void *) *arg0;
-        *arg0 = arg1;
+/* Prepend callback node `node` to the singly linked list `list` (a node's next
+ * pointer sits at +0x08); a NULL list pointer is ignored. */
+void CallbackList_Prepend(void **list, void *node) {
+    if (list != NULL) {
+        M2C_FIELD(node, void **, 8) = (void *) *list;
+        *list = node;
     }
 }
 

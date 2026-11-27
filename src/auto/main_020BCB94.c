@@ -259,6 +259,8 @@ void DeleteTouchCursor(void) {
     DeleteSpriteObjectsOfClass(&gTouchCursorClass);
 }
 
+/* Release the touch cursor: resume its idle animation after a stylus press had
+ * paused it on the tile it started on. */
 void HideTouchCursor(void) {
     M2C_UNK ResumeAnimationOfSpriteClass(M2C_UNK *);
     extern M2C_UNK gTouchCursorClass;

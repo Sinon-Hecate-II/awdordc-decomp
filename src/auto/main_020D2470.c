@@ -694,9 +694,13 @@ if(IsPlayerRouted(player)==0)result=1;else result=0;
 return result;
 }
 
-void func_020d33c4(void) {
+/* Stop accumulating the battle's turn time: clear gMapData's turn-timer flag.
+ * A second, byte-identical copy of DisableBattleTurnTimer, run at the end of
+ * InitPlayerStates when a battle starts. */
+void DisableBattleTurnTimer2(void) {
     extern M2C_UNK gMapData;
-    M2C_FIELD(&gMapData, s32 *, 8) = 0;
+
+    M2C_FIELD(&gMapData, s32 *, MAPDATA_TURN_TIMER) = 0;
 }
 
 void EnableBattleTurnTimer(void) {
@@ -704,9 +708,12 @@ void EnableBattleTurnTimer(void) {
     M2C_FIELD(&gMapData, s32 *, 8) = 1;
 }
 
+/* Disable the battle's turn timer: stop accumulating the current player's battle
+ * time each frame (EnableBattleTurnTimer starts it again). */
 void DisableBattleTurnTimer(void) {
     extern M2C_UNK gMapData;
-    M2C_FIELD(&gMapData, s32 *, 8) = 0;
+
+    M2C_FIELD(&gMapData, u32 *, MAPDATA_TURN_TIMER) = 0;
 }
 
 /* Adds one frame to the current player's accumulated battle time while the

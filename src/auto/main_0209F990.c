@@ -9,7 +9,7 @@ extern u8 gMovementTypeTable[];
 
 #pragma opt_strength_reduction off
 s32 func_0209f990(void) {
-    void func_0209f8c0(void);
+    void ResetTargetList(void);
     void AppendTargetEntry(s32, s32, s32, s32);
     s32 GetTileTargetKind(s32, s32);
     void *FindMapOrderAtTile(s32, s32);
@@ -28,7 +28,7 @@ s32 func_0209f990(void) {
     void *dim;
     s32 bits;
 
-    func_0209f8c0();
+    ResetTargetList();
     obj = (u8 *)*gCurrentMap;
     y = 0;
     if ((s32)M2C_FIELD(obj, u16 *, 0x5146) > 0) {
@@ -76,7 +76,7 @@ next_cell:
 }
 #pragma opt_common_subs off
 s32 func_0209fb70(void) {
-    void func_0209f8c0(void);
+    void ResetTargetList(void);
     void AppendTargetEntry(s32, s32, s32, s32);
     s32 GetTileTargetKind(s32, s32);
     void *FindMapOrderAtTile(s32, s32);
@@ -95,7 +95,7 @@ s32 func_0209fb70(void) {
     void *dim;
     s32 bits;
 
-    func_0209f8c0();
+    ResetTargetList();
     obj = (M2C_UNK *)*gCurrentMap;
     y = 0;
     if ((s32)M2C_FIELD(obj, u16 *, 0x5146) <= 0) goto done;

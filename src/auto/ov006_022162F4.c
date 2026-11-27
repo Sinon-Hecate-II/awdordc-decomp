@@ -540,6 +540,8 @@ void func_ov006_02217160(void) {
 
 }
 
+/* The map-transfer panel that is up: the sprite of
+ * gMapTransferPanelStateClass, or NULL when the transfer screen has none. */
 void *GetMapTransferPanelState(void) {
     void *FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gMapTransferPanelStateClass;

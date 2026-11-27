@@ -74,8 +74,10 @@ void MapEditor_SpawnScene(void) {
     CreateSpriteFromClass(&gMapEditorSceneClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
-void func_ov007_0221ab38(void) {
-    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
+/* Remove the map editor scene's sprite objects, the counterpart of
+ * MapEditor_SpawnScene; called when the map editor closes. */
+void MapEditor_DespawnScene(void) {
+    void DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gMapEditorSceneClass;
     DeleteSpriteObjectsOfClass(&gMapEditorSceneClass);
 }

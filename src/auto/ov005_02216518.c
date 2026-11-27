@@ -156,10 +156,12 @@ void RecordsMenu_BeginAction(s16 record, s8 mode) {
     CreateSpriteFromClass(&data_ov005_022204e0, func_ov005_02215650());
 }
 
-void SetOv005FileDirectory(void) {
+/* Point the file loader at the CO (shogun) color archive's directory,
+ * "/info/syogun_color". */
+void SetShogunColorFileDirectory(void) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    extern M2C_UNK data_ov005_022208e0;
-    SetFileDirectory(&data_ov005_022208e0);
+    extern M2C_UNK sShogunColorDir;
+    SetFileDirectory(&sShogunColorDir);
 }
 
 u8 func_ov005_02217320(void) {
@@ -213,7 +215,7 @@ void Ov005LoadEntryFacePalettes(void) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     LoadFacePalette(coId, FACE_LAYOUT_BODY_N, 2, 0, 0);
     gCur3DSpriteEngine = savedEngine;
-    SetOv005FileDirectory();
+    SetShogunColorFileDirectory();
 }
 
 /* Loads the selected CO's name graphic from shogun_name.narc into the sub
@@ -227,7 +229,7 @@ void Ov005RefreshNameGraphic(void) {
     void *GetNameFileForFace(s32);
     s32 GetLocalizedFileName(M2C_UNK *);
     u32 IsCoUnlocked(s32);
-    void SetOv005FileDirectory(void);
+    void SetShogunColorFileDirectory(void);
     extern u8 *gOv005MenuState;
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
@@ -244,7 +246,7 @@ void Ov005RefreshNameGraphic(void) {
         OpenNarcArchive();
         LoadNarcFileDecompressed(GetLocalizedFileName(nameFile), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800);
         CloseNarcArchive();
-        SetOv005FileDirectory();
+        SetShogunColorFileDirectory();
     } else {
         MI_CpuFill32(0, M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x1C) + 0x2800, 0x800);
     }

@@ -634,20 +634,22 @@ void func_ov003_021e5030(void) {
 
 }
 
-s32 func_ov003_021e5034(s32 arg0) {
+/* Deleting destructor of an empty class: free the object, then return it. */
+s32 func_ov003_021e5034(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 void func_ov003_021e5048(void) {
 
 }
 
-s32 func_ov003_021e504c(s32 arg0) {
+/* Deleting destructor of an empty class: free the object, then return it. */
+s32 func_ov003_021e504c(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 #pragma peephole off

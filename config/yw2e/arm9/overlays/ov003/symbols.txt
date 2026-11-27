@@ -70,10 +70,10 @@ func_ov003_021e6470 kind:function(arm,size=0xc) addr:0x021e6470
 Ov003_UpdateMapConfirmFlag kind:function(arm,size=0x2c) addr:0x021e647c
 CreateOv003Scene kind:function(arm,size=0x530) addr:0x021e64a8
 Ov003Scene_Destructor kind:function(arm,size=0x118) addr:0x021e69d8
-func_ov003_021e6af0 kind:function(arm,size=0x14) addr:0x021e6af0
+Ov003SceneChild_Delete kind:function(arm,size=0x14) addr:0x021e6af0
 func_ov003_021e6b04 kind:function(arm,size=0x4) addr:0x021e6b04
 DestroyOv003Scene kind:function(arm,size=0x120) addr:0x021e6b08
-func_ov003_021e6c28 kind:function(arm,size=0x4) addr:0x021e6c28
+Ov003SceneChild_Destroy kind:function(arm,size=0x4) addr:0x021e6c28
 func_ov003_021e6c2c kind:function(arm,size=0x10) addr:0x021e6c2c
 func_ov003_021e6c3c kind:function(arm,size=0x10) addr:0x021e6c3c
 func_ov003_021e6c4c kind:function(arm,size=0x10) addr:0x021e6c4c
@@ -205,13 +205,13 @@ InitOv003OptionValue kind:function(arm,size=0x2c) addr:0x021f05cc
 Ov003OptionValue_Destructor kind:function(arm,size=0x4) addr:0x021f05f8
 func_ov003_021f05fc kind:function(arm,size=0x3e0) addr:0x021f05fc
 ShutdownBattleObject kind:function(arm,size=0x3f0) addr:0x021f09dc
-func_ov003_021f0dcc kind:function(arm,size=0x14) addr:0x021f0dcc
+BattlePanel_Delete kind:function(arm,size=0x14) addr:0x021f0dcc
 DestroyWaypointPanelGroup kind:function(arm,size=0x50) addr:0x021f0de0
 DestroyBattleSetup kind:function(arm,size=0x64) addr:0x021f0e30
 DestroyBattleObject kind:function(arm,size=0x3f8) addr:0x021f0e94
 WaypointPanelGroup_Destructor kind:function(arm,size=0x48) addr:0x021f128c
 ShutdownBattleSetup kind:function(arm,size=0x5c) addr:0x021f12d4
-func_ov003_021f1330 kind:function(arm,size=0x4) addr:0x021f1330
+BattlePanel_Destroy kind:function(arm,size=0x4) addr:0x021f1330
 DestroyOv003OptionValue kind:function(arm,size=0x14) addr:0x021f1334
 func_ov003_021f1348 kind:function(arm,size=0x10) addr:0x021f1348
 func_ov003_021f1358 kind:function(arm,size=0x10) addr:0x021f1358
@@ -270,8 +270,8 @@ SortMapIdList kind:function(arm,size=0x80) addr:0x021f242c
 CopyMapPickLists kind:function(arm,size=0x40) addr:0x021f24ac
 LoadMapPickLists kind:function(arm,size=0x38) addr:0x021f24ec
 CountMapIds kind:function(arm,size=0x3c) addr:0x021f2524
-func_ov003_021f2560 kind:function(arm,size=0x14) addr:0x021f2560
-func_ov003_021f2574 kind:function(arm,size=0x14) addr:0x021f2574
+CountSelectedMapIds kind:function(arm,size=0x14) addr:0x021f2560
+CountDownloadedMapIds kind:function(arm,size=0x14) addr:0x021f2574
 RemoveDownloadedMapId kind:function(arm,size=0x44) addr:0x021f2588
 IsCampaignMapCategory kind:function(arm,size=0x88) addr:0x021f25cc
 IsCampaignMapHeaderCategory kind:function(arm,size=0x48) addr:0x021f2654
@@ -671,7 +671,7 @@ data_ov003_0220f61c kind:data(any) addr:0x0220f61c
 gOv003SceneClass kind:data(any) addr:0x0220f650
 data_ov003_0220f6f8 kind:data(any) addr:0x0220f6f8
 data_ov003_0220f700 kind:data(any) addr:0x0220f700
-data_ov003_0220f710 kind:data(any) addr:0x0220f710
+gOv003SceneChildVTable kind:data(any) addr:0x0220f710
 gOv003SceneVTable kind:data(any) addr:0x0220f720
 gOv003SceneIfaceVTable kind:data(any) addr:0x0220f74c
 data_ov003_0220f76c kind:data(any) addr:0x0220f76c
@@ -702,7 +702,7 @@ data_ov003_0220f896 kind:data(any) addr:0x0220f896
 data_ov003_0220f89e kind:data(any) addr:0x0220f89e
 data_ov003_0220f8ac kind:data(any) addr:0x0220f8ac
 data_ov003_0220f8e0 kind:data(any) addr:0x0220f8e0
-data_ov003_0220faf8 kind:data(any) addr:0x0220faf8
+gBattlePanelVTable kind:data(any) addr:0x0220faf8
 gWaypointPanelGroupVTable kind:data(any) addr:0x0220fb08
 data_ov003_0220fb18 kind:data(any) addr:0x0220fb18
 gOv003OptionRowVTable kind:data(any) addr:0x0220fb28

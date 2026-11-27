@@ -300,7 +300,11 @@ s32 func_020a7290(void) {
     return 0x78;
 }
 
-s32 GetUnitVariantIndex(s32 a,u8 b){return ((u8 *)b)[(s32)gUnitKindSpriteVariants+a*0x70];}
+/* Sprite variant (a four-tile block) the unit kind uses in the given cached
+ * player sprite state (0 or 1); the kind's record holds one variant byte per state. */
+s32 GetUnitVariantIndex(s32 unitKind, u8 spriteState) {
+    return ((u8 *)spriteState)[(s32)gUnitKindSpriteVariants + unitKind * UNIT_KIND_STATS_SIZE];
+}
 
 /* The sprite tile index (four tiles per sprite variant) that player `player`'s
  * units of `kind` use: the player record's cached sprite state picks the variant. */

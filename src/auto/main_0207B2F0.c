@@ -584,14 +584,16 @@ void DrawSpriteBatch(void) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1 << SPRITE_BATCH->bank2;
 }
 
-s32 GetBatchSpriteCols(s32 arg0) {
+/* Number of 8x8 tile columns covered by the source image of placed sprite `index`. */
+s32 GetBatchSpriteCols(s32 index) {
     s32 GetBatchSpriteSourceWidth();
-    return (s32) (GetBatchSpriteSourceWidth(arg0) + 7) >> 3;
+    return (s32) (GetBatchSpriteSourceWidth(index) + 7) >> 3;
 }
 
-s32 GetBatchSpriteRows(s32 arg0) {
+/* Number of 8x8 cells tall that sprite `index`'s source graphic spans. */
+s32 GetBatchSpriteRows(s32 index) {
     s32 GetBatchSpriteSourceHeight();
-    return (s32) (GetBatchSpriteSourceHeight(arg0) + 7) >> 3;
+    return (s32) (GetBatchSpriteSourceHeight(index) + 7) >> 3;
 }
 
 /* Width in pixels of the source tiles of placed sprite `index`, looked up by its kind. */

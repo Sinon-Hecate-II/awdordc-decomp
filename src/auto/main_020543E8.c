@@ -7,7 +7,7 @@ typedef struct CallbackPair { s32 first, second; } CallbackPair;
  * then the operation's data and the operation itself are released. */
 void gpiFreeOperation(void **connectionRef, GPIOperation *operation) {
     M2C_UNK ghiCloseSocket(s32);
-    M2C_UNK func_020496cc(s32, M2C_UNK);
+    M2C_UNK ghiSocketShutdown(s32, M2C_UNK);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fe9b0;
     extern M2C_UNK sGpiOperationSourceFile;
@@ -23,7 +23,7 @@ void gpiFreeOperation(void **connectionRef, GPIOperation *operation) {
         if (count < 0) {
             AssertFailed(&data_020fea4c, &sGpiOperationSourceFile, &data_020fe9b0, 0xB6);
         }
-        func_020496cc(M2C_FIELD(search, s32 *, 4), 2);
+        ghiSocketShutdown(M2C_FIELD(search, s32 *, 4), 2);
         ghiCloseSocket(M2C_FIELD(search, s32 *, 4));
         gpiFree(M2C_FIELD(search, void **, 0x18));
         M2C_FIELD(search, void **, 0x18) = NULL;
@@ -460,7 +460,7 @@ s32 gpiProcessPeerState(M2C_UNK manager, void *peer) {
    its callback vector, then the peer record itself. */
 M2C_UNK gpiFreePeer(void **manager, void *peer) {
     M2C_UNK Vector_Free(s32);
-    func_020496cc(M2C_FIELD(peer, s32 *, GPI_PEER_SOCKET), 2);
+    ghiSocketShutdown(M2C_FIELD(peer, s32 *, GPI_PEER_SOCKET), 2);
     ghiCloseSocket(M2C_FIELD(peer, s32 *, GPI_PEER_SOCKET));
     gpiFree(M2C_FIELD(peer, void **, GPI_PEER_RX_BUFFER));
     M2C_FIELD(peer, void **, GPI_PEER_RX_BUFFER) = NULL;

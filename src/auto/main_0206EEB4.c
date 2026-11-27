@@ -190,10 +190,12 @@ void *func_0206f8c4(u32 *string,u32 buffer,u32 firstArg,...) {
  return string;
 }
 
-s32 func_0206f944(s32 arg0) {
+/* Deleting destructor of the scoped char-array owner (vtable data_02100734):
+ * free the object and return it. */
+s32 DeleteScopedCharArray(s32 object) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(object);
+    return object;
 }
 
 void func_0206f958(void) {
@@ -240,9 +242,11 @@ s32 *ReleaseScopedCharArray(s32 *guard) {
     return guard;
 }
 
-s32 func_0206f9f4(s32 arg0) {
+/* Deleting destructor of the default_delete<char[]> functor (vtable data_0210074c):
+ * free the functor object and return it. */
+s32 DeleteScopedCharArrayDeleter(s32 object) {
     MemFree();
-    return arg0;
+    return object;
 }
 
 void func_0206fa08(void) {

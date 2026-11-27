@@ -1544,7 +1544,7 @@ gTerrainPaletteBlock kind:data(any) addr:0x021b8712
 gArmyInfoPlayerSlotDef kind:data(any) addr:0x021b8790
 gArmyInfoCloseScript kind:data(any) addr:0x021b87b8
 gArmyInfoScreenClass kind:data(any) addr:0x021b87f0
-data_ov000_021b8838 kind:data(any) addr:0x021b8838
+sArmyInfoDir kind:data(any) addr:0x021b8838
 sShogunNameNarc kind:data(any) addr:0x021b884c
 data_ov000_021b8860 kind:data(any) addr:0x021b8860
 data_ov000_021b8874 kind:data(any) addr:0x021b8874

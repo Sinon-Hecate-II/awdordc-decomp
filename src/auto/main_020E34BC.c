@@ -866,7 +866,7 @@ void func_020e4378(void) {
     M2C_UNK GX_InitDisplay();
     M2C_UNK GX_TurnOffDisplay();
     M2C_UNK func_02003104(s32);
-    M2C_UNK func_020035f8();
+    M2C_UNK GX_ReleaseBankGrantForAll();
     M2C_UNK InitSystemServices();
     M2C_UNK func_02006c58();
     M2C_UNK func_02006c6c();
@@ -890,7 +890,7 @@ void func_020e4378(void) {
     Arm7CommandInit();
     func_02003104(0x1FF);
     MI_CpuFill32(0, 0x6800000, 0xA4000);
-    func_020035f8();
+    GX_ReleaseBankGrantForAll();
     MI_CpuFill32(0xC0, 0x7000000, 0x400);
     MI_CpuFill32(0, 0x5000000, 0x400);
     MI_CpuFill32(0xC0, 0x7000400, 0x400);
