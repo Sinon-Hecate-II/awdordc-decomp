@@ -336,10 +336,12 @@ M2C_UNK FlushSocketCallbacks(M2C_UNK arg0) {
     func_020746f0();
 }
 #pragma opt_common_subs reset
-void func_02063f90(void) {
-    M2C_UNK _f2d(s32);
-    extern s32 gFloatNanBits;
-    _f2d(gFloatNanBits);
+/* Return the canonical IEEE NaN as a double: the "nan(...)" special value of the
+ * scan-float parser (the payload argument is not used). */
+double ScanFloatNaN(char *payload) {
+    double _f2d(float);
+    extern float gFloatNanBits;
+    return _f2d(gFloatNanBits);
 }
 
 #pragma opt_strength_reduction off

@@ -90,8 +90,8 @@ void CreateAdjacentAllyMarker(s32 dir) {
 }
 
 void func_020bbd8c(void) {
-    M2C_UNK func_020cab8c();
-    func_020cab8c();
+    M2C_UNK CreateMapCursorOptionSprite();
+    CreateMapCursorOptionSprite();
 }
 
 /* AI ammo action: create the action's effect sprite (CreateFlareShotSprite takes the

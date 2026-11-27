@@ -10,7 +10,7 @@ void CloseGt2Connection(void);
  * session down once the target is known. */
 void ProcessConnectionStateAction(s32 action){
 extern s32 sEmptyString;extern u8 gConnectionMgr[];
-s32 SetConnectionState(s32);void Qr2_StateChanged(s32);void SendConnectionPacket(s8,s32);u64 GetSystemTick(void);void TryConnectToPeer(s32,s32,s32);u32 GetConnectedPlayerMask(s32);void ReconnectUnlessServing(void);s32 SendConnectionCommand();s32 ReportConnectionCommandResult(void);void ResetSlotRequestRetry(void);void SetGpiStatus(s32,void *,s32);s32 GetSessionPlayerSlot(s32);void TeardownConnectionSession(void);void DestroyServerBrowser(s32);void NatNeg_RequestShutdown(void);void ReportGpiSessionStatus(void);s32 ReportConnectionStatusResult(void);void ResetSessionList(s32);
+s32 SetConnectionState(s32);void Qr2_StateChanged(s32);void SendConnectionPacket(s8,s32);u64 GetSystemTick(void);void TryConnectToPeer(s32,s32,s32);u32 GetConnectedPlayerMask(s32);void ReconnectUnlessServing(void);s32 SendConnectionCommand();s32 ReportConnectionCommandResult(void);void ResetSlotRequestRetry(void);void SetGpiStatus(s32,void *,s32);s32 GetSessionPlayerSlot(s32);void TeardownConnectionSession(void);void DestroyServerBrowser(s32);void NatNeg_RequestShutdown(void);void ReportGpiSessionStatus(void);s32 ReportConnectionStatusResult(void);void ResetServerBrowser(s32);
 s32 argCount=3,update=0; s32 values[5];s32 scratch,slot;u8 *conn,*conn2,*conn3,*conn4,*conn5,*conn6;s32 i;
 switch(action){
 case 0:
@@ -52,7 +52,7 @@ if(M2C_FIELD(GetConnection(),s32*,CONN_SESSION_SERVER_BROWSER)!=0){DestroyServer
 NatNeg_RequestShutdown();if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==2){ReportGpiSessionStatus();if(ReportConnectionStatusResult())return;if(gConnectionMgr[CONN_MGR_MATCH_STARTED]==1)gConnectionMgr[CONN_MGR_MATCH_FINISHED]=1;SetConnectionState(CONN_STATE_MATCH);}else SetConnectionState(1);M2C_FIELD(GetConnection(),s32*,CONN_SESSION_TARGET_ID)=0;
 }M2C_FIELD(GetConnection(),u8*,CONN_SESSION_BUSY)=0;break;
 }
-if(update&&M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)!=3)ResetSessionList(M2C_FIELD(GetConnection(),s32*,CONN_SESSION_SERVER_BROWSER));
+if(update&&M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)!=3)ResetServerBrowser(M2C_FIELD(GetConnection(),s32*,CONN_SESSION_SERVER_BROWSER));
 }
 
 /* True when every player id in the list is a member of the connection.  While a

@@ -2447,6 +2447,14 @@ typedef struct GpiBuddyStatus {
  * with it (the object's +0x34 field). */
 #define MATCH_ID_VCHT 0x56434854
 
+/* The other match ids a link start record can carry (see MATCH_ID_VCHT), for the
+ * two barriers that bracket a data exchange: P = play, T = transfer, R =
+ * request/ready, D = Download Play, C = multi-card/online, S = session. */
+#define MATCH_ID_PTDS 0x50544453 /* "PTDS": transfer barrier, Download Play */
+#define MATCH_ID_PRDS 0x50524453 /* "PRDS": ready barrier, Download Play (both data-block scripts post it first) */
+#define MATCH_ID_PTCS 0x50544353 /* "PTCS": transfer barrier, multi-card/online */
+#define MATCH_ID_PRCS 0x50524353 /* "PRCS": ready barrier, multi-card/online */
+
 /* The local player's link status (GetLocalPlayerStatus): its option bits and
  * the player id the online session assigned to this console. */
 #define LOCAL_STATUS_OPTIONS    0x1A /* u8 option bits the link menus edit */
@@ -4187,6 +4195,10 @@ enum {
 #define TEXT_SPRITE_VALUE   0x1C /* s32: numeric value, clamped to +/-999999 */
 #define TEXT_SPRITE_DESC    0x24 /* void *sprite descriptor used for each glyph */
 
+/* Game text strings (ConvertTextToGlyphs, main_020C8CBC.c): ordinary characters
+ * follow the text encoding, while TEXT_ESCAPE_CHAR introduces a raw glyph code. */
+#define TEXT_ESCAPE_CHAR 0x1F /* u8: the byte after it is a raw glyph code */
+
 /* A text layer sprite (CreateTextLayer, CreateTextLayerChild and the
  * RenderTextLayer family in main_02088FF4): a 3D-sprite object that owns the
  * text it draws plus two small render buffers. */
@@ -4885,6 +4897,14 @@ typedef struct OSThreadQueue {
     void *head; /* +0x00 first thread waiting on the queue, NULL when empty */
     void *tail; /* +0x04 last thread waiting on the queue */
 } OSThreadQueue; /* 8 bytes */
+
+/* Field offsets of an OSThreadQueue, for code that addresses it as a byte block. */
+#define OS_THREAD_QUEUE_HEAD 0x00 /* first waiting thread (void *) */
+#define OS_THREAD_QUEUE_TAIL 0x04 /* last waiting thread (void *) */
+
+/* gOsIrqThreadQueue (in the OS work area at gOsArea + 0xE0) is the thread queue
+ * OS_WaitIrq parks the current thread on until an IRQ handler signals one of the
+ * OS_AREA_EVENT_FLAGS bits; OS_InitIrqThreadQueue clears it during boot. */
 
 typedef struct OSMessageQueue {
     OSThreadQueue sendQueue;    /* +0x00 threads asleep because the queue is full */

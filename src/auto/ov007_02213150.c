@@ -86,10 +86,11 @@ void MapEditor_TogglePage(void) {
     PlaySoundEffect(SOUND_MENU_TAB);
 }
 
-void func_ov007_0221330c(void) {
+/* Spawn the scripted sprite that holds the map view while toggling the palette page. */
+void MapEditor_ShowPageToggleSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_0221f6b0;
-    CreateSpriteFromClass(&data_ov007_0221f6b0, 7);
+    extern M2C_UNK gMapEditorPageToggleSpriteClass;
+    CreateSpriteFromClass(&gMapEditorPageToggleSpriteClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 /* Whether the map open in the editor is a custom map rather than a campaign
@@ -117,8 +118,8 @@ void func_ov007_02213360(void) {
 }
 
 void func_ov007_0221336c(void) {
-    M2C_UNK func_ov007_0221c630();
-    func_ov007_0221c630();
+    M2C_UNK MapEditor_ReloadMap();
+    MapEditor_ReloadMap();
 }
 
 /* Confirm the map editor's map-fill menu: paint every cell from the preset the

@@ -66,7 +66,7 @@ void TeardownNetSession(void) {
     void func_0203b088(void);
     void ShutdownConnection(void);
     void func_020449dc(void);
-    void func_0205ad60(void *resource);
+    void GT2CloseSocket(void *resource);
 
     if (!gNetSession) return;
     if (M2C_FIELD(gNetSession, void **, 0x384)) {
@@ -94,7 +94,7 @@ void TeardownNetSession(void) {
     ShutdownConnection();
     func_020449dc();
     if (M2C_FIELD(gNetSession, void **, 0)) {
-        func_0205ad60(M2C_FIELD(gNetSession, void **, 0));
+        GT2CloseSocket(M2C_FIELD(gNetSession, void **, 0));
         M2C_FIELD(gNetSession, void **, 0) = 0;
     }
     gNetSession = 0;

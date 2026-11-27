@@ -240,10 +240,14 @@ void func_020d900c(void) {
  * has, the switch is done and the script carries on. */
 void WaitForUiModeSwitch(void *sprite){void GotoSpriteAnimationLabel(void *,s32);extern void *gUiMode;if(M2C_FIELD(gUiMode,s16 *,2)==M2C_FIELD(gUiMode,s16 *,4))return;GotoSpriteAnimationLabel(sprite,2);}
 
-void func_020d903c(M2C_UNK arg0) {
+/* Sub-screen UI script step: create the sprite that restores the regular UI
+ * mode's screen after the sub screen, as a child of `owner` - its class script
+ * fades the sub screen out and creates the current mode's sprite while holding
+ * the map view. */
+void CreateUiModeRestoreSprite(s32 owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212c4c8;
-    CreateSpriteObject(&data_0212c4c8, arg0);
+    extern M2C_UNK gUiModeRestoreClass;
+    CreateSpriteObject(&gUiModeRestoreClass, owner);
 }
 
 /* Apply the UI mode SetUiMode asked for, once the screen change covering it has

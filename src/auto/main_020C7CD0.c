@@ -383,11 +383,13 @@ void ApplyMapRecord(s32 arg0) {
     ApplyMapTerrain(arg0 + 0x54);
 }
 
-void func_020c8564(M2C_UNK arg0) {
+/* Apply a saved map record's units to the battle map: normalize the AI action
+ * steps saved with them, then rebuild the units and the selected unit per player. */
+void RestoreSavedMapUnits(s32 record) {
     M2C_UNK ResetSavedUnitActions();
 
-    ResetSavedUnitActions();
-    RestoreMapUnits(arg0);
+    ResetSavedUnitActions(record);
+    RestoreMapUnits(record);
 }
 
 /* Load the saved record of map `mapId` into the map-record buffer and install it

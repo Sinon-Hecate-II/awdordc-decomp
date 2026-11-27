@@ -174,19 +174,20 @@ void SetTimerDisplayGraphics(void *display, u32 textureOffset, s32 paletteSlot) 
     LoadTimerSpriteGraphics(textureOffset, paletteSlot);
 }
 
-void func_0208eb60(void *arg0, s32 arg1) {
+void SetTimerDisplayTicks(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x58) = arg1;
 }
 
-u8 func_0208eb68(void *arg0) {
-    u8 var_r0;
+/* Return whether the countdown timer display has reached zero. */
+u8 IsTimerDisplayExpired(void *timerDisplay) {
+    u8 isExpired;
 
-    if (M2C_FIELD(arg0, s32 *, 0x58) == 0) {
-        var_r0 = 1;
+    if (M2C_FIELD(timerDisplay, s32 *, TIMER_DISPLAY_TICKS) == 0) {
+        isExpired = 1;
     } else {
-        var_r0 = 0;
+        isExpired = 0;
     }
-    return var_r0;
+    return isExpired;
 }
 
 void func_0208eb80(void *p) {

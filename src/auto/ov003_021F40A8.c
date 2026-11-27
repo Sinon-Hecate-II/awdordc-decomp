@@ -16,7 +16,7 @@ void func_ov003_021f40a8(void *arg0) {
     void SetTextById(void *, s32);
     void Show3DSpriteSlide(void *);
     void func_ov003_021f14a0(void);
-    void func_ov006_02217464(void *);
+    void CreateMapOfferStateSprite(void *);
     void ScrollListTo(void *, s32, s32);
     void *MemAlloc(s32);
     extern u16 data_ov003_0220fde8;
@@ -99,7 +99,7 @@ void func_ov003_021f40a8(void *arg0) {
  Hide3DSprite(M2C_FIELD(q, void **, 0));
  }
  if ((u8)(OV3KIND(arg0) == 6)) {
-        func_ov006_02217464(arg0);
+        CreateMapOfferStateSprite(arg0);
     }
     if ((u8)(OV3KIND(arg0) == 0) || (u8)(OV3KIND(arg0) == 2) || (u8)(OV3KIND(arg0) == 3) ||
         (u8)(OV3KIND(arg0) == 4) || (u8)(OV3KIND(arg0) == 6) || (u8)(OV3KIND(arg0) == 7) ||

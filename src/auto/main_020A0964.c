@@ -335,10 +335,12 @@ s32 UnitPath_GetOutgoingDir(s32 step) {
     return 0;
 }
 
-void func_020a12c0(void *arg0) {
+/* Enter the unit move-path preview: start the map view's cell-raise animation and
+ * clear the preview object's frame counter at +0x5C. */
+void StartMovePathPreview(void *preview) {
     M2C_UNK StartMapViewRaiseTimer();
     StartMapViewRaiseTimer();
-    M2C_FIELD(arg0, s32 *, 0x5C) = 0;
+    M2C_FIELD(preview, s32 *, 0x5C) = 0;
 }
 
 /* Per-frame refresh of the selected unit's move-path preview: advance the

@@ -462,10 +462,12 @@ void GX_EndLoadOBJExtPltt(void) {
     M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, GX_EXTPLTT_LOAD_OBJ_BASE) = 0;
 }
 
+/* Begin a sub-engine background extended-palette load: release the palette's
+ * bank grant and record it in the load state. */
 void GX_BeginLoadBGExtPlttSub(void) {
     s32 GX_ReleaseBankForBGExtPlttSub();
-    extern s32 gGxExtPlttLoad;
-    gGxExtPlttLoad = GX_ReleaseBankForBGExtPlttSub();
+    extern M2C_UNK gGxExtPlttLoad;
+    M2C_FIELD(&gGxExtPlttLoad, s32 *, GX_EXTPLTT_LOAD_SUB_BG_GRANT) = GX_ReleaseBankForBGExtPlttSub();
 }
 
 /* Copy `size` bytes of extended background-palette data from `src` into the
@@ -496,10 +498,12 @@ void GX_EndLoadBGExtPlttSub(void) {
     M2C_FIELD(&gGxExtPlttLoad, s32 *, GX_EXTPLTT_LOAD_SUB_BG_GRANT) = 0;
 }
 
+/* Begin a sub-engine OBJ extended-palette load: release the palette's bank grant
+ * and record it in the load state. */
 void GX_BeginLoadOBJExtPlttSub(void) {
     s32 GX_ReleaseBankForOBJExtPlttSub();
     extern M2C_UNK gGxExtPlttLoad;
-    M2C_FIELD(&gGxExtPlttLoad, s32 *, 0x18) = GX_ReleaseBankForOBJExtPlttSub();
+    M2C_FIELD(&gGxExtPlttLoad, s32 *, GX_EXTPLTT_LOAD_SUB_OBJ_GRANT) = GX_ReleaseBankForOBJExtPlttSub();
 }
 
 /* Copy `size` bytes of extended OBJ-palette data from `src` into the sub-engine
@@ -675,12 +679,12 @@ void GX_SendMatrix4x4(void *arg0, void *arg1) {
 #pragma scheduling off
 void OS_WaitIrq(s32 arg0,u32 mask) {
 s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void OS_SleepThread(s32);
-extern M2C_UNK gOsArea,data_027e00e0;
+extern M2C_UNK gOsArea,gOsIrqThreadQueue;
 s32 ret=OS_DisableInterrupts();
 if(arg0) M2C_FIELD(&gOsArea,volatile u32 *,0x3ff8)&=~mask;
 OS_RestoreInterrupts(ret);
 if(!(mask&M2C_FIELD(&gOsArea,volatile u32 *,0x3ff8))) {
-do{OS_SleepThread((s32)&data_027e00e0);}while(!(mask&M2C_FIELD(&gOsArea,volatile u32 *,0x3ff8)));
+do{OS_SleepThread((s32)&gOsIrqThreadQueue);}while(!(mask&M2C_FIELD(&gOsArea,volatile u32 *,0x3ff8)));
 }
 }
 #pragma scheduling reset
@@ -738,9 +742,11 @@ void func_02004fd0(void) {
     func_02004ed8(7);
 }
 
-void func_02004fe0(void) {
-    extern M2C_UNK data_027e00e0;
-    M2C_FIELD(&data_027e00e0, s32 *, 4) = 0;
-    M2C_FIELD(&data_027e00e0, s32 *, 0) = 0;
+/* Clear the IRQ wait queue at boot: OS_WaitIrq parks the current thread on it,
+ * and an interrupt handler wakes the threads whose event bit it signalled. */
+void OS_InitIrqThreadQueue(void) {
+    extern M2C_UNK gOsIrqThreadQueue;
+    M2C_FIELD(&gOsIrqThreadQueue, s32 *, OS_THREAD_QUEUE_TAIL) = 0;
+    M2C_FIELD(&gOsIrqThreadQueue, s32 *, OS_THREAD_QUEUE_HEAD) = 0;
 }
 

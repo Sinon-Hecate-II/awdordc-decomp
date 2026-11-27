@@ -35,7 +35,7 @@ func_ov004_022130f4 kind:function(arm,size=0xc) addr:0x022130f4
 func_ov004_02213100 kind:function(arm,size=0xc) addr:0x02213100
 func_ov004_0221310c kind:function(arm,size=0xc) addr:0x0221310c
 func_ov004_02213118 kind:function(arm,size=0xc) addr:0x02213118
-func_ov004_02213124 kind:function(arm,size=0x18) addr:0x02213124
+Ov004_CreateBattleStartWindow kind:function(arm,size=0x18) addr:0x02213124
 HasPlayerOneUnitWithRank kind:function(arm,size=0x74) addr:0x0221313c
 IsPlayerOneUnitUnder90Hp kind:function(arm,size=0x7c) addr:0x022131b0
 IsCursorOnTileAfterFirstTurn kind:function(arm,size=0x40) addr:0x0221322c
@@ -114,8 +114,8 @@ func_ov004_02217f5c kind:function(arm,size=0x95c) addr:0x02217f5c
 func_ov004_022188b8 kind:function(arm,size=0xc) addr:0x022188b8
 MapView_StartBattle kind:function(arm,size=0x8c) addr:0x022188c4
 func_ov004_02218950 kind:function(arm,size=0x22c) addr:0x02218950
-func_ov004_02218b7c kind:function(arm,size=0x18) addr:0x02218b7c
-func_ov004_02218b94 kind:function(arm,size=0x18) addr:0x02218b94
+Ov004_ShowBattleStartWindow kind:function(arm,size=0x18) addr:0x02218b7c
+CreateMapView kind:function(arm,size=0x18) addr:0x02218b94
 data_ov004_02218bac kind:data(any) addr:0x02218bac
 data_ov004_02218bb8 kind:data(any) addr:0x02218bb8
 data_ov004_02218bc4 kind:data(any) addr:0x02218bc4
@@ -147,7 +147,7 @@ data_ov004_02218d78 kind:data(any) addr:0x02218d78
 data_ov004_02218d84 kind:data(any) addr:0x02218d84
 sUraPlaneAssetName kind:data(any) addr:0x02218d90
 sUraSideAssetName kind:data(any) addr:0x02218d9c
-data_ov004_02218da8 kind:data(any) addr:0x02218da8
+gOv004BattleStartWindowClass kind:data(any) addr:0x02218da8
 data_ov004_02218df8 kind:data(any) addr:0x02218df8
 data_ov004_02218e04 kind:data(any) addr:0x02218e04
 data_ov004_02218e0c kind:data(any) addr:0x02218e0c
@@ -1478,4 +1478,4 @@ data_ov004_0223c654 kind:data(any) addr:0x0223c654
 data_ov004_0223c660 kind:data(any) addr:0x0223c660
 data_ov004_0223c66c kind:data(any) addr:0x0223c66c
 data_ov004_0223c678 kind:data(any) addr:0x0223c678
-data_ov004_0223c684 kind:data(any) addr:0x0223c684
+gMapViewClass kind:data(any) addr:0x0223c684

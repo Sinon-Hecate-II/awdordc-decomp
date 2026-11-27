@@ -5,6 +5,10 @@
 
 #define SOUND_FLUSH_BLOCK           0x01 /* wait for space to submit the queued commands */
 
+/* Fields of the sound timer state used to convert elapsed hardware ticks into
+ * the sound driver's time base. */
+#define SOUND_TIMER_FRAME_START_TICK 0x04 /* u32 tick captured at the start of a game frame */
+
 /* The pre-sleep and post-sleep list nodes begin at the stop and release
  * callbacks. Each node contains a callback, its argument and a next pointer. */
 #define SOUND_PLAYER_PLAY_MODE      0x20 /* s32 hardware play mode (0 = normal, 1 = half size) */
@@ -110,6 +114,7 @@ typedef struct FadeEnvelope {
 
 /* The streamed-sound state (gStreamSoundState); its streamed voice object
  * (gStreamVoice) starts at +0x48. */
+#define STREAM_STATE_ACTIVE 0x00 /* s32 nonzero while a stream is open */
 #define STREAM_STATE_VOICE 0x48 /* s32 first word of the streamed voice: nonzero while open */
 
 /* The sound driver's one-time init block (gSoundInitState): the done flag its
@@ -145,6 +150,7 @@ typedef struct FadeEnvelope {
 #define SOUND_ARCHIVE_ENTRY_SIZE   16
 #define SOUND_ARCHIVE_ENTRY_OFFSET 0    /* s32 offset in the file of the object's data */
 #define SOUND_ARCHIVE_ENTRY_DATA   8    /* void * the object's data (from ENTRY_OFFSET) */
+#define SOUND_ARCHIVE_SLOT_DATA    0x14 /* loaded-data pointer as SetLoadedArchiveFile addresses it: SOUND_ARCHIVE_TABLE + i*SOUND_ARCHIVE_ENTRY_SIZE + 0x14, the same field as files[i].data */
 
 /* The resource tables inside the archive's loaded data block
  * (SOUND_ARCHIVE_DATA_BLOCK): each is a {u32 count; s32 offset[count];} section
@@ -457,6 +463,10 @@ typedef struct SoundChannelRecord {
 #define SOUND_MENU_CLOSE   0x10022 /* the screen's close/back action was taken */
 #define SOUND_MENU_CHANGE  0x10011 /* an option value or slider changed */
 #define SOUND_MENU_DENIED  0x1001D /* the action is not possible (a slot or map is unavailable) */
+
+/* Parameters Sound_SetChannelParameter hands the ARM7 driver (command 6). */
+#define SOUND_CHANNEL_PARAM_PAN    4 /* the channel's pan: Sound_SendChannelPan */
+#define SOUND_CHANNEL_PARAM_VOLUME 6 /* the channel's volume: Sound_SendChannelVolume, Sound_ReleaseVoice */
 
 /* Parameters Sound_SetPlayerParameter hands the ARM7 driver (command 7). */
 #define SOUND_PLAYER_PARAM_PAN  9 /* the sequence player's pan */

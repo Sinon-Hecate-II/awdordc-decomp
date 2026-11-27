@@ -49,9 +49,12 @@ s32 HasNasKeyRecord(s32 arg0) {
     return IsNasKeyRecord(arg0 + 0x10);
 }
 
-s32 IsPlayerRecordPresent(void) {
+/* True when the player record `record` holds a player (its kind field is not
+ * PLAYER_RECORD_KIND_EMPTY). */
+s32 IsPlayerRecordPresent(void *record) {
     s32 GetPlayerRecordKind();
-    if (GetPlayerRecordKind() != 0) {
+
+    if (GetPlayerRecordKind(record) != 0) {
         return 1;
     }
     return 0;
@@ -125,8 +128,10 @@ void IsNasProfileKeySetVeneer(void) {
     IsNasProfileKeySet();
 }
 
-s32 IsNasProfileKeySet(void *arg0) {
-    if ((M2C_FIELD(arg0, s32 *, 0x20) & 1) == 1) {
+/* True when the profile-id block `block` has a NAS player key stored in it
+ * (PROFILE_ID_BLOCK_KEY_SET bit 0). */
+s32 IsNasProfileKeySet(void *block) {
+    if ((M2C_FIELD(block, u32 *, PROFILE_ID_BLOCK_KEY_SET) & 1) == 1) {
         return 1;
     }
     return 0;

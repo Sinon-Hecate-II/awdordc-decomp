@@ -283,10 +283,12 @@ void FinishBattleAndSave(void) {
     SaveGameSettings();
 }
 
-void func_020b3c2c(M2C_UNK arg0) {
+/* Spawn the battle-end sequence sprite (gBattleEndSequenceClass) as a child of
+ * `parent`: it holds the map view, writes the save and releases the hold. */
+void SpawnBattleEndSequence(M2C_UNK parent) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_021286ac;
-    CreateSpriteObject(&data_021286ac, arg0);
+    extern M2C_UNK gBattleEndSequenceClass;
+    CreateSpriteObject(&gBattleEndSequenceClass, parent);
 }
 
 void func_020b3c44(void) {

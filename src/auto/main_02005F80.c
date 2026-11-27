@@ -480,7 +480,7 @@ void WaitForVBlankStart(void) { u32 saved; u32 *io; io=(u32 *)0x04000000; saved=
  * thread manager, the VRAM bank table, the save device, multiboot and the ARM7
  * command channel, finishing with a VBlank-synchronised interrupt restore. */
 void InitSystemServices(void) {
-    M2C_UNK func_02004fe0();
+    M2C_UNK OS_InitIrqThreadQueue();
     M2C_UNK func_02005254();
     M2C_UNK func_02005288();
     M2C_UNK func_02005968();
@@ -490,7 +490,7 @@ void InitSystemServices(void) {
     M2C_UNK InitVCountIrqModule();
     M2C_UNK InitArm7BootSync();
     M2C_UNK GX_ResetBankOwners();
-    M2C_UNK func_02008bb8();
+    M2C_UNK InitWramAndDma0();
     M2C_UNK PXI_Init();
     M2C_UNK Arm7CommandInit();
     M2C_UNK SaveDevice_Init();
@@ -499,10 +499,10 @@ void InitSystemServices(void) {
     PXI_Init();
     func_02005288();
     func_020069a4();
-    func_02004fe0();
+    OS_InitIrqThreadQueue();
     func_02005254();
     InstallExceptionHandler();
-    func_02008bb8();
+    InitWramAndDma0();
     InitVCountIrqModule();
     GX_ResetBankOwners();
     func_02005968();

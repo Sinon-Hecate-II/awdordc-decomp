@@ -74,7 +74,7 @@ func_ov006_022173fc kind:function(arm,size=0x14) addr:0x022173fc
 func_ov006_02217410 kind:function(arm,size=0x4) addr:0x02217410
 InitMapOfferState kind:function(arm,size=0x24) addr:0x02217414
 FreeMapOfferState kind:function(arm,size=0x2c) addr:0x02217438
-func_ov006_02217464 kind:function(arm,size=0x18) addr:0x02217464
+CreateMapOfferStateSprite kind:function(arm,size=0x18) addr:0x02217464
 InitMapOfferObject kind:function(arm,size=0x54) addr:0x0221747c
 FreeMapOfferObject kind:function(arm,size=0x34) addr:0x022174d0
 StartMapOfferSearch kind:function(arm,size=0x50) addr:0x02217504
@@ -166,8 +166,8 @@ data_ov006_022188dc kind:data(any) addr:0x022188dc
 gMapCodeEntryPanelVTable kind:data(any) addr:0x022188f8
 gMapTransferPanelVtable kind:data(any) addr:0x0221890c
 gMapTransferPanelStateClass kind:data(any) addr:0x02218918
-data_ov006_02218a48 kind:data(any) addr:0x02218a48
-data_ov006_02218a78 kind:data(any) addr:0x02218a78
+gMapOfferStateClass kind:data(any) addr:0x02218a48
+gCampaignMapMenuUiClass kind:data(any) addr:0x02218a78
 gMapOfferObjectClass kind:data(any) addr:0x02218aa8
 data_ov006_02218b94 kind:data(any) addr:0x02218b94 ambiguous
 gMapPickHintClass kind:data(any) addr:0x02218ba8

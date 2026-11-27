@@ -18,7 +18,7 @@ void func_0200fc58(void) {
     void TaskCreate(void *, void *, s32, u8 *, u32, s32);
     void TaskWake(void *);
     void SetFifoMessageHandler(s32, void *);
-    void func_0200fd90(s32);
+    void SaveDevice_SetEnabled(s32);
     void SaveDevice_ThreadMain(void);
     void SaveDevice_CommandReplyHandler(s32, s32, s32);
 
@@ -57,25 +57,27 @@ void func_0200fc58(void) {
     if (SaveDevice_IsMultiboot()) {
         return;
     }
-    func_0200fd90(1);
+    SaveDevice_SetEnabled(1);
 }
 #pragma optimization_level reset
-s32 func_0200fd68(void) {
-    extern s32 data_0212fd60;
-    return data_0212fd60;
+s32 SaveDevice_IsEnabled(void) {
+    extern s32 gSaveDeviceEnabled;
+    return gSaveDeviceEnabled;
 }
 
-void func_0200fd78(void) {
+/* Halt the system unless the save device has been brought up (its enabled flag
+ * is set).  SaveDevice_Configure and StartCardArchiveRead call it first. */
+void SaveDevice_AssertEnabled(void) {
     M2C_UNK SystemHalt();
-    if (func_0200fd68() != 0) {
+    if (SaveDevice_IsEnabled() != 0) {
         return;
     }
     SystemHalt();
 }
 
-void func_0200fd90(s32 arg0) {
-    extern s32 data_0212fd60;
-    data_0212fd60 = arg0;
+void SaveDevice_SetEnabled(s32 arg0) {
+    extern s32 gSaveDeviceEnabled;
+    gSaveDeviceEnabled = arg0;
 }
 
 #pragma optimization_level 2
@@ -335,7 +337,7 @@ void func_02000b9c(s32);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts
 void *p=&gSaveDeviceState; u32 state,state2;s32 value;void (*callback)(s32);
 func_02000b9c(0x2000bc4);
 if(arg0==0)SystemHalt();
-func_0200fd78();
+SaveDevice_AssertEnabled();
 state=OS_DisableInterrupts();
 while(M2C_FIELD(p,u32 *,0x114)&4)OS_SleepThread(p+0x10c);
 {
@@ -674,7 +676,7 @@ void StartCardArchiveRead(u32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, void
     extern void *data_0212fde0;
     extern u32 data_02130400[];
     extern M2C_UNK data_0212dca4;
-    void func_0200fd78(void);
+    void SaveDevice_AssertEnabled(void);
     s32 func_0200751c(void);
     void func_02007530(s32);
     void func_02005da4(void *);
@@ -693,7 +695,7 @@ void StartCardArchiveRead(u32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, void
     s32 state;
     s32 r;
 
-    func_0200fd78();
+    SaveDevice_AssertEnabled();
     state = func_0200751c();
     goto test;
 loop:

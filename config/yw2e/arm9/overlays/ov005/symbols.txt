@@ -36,7 +36,7 @@ func_ov005_022133c8 kind:function(arm,size=0x92c) addr:0x022133c8
 HistoryMenu_CreateRowSlots kind:function(arm,size=0xa0) addr:0x02213cf4
 HistoryMenu_Update kind:function(arm,size=0x300) addr:0x02213d94
 HistoryMenu_Close kind:function(arm,size=0x38) addr:0x02214094
-func_ov005_022140cc kind:function(arm,size=0x18) addr:0x022140cc
+HistoryMenu_CreateObject kind:function(arm,size=0x18) addr:0x022140cc
 func_ov005_022140e4 kind:function(arm,size=0x14) addr:0x022140e4
 RecordsMenu_IsRecordAvailable kind:function(arm,size=0x28) addr:0x022140f8
 RecordsMenu_IsSubRecordAvailable kind:function(arm,size=0x28) addr:0x02214120
@@ -69,7 +69,7 @@ func_ov005_02215664 kind:function(arm,size=0xe34) addr:0x02215664
 RecordsMenu_CreateRowSlots kind:function(arm,size=0x80) addr:0x02216498
 func_ov005_02216518 kind:function(arm,size=0xcf4) addr:0x02216518
 RecordsMenu_Close kind:function(arm,size=0x58) addr:0x0221720c
-func_ov005_02217264 kind:function(arm,size=0x18) addr:0x02217264
+RecordsMenu_CreateObject kind:function(arm,size=0x18) addr:0x02217264
 RecordsMenu_ClearHighlight kind:function(arm,size=0x24) addr:0x0221727c
 RecordsMenu_FinishAction kind:function(arm,size=0x38) addr:0x022172a0
 RecordsMenu_BeginAction kind:function(arm,size=0x34) addr:0x022172d8
@@ -94,7 +94,7 @@ Ov005ListMenuInput kind:function(arm,size=0x1bc) addr:0x02218a14
 Ov005DetailMenuInput kind:function(arm,size=0x1e4) addr:0x02218bd0
 Ov005MenuInput kind:function(arm,size=0x48) addr:0x02218db4
 Ov005_CloseMenu kind:function(arm,size=0x40) addr:0x02218dfc
-func_ov005_02218e3c kind:function(arm,size=0x18) addr:0x02218e3c
+Ov005_CreateMenuObject kind:function(arm,size=0x18) addr:0x02218e3c
 GetCurrentCoFaceId kind:function(arm,size=0x88) addr:0x02218e54
 GetResultSecondCoFaceId kind:function(arm,size=0x74) addr:0x02218edc
 GetCoQuoteTextId kind:function(arm,size=0x80) addr:0x02218f50
@@ -178,7 +178,7 @@ func_ov005_0221f084 kind:function(arm,size=0x364) addr:0x0221f084
 WaitForResultsInput kind:function(arm,size=0x60) addr:0x0221f3e8
 FreeResultsScreenGraphics kind:function(arm,size=0xb0) addr:0x0221f448
 func_ov005_0221f4f8 kind:function(arm,size=0x508) addr:0x0221f4f8
-func_ov005_0221fa00 kind:function(arm,size=0x18) addr:0x0221fa00
+CreateGameOverScreen kind:function(arm,size=0x18) addr:0x0221fa00
 func_ov005_0221fa18 kind:function(arm,size=0xfc) addr:0x0221fa18
 DrawUnlockedCoList kind:function(arm,size=0xb4) addr:0x0221fb14
 CreateUnlockedCoListScreen kind:function(arm,size=0x44) addr:0x0221fbc8
@@ -214,7 +214,7 @@ data_ov005_022201b0 kind:data(any) addr:0x022201b0
 data_ov005_022201c0 kind:data(any) addr:0x022201c0
 data_ov005_022201d0 kind:data(any) addr:0x022201d0
 sHistoryRowSlotDef kind:data(any) addr:0x022201e0
-data_ov005_02220208 kind:data(any) addr:0x02220208
+gHistoryMenuClass kind:data(any) addr:0x02220208
 data_ov005_02220270 kind:data(any) addr:0x02220270
 data_ov005_02220274 kind:data(any) addr:0x02220274
 data_ov005_02220278 kind:data(any) addr:0x02220278
@@ -256,7 +256,7 @@ data_ov005_02220486 kind:data(any) addr:0x02220486
 sRecordsRowSlotDef kind:data(any) addr:0x02220490
 sRecordsToggleSlotDef kind:data(any) addr:0x022204b8
 data_ov005_022204e0 kind:data(any) addr:0x022204e0
-data_ov005_02220510 kind:data(any) addr:0x02220510
+gRecordsMenuClass kind:data(any) addr:0x02220510
 gRecordSubBgId kind:data(any) addr:0x02220570
 gRecordMainBgId kind:data(any) addr:0x02220572
 data_ov005_02220644 kind:data(any) addr:0x02220644
@@ -287,7 +287,7 @@ data_ov005_022207e8 kind:data(any) addr:0x022207e8
 data_ov005_022207f0 kind:data(any) addr:0x022207f0
 gOv005CoGridSlotDef kind:data(any) addr:0x02220800
 gOv005DetailRowSlotDef kind:data(any) addr:0x02220828
-data_ov005_02220850 kind:data(any) addr:0x02220850
+gOv005MenuClass kind:data(any) addr:0x02220850
 data_ov005_022208e0 kind:data(any) addr:0x022208e0
 data_ov005_022208f4 kind:data(any) addr:0x022208f4
 data_ov005_02220908 kind:data(any) addr:0x02220908
@@ -326,7 +326,7 @@ data_ov005_02220b70 kind:data(any) addr:0x02220b70
 data_ov005_02220b80 kind:data(any) addr:0x02220b80 ambiguous
 gCampaignHintPanelClass kind:data(any) addr:0x02220bb0
 data_ov005_02220bf0 kind:data(any) addr:0x02220bf0
-data_ov005_02220c38 kind:data(any) addr:0x02220c38
+gGameOverScreenClass kind:data(any) addr:0x02220c38
 data_ov005_02220c88 kind:data(any) addr:0x02220c88
 gCoStoryMapQuoteTextIds kind:data(any) addr:0x02220ce8
 gResultsScreenClass kind:data(any) addr:0x02220d50

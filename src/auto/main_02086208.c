@@ -192,10 +192,13 @@ void *DestroyVoiceChatWidget(VoiceChatWidget *widget) {
     return widget;
 }
 
+/* Start the 3D sprite scene's init script on layer 7: its steps spawn the
+ * save/load screen opening sprite, load the ending resource, then create the
+ * save-progress and follow-up sprites. */
 void Init3DSpriteScene(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02102210;
-    CreateSpriteFromClass(&data_02102210, 7);
+    extern M2C_UNK gSpriteSceneInitClass;
+    CreateSpriteFromClass(&gSpriteSceneInitClass, 7);
 }
 
 /* Whether text bank `bank` is one of the banks the boot UI keeps loaded for
@@ -646,7 +649,10 @@ void SetupSprite3DScene(void) {
  REG_GX_NORMAL=0x20000000;
 }
 
-void func_02086e9c(void) {
+/* Finish a frame of the sprite 3D scene: pop the scene's matrix off the geometry
+ * engine's matrix stack (REG_GX_MTX_POP, 0x04000448) and swap the 3D display
+ * buffers (REG_GX_SWAP_BUFFERS, 0x04000540, at POP + 0xF8). */
+void FinishSprite3DScene(void) {
     M2C_FIELD((void *)0x04000448, s32 *, 0) = 1;
     M2C_FIELD((void *)0x04000448, s32 *, 0xF8) = 1;
 }

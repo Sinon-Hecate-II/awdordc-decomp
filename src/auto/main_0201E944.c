@@ -188,12 +188,12 @@ s32 NetworkInitSocketLayer(void) {
     s32 SocketCreateFromConfig();
     extern s32 gNetAllocator;
     extern M2C_UNK gNetSocketConfig;
-    extern M2C_UNK data_02138ac0;
+    extern M2C_UNK gNetTaskState;
     s32 result;
 
     result = NetworkAllocTaskPool(M2C_FIELD(gNetAllocator, s32 *, NET_ALLOC_TASKS));
     if (result >= 0) {
-        M2C_FIELD(&data_02138ac0, s32 *, 0xC) = SocketCreateFromConfig(&gNetSocketConfig);
+        M2C_FIELD(&gNetTaskState, s32 *, 0xC) = SocketCreateFromConfig(&gNetSocketConfig);
     }
     return result;
 }
@@ -203,15 +203,15 @@ void NetworkInitStack(void) {
     void func_0201a4f8(s32);
     void SetNetworkThreadPriority(s32);
     void func_0201f030(void);
-    void func_0201f09c(void);
+    void NetTask_MarkReady(void);
     void WFC_SetSendCallback(s32);
     void func_0201a26c(void *);
     void NetStackQueueAndWakeSender(s32, s32, s32, s32);
     s32 ReapClosedSockets(void);
-    s32 func_0201f0b4(void);
+    s32 IsConnectionAltCodeSet(void);
     extern s32 data_020faf98;
     extern s32 data_02138ad0;
-    extern s32 data_02138ac0;
+    extern s32 gNetTaskState;
     extern s32 data_020fafb8;
     extern s32 data_021372e0;
     void *base;
@@ -220,12 +220,12 @@ void NetworkInitStack(void) {
     base = (void *)&data_02138ad0;
     ctx = (void *)data_020faf98;
     func_02007f8c(base, 0, 0x30);
-    M2C_FIELD(&data_02138ac0, s32 *, 0x14) = M2C_FIELD(ctx, s32 *, 0x18);
-    M2C_FIELD(&data_02138ac0, s32 *, 0x18) = M2C_FIELD(ctx, s32 *, 0x1C);
-    M2C_FIELD(&data_02138ac0, s32 *, 0x20) = (s32)func_0201f0b4;
-    M2C_FIELD(&data_02138ac0, s32 *, 0x24) = 0;
-    M2C_FIELD(&data_02138ac0, s32 *, 0x28) = 0;
-    M2C_FIELD(&data_02138ac0, s32 *, 0x3C) = M2C_FIELD(&data_02138ac0, s32 *, 0x0);
+    M2C_FIELD(&gNetTaskState, s32 *, 0x14) = M2C_FIELD(ctx, s32 *, 0x18);
+    M2C_FIELD(&gNetTaskState, s32 *, 0x18) = M2C_FIELD(ctx, s32 *, 0x1C);
+    M2C_FIELD(&gNetTaskState, s32 *, 0x20) = (s32)IsConnectionAltCodeSet;
+    M2C_FIELD(&gNetTaskState, s32 *, 0x24) = 0;
+    M2C_FIELD(&gNetTaskState, s32 *, 0x28) = 0;
+    M2C_FIELD(&gNetTaskState, s32 *, 0x3C) = M2C_FIELD(&gNetTaskState, s32 *, 0x0);
     tmp = M2C_FIELD(ctx, s32 *, 0x24);
     if (tmp == 0) tmp = 0x4000;
     M2C_FIELD(base, s32 *, 0x20) = tmp;
@@ -245,11 +245,11 @@ void NetworkInitStack(void) {
         M2C_FIELD(&data_021372e0, s32 *, 0x0) = 0;
         if (M2C_FIELD(ctx, s32 *, 0x0) != 0) {
             M2C_FIELD(base, s32 *, 0x0) = 0;
-            M2C_FIELD(base, s32 *, 0xC) = (s32)func_0201f09c;
-            M2C_FIELD(&data_02138ac0, s32 *, 0x8) = 1;
-            M2C_FIELD(base, s32 *, 0x28) = M2C_FIELD(&data_02138ac0, s32 *, 0x4);
+            M2C_FIELD(base, s32 *, 0xC) = (s32)NetTask_MarkReady;
+            M2C_FIELD(&gNetTaskState, s32 *, 0x8) = 1;
+            M2C_FIELD(base, s32 *, 0x28) = M2C_FIELD(&gNetTaskState, s32 *, 0x4);
         } else {
-            M2C_FIELD(&data_02138ac0, s32 *, 0x8) = 0;
+            M2C_FIELD(&gNetTaskState, s32 *, 0x8) = 0;
             M2C_FIELD(base, s32 *, 0x0) = 1;
             M2C_FIELD(base, s32 *, 0xC) = (s32)func_0201f030;
         }
@@ -269,7 +269,7 @@ void func_0201f030(void) {
     extern s32 gNetAllocator;
     extern s32 gLocalIpAddress, data_021372ac, data_021372bc;
     extern M2C_UNK gDnsServerAddresses;
-    extern M2C_UNK data_02138ac0;
+    extern M2C_UNK gNetTaskState;
     s32 *src;
     s32 *dst;
     src = (s32 *)gNetAllocator;
@@ -282,18 +282,23 @@ void func_0201f030(void) {
     dst = (s32 *)&gDnsServerAddresses;
     dst[0] = src[4];
     dst[1] = src[5];
-    dst = (s32 *)&data_02138ac0;
+    dst = (s32 *)&gNetTaskState;
     dst[2] |= 2;
 }
 #pragma opt_strength_reduction reset
-void func_0201f09c(void) {
-    extern M2C_UNK data_02138ac0;
-    M2C_FIELD(&data_02138ac0, s32 *, 8) = (s32) (M2C_FIELD(&data_02138ac0, s32 *, 8) | 2);
+/* Setup callback for a network task that was given its connection configuration
+ * up front: mark it ready by setting the state flags' READY bit. */
+void NetTask_MarkReady(void) {
+    extern M2C_UNK gNetTaskState;
+    M2C_FIELD(&gNetTaskState, s32 *, NET_TASK_FLAGS) =
+        (s32) (M2C_FIELD(&gNetTaskState, s32 *, NET_TASK_FLAGS) | NET_TASK_FLAG_READY);
 }
 
-s32 func_0201f0b4(void) {
-    s32 WFC_GetConnectionAltCode();
-    if (WFC_GetConnectionAltCode() != 0) {
+/* Reports whether the WFC session currently holds the connection record's
+ * alternate code (1) or not (0). */
+s32 IsConnectionAltCodeSet(void) {
+    void *WFC_GetConnectionAltCode(void);
+    if (WFC_GetConnectionAltCode() != NULL) {
         return 1;
     }
     return 0;

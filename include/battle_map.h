@@ -1270,6 +1270,14 @@ typedef struct MapRecordStamp {
 #define MAP_DATA_VALUE_LIMIT_HIGH 0x0F /* u8 high bound of the map's value (MapData_GetValueLimitHigh) */
 #define MAP_DATA_VALUE_LIMIT_UNIT 100  /* the value bounds are stored in units of 100 */
 #define MAP_DATA_PLAYER_STATE  0x38 /* u8[4] per-player state used by campaign battles */
+#define MAP_DATA_PLAYER_CO_ID  0x1C /* u8[4] CO id assigned to each player slot, 0 = random, 15 = the map's own (GetMapPlayerCoId) */
+/* One flags byte per player slot (GetMapPlayerFlags); bit 7 marks a player fighting
+ * on the first player's side, bit 6 one whose units the cursor cannot select. */
+#define MAP_DATA_PLAYER_FLAGS  0x3C /* u8[4] per-player flags */
+#define MAP_PLAYER_FLAG_NO_SELECT 0x40 /* the player's units cannot be selected (CanSelectCursorUnit) */
+#define MAP_PLAYER_FLAG_ALLY      0x80 /* the player is an ally of the first player (InitBattleMapConfig) */
+#define MAP_DATA_PLAYER_CO_ID  0x1C /* u8[4] CO id assigned to each player slot (GetMapPlayerCoId) */
+#define MAP_DATA_PLAYER_ID     0x20 /* u8[4] player id each player slot is assigned (GetMapPlayerId) */
 #define MAP_DATA_PLAYER_ARMY   0x24 /* u8[4] army (nation) id assigned to each player slot (GetMapPlayerArmyId) */
 #define MAP_DATA_PLAYER_MUSIC  0x28 /* s32[4] music track overriding the army's for each player slot, 0 = none (MapData_GetPlayerTrack) */
 #define MAP_DATA_FOLLOWUP_MAPS 0x14 /* u16[4] map ids a cleared battle on this map unlocks, per player count slot */

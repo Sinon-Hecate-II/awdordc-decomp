@@ -63,8 +63,10 @@ void CancelMapReceiveOnSessionError(void *sprite) {
     GotoSpriteAnimationLabel(sprite, 3);
 }
 
-void CreateMapListObject(M2C_UNK arg0) {
-    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
+/* Spawn the ov006 joinable-map list object as a child sprite of `owner`: its
+ * script runs InitMapListObject, the list build/input steps and FreeMapListObject. */
+void CreateMapListObject(M2C_UNK owner) {
+    void CreateSpriteObject(void *, s32);
     extern M2C_UNK gMapListClass;
-    CreateSpriteObject(&gMapListClass, arg0);
+    CreateSpriteObject(&gMapListClass, owner);
 }

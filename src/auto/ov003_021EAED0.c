@@ -30,7 +30,7 @@ s32 IsWaypointPanelAdjustingCounter(void *);void ApplyWaypointMenuAction(void *,
 void StepCounterUp(s32,s32,s32);
 void Ov003_UpdateWaypointSlotButtons(s32);s32 IsWaypointSlotClicked(s32),func_ov003_021ed8c4(s32),IsWaypointSlotPressed(s32),func_ov003_021ed8e8(s32);
 void UpdateWaypointSelection(void *,u8),SetWaypointPanelState(void *,s32),func_ov003_021eccd4(void *),func_ov003_021ed8f0(void *,s32,u8);
-s32 InRange(s32,s32,s32);s32 func_0208eb68(void *);
+s32 InRange(s32,s32,s32);s32 IsTimerDisplayExpired(void *);
 extern void *gTouchState;extern u16 *gKeyState;
 u8 packet[36],send[36];u16 keys;s32 ready,touch;u8 i;u16 held;s32 action,slot;
 if(IsLinkSessionActive()){
@@ -159,7 +159,7 @@ Link_SendPacket(send,36);
 }
 if(!IsMapListCategory3())return;
 if(!IsLinkSessionActive())return;
-if(!func_0208eb68(M2C_FIELD(arg0,void **,0x60)))return;
+if(!IsTimerDisplayExpired(M2C_FIELD(arg0,void **,0x60)))return;
 ApplyWaypointMenuAction(arg0,25);M2C_FIELD(arg0,u8 *,0x39)|=2;
 }
 #pragma pop

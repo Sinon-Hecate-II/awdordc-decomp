@@ -167,7 +167,9 @@ void UnloadSituationScreen(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_ov000_02171028(void) {
+/* Create the map-situation screen's sprite (its class is the one the screen's
+ * actions find it by) on the default sprite layer. */
+void CreateSituationScreenSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gSituationScreenClass;
     CreateSpriteFromClass(&gSituationScreenClass, 7);
@@ -223,7 +225,9 @@ void ResumeWinRuleWindowAnimation(void *window) {
     Sprite_ResumeAnimation((s32)window);
 }
 
-void func_ov000_02171214(void) {
+/* Create the win-rule window: it holds the map view, draws the map's
+ * victory-condition text and releases the hold when the player closes it. */
+void CreateWinRuleWindow(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gWinRuleWindowClass;
     CreateSpriteFromClass(&gWinRuleWindowClass, 7);
@@ -335,10 +339,13 @@ void ResumeUsernameScreenAnimation(void *screen) {
     Sprite_ResumeAnimation((s32)screen);
 }
 
-void func_ov000_02171750(void) {
+/* Spawn the player-name entry screen (class gUsernameScreenClass) on the default
+ * sprite layer: it holds the map view, loads the username graphics and draws one
+ * name row per player that still needs a name. */
+void OpenUsernameScreen(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov000_021b8c94;
-    CreateSpriteFromClass(&data_ov000_021b8c94, 7);
+    extern M2C_UNK gUsernameScreenClass;
+    CreateSpriteFromClass(&gUsernameScreenClass, 7);
 }
 
 s32 func_ov000_02171768(s32 arg0) {

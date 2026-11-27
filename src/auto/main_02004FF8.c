@@ -289,12 +289,14 @@ void OSi_TryLockWord(M2C_UNK lockId) {
     OSi_DoLockByWord(lockId, OS_LOCK_WORD_ADDR, (M2C_UNK)OSi_DisableFIQ, 1);
 }
 
+/* Disable the ARM9 FIQ interrupt source in REG_EXMEMCNT (bit 7). */
 void OSi_DisableFIQ(void) {
-    *(u16 *)0x04000204 &= ~0x80;
+    *(u16 *)REG_EXMEMCNT &= ~0x80;
 }
 
+/* Re-enable the ARM9 FIQ interrupt source in REG_EXMEMCNT (bit 7). */
 void OSi_EnableFIQ(void) {
-    *(u16 *)0x04000204 |= 0x80;
+    *(u16 *)REG_EXMEMCNT |= 0x80;
 }
 
 /* Take the game card's shared OS lock word for `lockId`; OSi_DisableCardInterrupt
@@ -311,12 +313,14 @@ void OSi_UnlockCard(M2C_UNK lockId) {
     OS_UnlockByWordNoFiq(lockId, CARD_LOCK_WORD_ADDR, (M2C_UNK)OSi_EnableCardInterrupt);
 }
 
+/* Mask the game card interrupt in REG_EXMEMCNT (bit 11). */
 void OSi_DisableCardInterrupt(void) {
-    *(u16 *)0x04000204 &= ~0x800;
+    *(u16 *)REG_EXMEMCNT &= ~0x800;
 }
 
+/* Re-enable the game card interrupt in REG_EXMEMCNT (bit 11). */
 void OSi_EnableCardInterrupt(void) {
-    *(u16 *)0x04000204 |= 0x800;
+    *(u16 *)REG_EXMEMCNT |= 0x800;
 }
 
 u16 OSi_GetLockOwnerId(void *arg0) {
@@ -654,12 +658,14 @@ void TerminateThread(void *thread) {
     OS_WakeupThread((u8 *)thread + THREAD_JOIN_QUEUE); OS_EnableScheduler(); OS_RestoreInterrupts(irqState); OS_Reschedule();
 }
 
-void CancelThreadWakeTimer(void *arg0) {
-    M2C_UNK CancelTimer();
-    if (M2C_FIELD(arg0, s32 *, 0xB0) == 0) {
+/* Cancel the wake timer a sleeping thread armed (Thread::THREAD_WAKE_TIMER), when
+ * it has one, so it cannot be woken by a stale timer. */
+void CancelThreadWakeTimer(void *thread) {
+    void CancelTimer(void *);
+    if (M2C_FIELD(thread, void **, THREAD_WAKE_TIMER) == 0) {
         return;
     }
-    CancelTimer();
+    CancelTimer(M2C_FIELD(thread, void **, THREAD_WAKE_TIMER));
 }
 
 /* Wait until `thread` has finished: while it is still running, sleep this

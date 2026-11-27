@@ -68,10 +68,11 @@
  * headers, one page per player on the transfer screen. */
 #define CAMPAIGN_PAGE_HEADERS 50
 
-/* The ov006 "offer this map" object (class data_ov006_02218a48) that searches
+/* The ov006 "offer this map" object (class gMapOfferObjectClass) that searches
  * for another linked player to exchange the campaign map with: the map it
  * offers, the text buffer the search request is named with, how many players
- * the search found and the map record it sends them. */
+ * the search found and the map record it sends them.  A separate state sprite
+ * (gMapOfferStateClass) owns the shared search state in gMapOfferState. */
 #define MAP_OFFER_MAP_ID       0x34 /* s32 campaign map id offered */
 #define MAP_OFFER_PLAYER_COUNT 0x38 /* s32 players the current request found */
 #define MAP_OFFER_NAME         0x3C /* void *text buffer holding the map name */

@@ -383,10 +383,12 @@ void ResetWebRequest(void) {
     M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PHASE) = 2;
 }
 
-s32 GetWebResponseBody(s32 *arg0) {
+/* Report the payload of the last completed WFC web request: its pointer is
+ * returned and its byte size is written to `sizeOut`. */
+s32 GetWebResponseBody(s32 *sizeOut) {
     extern M2C_UNK gWebRequestState;
-    *arg0 = M2C_FIELD(&gWebRequestState, s32 *, 0x64);
-    return M2C_FIELD(&gWebRequestState, s32 *, 0x60);
+    *sizeOut = M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PAYLOAD_SIZE);
+    return M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PAYLOAD);
 }
 
 /* Builds the Nintendo WFC put.asp request into gWebRequestState: formats the

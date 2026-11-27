@@ -293,14 +293,14 @@ void func_ov010_0222a148(void *arg0) {
    owner's error callback, if it has one. */
 void ReportNetErrorToCallback(void *self) {
     s32 GetNetErrorCode();
-    s32 func_ov010_02228314(s32 *, u32 *);
+    s32 GetNetErrorVeneer(s32 *, u32 *);
     s32 errorDetail;
     u32 errorType;
     void (*callback)(s32, s32, u32, s32);
     s32 errorCode, reported;
     if (GetNetErrorCode()) reported = 1; else reported = 0;
     if (!reported) return;
-    errorCode = func_ov010_02228314(&errorDetail, &errorType);
+    errorCode = GetNetErrorVeneer(&errorDetail, &errorType);
     if (IsOnlineSessionFlagSet(OV010_FLAG_ERROR)) return;
     switch (errorType) {
     case 0:

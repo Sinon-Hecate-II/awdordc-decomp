@@ -444,10 +444,12 @@ void UpdateUnitSelectionMenu(void *dialog) {
     DrawUnitInfoPanel(1);
 }
 
-void func_020ca77c(M2C_UNK arg0) {
-    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212b1fc;
-    CreateSpriteObject(&data_0212b1fc, arg0);
+/* Spawn the target/unit selection menu object as a child sprite of `owner`: its
+ * script runs InitTargetSelectionMenu and, per frame, UpdateUnitSelectionMenu. */
+void CreateTargetSelectionMenuObject(M2C_UNK owner) {
+    void CreateSpriteObject(void *, s32);
+    extern M2C_UNK gTargetSelectionMenuClass;
+    CreateSpriteObject(&gTargetSelectionMenuClass, owner);
 }
 
 #pragma push

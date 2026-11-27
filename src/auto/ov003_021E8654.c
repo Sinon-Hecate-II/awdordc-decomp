@@ -163,7 +163,7 @@ void func_ov003_021e8958(void *arg0) {
     s32 IsMapListCategory3(void);
     void *CreateTimerDisplay(void *);
     void SetTimerDisplayGraphics(void *, s32, s32);
-    void func_0208eb60(void *, s32);
+    void SetTimerDisplayTicks(void *, s32);
     s32 GetSceneEntryOffset(void);
     void SetSpriteTweenValue(void *, s32);
     s32 IsLinkSessionActive(void);
@@ -238,7 +238,7 @@ void func_ov003_021e8958(void *arg0) {
         gCur3DSpriteEngine = g3DSpriteEngineMain;
         M2C_FIELD(arg0, void **, 0x60) = CreateTimerDisplay(arg0);
         SetTimerDisplayGraphics(M2C_FIELD(arg0, void **, 0x60), 0xd400, 0xb);
-        func_0208eb60(M2C_FIELD(arg0, void **, 0x60), 0x708);
+        SetTimerDisplayTicks(M2C_FIELD(arg0, void **, 0x60), 0x708);
         func_ov003_021e87d0(M2C_FIELD(arg0, void **, 0x60), 0, 0xb6);
         gCur3DSpriteEngine = t2;
     }

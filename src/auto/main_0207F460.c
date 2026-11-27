@@ -244,6 +244,9 @@ void InstallHBlankIrqHandler(s32 handler) {
     CreateQueuedSpriteTask((M2C_UNK *)EnableHBlankIrqTask, 2);
 }
 
+/* Turn the HBlank (scanline) interrupt back off by queueing the sprite task that
+ * clears the main sprite bank's HBlank enable and masks the interrupt; the
+ * counterpart of InstallHBlankIrqHandler. */
 void StopHBlankIrq(void) {
     M2C_UNK CreateQueuedSpriteTask(M2C_UNK *, M2C_UNK);
     void DisableHBlankIrqTask(void);

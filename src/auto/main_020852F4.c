@@ -156,9 +156,11 @@ void Link_InstallCommandHandler(void) {
     Link_SetMessageHandler((M2C_UNK *)&Link_HandleCommandMessage);
 }
 
-void func_02085428(M2C_UNK arg0) {
+/* Final script step of the Download Play data-block sender: create the match
+ * start request tagged PTDS (the transfer barrier) with the sender as owner. */
+void RequestDownloadPlayMatchStart(M2C_UNK owner) {
     M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
-    Link_CreateStartRequest(0x50544453, arg0);
+    Link_CreateStartRequest(MATCH_ID_PTDS, owner);
 }
 
 /* First update of a link data-block sender: broadcast its stored block to the
@@ -169,8 +171,10 @@ void BroadcastLinkBlock(void *sender) {
     Sprite_ResumeAnimation(sender);
 }
 
-void func_02085464(M2C_UNK arg0) {
-    Link_CreateStartRequest(0x50524453, arg0);
+/* Post the link match-start request ('PRDS') that opens the data-block transfer
+ * session; the block-sender sprite script runs this as its first action. */
+void SendBlockSenderStartRequest(M2C_UNK owner) {
+    Link_CreateStartRequest(MATCH_ID_PRDS, owner);
 }
 
 /* Create the link task that sends one whole data block to the other players: it
@@ -190,8 +194,11 @@ void CreateLinkBlockSender(s32 blockData, s32 blockSize, M2C_UNK owner) {
     M2C_FIELD(sender, s32 *, LINK_BLOCK_SENDER_SIZE) = blockSize;
 }
 
-void func_020854b8(M2C_UNK arg0) {
-    Link_CreateStartRequest(0x50544453, arg0);
+/* Final script step of the Download Play data-block receiver: post the match start
+ * request tagged PTDS (the transfer barrier), the receiver's twin of the sender's
+ * RequestDownloadPlayMatchStart. */
+void ReplyDownloadPlayMatchStart(M2C_UNK owner) {
+    Link_CreateStartRequest(MATCH_ID_PTDS, owner);
 }
 
 /* Resume the data-block receiver's (waiting) animation once its block has
@@ -209,8 +216,11 @@ void ResumeBlockReceiverAnimation(void *receiver) {
     Sprite_ResumeAnimation(receiver);
 }
 
-void func_02085514(M2C_UNK arg0) {
-    Link_CreateStartRequest(0x50524453, arg0);
+/* Post the link start request that carries the ready barrier ('PRDS') for a
+ * data-block exchange; the block-receiver sprite script runs this as its first
+ * action, the same barrier the sender posts in SendBlockSenderStartRequest. */
+void SendBlockReceiverStartRequest(M2C_UNK owner) {
+    Link_CreateStartRequest(MATCH_ID_PRDS, owner);
 }
 
 /* Handles the link messages that carry a whole data block: a LINK_MSG_BLOCK
@@ -257,8 +267,11 @@ void CreateLinkBlockReceiver(s32 blockData, s32 blockSize, s32 owner) {
     M2C_FIELD(receiver, s32 *, LINK_PLAYER_DATA_SIZE) = blockSize;
 }
 
-void func_020855f0(M2C_UNK arg0) {
-    Link_CreateStartRequest(0x50544353, arg0);
+/* Post the link start request carrying the transfer barrier ('PTCS') for the
+ * multi-card/online player-data exchange; the player-data script runs it once
+ * every player's data block is in. */
+void RequestPlayerDataMatchStart(M2C_UNK owner) {
+    Link_CreateStartRequest(MATCH_ID_PTCS, owner);
 }
 
 /* True while a connected player's data block has not arrived yet; false once every
@@ -276,13 +289,19 @@ u8 IsPlayerDataIncomplete(void *listener) {
     return (u8)incomplete;
 }
 
-void func_02085644(void *arg0) {
+/* Broadcast this player's data block to the other players as a
+ * LINK_MSG_PLAYER_DATA message; the player-data script runs it before it waits
+ * for everyone else's blocks to arrive. */
+void BroadcastPlayerData(void *listener) {
     M2C_UNK Link_BroadcastMessage(M2C_UNK, s32, s32);
-    Link_BroadcastMessage(0x86, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
+    Link_BroadcastMessage(LINK_MSG_PLAYER_DATA, M2C_FIELD(listener, s32 *, LINK_PLAYER_OWN_DATA), M2C_FIELD(listener, s32 *, LINK_PLAYER_DATA_SIZE));
 }
 
-void func_0208565c(M2C_UNK arg0) {
-    Link_CreateStartRequest(0x50524353, arg0);
+/* Post the link start request carrying the ready barrier ('PRCS') for the
+ * multi-card/online player-data exchange; the player-data script runs it as its
+ * first action, before it broadcasts this player's block. */
+void SendPlayerDataStartRequest(M2C_UNK owner) {
+    Link_CreateStartRequest(MATCH_ID_PRCS, owner);
 }
 
 /* Handles the link messages that carry the players' data blocks: a

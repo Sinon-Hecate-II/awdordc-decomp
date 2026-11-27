@@ -395,10 +395,12 @@ void LoadPlayerArmyPalette(s32 player) {
     CopyToObjPaletteShadow(gArmyPalettes + ((M2C_FIELD(player * MAP_PLAYER_STRIDE + M2C_FIELD(gCurrentMap, s32 *, 0), u8 *, PLAYER_ARMY_INDEX_OFF) + 3) << 5), 0x160, 0x20);
 }
 
-void LoadUiGraphicsBlock(M2C_UNK arg0) {
-    M2C_UNK LoadGraphicsBlock(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0211e0a8;
-    LoadGraphicsBlock(&data_0211e0a8, arg0);
+/* Put the UI tile graphics block into the 3D sprite engine at VRAM address
+ * `vramDest` (decompressing it when it is stored compressed). */
+void LoadUiGraphicsBlock(u32 vramDest) {
+    void LoadGraphicsBlock(M2C_UNK *, u32);
+    extern M2C_UNK gUiGraphicsBlock;
+    LoadGraphicsBlock(&gUiGraphicsBlock, vramDest);
 }
 
 /* Copy the UI sprite palette into the current 3D sprite engine's OBJ palette

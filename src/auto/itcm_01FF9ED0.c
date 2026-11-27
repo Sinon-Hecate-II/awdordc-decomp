@@ -508,13 +508,13 @@ void GotoSpriteAnimationLabel(void *sprite, s32 label) {
     } while (id != 0);
 }
 
-void func_01ffa904(void *arg0, s32 arg1) {
+void Set3DSpriteClass(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 4) = arg1;
     M2C_FIELD(arg0, s32 *, 8) = arg1;
     M2C_FIELD(arg0, s32 *, 0x10) = 0;
 }
 
-void func_01ffa918(void *arg0, s32 arg1) {
+void Set3DSpriteDeleteCallback(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0xC) = arg1;
 }
 

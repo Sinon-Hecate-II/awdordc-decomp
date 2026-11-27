@@ -357,10 +357,11 @@ void func_ov010_02228280(s32 arg0) {
     M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) = 1 << arg0;
 }
 
-void SetOnlineSessionFlag(s32 arg0) {
+/* Raise one step flag (OV010_FLAG_*) of the ov010 online session. */
+void SetOnlineSessionFlag(s32 flag) {
     extern M2C_UNK gOv010OnlineSession;
-    M2C_FIELD(&gOv010OnlineSession, s32 *, (unsigned)0x54) =
-        (M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) | (1 << arg0));
+    M2C_FIELD(&gOv010OnlineSession, s32 *, (unsigned)OV010_SESSION_STEP_FLAGS) =
+        (M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_STEP_FLAGS) | (1 << flag));
 }
 
 /* Returns 1 when step flag `flag` (OV010_FLAG_*) of the ov010 online session
@@ -386,13 +387,15 @@ M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK flagIndex) {
     return flags;
 }
 
+/* The pending network error code (0 when none), read through GetNetError; its
+ * error detail and type are fetched too but ignored here. */
 s32 GetNetErrorCode(void) {
-    void func_ov010_02228314();
-    s32 out[2];
-    func_ov010_02228314(&out[1], &out[0]);
+    void GetNetErrorVeneer();
+    s32 error[2];
+    GetNetErrorVeneer(&error[1], &error[0]);
 }
 
-void func_ov010_02228314(void) {
+void GetNetErrorVeneer(void) {
     M2C_UNK GetNetError();
     GetNetError();
 }
@@ -562,10 +565,13 @@ s32 Ov010Online_PollSessionEnd(void) {
     return 0;
 }
 
-void func_ov010_02228748(M2C_UNK arg0) {
+/* Create the online reconnect object, owned by `owner`: its class script waits
+ * for the old WFC session to end, then starts a new WFC connection and waits for
+ * it to come up. */
+void CreateOnlineReconnectObject(void *owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov010_0222c1b8;
-    CreateSpriteObject(&data_ov010_0222c1b8, arg0);
+    extern M2C_UNK gOnlineReconnectClass;
+    CreateSpriteObject(&gOnlineReconnectClass, owner);
 }
 
 #pragma push

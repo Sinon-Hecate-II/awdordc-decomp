@@ -174,10 +174,12 @@ void ResumeAnimationOnInput(void *task) {
     Sprite_ResumeAnimation(task);
 }
 
+/* Spawn the turn-start panel that renders the starting army's state and waits for
+ * the player to press a key before the turn continues. */
 void CreateTurnStartPanel(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02128d2c;
-    CreateSpriteFromClass(&data_02128d2c, 7);
+    extern M2C_UNK gTurnStartPanelClass;
+    CreateSpriteFromClass(&gTurnStartPanelClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 void func_020b78c4(void *arg0) {

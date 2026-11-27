@@ -347,7 +347,7 @@ M2C_UNK SocketDestroy(s32 obj) {
 extern void *gNetAllocator;
 void ConnectionAbort(s32);
 void SocketRemoveFromActiveList(M2C_UNK);
-void func_02021490(M2C_UNK);
+void SocketRemoveFromClosedList(M2C_UNK);
 void OS_WakeupThread(s32);
 s32 child,next,lock,active;
 s8 state;
@@ -367,7 +367,7 @@ OS_WakeupThread(M2C_FIELD(obj,s32*,0x64)+0x10c);
 ConnectionAbort(M2C_FIELD(obj,s32*,0x64));
 }else if(state==2)ConnectionAbort(M2C_FIELD(obj,s32*,0x68));
 lock=OS_DisableInterrupts();
-SocketRemoveFromActiveList(obj);func_02021490(obj);
+SocketRemoveFromActiveList(obj);SocketRemoveFromClosedList(obj);
 M2C_FIELD(gNetAllocator,void (**)(s32),0x1c)(obj);
 OS_RestoreInterrupts(lock);
 }
@@ -674,16 +674,19 @@ void SocketAddToClosedList(void *arg0) {
     func_02021408((void **)&gClosedSocketList, arg0);
 }
 
-void SocketRemoveFromActiveList(M2C_UNK arg0) {
-    M2C_UNK func_02021448(M2C_UNK *, M2C_UNK);
+/* Remove a socket object from the socket layer's list of active sockets. */
+void SocketRemoveFromActiveList(s32 socket) {
+    s32 SocketUnlinkFromList(s32 *, s32);
     extern M2C_UNK gActiveSocketList;
-    func_02021448(&gActiveSocketList, arg0);
+    SocketUnlinkFromList((s32 *)&gActiveSocketList, socket);
 }
 
-s32 func_02021448(s32 *arg0, s32 arg1) {
- void *SocketFindLink(void *, s32);
- void *p = SocketFindLink(arg0, arg1);
- if(p) M2C_FIELD(p,s32 *,0)=M2C_FIELD(arg1,s32 *,0x7c);
+/* Unlink a socket object from one of the socket layer's lists: find the list
+ * pointer that refers to the socket and make it skip the socket. */
+s32 SocketUnlinkFromList(s32 *list, s32 socket) {
+    void *SocketFindLink(void *, s32);
+    void *link = SocketFindLink(list, socket);
+    if (link) M2C_FIELD(link, s32 *, 0) = M2C_FIELD(socket, s32 *, SOCK_LIST_NEXT);
 }
 
 void *SocketFindLink(void *arg0, s32 arg1);
@@ -702,9 +705,11 @@ void *SocketFindLink(void *link, s32 socket) {
     return NULL;
 }
 
-void func_02021490(M2C_UNK arg0) {
+/* Remove a socket object from the socket layer's list of closed sockets. */
+void SocketRemoveFromClosedList(s32 socket) {
+    s32 SocketUnlinkFromList(s32 *, s32);
     extern M2C_UNK gClosedSocketList;
-    func_02021448(&gClosedSocketList, arg0);
+    SocketUnlinkFromList((s32 *)&gClosedSocketList, socket);
 }
 
 /* Whether a socket handle is not registered: 1 for a non-positive handle or one

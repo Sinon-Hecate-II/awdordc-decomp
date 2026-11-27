@@ -182,12 +182,14 @@ loop:
     return;
 }
 
-u8 func_02072da4(void *arg0) {
-u8 *p=M2C_FIELD(arg0,u8 **,8);
-s32 result;
-if(p) result=*p&31;
-else result=0;
-return (u8)result;
+/* The 5-bit opcode of the exception-handling token's current byte (the byte the
+ * token's cursor at +0x08 points at); 0 when the token has no cursor. */
+u8 GetExceptionOpcode(void *token) {
+    u8 *p = M2C_FIELD(token, u8 **, 8);
+    s32 code;
+    if (p) code = *p & 0x1f;
+    else code = 0;
+    return (u8)code;
 }
 
 #pragma push
@@ -299,7 +301,7 @@ block_48:
 void func_02073148(s32 arg0, void *arg1, s32 arg2) {
 u32 U32DivideRem(s32,u32);
 s32 Js_RestoreFrameRegisters(void *,void *);
-void func_020742e0(void);
+void StdTerminate(void);
 s32 Js_DecodeFrameData(void *,void *);
 s32 spa0;
 s32 sp9c;
@@ -346,7 +348,7 @@ loop:
 p=M2C_FIELD(arg1,u8 **,8);
 if(!p) {
 FindExceptionTableHandler(Js_RestoreFrameRegisters(arg0,arg1),arg1);
-if(!M2C_FIELD(arg1,s32 *,4)) func_020742e0();
+if(!M2C_FIELD(arg1,s32 *,4)) StdTerminate();
 Js_DecodeFrameData(arg0,arg1);
 p=M2C_FIELD(arg1,u8 **,8);
 if(!p) goto loop;
@@ -452,7 +454,7 @@ v=(flag?(s32)M2C_FIELD(arg0+sp8*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x1
 case 19:
 q=DecodeExceptionSignedValue(p+1,&sp4);
 M2C_FIELD(arg1,u8 **,8)=q;break;
-default: bad: func_020742e0();break;
+default: bad: StdTerminate();break;
 } if(op&128) M2C_FIELD(arg1,u8 **,8)=0;goto loop;
 }
 

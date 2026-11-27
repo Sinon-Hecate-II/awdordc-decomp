@@ -9,10 +9,11 @@ typedef struct UnitCB9 { u8 kind:6; u8 owner:2; u8 x,y,pad; u16 flags; u16 hp; u
 typedef struct UnitHealthCB { u8 pad[6]; u16 health:7; u16 flags:9; } UnitHealthCB;
 extern u8 gMapCursorDirs[][4];
 
-void func_020cab8c(void) {
+/* Spawn the map cursor-option sprite on the default layer; its script handles directional selection and map-view holds. */
+void CreateMapCursorOptionSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212b4a4;
-    CreateSpriteFromClass(&data_0212b4a4, 7);
+    extern M2C_UNK gMapCursorOptionSpriteClass;
+    CreateSpriteFromClass(&gMapCursorOptionSpriteClass, 7);
 }
 
 #pragma optimization_level 4

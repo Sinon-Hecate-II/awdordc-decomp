@@ -42,11 +42,15 @@ s32 gti2ResendPendingCommand(void *connection, Gt2SentCommand *command) {
     return 1;
 }
 
-void gti2Send(s32 a, s32 b, s32 c, s32 d) {
-    M2C_UNK gti2SendReliableMessage();
-    M2C_UNK gti2SendUnreliable();
-    if (d) { gti2SendReliableMessage(); return; }
-    gti2SendUnreliable();
+/* Forward an outgoing GT2 message to the reliable or the unreliable sender. */
+void gti2Send(void *connection, const u8 *message, s32 length, s32 reliable) {
+    s32 gti2SendReliableMessage(void *, const u8 *, s32);
+    s32 gti2SendUnreliable(void *, const u8 *, s32);
+    if (reliable) {
+        gti2SendReliableMessage(connection, message, length);
+        return;
+    }
+    gti2SendUnreliable(connection, message, length);
 }
 
 /* Hash a connection-table key (remote address and port) into a bucket of the

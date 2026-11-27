@@ -186,8 +186,8 @@ void ScrollListCreateButtons(void) {
 
 void *GetScrollList(void) {
     void *FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_ov000_021b8a78;
-    return FindObjectByClass(&data_ov000_021b8a78);
+    extern M2C_UNK gScrollListClass;
+    return FindObjectByClass(&gScrollListClass);
 }
 
 #pragma push
@@ -425,9 +425,12 @@ void ScrollListClose(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 #pragma opt_common_subs reset
-void func_ov000_021707c0(void) {
+/* Open the unit-list menu: its class takes a hold on the map view, builds and
+ * draws the list, scrolls it while open, and on close releases the hold and steps
+ * the cursor to the selected unit. */
+void ScrollListOpen(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov000_021b8a78;
-    CreateSpriteFromClass(&data_ov000_021b8a78, 7);
+    extern M2C_UNK gScrollListClass;
+    CreateSpriteFromClass(&gScrollListClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 

@@ -109,8 +109,8 @@ void ShowPlayerUnitDialog(void *unitView) {
 }
 
 void func_020bcde0(void) {
-    M2C_UNK func_020c4764();
-    func_020c4764();
+    M2C_UNK CreateBreakCutIn();
+    CreateBreakCutIn();
 }
 
 void func_020bcdec(void *arg0) {

@@ -183,10 +183,11 @@ void SetLinkResultFlagMask(s32 arg0) {
     M2C_FIELD(&gLinkState, s32 *, 0x50) = 1 << arg0;
 }
 
-void SetLinkResultFlag(s32 arg0) {
+/* Mark player slot `player`'s link result as handled. */
+void SetLinkResultFlag(s32 player) {
     extern M2C_UNK gLinkState;
-    M2C_FIELD(&gLinkState, s32 *, (unsigned)0x50) =
-        (M2C_FIELD(&gLinkState, s32 *, 0x50) | (1 << arg0));
+    M2C_FIELD(&gLinkState, s32 *, (unsigned)LINK_STATE_RESULT_FLAGS) =
+        (M2C_FIELD(&gLinkState, s32 *, LINK_STATE_RESULT_FLAGS) | (1 << player));
 }
 
 /* Whether the link result of player slot `player` has already been handled. */

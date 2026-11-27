@@ -232,15 +232,16 @@ void RefreshFaceSpritePalette(void *face) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-u8 IsFaceSpriteLoaded(void *arg0) {
-    u8 var_r0;
+/* Whether the CO face sprite has a face loaded (FACE_SPRITE_FACE is nonzero). */
+u8 IsFaceSpriteLoaded(void *face) {
+    u8 loaded;
 
-    if (M2C_FIELD(arg0, u8 *, 0x58) != 0) {
-        var_r0 = 1;
+    if (M2C_FIELD(face, u8 *, FACE_SPRITE_FACE) != 0) {
+        loaded = 1;
     } else {
-        var_r0 = 0;
+        loaded = 0;
     }
-    return var_r0;
+    return loaded;
 }
 
 M2C_UNK func_0209902c(void *arg0) {
@@ -379,15 +380,17 @@ void SetFaceSpriteVariant(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x5B) = arg1;
 }
 
-u8 FaceSpriteIsLoaded(void *arg0) {
-    u8 var_r0;
+/* Whether the CO face sprite has a face loaded (FACE_SPRITE_FACE is nonzero);
+ * the copy the face refresh and draw helpers use. */
+u8 FaceSpriteIsLoaded(void *face) {
+    u8 loaded;
 
-    if (M2C_FIELD(arg0, u8 *, 0x58) != 0) {
-        var_r0 = 1;
+    if (M2C_FIELD(face, u8 *, FACE_SPRITE_FACE) != 0) {
+        loaded = 1;
     } else {
-        var_r0 = 0;
+        loaded = 0;
     }
-    return var_r0;
+    return loaded;
 }
 
 /* Reset a CO face sprite to its blank state (no face, expression, layout or
@@ -473,7 +476,7 @@ s32 func_0209943c(s32 arg0) {
  * `tileSet` (TEXT_GLYPH_TILES bytes) into the layer from tile `baseTile` + 16. */
 M2C_UNK InitTextTiles(s32 layer, s32 baseTile, s32 tileSet) {
     extern void *gCur3DSpriteEngine;
-    extern M2C_UNK data_0211e9dc, data_0211f0dc;
+    extern M2C_UNK gTextGlyphTiles0, gTextGlyphTiles1;
     void MI_CpuCopy32(void *, void *, s32);
     void *text = M2C_FIELD(gCur3DSpriteEngine, void **, DS3D_ENGINE_TEXT_CACHE);
     M2C_FIELD(text, u16 *, TEXT_CACHE_NEXT_TILE) = baseTile + TEXT_FIRST_TILE;
@@ -481,17 +484,19 @@ M2C_UNK InitTextTiles(s32 layer, s32 baseTile, s32 tileSet) {
     M2C_FIELD(text, u8 *, TEXT_CACHE_LAYER) = layer;
     switch (tileSet) {
     case 0:
-        MI_CpuCopy32(&data_0211e9dc, (u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine + layer * 4, void **, 12) + ((baseTile + TEXT_GLYPH_OFFSET) << 5), TEXT_GLYPH_TILES);
+        MI_CpuCopy32(&gTextGlyphTiles0, (u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine + layer * 4, void **, 12) + ((baseTile + TEXT_GLYPH_OFFSET) << 5), TEXT_GLYPH_TILES);
         break;
     case 1:
-        MI_CpuCopy32(&data_0211f0dc, (u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine + layer * 4, void **, 12) + ((baseTile + TEXT_GLYPH_OFFSET) << 5), TEXT_GLYPH_TILES);
+        MI_CpuCopy32(&gTextGlyphTiles1, (u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine + layer * 4, void **, 12) + ((baseTile + TEXT_GLYPH_OFFSET) << 5), TEXT_GLYPH_TILES);
         break;
     }
 }
 
-void ResetTextTiles(M2C_UNK arg0) {
-    M2C_UNK InitTextTiles(M2C_UNK, M2C_UNK, M2C_UNK);
-    InitTextTiles(1, arg0, 0);
+/* Reset the text layer of the current 3D sprite engine to the default glyph
+ * tile set, starting the next cached string at tile `baseTile` + TEXT_FIRST_TILE. */
+void ResetTextTiles(s32 baseTile) {
+    M2C_UNK InitTextTiles(s32, s32, s32);
+    InitTextTiles(TEXT_GLYPH_LAYER, baseTile, TEXT_GLYPH_SET_DEFAULT);
 }
 
 /* Fill two tilemap rows for a cached glyph string, alternating even and odd tile IDs across the rows. */
@@ -733,25 +738,29 @@ void EndTextLineAndMarkRedraw(TextState0209 *text) {
     text->flags |= TEXT_FLAG_PENDING_REDRAW;
 }
 
-u8 IsLeadByte(u8 *arg0) {
-    u8 var_r0;
+/* Whether `text` starts with a double-byte character's lead byte: the byte has
+ * its high bit set, as the game's Shift-JIS text marks such characters. */
+u8 IsLeadByte(u8 *text) {
+    u8 lead;
 
-    if (*arg0 & 0x80) {
-        var_r0 = 1;
+    if (*text & 0x80) {
+        lead = 1;
     } else {
-        var_r0 = 0;
+        lead = 0;
     }
-    return var_r0;
+    return lead;
 }
 
-u8 IsGlyphEscape(u8 *arg0) {
-    u8 var_r0;
+/* Whether `text` starts with the game-text escape (TEXT_ESCAPE_CHAR), whose next
+ * byte is a raw glyph code rather than an encoded character. */
+u8 IsGlyphEscape(u8 *text) {
+    u8 escape;
 
-    if (*arg0 == 0x1F) {
-        var_r0 = 1;
+    if (*text == TEXT_ESCAPE_CHAR) {
+        escape = 1;
     } else {
-        var_r0 = 0;
+        escape = 0;
     }
-    return var_r0;
+    return escape;
 }
 

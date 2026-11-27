@@ -1,6 +1,8 @@
 /* 37 functions from 0x020D7BC8 to 0x020D8BB4 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
+#include "ds3dsprite.h"
 static inline u16 TerrainSpriteY(s32 y) { return (u16)y; }
 /* The OBJ boundary value, bits 13..14 of the current sprite bank's flags word
  * (DS3D_BANK_OBJ_BOUNDARY_MASK >> 13): the shift the terrain and unit sprites
@@ -227,10 +229,13 @@ s32 GetMapCategory(void) {
     return gMapCategory;
 }
 
-void func_020d887c(void) {
+/* Create the map-select screen object: its script resets the dialog and text
+ * UI, refreshes the save-slot records and then runs the map-list screen, which
+ * is where the game returns after a battle or the campaign ending. */
+void OpenMapSelectScreen(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212c058;
-    CreateSpriteFromClass(&data_0212c058, 7);
+    extern M2C_UNK gMapSelectScreenClass;
+    CreateSpriteFromClass(&gMapSelectScreenClass, 7);
 }
 
 M2C_UNK func_020d8894(void) {
@@ -239,10 +244,12 @@ M2C_UNK func_020d8894(void) {
     CreateSpriteFromClass(&data_0212bfe8, 7);
 }
 
-void func_020d88ac(void) {
+/* Create the ending screen: the sprite whose class loads the ending resource
+ * (archive slot 0xB) and plays the campaign's final-map ending. */
+void CreateEndingScreen(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212c020;
-    CreateSpriteFromClass(&data_0212c020, 7);
+    extern M2C_UNK gEndingScreenClass;
+    CreateSpriteFromClass(&gEndingScreenClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 /* Select battle mode 4 in the map configuration and open the map-list screen
@@ -324,16 +331,20 @@ void EnterMapEditorScreen(void) {
     CreateSpriteFromClass(&gMapEditorScreenAnim, 7);
 }
 
-void func_020d89e8(void) {
+/* Spawn the scripted screen sprite for the battle's stage title: its class first
+ * makes sure archive resource slot 5 is loaded, then hands over to the ov004
+ * battle overlay, which shows the stage's name graphic (name_%02d.cg). */
+void CreateStageTitleScreen(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212bf38;
-    CreateSpriteFromClass(&data_0212bf38, 7);
+    extern M2C_UNK gStageTitleScreenClass;
+    CreateSpriteFromClass(&gStageTitleScreenClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
-void func_020d8a00(void) {
+/* Spawn the scripted sprite that loads and opens the Records menu. */
+void CreateRecordsMenuSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212bf78;
-    CreateSpriteFromClass(&data_0212bf78, 7);
+    extern M2C_UNK gRecordsMenuSpriteClass;
+    CreateSpriteFromClass(&gRecordsMenuSpriteClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 void func_020d8a18(void) {
@@ -349,10 +360,11 @@ void func_020d8a38(void) {
     func_020cd480(2);
 }
 
-void func_020d8a48(void) {
+/* Spawn the scripted sprite that loads and opens the History menu. */
+void CreateHistoryMenuSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212bf58;
-    CreateSpriteFromClass(&data_0212bf58, 7);
+    extern M2C_UNK gHistoryMenuSpriteClass;
+    CreateSpriteFromClass(&gHistoryMenuSpriteClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 /* Whether the battle mode in the low three bits of the map configuration is 7
@@ -385,10 +397,12 @@ void func_020d8abc(void) {
     SetMapConfigMode6();
 }
 
-void func_020d8ac8(void) {
+/* Create the front-end sequence screen: its class runs the front-end sequence
+ * sprite and then starts the battle map. */
+void CreateFrontEndSequenceScreen(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212bf98;
-    CreateSpriteFromClass(&data_0212bf98, 7);
+    extern M2C_UNK gFrontEndSequenceScreenClass;
+    CreateSpriteFromClass(&gFrontEndSequenceScreenClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 /* Select battle mode 7 in the map configuration and open the map-list screen
@@ -401,10 +415,12 @@ M2C_UNK OpenMode7MapList(void) {
     CreateSpriteFromClass(&data_0212c0d8, 7);
 }
 
-void func_020d8b10(void) {
+/* Spawn the scripted sprite (class gMicTestScreenClass) that creates the mic test
+ * object and then opens its dialog box. */
+void OpenMicTestScreen(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212bf18;
-    CreateSpriteFromClass(&data_0212bf18, 7);
+    extern M2C_UNK gMicTestScreenClass;
+    CreateSpriteFromClass(&gMicTestScreenClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 void func_020d8b28(void) {

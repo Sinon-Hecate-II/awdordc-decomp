@@ -184,11 +184,13 @@ void func_ov011_02225064(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x39) = (u8) (M2C_FIELD(arg0, u8 *, 0x39) + 1);
 }
 
-void func_ov011_02225074(M2C_UNK arg0) {
+/* Intro script step: handle the intro object's input, then lay out the
+ * sequence's sprites and screen blend (func_ov011_022224a8). */
+void HandleIntroInputAndUpdateSprites(void *intro) {
     M2C_UNK HandleIntroInput();
-    M2C_UNK func_ov011_022224a8(M2C_UNK);
+    M2C_UNK func_ov011_022224a8();
     HandleIntroInput();
-    func_ov011_022224a8(arg0);
+    func_ov011_022224a8(intro);
 }
 
 void func_ov011_0222508c(void) {

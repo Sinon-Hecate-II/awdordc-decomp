@@ -73,13 +73,14 @@ u16 MapScriptResolvePlayer(u16 playerId) {
     return M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER);
 }
 
-s32 func_02091ef0(void) {
-    return (M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4A) * 2) + 2;
+/* Return the number of text rows across the scene panels (two rows per row pair). */
+s32 GetScenePanelRowCount(void) {
+    return (M2C_FIELD(Get3DSpriteManager(), u8 *, DS3D_MANAGER_PANEL_ROW_PAIRS) * 2) + 2;
 }
 
 s32 func_02091f08(void) {
-    s32 func_02091ef0();
-    return func_02091ef0() * 8;
+    s32 GetScenePanelRowCount();
+    return GetScenePanelRowCount() * 8;
 }
 
 /* Pointer to the ScenePanelState of panel `panelIndex` among the 3D sprite
@@ -595,10 +596,12 @@ s32 ShowMessageText(s32 textId) {
 abort: return 1;
 }
 
-void SpawnMessageTextSprite(M2C_UNK arg0) {
+/* Spawn the message-text sprite as a child of `parent`, the dialog sprite whose
+ * state is showing the message (SpriteState_ShowMessage). */
+void SpawnMessageTextSprite(M2C_UNK parent) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gMessageTextSpriteClass;
-    CreateSpriteObject(&gMessageTextSpriteClass, arg0);
+    CreateSpriteObject(&gMessageTextSpriteClass, parent);
 }
 
 /* Map-script wait callback: once the message text sprites have gone, clear the

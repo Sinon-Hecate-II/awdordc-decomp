@@ -76,14 +76,17 @@ u32 LoadCardArchiveIndex(u32 memory, u32 size) {
 }
 
 #pragma opt_strength_reduction off
-u32 func_0200bf0c(void *arg0) {
+/* Size in bytes of the data a file header describes: the low 24 bits of the
+ * header's flags word when its inline-size bit (bit 24) is set, otherwise the
+ * header's data size. */
+u32 GetFileDataSize(FSFileHeader *header) {
     typedef union {
         struct { u32 value : 24; u32 enabled : 1; u32 rest : 7; } f;
         u32 w;
     } Bits;
-    Bits *b = (Bits *)((u8 *)arg0 + 0x1c);
+    Bits *b = (Bits *)&header->flags;
     if ((b->w >> 24) & 1) return b->f.value;
-    return M2C_FIELD(arg0, u32 *, 8);
+    return header->dataSize;
 }
 #pragma opt_strength_reduction reset
 /* Clear the BSS part of a loaded resource file: invalidate the instruction and
@@ -212,7 +215,6 @@ s32 HmacSha1Verify(u32 expectedDigest, s32 message, s32 messageLength) {
 #pragma push
 #pragma opt_lifetimes off
 void CompleteFileLoad(void *arg0) {
-    u32 func_0200bf0c(void *);
     s32 HmacSha1Verify(u32, s32, s32);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
     void SystemHalt(void);
@@ -232,7 +234,7 @@ void CompleteFileLoad(void *arg0) {
     u32 fn;
 
     r5 = arg0;
-    r4 = func_0200bf0c(r5);
+    r4 = GetFileDataSize(r5);
 
     if (*(u16 *)0x27ffc40 == 2) {
         top = (u32)M2C_FIELD(r5, u32 *, 0x1c) >> 24;

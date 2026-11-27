@@ -62,10 +62,13 @@ void RestartLinkSession(void) {
     }
 }
 
-void CreateLinkDepartureObject(M2C_UNK arg0) {
+/* Create the single-card link's departure object, owned by `owner`: its class
+ * script recovers the link session (RestartLinkSession) and then waits for the
+ * phase that lets the overlay close. */
+void CreateLinkDepartureObject(void *owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov009_02226440;
-    CreateSpriteObject(&data_ov009_02226440, arg0);
+    extern M2C_UNK gLinkDepartureClass;
+    CreateSpriteObject(&gLinkDepartureClass, owner);
 }
 
 /* Ends the single-card link session: flushes the packet queues, deletes the
@@ -106,16 +109,21 @@ s32 EndLinkSession(void) {
     return 1;
 }
 
-void func_ov009_02225420(M2C_UNK arg0) {
+/* Spawn the link-end object under `owner`: its class script ends the link session
+ * (EndLinkSession) and then waits for the link phase that lets the overlay close. */
+void CreateLinkEndObject(M2C_UNK owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov009_02226468;
-    CreateSpriteObject(&data_ov009_02226468, arg0);
+    extern M2C_UNK gLinkEndClass;
+    CreateSpriteObject(&gLinkEndClass, owner);
 }
 
-void func_ov009_02225438(M2C_UNK arg0) {
+/* Create the single-card link's leave object, owned by `owner`: its class script
+ * first spawns the departure object (which recovers the link session) and then
+ * the link-end object (which ends the session and waits for the link phase). */
+void CreateLinkLeaveObject(void *owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov009_02226490;
-    CreateSpriteObject(&data_ov009_02226490, arg0);
+    extern M2C_UNK gLinkLeaveClass;
+    CreateSpriteObject(&gLinkLeaveClass, owner);
 }
 
 s32 GetLinkLocalPlayerId(void) {

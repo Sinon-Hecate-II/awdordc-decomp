@@ -34,9 +34,9 @@ void FillUnitInfo(void *arg0, void *arg1) {
     else M2C_FIELD(M2C_FIELD(entry, void **, 0x10), u8 *, 0x49) = 0;
 
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x10) = func_020a789c(unit);
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x14) = func_020a78ac(unit);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x14) = GetUnitMaxAmmo(unit);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x18) = func_020a78c4(unit);
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x1C) = func_020a78d4(unit);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x1C) = GetUnitMaxFuel(unit);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x20) = GetUnitStatDamageBonus(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x24) = GetUnitAttackPowerStatBonus(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
     kind = ((UnitKind75310 *)unit)->value;

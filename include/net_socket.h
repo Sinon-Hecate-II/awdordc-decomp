@@ -31,6 +31,14 @@
 #define F_GETFL    3
 #define F_SETFL    4
 #define O_NONBLOCK 4
+/* The network task's state object (gNetTaskState, set up by NetworkInitStack in
+ * main_0201E944): the flags word at +0x08 records the connection setup, and the
+ * +0x1C callback applies a pre-supplied configuration.
+ * NET_TASK_FLAG_READY is set by NetTask_MarkReady (the setup callback used when
+ * the configuration was already applied). */
+#define NET_TASK_FLAGS      0x08 /* s32 flag word */
+#define NET_TASK_FLAG_READY 0x02 /* the setup callback has applied the network configuration */
+
 #define SOCK_FLAGS      0x70 /* s16: bit 0 set once the socket is initialised */
 #define SOCK_FLAG_READY 0x0001
 #define SOCK_FLAG_BUSY  0x0002 /* a task is running on the socket (or a read is in progress) */

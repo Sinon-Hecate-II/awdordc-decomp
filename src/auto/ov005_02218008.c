@@ -269,10 +269,12 @@ void Ov005_CloseMenu(void) {
     FreeUiGraphicsBank(10);
 }
 
-void func_ov005_02218e3c(M2C_UNK arg0) {
-    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov005_02220850;
-    CreateSpriteObject(&data_ov005_02220850, arg0);
+/* Spawn the ov005 two-page CO selection menu object as a child sprite of `owner`:
+ * its script runs the menu setup, Ov005MenuInput and Ov005_CloseMenu. */
+void Ov005_CreateMenuObject(M2C_UNK owner) {
+    void CreateSpriteObject(void *, s32);
+    extern M2C_UNK gOv005MenuClass;
+    CreateSpriteObject(&gOv005MenuClass, owner);
 }
 
 /* The face id of the CO who talks to the player: on a story map (map id

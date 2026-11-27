@@ -203,8 +203,8 @@ if(result!=3 || i==4){ReportQr2Error(result);return result;}
 M2C_FIELD(GetConnection(),s32*,28)=0;
 M2C_FIELD(GetConnection(),s16*,26)=0;
 func_0205e864(M2C_FIELD(GetConnection(),s32*,16),&Qr2OnPublicAddress);
-func_0205e834(M2C_FIELD(GetConnection(),s32*,16),&Qr2OnStateChanged);
-func_0205e84c(M2C_FIELD(GetConnection(),s32*,16),&Qr2OnReceiveState);
+SetQr2StateChangedCallback(M2C_FIELD(GetConnection(),s32*,16),&Qr2OnStateChanged);
+SetQr2ReceiveStateCallback(M2C_FIELD(GetConnection(),s32*,16),&Qr2OnReceiveState);
 Qr2_StateChanged(M2C_FIELD(GetConnection(),s32*,16));
 return result;
 }

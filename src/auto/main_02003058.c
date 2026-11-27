@@ -592,9 +592,11 @@ void GX_SetFog(s32 enable, s32 fogBlend, s32 fogDensity, s32 fogOffset) {
     }
 }
 
-void GX_LoadToonTable(M2C_UNK arg0) {
+/* Copy 32 16-bit toon-table entries (0x40 bytes) from `table` into the geometry
+ * engine's toon table. */
+void GX_LoadToonTable(M2C_UNK table) {
     M2C_UNK CopyU16(M2C_UNK, s32, M2C_UNK);
-    CopyU16(arg0, 0x04000380, 0x40);
+    CopyU16(table, G3X_TOON_TABLE_ADDR, G3X_TOON_TABLE_SIZE);
 }
 
 /* Set what the 3D engine clears the rear buffer to: the background colour with

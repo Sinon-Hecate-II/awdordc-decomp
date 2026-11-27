@@ -463,8 +463,11 @@ if(month>=3 && !(year&3)) days++;
 return year*365+days+((year+3)>>2);
 }
 
-s32 RtcTimeToSeconds(void *arg0) {
-    return (((M2C_FIELD(arg0, s32 *, 0) * 0x3C) + M2C_FIELD(arg0, s32 *, 4)) * 0x3C) + M2C_FIELD(arg0, s32 *, 8);
+/* Seconds within the day for an RTC time record (via RtcSecondsToTime): the
+ * record is hour, minute, second, so hour*60*60 + minute*60 + second. */
+s32 RtcTimeToSeconds(void *time) {
+    RtcTime *t = (RtcTime *)time;
+    return ((t->hour * RTC_SECONDS_PER_MINUTE + t->minute) * RTC_SECONDS_PER_MINUTE) + t->second;
 }
 
 #pragma opt_propagation off

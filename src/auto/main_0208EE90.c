@@ -181,10 +181,11 @@ s32 func_0208f4c4(s32 arg0) {
     return arg0;
 }
 
-void func_0208f4d8(void) {
-    s32 GetSystemTick();
-    extern M2C_UNK gSoundTimerState;
-    M2C_FIELD(&gSoundTimerState, s32 *, 4) = GetSystemTick();
+/* Capture the hardware tick at the start of a frame for the sound timer. */
+void SoundEngineStartFrameTimer(void) {
+    s32 GetSystemTick(void);
+
+    M2C_FIELD(&gSoundTimerState, s32 *, SOUND_TIMER_FRAME_START_TICK) = GetSystemTick();
 }
 
 /* End-of-frame sound driver tick: measures the system ticks elapsed since the

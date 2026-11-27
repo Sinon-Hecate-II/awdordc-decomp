@@ -435,10 +435,12 @@ void CreateSaveBattlePanelForCurrentSave(M2C_UNK owner) {
     CreateSaveBattlePanel(saveType, owner);
 }
 
-void func_020b4cf4(void) {
+/* Open the battle menu's save screen (class gSaveBattleScreenClass) on the default
+ * sprite layer, after the map menu sprites have been closed. */
+void OpenSaveBattleScreen(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_021286f4;
-    CreateSpriteFromClass(&data_021286f4, 7);
+    extern M2C_UNK gSaveBattleScreenClass;
+    CreateSpriteFromClass(&gSaveBattleScreenClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 void func_020b4d0c(void) {
@@ -450,10 +452,14 @@ void func_020b4d0c(void) {
     CreateSavedBattleView();
 }
 
-void func_020b4d24(void) {
+/* Continue command: open the battle-loading transition screen (class
+ * gContinueBattleScreenClass) on the default sprite layer; its animation script
+ * holds the map view, fades the music down, shows its message, then rebuilds the
+ * scene and creates the saved battle view that resumes the battle. */
+void OpenContinueBattleScreen(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_021287b4;
-    CreateSpriteFromClass(&data_021287b4, 7);
+    extern M2C_UNK gContinueBattleScreenClass;
+    CreateSpriteFromClass(&gContinueBattleScreenClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 /* Begin a battle saved under the save type in the screen's +0x5C field: initialise
@@ -521,10 +527,13 @@ void CreateCampaignSaveSlotPanel(s32 saveSlot) {
     M2C_FIELD(CreateSpriteForOwner(&data_0212874c), s32 *, 0x5C) = saveSlot;
 }
 
-void func_020b4e10(M2C_UNK arg0) {
+/* Spawn the action (owned by `owner`) that wipes every save record, restores the
+ * default game settings and reloads the campaign map headers, fading the music
+ * down and back up around it. */
+void CreateEraseAllSaveDataAction(M2C_UNK owner) {
     M2C_UNK CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02128a0c;
-    CreateSpriteForOwner(&data_02128a0c, arg0);
+    extern M2C_UNK gEraseAllSaveDataClass;
+    CreateSpriteForOwner(&gEraseAllSaveDataClass, owner);
 }
 
 /* Set up the 3D-sprite overlay of both screens for the map: reset each engine's

@@ -81,11 +81,13 @@ void AnimateMapPreviewCursorColor(void) {
     );
 }
 
-void CopyMapPreviewTiles(M2C_UNK arg0) {
+/* Copy a map preview's tile graphics into `dst`: the top half of the rows, then
+ * the bottom half. */
+void CopyMapPreviewTiles(M2C_UNK dst) {
     M2C_UNK CopyMapPreviewTopHalf();
     M2C_UNK CopyMapPreviewBottomHalf(M2C_UNK);
-    CopyMapPreviewTopHalf();
-    CopyMapPreviewBottomHalf(arg0);
+    CopyMapPreviewTopHalf(dst);
+    CopyMapPreviewBottomHalf(dst);
 }
 
 /* Fills a map-preview tilemap with consecutive tile ids starting at firstTile:

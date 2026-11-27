@@ -54,4 +54,11 @@ typedef struct TypeInfo {
     char *name;    /* +0x04 mangled type name string */
 } TypeInfo;
 
+/* The C++ runtime's global handler table gCppExceptionHandlers: std::terminate
+ * dispatches to the first entry and std::unexpected to the second.  The default
+ * unexpected handler calls std::terminate; the game's terminate handler flushes
+ * the socket events (ForceFlushSocketEvents). */
+#define CPP_TERMINATE_HANDLER  0x00 /* void (*)(void) */
+#define CPP_UNEXPECTED_HANDLER 0x04 /* void (*)(void) */
+
 #endif

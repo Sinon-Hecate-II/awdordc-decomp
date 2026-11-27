@@ -413,16 +413,20 @@ void func_ov004_02218950(void *transition) {
     Sprite_ResumeAnimation(transition);
 }
 
-void func_ov004_02218b7c(M2C_UNK arg0) {
+/* Close the ov003 map menu and open the ov004 battle-start window as a child of
+ * `owner`. */
+void Ov004_ShowBattleStartWindow(M2C_UNK owner) {
     M2C_UNK Ov003_DestroyMapMenu();
-    M2C_UNK func_ov004_02213124(M2C_UNK);
+    M2C_UNK Ov004_CreateBattleStartWindow(M2C_UNK);
     Ov003_DestroyMapMenu();
-    func_ov004_02213124(arg0);
+    Ov004_CreateBattleStartWindow(owner);
 }
 
-void func_ov004_02218b94(M2C_UNK arg0) {
+/* Spawn the map-view screen object (the campaign map-progress view, with its rank
+ * reveal and battle-start actions) as a child of `parent`. */
+void CreateMapView(M2C_UNK parent) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov004_0223c684;
-    CreateSpriteObject(&data_ov004_0223c684, arg0);
+    extern M2C_UNK gMapViewClass;
+    CreateSpriteObject(&gMapViewClass, parent);
 }
 

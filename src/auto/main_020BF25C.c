@@ -406,22 +406,31 @@ M2C_FIELD(gMapConfig,u16*,0)=(M2C_FIELD(gMapConfig,u16*,0)&~0x100)|((u32)((u16)(
 M2C_FIELD(gMapConfig,u16*,0)=(M2C_FIELD(gMapConfig,u16*,0)&~0x40)|((u32)((u16)((u32)((s32)((MapSettings *)arg0)->rules<<31)>>31)<<31)>>25);
 }
 
-void func_020c01bc(M2C_UNK arg0) {
+/* Create a child sprite owned by `owner` for one of the save/load screen's actions;
+ * its class (whose callbacks reference SaveGameSettings and IsSaveInProgress)
+ * carries the action out. */
+void func_020c01bc(M2C_UNK owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212945c;
-    CreateSpriteObject(&data_0212945c, arg0);
+    CreateSpriteObject(&data_0212945c, owner);
 }
 
-void func_020c01d4(M2C_UNK arg0) {
+/* Create a child sprite owned by `owner` for one of the save/load screen's actions;
+ * its class's callbacks reference LoadGameSettings and IsSaveInProgress, the load
+ * counterpart of func_020c01bc's save class. */
+void func_020c01d4(M2C_UNK owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212942c;
-    CreateSpriteObject(&data_0212942c, arg0);
+    CreateSpriteObject(&data_0212942c, owner);
 }
 
-void func_020c01ec(M2C_UNK arg0) {
+/* Create a child sprite owned by `owner` from one of the save/load feature's data
+ * classes; ov003's map-select transition starts it (with the screen object as
+ * `owner`) when a new list entry is chosen. */
+void func_020c01ec(M2C_UNK owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02129514;
-    CreateSpriteObject(&data_02129514, arg0);
+    CreateSpriteObject(&data_02129514, owner);
 }
 
 /* Open the save/load screen from the main menu: halt with the load-failure
@@ -444,9 +453,10 @@ void OpenSaveLoadScreen(void) {
     CreateSaveLoadScreen();
 }
 
-void func_020c023c(M2C_UNK arg0) {
+/* Spawn the save/load screen "open" sprite, owned by layer `owner`. */
+void CreateSaveLoadScreenOpenSprite(M2C_UNK owner) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gSaveLoadScreenOpenClass;
-    CreateSpriteFromClass(&gSaveLoadScreenOpenClass, arg0);
+    CreateSpriteFromClass(&gSaveLoadScreenOpenClass, owner);
 }
 

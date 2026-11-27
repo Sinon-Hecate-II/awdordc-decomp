@@ -77,10 +77,11 @@ void func_ov004_02213118(void) {
     WaitForInputOrTimeout();
 }
 
-void func_ov004_02213124(M2C_UNK arg0) {
+/* Spawn the battle-start window sprite that plays the ov004 opening animation. */
+void Ov004_CreateBattleStartWindow(s32 owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov004_02218da8;
-    CreateSpriteObject(&data_ov004_02218da8, arg0);
+    extern M2C_UNK gOv004BattleStartWindowClass;
+    CreateSpriteObject(&gOv004BattleStartWindowClass, owner);
 }
 
 /* Check whether any of player one's active unit records has a nonzero rank. */

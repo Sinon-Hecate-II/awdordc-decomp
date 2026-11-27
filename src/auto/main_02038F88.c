@@ -353,7 +353,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     extern M2C_UNK gPlayerConnections;
     extern u32 gEmptyString;
 
-    s32 func_0203e558(void);
+    s32 IsConnectionMissing(void);
     void *gt2GetConnectionData();
     void ResetTransferSlot();
     s32 RemovePeerBySlot(s32);
@@ -378,7 +378,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     s32 arg0v = arg0;
     s32 arg1v = arg1;
 
-    if (func_0203e558() != 0) return;
+    if (IsConnectionMissing() != 0) return;
 
     switch (arg1v) {
         case 0:

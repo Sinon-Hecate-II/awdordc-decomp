@@ -175,7 +175,7 @@ SetOnlineSessionFlag kind:function(arm,size=0x1c) addr:0x02228298
 IsOnlineSessionFlagSet kind:function(arm,size=0x20) addr:0x022282b4
 Ov010Online_ClearStepFlag kind:function(arm,size=0x24) addr:0x022282d4
 GetNetErrorCode kind:function(arm,size=0x1c) addr:0x022282f8
-func_ov010_02228314 kind:function(arm,size=0xc) addr:0x02228314
+GetNetErrorVeneer kind:function(arm,size=0xc) addr:0x02228314
 func_ov010_02228320 kind:function(arm,size=0xc) addr:0x02228320
 func_ov010_0222832c kind:function(arm,size=0x2e8) addr:0x0222832c
 Ov010Online_StartWfcConnection kind:function(arm,size=0x2c) addr:0x02228614
@@ -186,7 +186,7 @@ Ov010HttpConnectSprite_Update kind:function(arm,size=0x24) addr:0x022286cc
 Ov010MatchmakingSprite_Update kind:function(arm,size=0x24) addr:0x022286f0
 func_ov010_02228714 kind:function(arm,size=0xc) addr:0x02228714
 Ov010Online_PollSessionEnd kind:function(arm,size=0x28) addr:0x02228720
-func_ov010_02228748 kind:function(arm,size=0x18) addr:0x02228748
+CreateOnlineReconnectObject kind:function(arm,size=0x18) addr:0x02228748
 Ov010Online_InitSession kind:function(arm,size=0x2d8) addr:0x02228760
 func_ov010_02228a38 kind:function(arm,size=0x10) addr:0x02228a38
 FreePacketAssemblySlot kind:function(arm,size=0x28) addr:0x02228a48
@@ -295,8 +295,8 @@ Ov010Online_ShowNetError kind:function(arm,size=0x80) addr:0x0222a8ec
 func_ov010_0222a96c kind:function(arm,size=0x4) addr:0x0222a96c
 StartOnlineMatchSplitTransitions kind:function(arm,size=0x6c) addr:0x0222a970
 UpdateEntityCursor kind:function(arm,size=0x374) addr:0x0222a9dc
-func_ov010_0222ad50 kind:function(arm,size=0xb8) addr:0x0222ad50
-func_ov010_0222ae08 kind:function(arm,size=0x18) addr:0x0222ae08
+HandleEntityLinkResult kind:function(arm,size=0xb8) addr:0x0222ad50
+CreateEntityNetErrorReporter kind:function(arm,size=0x18) addr:0x0222ae08
 Ov010_HideEntityLabel kind:function(arm,size=0xd8) addr:0x0222ae20
 Sprite_ResumeAnimationWhenOnlineConnected kind:function(arm,size=0x20) addr:0x0222aef8
 Ov010Online_BeginSession kind:function(arm,size=0x40) addr:0x0222af18
@@ -373,7 +373,7 @@ sOv010NasRegisterRequest kind:data(any) addr:0x0222c0e8
 data_ov010_0222c128 kind:data(any) addr:0x0222c128
 gOnlineDepartureSpriteClass kind:data(any) addr:0x0222c140
 gOv010SessionStateClass kind:data(any) addr:0x0222c160
-data_ov010_0222c1b8 kind:data(any) addr:0x0222c1b8
+gOnlineReconnectClass kind:data(any) addr:0x0222c1b8
 data_ov010_0222c218 kind:data(any) addr:0x0222c218
 gOv010StartRequestClass kind:data(any) addr:0x0222c250
 gOnlinePlayerAnnounceClass kind:data(any) addr:0x0222c288

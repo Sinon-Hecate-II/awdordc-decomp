@@ -155,8 +155,9 @@ s32 IsFootUnitKind(s32 kind) {
  switch(kind){case UNIT_KIND_INFANTRY:case UNIT_KIND_MECH:case UNIT_KIND_BIKE:return 1;default:return 0;}
 }
 
-s32 IsCaptureKind(s32 a) {
- switch(a){case 1:case 2:return 1;default:return 0;}
+/* Whether `kind` is a kind that can capture a property: Infantry or Mech. */
+s32 IsCaptureKind(s32 kind) {
+ switch(kind){case UNIT_KIND_INFANTRY:case UNIT_KIND_MECH:return 1;default:return 0;}
 }
 
 /* Attack class (UNIT_ATTACK_*) of unit kind `kind`, from the kind's maximum

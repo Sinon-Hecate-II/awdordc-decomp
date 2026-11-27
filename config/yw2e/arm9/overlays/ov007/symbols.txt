@@ -1,7 +1,7 @@
 MapEditor_StartMap kind:function(arm,size=0x22c) addr:0x02211200
 MapEditor_ShowIntroMessage kind:function(arm,size=0x54) addr:0x0221142c
 MapEditor_EndMap kind:function(arm,size=0x2c) addr:0x02211480
-MapEditor_SpawnCursorSprite kind:function(arm,size=0x18) addr:0x022114ac
+MapEditor_SpawnGraphicsRefreshSprite kind:function(arm,size=0x18) addr:0x022114ac
 MapEditor_PlaceSelectedUnit kind:function(arm,size=0x9c) addr:0x022114c4
 MapEditor_PickUnit kind:function(arm,size=0x9c) addr:0x02211560
 MapEditor_EraseUnit kind:function(arm,size=0xa4) addr:0x022115fc
@@ -12,7 +12,7 @@ MapEditor_EraseTerrain kind:function(arm,size=0xcc) addr:0x02211840
 MapEditor_TryPaintTerrain kind:function(arm,size=0x84) addr:0x0221190c
 MapEditor_GetCursorType kind:function(arm,size=0x158) addr:0x02211990
 MapEditor_Update kind:function(arm,size=0x384) addr:0x02211ae8
-func_ov007_02211e6c kind:function(arm,size=0x18) addr:0x02211e6c
+MapEditor_CreateObject kind:function(arm,size=0x18) addr:0x02211e6c
 MapEditor_ResumeAnimation kind:function(arm,size=0x20) addr:0x02211e84
 SetMapEditorMode kind:function(arm,size=0x5c) addr:0x02211ea4
 GetMapEditorMode kind:function(arm,size=0x10) addr:0x02211f00
@@ -42,13 +42,13 @@ MapEditor_LoadExplosionSprite kind:function(arm,size=0x1c) addr:0x022121e4
 func_ov007_02212200 kind:function(arm,size=0xabc) addr:0x02212200
 func_ov007_02212cbc kind:function(arm,size=0xc) addr:0x02212cbc
 func_ov007_02212cc8 kind:function(arm,size=0xd8) addr:0x02212cc8
-func_ov007_02212da0 kind:function(arm,size=0x18) addr:0x02212da0
+MapEditor_SpawnButtonScreen kind:function(arm,size=0x18) addr:0x02212da0
 func_ov007_02212db8 kind:function(arm,size=0x14) addr:0x02212db8
 func_ov007_02212dcc kind:function(arm,size=0x384) addr:0x02212dcc
 func_ov007_02213150 kind:function(arm,size=0x12c) addr:0x02213150
 MapEditor_SlideOutButtonSprites kind:function(arm,size=0x40) addr:0x0221327c
 MapEditor_TogglePage kind:function(arm,size=0x50) addr:0x022132bc
-func_ov007_0221330c kind:function(arm,size=0x18) addr:0x0221330c
+MapEditor_ShowPageToggleSprite kind:function(arm,size=0x18) addr:0x0221330c
 MapEditor_IsCustomMap kind:function(arm,size=0x34) addr:0x02213324
 func_ov007_02213358 kind:function(arm,size=0x8) addr:0x02213358
 func_ov007_02213360 kind:function(arm,size=0xc) addr:0x02213360
@@ -179,7 +179,7 @@ MapEditor_RenderMapName kind:function(arm,size=0x5c) addr:0x0221a104
 func_ov007_0221a160 kind:function(arm,size=0x408) addr:0x0221a160
 MapEditor_ClearSceneSprites kind:function(arm,size=0x34) addr:0x0221a568
 func_ov007_0221a59c kind:function(arm,size=0x584) addr:0x0221a59c
-func_ov007_0221ab20 kind:function(arm,size=0x18) addr:0x0221ab20
+MapEditor_SpawnScene kind:function(arm,size=0x18) addr:0x0221ab20
 func_ov007_0221ab38 kind:function(arm,size=0x14) addr:0x0221ab38
 MapEditor_RefreshGraphics kind:function(arm,size=0x1c) addr:0x0221ab4c
 MapEditor_FitPreviewToMap kind:function(arm,size=0xb8) addr:0x0221ab68
@@ -215,7 +215,7 @@ StartNextMap kind:function(arm,size=0x198) addr:0x0221c33c
 UpdateCampaignSaveMessage kind:function(arm,size=0x48) addr:0x0221c4d4
 func_ov007_0221c51c kind:function(arm,size=0x18) addr:0x0221c51c
 func_ov007_0221c534 kind:function(arm,size=0xfc) addr:0x0221c534
-func_ov007_0221c630 kind:function(arm,size=0x18) addr:0x0221c630
+MapEditor_ReloadMap kind:function(arm,size=0x18) addr:0x0221c630
 MapEditor_LoadMapData kind:function(arm,size=0xd0) addr:0x0221c648
 func_ov007_0221c718 kind:function(arm,size=0x644) addr:0x0221c718
 func_ov007_0221cd5c kind:function(arm,size=0xc) addr:0x0221cd5c
@@ -256,14 +256,14 @@ data_ov007_0221f52c kind:data(any) addr:0x0221f52c
 data_ov007_0221f544 kind:data(any) addr:0x0221f544
 data_ov007_0221f574 kind:data(any) addr:0x0221f574
 data_ov007_0221f5a4 kind:data(any) addr:0x0221f5a4
-data_ov007_0221f5c0 kind:data(any) addr:0x0221f5c0
+gMapEditorGraphicsRefreshClass kind:data(any) addr:0x0221f5c0
 gMapEditorClass kind:data(any) addr:0x0221f5f8
 gMapNameFormat kind:data(any) addr:0x0221f678
 gUnitEraseEffect kind:data(any) addr:0x0221f680
 data_ov007_0221f690 kind:data(any) addr:0x0221f690
 gMapEditorExplosionName kind:data(any) addr:0x0221f6a0
-data_ov007_0221f6b0 kind:data(any) addr:0x0221f6b0
-data_ov007_0221f6e8 kind:data(any) addr:0x0221f6e8
+gMapEditorPageToggleSpriteClass kind:data(any) addr:0x0221f6b0
+gMapEditorButtonScreenClass kind:data(any) addr:0x0221f6e8
 gMapResizeSpriteClass kind:data(any) addr:0x0221f740
 gMapEditorMenuClass kind:data(any) addr:0x0221f780
 gMapEditorFillDialogClass kind:data(any) addr:0x0221f7c0
@@ -299,7 +299,7 @@ data_ov007_0222007c kind:data(any) addr:0x0222007c
 data_ov007_02220088 kind:data(any) addr:0x02220088
 data_ov007_02220094 kind:data(any) addr:0x02220094
 data_ov007_022200a0 kind:data(any) addr:0x022200a0
-data_ov007_022200b0 kind:data(any) addr:0x022200b0
+gMapEditorSceneClass kind:data(any) addr:0x022200b0
 data_ov007_022200d8 kind:data(any) addr:0x022200d8
 data_ov007_022200e4 kind:data(any) addr:0x022200e4
 data_ov007_022200f0 kind:data(any) addr:0x022200f0
@@ -314,7 +314,7 @@ data_ov007_0222014c kind:data(any) addr:0x0222014c
 data_ov007_02220158 kind:data(any) addr:0x02220158
 data_ov007_02220164 kind:data(any) addr:0x02220164
 data_ov007_02220170 kind:data(any) addr:0x02220170
-data_ov007_02220178 kind:data(any) addr:0x02220178
+gMapEditorReloadScreenClass kind:data(any) addr:0x02220178
 data_ov007_022201d8 kind:data(any) addr:0x022201d8
 data_ov007_02220288 kind:data(any) addr:0x02220288
 data_ov007_0222028c kind:data(any) addr:0x0222028c

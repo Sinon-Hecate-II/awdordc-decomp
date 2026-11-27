@@ -163,11 +163,26 @@ u8 func_020a8a04(void) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 0x10);
 }
 
-u8 GetMapPlayerFlags(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,60);}
+/* The per-player flags byte of the map data record of `mapId` for player slot
+ * `player` (1-based). */
+u8 GetMapPlayerFlags(s32 mapId, s32 player) {
+    u8 *record = (u8 *) MapData_GetRecord(mapId);
+    return M2C_FIELD(record + (player - 1), u8 *, MAP_DATA_PLAYER_FLAGS);
+}
 
-u8 func_020a8a30(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,28);}
+/* The CO id the map data record of `mapId` assigns to player slot `player`
+ * (1-based): 0 means a random CO, 15 leaves the map's default in place. */
+u8 GetMapPlayerCoId(s32 mapId, s32 player) {
+    u8 *record = (u8 *) MapData_GetRecord(mapId);
+    return M2C_FIELD(record + (player - 1), u8 *, MAP_DATA_PLAYER_CO_ID);
+}
 
-u8 GetMapPlayerId(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,32);}
+/* The player id the map data record of `mapId` assigns to player slot `player`
+ * (1-based), used to set each slot's player in the battle. */
+u8 GetMapPlayerId(s32 mapId, s32 player) {
+    u8 *record = (u8 *) MapData_GetRecord(mapId);
+    return M2C_FIELD(record + (player - 1), u8 *, MAP_DATA_PLAYER_ID);
+}
 
 /* The army (nation) id the map data record of `mapId` assigns to player slot `player`
  * (1-based); ARM_* ids. */

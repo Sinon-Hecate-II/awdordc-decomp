@@ -376,14 +376,17 @@ void SetScenePanelChildFlip(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x58) = arg1;
 }
 
-s32 Get3DSpriteChild(void *arg0, s32 arg1) {
-    s32 var_r1;
+/* Return scene-panel child sprite `slot` (0 or 1): the pointer stored at
+ * SCENE_PANEL_FACE0 or SCENE_PANEL_FACE1, swapped when the panel's flip flag is
+ * set. */
+s32 Get3DSpriteChild(void *panel, s32 slot) {
+    s32 childSlot;
 
-    var_r1 = arg1;
-    if (M2C_FIELD(arg0, u8 *, 0x58) != 0) {
-        var_r1 = 1 - var_r1;
+    childSlot = slot;
+    if (M2C_FIELD(panel, u8 *, SCENE_PANEL_FLIP) != 0) {
+        childSlot = 1 - childSlot;
     }
-    return M2C_FIELD((arg0 + (var_r1 * 4)), s32 *, 0x68);
+    return M2C_FIELD((panel + (childSlot * 4)), s32 *, SCENE_PANEL_FACE0);
 }
 
 /* The scene panel's face sprite that is in use: the first of its two face
@@ -586,10 +589,12 @@ void **Alloc3DSprite(s32 layer) {
     return result;
 }
 
-void FindScenePanel(M2C_UNK arg0) {
+/* Find the scene panel sprite at panel slot `panelIndex` (each panel is a separate
+ * depth in the panel sprite class), or NULL when that panel is not on screen. */
+s32 FindScenePanel(u16 panelIndex) {
     M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gScenePanelSpriteClass;
-    Find3DSpriteByClassAndZ(&gScenePanelSpriteClass, arg0);
+    return Find3DSpriteByClassAndZ(&gScenePanelSpriteClass, panelIndex);
 }
 
 void func_0209e9f4(void) {

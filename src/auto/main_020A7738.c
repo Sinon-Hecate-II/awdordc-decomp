@@ -60,27 +60,33 @@ u32 func_020a789c(void *arg0) {
     return (u32) (M2C_FIELD(arg0, u16 *, 6) << 0x15) >> 0x1C;
 }
 
-void func_020a78ac(u8 *arg0) {
+/* Maximum ammo for the unit record's kind (the kind's entry in the per-kind max
+ * ammo table). */
+s32 GetUnitMaxAmmo(u8 *unit) {
     M2C_UNK GetUnitKindMaxAmmo(u32);
-    GetUnitKindMaxAmmo((u32) (*arg0 << 0x1A) >> 0x1A);
+    return GetUnitKindMaxAmmo((u32) (*unit << 0x1A) >> 0x1A);
 }
 
 u32 func_020a78c4(void *arg0) {
     return (u32) (M2C_FIELD(arg0, u8 *, 0xA) << 0x19) >> 0x19;
 }
 
-void func_020a78d4(u8 *arg0) {
+/* Maximum fuel of the unit's kind: take the kind from the unit's first byte
+ * (MAP_UNIT_KIND, its low six bits) and look up the kind's record. */
+void GetUnitMaxFuel(u8 *unit) {
     M2C_UNK GetUnitKindMaxFuel(u32);
-    GetUnitKindMaxFuel((u32) (*arg0 << 0x1A) >> 0x1A);
+    GetUnitKindMaxFuel((u32) (*unit << 0x1A) >> 0x1A);
 }
 
 u32 func_020a78ec(u8 *arg0) {
     return (u32) (*arg0 << 0x18) >> 0x1E;
 }
 
-s32 GetUnitMaxLuck(void *arg0) {
+/* A unit's maximum damage variance: its max-luck bonus (terrain, CO effects) plus
+ * the base 10 the luck roll can add to the damage. */
+s32 GetUnitMaxLuck(void *unit) {
     s32 GetUnitMaxLuckBonus(void *, u8, u8);
-    return GetUnitMaxLuckBonus(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 0xA;
+    return GetUnitMaxLuckBonus(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2)) + 0xA;
 }
 
 s32 GetUnitMinLuck(void *arg0) {
@@ -246,15 +252,16 @@ u8 func_020a7c98(s32 arg0) {
  return gMovementTypeTable[arg0 * 0x70];
 }
 
-u8 HasUnitActed(void *arg0) {
-    u8 var_r0;
+/* Whether the unit has already acted this turn (its UNIT_FLAG_ACTED bit). */
+u8 HasUnitActed(void *unit) {
+    u8 acted;
 
-    if (M2C_FIELD(arg0, u16 *, 4) & 1) {
-        var_r0 = 1;
+    if (M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) & UNIT_FLAG_ACTED) {
+        acted = 1;
     } else {
-        var_r0 = 0;
+        acted = 0;
     }
-    return var_r0;
+    return acted;
 }
 
 /* Nonzero when the unit has capture points: it is part-way through capturing the
@@ -270,15 +277,17 @@ u8 UnitHasCapturePoints(void *unit) {
     return hasPoints;
 }
 
-u8 UnitHasCargo(void *arg0) {
-    u8 var_r0;
+/* Nonzero when the unit carries another unit: its first carried-unit slot
+ * (MAP_UNIT_CARRIED) holds a unit id. */
+u8 UnitHasCargo(void *unit) {
+    u8 hasCargo;
 
-    if (M2C_FIELD(arg0, u8 *, 0xC) != 0) {
-        var_r0 = 1;
+    if (M2C_FIELD(unit, u8 *, MAP_UNIT_CARRIED) != 0) {
+        hasCargo = 1;
     } else {
-        var_r0 = 0;
+        hasCargo = 0;
     }
-    return var_r0;
+    return hasCargo;
 }
 
 /* Whether `unit` is the unit the player that owns it has currently selected. */

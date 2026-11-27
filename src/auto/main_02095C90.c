@@ -202,7 +202,9 @@ s32 TryStartDialogSkip(void) {
     return 1;
 }
 
-void func_020960b4(void) {
+/* Register the dialog-sequence update as a frame-callback task (priority 5), so
+ * the queued dialog scripts advance once per frame. */
+void QueueDialogSequenceUpdate(void) {
     M2C_UNK CreateFrameCallbackTask(M2C_UNK *, M2C_UNK);
     extern M2C_UNK UpdateDialogSequences;
     CreateFrameCallbackTask(&UpdateDialogSequences, 5);
@@ -374,7 +376,7 @@ block_8:
  * unit, then the map view is refreshed. */
 void LoadCurrentMap(void){
 extern s32 *gCurrentMap;
-s32 GetMapRecordBuffer(void);s32 IsLinkSessionActive(void);s32 LoadMapRecord(s32,s32);void func_020c8564(s32);s32 func_020a8b2c(s32);M2C_UNK SetFileDirectory(M2C_UNK *);s32 LoadFileToBuffer(s32,s32);M2C_UNK PlaceMapDeployment(s32,M2C_UNK);M2C_UNK HeapFreeBlock(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void RefreshMapView();
+s32 GetMapRecordBuffer(void);s32 IsLinkSessionActive(void);s32 LoadMapRecord(s32,s32);void RestoreSavedMapUnits(s32);s32 func_020a8b2c(s32);M2C_UNK SetFileDirectory(M2C_UNK *);s32 LoadFileToBuffer(s32,s32);M2C_UNK PlaceMapDeployment(s32,M2C_UNK);M2C_UNK HeapFreeBlock(s32);void GetUnitOwner(void *);void *GetPlayerSelectedUnit(void);void RefreshMapView();
 s32 id=M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_ID);
 s32 p,i;BattleMapUnitHead *unit; s32 off;
 if(id>=MAP_ID_CAMPAIGN_FIRST&&id<MAP_ID_CAMPAIGN_END){
@@ -382,7 +384,7 @@ p=GetMapRecordBuffer();
 if(!IsLinkSessionActive()){
 if(!LoadMapRecord(id,p))return;
 }
-func_020c8564(p);
+RestoreSavedMapUnits(p);
 }else{
 if(!func_020a8b2c(id))return;
 SetFileDirectory((M2C_UNK *)data_02102ee4);

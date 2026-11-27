@@ -75,7 +75,7 @@ void TeardownConnectionSession(void) {
 s32 SendMatchmakingParameter(s32 value) {
     void FormatMatchmakingMessage(M2C_UNK,s32,s32,s32);
     M2C_UNK StringFormatN();
-    void ResetSessionList(s32);
+    void ResetServerBrowser(s32);
     s32 SendToPlayerList(s32,s32,s32,void *,s32,void *,s32);
     u64 GetSystemTick(void);
     extern M2C_UNK gSessionPlayers,gConnectionMgr,sDwcFormatAnd,sDwcFormatParam,sDwcKeyPid;
@@ -111,7 +111,7 @@ s32 SendMatchmakingParameter(s32 value) {
         break;
     default:break;
     }
-    ResetSessionList(M2C_FIELD(GetConnection(),s32 *,0xe4));
+    ResetServerBrowser(M2C_FIELD(GetConnection(),s32 *,0xe4));
     for(i=0;i<5;i++){
         result=SendToPlayerList(M2C_FIELD(GetConnection(),s32 *,0xe4),1,0,playerIds,count,message,6);
         if(result==0)break;
@@ -138,7 +138,7 @@ void FormatMatchmakingMessage(M2C_UNK text, s32 playerId, s32 capacity, s32 mode
 }
 
 s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
-    s32 func_02060c78(void *);
+    s32 SBServerHasPrivateAddress(void *);
     s32 SBServerGetIp(s32 *);
     s32 func_020617b4(void *);
     s32 func_02060c90(void *);
@@ -167,7 +167,7 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
         low = M2C_FIELD(s, u32 *, 0x200);
         low = (u16)low;
         sessionId = ((u32)high << 16) | low;
-        if (func_02060c78((void *)data)) {
+        if (SBServerHasPrivateAddress((void *)data)) {
             value = SBServerGetIp((s32 *)data);
             if (value != func_020617b4(M2C_FIELD(GetConnection(), void **, 0xe4))) {
                 deferred = 1;

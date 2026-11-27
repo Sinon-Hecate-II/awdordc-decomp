@@ -18,9 +18,9 @@ void UpdateMapSelectionCursor(void) {
 
 void func_020d549c(void) {
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020cc62c();
+    M2C_UNK CreateMapViewSprite();
     PlaySoundEffect(0x10017);
-    func_020cc62c();
+    CreateMapViewSprite();
 }
 
 void func_020d54b4(void) {

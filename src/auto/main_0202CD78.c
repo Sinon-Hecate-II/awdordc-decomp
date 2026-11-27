@@ -633,13 +633,15 @@ void func_0202d9c0(s32 *arg0) {
     *arg0 = 0;
 }
 
-void Sound_ClearPlayerHandle(void **arg0) {
-    void *temp_r2;
+/* Detach the caller's handle variable from the sound player it owns: clear the
+ * player's owner back-pointer and the handle, leaving the player slot itself. */
+void Sound_ClearPlayerHandle(void **handle) {
+    void *player;
 
-    temp_r2 = *arg0;
-    if (temp_r2 != NULL) {
-        M2C_FIELD(temp_r2, s32 *, 0x14C) = 0;
-        *arg0 = NULL;
+    player = *handle;
+    if (player != NULL) {
+        M2C_FIELD(player, s32 *, SOUND_HANDLE_OWNER) = 0;
+        *handle = NULL;
     }
 }
 

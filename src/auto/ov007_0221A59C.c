@@ -66,16 +66,18 @@ if((gFrameCounter&63)<48){AddSprite(192,180,(u16)((0x3ff&(396>>((u32)(**(u16**)g
 gCur3DSpriteEngine=saved;
 }
 
-void func_ov007_0221ab20(void) {
+/* Spawn the map editor scene object: its class builds the editor's graphics and
+ * status panel, and clears the scene sprites when the editor closes. */
+void MapEditor_SpawnScene(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_022200b0;
-    CreateSpriteFromClass(&data_ov007_022200b0, 7);
+    extern M2C_UNK gMapEditorSceneClass;
+    CreateSpriteFromClass(&gMapEditorSceneClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 void func_ov007_0221ab38(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_ov007_022200b0;
-    DeleteSpriteObjectsOfClass(&data_ov007_022200b0);
+    extern M2C_UNK gMapEditorSceneClass;
+    DeleteSpriteObjectsOfClass(&gMapEditorSceneClass);
 }
 
 /* Rebuild the map editor's graphics after the map or the editor selection

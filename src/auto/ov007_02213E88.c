@@ -166,6 +166,8 @@ void func_ov007_022142bc(void *arg0) {
     MapEditor_StartMapResize(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
 }
 
+/* Create the map editor's tile cursor object: it holds the map view and tracks
+ * the tile the player is editing (its input update is func_ov007_02213e88). */
 void MapEditor_CreateTileCursor(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gMapEditCursorClass;

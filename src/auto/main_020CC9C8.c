@@ -1,6 +1,7 @@
 /* 31 functions from 0x020CC9C8 to 0x020CD8A8 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 
 
 /* Starts a zoom-in or zoom-out of the map view: picks the new zoom level and
@@ -67,10 +68,11 @@ void func_020ccc94(void) {
     UpdateCursorCellDisplayMode();
 }
 
+/* Spawn the map menu's zoom-control sprite on the default sprite layer. */
 void CreateMapMenu(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gMapZoomClass;
-    CreateSpriteFromClass(&gMapZoomClass, 7);
+    CreateSpriteFromClass(&gMapZoomClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 /* Nonzero while the map-view zoom transition is running (an object of the map
@@ -138,10 +140,13 @@ void ShowBattleResultsScreen(s32 sprite) {
     }
 }
 
-void func_020cce4c(void) {
+/* Creates the battle-finish sequence object: its script holds the map view,
+ * runs the map-clear effect, shows the results screen, saves and sends the
+ * battle-end request before releasing the hold. */
+void CreateBattleFinishSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212b894;
-    CreateSpriteFromClass(&data_0212b894, 7);
+    extern M2C_UNK gBattleFinishSpriteClass;
+    CreateSpriteFromClass(&gBattleFinishSpriteClass, 7);
 }
 
 /* Returns a player's battle outcome (BATTLE_RESULT_*): handles the link-battle

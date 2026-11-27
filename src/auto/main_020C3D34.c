@@ -166,10 +166,11 @@ void DestroyBreakCutIn(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_020c4764(M2C_UNK arg0) {
+/* Spawn the battle-start "break" cut-in sprite for `owner`. */
+void CreateBreakCutIn(s32 owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212a3cc;
-    CreateSpriteObject(&data_0212a3cc, arg0);
+    extern M2C_UNK gBreakCutInClass;
+    CreateSpriteObject(&gBreakCutInClass, owner);
 }
 
 /* Resolve the GameSpy profile id behind a 12-byte match player record, through

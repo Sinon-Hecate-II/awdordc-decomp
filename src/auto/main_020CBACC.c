@@ -50,10 +50,13 @@ void StepMapViewToCurrentPlayerCursor(void) {
  StepMapViewToTile(M2C_FIELD(player,u8 *,PLAYER_REC_CURSOR_X),M2C_FIELD(player,u8 *,PLAYER_REC_CURSOR_Y));
 }
 
-void func_020cbc08(void) {
+/* Start the turn intro's upkeep sprite on layer 7: its script holds the map view,
+ * marks the units that a supply unit refuels or upgrades, pans the view to the
+ * current player's cursor and refreshes the map. */
+void CreateTurnIntroUpkeepSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212b534;
-    CreateSpriteFromClass(&data_0212b534, 7);
+    extern M2C_UNK gTurnIntroUpkeepScript;
+    CreateSpriteFromClass(&gTurnIntroUpkeepScript, 7);
 }
 
 #pragma opt_common_subs off
@@ -130,10 +133,11 @@ while (M2C_FIELD(task, s16 *, 0x6c) < MAP_UNIT_GROUP_SCAN) {
 if (M2C_FIELD(task, s16 *, 0x6c) >= MAP_UNIT_GROUP_SCAN) Sprite_ResumeAnimation(task);
 }
 
-void func_020cbda4(void) {
+/* Spawn the scripted sprite that runs the turn-intro upkeep and battle-end checks. */
+void CreateTurnIntroSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212b25c;
-    CreateSpriteFromClass(&data_0212b25c, 7);
+    extern M2C_UNK gTurnIntroSpriteClass;
+    CreateSpriteFromClass(&gTurnIntroSpriteClass, 7);
 }
 
 /* Pack the target cursor tile into the cached cell coordinates, reset display flags, and refresh display mode. */
@@ -230,10 +234,13 @@ SetPlayerGaveUp(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),1);
 SetBattleCommand(AI_COMMAND_DESTROY_UNIT,0,0,0);
 }
 
-void func_020cc08c(void) {
+/* Spawn the give-up script in layer 7: it takes a hold on the map view, waits
+ * for the player to confirm, then makes the current player give up, destroys
+ * the unit under the cursor and schedules the battle-end check. */
+void CreateGiveUpScript(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212b4ec;
-    CreateSpriteFromClass(&data_0212b4ec, 7);
+    extern M2C_UNK gGiveUpScript;
+    CreateSpriteFromClass(&gGiveUpScript, 7);
 }
 
 /* Sets up the map-view screen: resets the map view, saves the scroll position on
@@ -403,10 +410,12 @@ void CloseMapViewStep(void *a) {
     M2C_FIELD(*gCurrentMap, u16 *, MAP_MODE) = 0;
 }
 
-void func_020cc62c(void) {
+/* Spawn the scripted sprite that opens and controls the map-view screen. */
+void CreateMapViewSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212b664;
-    CreateSpriteFromClass(&data_0212b664, 7);
+    extern M2C_UNK gMapViewSpriteClass;
+
+    CreateSpriteFromClass(&gMapViewSpriteClass, 7);
 }
 
 /* Target-cursor update: place the map-view cursor on the tile the target cursor
@@ -461,10 +470,13 @@ if(distance==0)return;
 if(distance==1)AddRecordValue(7,1);else AddRecordValue(8,1);
 }
 
+/* Spawn the attack-target-selection script in layer 7: it holds the map view,
+ * builds the list of targets in range, opens the target-selection menu and
+ * submits the chosen target. */
 void CreateTargetSelectionSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212b294;
-    CreateSpriteFromClass(&data_0212b294, 7);
+    extern M2C_UNK gTargetSelectionScript;
+    CreateSpriteFromClass(&gTargetSelectionScript, 7);
 }
 
 /* Whether a battle preview is on screen: either the full battle animation or

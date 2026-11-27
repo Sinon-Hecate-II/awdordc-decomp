@@ -438,9 +438,13 @@ void EndPlayerTurn(void) {
  func_020a6fcc(); M2C_FIELD(*gCurrentMap,u16 *,MAP_STATE)=1;
 }
 
-void func_020bbba4(void) {
+/* Hand the map back to its cursor and re-open the cursor's action menu: spawn
+ * the gMapCursorMenuClass screen on the default sprite layer. Its script drops the
+ * map-view hold, runs a frame of cursor input, waits for the view to settle, aims
+ * the cursor target at the cursor's tile and opens the map action menu. */
+void OpenMapCursorMenu(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212afac;
-    CreateSpriteFromClass(&data_0212afac, 7);
+    extern M2C_UNK gMapCursorMenuClass;
+    CreateSpriteFromClass(&gMapCursorMenuClass, 7);
 }
 

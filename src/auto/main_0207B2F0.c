@@ -179,10 +179,11 @@ u8 IsMapViewScrolling(void) {
     return scrolling;
 }
 
-void CreateMapViewScrollHold(M2C_UNK arg0) {
+/* Spawn the map-view scroll hold sprite that keeps the view from scrolling while it runs. */
+void CreateMapViewScrollHold(s32 owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02100bf8;
-    CreateSpriteObject(&data_02100bf8, arg0);
+    extern M2C_UNK gMapViewScrollHoldClass;
+    CreateSpriteObject(&gMapViewScrollHoldClass, owner);
 }
 
 /* Point the current map at the built-in storage for its four blocks: the battle

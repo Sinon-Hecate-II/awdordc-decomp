@@ -4,7 +4,7 @@
 #include "ov003_menu.h"
 
 s16 GetSpriteAnimValue(void *);
-void func_02086e9c(void);
+void FinishSprite3DScene(void);
 void SetupSprite3DScene(s32);
 s32 Divide(s32, s32);
 void SetGxPolygonAttr(s32, s32);
@@ -105,7 +105,7 @@ if(!Pair856(arg0,i)&&Mode856(arg0,8))Ov003_IsValueInRange((u8)i,2,4);
 next:data=M2C_FIELD(arg0,void **,68);originY=(s16)(originY+M2C_FIELD(data,u8 *,4));advance:i++;offset+=36;
 }while(i<M2C_FIELD(data,u8 *,0));
 }
-func_02086e9c();
+FinishSprite3DScene();
 }
 
 /* Whether the ov003 menu's selection context is showing the campaign save-slot

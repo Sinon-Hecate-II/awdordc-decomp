@@ -107,10 +107,13 @@ void FreeMapOfferState(void) {
     M2C_FIELD(&gMapOfferState, s32 *, MAP_OFFER_STATE_RECORD) = 0;
 }
 
-void func_ov006_02217464(M2C_UNK arg0) {
-    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov006_02218a48;
-    CreateSpriteFromClass(&data_ov006_02218a48, arg0);
+/* Create the map-offer search's state sprite, owned by `owner`: its class script
+ * allocates the shared received-player-record buffer when the search starts and
+ * frees it when the search ends. */
+void CreateMapOfferStateSprite(void *owner) {
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, void *);
+    extern M2C_UNK gMapOfferStateClass;
+    CreateSpriteFromClass(&gMapOfferStateClass, owner);
 }
 
 /* Allocate the ov006 map-offer object's name, map-record and packed-record
@@ -298,10 +301,13 @@ void ShutdownCampaignMapMenuUi(void) {
     ShowFrameBorderSprite();
 }
 
-void CreateCampaignMapMenuUi(M2C_UNK arg0) {
-    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov006_02218a78;
-    CreateSpriteObject(&data_ov006_02218a78, arg0);
+/* Create the campaign map menu's UI object, owned by `owner`: its class script
+ * loads the menu's UI graphics bank and shows the one-time hint, and restores the
+ * graphics bank and frame border when the menu closes. */
+void CreateCampaignMapMenuUi(void *owner) {
+    M2C_UNK CreateSpriteObject(M2C_UNK *, void *);
+    extern M2C_UNK gCampaignMapMenuUiClass;
+    CreateSpriteObject(&gCampaignMapMenuUiClass, owner);
 }
 
 /* Set up the map-transfer object: allocate the received-player and map-record

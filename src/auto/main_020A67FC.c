@@ -107,12 +107,14 @@ M2C_FIELD(last,u16 *,MAP_UNIT_FLAGS)&=~UNIT_FLAG_REPAIR_TMP;
 }
 }
 #pragma opt_common_subs reset
-void func_020a6b50(void *arg0) {
-    void *temp_r2;
+/* Unit-sprite class update: copy the tile x/y of the map unit the sprite draws
+ * (the record it holds at UNIT_SPRITE_UNIT) so the sprite follows its unit. */
+void UnitSprite_UpdateTilePosition(void *sprite) {
+    void *unit;
 
-    temp_r2 = M2C_FIELD(arg0, void **, 0x54);
-    M2C_FIELD(arg0, s32 *, 0x34) = (s32) M2C_FIELD(temp_r2, u8 *, 1);
-    M2C_FIELD(arg0, s32 *, 0x38) = (s32) M2C_FIELD(temp_r2, u8 *, 2);
+    unit = M2C_FIELD(sprite, void **, UNIT_SPRITE_UNIT);
+    M2C_FIELD(sprite, s32 *, UNIT_SPRITE_TILE_X) = (s32) M2C_FIELD(unit, u8 *, 1);
+    M2C_FIELD(sprite, s32 *, UNIT_SPRITE_TILE_Y) = (s32) M2C_FIELD(unit, u8 *, 2);
 }
 
 /* Unit-sprite state handler: explode the unit the sprite draws (the BattleMapUnit

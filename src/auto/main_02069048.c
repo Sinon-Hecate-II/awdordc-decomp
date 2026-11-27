@@ -16,7 +16,7 @@ typedef struct { char text[5]; } ScanWord5;
 #pragma push
 #pragma opt_strength_reduction off
 double ScanFloatStrtod(s32 limit,s32 (*read)(void *,s32,s32),void *ctx,s32 *count,s32 *status){
-double func_0206f0dc(void *);double func_02063f90(char *);void *memcpy(void *,const void *,u32);
+double func_0206f0dc(void *);double ScanFloatNaN(char *);void *memcpy(void *,const void *,u32);
 s32 hexstate=0,used=0,space=0,state=1;
 u16 decimal[19]={0};ScanWord9 infcopy;char payload[32];ScanWord9 infinity;u8 hex[8];ScanWord5 nancopy;double packed;u8 *bits=(u8 *)&packed;ScanWord5 nanword;
 s32 negative=0,expnegative=0,sign=0,adjust=0,exponent=0,hexexponent=0,hexnegative=0;
@@ -47,7 +47,7 @@ case 0x2000:{
  while(n<32&&(ScanFloatClass(ch,8)||ScanFloatClass(ch,1)||ch=='.')){payload[n++]=ch;SCAN_FLOAT_NEXT();}
  if(ch!=')'){state=0x1000;break;}n++;payload[n]=0;
  }
- if(negative)value=0.0-func_02063f90(payload);else value=func_02063f90(payload);*count=space+state+n+sign;return value;}
+ if(negative)value=0.0-ScanFloatNaN(payload);else value=ScanFloatNaN(payload);*count=space+state+n+sign;return value;}
 case 2:
  if(ch=='.'){state=16;SCAN_FLOAT_NEXT();break;}
  if(!ScanFloatClass(ch,8)){state=0x1000;break;}

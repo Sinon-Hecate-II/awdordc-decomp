@@ -69,10 +69,10 @@ void func_020c5da4(void) {
 }
 
 void func_020c5db4(void) {
-    M2C_UNK func_ov000_02171214();
+    M2C_UNK CreateWinRuleWindow();
     M2C_UNK DeleteMapMenuSprites();
     DeleteMapMenuSprites();
-    func_ov000_02171214();
+    CreateWinRuleWindow();
 }
 
 /* Map-menu command "Unit List": save the carried-unit menu state, close the map
@@ -573,25 +573,25 @@ void OpenArmyInfoCommand(void) {
 
 void func_020c69a0(void) {
     M2C_UNK ResumeMapInputMode();
-    M2C_UNK func_ov000_02171028();
+    M2C_UNK CreateSituationScreenSprite();
     PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
     ResumeMapInputMode();
-    func_ov000_02171028();
+    CreateSituationScreenSprite();
 }
 
 void func_020c69b8(void) {
-    M2C_UNK func_ov000_0217242c();
+    M2C_UNK OpenMapInfoScreen();
     M2C_UNK DeleteMapMenuSprites();
     DeleteMapMenuSprites();
-    func_ov000_0217242c();
+    OpenMapInfoScreen();
 }
 
 void func_020c69c8(void) {
-    M2C_UNK func_ov000_02171750();
+    M2C_UNK OpenUsernameScreen();
     M2C_UNK DeleteMapMenuSprites();
     DeleteMapMenuSprites();
-    func_ov000_02171750();
+    OpenUsernameScreen();
 }
 
 void func_020c69d8(void) {
@@ -602,18 +602,18 @@ void func_020c69d8(void) {
 }
 
 void func_020c69e8(void) {
-    M2C_UNK func_020cc08c();
+    M2C_UNK CreateGiveUpScript();
     M2C_UNK DeleteMapMenuSprites();
     DeleteMapMenuSprites();
-    func_020cc08c();
+    CreateGiveUpScript();
 }
 
 void func_020c69f8(void) {
-    M2C_UNK func_ov000_021707c0();
+    M2C_UNK ScrollListOpen();
     PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
     ResumeMapInputMode();
-    func_ov000_021707c0();
+    ScrollListOpen();
 }
 
 /* End Turn menu command: close the map menu and end the current player's turn;
@@ -641,17 +641,17 @@ void OpenOptionsCommand(void) {
 }
 
 void func_020c6a54(void) {
-    M2C_UNK func_020b4cf4();
+    M2C_UNK OpenSaveBattleScreen();
     M2C_UNK DeleteMapMenuSprites();
     DeleteMapMenuSprites();
-    func_020b4cf4();
+    OpenSaveBattleScreen();
 }
 
 void func_020c6a64(void) {
-    M2C_UNK func_020b4d24();
+    M2C_UNK OpenContinueBattleScreen();
     M2C_UNK DeleteMapMenuSprites();
     DeleteMapMenuSprites();
-    func_020b4d24();
+    OpenContinueBattleScreen();
 }
 
 /* Confirm the pending directional action: drop the cursor UI, and when no cursor
@@ -695,10 +695,10 @@ void ConfirmProduceUnitCommand(void) {
 }
 
 void func_020c6b68(void) {
-    M2C_UNK func_020bbba4();
+    M2C_UNK OpenMapCursorMenu();
     M2C_UNK DeleteMapMenuSprites();
     DeleteMapMenuSprites();
-    func_020bbba4();
+    OpenMapCursorMenu();
 }
 
 /* Capture the property the unit under the cursor stands on: refresh the battle

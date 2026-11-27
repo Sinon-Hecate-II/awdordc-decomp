@@ -81,11 +81,13 @@ void gti2CreateSocket(s32,s32,s32,s32,s32);
 gti2CreateSocket(a,b,c,d,e);
 }
 
-void func_0205ad60(M2C_UNK arg0) {
-    void GT2NotifyConnectionClosed();
-    M2C_UNK gti2FreeSocket(M2C_UNK);
-    GT2NotifyConnectionClosed();
-    gti2FreeSocket(arg0);
+/* Close a GT2 socket: fail every connection it still owns, then free it. */
+void GT2CloseSocket(void *socket) {
+    void GT2NotifyConnectionClosed(void *);
+    void gti2FreeSocket(void *);
+
+    GT2NotifyConnectionClosed(socket);
+    gti2FreeSocket(socket);
 }
 
 /* Per-frame update of one GT2 socket: drain its incoming datagrams, advance the

@@ -69,14 +69,14 @@ s32 Wfc_StepMatch(void) {
 s32 Wfc_StepStartHost(M2C_UNK state) {
     s32 func_02021a90(s32);
     void Wfc_BuildHostConfig(M2C_UNK, M2C_UNK, M2C_UNK);
-    extern s32 data_02138ac0;
+    extern s32 gNetTaskState;
     s32 config;
     s32 control;
 
     control = Wfc_GetWorkBlock(WFC_WORK_CONTROL);
     config = Wfc_GetWorkBlock(WFC_WORK_AUX);
     Wfc_BuildHostConfig(control, state, config);
-    data_02138ac0 = 4;
+    gNetTaskState = 4;
     if (func_02021a90(config) == 0) {
         return 0xC;
     }
@@ -152,8 +152,8 @@ s32 Wfc_StepHttp(void *state) {
 }
 
 s32 func_02031518(void *arg0) {
-    M2C_UNK func_0202f590(u8);
-    func_0202f590(M2C_FIELD(arg0, u8 *, 0xD0D));
+    M2C_UNK Wfc_SetFriendSlot(u8);
+    Wfc_SetFriendSlot(M2C_FIELD(arg0, u8 *, 0xD0D));
     return 0x10;
 }
 

@@ -192,7 +192,7 @@ void func_0201a26c(void *arg0) {
     extern s32 gLocalMacAddress;
     extern s32 gNetworkThreadPriority;
     extern s32 gNetReceiveThread;
-    extern s32 data_02138ac0;
+    extern s32 gNetTaskState;
     extern s32 gNetworkTask;
     extern s32 data_021382c0;
 
@@ -263,7 +263,7 @@ hi=M2C_FIELD(arg0,s32 *,0x18);lo=M2C_FIELD(arg0,u32 *,0x14);
 
     M2C_FIELD((u8 *)&gNetStack, u8 *, 0x1) = 0;
     {
-        TaskCreate((void *)&gNetReceiveThread, (void *)NetReceiveThreadMain, 0, (void *)&data_02138ac0, 0x800, gNetworkThreadPriority);
+        TaskCreate((void *)&gNetReceiveThread, (void *)NetReceiveThreadMain, 0, (void *)&gNetTaskState, 0x800, gNetworkThreadPriority);
         TaskCreate((void *)&gNetworkTask, (void *)&func_0201dd08, 0, (void *)&data_021382c0, 0x800, gNetworkThreadPriority);
     }
     TaskWake((s32)&gNetReceiveThread);

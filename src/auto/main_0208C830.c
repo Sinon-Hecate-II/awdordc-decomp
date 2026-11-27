@@ -77,10 +77,12 @@ void func_0208ca08(void *arg0) {
     UpdatePaletteFade(arg0);
 }
 
-void func_0208ca14(M2C_UNK arg0) {
+/* Create a palette-fade sprite owned by `owner`; the class's init clears its fade
+ * fields, so the caller sets the fade up afterwards with StartPaletteFade. */
+void CreatePaletteFadeSprite(M2C_UNK owner) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_021027c0;
-    CreateSpriteFromClass(&data_021027c0, arg0);
+    extern M2C_UNK gPaletteFadeSpriteClass;
+    CreateSpriteFromClass(&gPaletteFadeSpriteClass, owner);
 }
 
 /* Sets up one of the two built-in patterns a 3D sprite panel is drawn with:

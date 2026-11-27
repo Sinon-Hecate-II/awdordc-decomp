@@ -27,7 +27,7 @@ void *StringStorageReplace(StringStorage *self, u32 pos, u32 remove, u8 *first, 
 u32 StringLength(void *);void *MemAllocArray(u32),*MemAlloc(u32);
 void StringCopy(void *,void *);void func_0206f8c4(u32 *,u32,Flag);
 void func_0207465c(void *,void *,void *);
-s32 func_020700a0(s32),func_02070068(s32);
+s32 OutOfRangeDestructor(s32),LengthErrorDestructor(s32);
 void MemCopy(void *,void *,u32),MemMove(void *,void *,u32);s32 MemFree(s32);
 void StringStorageAssignRange(void *,s32,s32);void *StringStorageFree(void *);
 extern u8 data_021008f0[],data_02100888[],data_02100860[],data_0210090c[],data_02100944[],data_02100874[],data_021008b8[],data_021007f4[];
@@ -39,14 +39,14 @@ if(!large){oldcap=11;data=self->small.data;oldsize=self->small.length;}
 else {oldcap=self->large.capacity;oldsize=self->large.length;data=self->large.data;}
 if(pos>oldsize){
 InitStringException(exception1,data_021008f0,data_02100860);
-func_0207465c(data_0210090c,exception1,func_020700a0);
+func_0207465c(data_0210090c,exception1,OutOfRangeDestructor);
 }
 remaining=oldsize-pos;
 removed=*(remaining<remove?&remaining:&remove);
 inserted=end-first;
 if(inserted>0x7ffffffeU || oldsize-removed>0x7ffffffeU-inserted){
 InitStringException(exception2,data_02100944,data_02100874);
-func_0207465c(data_021008b8,exception2,func_02070068);
+func_0207465c(data_021008b8,exception2,LengthErrorDestructor);
 }
 newsize=inserted+(oldsize-removed);tail=oldsize-(pos+removed);
 if(newsize>=oldcap){
@@ -94,10 +94,12 @@ void StringStorageReplaceRange(void *storage, s32 pos, u32 remove, s32 first, s3
     StringStorageReplace(storage,pos,remove,first,last,unusedFlag);
 }
 
-s32 func_02070030(s32 arg0) {
+/* std::exception destructor (the first slot of data_02100888's vtable): release
+ * the exception's message string owner and return the exception object. */
+s32 ExceptionDestructor(s32 exception) {
     M2C_UNK func_0206f994(s32);
-    func_0206f994(arg0 + 4);
-    return arg0;
+    func_0206f994(exception + 4);
+    return exception;
 }
 
 /* std::exception deleting destructor: release the exception's message string
@@ -110,10 +112,12 @@ s32 DeleteException(s32 exception) {
     return exception;
 }
 
-s32 func_02070068(s32 arg0) {
+/* std::length_error destructor (the first slot of data_02100874's vtable): release
+ * the exception's message string owner and return the exception object. */
+s32 LengthErrorDestructor(s32 exception) {
     M2C_UNK func_0206f994(s32);
-    func_0206f994(arg0 + 4);
-    return arg0;
+    func_0206f994(exception + 4);
+    return exception;
 }
 
 /* std::length_error deleting destructor: release the exception's message string
@@ -126,9 +130,11 @@ s32 DeleteLengthError(s32 exception) {
     return exception;
 }
 
-s32 func_020700a0(s32 arg0) {
-    func_0206f994(arg0 + 4);
-    return arg0;
+/* std::out_of_range destructor (the first slot of data_02100860's vtable):
+ * release the exception's message string owner and return the exception object. */
+s32 OutOfRangeDestructor(s32 exception) {
+    func_0206f994(exception + 4);
+    return exception;
 }
 
 /* std::out_of_range deleting destructor: release the exception's message string

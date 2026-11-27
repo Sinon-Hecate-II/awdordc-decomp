@@ -36,9 +36,10 @@ s32 Wfc_GetNetCheckState(void) {
     return state;
 }
 
+/* The result code the WFC network check last published (negative on failure). */
 s32 Wfc_GetNetResultCode(void) {
     extern void *gWfcNet;
-    return M2C_FIELD(gWfcNet, s32 *, 0x1004);
+    return M2C_FIELD(gWfcNet, s32 *, WFC_NET_CHECK_RESULT);
 }
 
 /* Create and wake the HTTP network-check worker unless its existing thread is still running. */

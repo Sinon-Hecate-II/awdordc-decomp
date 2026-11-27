@@ -217,6 +217,6 @@ void RecordsMenu_ToggleRecordEnabled(u8 *row) {
 
 void func_ov005_02215650(void) {
     M2C_UNK FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_ov005_02220510;
-    FindObjectByClass(&data_ov005_02220510);
+    extern M2C_UNK gRecordsMenuClass;
+    FindObjectByClass(&gRecordsMenuClass);
 }

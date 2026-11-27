@@ -1,6 +1,7 @@
 /* 27 functions from 0x0209EAF4 to 0x0209F990 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 #include "ov000_ai.h"
 typedef struct MapConfigRecord {
     u16 flags;
@@ -220,9 +221,11 @@ void StartBattlePreview(void *preview) {
     CreateBattleSceneSprite(preview);
 }
 
-void func_0209f220(void) {
+/* Clear the sub (top) screen's 3D sprite bank master brightness, returning it to
+ * normal after a fade. */
+void ResetSubScreenBrightness(void) {
     extern void *g3DSpriteBankSub;
-    M2C_FIELD(g3DSpriteBankSub, s8 *, 0x50) = 0;
+    M2C_FIELD(g3DSpriteBankSub, s8 *, DS3D_BANK_BRIGHTNESS) = 0;
 }
 
 /* Run the map's staged battle event: hand its recorded attacker and defender
@@ -320,7 +323,7 @@ void InitBattleMapConfig(void) {
     extern void **gCurrentMap;
     extern MapConfigRecord gMapConfig;
     void ResetPlayerSetupTables(void);
-    s32 func_020a8a30(s32,s32); s32 GetMapPlayerArmyId(s32,s32); s32 GetMapPlayerId(s32,s32); s32 GetMapPlayerFlags(s32,s32);
+    s32 GetMapPlayerCoId(s32,s32); s32 GetMapPlayerArmyId(s32,s32); s32 GetMapPlayerId(s32,s32); s32 GetMapPlayerFlags(s32,s32);
     void SetPlayerCoId(s32,s32); void SetPlayerArmyId(s32,s32); void SetPlayerIdForSlot(s32,s32); void SetPlayerTeam(s32,s32);
     s32 func_020a88d4(s32); s32 MapData_GetBattleSetting(s32); s32 MapData_GetMapValue(s32); s32 MapData_GetValueLimitLow(s32); s32 MapData_GetValueLimitHigh(s32); s32 func_020a8a04(s32);
     void func_020a88c4(s32); void SetMapWeather(void); s32 MapData_GetTileset(s32);
@@ -331,7 +334,7 @@ void InitBattleMapConfig(void) {
 
     ResetPlayerSetupTables();
     for (player = 1; player < 5; player++) {
-        value = func_020a8a30(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
+        value = GetMapPlayerCoId(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
         fieldA = GetMapPlayerArmyId(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
         fieldB = GetMapPlayerId(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
         playerFlags = GetMapPlayerFlags(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);

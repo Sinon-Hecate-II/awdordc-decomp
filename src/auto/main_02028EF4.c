@@ -797,11 +797,13 @@ if(gWfcSignalSampleCount<16) gWfcSignalSampleCount++;
 else gWfcSignalSampleCount=(gWfcSignalSampleCount+1)%16+16;
 }
 #pragma opt_propagation reset
-void ListInit(void *arg0, s16 arg1) {
-    M2C_FIELD(arg0, s32 *, 0) = 0;
-    M2C_FIELD(arg0, s32 *, 4) = 0;
-    M2C_FIELD(arg0, s16 *, 8) = 0;
-    M2C_FIELD(arg0, s16 *, 0xA) = arg1;
+/* Initialise an empty doubly-linked list whose nodes keep their link pair at
+ * byte offset `nodeOffset` inside the node. */
+void ListInit(void *list, s16 nodeOffset) {
+    M2C_FIELD(list, s32 *, DLIST_HEAD) = 0;
+    M2C_FIELD(list, s32 *, DLIST_TAIL) = 0;
+    M2C_FIELD(list, u16 *, DLIST_COUNT) = 0;
+    M2C_FIELD(list, u16 *, DLIST_NODE_OFFSET) = nodeOffset;
 }
 
 /* Make `node` the only node of the doubly-linked list `list`: clear its link
@@ -906,11 +908,12 @@ void ListRemove(void *list, void *entry) {
     *(u16 *)((u8 *)list + DLIST_COUNT) = off;
 }
 
-s32 ListNext(void *arg0, s32 arg1) {
-    if (arg1 == 0) {
-        return M2C_FIELD(arg0, s32 *, 0);
+/* Return the node after `node` in `list`, or the list's head when `node` is NULL. */
+s32 ListNext(void *list, s32 node) {
+    if (node == 0) {
+        return M2C_FIELD(list, s32 *, DLIST_HEAD);
     }
-    return M2C_FIELD((arg1 + M2C_FIELD(arg0, u16 *, 0xA)), s32 *, 4);
+    return M2C_FIELD((node + M2C_FIELD(list, u16 *, DLIST_NODE_OFFSET)), s32 *, DLIST_LINK_NEXT);
 }
 
 s32 ListPrev(void *arg0, s32 arg1) {

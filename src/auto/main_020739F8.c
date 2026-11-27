@@ -3,8 +3,8 @@
 #include "cpp_exception.h"
 #pragma cplusplus on
 extern "C" {
-void func_020742f8(void);
-M2C_UNK func_020742e0(void);
+void StdUnexpected(void);
+M2C_UNK StdTerminate(void);
 void *DecodeExceptionValue(void *, s32 *);
 void *DecodeExceptionSignedValue(void *, s32 *);
 s32 ExceptionTypeMatches(M2C_UNK,void *);
@@ -23,7 +23,7 @@ typedef struct { s32 a,b,c,d; } CtxOperands_020739f8;
 
 #pragma scheduling off
 s32 func_020739f8(void *arg0, void *arg1) {
-    u8 func_02072da4(CtxToken_020739f8 *);
+    u8 GetExceptionOpcode(CtxToken_020739f8 *);
     void *DecodeExceptionSignedValue(void *, s32 *);
     s32 func_02072dc0(Ctx_020739f8 *);
     s32 out;
@@ -50,7 +50,7 @@ s32 func_020739f8(void *arg0, void *arg1) {
     ctx.state.tail = st->tail;
 
     for (;;) {
-        u8 cmd = func_02072da4(&ctx.token);
+        u8 cmd = GetExceptionOpcode(&ctx.token);
         switch (cmd) {
         default:
         case 1:
@@ -106,14 +106,14 @@ s32 ExceptionTypeMatches(M2C_UNK typePattern, void *exception) {
 #pragma exceptions on
 extern "C" void func_02073bd0(void *arg0){
 u8 *p=M2C_FIELD(arg0,u8 **,20);s32 values[4];
-try{func_020742f8();}catch(...){
+try{StdUnexpected();}catch(...){
 void *q=DecodeExceptionValue(p+1,&values[0]);
 q=DecodeExceptionValue(q,&values[1]);
 values[3]=(s32)DecodeExceptionSignedValue(q,&values[2]);
 if(ExceptionTypeMatches(M2C_FIELD(arg0,s32 *,8),values))func_020746a4();
 if(ExceptionTypeMatches((s32)data_021009a4,values)){void *exception=data_02100998;func_0207465c(data_021009bc,&exception,(void *)func_02073c78);}
 }
-func_020742e0();
+StdTerminate();
 }
 #pragma exceptions off
 #pragma cplusplus off
@@ -140,11 +140,11 @@ void func_02073c7c(s32 *arg0, s32 *arg1, void *arg2, s32 arg3) {
 #pragma peephole reset
 #pragma scheduling reset
 u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
-    u8 func_02072da4(CtxToken_020739f8 *);
+    u8 GetExceptionOpcode(CtxToken_020739f8 *);
     s32 func_02072dc0(Ctx_020739f8 *);
     void *DecodeExceptionValue(void *, M2C_UNK *);
     void *DecodeExceptionSignedValue(void *, s32 *);
-    M2C_UNK func_020742e0(void);
+    M2C_UNK StdTerminate(void);
     s32 func_02074330(M2C_UNK, s32, M2C_UNK *);
     s32 ExceptionTypeMatches(M2C_UNK, void *);
     void func_02073c7c(s32 *, s32 *, void *, s32);
@@ -168,7 +168,7 @@ u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
     ctx.state.f6 = ((CtxState_020739f8 *)arg0)->f6;
     ctx.state.tail = ((CtxState_020739f8 *)arg0)->tail;
 
-    code = func_02072da4(&ctx.token);
+    code = GetExceptionOpcode(&ctx.token);
     for (;;) {
         switch (code) {
         case 12: {
@@ -216,11 +216,11 @@ u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
         case 1:
         case 14:
         default:
-            func_020742e0();
+            StdTerminate();
             goto done;
         }
         func_02072dc0(&ctx);
-        code = func_02072da4(&ctx.token);
+        code = GetExceptionOpcode(&ctx.token);
     }
 done:
     return (u8 *)ctx.token.t2;
@@ -249,13 +249,13 @@ void Js_BuildHandlerEntry(void *record, s32 stackOffset, s32 resume) {
  * run the block's opcodes until one continues or ends execution.  Returns 0 when the
  * block runs to its end (or the record has no handler). */
 void Js_RunHandler(void *a){
-void FindExceptionTableHandler(s32,void *); M2C_UNK func_020742e0(void); s32 func_020739f8(void *,void *); u8 *func_02073cdc(void *,void *,s32 *); void *DecodeExceptionValue(void *,M2C_UNK *); void *DecodeExceptionSignedValue(void *,s32 *); M2C_UNK func_02073148(); M2C_UNK func_0207462c(void *,s32 *,s32); void Js_DecodeFrameData(void *,void *);
+void FindExceptionTableHandler(s32,void *); M2C_UNK StdTerminate(void); s32 func_020739f8(void *,void *); u8 *func_02073cdc(void *,void *,s32 *); void *DecodeExceptionValue(void *,M2C_UNK *); void *DecodeExceptionSignedValue(void *,s32 *); M2C_UNK func_02073148(); M2C_UNK func_0207462c(void *,s32 *,s32); void Js_DecodeFrameData(void *,void *);
 s32 frame[6]; s32 operands[4]; u8 *p; u8 *data;
 FindExceptionTableHandler(M2C_FIELD(a,s32 *,16),frame);
-if(!frame[1])func_020742e0();
+if(!frame[1])StdTerminate();
 Js_DecodeFrameData(a,frame);
 if(M2C_FIELD(a,s32 *,0))M2C_FIELD(a,s32 *,12)=0;
-else {M2C_FIELD(a,s32 *,12)=func_020739f8(a,frame);if(!M2C_FIELD(a,s32 *,12))func_020742e0();}
+else {M2C_FIELD(a,s32 *,12)=func_020739f8(a,frame);if(!M2C_FIELD(a,s32 *,12))StdTerminate();}
 p=func_02073cdc(a,frame,&operands[0]);
 operands[1]=p[1]|(p[2]<<8)|(p[3]<<16)|(p[4]<<24);
 DecodeExceptionSignedValue(DecodeExceptionValue(p+5,&operands[2]),&operands[3]);
@@ -412,18 +412,20 @@ void func_020742c8(void) {
 }
 
 void func_020742d4(void) {
-    M2C_UNK func_020742e0();
-    func_020742e0();
+    M2C_UNK StdTerminate();
+    StdTerminate();
 }
 
-M2C_UNK func_020742e0(void) {
-    extern M2C_UNK data_02100a80;
-    return M2C_FIELD(&data_02100a80, M2C_UNK (**)(), 0)();
+M2C_UNK StdTerminate(void) {
+    extern M2C_UNK gCppExceptionHandlers;
+    return M2C_FIELD(&gCppExceptionHandlers, M2C_UNK (**)(), 0)();
 }
 
-void func_020742f8(void) {
-    extern M2C_UNK data_02100a80;
-    M2C_FIELD(&data_02100a80, M2C_UNK (**)(), 4)();
+/* std::unexpected: dispatch to the current unexpected handler.  Its default
+ * handler calls std::terminate, which dispatches to the terminate handler. */
+void StdUnexpected(void) {
+    extern M2C_UNK gCppExceptionHandlers;
+    M2C_FIELD(&gCppExceptionHandlers, M2C_UNK (**)(), CPP_UNEXPECTED_HANDLER)();
 }
 
 /* Push an exit-function record (a node for __cxa_atexit) onto gExitFunctionList:

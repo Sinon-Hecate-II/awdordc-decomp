@@ -446,10 +446,12 @@ u8 TryEnableLcd(void) {
     return retry;
 }
 
+/* Create the sleep screen's sprite object (class gSleepScreenSpriteClass) on the
+ * default sprite layer. */
 void CreateSleepScreenSprites(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gSleepScreenSpriteClass;
-    CreateSpriteFromClass(&gSleepScreenSpriteClass, 7);
+    CreateSpriteFromClass(&gSleepScreenSpriteClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 /* Tear down the sleep screen: delete its sprite objects and switch the LCD off. */

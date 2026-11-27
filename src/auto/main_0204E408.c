@@ -175,18 +175,20 @@ void gpiFreeConnection(void **connection) {
     *connection = NULL;
 }
 
-s32 func_0204e830(void *arg0, void *arg1) {
-    M2C_FIELD(arg1, s32 *, 8) = 0;
-    M2C_FIELD(arg1, s32 *, 0x10) = 0;
-    M2C_FIELD(arg1, s32 *, 0x14) = 0;
-    M2C_FIELD(arg1, s32 *, 0x18) = 0;
+/* gpiWalkBuddyTable callback that empties one GameSpy buddy-status record: drop
+ * its presence details, signature, use count and owned string, without freeing it. */
+s32 gpiClearBuddyStatusRecord(void *connection, GpiBuddyStatus *status) {
+    status->details = NULL;
+    status->signature = NULL;
+    status->useCount = 0;
+    status->unk18 = NULL;
     return 1;
 }
 
 /* Reset a gpi connection to its initial state: free its receive, message, send
  * and two queue buffers, drop the pending operations and clear the cached status
  * and location strings. */
-s32 gpiResetConnection(void **a){void gpiRemoveOperation(void **,void *);void gpiWalkBuddyTable(void **,void *);s32 func_0204e830(void *, void *);GpiConnection *p=*a;
+s32 gpiResetConnection(void **a){void gpiRemoveOperation(void **,void *);void gpiWalkBuddyTable(void **,void *);GpiConnection *p=*a;
 p->unk110=0;p->unk12f=0;p->unk144=0;
 p->socket=-1;p->state=0;
 p->recvBuffer.len=0;p->recvBuffer.pos=0;p->recvBuffer.size=0;
@@ -202,7 +204,7 @@ gpiFree(p->unk450.data);p->unk450.data=0;
 p->unk204=-1;p->unk20c=2;
 while(p->unk424)gpiRemoveOperation(a,p->unk424);
 p->unk424=0;p->unk430=0;
-gpiWalkBuddyTable(a,&func_0204e830);
+gpiWalkBuddyTable(a,&gpiClearBuddyStatusRecord);
 p->unk19c=0;p->unk1a0=0;p->unk198=0;p->unk210=0;p->unk41c=0;p->unk434=0;
 p->cachedStatus=-1;p->statusString[0]=0;p->locationString[0]=0;
 return 0;}

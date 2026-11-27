@@ -115,7 +115,7 @@ s32 HandleOverlayResult(void) {
  M2C_UNK GetLinkPhase();
  void SetLinkResultFlag(M2C_UNK);
  M2C_UNK GetNetErrorCode();
- M2C_UNK func_ov010_02228314(M2C_UNK *,M2C_UNK *);
+ M2C_UNK GetNetErrorVeneer(M2C_UNK *,M2C_UNK *);
  void SetOnlineSessionFlag(M2C_UNK);
  M2C_UNK GetOverlayEventFlags();
  void func_02081fd4(void);
@@ -135,7 +135,7 @@ s32 HandleOverlayResult(void) {
  } break;
  case 2:
  if(GetNetErrorCode()!=0 ? 1 : overlayResult){
- func_ov010_02228314(&errorCode,&errorType);
+ GetNetErrorVeneer(&errorCode,&errorType);
  switch(errorType){case 0: break; case 1: case 2: case 3: case 4: case 5: case 6: case 7: SetOnlineSessionFlag(6); break;}
  overlayResult=1;
  }
@@ -167,7 +167,7 @@ void func_020d3830(void) {
     M2C_UNK GetActiveOverlay();
     M2C_UNK GetLinkResultCode();
     void CreateLinkStatusLabel(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    M2C_UNK func_ov010_02228314(M2C_UNK *, M2C_UNK *);
+    M2C_UNK GetNetErrorVeneer(M2C_UNK *, M2C_UNK *);
     void CreateNetErrorSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, void *);
     void func_ov010_02228320();
     void Ov010Online_ClearStepFlag(M2C_UNK);
@@ -193,7 +193,7 @@ void func_020d3830(void) {
         void **current;
         s32 result;
         s32 spare;
-        s32 ret = func_ov010_02228314(&result, &spare);
+        s32 ret = GetNetErrorVeneer(&result, &spare);
         CreateNetErrorSprite(0, 0x25c, ret, result, spare, (void *)7);
         func_ov010_02228320();
         switch (spare) {
@@ -731,10 +731,10 @@ void func_020d427c(void) {
 /* Battle-map state MAP_STATE_TURN_INTRO1: create the turn-intro sprite, then
  * move on to the intro's second step. */
 void TurnIntro1Step(void) {
-    M2C_UNK func_020cbda4();
+    M2C_UNK CreateTurnIntroSprite();
     extern void **gCurrentMap;
 
-    func_020cbda4();
+    CreateTurnIntroSprite();
     M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = MAP_STATE_TURN_INTRO2;
 }
 
@@ -742,10 +742,10 @@ void TurnIntro1Step(void) {
  * (it marks cargo and supply tiles and steps the view to the current player's
  * cursor), then move on to MAP_STATE_TURN_INTRO3. */
 void TurnIntro2Step(void) {
-    M2C_UNK func_020cbc08();
+    M2C_UNK CreateTurnIntroUpkeepSprite();
     extern void **gCurrentMap;
 
-    func_020cbc08();
+    CreateTurnIntroUpkeepSprite();
     M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = MAP_STATE_TURN_INTRO3;
 }
 
@@ -764,13 +764,13 @@ void TurnIntro3Step(void) {
  * current player's turn. */
 void TurnIntroWaitStep(void) {
     M2C_UNK IsDialogActive();
-    M2C_UNK func_020a5ac8();
+    M2C_UNK CreateOrderEffectSprite();
     extern void **gCurrentMap;
 
     if (IsDialogActive() != 0) {
         return;
     }
-    func_020a5ac8();
+    CreateOrderEffectSprite();
     M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = MAP_STATE_PLAYER_TURN;
 }
 

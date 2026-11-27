@@ -111,10 +111,12 @@ void RecordsMenu_Close(void) {
     StartMusicTrack(4);
 }
 
-void func_ov005_02217264(M2C_UNK arg0) {
-    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov005_02220510;
-    CreateSpriteObject(&data_ov005_02220510, arg0);
+/* Spawn the ov005 records (music/sound test) menu scene object as a child sprite of
+ * `owner`: its script runs the menu init, func_ov005_02216518 and RecordsMenu_Close. */
+void RecordsMenu_CreateObject(M2C_UNK owner) {
+    void CreateSpriteObject(void *, s32);
+    extern M2C_UNK gRecordsMenuClass;
+    CreateSpriteObject(&gRecordsMenuClass, owner);
 }
 
 /* Clear the records screen's highlighted record and fade out the music that was

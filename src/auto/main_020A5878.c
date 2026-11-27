@@ -63,10 +63,12 @@ StepMapViewToTile(player[0x2D],player[0x2E]);
 Sprite_ResumeAnimation(ctrl);
 }
 
-void func_020a5ac8(void) {
+/* Create the sprite that plays back the map's queued order effects (its class
+ * script selects the targets, ticks the order timers and moves the units). */
+void CreateOrderEffectSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02120608;
-    CreateSpriteFromClass(&data_02120608, 7);
+    extern M2C_UNK gOrderEffectSpriteClass;
+    CreateSpriteFromClass(&gOrderEffectSpriteClass, 7);
 }
 
 /* The damage-table kind (the row GetWeaponDamagePercent indexes) a weapon uses

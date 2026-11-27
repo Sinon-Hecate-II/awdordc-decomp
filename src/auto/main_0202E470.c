@@ -433,11 +433,13 @@ void *GetSoundArchiveEntry(void *archive, s32 index) {
     return entry;
 }
 
-void Sound_ResetFade(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 4) = 0;
-    M2C_FIELD(arg0, s32 *, 0) = 0;
-    M2C_FIELD(arg0, s32 *, 0xC) = 0;
-    M2C_FIELD(arg0, s32 *, 8) = 0;
+/* Reset a fade envelope to silence: no ramp (start and target zero) and no
+ * elapsed or length ticks. */
+void Sound_ResetFade(FadeEnvelope *fade) {
+    fade->target = 0;
+    fade->start = 0;
+    fade->length = 0;
+    fade->elapsed = 0;
 }
 
 /* Start the fade at `fade`: keep the envelope's current value as the new
@@ -465,17 +467,19 @@ s32 GetFadeValue(FadeEnvelope *fade) {
     return start + RuntimeIntDivMod(elapsed * (fade->target - start), length);
 }
 
-void AdvanceFade(void *arg0) {
-    s32 temp_r2;
+/* Advance a fade envelope by one tick, saturating at the fade's length. */
+void AdvanceFade(FadeEnvelope *fade) {
+    s32 elapsed;
 
-    temp_r2 = M2C_FIELD(arg0, s32 *, 8);
-    if (temp_r2 < (s32) M2C_FIELD(arg0, s32 *, 0xC)) {
-        M2C_FIELD(arg0, s32 *, 8) = (s32) (temp_r2 + 1);
+    elapsed = fade->elapsed;
+    if (elapsed < fade->length) {
+        fade->elapsed = (s32) (elapsed + 1);
     }
 }
 
-s32 IsFadeDone(void *arg0) {
-    if ((s32) M2C_FIELD(arg0, s32 *, 8) >= (s32) M2C_FIELD(arg0, s32 *, 0xC)) {
+/* Has the fade envelope reached (or passed) its length, so the fade is over? */
+s32 IsFadeDone(FadeEnvelope *fade) {
+    if (fade->elapsed >= fade->length) {
         return 1;
     }
     return 0;

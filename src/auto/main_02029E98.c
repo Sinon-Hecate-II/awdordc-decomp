@@ -619,7 +619,7 @@ void InitSoundDriver(void) {
     M2C_UNK PM_AddPreSleepCallback(M2C_UNK);
     M2C_UNK PM_AddPostSleepCallback(M2C_UNK);
     void Sound_ResetChannelMasks(void);
-    M2C_UNK func_0202ba8c(void);
+    M2C_UNK ResetStreamState(void);
     M2C_UNK Sound_InitVoices(void);
     void Sound_StopAllChannels(void);
     void func_0202aa58(void);
@@ -638,7 +638,7 @@ void InitSoundDriver(void) {
     PM_AddPreSleepCallback((M2C_UNK)&data_02138eb0);
     PM_AddPostSleepCallback((M2C_UNK)&data_02138ebc);
     Sound_ResetChannelMasks();
-    func_0202ba8c();
+    ResetStreamState();
     Sound_InitVoices();
     M2C_FIELD(&gSoundInitState, s8 *, 0) = -1;
     M2C_FIELD(&gSoundInitState, s32 *, 4) = 1;

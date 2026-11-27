@@ -18,7 +18,7 @@ g3DSpriteBankSub kind:data(any) addr:0x027e00c0
 g3DSpriteEngineSub kind:data(any) addr:0x027e00c4
 g3DSpriteEngineMain kind:data(any) addr:0x027e00c8
 gMoveSearchState kind:data(any) addr:0x027e00cc
-data_027e00e0 kind:bss addr:0x027e00e0
+gOsIrqThreadQueue kind:bss addr:0x027e00e0
 data_027e00e8 kind:bss addr:0x027e00e8
 data_027e00f8 kind:bss addr:0x027e00f8
 data_027e00fc kind:bss addr:0x027e00fc

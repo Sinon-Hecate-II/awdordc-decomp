@@ -90,9 +90,11 @@ s32 Wfc_GetResultCode(void) {
  return M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), s32 *, 0xC);
 }
 
-void func_0202f590(u32 arg0) {
- extern M2C_UNK gWfcManager;
- M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, 0x17) = Wfc_FriendIdToSlot(arg0);
+/* Publish the save slot of the friend id the WFC session is match-making with
+ * into the control block. */
+void Wfc_SetFriendSlot(u32 friendId) {
+    extern M2C_UNK gWfcManager;
+    M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, WFC_CONTROL_FRIEND_SLOT) = Wfc_FriendIdToSlot(friendId);
 }
 
 u32 Wfc_FriendIdToSlot(u32 arg0) {

@@ -296,8 +296,11 @@ void MbWorker_ClearJob(M2C_UNK arg0) {
     MI_CpuFill8(arg0, 0, 0x20);
 }
 
-s32 func_0201874c(void *arg0) {
-    if (((u32) (M2C_FIELD(arg0, s32 *, 4) << 0x1F) >> 0x1F) != 0) {
+/* Whether the multiboot worker request `request` is already on the worker's
+ * queue: its queued flag is bit 0 of the status word at +0x04, which Mb_QueueTask
+ * sets and the worker clears when it picks the request up. */
+s32 Mb_IsTaskQueued(void *request) {
+    if (((u32) (M2C_FIELD(request, s32 *, 4) << 0x1F) >> 0x1F) != 0) {
         return 1;
     }
     return 0;

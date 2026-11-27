@@ -135,8 +135,8 @@ CloseLinkChannel kind:function(arm,size=0x40) addr:0x0222525c
 RestartLinkSession kind:function(arm,size=0xac) addr:0x0222529c
 CreateLinkDepartureObject kind:function(arm,size=0x18) addr:0x02225348
 EndLinkSession kind:function(arm,size=0xc0) addr:0x02225360
-func_ov009_02225420 kind:function(arm,size=0x18) addr:0x02225420
-func_ov009_02225438 kind:function(arm,size=0x18) addr:0x02225438
+CreateLinkEndObject kind:function(arm,size=0x18) addr:0x02225420
+CreateLinkLeaveObject kind:function(arm,size=0x18) addr:0x02225438
 GetLinkLocalPlayerId kind:function(arm,size=0x10) addr:0x02225450
 GetLinkLocalPlayerSlot kind:function(arm,size=0x10) addr:0x02225460
 GetLinkConnectedPlayerCount kind:function(arm,size=0x10) addr:0x02225470
@@ -229,9 +229,9 @@ data_ov009_02226304 kind:data(any) addr:0x02226304
 __sinit_ov009_02226314 kind:function(arm,size=0xb4) addr:0x02226314
 .p__sinit_ov009_02226314 kind:data(word) addr:0x022263c8
 gLinkSession kind:data(any) addr:0x022263e0
-data_ov009_02226440 kind:data(any) addr:0x02226440
-data_ov009_02226468 kind:data(any) addr:0x02226468
-data_ov009_02226490 kind:data(any) addr:0x02226490
+gLinkDepartureClass kind:data(any) addr:0x02226440
+gLinkEndClass kind:data(any) addr:0x02226468
+gLinkLeaveClass kind:data(any) addr:0x02226490
 gLinkActorClass kind:data(any) addr:0x022264b8
 gLinkReceiverClass kind:data(any) addr:0x022264e0
 gLocalMatchRequestClass kind:data(any) addr:0x02226518

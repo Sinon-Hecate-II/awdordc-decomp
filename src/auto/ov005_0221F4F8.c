@@ -70,10 +70,12 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;gCur3DSpriteEngine=saved;
 if(M2C_FIELD(arg0,s32 *,0x38)==126)Show3DSpriteSlide(M2C_FIELD(arg0,void **,0x34));
 }
 
-void func_ov005_0221fa00(M2C_UNK arg0) {
+/* Spawn the game-over screen object (the defeat screen built from the
+ * gameover_main/sub graphics) as a child of `parent`. */
+void CreateGameOverScreen(M2C_UNK parent) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov005_02220c38;
-    CreateSpriteObject(&data_ov005_02220c38, arg0);
+    extern M2C_UNK gGameOverScreenClass;
+    CreateSpriteObject(&gGameOverScreenClass, parent);
 }
 
 /* Enable five display-control bits (0x10/0x20/0x40/0x80/0x100) on each of the two screen contexts. */

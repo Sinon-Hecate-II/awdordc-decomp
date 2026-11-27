@@ -661,10 +661,12 @@ block_18:
 
 #pragma peephole reset
 #pragma opt_strength_reduction reset
-void func_02008bb8(void) {
-    M2C_UNK func_02007974(M2C_UNK);
+/* Boot helper: split WRAM so the ARM7 owns it (the OS's standard setting) and
+ * stop/reset DMA0, which the boot loader may have left running. */
+void InitWramAndDma0(void) {
+    M2C_UNK SetWramControl(M2C_UNK);
     M2C_UNK DmaStopChannel(M2C_UNK);
-    func_02007974(3);
+    SetWramControl(3);
     DmaStopChannel(0);
 }
 
@@ -688,13 +690,18 @@ void Sound_StopArm7Channel(u8 channel) {
     SendArm7Message(3, channel, 0, 0, 0);
 }
 
-void func_02008c38(M2C_UNK arg0, M2C_UNK arg1) {
+/* Set sound hardware `channel`'s volume to `volume` (ARM7 channel parameter 6,
+ * curve mode 2).  Sound_UpdateVoices and Sound_ReleaseVoice use it. */
+void Sound_SendChannelVolume(M2C_UNK channel, M2C_UNK volume) {
     M2C_UNK Sound_SetChannelParameter(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    Sound_SetChannelParameter(arg0, 6, arg1, 2);
+    Sound_SetChannelParameter(channel, SOUND_CHANNEL_PARAM_VOLUME, volume, 2);
 }
 
-void Sound_SendChannelPan(M2C_UNK arg0, M2C_UNK arg1) {
-    Sound_SetChannelParameter(arg0, 4, arg1, 1);
+/* Send ARM7 sound command 6: set hardware `channel`'s pan to `pan`, easing with
+ * curve mode 1.  The per-frame voice update uses it to place a starting voice in
+ * the stereo field. */
+void Sound_SendChannelPan(u8 channel, s32 pan) {
+    Sound_SetChannelParameter(channel, SOUND_CHANNEL_PARAM_PAN, pan, 1);
 }
 
 /* Send ARM7 sound command 7 for `channel`: move the voice playing on it to

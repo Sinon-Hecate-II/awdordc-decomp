@@ -112,7 +112,7 @@ void NitroMain(void) {
 extern u8 gFramePending;
 extern s32 gFrameCounter;
 extern void (*gFrameEndCallback)(void);
-void func_0208f4d8(void);
+void SoundEngineStartFrameTimer(void);
 void func_0208184c(void);
 void UpdateTouchInput(void);
 void Sound_UpdateDriverIfEnabled(void);
@@ -127,7 +127,7 @@ void Update3DSpriteObject(void);
 void OS_WaitIrq(int,int);
 if (!gFramePending) return;
 gFrameEndCallback=0;
-func_0208f4d8();
+SoundEngineStartFrameTimer();
 gFrameCounter++;
 func_0208184c(); UpdateTouchInput(); Sound_UpdateDriverIfEnabled(); CreateSleepRequestSprite();
 GetSpriteLayerHead(3);Update3DSpriteObject();
@@ -206,7 +206,7 @@ void ResetGameState(void) {
     M2C_UNK ResetTextLabelSlots();
     M2C_UNK ResetTextState();
     M2C_UNK ResetDialogUI();
-    M2C_UNK func_020960b4();
+    M2C_UNK QueueDialogSequenceUpdate();
     M2C_UNK ResetMapConfig();
     M2C_UNK ResetScreenStates();
     M2C_UNK ApplyScreenMode(M2C_UNK);
@@ -247,7 +247,7 @@ void ResetGameState(void) {
     ResetMapListsAndGraphics();
     ResetMapConfig();
     ClearUnitMoveSlots();
-    func_020960b4();
+    QueueDialogSequenceUpdate();
 }
 
 /* Clear every campaign save record's 8-byte save summary, emptying the slots. */

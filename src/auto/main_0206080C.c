@@ -227,8 +227,10 @@ u16 SBServerGetPortNBO(void *arg0) {
     return M2C_FIELD(arg0, u16 *, 4);
 }
 
-s32 func_02060c78(void *arg0) {
-    if ((M2C_FIELD(arg0, u8 *, 0x15) & 2) == 2) {
+/* GameSpy SBServerHasPrivateAddress: true when the server record carries its own
+ * (private) address and query port, from the QR2 reply's optional id field. */
+s32 SBServerHasPrivateAddress(GpiPlayer *server) {
+    if ((server->flags & GPI_REC_FLAG_ID) == GPI_REC_FLAG_ID) {
         return 1;
     }
     return 0;
@@ -571,11 +573,13 @@ void SBServerListRemoveServer(s32 list, s32 server) {
     SBServerListRemoveServerAt(list + SB_LIST_QUERY, index);
 }
 
-s32 SBServerListThink(s32 arg0) {
+/* One per-frame step of the server browser: tick the QR2 detail-query list, then
+ * run the server-list state machine. */
+s32 SBServerListThink(s32 browser) {
     s32 SBServerListProcessState(s32);
 
-    Qr2Query_Update((void *) arg0);
-    return SBServerListProcessState(arg0 + 0x4C);
+    Qr2Query_Update((void *) browser);
+    return SBServerListProcessState(browser + SB_LIST_QUERY);
 }
 
 /* Reset a server-browser object: disconnect the QR2 session it holds at
@@ -588,11 +592,13 @@ M2C_UNK SBServerListReset(void *browser) {
     Qr2Query_ResetQueues(browser);
 }
 
-void ResetSessionList(s32 arg0) {
+/* Reset the connection's server browser: reset the SBServerList state and drop the
+ * servers the application already removed. */
+void ResetServerBrowser(s32 browser) {
     M2C_UNK SBServerListReset();
     M2C_UNK SBServerListClearRemovedServers(s32);
-    SBServerListReset();
-    SBServerListClearRemovedServers(arg0 + 0x4C);
+    SBServerListReset(browser);
+    SBServerListClearRemovedServers(browser + SB_LIST_QUERY);
 }
 
 /* The server browser's activity code, from its count of pending detail queries and

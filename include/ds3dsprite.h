@@ -349,6 +349,8 @@ typedef struct DS3DSpriteLayoutConfig {
 #define TEXT_GLYPH_TILES     0x700 /* bytes of one glyph tile set the text starts from */
 #define TEXT_GLYPH_OFFSET    16    /* tiles between the base tile and the glyph tiles */
 #define TEXT_FIRST_TILE      100   /* tiles between the base tile and the first string */
+#define TEXT_GLYPH_LAYER     1     /* engine texture layer the glyph tiles and text are drawn on */
+#define TEXT_GLYPH_SET_DEFAULT 0   /* the default glyph tile set (set 1 is the alternate font) */
 /* The text renderer's glyph tables, one entry per byte value: gGlyphBitmapTable
  * holds each glyph's 4bpp bitmap pointer, gGlyphWidthTable its pixel advance
  * (DrawGlyph, main_02098BD4). */

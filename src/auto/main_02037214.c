@@ -208,10 +208,12 @@ s32 GetHeapBlockHeader(s32 arg0) {
     return arg0 - 0x20;
 }
 
-void *InitHeapBlock(void *arg0, s32 arg1) {
-    M2C_FIELD(arg0, s32 *, 0) = 0x4457434D;
-    M2C_FIELD(arg0, s32 *, 4) = arg1;
-    return arg0 + 0x20;
+/* Stamp a fresh allocator block's header (magic tag and user-data size) and
+ * return the pointer to its user data, just past the header. */
+void *InitHeapBlock(void *block, s32 size) {
+    M2C_FIELD(block, s32 *, 0) = HEAP_BLOCK_MAGIC;
+    M2C_FIELD(block, s32 *, HEAP_BLOCK_SIZE) = size;
+    return block + HEAP_BLOCK_HEADER;
 }
 
 s32 GetHeapBlockSize(s32 arg0) {
@@ -294,9 +296,11 @@ void gpiRealloc(M2C_UNK block, M2C_UNK size) {
     HeapRealloc(GPI_HEAP_ID, block, size, size);
 }
 
-void gpiFree(M2C_UNK arg0) {
+/* Free a block previously obtained from gpiMalloc/gpiRealloc; the GPI library
+ * allocates from heap 5. */
+void gpiFree(M2C_UNK block) {
     void HeapFree(M2C_UNK, M2C_UNK, M2C_UNK);
-    HeapFree(5, arg0, 0);
+    HeapFree(GPI_HEAP_ID, block, 0);
 }
 
 /* Create the WFC connection object: zero its 12 bytes, set its mode and sub-mode,

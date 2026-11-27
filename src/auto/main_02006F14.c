@@ -530,7 +530,7 @@ s32 SystemHalt(void) {
  for (;;) { OS_DisableInterrupts(); func_02007968(); }
 }
 
-void func_02007974(s8 arg0) {
+void SetWramControl(s8 arg0) {
     *(s8 *)0x04000247 = arg0;
 }
 

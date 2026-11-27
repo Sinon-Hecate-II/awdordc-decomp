@@ -6,7 +6,7 @@
    the entity asks for (0 = main engine, 1 = sub engine, 3 = the engine that is active), and
    then moves the entity on to the matching next state. */
 void UpdateEntityCursor(void *arg0){
-M2C_UNK func_ov010_02228180(void *);M2C_UNK GotoSpriteAnimationLabel(void *,s32);M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK SetPanelChoice(void *,s32);s32 IsProfileNasKeyResolved(s32);s32 IsProfileIdBlockLocalRecord(s32);M2C_UNK CreateNetErrorReporter(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
+M2C_UNK func_ov010_02228180(void *);M2C_UNK GotoSpriteAnimationLabel(void *,s32);M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK SetPanelChoice(void *,s32);s32 IsProfileNasKeyResolved(s32);s32 IsProfileIdBlockLocalRecord(s32);M2C_UNK CreateNetErrorReporter(M2C_UNK *,M2C_UNK);void HandleEntityLinkResult(M2C_UNK,M2C_UNK,M2C_UNK,void *);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 if(func_ov010_02228180(arg0)==3){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
@@ -21,7 +21,7 @@ created=CreateTextLayer(arg0);RenderTextLayerMessage(created,2,M2C_FIELD(arg0,u1
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 
 }while(++i<2);gCur3DSpriteEngine=savedBank;}GotoSpriteAnimationLabel(arg0,8);return;}
-CreateNetErrorReporter((M2C_UNK *)func_ov010_0222ad50,(M2C_UNK)arg0);
+CreateNetErrorReporter((M2C_UNK *)HandleEntityLinkResult,(M2C_UNK)arg0);
 if(!IsProfileNasKeyResolved(0)){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 savedBank=gCur3DSpriteEngine;i=0;do{
@@ -63,7 +63,7 @@ SetPanelChoice(created,0);
 /* Settles one text layer on a display bank: creates the layer's label with the chosen
    value and bank (CreateNetErrorSprite) and drops out of the message queue, or switches
    back to the layer's idle animation.  Ignored while another message is showing. */
-void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
+void HandleEntityLinkResult(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     s32 GetScreenFlag(M2C_UNK);
     s32 IsScreenFadeActive(void);
     M2C_UNK CreateNetErrorSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, void *);
@@ -99,10 +99,12 @@ void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     }
 }
 
-void func_ov010_0222ae08(M2C_UNK arg0) {
+/* Create the online match's net-error reporter bound to the entity handler
+ * (HandleEntityLinkResult), which shows the entity's status text on a bank. */
+void CreateEntityNetErrorReporter(M2C_UNK entity) {
     M2C_UNK CreateNetErrorReporter(M2C_UNK *, M2C_UNK);
-    void func_ov010_0222ad50(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    CreateNetErrorReporter((M2C_UNK *) &func_ov010_0222ad50, arg0);
+    void HandleEntityLinkResult(M2C_UNK, M2C_UNK, M2C_UNK, void *);
+    CreateNetErrorReporter((M2C_UNK *) &HandleEntityLinkResult, entity);
 }
 
 /* Put the entity's label away: on every display bank the entity asks for

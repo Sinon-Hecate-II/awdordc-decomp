@@ -36,10 +36,13 @@ default: ReportNasError(); break;
 }
 }
 #pragma pop
-void NasLoginRequestCallback(M2C_UNK arg0, M2C_UNK arg1) {
+/* The NAS request's done callback (NAS_LOGIN_DONE_CB): the account name and
+ * password it returned start the gpi connection that carries the login, in the
+ * NAS_STATE_CONNECTED state; its completion runs NasConnectionResultCallback. */
+void NasLoginRequestCallback(M2C_UNK name, M2C_UNK password) {
     void StartNasGpiConnection(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK);
     void NasConnectionResultCallback(M2C_UNK, Record39 *);
-    StartNasGpiConnection(arg0, arg1, (M2C_UNK *)&NasConnectionResultCallback, 2);
+    StartNasGpiConnection(name, password, (M2C_UNK *)&NasConnectionResultCallback, NAS_STATE_CONNECTED);
 }
 
 /* Start the gpi connection that carries the NAS login: keep the account name and
@@ -211,9 +214,11 @@ s32 IsNasLoginDone(void) {
     return 0;
 }
 
-void GetMatchPlayerRecordInfo(M2C_UNK arg0, M2C_UNK arg1) {
+/* Read only the display name out of the match player record `playerRecord`,
+ * skipping the SCM/SCN key outputs that GetMatchPlayerInfo can also fill. */
+void GetMatchPlayerRecordInfo(M2C_UNK playerRecord, M2C_UNK nameOut) {
     M2C_UNK GetMatchPlayerInfo(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    GetMatchPlayerInfo(arg0, 0, 0, arg1);
+    GetMatchPlayerInfo(playerRecord, 0, 0, nameOut);
 }
 
 /* Fetches the local player's match record (by `matchId`) and, when the record

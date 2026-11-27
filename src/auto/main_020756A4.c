@@ -248,9 +248,10 @@ for(;oldest<kept;oldest++)keptRecords[oldest]=keptRecords[oldest+1];
 if(keptRecords)HeapFreeBlock(keptRecords);
 }
 
-void DeleteSaveRecord(M2C_UNK arg0) {
+/* Queue the deletion of save-directory record `recordId` on the global save manager. */
+void DeleteSaveRecord(s32 recordId) {
     extern M2C_UNK gSaveManager;
-    SaveList_QueueDelete(&gSaveManager, arg0);
+    SaveList_QueueDelete(&gSaveManager, recordId);
 }
 
 /* Start the save-flush task sprite (depth 1, 0x400-byte stack, priority 0x11)
@@ -268,9 +269,10 @@ s32 LoadSaveRecord(u16 recordId, void *dest) {
     return ReadSaveBlockChain(&gSaveManager, recordId, (s32)dest);
 }
 
-void GetSaveRecordSize(M2C_UNK arg0) {
+/* Return the total payload size of save-directory record `recordId`'s block chain. */
+s32 GetSaveRecordSize(s32 recordId) {
     extern M2C_UNK gSaveManager;
-    GetSaveBlockChainSize(&gSaveManager, arg0);
+    return GetSaveBlockChainSize(&gSaveManager, recordId);
 }
 
 void IsSaveTaskRunning(void) {

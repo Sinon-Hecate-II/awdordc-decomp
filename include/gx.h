@@ -2,7 +2,8 @@
 #define GX_H
 #include "common.h"
 
-/* VRAM bank control registers.  0x04000247 is unused: H and I are at +8/+9. */
+/* VRAM bank control registers.  H and I sit at +8/+9, so 0x04000247 between G and
+ * H is not a VRAM bank but the WRAM control byte. */
 #define REG_VRAM_A_CR (*(volatile u8 *)0x04000240)
 #define REG_VRAM_B_CR (*(volatile u8 *)0x04000241)
 #define REG_VRAM_C_CR (*(volatile u8 *)0x04000242)
@@ -12,6 +13,7 @@
 #define REG_VRAM_G_CR (*(volatile u8 *)0x04000246)
 #define REG_VRAM_H_CR (*(volatile u8 *)0x04000248)
 #define REG_VRAM_I_CR (*(volatile u8 *)0x04000249)
+#define REG_WRAMCNT   (*(volatile u8 *)0x04000247) /* ARM7/ARM9 split of the 32 KiB WRAM (3 = ARM7) */
 
 /* Background priority is held in bits 0..1 of each control register. */
 #define REG_BG0CNT (*(volatile u16 *)0x04000008)
@@ -366,6 +368,8 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define G3X_EDGE_TABLE_SIZE     0x10
 #define G3X_FOG_TOON_TABLE_ADDR 0x04000360 /* 16-entry fog table, then the 32-entry toon table */
 #define G3X_FOG_TOON_TABLE_SIZE 0x60
+#define G3X_TOON_TABLE_ADDR     (G3X_FOG_TOON_TABLE_ADDR + 0x20) /* the 32-entry toon table, after the fog table */
+#define G3X_TOON_TABLE_SIZE     0x40 /* 32 16-bit toon colours */
 
 #define GXSTAT_GEOMETRY_BUSY 0x08000000
 #define GXSTAT_STACK_ERROR   0x00008000

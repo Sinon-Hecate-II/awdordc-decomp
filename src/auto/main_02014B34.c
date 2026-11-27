@@ -66,7 +66,7 @@ s32 func_02014d6c(void) {
     s32 Mb_GetChunkTransfer(void *,void *,u16,void *);
     s32 SerializeCommand(s8 *,void *);
     s32 Mb_CopyImageRange(void *,u32,s32,u32);
-    s32 func_0201874c(void *);
+    s32 Mb_IsTaskQueued(void *);
     void SystemHalt(void);
     void Mb_QueueTask(void *,void (*)(void *),s32,s32);
     s32 SendMatchPacket(s32,u16,s32);
@@ -120,7 +120,7 @@ s32 func_02014d6c(void) {
     size=output[1];
     if (!Mb_CopyImageRange(buffer,offset,command,size)) {
         task=gMbWork+0x7ce0;
-        if (!func_0201874c(task)) {
+        if (!Mb_IsTaskQueued(task)) {
             if (M2C_FIELD(buffer,u32 *,0)) M2C_FIELD(buffer,u32 *,0)--;
             else {
                 records=(u32 (*)[4])(buffer+0x30);

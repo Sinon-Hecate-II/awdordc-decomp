@@ -43,7 +43,7 @@ void MapEditor_StartMap(void *editor) {
  centerY=(u32)M2C_FIELD(map,u16*,MAP_HEIGHT)>>1;
  SetMapCursorTargetTile((s16)centerX,(s16)centerY);SetMapViewPositionToTileCentered(centerX,centerY);
  SetMapEditorMode(0);SetMapEditorTool(0);SetMapEditorUnitKind(1);SetMapEditorUnitOwner(1);SetMapEditorUnitFlags(0);SetMapEditorTerrainKind(1);SetMapEditorTerrainOwner(0);
- RefreshMapEditor();func_ov007_02212da0();func_ov007_02213150();func_ov007_0221ab20();MapEditor_SetMapModified(0);
+ RefreshMapEditor();MapEditor_SpawnButtonScreen();func_ov007_02213150();MapEditor_SpawnScene();MapEditor_SetMapModified(0);
  M2C_FIELD(editor,u8*,MAP_EDITOR_INPUT_LATCH)=1;
 MapEditor_LoadExplosionSprite();
 }
@@ -87,10 +87,13 @@ void MapEditor_EndMap(void) {
     MapSettings_CopyFromGameSettings(0);
 }
 
-void MapEditor_SpawnCursorSprite(M2C_UNK arg0) {
-    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_0221f5c0;
-    CreateSpriteFromClass(&data_ov007_0221f5c0, arg0);
+/* Build the map editor's display-refresh sprite owned by `owner` (the editor
+ * scene): its script calls MapEditor_RefreshGraphics and RefreshTeamVisibility,
+ * re-rendering the editor's palette graphics and team sight overlay after an edit. */
+void MapEditor_SpawnGraphicsRefreshSprite(M2C_UNK owner) {
+    void CreateSpriteFromClass(void *, s32);
+    extern M2C_UNK gMapEditorGraphicsRefreshClass;
+    CreateSpriteFromClass(&gMapEditorGraphicsRefreshClass, owner);
 }
 
 /* Map editor unit brush: places the editor's selected unit kind, owner and flags
@@ -118,7 +121,7 @@ void MapEditor_PlaceSelectedUnit(M2C_UNK editor, s32 x, s32 y, s32 playErrorSoun
         RefreshMapCellUnits();
         RefreshMapEditor();
         MapEditor_SetMapModified(1);
-        MapEditor_SpawnCursorSprite(editor);
+        MapEditor_SpawnGraphicsRefreshSprite(editor);
         SpawnSoundEffectAtTile(0x119, x, y, 1);
         return;
     case 0:
@@ -178,7 +181,7 @@ void MapEditor_EraseUnit(M2C_UNK editor, s32 x, s32 y, s32 sound) {
         RefreshMapCellUnits();
         RefreshMapEditor();
         MapEditor_SetMapModified(1);
-        MapEditor_SpawnCursorSprite(editor);
+        MapEditor_SpawnGraphicsRefreshSprite(editor);
         CreateAnimatedMapSprite(&gUnitEraseEffect, x, y, 0x50, 0, 0, editor);
         SpawnSoundEffectAtTile(0x8A, x, y, 1);
         return;
@@ -211,7 +214,7 @@ u8 GetMapEditorTerrainKind();u8 GetMapEditorTerrainOwner();s32 Map_PaintTile(s32
 M2C_UNK RefreshMapCellUnits();void RefreshMapEditor(void);void MapEditor_SetMapModified(s32);M2C_UNK SpawnSoundEffectAtTile(s32,s32,s32,s32);M2C_UNK PlaySoundEffect(s32);
 s32 kind=GetMapEditorTerrainKind();s32 owner=GetMapEditorTerrainOwner();
 switch(Map_PaintTile(x,y,kind,owner,1)){
-case 1:RefreshMapCellUnits();RefreshMapEditor();MapEditor_SetMapModified(1);MapEditor_SpawnCursorSprite(a);
+case 1:RefreshMapCellUnits();RefreshMapEditor();MapEditor_SetMapModified(1);MapEditor_SpawnGraphicsRefreshSprite(a);
 switch(kind){case 7:case 8:case 9:case 10:case 11:case 12:SpawnSoundEffectAtTile(0x11a,x,y,1);break;
 default:SpawnSoundEffectAtTile(0x119,x,y,1);break;}break;
 case 0:if(sound==0)return;PlaySoundEffect(0x1001d);break;
@@ -261,7 +264,7 @@ void MapEditor_EraseTerrain(M2C_UNK editor, s32 x, s32 y, s32 sound) {
         RefreshMapCellUnits();
         RefreshMapEditor();
         MapEditor_SetMapModified(1);
-        MapEditor_SpawnCursorSprite(editor);
+        MapEditor_SpawnGraphicsRefreshSprite(editor);
         CreateAnimatedMapSprite(&data_ov007_0221f690, x, y, 0x50, 0, 0, editor);
         SpawnSoundEffectAtTile(0x8a, x, y, 1);
         return;
@@ -372,7 +375,7 @@ void MapEditor_Update(M2C_UNK editor) {
     void CreateMapMenu(void);
     void func_ov007_02219418(void);
     void OpenMapEditorOptionsMenu(void);
-    void func_ov007_0221330c(void);
+    void MapEditor_ShowPageToggleSprite(void);
     u8 GetMapEditorMode(void);
     u8 GetMapEditorTool(void);
     void MapEditor_PlaceSelectedUnit(M2C_UNK, s32, s32, s32);
@@ -417,7 +420,7 @@ void MapEditor_Update(M2C_UNK editor) {
     if (keyPressed & KEY_R) { CreateMapMenu(); return; }
     if (keyPressed & KEY_L) { func_ov007_02219418(); return; }
     if (keyPressed & KEY_START) { OpenMapEditorOptionsMenu(); return; }
-    if (keyPressed & KEY_SELECT) { func_ov007_0221330c(); return; }
+    if (keyPressed & KEY_SELECT) { MapEditor_ShowPageToggleSprite(); return; }
     if (!gTouchState[TOUCH_ACTIVE]) goto L_b4c;
     if (IsAnyUnitSpritePressed()) return;
     tool = GetMapEditorTool();
@@ -488,10 +491,12 @@ Done:
     return;
 }
 #pragma optimization_level reset
-void func_ov007_02211e6c(M2C_UNK arg0) {
-    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
+/* Spawn the map editor scene object (a child sprite of `owner`): the object's
+ * script runs MapEditor_StartMap, MapEditor_Update and MapEditor_EndMap. */
+void MapEditor_CreateObject(M2C_UNK owner) {
+    void CreateSpriteObject(void *, s32);
     extern M2C_UNK gMapEditorClass;
-    CreateSpriteObject(&gMapEditorClass, arg0);
+    CreateSpriteObject(&gMapEditorClass, owner);
 }
 
 /* Resume the map editor object's animation, if the editor object is alive. */

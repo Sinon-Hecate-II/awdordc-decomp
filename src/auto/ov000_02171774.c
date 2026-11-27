@@ -119,10 +119,13 @@ void ResumeAnimationOnB(void *sprite) {
     Sprite_ResumeAnimation(sprite);
 }
 
-void func_ov000_0217242c(void) {
+/* Open the map info screen from the map menu: start the layer-7 script that
+ * holds the map view still, loads the players' army graphics, draws the map's
+ * rule/income information and waits for B before releasing the map. */
+void OpenMapInfoScreen(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov000_021b8d18;
-    CreateSpriteFromClass(&data_ov000_021b8d18, 7);
+    extern M2C_UNK gMapInfoScreenScript;
+    CreateSpriteFromClass(&gMapInfoScreenScript, 7);
 }
 
 void func_ov000_02172444(void) {

@@ -165,6 +165,10 @@ void RunAiSupplyAction(void) {
     func_ov000_0218ef40();
 }
 
+/* The AI's flare action for a kind-5 unit (UNIT_KIND_FLARE): unless the map-175
+ * override applies, have TagAiKind5TargetCells mark the cells the current
+ * player's healthy indirect units can hit and aim the flare at the best-scored
+ * cell near the cursor unit. */
 void RunAiKind5Action(void) {
     M2C_UNK TagAiKind5TargetCells();
     if (IsAiMap175Player2Override() != 0) {

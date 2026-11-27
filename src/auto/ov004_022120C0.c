@@ -37,7 +37,7 @@ void func_ov004_022120c0(void *arg0) {
     M2C_UNK OffsetTileIndices();
     M2C_UNK CloseNarcArchive();
     M2C_UNK ApplyScreenMode(s32);
-    M2C_UNK func_0208ca14();
+    M2C_UNK CreatePaletteFadeSprite();
     M2C_UNK FillPaletteFadeFrom();
     M2C_UNK CapturePaletteFadeTarget();
     M2C_UNK StartPaletteFadeIn();
@@ -139,13 +139,13 @@ void func_ov004_022120c0(void *arg0) {
 
             ApplyScreenMode(0);
 
-            M2C_FIELD(arg0, void **, 0x40) = (void *)func_0208ca14(arg0);
+            M2C_FIELD(arg0, void **, 0x40) = (void *)CreatePaletteFadeSprite(arg0);
             M2C_FIELD((void *)M2C_FIELD(arg0, void **, 0x40), u8 *, 0x34) = 0;
             FillPaletteFadeFrom(M2C_FIELD(arg0, void **, 0x40), 0);
             CapturePaletteFadeTarget(M2C_FIELD(arg0, void **, 0x40), 0);
             StartPaletteFadeIn(M2C_FIELD(arg0, void **, 0x40), 0);
 
-            M2C_FIELD(arg0, void **, 0x44) = (void *)func_0208ca14(arg0);
+            M2C_FIELD(arg0, void **, 0x44) = (void *)CreatePaletteFadeSprite(arg0);
             M2C_FIELD((void *)M2C_FIELD(arg0, void **, 0x44), u8 *, 0x34) = 1;
             FillPaletteFadeFrom(M2C_FIELD(arg0, void **, 0x44), 0);
             CapturePaletteFadeTarget(M2C_FIELD(arg0, void **, 0x44), 1);

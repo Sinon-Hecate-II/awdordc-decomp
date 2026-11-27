@@ -339,12 +339,13 @@ void SocketStartListen(void *conn) {
     OS_RestoreInterrupts(irqState);
 }
 
-void SocketSetReceiveCallback(s32 arg0) {
+/* Set the receive callback on the connection the running socket object works on. */
+void SocketSetReceiveCallback(s32 callback) {
     extern M2C_UNK gSocketManager;
-    void *x = M2C_FIELD(&gSocketManager, void **, 4);
-    s32 *q = M2C_FIELD(x, s32 **, 0xa4);
-    if (q != 0) {
-        M2C_FIELD(q, s32 *, 0x38) = arg0;
+    void *thread = M2C_FIELD(&gSocketManager, void **, SOCKMGR_RUNNING_THREAD);
+    s32 *connection = M2C_FIELD(thread, s32 **, SOCK_OBJECT_RAW);
+    if (connection != 0) {
+        M2C_FIELD(connection, s32 *, SOCKET_DATA_CB) = callback;
     }
 }
 

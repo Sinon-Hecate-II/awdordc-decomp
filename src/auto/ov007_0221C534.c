@@ -43,10 +43,14 @@ viewY=(u32)M2C_FIELD(state,u16 *,0x5146)>>1;
 SetMapCursorTargetTile((s16)viewX,(s16)viewY);SetMapViewPositionToTileCentered(viewX,viewY);MapEditor_SetMapModified(0);
 }
 
-void func_ov007_0221c630(void) {
+/* Reload the map the editor shows: spawn the transition screen (class
+ * gMapEditorReloadScreenClass) on the default sprite layer; its script holds the
+ * map view, closes the map menu, waits out its message and then rebuilds the map
+ * scene (MapEditor_InitMapScene) before releasing the hold. */
+void MapEditor_ReloadMap(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_02220178;
-    CreateSpriteFromClass(&data_ov007_02220178, 7);
+    extern M2C_UNK gMapEditorReloadScreenClass;
+    CreateSpriteFromClass(&gMapEditorReloadScreenClass, 7);
 }
 
 /* Prepare the map the editor opens on: a campaign map record is loaded with

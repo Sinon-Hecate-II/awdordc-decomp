@@ -1,6 +1,7 @@
 /* 54 functions from 0x020D4430 to 0x020D5430 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 void UpdateMapCursor(void);
 void UpdateUnitSelectCursor(void);
 void UpdateAimingCursor(void);
@@ -62,7 +63,7 @@ void BattleFinishStep(void) {
 
     if (IsDialogActive()) return;
     DisableBattleTurnTimer();
-    func_020cce4c();
+    CreateBattleFinishSprite();
     M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = MAP_STATE_NONE;
 }
 
@@ -223,10 +224,11 @@ void InitBattleMapScene(void) {
     CreateSubScreenUi();
 }
 
-void func_020d4948(void) {
+/* Create the setup sprite that initializes battle-map input and presentation. */
+void CreateBattleMapInputSprites(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212be74;
-    CreateSpriteFromClass(&data_0212be74, 7);
+    extern M2C_UNK gBattleMapSetupClass;
+    CreateSpriteFromClass(&gBattleMapSetupClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 /* Once the battle has finished, begin tearing down the running link/online
@@ -250,8 +252,8 @@ void FinishBattle(void) {
     M2C_UNK ResetBattleEndState();
     s32 DidPlayerWin();
     M2C_UNK OpenCampaignMapScreen();
-    M2C_UNK func_020d887c();
-    M2C_UNK func_020d88ac();
+    M2C_UNK OpenMapSelectScreen();
+    M2C_UNK CreateEndingScreen();
     M2C_UNK SetMapConfigMode1();
     M2C_UNK func_020d8cc8();
     s32 IsFinalCampaignMap();
@@ -264,7 +266,7 @@ void FinishBattle(void) {
     switch ((u8) battleMode) {
     case 0:
         if ((DidPlayerWin() != 0) && (IsFinalCampaignMap() != 0) && (((u32) (gSaveSlotSummary << 8) >> 0x18) == 1)) {
-            func_020d88ac();
+            CreateEndingScreen();
             return;
         }
         EnsureResource4Loaded();
@@ -273,7 +275,7 @@ void FinishBattle(void) {
     case 1:
         if (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_ENDED) != 0) {
             if ((M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_FLAG1) != 0) || ((M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_FLAG2) != 0) && (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_FLAG3) == 0))) {
-                func_020d887c();
+                OpenMapSelectScreen();
             } else {
                 SetMapConfigMode1();
             }
@@ -281,15 +283,17 @@ void FinishBattle(void) {
             ResetBattleEndState();
             return;
         }
-        func_020d887c();
+        OpenMapSelectScreen();
         return;
     }
 }
 
-void func_020d4a50(void) {
+/* Creates the battle-end flow object: it shows the campaign ending when the
+ * player won, saves, leaves the link/online session and finishes the battle. */
+void CreateBattleEndFlowSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212be0c;
-    CreateSpriteFromClass(&data_0212be0c, 7);
+    extern M2C_UNK gBattleEndFlowSpriteClass;
+    CreateSpriteFromClass(&gBattleEndFlowSpriteClass, 7);
 }
 
 /* Start callback of the saved-battle loading sprite: reset the battle map, resume
@@ -414,7 +418,13 @@ void func_020d4c18(void) {
 }
 
 void SetBattleMapFramePending(void *);
-void func_020d4c28(void *arg0){G3X_Reset();UpdateMapView();SetBattleMapFramePending(arg0);}
+/* Reset the 3D engine and refresh the battle map view's transforms, then mark
+ * the map sprite object's frame as pending so the map is redrawn next frame. */
+void RefreshBattleMapView(void *mapObject) {
+    G3X_Reset();
+    UpdateMapView();
+    SetBattleMapFramePending(mapObject);
+}
 
 void func_020d4c44(void) {
     M2C_UNK StepBattleMap();

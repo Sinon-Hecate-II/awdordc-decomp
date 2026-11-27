@@ -44,7 +44,7 @@ void Sound_UpdateVoices(void) {
     s32 Sound_GetActiveChannels(void);
     void *ListNext(void *, s32);
     s32 Sound_IsCommandReached(void *);
-    M2C_UNK func_02008c38(u8, s32);
+    M2C_UNK Sound_SendChannelVolume(u8, s32);
     void Sound_StopArm7Channel(u8);
     void Sound_RecycleVoice(void *);
     void AdvanceFade(void *);
@@ -95,7 +95,7 @@ void Sound_UpdateVoices(void) {
                 newVolume = 0x7FFF;
             }
             if (newVolume != M2C_FIELD(voice, s16 *, SOUND_VOICE_LAST_VOLUME)) {
-                func_02008c38(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL), newVolume);
+                Sound_SendChannelVolume(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL), newVolume);
                 M2C_FIELD(voice, s16 *, SOUND_VOICE_LAST_VOLUME) = (s16) newVolume;
             }
         }
@@ -247,10 +247,10 @@ M2C_UNK Sound_InsertActiveVoice(void *voice) {
  * first, then release that channel and put the voice back on the free list. */
 void Sound_ReleaseVoice(void *voice) {
     M2C_UNK Sound_ReleaseArm7Channel(u8);
-    M2C_UNK func_02008c38(u8, s32);
+    M2C_UNK Sound_SendChannelVolume(u8, s32);
 
     if (M2C_FIELD(voice, u8 *, SOUND_VOICE_STATE) == SOUND_VOICE_PLAYING) {
-        func_02008c38(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL), 0xFFFFFD2D);
+        Sound_SendChannelVolume(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL), 0xFFFFFD2D);
     }
     Sound_ReleaseArm7Channel(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL));
     Sound_RecycleVoice(voice);
@@ -664,10 +664,12 @@ s32 Sound_ResumePlayer(void *player) {
     return Sound_StartChannels(M2C_FIELD(player, s32 *, SOUND_PLAYER_CHANNEL_MASK), 0, 1 << M2C_FIELD(player, s32 *, SOUND_PLAYER_HW_CHANNEL), 0);
 }
 
-void func_0202ba8c(void) {
+/* Clear the streamed sound state and its voice's active flag, called while the
+ * sound driver is set up. */
+void ResetStreamState(void) {
     extern M2C_UNK gStreamSoundState;
-    M2C_FIELD(&gStreamSoundState, s32 *, 0) = 0;
-    M2C_FIELD(&gStreamSoundState, s32 *, 0x48) = 0;
+    M2C_FIELD(&gStreamSoundState, s32 *, STREAM_STATE_ACTIVE) = 0;
+    M2C_FIELD(&gStreamSoundState, s32 *, STREAM_STATE_VOICE) = 0;
 }
 
 /* Per-frame volume update of the streamed voice: advances the open voice's fade

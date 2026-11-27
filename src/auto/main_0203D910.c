@@ -493,7 +493,8 @@ void ShutdownConnection(void) {
     M2C_FIELD(&gConnectionMgr, s8 *, CONN_MGR_MATCH_FINISHED) = 0;
 }
 
-s32 func_0203e558(void) {
+/* Whether no connection session exists (the counterpart of GetConnection). */
+s32 IsConnectionMissing(void) {
     s32 GetConnection();
     if (GetConnection() == 0) {
         return 1;

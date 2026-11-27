@@ -568,16 +568,18 @@ REG_GX_POLYGON_ATTR=GX_POLYGON_DEFAULT;
 }
 }
 
-void CreateCursorCellBurst(M2C_UNK arg0) {
+/* Spawn the map cursor's cell-burst effect, a sprite of gCursorCellBurstClass
+ * owned by `owner`.  The map close (main_020D5430) spawns it on layer 7. */
+void CreateCursorCellBurst(M2C_UNK owner) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02100bd0;
-    CreateSpriteFromClass(&data_02100bd0, arg0);
+    extern M2C_UNK gCursorCellBurstClass;
+    CreateSpriteFromClass(&gCursorCellBurstClass, owner);
 }
 
 void func_0207b040(void) {
  M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
- extern M2C_UNK data_02100bd0;
- DeleteSpriteObjectsOfClass(&data_02100bd0);
+ extern M2C_UNK gCursorCellBurstClass;
+ DeleteSpriteObjectsOfClass(&gCursorCellBurstClass);
  func_0207a768();
 }
 

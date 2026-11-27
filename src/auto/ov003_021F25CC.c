@@ -146,7 +146,7 @@ void func_ov003_021f2878(s32 entry) {
     s32 IsLinkResultFlagSet(M2C_UNK);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     void SetOnlineSessionFlag(M2C_UNK);
-    M2C_UNK func_ov010_02228314(M2C_UNK *, M2C_UNK *);
+    M2C_UNK GetNetErrorVeneer(M2C_UNK *, M2C_UNK *);
     s32 GetOverlayEventFlags(void);
     s32 GetSessionPlayerCount(void);
     s32 Ov003SceneObjectHasChildren(void);
@@ -182,7 +182,7 @@ ready:
         break; case 2:
             if (IsOnlineSessionFlagSet(6) == 0) {
                 SetOnlineSessionFlag(6);
-                func_ov010_02228314(&var_sp4, &var_sp0);
+                GetNetErrorVeneer(&var_sp4, &var_sp0);
                 switch (var_sp0) {
                 case 1: case 2: case 3: case 4: case 5: case 6: case 7:
                     SetOnlineSessionFlag(6);
@@ -208,7 +208,7 @@ s32 ShowLinkResultPanel(s32 entry) {
     s32 GetActiveOverlay(void);
     s32 GetLinkResultCode(void);
     void CreateLinkStatusLabel(s32, s32, s32, void *);
-    s32 func_ov010_02228314(s32 *, s32 *);
+    s32 GetNetErrorVeneer(s32 *, s32 *);
     void CreateNetErrorSprite(s32, s32, s32, s32, s32, void *);
     void func_ov010_02228320(void);
     void Ov010Online_ClearStepFlag(s32);
@@ -228,7 +228,7 @@ s32 ShowLinkResultPanel(s32 entry) {
         CreateLinkStatusLabel(0, 0x6e0, GetLinkResultCode(), (void *)entry);
         break;
     case 2:
-        CreateNetErrorSprite(0, 0x6e0, func_ov010_02228314(&result, &spare), result, spare, (void *)entry);
+        CreateNetErrorSprite(0, 0x6e0, GetNetErrorVeneer(&result, &spare), result, spare, (void *)entry);
         func_ov010_02228320();
         switch (spare) {
         case 0:

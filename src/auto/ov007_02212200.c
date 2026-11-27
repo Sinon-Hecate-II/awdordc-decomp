@@ -277,16 +277,18 @@ void func_ov007_02212cc8(M2C_UNK arg0) {
     GotoSpriteAnimationLabel(arg0, 1);
 }
 
-void func_ov007_02212da0(void) {
+/* Spawn the map editor's palette button screen, whose class builds and animates
+ * the button sprites. */
+void MapEditor_SpawnButtonScreen(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_0221f6e8;
-    CreateSpriteFromClass(&data_ov007_0221f6e8, 7);
+    extern M2C_UNK gMapEditorButtonScreenClass;
+    CreateSpriteFromClass(&gMapEditorButtonScreenClass, 7);
 }
 
 void func_ov007_02212db8(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_ov007_0221f6e8;
-    DeleteSpriteObjectsOfClass(&data_ov007_0221f6e8);
+    extern M2C_UNK gMapEditorButtonScreenClass;
+    DeleteSpriteObjectsOfClass(&gMapEditorButtonScreenClass);
 }
 
 M2C_UNK func_ov007_02212dcc(void) {

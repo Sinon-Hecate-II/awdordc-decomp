@@ -90,16 +90,18 @@ M2C_UNK *gpiGetInfoField(void *info, s8 *key) {
     return (M2C_UNK *)base;
 }
 
-M2C_UNK *gpiGetInfoFieldOrEmpty(void *arg0, M2C_UNK *arg1) {
+/* Look up field `key` in the gpi info reply `info`, falling back to the shared
+ * empty value gGpiEmptyValue when the reply has no such field. */
+M2C_UNK *gpiGetInfoFieldOrEmpty(void *info, M2C_UNK *key) {
     M2C_UNK *gpiGetInfoField();
     extern M2C_UNK gGpiEmptyValue;
-    M2C_UNK *var_r0;
+    M2C_UNK *value;
 
-    var_r0 = gpiGetInfoField();
-    if (var_r0 == NULL) {
-        var_r0 = &gGpiEmptyValue;
+    value = gpiGetInfoField(info, key);
+    if (value == NULL) {
+        value = &gGpiEmptyValue;
     }
-    return var_r0;
+    return value;
 }
 
 s32 SocketHasPendingData(s32 a) {

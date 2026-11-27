@@ -549,26 +549,32 @@ s32 Qr2_CreateConnection(u8 **outConnection, s32 socket, s32 localPort, s32 game
     return 0;
 }
 #pragma pop
-void func_0205e834(void *arg0, s32 arg1) {
+/* Set the state-changed callback (QR2_CB_STATE_CHANGED) of a QR2 connection: the
+ * callback that is told the new peer target.  A NULL `connection` selects the
+ * shared default gQr2Connection. */
+void SetQr2StateChangedCallback(void *connection, s32 callback) {
     extern void *gQr2Connection;
-    void *var_r0;
+    void *target;
 
-    var_r0 = arg0;
-    if (var_r0 == NULL) {
-        var_r0 = gQr2Connection;
+    target = connection;
+    if (target == NULL) {
+        target = gQr2Connection;
     }
-    M2C_FIELD(var_r0, s32 *, 0xA0) = arg1;
+    M2C_FIELD(target, s32 *, QR2_CB_STATE_CHANGED) = callback;
 }
 
-void func_0205e84c(void *arg0, s32 arg1) {
+/* Set the receive-state callback (QR2_CB_RECEIVE_STATE) of a QR2 connection: the
+ * callback handed a raw message relayed from another player.  A NULL `connection`
+ * selects the shared default gQr2Connection. */
+void SetQr2ReceiveStateCallback(void *connection, s32 callback) {
     extern void *gQr2Connection;
-    void *var_r0;
+    void *target;
 
-    var_r0 = arg0;
-    if (var_r0 == NULL) {
-        var_r0 = gQr2Connection;
+    target = connection;
+    if (target == NULL) {
+        target = gQr2Connection;
     }
-    M2C_FIELD(var_r0, s32 *, 0xA4) = arg1;
+    M2C_FIELD(target, s32 *, QR2_CB_RECEIVE_STATE) = callback;
 }
 
 void func_0205e864(void *arg0, s32 arg1) {

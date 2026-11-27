@@ -109,8 +109,8 @@ s32 func_0209cd6c(void *arg0) {
 /* 3D-sprite state handler: install the state entry's data as the sprite's delete
  * callback, then move on to the next entry. */
 s32 SpriteState_SetDeleteCallback(void *sprite) {
-    M2C_UNK func_01ffa918(void *, s32);
-    func_01ffa918(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA));
+    M2C_UNK Set3DSpriteDeleteCallback(void *, s32);
+    Set3DSpriteDeleteCallback(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA));
     M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
@@ -310,9 +310,12 @@ s32 SpriteState_ResumeObjectsOfClass(void *sprite) {
     return 1;
 }
 
-s32 func_0209d05c(void *arg0) {
+/* 3D-sprite state handler: jump the sprite's animation unconditionally to the
+ * label named by the state entry's parameter, then keep running states this
+ * frame. */
+s32 SpriteState_GotoLabel(void *sprite) {
     M2C_UNK GotoSpriteAnimationLabel(void *, s16);
-    GotoSpriteAnimationLabel(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
+    GotoSpriteAnimationLabel(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM));
     return 1;
 }
 
@@ -344,9 +347,13 @@ s32 SpriteState_GotoIfNotPredicate(void *sprite) {
     return 1;
 }
 
-s32 func_0209d10c(void *arg0) {
-    M2C_UNK func_01ffa904(void *, s32);
-    func_01ffa904(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4));
+/* 3D-sprite state handler: install the state entry's data as the sprite's class,
+ * restarting its animation script at the class record, then run on in the same
+ * frame. */
+s32 SpriteState_SetClass(void *sprite) {
+    void Set3DSpriteClass(void *, s32);
+
+    Set3DSpriteClass(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA));
     return 1;
 }
 

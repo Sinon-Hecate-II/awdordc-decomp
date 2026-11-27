@@ -366,10 +366,12 @@ void HistoryMenu_Close(void) {
     gHistoryMenu = NULL;
 }
 
-void func_ov005_022140cc(M2C_UNK arg0) {
-    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov005_02220208;
-    CreateSpriteObject(&data_ov005_02220208, arg0);
+/* Spawn the ov005 history/records menu scene object (a child sprite of `owner`):
+ * its script runs the menu's init, HistoryMenu_Update and HistoryMenu_Close. */
+void HistoryMenu_CreateObject(M2C_UNK owner) {
+    void CreateSpriteObject(void *, s32);
+    extern M2C_UNK gHistoryMenuClass;
+    CreateSpriteObject(&gHistoryMenuClass, owner);
 }
 
 void func_ov005_022140e4(void) {

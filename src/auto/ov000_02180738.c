@@ -708,8 +708,11 @@ if((s32)((u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_HEALTH)<<25)>>25)>M2C_FIELD((u8 *)m
 SetMapCursor(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y),23,0,0);
 }
 
+/* Kind-13 (Rig) AI action: run the Rig's build action.  On map 175 (0xAF) the
+ * script takes over player 2, so the AI skips every action there. */
 void RunAiKind13Action(void) {
-    M2C_UNK RunAiKind13BuildAction();
+    void RunAiKind13BuildAction(void);
+
     if (IsAiMap175Player2Override() != 0) {
         return;
     }

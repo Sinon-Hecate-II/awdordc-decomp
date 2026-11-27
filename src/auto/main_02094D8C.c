@@ -188,6 +188,9 @@ void WaitForScreenFadeOrSkip(void *scriptSprite) {
     Sprite_ResumeAnimation(scriptSprite);
 }
 
+/* Create the screen-transition wait object: it holds the scene script until the
+ * running screen transition or fade has finished (or the player skips it), then
+ * resumes the script. */
 void CreateScreenTransitionWaitSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gScreenTransitionWaitSpriteClass;

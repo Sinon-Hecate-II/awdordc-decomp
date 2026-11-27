@@ -322,7 +322,14 @@ s32 GetLoadedArchiveFile(u32 index) {
     return (s32)table->files[index].data;
 }
 
-s32 SetLoadedArchiveFile(s32 a,s32 b) {extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84)+a*16;M2C_FIELD(p,s32 *,20)=b;return (s32)p;}
+/* Record the block sound-archive file `fileId` was loaded into and return the
+ * address in the archive's file table it was recorded at. */
+s32 SetLoadedArchiveFile(s32 fileId, s32 data) {
+    extern s32 gCurrentArchive;
+    u8 *slot = (u8 *)M2C_FIELD(gCurrentArchive, void **, SOUND_ARCHIVE_TABLE) + fileId * SOUND_ARCHIVE_ENTRY_SIZE;
+    M2C_FIELD(slot, s32 *, SOUND_ARCHIVE_SLOT_DATA) = data;
+    return (s32)slot;
+}
 
 void func_0202c488(M2C_UNK arg0, M2C_UNK arg1, void *arg2) {
     M2C_FIELD(arg2, s32 *, 0x8C) = 0;
