@@ -301,14 +301,17 @@ s32 FocusSpriteSlotById(s32 arg0) {
     SetSpriteSlotFocus((u8 *)FindSpriteSlotById(), arg0);
 }
 
-s32 SelectSpriteSlot(void) {
-    s32 FocusSpriteSlotById();
-    void SetSpriteSlotFrameToFocus();
-    s32 temp_r4;
+/* Move the sprite-slot focus to the slot whose id is `id` and snap the manager's
+ * focus frame onto it without the per-frame easing.  Returns the slot that took
+ * focus (its pointer), as FocusSpriteSlotById does. */
+s32 SelectSpriteSlot(s32 id) {
+    s32 FocusSpriteSlotById(s32);
+    void SetSpriteSlotFrameToFocus(void);
+    s32 focused;
 
-    temp_r4 = FocusSpriteSlotById();
+    focused = FocusSpriteSlotById(id);
     SetSpriteSlotFrameToFocus();
-    return temp_r4;
+    return focused;
 }
 
 void FocusSpriteSlot(u8 *arg0) {

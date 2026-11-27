@@ -36,6 +36,16 @@ typedef struct SpriteBaseBits {
 #define UNIT_SPRITE_TILE_X      0x34 /* s32 tile x copied from the unit record's +1 */
 #define UNIT_SPRITE_TILE_Y      0x38 /* s32 tile y copied from the unit record's +2 */
 
+/* A unit sprite also serves as a menu entry sprite: the ov003 unit list, setup
+ * menu and map grid draw their entries as unit sprites whose depth
+ * (DS3D_SPRITE_Z) is the entry's index.  These four hold the index the d-pad
+ * moves to from this entry; the sprite at that index is then looked up by
+ * class and depth (the directional helpers in main_020AB884.c). */
+#define UNIT_SPRITE_UP    0x68 /* u16 entry index above this one */
+#define UNIT_SPRITE_DOWN  0x6A /* u16 entry index below this one */
+#define UNIT_SPRITE_LEFT  0x6C /* u16 entry index to the left */
+#define UNIT_SPRITE_RIGHT 0x6E /* u16 entry index to the right */
+
 /* The unit sprites' shared input flags at gUnitSpriteInput: the hold counter at
  * +0 pauses their per-frame animation updates while nonzero, and the pressed
  * flag at +1 is set by MarkUnitSpritePressed while any unit sprite is pressed. */

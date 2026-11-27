@@ -329,9 +329,12 @@ if(id==-1)return;
 func_02076180((u16)id);
 }
 
-void QueueSaveRecord(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Queue the `size`-byte save record `block` as save type `type` on the global
+ * save manager: the queue writer takes a record name too, which these records
+ * do not use (0). */
+void QueueSaveRecord(void *block, s32 size, s32 type) {
     M2C_UNK SaveList_QueueUpdate(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    SaveList_QueueUpdate(arg0, 0, arg1, arg2);
+    SaveList_QueueUpdate(block, 0, size, type);
 }
 
 /* Snapshot the live game settings into `buffer`, drop the old shared settings

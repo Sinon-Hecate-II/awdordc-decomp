@@ -6,6 +6,11 @@
 #define MAP_EFFECT_H
 #include "common.h"
 
+/* Every map effect task keeps the map tile its effect plays on at +0x38/+0x3C
+ * (ExplosionEffect and UnitRemoveEffect below include them). */
+#define MAP_EFFECT_TILE_X 0x38 /* s32 map tile x */
+#define MAP_EFFECT_TILE_Y 0x3C /* s32 map tile y */
+
 /* A placed map sprite: the 3D sprite object the effect handlers create and
  * PlaceMapSprite (main_020B4264.c) positions on the map. */
 typedef struct MapSprite {

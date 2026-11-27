@@ -388,8 +388,12 @@ s32 GetUnitBuildCost(player, unitKind)
     return Divide(cost * 0x64, 0x64);
 }
 
-s32 GetUnitBuildCostTimes10(void) {
-    return GetUnitBuildCost() * 0xA;
+/* The build cost of unit kind `unitKind` for `player` in tenths: the price
+ * times ten, the unit costs the funds the production menu displays. */
+s32 GetUnitBuildCostTimes10(s32 player, s32 unitKind) {
+    s32 GetUnitBuildCost(s32, s32);
+
+    return GetUnitBuildCost(player, unitKind) * 0xA;
 }
 
 s32 GetUnitActionCost(void) {

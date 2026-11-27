@@ -798,11 +798,15 @@ void Ov001_FriendListWaitIconRow(void) {
     Ov001_SetStepCallback(&Ov001_UpdateFriendList);
 }
 
+/* Per-frame step of the ov001 Wi-Fi friend-list screen: process the panel input,
+ * run the empty per-frame hook, then handle the back choice and the roster
+ * fetch result. */
 void Ov001_UpdateFriendList(void) {
     M2C_UNK Ov001_HandleFriendListBack();
     void Ov001_CheckFriendList(void);
+
     Ov001_HandleFriendListMenuInput();
-    func_ov001_02180b8c();
+    Ov001_FriendListNoop();
     Ov001_HandleFriendListBack();
     Ov001_CheckFriendList();
 }

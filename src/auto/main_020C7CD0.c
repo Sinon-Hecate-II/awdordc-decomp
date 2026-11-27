@@ -376,11 +376,14 @@ base=*gCurrentMap;
 return (s32)base;
 }
 
-void ApplyMapRecord(s32 arg0) {
-    void ApplyMapHeader();
+/* Install a saved map record on the battle map: its header (name, players,
+ * size), then its terrain area, which starts right after the 0x54-byte header. */
+void ApplyMapRecord(MapRecordHeader *record) {
+    void ApplyMapHeader(MapRecordHeader *);
     M2C_UNK ApplyMapTerrain(s32);
-    ApplyMapHeader();
-    ApplyMapTerrain(arg0 + 0x54);
+
+    ApplyMapHeader(record);
+    ApplyMapTerrain((s32)record + 0x54);
 }
 
 /* Apply a saved map record's units to the battle map: normalize the AI action

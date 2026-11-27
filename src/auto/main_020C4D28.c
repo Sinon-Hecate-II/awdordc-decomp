@@ -363,19 +363,19 @@ u64 GetBattleSlotMapCode(void *record) {
     return GetPlayerRecordCode(record);
 }
 
-s32 func_020c544c(s32 arg0) {
+/* The PLAYER_RECORD_KIND_* value of battle-save slot summary `record`, or 0
+ * when the slot has no record. */
+s32 GetBattleSlotPlayerType(void *record) {
     s32 GetPlayerRecordType();
-    if (arg0 == 0) {
-        return 0;
-    }
+    if (record == NULL) return 0;
     return GetPlayerRecordType();
 }
 
 void func_020c5464(void) {
-    M2C_UNK func_020c544c();
+    M2C_UNK GetBattleSlotPlayerType();
     M2C_UNK GetBattleSlotSummary();
     GetBattleSlotSummary();
-    func_020c544c();
+    GetBattleSlotPlayerType();
 }
 
 /* Whether `code` is a valid player (friend) code for this profile's game id: the

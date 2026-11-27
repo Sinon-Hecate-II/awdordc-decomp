@@ -117,8 +117,11 @@ void CreateSaveProgressSprite(M2C_UNK owner) {
     CreateSpriteObject(&gSaveProgressSpriteClass, owner);
 }
 
-s32 GetCarriedUnitListEntry(void *arg0, s32 arg1) {
-    return (M2C_FIELD((arg0 + arg1), u8 *, 0x42) * 0x28) + M2C_FIELD(arg0, s32 *, 0x34);
+/* The 0x28-byte entry of the caller's entry table that visible row `row` of a
+ * carried-unit list shows (the row's index is one byte, scaled by the entry
+ * size). */
+s32 GetCarriedUnitListEntry(MenuC0634 *menu, s32 row) {
+    return (menu->indices[row] * 0x28) + (s32)menu->entries;
 }
 
 s8 GetCarriedUnitListEntryStatus(s32 arg0, s32 arg1) {

@@ -304,48 +304,56 @@ u8 IsUnitSelected(u8 *unit) {
     return selected;
 }
 
-u8 func_020a7d20(void *arg0) {
-    u8 var_r0;
+/* Whether the unit is being carried in a transport (its UNIT_FLAG_CARRIED bit): it
+ * stands on no map cell while it is. */
+u8 IsUnitCarried(void *unit) {
+    u8 carried;
 
-    if (M2C_FIELD(arg0, u16 *, 4) & 2) {
-        var_r0 = 1;
+    if (M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) & UNIT_FLAG_CARRIED) {
+        carried = 1;
     } else {
-        var_r0 = 0;
+        carried = 0;
     }
-    return var_r0;
+    return carried;
 }
 
-u8 IsUnitSubmerged(void *arg0) {
-    u8 var_r0;
+/* Whether the unit is a submerged submarine: its UNIT_FLAG_SUBMERGED bit is set,
+ * so it is hidden from the other side. */
+u8 IsUnitSubmerged(void *unit) {
+    u8 submerged;
 
-    if (M2C_FIELD(arg0, u16 *, 4) & 0x20) {
-        var_r0 = 1;
+    if (M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) & UNIT_FLAG_SUBMERGED) {
+        submerged = 1;
     } else {
-        var_r0 = 0;
+        submerged = 0;
     }
-    return var_r0;
+    return submerged;
 }
 
-u8 IsUnitMarkedForRepair(void *arg0) {
-    u8 var_r0;
+/* Nonzero when the unit is flagged for repair/resupply: UNIT_FLAG_REPAIR is set
+ * on its MAP_UNIT_FLAGS word (it drives the unit's repair status icon). */
+u8 IsUnitMarkedForRepair(void *unit) {
+    u8 marked;
 
-    if (M2C_FIELD(arg0, u16 *, 4) & 0x100) {
-        var_r0 = 1;
+    if (M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) & UNIT_FLAG_REPAIR) {
+        marked = 1;
     } else {
-        var_r0 = 0;
+        marked = 0;
     }
-    return var_r0;
+    return marked;
 }
 
-u8 func_020a7d68(void *arg0) {
-    u8 var_r0;
+/* Nonzero when the unit carries team B's sight bit (UNIT_FLAG_VISIBLE_TEAM_B):
+ * the fog pass leaves it set on a submerged unit a team-B player can see. */
+u8 IsUnitVisibleToTeamB(void *unit) {
+    u8 visible;
 
-    if (M2C_FIELD(arg0, u16 *, 4) & 0x80) {
-        var_r0 = 1;
+    if (M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) & UNIT_FLAG_VISIBLE_TEAM_B) {
+        visible = 1;
     } else {
-        var_r0 = 0;
+        visible = 0;
     }
-    return var_r0;
+    return visible;
 }
 
 /* Whether a unit's fuel has fallen to half its kind's maximum or below; a kind

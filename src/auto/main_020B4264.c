@@ -443,9 +443,12 @@ void OpenSaveBattleScreen(void) {
     CreateSpriteFromClass(&gSaveBattleScreenClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
-void func_020b4d0c(void) {
-    s32 GetCurrentSaveType();
-    M2C_UNK CreateSavedBattleView();
+/* Create the saved-battle view for the current save type, unless there is no
+ * saved battle to show. */
+void CreateSavedBattleViewForCurrentSave(void) {
+    s32 GetCurrentSaveType(void);
+    void CreateSavedBattleView();
+
     if (GetCurrentSaveType() == 0) {
         return;
     }

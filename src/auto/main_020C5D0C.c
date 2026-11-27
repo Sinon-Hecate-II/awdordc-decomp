@@ -571,7 +571,9 @@ void OpenArmyInfoCommand(void) {
     CreateSpriteFromClass(&gArmyInfoOpenScript, 7);
 }
 
-void func_020c69a0(void) {
+/* Map-menu command "Situation": save the carried-unit list menu, close the map
+ * menu, return the map to its input mode and open the map-situation screen. */
+void OpenSituationScreenCommand(void) {
     M2C_UNK ResumeMapInputMode();
     M2C_UNK CreateSituationScreenSprite();
     PushCarriedUnitMenuState();
@@ -608,8 +610,12 @@ void func_020c69e8(void) {
     CreateGiveUpScript();
 }
 
-void func_020c69f8(void) {
-    M2C_UNK ScrollListOpen();
+/* Map-menu command: save the carried-unit menu state, close the map menu,
+ * return the map to its input mode and open the scrollable unit list (its tabs
+ * and sorted rows) in layer 7. */
+void OpenUnitListMenuCommand(void) {
+    void ScrollListOpen(void);
+
     PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
     ResumeMapInputMode();
@@ -743,7 +749,10 @@ void ConfirmWaitCommand(void) {
     SetBattleCommand(AI_COMMAND_WAIT, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
 }
 
-void func_020c6c20(void) {
+/* Map-menu "Drop" command for the first carried unit: spawn the directional
+ * cargo-drop cursor for slot 0, close the action menu and keep the map view
+ * held until the player picks a drop direction. */
+void DropFirstCargoCommand(void) {
     M2C_UNK CreateMapCursorOption(M2C_UNK);
     M2C_UNK AcquireMapViewHold();
     CreateMapCursorOption(0);
@@ -751,7 +760,10 @@ void func_020c6c20(void) {
     AcquireMapViewHold();
 }
 
-void func_020c6c38(void) {
+/* Map-menu "Drop" command for the second carried unit: spawn the directional
+ * cargo-drop cursor for slot 1, close the action menu and keep the map view
+ * held until the player picks a drop direction. */
+void DropSecondCargoCommand(void) {
     CreateMapCursorOption(1);
     DeleteMapMenuSprites();
     AcquireMapViewHold();

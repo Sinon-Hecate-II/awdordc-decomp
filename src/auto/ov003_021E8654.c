@@ -184,7 +184,7 @@ void func_ov003_021e8958(void *arg0) {
     void Mark3DSpriteLayerDirty(s32);
     void LoadFaceTexture(s32, s32, s32);
     void LoadFaceTextureAndPalette(s32, s32, s32);
-    void func_ov003_021ea27c(s32, s32, s32);
+    void LoadSpriteImage(s32, s32, s32);
     void func_ov003_021ea294(s32, s32, s32);
     void *GetLocalizedFileName(void *);
     void *LoadFileToBuffer(void *, s32);
@@ -274,7 +274,7 @@ void func_ov003_021e8958(void *arg0) {
     Mark3DSpriteLayerDirty(3);
     for (i = 0; i < 12; i++) LoadFaceTexture(i + 1, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xc) + (((i << 7) + 2) << 5));
     for (i = 0; i < 13; i++) LoadFaceTextureAndPalette(i, ((i << 4) + 0x1f0) << 5, 7);
-    func_ov003_021ea27c(4, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0x3400);
+    LoadSpriteImage(4, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0x3400);
     func_ov003_021ea294(5, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2c0);
     SetFileDirectory(data_ov003_0220fb8c);
     h = LoadFileToBuffer(GetLocalizedFileName(data_ov003_0220fb94), 1);

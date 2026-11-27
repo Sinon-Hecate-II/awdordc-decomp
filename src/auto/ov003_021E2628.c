@@ -5,7 +5,7 @@ s32 IsMapConfirmEnabled(void);void Hide3DSprite(void*);void SetOv003SceneState(s
 void MenuSpriteUpdate(void*);u32 func_ov003_021f2574(void);void PlaySoundEffect(s32);
 void *CreateTextLayer(void*);s32 func_ov003_021f1894(void);void RenderTextLayerMessage(void*,s32,s32,s32);void SetPanelChoice(void*,s32);
 void Ov003_UpdateMapGridButtons(void*);void func_ov003_021e1530(void*,u8);void func_ov003_021e3714(void*);
-void *func_020abb9c(void*);void *func_020abbb4(void*);void *func_020abbcc(void*);void *func_020abbe4(void*);
+void *GetUnitSpriteAbove(void*);void *GetUnitSpriteBelow(void*);void *GetUnitSpriteLeft(void*);void *GetUnitSpriteRight(void*);
 s32 GetUnitSpriteHeight(void*);s32 GetUnitSpriteWidth(void*);void SetTextById(void*,s32);
 typedef struct {u8 low:2,toggle:2,mode:2,pending:1,high:1;} HandlerFlags;
 typedef struct {u8 frame:4,enabled:1,high:3;} ButtonFlags;
@@ -62,28 +62,28 @@ if(allowed&&(keys&1)){PressButton(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0));
 if(allowed&&(keys&8)){PressButton(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0));if(Available(p)){PlaySoundEffect(0x1000d);ShowAction(p,0);}else VCall(p,0x1c);allowed=0;}
 if(allowed&&(keys&2)){PlaySoundEffect(0x1000f);PressButton(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,4));if(Available(p))ShowAction(p,1);else VCall(p,0x20);}
 if(repeat&64) {
-sprite=func_020abb9c(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38));menu=M2C_FIELD(p,void**,0x48);
+sprite=GetUnitSpriteAbove(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38));menu=M2C_FIELD(p,void**,0x48);
 selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0x38),u16*,0x2e);
 func_ov003_021e1530(menu,(u8)M2C_FIELD(sprite,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38),u16*,0x2e)){
 PlaySoundEffect(0x10019);func_ov003_021e3714(p);UpdateSelection(p);}
 }
 else if(repeat&128) {
-sprite=func_020abbb4(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38));menu=M2C_FIELD(p,void**,0x48);
+sprite=GetUnitSpriteBelow(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38));menu=M2C_FIELD(p,void**,0x48);
 selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0x38),u16*,0x2e);
 func_ov003_021e1530(menu,(u8)M2C_FIELD(sprite,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38),u16*,0x2e)){
 PlaySoundEffect(0x10019);func_ov003_021e3714(p);UpdateSelection(p);}
 }
 if(repeat&32) {
-sprite=func_020abbcc(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38));menu=M2C_FIELD(p,void**,0x48);
+sprite=GetUnitSpriteLeft(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38));menu=M2C_FIELD(p,void**,0x48);
 selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0x38),u16*,0x2e);
 func_ov003_021e1530(menu,(u8)M2C_FIELD(sprite,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38),u16*,0x2e)){
 PlaySoundEffect(0x10019);func_ov003_021e3714(p);UpdateSelection(p);}
 }
 else if(repeat&16) {
-sprite=func_020abbe4(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38));menu=M2C_FIELD(p,void**,0x48);
+sprite=GetUnitSpriteRight(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38));menu=M2C_FIELD(p,void**,0x48);
 selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0x38),u16*,0x2e);
 func_ov003_021e1530(menu,(u8)M2C_FIELD(sprite,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x48),void**,0x38),u16*,0x2e)){

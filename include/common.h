@@ -2454,6 +2454,7 @@ typedef struct GpiBuddyStatus {
 #define MATCH_ID_PRDS 0x50524453 /* "PRDS": ready barrier, Download Play (both data-block scripts post it first) */
 #define MATCH_ID_PTCS 0x50544353 /* "PTCS": transfer barrier, multi-card/online */
 #define MATCH_ID_PRCS 0x50524353 /* "PRCS": ready barrier, multi-card/online */
+#define MATCH_ID_GMED 0x474D4544 /* "GMED": the battle-end start record ("game ended") */
 
 /* The local player's link status (GetLocalPlayerStatus): its option bits and
  * the player id the online session assigned to this console. */

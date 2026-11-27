@@ -371,14 +371,19 @@ if(flags&64){HandleUiCancel();return;}
 StepMapCursorTargetFromInput(0x1001a);func_0207a7a4(1,4);StepMapCursorAndNotify(2,10);
 }
 
-void func_020c77d4(void *arg0) {
+/* Attack-target marker step: move the map view onto the tile the strike is
+ * aimed at (the effect's target tile, not the tile the attack comes from). */
+void StepMapViewToAttackTarget(AttackTargetEffect *effect) {
     M2C_UNK StepMapViewToTile(s16, s16);
-    StepMapViewToTile(M2C_FIELD(arg0, s16 *, 0x6C), M2C_FIELD(arg0, s16 *, 0x6E));
+
+    StepMapViewToTile(effect->targetX, effect->targetY);
 }
 
-void func_020c77ec(void *arg0) {
+/* Sprite state handler: pan the map view onto the tile the sprite records in
+ * its own tile fields (+0x34 x, +0x38 y). */
+void PanMapViewToSpriteTile(void *sprite) {
     M2C_UNK PanMapViewToTile(s32, s32);
-    PanMapViewToTile(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
+    PanMapViewToTile(M2C_FIELD(sprite, s32 *, 0x34), M2C_FIELD(sprite, s32 *, 0x38));
 }
 
 /* Missile-launch step of an attack-target effect: spawn the missile effect on
@@ -421,8 +426,12 @@ void CreateTileMarkerSprite(s32 x, s32 y, s32 range, s16 tileIndex, s32 parent) 
     M2C_FIELD(sprite, s16 *, 0x52) = tileIndex;
 }
 
-void func_020c78ac(void *arg0) {
-    PanMapViewToTile(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
+/* Script step of the script-marker sprite: pan the map view onto the tile the
+ * sprite was created at (x at +0x34, y at +0x38). */
+void ScriptMarkerSprite_PanMapViewToTile(void *sprite) {
+    s32 PanMapViewToTile(s32, s32);
+
+    PanMapViewToTile(M2C_FIELD(sprite, s32 *, 0x34), M2C_FIELD(sprite, s32 *, 0x38));
 }
 
 /* Spawn the missile_b marker for this effect sprite: its tile (x at +0x34, y at
@@ -508,9 +517,12 @@ s32 GetMapRecordBufferStamp(void) {
     return GetMapRecordHeader() + 0x40;
 }
 
-s32 ComputeMapRecordChecksum(s32 arg0) {
+/* CRC-16 of a runtime map record's data (its terrain and packed unit entries),
+ * stored in the record's stamp as MAP_RECORD_CHECKSUM. */
+s32 ComputeMapRecordChecksum(s32 record) {
     M2C_UNK Crc16(s32, s32);
-    return Crc16(arg0 + 0x54, 0x6A4);
+
+    return Crc16(record + MAP_RECORD_DATA, MAP_RECORD_DATA_SIZE);
 }
 
 /* Validate a saved map record's header before loading it: the name must be

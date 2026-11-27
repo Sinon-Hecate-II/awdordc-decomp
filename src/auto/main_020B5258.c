@@ -113,9 +113,11 @@ void ExplosionSprite_Update(void *arg0) {
     ExplosionSprite_Trigger(arg0);
 }
 
-void func_020b5504(void *arg0) {
+/* Start handler of a map effect task: step the map view to the map tile the
+ * effect was created on. */
+void MapEffect_Start(void *effect) {
     M2C_UNK StepMapViewToTile(s32, s32);
-    StepMapViewToTile(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
+    StepMapViewToTile(M2C_FIELD(effect, s32 *, MAP_EFFECT_TILE_X), M2C_FIELD(effect, s32 *, MAP_EFFECT_TILE_Y));
 }
 
 /* Start handler of the explosion effect: spawn the animated sprite for the

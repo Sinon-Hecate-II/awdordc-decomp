@@ -154,7 +154,7 @@ DAE_RET DrawUnitSlotList(void *menu) {
     M2C_UNK StringFormat(void *, const char *, ...);
     M2C_UNK DrawTextLine(s32, s32, s32, void *, s32, s32);
     s32 GetBattleSlotSummary(s32);
-    s32 func_020c544c(s32);
+    s32 GetBattleSlotPlayerType(s32);
     s32 GetMatchPlayerRecordInfo(s32, s32);
     void InitOnlinePlayerRecord(void *);
     s32 GetMatchPlayerName(s32, u8 *, u8 *, void *, s32 *);
@@ -193,7 +193,7 @@ DAE_RET DrawUnitSlotList(void *menu) {
         for (i = 0; i < 60; i++) {
             unit = GetBattleSlotSummary(i);
             if (!unit) continue;
-            if (func_020c544c(unit) != 3) continue;
+            if (GetBattleSlotPlayerType(unit) != 3) continue;
             if (GetMatchPlayerRecordInfo(unit, 0) != 6) continue;
             InitOnlinePlayerRecord(info);
             if (GetMatchPlayerName(unit, &glyphA, &glyphB, info, &code) != 6) continue;

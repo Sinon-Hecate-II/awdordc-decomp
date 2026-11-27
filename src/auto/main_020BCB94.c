@@ -113,10 +113,13 @@ void func_020bcde0(void) {
     CreateBreakCutIn();
 }
 
-void func_020bcdec(void *arg0) {
-    M2C_UNK ChangeMusicTrackWithFade();
-    M2C_UNK GetCoPowerMusicTrack(u8);
-    GetCoPowerMusicTrack((u8) M2C_FIELD(arg0, s32 *, 0x5C));
+/* Start the CO-power theme of the player whose units the unit-view object shows,
+ * then fade the current music over to it. */
+void PlayPlayerUnitViewCoPowerMusic(void *view) {
+    void ChangeMusicTrackWithFade(void);
+    void GetCoPowerMusicTrack(u8);
+
+    GetCoPowerMusicTrack((u8) M2C_FIELD(view, s32 *, PLAYER_UNIT_VIEW_PLAYER));
     ChangeMusicTrackWithFade();
 }
 

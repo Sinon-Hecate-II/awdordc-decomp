@@ -29,9 +29,11 @@ s32 CalculateUnitDamage(u8 *unit, s32 targetKind, s32 weaponIndex, s32 targetFla
  return damage;
 }
 
-s32 GetUnitAttackPower(void *arg0) {
+/* Attack power of `unit` in percent: the 100 base plus the unit's attack-power
+ * bonus, which depends on its owner, stat block and the terrain at its tile. */
+s32 GetUnitAttackPower(void *unit) {
     s32 GetUnitAttackPowerBonus(void *, u8, u8);
-    return GetUnitAttackPowerBonus(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 0x64;
+    return GetUnitAttackPowerBonus(unit, M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y)) + 100;
 }
 
 /* Attack bonus, in damage percent, that a unit gets from its campaign owner
@@ -48,14 +50,19 @@ s32 GetOwnerGroupDefenseBonus(u32 ownerGroup) {
  switch(ownerGroup) { case 1: return 0; case 2: return 0; case 3: return 20; default: return 0; }
 }
 
-void func_020a87ec(u8 *arg0) {
-    M2C_UNK GetOwnerGroupAttackBonus(u32);
-    GetOwnerGroupAttackBonus((u32) (*arg0 << 0x18) >> 0x1E);
+/* Attack bonus, in damage percent, that a unit gets from its owner group (the top
+ * two bits of its kind byte, MAP_UNIT_OWNER_MASK). */
+s32 GetUnitOwnerGroupAttackBonus(u8 *unit) {
+    s32 GetOwnerGroupAttackBonus(u32);
+    return GetOwnerGroupAttackBonus((u32) (*unit << 0x18) >> 0x1E);
 }
 
-void func_020a8804(u8 *arg0) {
+/* Defense bonus the unit's campaign owner group grants: take the owner group from
+ * the top two bits of the unit's kind byte (MAP_UNIT_KIND) and look up its bonus
+ * (only the strongest army, group 3, defends better). */
+void GetUnitOwnerGroupDefenseBonus(u8 *unit) {
     M2C_UNK GetOwnerGroupDefenseBonus(u32);
-    GetOwnerGroupDefenseBonus((u32) (*arg0 << 0x18) >> 0x1E);
+    GetOwnerGroupDefenseBonus((u32) (*unit << 0x18) >> 0x1E);
 }
 
 /* Attack bonus, in damage percent, that player `player` gets from the

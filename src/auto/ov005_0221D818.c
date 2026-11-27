@@ -147,9 +147,12 @@ void Ov005EnterResultsScreen(M2C_UNK parent) {
     InitResultsScreenGraphics(parent);
 }
 
-void func_ov005_0221e214(void) {
+/* Leave the ov005 results screen: delete its unit and text sprites, then clear
+ * the message-box suppression and put the voice-chat widget back in place. */
+void Ov005LeaveResultsScreen(void) {
     M2C_UNK ClearMessageBoxState();
     M2C_UNK RestoreVoiceChatWidgetPosition();
+
     DeleteUnitSprites();
     DeleteTextSprites();
     ClearMessageBoxState();

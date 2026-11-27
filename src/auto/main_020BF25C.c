@@ -1,6 +1,7 @@
 /* 35 functions from 0x020BF25C to 0x020C0254 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "sound.h"
 extern char data_0215e5e4[], gCampaignSaveRecords[];
 extern char data_021295c4[], data_021295d0[], data_021295d8[], data_021295dc[], data_021295e4[], data_021295ec[], data_021295f4[], data_021295f8[], data_021295fc[], data_02129604[];
 static inline int SaveRangeA(s32 n) { int b=0; if(n>=0xa1) b=(n<0xbb); return b!=0; }
@@ -82,8 +83,8 @@ void SaveGameSettings(void) {
 #pragma opt_propagation reset
 /* Load the saved game-settings snapshot, restore its values, and initialise defaults if its magic is invalid. */
 M2C_UNK LoadGameSettings(void) {
-    void func_020bfa08(void);
-    void func_020bfa48(void);
+    void ApplyMusicVolumeSetting(void);
+    void ApplySoundEffectVolumeSetting(void);
     s32 LoadNewestSaveRecord(s32, void *);
     void func_020beabc(void *);
     void InitDefaultGameSettings(void);
@@ -95,8 +96,8 @@ M2C_UNK LoadGameSettings(void) {
     if (M2C_FIELD(&gGameSettings, u32 *, 0x128) != GAME_SETTINGS_MAGIC) {
         InitDefaultGameSettings();
     }
-    func_020bfa08();
-    func_020bfa48();
+    ApplyMusicVolumeSetting();
+    ApplySoundEffectVolumeSetting();
 }
 
 /* Unlock every CO whose unlock map (ARMY_DATA_UNLOCK_MAP) is `mapId`, awarding
@@ -199,27 +200,30 @@ u8 GetMusicVolumeSetting(void) {
 }
 
 void SetMusicVolumeSetting(s32 a) {
-extern M2C_UNK gGameSettings;void func_020bfa08(void);
+extern M2C_UNK gGameSettings;void ApplyMusicVolumeSetting(void);
 M2C_FIELD(&gGameSettings,u8 *,0x12c)=a;
-func_020bfa08();
+ApplyMusicVolumeSetting();
 }
 
-void func_020bfa08(void) {
+/* Apply the player's music volume setting to the music channel. */
+void ApplyMusicVolumeSetting(void) {
     M2C_UNK SetMusicVolumeLevel(M2C_UNK, s32);
-    SetMusicVolumeLevel(1, GetMusicVolumeSetting());
+    SetMusicVolumeLevel(SOUND_VOLUME_LEVEL_PLAYER, GetMusicVolumeSetting());
 }
 
 s32 GetSoundEffectVolumeSetting(void){return M2C_FIELD(&gGameSettings,u8 *,0x12d);}
 
 void SetSoundEffectVolumeSetting(s32 a) {
-void func_020bfa48(void);
+void ApplySoundEffectVolumeSetting(void);
 M2C_FIELD(&gGameSettings,u8 *,0x12d)=a;
-func_020bfa48();
+ApplySoundEffectVolumeSetting();
 }
 
-void func_020bfa48(void) {
-    M2C_UNK SetSoundEffectVolumeLevel(M2C_UNK, s32);
-    s32 GetSoundEffectVolumeSetting();
+/* Push the saved sound-effect volume setting to the sound driver. */
+void ApplySoundEffectVolumeSetting(void) {
+    void SetSoundEffectVolumeLevel(M2C_UNK, s32);
+    s32 GetSoundEffectVolumeSetting(void);
+
     SetSoundEffectVolumeLevel(1, GetSoundEffectVolumeSetting());
 }
 

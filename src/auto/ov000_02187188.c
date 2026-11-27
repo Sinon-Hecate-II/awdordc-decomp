@@ -56,182 +56,117 @@ s32 MoveDestinationScore(s32 x, s32 y, u8 *unit) {
 
 s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
     s32 MoveDestinationScore(s32, s32, u8 *);
-    extern void **data_027e0058;
-    extern u32 gFrameCounter;
-    s32 sp2C;
-    s32 sp28;
-    void *sp24;
-    s32 sp20;
-    s32 sp1C;
-    void *sp18;
-    s32 sp14;
-    s32 sp10;
-    s32 spC;
-    s32 sp8;
-    void *sp4;
-    s32 sp0;
-    s32 temp_r0;
-    s32 temp_r0_2;
-    s32 temp_r0_3;
-    s32 temp_r0_4;
-    s32 temp_r0_5;
-    s32 temp_r0_6;
-    s32 temp_r1_2;
-    s32 temp_r1_3;
-    s32 temp_r1_5;
-    s32 temp_r1_6;
-    s32 temp_r5;
-    s32 temp_r6;
-    s32 var_r0;
-    s32 var_r0_2;
-    s32 var_r1;
-    s32 var_r1_2;
-    s32 var_r4;
-    s32 var_r4_2;
-    s32 var_r5;
-    s32 var_r6;
-    s32 var_r7;
-    s32 var_r7_2;
-    s32 var_r8;
-    s32 var_r8_2;
-    u8 temp_r1;
-    u8 temp_r1_4;
-    void *temp_r2;
-    void *temp_r2_2;
-    void *temp_r3;
-    void *temp_r4;
+    s32 noResult = MAP_DESTINATION_NONE;
+    s32 x = arg0;
+    s32 y = arg1;
+    s16 *out = arg2;
+    s16 *out2 = arg3;
+    s32 rowB;
+    s32 offsetB;
+    u8 *unitB;
+    s32 rowA;
+    s32 offsetA;
+    u8 *unitA;
+    s32 minX;
+    s32 maxY;
+    s32 dir;
+    register s32 bestScore, tx, dy0, dy1, ty, maxX;
+    void *base;
+    s32 score;
+    s32 adx;
+    s32 dist;
 
-    sp0 = arg1;
-    temp_r4 = *data_027e0058;
-    sp4 = arg3;
-    temp_r1 = M2C_FIELD(M2C_FIELD(temp_r4, void **, 0x52D0), u8 *, 0xC);
-    if (temp_r1 == 0) {
-        return 0;
-    }
-    sp1C = temp_r1 * 0xE;
-    sp18 = temp_r4 + 0x59A4;
-    temp_r0 = arg0 - 1;
-    sp14 = temp_r0;
-    var_r4 = 0;
-    M2C_FIELD(arg2, s16 *, 0) = 0x270F;
-    if (temp_r0 < 0) {
-        sp14 = 0;
-    }
-    var_r7 = sp0 - 1;
-    temp_r1_2 = arg0 + 1;
-    if (var_r7 < 0) {
-        var_r7 = 0;
-    }
-    temp_r2 = *data_027e0058;
-    var_r8 = M2C_FIELD(temp_r2, u16 *, 0x5144) - 1;
-    if (temp_r1_2 < var_r8) {
-        var_r8 = temp_r1_2;
-    }
-    temp_r1_3 = sp0 + 1;
-    temp_r0_2 = M2C_FIELD(temp_r2, u16 *, 0x5146) - 1;
-    sp10 = temp_r0_2;
-    if (temp_r1_3 < temp_r0_2) {
-        sp10 = temp_r1_3;
-    }
-    if (var_r7 <= sp10) {
+    dir = M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, 0xC);
+    if (dir == 0) return 0;
+    offsetA = dir * MAP_UNIT_STRIDE;
+    unitA = (u8 *) *gCurrentMap + MAP_UNIT_RECORDS;
+    minX = x - 1;
+    bestScore = 0;
+    *out = (s16) noResult;
+    if (minX < 0) minX = 0;
+    ty = y - 1;
+    if (ty < 0) ty = 0;
+    base = *gCurrentMap;
+    maxX = M2C_FIELD(base, u16 *, MAP_WIDTH) - 1;
+    if (x + 1 < maxX) maxX = x + 1;
+    maxY = M2C_FIELD(base, u16 *, MAP_HEIGHT) - 1;
+    if (y + 1 < maxY) maxY = y + 1;
+    if (ty <= maxY) {
         do {
-            var_r5 = sp14;
-            if (var_r5 <= var_r8) {
-                temp_r6 = sp0 - var_r7;
-                sp20 = (s32) (s16) var_r7;
+            tx = minX;
+            if (tx <= maxX) {
                 do {
-                    var_r1 = arg0 - var_r5;
-                    if (var_r1 <= 0) {
-                        var_r1 = var_r5 - arg0;
-                    }
-                    if (temp_r6 > 0) {
-                        var_r0 = var_r1 + temp_r6;
-                    } else {
-                        var_r0 = var_r1 + (var_r7 - sp0);
-                    }
-                    if ((var_r0 >= 1) && (var_r0 <= 1)) {
-                        temp_r0_3 = MoveDestinationScore((s32) var_r5, (s32) var_r7, (u8 *)(sp18 + sp1C));
-                        if ((temp_r0_3 >= var_r4) && ((temp_r0_3 != var_r4) || !(gFrameCounter & 1))) {
-                            var_r4 = temp_r0_3;
-                            M2C_FIELD(arg2, s16 *, 0) = (s16) var_r5;
-                            M2C_FIELD(arg2, s16 *, 2) = (s16) sp20;
+                    dy0 = y - ty;
+                    dy1 = ty - y;
+                    rowA = ty;
+                    adx = x - tx;
+                    if (adx <= 0) adx = tx - x;
+                    dist = 0;
+                    dist = adx + dist;
+                    if (dy0 > 0) dist = dist + dy0;
+                    else dist = dist + dy1;
+                    if (dist >= 1 && dist <= 1) {
+                        score = MoveDestinationScore(tx, ty, unitA + offsetA);
+                        if (score >= bestScore && (score != bestScore || !(gFrameCounter & 1))) {
+                            bestScore = score;
+                            out[0] = (s16) tx;
+                            out[1] = (s16) rowA;
                         }
                     }
-                    var_r5 += 1;
-                } while (var_r5 <= var_r8);
+                    tx++;
+                } while (tx <= maxX);
             }
-            var_r7 += 1;
-        } while (var_r7 <= sp10);
+            ty++;
+        } while (ty <= maxY);
     }
-    if (M2C_FIELD(arg2, s16 *, 0) == 0x270F) {
-        return 0;
-    }
-    temp_r3 = *data_027e0058;
-    temp_r1_4 = M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0xD);
-    if (temp_r1_4 == 0) {
-        return 1;
-    }
-    sp28 = temp_r1_4 * 0xE;
-    M2C_FIELD(sp4, s16 *, 0) = 0x270F;
-    sp24 = temp_r3 + 0x59A4;
-    temp_r0_4 = arg0 - 1;
-    spC = temp_r0_4;
-    var_r6 = 0;
-    if (temp_r0_4 < 0) {
-        spC = 0;
-    }
-    var_r7_2 = sp0 - 1;
-    temp_r1_5 = arg0 + 1;
-    if (var_r7_2 < 0) {
-        var_r7_2 = 0;
-    }
-    temp_r2_2 = *data_027e0058;
-    var_r8_2 = M2C_FIELD(temp_r2_2, u16 *, 0x5144) - 1;
-    if (temp_r1_5 < var_r8_2) {
-        var_r8_2 = temp_r1_5;
-    }
-    temp_r1_6 = sp0 + 1;
-    temp_r0_5 = M2C_FIELD(temp_r2_2, u16 *, 0x5146) - 1;
-    sp8 = temp_r0_5;
-    if (temp_r1_6 < temp_r0_5) {
-        sp8 = temp_r1_6;
-    }
-    if (var_r7_2 <= sp8) {
+    if (out[0] == (s16) noResult) return 0;
+
+    dir = M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, 0xD);
+    if (dir == 0) return 1;
+    offsetB = dir * MAP_UNIT_STRIDE;
+    unitB = (u8 *) *gCurrentMap + MAP_UNIT_RECORDS;
+    *out2 = (s16) noResult;
+    minX = x - 1;
+    bestScore = 0;
+    if (minX < 0) minX = 0;
+    ty = y - 1;
+    if (ty < 0) ty = 0;
+    base = *gCurrentMap;
+    maxX = M2C_FIELD(base, u16 *, MAP_WIDTH) - 1;
+    if (x + 1 < maxX) maxX = x + 1;
+    maxY = M2C_FIELD(base, u16 *, MAP_HEIGHT) - 1;
+    if (y + 1 < maxY) maxY = y + 1;
+    if (ty <= maxY) {
         do {
-            var_r4_2 = spC;
-            if (var_r4_2 <= var_r8_2) {
-                temp_r5 = sp0 - var_r7_2;
-                sp2C = (s32) (s16) var_r7_2;
+            tx = minX;
+            if (tx <= maxX) {
                 do {
-                    var_r1_2 = arg0 - var_r4_2;
-                    if (var_r1_2 <= 0) {
-                        var_r1_2 = var_r4_2 - arg0;
-                    }
-                    if (temp_r5 > 0) {
-                        var_r0_2 = var_r1_2 + temp_r5;
-                    } else {
-                        var_r0_2 = var_r1_2 + (var_r7_2 - sp0);
-                    }
-                    if ((var_r0_2 >= 1) && (var_r0_2 <= 1)) {
-                        if ((var_r4_2 == M2C_FIELD(arg2, s16 *, 0)) && (var_r7_2 == M2C_FIELD(arg2, s16 *, 2))) {
-                        } else {
-                            temp_r0_6 = MoveDestinationScore((s32) var_r4_2, (s32) var_r7_2, (u8 *)(sp24 + sp28));
-                            if ((temp_r0_6 >= var_r6) && ((temp_r0_6 != var_r6) || !(gFrameCounter & 1))) {
-                                var_r6 = temp_r0_6;
-                                M2C_FIELD(sp4, s16 *, 0) = (s16) var_r4_2;
-                                M2C_FIELD(sp4, s16 *, 2) = (s16) sp2C;
+                    dy0 = y - ty;
+                    dy1 = ty - y;
+                    rowB = ty;
+                    adx = x - tx;
+                    if (adx <= 0) adx = tx - x;
+                    dist = 0;
+                    dist = adx + dist;
+                    if (dy0 > 0) dist = dist + dy0;
+                    else dist = dist + dy1;
+                    if (dist >= 1 && dist <= 1) {
+                        if (tx != out[0] || ty != out[1]) {
+                            score = MoveDestinationScore(tx, ty, unitB + offsetB);
+                            if (score >= bestScore && (score != bestScore || !(gFrameCounter & 1))) {
+                                bestScore = score;
+                                out2[0] = (s16) tx;
+                                out2[1] = (s16) rowB;
                             }
                         }
                     }
-                    var_r4_2 += 1;
-                } while (var_r4_2 <= var_r8_2);
+                    tx++;
+                } while (tx <= maxX);
             }
-            var_r7_2 += 1;
-        } while (var_r7_2 <= sp8);
+            ty++;
+        } while (ty <= maxY);
     }
-    if (M2C_FIELD(sp4, s16 *, 0) == 0x270F) {
-        return 1;
-    }
+    if (out2[0] == (s16) noResult) return 1;
     return 2;
 }
 

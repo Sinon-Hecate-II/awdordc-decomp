@@ -369,13 +369,13 @@ void func_020d0164(M2C_UNK arg0, M2C_UNK arg1) {
 /* For each active player, flood-fill and mark the tiles reachable by its current unit's movement range. */
 M2C_UNK func_020d0178(void) {
 void InitAreaScan(void *,s32,s32,s32,s32,s32); void SetPlayerMoveRangeCell(s32,s32,s32,s32); s32 GetPlayerMoveRangeGrid(s32);
-s32 IsPlayerActive(s32); void *GetPlayerSelectedUnit(s32); s32 func_020a7d20(void); s32 GetPlayerCoZoneMoveRange(s32); s32 GetPlayerArmyVariantIfSet(s32); s32 NextAreaTile(void *); void BuildMoveRangeFlags(void);
+s32 IsPlayerActive(s32); void *GetPlayerSelectedUnit(s32); s32 IsUnitCarried(void); s32 GetPlayerCoZoneMoveRange(s32); s32 GetPlayerArmyVariantIfSet(s32); s32 NextAreaTile(void *); void BuildMoveRangeFlags(void);
 s32 player; s32 pathState[8]; void *unit; s32 moveRange;
 for(player=1;player<5;player++){
 if(!IsPlayerActive(player))continue;
 func_020d0164(GetPlayerMoveRangeGrid(player),0);
 unit=GetPlayerSelectedUnit(player); if(!unit)continue;
-if(func_020a7d20() && !(M2C_FIELD(unit,u16 *,4)&4))continue;
+if(IsUnitCarried() && !(M2C_FIELD(unit,u16 *,4)&4))continue;
 moveRange=GetPlayerCoZoneMoveRange(player); if(GetPlayerArmyVariantIfSet(player))moveRange=6;
 InitAreaScan(pathState,moveRange,M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),M2C_FIELD((void *)*gCurrentMap,u16 *,0x5144),M2C_FIELD((void *)*gCurrentMap,u16 *,0x5146));
 for(;;){if(!NextAreaTile(pathState))break;SetPlayerMoveRangeCell(player,pathState[4],pathState[5],1);}
@@ -473,15 +473,17 @@ s32 IsProductionSiteOwnedByPlayer(u8 terrain, s32 player) {
     return 0;
 }
 
-u8 IsTerrainKind(s32 arg0, s32 arg1) {
-    u8 var_r0;
+/* Whether a map cell's terrain byte is of the given kind: compares its low five
+ * bits (MAP_TERRAIN_KIND_MASK), ignoring the property owner bits. */
+u8 IsTerrainKind(s32 terrain, s32 kind) {
+    u8 result;
 
-    if ((arg0 & 0x1F) == arg1) {
-        var_r0 = 1;
+    if ((terrain & MAP_TERRAIN_KIND_MASK) == kind) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 /* Whether the terrain of the map cell at (x, y) is of kind `terrainKind`. */

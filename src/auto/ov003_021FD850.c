@@ -301,30 +301,34 @@ void func_ov003_021fdc1c(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, u8 *, 0x3B) = (u8) ((M2C_FIELD(temp_r0, u8 *, 0x3B) & ~0xF) | 3);
 }
 
-void func_ov003_021fdfe8(M2C_UNK arg0) {
+/* Build the ov003 map-list menu scene in menu kind 4 (a paged map-list mode):
+ * create the scene object, install its vtables and flag bytes from the current
+ * map, then attach its paged map list, its two number labels and its 8-byte
+ * scratch block. */
+void Ov003_CreateMapList4Scene(void *owner) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *MemAlloc(s32);
     M2C_UNK SpriteTween_Start(void *, M2C_UNK);
     M2C_UNK SetTextSpriteValue(void *, M2C_UNK);
     M2C_UNK SetOv003SceneClass(M2C_UNK *);
+    extern M2C_UNK gOv003MapListMenuClass;
     extern M2C_UNK gSceneBaseVTable;
+    extern M2C_UNK gSceneBaseIfaceVTable;
+    extern M2C_UNK data_ov003_02210104;
+    extern M2C_UNK data_ov003_02210130;
+    extern M2C_UNK data_ov003_022100d4;
+    extern M2C_UNK gMapPickSelectionIfaceVTable;
     extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK gTextLabelSlotState;
     extern void **gCurrentMap;
-    extern M2C_UNK gMapPickSelectionIfaceVTable;
-    extern M2C_UNK gSceneBaseIfaceVTable;
-    extern M2C_UNK gOv003MapListMenuClass;
-    extern M2C_UNK data_ov003_022100d4;
-    extern M2C_UNK data_ov003_02210104;
-    extern M2C_UNK data_ov003_02210130;
+
     Ov003MapListMenuScene *scene;
-    Ov003MapList *list;
-    SceneViewLabel *label;
     void *child;
     u8 i;
+    s32 mapId;
 
     SetOv003SceneClass(&gOv003MapListMenuClass);
-    scene = (Ov003MapListMenuScene *) CreateSpriteFromClass(&gOv003MapListMenuClass, arg0);
+    scene = (Ov003MapListMenuScene *) CreateSpriteFromClass(&gOv003MapListMenuClass, owner);
     if (scene != NULL) {
         scene->vtable = &gSceneBaseVTable;
         scene->iface = &gSceneBaseIfaceVTable;
@@ -338,11 +342,13 @@ void func_ov003_021fdfe8(M2C_UNK arg0) {
         scene->flags3B.first = 0;
         scene->flags3B.second = 0;
         scene->flags3B.third = 0;
-        scene->mapId = (u16) M2C_FIELD(*gCurrentMap, u16 *, MAP_ID);
+        mapId = M2C_FIELD(*gCurrentMap, u16 *, MAP_ID);
+        scene->mapId = mapId;
         scene->flags3E.flags.first = 2;
         scene->flags3E.flags.second = 7;
         scene->flags3E.flags.third = 0;
         scene->flags3E.flags.fourth = 0;
+
         scene->mapList = NULL;
         scene->labelSlots = &gTextLabelSlotState;
         scene->unk4C = 0;
@@ -355,8 +361,10 @@ void func_ov003_021fdfe8(M2C_UNK arg0) {
         scene->unk68 = 0;
         scene->unk70 = 0;
 
-        list = (Ov003MapList *) MemAlloc(0x187C);
-        if (list != NULL) {
+        child = MemAlloc(0x187C);
+        if (child) {
+            Ov003MapList *list = child;
+
             list->vtable = &data_ov003_022100d4;
             list->iface = &gMapPickSelectionIfaceVTable;
             for (i = 0; i < 5; i++) {
@@ -379,11 +387,12 @@ void func_ov003_021fdfe8(M2C_UNK arg0) {
             list->tween.base = 8;
             list->tween.amplitude = 8;
         }
-        scene->mapList = list;
+        scene->mapList = child;
 
         child = MemAlloc(0x2C);
-        if (child != NULL) {
-            label = (SceneViewLabel *) child;
+        if (child) {
+            SceneViewLabel *label = child;
+
             label->vtable = &gHeapObjectVTable;
             label->kind = 0;
             label->textId = 0;
@@ -400,7 +409,7 @@ void func_ov003_021fdfe8(M2C_UNK arg0) {
             label->unk28 = (u8) (label->unk28 & ~0xE0);
             label->unk29 = 0;
         }
-        scene->labelA = (SceneViewLabel *) child;
+        scene->labelA = child;
         scene->labelA->unk16 = 2;
         scene->labelA->unk14 = 8;
         scene->labelA->unk17 = 8;
@@ -409,8 +418,9 @@ void func_ov003_021fdfe8(M2C_UNK arg0) {
         scene->labelA->unk28 = (u8) ((scene->labelA->unk28 & ~0xE0) | 0x20);
 
         child = MemAlloc(0x2C);
-        if (child != NULL) {
-            label = (SceneViewLabel *) child;
+        if (child) {
+            SceneViewLabel *label = child;
+
             label->vtable = &gHeapObjectVTable;
             label->kind = 0;
             label->textId = 0;
@@ -427,7 +437,7 @@ void func_ov003_021fdfe8(M2C_UNK arg0) {
             label->unk28 = (u8) (label->unk28 & ~0xE0);
             label->unk29 = 0;
         }
-        scene->labelB = (SceneViewLabel *) child;
+        scene->labelB = child;
         scene->labelB->unk16 = 2;
         scene->labelB->unk14 = 8;
         scene->labelB->unk17 = 8;
@@ -438,13 +448,12 @@ void func_ov003_021fdfe8(M2C_UNK arg0) {
         scene->labelB->unk21 = 9;
 
         child = MemAlloc(8);
-        if (child != NULL) {
+        if (child) {
             ((s32 *) child)[0] = 0;
             ((s32 *) child)[1] = 0;
         }
         scene->unk6C = child;
-
-        scene->flags3E.byte = (u8) (scene->flags3E.byte | 0x80);
+        scene->flags3E.byte |= 0x80;
     }
     scene->flags3B.kind = 4;
 }

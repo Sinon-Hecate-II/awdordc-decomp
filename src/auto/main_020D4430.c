@@ -459,15 +459,16 @@ void SetBattleMapFramePending(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x5C) = 1;
 }
 
-u8 IsBattleMapFramePending(void *arg0) {
-    u8 var_r0;
+/* Whether the battle map view's sprite object has a frame waiting to be drawn. */
+u8 IsBattleMapFramePending(void *mapObject) {
+    u8 pending;
 
-    if (M2C_FIELD(arg0, s32 *, 0x5C) != 0) {
-        var_r0 = 1;
+    if (M2C_FIELD(mapObject, s32 *, BATTLE_MAP_FRAME_PENDING) != 0) {
+        pending = 1;
     } else {
-        var_r0 = 0;
+        pending = 0;
     }
-    return var_r0;
+    return pending;
 }
 
 void ClearBattleMapFramePending(void *arg0) {

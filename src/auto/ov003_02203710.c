@@ -46,7 +46,7 @@ M2C_FIELD(record,volatile s32*,12)=v;
 
 #pragma opt_common_subs off
 void func_ov003_02203710(void *arg0,s32 arg1) {
-void *func_020abb9c(void*);void *func_020abbb4(void*);void *func_020abbcc(void*);void *func_020abbe4(void*);
+void *GetUnitSpriteAbove(void*);void *GetUnitSpriteBelow(void*);void *GetUnitSpriteLeft(void*);void *GetUnitSpriteRight(void*);
 void func_ov003_02200dc8(void*,s32);void PlaySoundEffect(s32);
 void *ctx=M2C_FIELD(arg0,void**,0x44),*entry,*next;
 s32 old;
@@ -57,25 +57,25 @@ old=M2C_FIELD(ctx+offset,s32*,12);
 if((u8)(state==0)){
 switch(arg1){
 case 1:
-next=func_020abb9c(M2C_FIELD(ctx,void**,0x10c));ctx=M2C_FIELD(arg0,void**,0x44);
+next=GetUnitSpriteAbove(M2C_FIELD(ctx,void**,0x10c));ctx=M2C_FIELD(arg0,void**,0x44);
 old=M2C_FIELD(M2C_FIELD(ctx,void**,0x10c),u16*,0x2e)&255;
 func_ov003_02200dc8(ctx,M2C_FIELD(next,u16*,0x2e)&255);
 if(old==(M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void**,0x44),void**,0x10c),u16*,0x2e)&255))return;
 PlaySoundEffect(0x10019);MenuCopyCursor(arg0);if (MenuIsFixed(arg0) == 0) MenuDescribe(arg0); return;
 case 2:
-next=func_020abbb4(M2C_FIELD(ctx,void**,0x10c));ctx=M2C_FIELD(arg0,void**,0x44);
+next=GetUnitSpriteBelow(M2C_FIELD(ctx,void**,0x10c));ctx=M2C_FIELD(arg0,void**,0x44);
 old=M2C_FIELD(M2C_FIELD(ctx,void**,0x10c),u16*,0x2e)&255;
 func_ov003_02200dc8(ctx,M2C_FIELD(next,u16*,0x2e)&255);
 if(old==(M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void**,0x44),void**,0x10c),u16*,0x2e)&255))return;
 PlaySoundEffect(0x10019);MenuCopyCursor(arg0);if (MenuIsFixed(arg0) == 0) MenuDescribe(arg0); return;
 case 4:
-next=func_020abbcc(M2C_FIELD(ctx,void**,0x10c));ctx=M2C_FIELD(arg0,void**,0x44);
+next=GetUnitSpriteLeft(M2C_FIELD(ctx,void**,0x10c));ctx=M2C_FIELD(arg0,void**,0x44);
 old=M2C_FIELD(M2C_FIELD(ctx,void**,0x10c),u16*,0x2e)&255;
 func_ov003_02200dc8(ctx,M2C_FIELD(next,u16*,0x2e)&255);
 if(old==(M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void**,0x44),void**,0x10c),u16*,0x2e)&255))return;
 PlaySoundEffect(0x10019);MenuCopyCursor(arg0);if (MenuIsFixed(arg0) == 0) MenuDescribe(arg0); return;
 case 8:
-next=func_020abbe4(M2C_FIELD(ctx,void**,0x10c));ctx=M2C_FIELD(arg0,void**,0x44);
+next=GetUnitSpriteRight(M2C_FIELD(ctx,void**,0x10c));ctx=M2C_FIELD(arg0,void**,0x44);
 old=M2C_FIELD(M2C_FIELD(ctx,void**,0x10c),u16*,0x2e)&255;
 func_ov003_02200dc8(ctx,M2C_FIELD(next,u16*,0x2e)&255);
 if(old==(M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void**,0x44),void**,0x10c),u16*,0x2e)&255))return;

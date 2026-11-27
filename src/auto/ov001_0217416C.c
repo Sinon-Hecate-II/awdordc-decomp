@@ -228,12 +228,15 @@ void Ov001_KeypadSlideStep5(s32 task) {
 void Ov001KeypadTouchHeld(void);
 void Ov001KeypadTouchPressed(void);
 void Ov001KeypadTouchReleased(void);
+/* One frame of the keypad's input: run the stylus pressed/held/released
+ * handlers, then the d-pad and button handler that edits the code. */
 void Ov001_KeypadInputStep(void) {
-          void func_ov001_02174dcc(void);
+    void Ov001_KeypadButtonInput(void);
+
     Ov001KeypadTouchPressed();
     Ov001KeypadTouchHeld();
     Ov001KeypadTouchReleased();
-    func_ov001_02174dcc();
+    Ov001_KeypadButtonInput();
 }
 
 /* Handles the start of a stylus touch on the numeric keypad: remembers the key the touch landed
@@ -487,7 +490,7 @@ void Ov001_SetKeypadHighlight(s32 key) {
     M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_HIGHLIGHTED) = key;
 }
 
-void func_ov001_02174dcc(void) {
+void Ov001_KeypadButtonInput(void) {
     extern void *gOv001Keypad;
     extern u8 gKeypadDigitChars[];
     extern u8 gKeypadAuxCodes[];

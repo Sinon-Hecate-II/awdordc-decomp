@@ -237,10 +237,12 @@ void *DestroySpriteGrid(void *grid) {
     return grid;
 }
 
-void *func_020b3b6c(void *arg0) {
+/* Release the sprite grid's allocated cell block, keeping the widget itself;
+ * returns the widget. */
+void *FreeSpriteGridCells(void *grid) {
     M2C_UNK HeapFreeBlock(s32);
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x2C));
-    return arg0;
+    HeapFreeBlock(M2C_FIELD(grid, s32 *, SPRITE_GRID_CELLS + SPRITE_CELL_LIST_CELLS));
+    return grid;
 }
 
 /* Finishes a battle: stamps the battle record's date, stores the result in the

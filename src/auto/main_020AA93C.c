@@ -489,9 +489,11 @@ u32 IsAnyUnitSpritePressed(void) {
     return *(volatile u8 *)(&gUnitSpriteInput + UNIT_SPRITE_PRESSED);
 }
 
+/* Hold the unit sprites' animation: one more holder of the shared hold counter,
+ * which their per-frame update waits on. */
 void AcquireUnitSpriteHold(void) {
     extern u8 gUnitSpriteInput;
-    gUnitSpriteInput += 1;
+    *(&gUnitSpriteInput + UNIT_SPRITE_HOLD_COUNT) += 1;
 }
 
 void ReleaseUnitSpriteHold(void) {

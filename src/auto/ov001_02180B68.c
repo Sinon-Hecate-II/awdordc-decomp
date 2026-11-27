@@ -24,7 +24,7 @@ void Ov001_HandleFriendListMenuInput(void) {
     Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
-void func_ov001_02180b8c(void) {
+void Ov001_FriendListNoop(void) {
 
 }
 

@@ -344,7 +344,7 @@ u32 GetMapUnitKind(u8 *arg0) {
    power bonus, -30 in a sandstorm unless that player's sprite state is 10, then
    the unit's weapon bonus and its stat-block bonus.  0 for excluded kinds. */
 s32 GetUnitDamageBonus(u8 *unit,s32 x,s32 y){
-s32 IsUnitKindClass6(u32);s32 GetPlayerAttackPropertyBonus(s32);s32 func_020a87ec(void *);s32 GetUnitStatDamageBonus(void *,s32,s32);
+s32 IsUnitKindClass6(u32);s32 GetPlayerAttackPropertyBonus(s32);s32 GetUnitOwnerGroupAttackBonus(void *);s32 GetUnitStatDamageBonus(void *,s32,s32);
 s32 bonus=0,owner;
 if(IsUnitKindClass6((u32)(unit[0]<<26)>>26))return bonus;
 if(unit){if(!unit)owner=0;else owner=((s32)unit-(s32)((u8 *)*gCurrentMap+0x59a4))/14;owner=(owner>>6)+1;}else owner=0;
@@ -353,7 +353,7 @@ if(unit){if(!unit)owner=0;else owner=((s32)unit-(s32)((u8 *)*gCurrentMap+0x59a4)
 if(((Bits020a8c10 *)((u8 *)*gCurrentMap+owner*140+0x6810))->value!=10){
 if(M2C_FIELD(*gCurrentMap,u8 *,0x5158)==3)bonus-=30;
 }
-bonus+=func_020a87ec(unit);
+bonus+=GetUnitOwnerGroupAttackBonus(unit);
 return bonus+GetUnitStatDamageBonus(unit,x,y);
 }
 
@@ -363,7 +363,7 @@ return bonus+GetUnitStatDamageBonus(unit,x,y);
 s32 GetUnitAttackPowerBonus(u8 *unit, s32 x, s32 y) {
     s32 IsUnitKindClass6(u32);
     s32 GetPlayerAttackPropertyBonusAlt(s32);
-    s32 func_020a8804(void *);
+    s32 GetUnitOwnerGroupDefenseBonus(void *);
     s32 GetUnitAttackPowerStatBonus(void *, s32, s32);
     s32 bonus = 0, owner;
     if (IsUnitKindClass6((u32)(unit[0] << 26) >> 26)) return bonus;
@@ -373,7 +373,7 @@ s32 GetUnitAttackPowerBonus(u8 *unit, s32 x, s32 y) {
         owner = (owner >> 6) + 1;
     } else owner = 0;
     bonus += GetPlayerAttackPropertyBonusAlt(owner);
-    bonus += func_020a8804(unit);
+    bonus += GetUnitOwnerGroupDefenseBonus(unit);
     return bonus + GetUnitAttackPowerStatBonus(unit, x, y);
 }
 

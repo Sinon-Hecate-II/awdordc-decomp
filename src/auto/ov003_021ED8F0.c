@@ -1,6 +1,6 @@
 /* 1 function from 0x021ED8F0 to 0x021EE8B8 (ov003), found by ds-decomp. */
 #include "common.h"
-void *func_020abb9c(void*);void *func_020abbb4(void*);void *func_020abbcc(void*);void *func_020abbe4(void*);
+void *GetUnitSpriteAbove(void*);void *GetUnitSpriteBelow(void*);void *GetUnitSpriteLeft(void*);void *GetUnitSpriteRight(void*);
 void HandleWaypointInput(void*,u8);s32 InRange(s16,s16,s16);void PlaySoundEffect(s32);
 s32 GetUnitSpriteHeight(void*);s32 GetUnitSpriteWidth(void*);s16 GetWaypointSlotX(u8);void SetTextById(void*,s32);
 typedef struct {u8 low:2,mode:2,state:4;} OptionsFlags;
@@ -64,28 +64,28 @@ void func_ov003_021ed8f0(void *arg0,u32 arg1,s32 arg2){
 u8 *p=arg0,*menu=M2C_FIELD(p,u8**,0x6c);u8 state=((OptionsFlags*)(p+0x39))->state;
 u8 zero=state==0,two=state==2;u8 oldX=menu[7],selected;void *next;
 if(zero|two){switch(arg1){case 64:
-next=func_020abb9c(M2C_FIELD(menu,void**,0xe0));
+next=GetUnitSpriteAbove(M2C_FIELD(menu,void**,0xe0));
 menu=M2C_FIELD(p,u8**,0x6c);selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0xe0),u16*,0x2e);
 HandleWaypointInput(menu,(u8)M2C_FIELD(next,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0),u16*,0x2e)){
 PlaySoundEffect(0x10019);RefreshOptionCursor(p);RefreshOptionText(p);SaveOptionPosition(p);
 }break;
 case 128:
-next=func_020abbb4(M2C_FIELD(menu,void**,0xe0));
+next=GetUnitSpriteBelow(M2C_FIELD(menu,void**,0xe0));
 menu=M2C_FIELD(p,u8**,0x6c);selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0xe0),u16*,0x2e);
 HandleWaypointInput(menu,(u8)M2C_FIELD(next,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0),u16*,0x2e)){
 PlaySoundEffect(0x10019);RefreshOptionCursor(p);RefreshOptionText(p);SaveOptionPosition(p);
 }break;
 case 32:
-next=func_020abbcc(M2C_FIELD(menu,void**,0xe0));
+next=GetUnitSpriteLeft(M2C_FIELD(menu,void**,0xe0));
 menu=M2C_FIELD(p,u8**,0x6c);selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0xe0),u16*,0x2e);
 HandleWaypointInput(menu,(u8)M2C_FIELD(next,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0),u16*,0x2e)){
 PlaySoundEffect(0x10019);RefreshOptionCursor(p);RefreshOptionText(p);SaveOptionPosition(p);
 }break;
 case 16:
-next=func_020abbe4(M2C_FIELD(menu,void**,0xe0));
+next=GetUnitSpriteRight(M2C_FIELD(menu,void**,0xe0));
 menu=M2C_FIELD(p,u8**,0x6c);selected=(u8)M2C_FIELD(M2C_FIELD(menu,void**,0xe0),u16*,0x2e);
 HandleWaypointInput(menu,(u8)M2C_FIELD(next,u16*,0x2e));
 if(selected!=(u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0),u16*,0x2e)){

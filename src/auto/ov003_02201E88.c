@@ -239,9 +239,12 @@ void func_ov003_022023c4(void *arg0, s32 arg1) {
 
 void func_ov003_022023cc(void *arg0,s32 arg1){M2C_FIELD(arg0,u8*,0x20)=(M2C_FIELD(arg0,u8*,0x20)&~0xe0)|((u32)(arg1<<29)>>24);}
 
-void func_ov003_022023e4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    LoadSpriteResource(arg0, 0, arg1, arg2);
+/* Load one sprite image (resource kind 0) of `family` at `index` into the
+ * sprite engine's `destination` buffer. */
+void LoadSetupSpriteImage(M2C_UNK family, M2C_UNK index, M2C_UNK destination) {
+    int LoadSpriteResource(int, int, int, int);
+
+    LoadSpriteResource(family, 0, index, destination);
 }
 
 void func_ov003_022023fc(void) {

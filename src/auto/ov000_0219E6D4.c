@@ -191,7 +191,7 @@ s32 func_ov000_0219e9f4(void)
     s32 IsPlayerLocallyControlled(s32);
     s32 IsLocalSessionHost(void);
     u8 IsUnitSubmerged(void *);
-    u8 func_020a7d68(void *);
+    u8 IsUnitVisibleToTeamB(void *);
     s32 ShouldSkipAiActionView(void);
     extern u8 gAiCommand[];
     extern s8 *gAiCommandState;
@@ -336,7 +336,7 @@ s32 func_ov000_0219e9f4(void)
                 visible = 0;
         }
         if ((u8)!visible == 0 && (!IsUnitSubmerged(unit) ||
-            func_020a7d68(M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT)))) {
+            IsUnitVisibleToTeamB(M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT)))) {
             unit = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
             scrolling = StepMapViewToTile(unit[MAP_UNIT_X], unit[MAP_UNIT_Y]);
         }

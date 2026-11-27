@@ -128,25 +128,32 @@ void func_020b0ab4(void) {
     Reset3DSpriteBankState();
 }
 
-void func_020b0ac4(void *arg0) {
-    M2C_UNK StartMapViewRaiseTimer();
-    if (M2C_FIELD(arg0, s16 *, 0x6C) == 0) {
+/* Start handler of the map-order effect sprite: when the sprite shows an order
+ * effect, begin raising the map cells it highlights. */
+void MapOrderEffectSprite_StartRaise(void *sprite) {
+    void StartMapViewRaiseTimer(void);
+
+    if (M2C_FIELD(sprite, s16 *, MAPORDER_EFFECT_SPRITE_KIND) == 0) {
         return;
     }
     StartMapViewRaiseTimer();
 }
 
-void func_020b0adc(void *arg0) {
+/* Per-frame step of the map-order effect sprite: while it shows an order effect,
+ * keep advancing the map-view cell-raise animation it started. */
+void MapOrderEffectSprite_UpdateRaise(void *sprite) {
     M2C_UNK AdvanceMapViewRaiseTimer();
-    if (M2C_FIELD(arg0, s16 *, 0x6C) == 0) {
+    if (M2C_FIELD(sprite, s16 *, MAPORDER_EFFECT_SPRITE_KIND) == 0) {
         return;
     }
     AdvanceMapViewRaiseTimer();
 }
 
-void func_020b0af4(void *arg0) {
+/* Stop step of the map-order effect sprite: while it shows an order effect, reset
+ * the map-view cell-raise animation its start handler began. */
+void MapOrderEffectSprite_ResetRaise(void *sprite) {
     M2C_UNK ResetMapViewRaiseTimer();
-    if (M2C_FIELD(arg0, s16 *, 0x6C) == 0) {
+    if (M2C_FIELD(sprite, s16 *, MAPORDER_EFFECT_SPRITE_KIND) == 0) {
         return;
     }
     ResetMapViewRaiseTimer();

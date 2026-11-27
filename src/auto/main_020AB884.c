@@ -78,17 +78,36 @@ s16 GetListScrollY(void *widget) {
     return (s16) (secondValue + GetSpriteAnimValue(widget + LIST_WIDGET_ROW_TWEEN));
 }
 
-void func_020abb9c(void *arg0) {
+/* Unit sprite of the menu entry above `unitSprite`: menu entries are unit
+ * sprites whose depth (DS3D_SPRITE_Z) is their entry index, and each one stores
+ * the index its d-pad keys move to in UNIT_SPRITE_UP..RIGHT. */
+void *GetUnitSpriteAbove(void *unitSprite) {
     M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *, u16);
     extern M2C_UNK gUnitSpriteClass;
-    Find3DSpriteByClassAndZ(&gUnitSpriteClass, M2C_FIELD(arg0, u16 *, 0x68));
+
+    return (void *)Find3DSpriteByClassAndZ(&gUnitSpriteClass, M2C_FIELD(unitSprite, u16 *, UNIT_SPRITE_UP));
 }
 
-void func_020abbb4(void *arg0) {M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *,u16);extern M2C_UNK gUnitSpriteClass;Find3DSpriteByClassAndZ(&gUnitSpriteClass,M2C_FIELD(arg0,u16 *,106));}
+void *GetUnitSpriteBelow(void *unitSprite) {
+    M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *, u16);
+    extern M2C_UNK gUnitSpriteClass;
 
-void func_020abbcc(void *arg0) {M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *,u16);extern M2C_UNK gUnitSpriteClass;Find3DSpriteByClassAndZ(&gUnitSpriteClass,M2C_FIELD(arg0,u16 *,108));}
+    return (void *)Find3DSpriteByClassAndZ(&gUnitSpriteClass, M2C_FIELD(unitSprite, u16 *, UNIT_SPRITE_DOWN));
+}
 
-void func_020abbe4(void *arg0) {M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *,u16);extern M2C_UNK gUnitSpriteClass;Find3DSpriteByClassAndZ(&gUnitSpriteClass,M2C_FIELD(arg0,u16 *,110));}
+void *GetUnitSpriteLeft(void *unitSprite) {
+    M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *, u16);
+    extern M2C_UNK gUnitSpriteClass;
+
+    return (void *)Find3DSpriteByClassAndZ(&gUnitSpriteClass, M2C_FIELD(unitSprite, u16 *, UNIT_SPRITE_LEFT));
+}
+
+void *GetUnitSpriteRight(void *unitSprite) {
+    M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *, u16);
+    extern M2C_UNK gUnitSpriteClass;
+
+    return (void *)Find3DSpriteByClassAndZ(&gUnitSpriteClass, M2C_FIELD(unitSprite, u16 *, UNIT_SPRITE_RIGHT));
+}
 
 /* Advance one frame of a two-axis easing animation: when its target coordinate
    (+0x10/+0x11) changes, latch it and restart; ease +0xA from +8 towards 0xA0 or
@@ -528,12 +547,17 @@ void Apply3DSpriteBanksForScreen(s32 screen) {
     }
 }
 
-void func_020ac5c8(void *arg0) {
-    M2C_UNK DecrementSpriteChildCount();
-    if (M2C_FIELD(arg0, s32 *, 0x40) == 0) {
+/* Class destructor of the screen-transition sprite: when it was created as a
+ * child of another sprite, drop that parent's child count again. */
+void ScreenTransitionSprite_ReleaseParent(void *transition) {
+    void DecrementSpriteChildCount(void *);
+    void *parent;
+
+    parent = M2C_FIELD(transition, void **, TRANSITION_SPRITE_PARENT);
+    if (parent == NULL) {
         return;
     }
-    DecrementSpriteChildCount();
+    DecrementSpriteChildCount(parent);
 }
 
 /* Starts the screen-split transition sprite: resets its elapsed-frame counter,
@@ -609,11 +633,17 @@ void func_020ac65c(void *arg0) {
     Apply3DSpriteBanksForScreen(M2C_FIELD(arg0, u8 *, 0x3c));
 }
 
-void func_020ac7a0(void *arg0) {
-    if (M2C_FIELD(arg0, s32 *, 0x40) == 0) {
+/* Class destructor of the screen-fade sprite: when it was created as a child of
+ * another sprite, drop that parent's child count again. */
+void ScreenFadeSprite_ReleaseParent(void *fade) {
+    void DecrementSpriteChildCount(void *);
+    void *parent;
+
+    parent = M2C_FIELD(fade, void **, TRANSITION_SPRITE_PARENT);
+    if (parent == NULL) {
         return;
     }
-    DecrementSpriteChildCount();
+    DecrementSpriteChildCount(parent);
 }
 
 /* Restart handler of the screen-transition sprite: zero its elapsed-frame

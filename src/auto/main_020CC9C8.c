@@ -106,9 +106,11 @@ map=*gCurrentMap;
 if(hidden>=99)return 0;return 1;
 }
 #pragma opt_strength_reduction reset
-void SendBattleEndStartRequest(M2C_UNK arg0) {
+/* Tell the link peers the battle has ended: post a match start request tagged
+ * with the battle-end match id ('GMED'), owned by `owner`. */
+void SendBattleEndStartRequest(s32 owner) {
     M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
-    Link_CreateStartRequest(0x474D4544, arg0);
+    Link_CreateStartRequest(MATCH_ID_GMED, owner);
 }
 
 /* Once the battle has ended, spawn the battle-end request object under `owner`:

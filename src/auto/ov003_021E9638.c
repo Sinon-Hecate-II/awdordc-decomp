@@ -470,9 +470,11 @@ paletteBit=E9638Toggle(p);
 M2C_FIELD(p,u8*,0x3a)=(M2C_FIELD(p,u8*,0x3a)&~2)|((u32)(paletteBit<<31)>>30);
 }
 
-void func_ov003_021ea27c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    LoadSpriteResource(arg0, 0, arg1, arg2);
+/* Load the image of resource family `family` at `index` into `destination` in the
+ * current 3D sprite engine (LoadSpriteResource with resource kind 0). */
+void LoadSpriteImage(s32 family, s32 index, s32 destination) {
+    M2C_UNK LoadSpriteResource(s32, s32, s32, s32);
+    LoadSpriteResource(family, 0, index, destination);
 }
 
 void func_ov003_021ea294(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

@@ -485,11 +485,14 @@ void UpdateMapActionPopup(void *arg0) {
     M2C_FIELD(arg0, s32 *, MAP_ACTION_SCALE) = eased;
 }
 
-void func_020c989c(void *arg0) {
+/* Map-action popup finish: release the hold the popup put on the map view and
+ * clear the 3D animation sprite it was drawing. */
+void FinishMapActionPopup(void *popup) {
     void Sprite_ClearHandle(s32 *);
     M2C_UNK ReleaseMapViewHold();
+
     ReleaseMapViewHold();
-    Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x54));
+    Sprite_ClearHandle(M2C_FIELD(popup, s32 *, MAP_ACTION_SPRITE));
 }
 
 /* Nonzero while a map-action effect is playing (an object of the map-action

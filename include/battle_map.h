@@ -683,8 +683,9 @@ typedef struct MapTargetList {
  * UNIT_FLAG_VISIBLE is set again on the fogged enemy units in sight of the
  * viewing team (RefreshUnitVisibility). */
 #define UNIT_FLAG_FOG      0x0020 /* the unit stands in fog: the visibility pass rechecks it */
-#define UNIT_FLAG_VISIBLE  0x0040 /* the unit is in sight of the viewing team */
-#define UNIT_FLAG_FOG_MASK 0x00C0 /* the visibility bits the turn-start pass resets */
+#define UNIT_FLAG_VISIBLE  0x0040 /* the unit is in sight of team A */
+#define UNIT_FLAG_VISIBLE_TEAM_B 0x0080 /* the unit is in sight of team B (a submerged unit a team-B player can move past) */
+#define UNIT_FLAG_FOG_MASK 0x00C0 /* the two per-team visibility bits the sight pass resets */
 
 /* The two battle-participant scratch records, 0x20 bytes each: the side that
  * starts the fight at MAP_BATTLE_ATTACKER, its opponent at MAP_BATTLE_DEFENDER.
@@ -1246,6 +1247,8 @@ typedef struct MapRecordStamp {
 #define MAP_RECORD_NAME        0x06 /* char[0x21] map name, NUL terminated */
 #define MAP_RECORD_MAGIC       0x20070731
 #define MAP_RECORD_CHECKSUM    0x46 /* u16 CRC-16 of the record data (Crc16 from +0x54, 0x6A4 bytes) */
+#define MAP_RECORD_DATA        0x54 /* start of the record data the checksum covers (terrain and units) */
+#define MAP_RECORD_DATA_SIZE   0x6A4 /* bytes the checksum covers; MAP_RECORD_DATA + this = MAP_RECORD_SIZE */
 #define MAP_RECORD_SAVE_SIZE   0x2AC /* compact saved record */
 #define MAP_RECORD_SIZE        0x6F8 /* expanded runtime record */
 #define MAP_RECORD_STAMP       0x40  /* u8[0x14] date, checksum and console id stamp */
