@@ -87,9 +87,11 @@ void LoadCampaignMapHeaders(void) {
     } while (index < MAP_ID_CAMPAIGN_PER_PLAYER);
 }
 
-void func_020c8e64(void *arg0) {
+/* Reset the campaign-map header loader: rewind its slot index and clear every
+ * cached campaign map header. */
+void ResetCampaignMapHeaderLoader(void *loader) {
     M2C_UNK ClearCampaignMapHeaders();
-    M2C_FIELD(arg0, s32 *, 0x5C) = 0;
+    M2C_FIELD(loader, s32 *, CAMPAIGN_HEADER_LOAD_INDEX) = 0;
     ClearCampaignMapHeaders();
 }
 

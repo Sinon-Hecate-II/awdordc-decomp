@@ -279,8 +279,9 @@ void Ov011_Init3DRendering(void) {
     M2C_FIELD((void *)0x04000440, s32 *, 0xC) = 0;
 }
 
+/* Frame-callback task: ask the 3D engine to swap its front and back buffers. */
 void Ov011_Swap3DBuffers(void) {
-    *(s32 *)0x04000540 = 1;
+    *(s32 *)GX_SWAP_BUFFERS = 1;
 }
 
 /* Create the entry's main-screen sprite and reserve its texture and palette slots. */

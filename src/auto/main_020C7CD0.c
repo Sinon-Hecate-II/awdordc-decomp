@@ -76,9 +76,11 @@ void ExpandMapRecord(void *arg0, void *arg1) {
         HeapFreeBlock(src);
 }
 
-s32 GetCampaignMapHeader(s32 arg0) {
+/* Return the saved-record header at `slot` in the campaign map header table
+ * (a raw table index, not a campaign map id). */
+s32 GetCampaignMapHeader(s32 slot) {
     extern M2C_UNK gCampaignMapHeaders;
-    return (0x54 * arg0) + (s32) &gCampaignMapHeaders;
+    return ((s32) sizeof(MapRecordHeader) * slot) + (s32) &gCampaignMapHeaders;
 }
 
 /* Return the campaign map's header record for a campaign map id: the

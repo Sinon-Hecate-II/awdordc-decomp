@@ -1,6 +1,13 @@
 /* 4 functions from 0x02099B18 to 0x02099E6C (main), found by ds-decomp. */
 #include "common.h"
 
+/* The step-timing fields of a text object (TextState, main_0209ACC4.c). */
+typedef struct TextState {
+    u8  pad_00[0x54];
+    s8  delay;  /* +0x54 frames left before the next step */
+    s8  speed;  /* +0x55 frames per step; nonzero also enables the tick sound */
+} TextState;
+
 u8 IsLeadByte(u8 *arg0);
 u8 IsGlyphEscape(u8 *arg0);
 #pragma opt_propagation off
@@ -121,7 +128,9 @@ s32 Text_GetScreenCount(u8 *text) {
     return 1;
 }
 
-void StopTextObject(void *arg0) {
-    M2C_FIELD(arg0, s8 *, 0x55) = 0;
-    M2C_FIELD(arg0, s8 *, 0x54) = -2;
+/* Stop a text object advancing its script: clear the per-step speed and set the
+ * delay to the stopped sentinel so the text engine leaves it alone. */
+void StopTextObject(TextState *text) {
+    text->speed = 0;
+    text->delay = -2;
 }

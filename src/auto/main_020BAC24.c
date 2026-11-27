@@ -54,10 +54,11 @@ else RunCursorUnitEvent(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT));
 RefreshMapCursorCellCache();
 }
 
-void func_020bb028(void) {
+/* Drop every unit's move-range/path sprite and redraw the map view. */
+void ClearUnitMoveObjectsAndRefreshMap(void) {
     M2C_UNK func_020bf858();
-    M2C_UNK RefreshMapView();
     M2C_UNK DeleteAllUnitMoveObjects();
+    M2C_UNK RefreshMapView();
     func_020bf858();
     DeleteAllUnitMoveObjects();
     RefreshMapView();

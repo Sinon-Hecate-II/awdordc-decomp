@@ -58,12 +58,13 @@ s32 func_ov009_0222132c(s32 size,s32 align) {
     return func_020e3580();
 }
 
-void FreeLinkBlock(s32 arg0, s32 arg1) {
-    M2C_UNK HeapFreeBlock();
-    if (arg0 == 0) {
+/* Free a link packet block (`size` is not used by the allocator). */
+void FreeLinkBlock(s32 block, s32 size) {
+    void HeapFreeBlock(void *);
+    if (block == 0) {
         return;
     }
-    HeapFreeBlock();
+    HeapFreeBlock((void *) block);
 }
 
 /* Reset a gLinkPlayers slot to its unset state: clear the 0x16-byte player

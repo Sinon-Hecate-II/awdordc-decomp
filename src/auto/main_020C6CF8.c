@@ -64,7 +64,7 @@ s32 CanSelectCursorUnit(void) {
 extern void **gCurrentMap; extern u16 gMapConfig;
 s32 IsUnitSelected(void *);s32 func_020cf908(s32,s32,s32,s32);
 s32 GetMapPlayerFlags(s32,s32);s32 GetPlayerSelectedUnit(s32);s32 IsPlayerSelectionEnabled(s32);
-s32 func_020a88e8(s32);s32 GetPlayerCoZoneBonusIndex(s32);s32 GetMapUnitKind(void *);
+s32 MapData_HasNoCoRule(s32);s32 GetPlayerCoZoneBonusIndex(s32);s32 GetMapUnitKind(void *);
 s32 IsCoZoneKindSelectable(s32,s32);s32 GetUnitActionCost(s32,s32);
 u8 *map; s32 value; s32 unitKind; s32 player;
 if(((u32)(gMapConfig<<18)>>31)==0)return 2;
@@ -79,7 +79,7 @@ map=*gCurrentMap;player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
 if(M2C_FIELD(map+player*MAP_PLAYER_STRIDE,Bits020a8c10 *,MAP_PLAYER_STATES+PLAYER_REC_SPRITE).value==0)return 2;
 if(GetPlayerSelectedUnit(player))return 2;
 if(!IsPlayerSelectionEnabled(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))return 2;
-if(func_020a88e8(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)))return 2;
+if(MapData_HasNoCoRule(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)))return 2;
 value=GetPlayerCoZoneBonusIndex(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
 unitKind=GetMapUnitKind(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT));
 if(!IsCoZoneKindSelectable(value,unitKind))return 2;
@@ -234,11 +234,13 @@ void DrawSecondCarriedUnitIcon(void) {
  SetCarriedUnitIconSprite(1,0x240,10,2,2);
 }
 
-s32 GetMenuCenteredX(s32 arg0) {
-    u32 temp_r0;
+/* Screen x in pixels that centres a menu `widthTiles` tiles wide on the
+ * 32-tile-wide (256-pixel) screen. */
+s32 GetMenuCenteredX(s32 widthTiles) {
+    u32 offset;
 
-    temp_r0 = 0x20 - arg0;
-    return ((s32) (temp_r0 + (temp_r0 >> 0x1F)) >> 1) * 8;
+    offset = 0x20 - widthTiles;
+    return ((s32) (offset + (offset >> 0x1F)) >> 1) * 8;
 }
 
 s32 GetMenuTopY(void) {
@@ -291,6 +293,8 @@ void OpenBattleMenu(void) {
     CreateMenuAt(&gBattleMenuEntries, x, GetMenuTopY(), 0x50);
 }
 
+/* Close the carried-unit menu: clear the text tiles and pop the carried-unit
+ * menu state, which rebuilds the menu beneath it. */
 void CloseCarriedUnitMenu(void) {
     M2C_UNK ResetTextTiles(M2C_UNK);
     M2C_UNK PopCarriedUnitMenuState();

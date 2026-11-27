@@ -8,7 +8,7 @@ void MI_CpuFill8(void *, s32, s32);
 s32 Divide(s32, s32);
 s32 IsMobileIndirectUnitKind(u32);
 s32 IsCarrierUnitKind(u32);
-s32 func_020d0164(s32, s32);
+s32 FillCellLayerBytes(s32, s32);
 s32 IsUnitOnCurrentTeam(s32);
 s32 IsPropertyOwnedByTeam(u16, u8, s32);
 s32 GetUnitBuildCost(u16, s32);
@@ -281,7 +281,7 @@ void func_ov000_02181c88(void) {
     MI_CpuFill8(&gAiSafeDirectRangeBitmap, 0, 0xA1);
     MI_CpuFill8(&gAiSafeIndirectRangeBitmap, 0, 0xA1);
     MI_CpuFill8(&gAiRangeLayer, 0, 0x508);
-    func_020d0164(*gCurrentMap + 0x2338, 0);
+    FillCellLayerBytes(*gCurrentMap + 0x2338, 0);
     FillMapCellLayer(*gCurrentMap + 0x2840, 0);
     FillMapCellLayer(*gCurrentMap + 0x2D48, 0);
     sp3C = 1;

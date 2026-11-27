@@ -245,12 +245,12 @@ void func_ov003_0220a864(M2C_UNK arg0) {
   void SpriteCellListClear(void *);
   void SpriteCellListSelectTile(void *,s16);
   s32 ScaleFixed8(s32,s32);
-  s32 func_020a8e28(s32,s32);
+  s32 GetCenteredMargin(s32,s32);
   s32 GetLanguage(void);
   s32 GetLocalizedText(void *);
   s32 MeasureStringWidth(s32);
-  void func_020a99f4(void *);
-  void func_020a9a08(void *);
+  void ScrollBar_EnableTouch(void *);
+  void ScrollBar_DisableTouch(void *);
   s32 minus=-1;
   s32 constant=0xcd;
   void *inner;
@@ -264,7 +264,7 @@ void func_ov003_0220a864(M2C_UNK arg0) {
   cur=M2C_FIELD(inner,void **,0);
   selected=cur?M2C_FIELD(cur,u16 *,8):minus;
   SpriteCellListClear(inner);
-  xpre=func_020a8e28(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,1),constant)+16;
+  xpre=GetCenteredMargin(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,1),constant)+16;
   i=11;
 if(i<M2C_FIELD(M2C_FIELD(arg0,void**,0x44),u8*,0)+11){s16 selectionX=(s16)xpre;
  do {
@@ -309,11 +309,11 @@ width=ScaleFixed8(rawWidth,constant);
   }
   }
   if((u8)(M2C_FIELD(M2C_FIELD(arg0,void **,0x3c),u8 *,15)==8)) {
-  func_020a99f4(M2C_FIELD(arg0,void **,0x60));
-  func_020a99f4(M2C_FIELD(arg0,void **,0x64));
+  ScrollBar_EnableTouch(M2C_FIELD(arg0,void **,0x60));
+  ScrollBar_EnableTouch(M2C_FIELD(arg0,void **,0x64));
   } else {
-  func_020a9a08(M2C_FIELD(arg0,void **,0x60));
-  func_020a9a08(M2C_FIELD(arg0,void **,0x64));
+  ScrollBar_DisableTouch(M2C_FIELD(arg0,void **,0x60));
+  ScrollBar_DisableTouch(M2C_FIELD(arg0,void **,0x64));
   }
 }
 #pragma pop

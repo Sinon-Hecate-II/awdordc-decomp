@@ -161,7 +161,7 @@ void func_ov002_021e9008(void *arg0, s16 arg1, s16 arg2) {
  * flip byte at +0x8C is set), scale and the two optional rotation offsets, then draws
  * the model and its three child lists; pops the transforms at the end. */
 void DrawUnitModelTree(void *unit){
-void func_ov002_021e1ef8(void *,s32);void func_ov002_021e2cf0(void *);void DrawModelEffectDisc(void *);
+void func_ov002_021e1ef8(void *,s32);void Ov002_DrawEffectNode(void *);void DrawModelEffectDisc(void *);
 void *node,*child;s32 transX,transZ,transY,modelScale;volatile u32 *matrix=(volatile u32 *)0x4000444;
 matrix[0]=0;
 if(!M2C_FIELD(unit,u8 *,0x8c)){
@@ -180,12 +180,12 @@ else{transX=M2C_FIELD(unit,s16 *,0x7c);transY=M2C_FIELD(unit,s16 *,0x7e);matrix[
 }
 func_ov002_021e1ef8(unit,0);
 node=0;while((node=Next021e8e8c(unit+0x54,node))!=0){child=M2C_FIELD(node,void **,0);if(M2C_FIELD(child,u8 *,0x4a))func_ov002_021e1ef8(child,0);}
-node=0;while((node=Next021e8e8c(unit+0x5c,node))!=0){child=M2C_FIELD(node,void **,0);if(M2C_FIELD(child,u8 *,0x4a))func_ov002_021e2cf0(child);}
+node=0;while((node=Next021e8e8c(unit+0x5c,node))!=0){child=M2C_FIELD(node,void **,0);if(M2C_FIELD(child,u8 *,0x4a))Ov002_DrawEffectNode(child);}
 node=0;while((node=Next021e8e8c(unit+0x64,node))!=0)DrawModelEffectDisc(M2C_FIELD(node,void **,0));
 if(M2C_FIELD(unit,s16 *,0x7c)||M2C_FIELD(unit,s16 *,0x7e))*(volatile u32 *)0x4000448=1;
 if(M2C_FIELD(unit,s32 *,0x74)||M2C_FIELD(unit,s32 *,0x78))*(volatile u32 *)0x4000448=1;
 node=0;while((node=Next021e8e8c(unit+0x54,node))!=0){child=M2C_FIELD(node,void **,0);if(!M2C_FIELD(child,u8 *,0x4a))func_ov002_021e1ef8(child,0);}
-node=0;while((node=Next021e8e8c(unit+0x5c,node))!=0){child=M2C_FIELD(node,void **,0);if(!M2C_FIELD(child,u8 *,0x4a))func_ov002_021e2cf0(child);}
+node=0;while((node=Next021e8e8c(unit+0x5c,node))!=0){child=M2C_FIELD(node,void **,0);if(!M2C_FIELD(child,u8 *,0x4a))Ov002_DrawEffectNode(child);}
 *(volatile u32 *)0x4000448=1;
 }
 

@@ -415,16 +415,16 @@ M2C_UNK func_020db5e8(void *arg0) {
                     r2 = 0x3ff & (0x1e0 >> (s32)r3);
                     r2 = r2 | 0x7000;
                     DrawTimerDigits(0xc0, 0xa4, (u16)r2, 0, timeValue);
-                    gCur3DSpriteEngine = savedEngine;
-                    if (GetConnectedPlayerCount() >= 2) {
-                        return;
-                    }
                 }
             }
         }
     }
+    gCur3DSpriteEngine = savedEngine;
+    if (GetConnectedPlayerCount() >= 2) {
+        return;
+    }
     if (IsOnlineSessionFlagSet(3) != 0) {
-        M2C_FIELD(arg0, u16 *, 0x48) |= 0x100;
+        M2C_FIELD(arg0, u16 *, 0x48) = M2C_FIELD(arg0, u16 *, 0x48) | 0x100;
     }
     return;
 }

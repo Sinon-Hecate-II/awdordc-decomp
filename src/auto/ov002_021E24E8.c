@@ -325,9 +325,10 @@ void SetEffectNodeDrawTransform(void *node,u8 flip) {
  REG_GX_MTX_SCALE=value;REG_GX_MTX_SCALE=value;REG_GX_MTX_SCALE=4096;
 }
 
-void func_ov002_021e2cf0(void *arg0) {
+/* Draw an effect node and its subtree, flipped when its move-while-scaling flag is set. */
+void Ov002_DrawEffectNode(void *node) {
     M2C_UNK func_ov002_021e1ef8(void *, u8);
-    func_ov002_021e1ef8(arg0, (u8) M2C_FIELD(arg0, u16 *, 0x86));
+    func_ov002_021e1ef8(node, (u8) M2C_FIELD(node, u16 *, FX_NODE_MODE_86));
 }
 
 /* Set an effect node's position: its whole-pixel translation (SetEffectNodeTranslation

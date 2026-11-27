@@ -319,17 +319,20 @@ void *func_020a72e8(s32 arg0) {
     return (u8 *)&gArmyPalettes + ((arg0 - 1) << 5);
 }
 
-s32 GetSubmergedDamageRow(s32 arg0, s32 arg1) {
-    s32 var_r0;
+/* Damage-table row a hit on a target of `targetKind` reads: when the target is a
+ * submerged submarine (`targetFlags` nonzero) its normal row gives way to the
+ * submerged-submarine row. */
+s32 GetSubmergedDamageRow(s32 targetKind, s32 targetFlags) {
+    s32 row;
 
-    var_r0 = arg0;
-    if (arg1 == 0) {
-        return var_r0;
+    row = targetKind;
+    if (targetFlags == 0) {
+        return row;
     }
-    if (var_r0 == 0x16) {
-        var_r0 = 0x1B;
+    if (row == UNIT_KIND_SUBMARINE) {
+        row = UNIT_DAMAGE_ROW_SUBMERGED;
     }
-    return var_r0;
+    return row;
 }
 
 /* Return the 1-based player that owns the unit record at `p`, from its slot in

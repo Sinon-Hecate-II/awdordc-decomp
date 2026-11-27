@@ -603,9 +603,10 @@ void func_020859b4(M2C_UNK arg0) {
     CreateLocalBattleSaveSprite(arg0);
 }
 #pragma pop
+/* Record the current server date and time as the profile's last-synced stamp. */
 void SaveProfileSyncTime(void) {
     M2C_UNK GetServerDateTime(s32);
-    GetServerDateTime(GetProfileSaveBlock() + 0x58);
+    GetServerDateTime(GetProfileSaveBlock() + PROFILE_SYNC_TIME);
 }
 
 s32 GetProfileSyncTime(void) {
@@ -613,8 +614,10 @@ s32 GetProfileSyncTime(void) {
     return GetProfileSaveBlock() + 0x58;
 }
 
+/* Stamp the profile save with the current server date/time as its get-request
+ * time, so the request's age can be measured later. */
 void StoreGetRequestServerTime(void) {
-    GetServerDateTime(GetProfileSaveBlock() + 0x74);
+    GetServerDateTime(GetProfileSaveBlock() + PROFILE_GET_REQUEST_TIME);
 }
 
 s32 GetGetRequestServerTime(void) {

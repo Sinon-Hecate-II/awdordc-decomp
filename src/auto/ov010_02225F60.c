@@ -116,9 +116,10 @@ s32 AllocAlignedBuffer() {
     func_020e3580();
 }
 
-void FreeBuffer(s32 arg0) {
+/* Free an allocation made by AllocAlignedBuffer (a NULL block is left alone). */
+void FreeBuffer(s32 buffer) {
     M2C_UNK HeapFreeBlock();
-    if (arg0 == 0) {
+    if (buffer == 0) {
         return;
     }
     HeapFreeBlock();
@@ -577,14 +578,16 @@ s32 FinishWebRegisterRequest(void) {
     return result;
 }
 
-void func_ov010_022268dc(void) {
+void Ov010RegisterSprite_Destructor(void) {
 
 }
 
-s32 func_ov010_022268e0(s32 arg0) {
+/* Deleting destructor of the online register-waiting sprite (slot 1 of
+ * sOv010RegisterSpriteVtable): the sprite owns nothing, so only free it. */
+s32 Ov010RegisterSprite_Delete(s32 sprite) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return sprite;
 }
 
 void Ov010_AllocBlock(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

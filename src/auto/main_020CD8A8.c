@@ -332,9 +332,10 @@ radius=GetUnitMoveScoreWeather(unit,x,y);
 MarkThreatBitmap((s16)x,(s16)y,(s16)radius,M2C_FIELD(*gCurrentMap+owner*MAP_PLAYER_STRIDE,u8 *,PLAYER_SIDE_OFF),(u8)owner,(u8)mark);
 }
 
-void MarkUnitThreatRange(void *arg0) {
+/* Mark a map unit's threat range at the tile it currently stands on. */
+void MarkUnitThreatRange(void *unit) {
     void MarkUnitThreatAt(void *, s32, s32);
-    MarkUnitThreatAt(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
+    MarkUnitThreatAt(unit, M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y));
 }
 
 /* Marks the cursor unit's threat range on every tile of a movement path: walks

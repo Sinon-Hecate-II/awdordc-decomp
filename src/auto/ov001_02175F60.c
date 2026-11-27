@@ -308,7 +308,7 @@ void Ov001_InitScreen(void) {
     void Ov001_InitMessageArchiveQueue(void);
     void Ov001_AllocChoiceFrameSprites(void);
     void Ov001_InitHighlightBackground(void);
-    void func_ov001_02171c10(void);
+    void Ov001_ClearMessagePanelActive(void);
     u8 Ov001_GetLanguage(void);
     s32 Ov001_HasScreenOption(s32);
     s32 Ov001_GetScreenLayout(void);
@@ -349,7 +349,7 @@ void Ov001_InitScreen(void) {
     Ov001_InitMessageArchiveQueue();
     Ov001_AllocChoiceFrameSprites();
     Ov001_InitHighlightBackground();
-    func_ov001_02171c10();
+    Ov001_ClearMessagePanelActive();
     /* English has a separate US archive selected by option flag 2. */
     if (Ov001_GetLanguage() == 1 && Ov001_HasScreenOption(2) != 0) {
         gOv001MessageArchive = Ov001_LoadMessageArchive((M2C_UNK)&gOv001MessagePathUsa);

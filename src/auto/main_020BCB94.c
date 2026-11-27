@@ -206,12 +206,14 @@ void func_020bd054(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x4C) = 0;
 }
 
-void func_020bd064(void *arg0) {
-    s16 temp_r1;
+/* Advance the touch cursor's held-state frame timer until it reaches the limit,
+ * after which the cursor's state resumes its animation. */
+void TouchCursor_TickFrameTimer(void *cursor) {
+    s16 timer;
 
-    temp_r1 = M2C_FIELD(arg0, s16 *, 0x4C);
-    if ((s32) temp_r1 < 8) {
-        M2C_FIELD(arg0, s16 *, 0x4C) = (s16) (temp_r1 + 1);
+    timer = M2C_FIELD(cursor, s16 *, TOUCH_CURSOR_FRAME_TIMER);
+    if ((s32) timer < TOUCH_CURSOR_FRAME_LIMIT) {
+        M2C_FIELD(cursor, s16 *, TOUCH_CURSOR_FRAME_TIMER) = (s16) (timer + 1);
     }
 }
 

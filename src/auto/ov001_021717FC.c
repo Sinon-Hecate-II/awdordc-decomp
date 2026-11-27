@@ -137,7 +137,8 @@ M2C_FIELD(gOv001IconRow,s8 *,22)=-1;
 if(M2C_FIELD(gOv001IconRow,s32 *,16)){M2C_FIELD(gOv001IconRow,s32 *,16)=0;Ov001_PostTaskMessage(0,message);}
 }
 
-void func_ov001_02171c10(void) {
+/* Mark the ov001 message panel as gone, without freeing its background. */
+void Ov001_ClearMessagePanelActive(void) {
     extern s8 gOv001MessagePanelActive;
     gOv001MessagePanelActive = 0;
 }

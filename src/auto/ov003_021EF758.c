@@ -124,8 +124,10 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
     return sp8;
 }
 
-void func_ov003_021efb40(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0xC)(arg0);
+/* Class-script action of the ov003 battle scene: forward to the scene object's
+ * virtual init method at vtable offset 0xC. */
+void Ov003_BattleScene_CallInit(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), 0xC)(scene);
 }
 
 void func_ov003_021efb54(void) {
@@ -133,8 +135,10 @@ void func_ov003_021efb54(void) {
     func_ov003_021ea57c();
 }
 
-void func_ov003_021efb60(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x14)(arg0);
+/* Class-script action of the ov003 battle scene: forward to the scene object's
+ * virtual show/enter method at vtable offset 0x14. */
+void Ov003_BattleScene_CallShow(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_SHOW)(scene);
 }
 
 #pragma push

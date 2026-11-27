@@ -659,8 +659,9 @@ void FinishSprite3DScene(void) {
     M2C_FIELD((void *)0x04000448, s32 *, 0xF8) = 1;
 }
 
+/* Frame-end callback: trigger the 3D engine's display buffer swap. */
 void SwapGxBuffers(void) {
-    *(s32 *)0x04000540 = 1;
+    REG_GX_SWAP_BUFFERS = 1;
 }
 
 /* Pop the 3D matrix stack and queue a buffer swap for the end of the frame, once

@@ -16,7 +16,7 @@ extern u8 data_ov002_021f303e[],data_ov002_021f3040[],data_ov002_021f3042[],data
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 void ResetGxTextureParams(void);
 void DrawSolidQuad(s32,s32,s32,s32,s32,u16);
-void func_ov002_021e5974(s32 *,s32 *);
+void Ov002_SwapInts(s32 *,s32 *);
 void DrawFlatQuad(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void DrawGradientQuad(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
 s32 AreUnitViewGaugesDone(void);
@@ -35,11 +35,11 @@ color=data_ov002_021f3107[offset]?M2C_FIELD(p,u16 *,6):0x7fff;
 if(gVersusPlayerCoIndex[offset]){
 if(data_ov002_021f3106[offset]!=2){
 y=168-(s8)p[2];ResetGxTextureParams();a=91;b=82;
-if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
+if(((u32)(p[3]<<28)>>28)==1)Ov002_SwapInts(&a,&b);
 if(((u32)(p[3]<<28)>>28)==0)DrawFlatQuad(0,y,a,y,0,y+16,b,y+16,9,0);
 else DrawFlatQuad(256-a,y,256,y,256-b,y+16,256,y+16,9,0);
 y=169-(s8)p[2];ResetGxTextureParams();a=84;b=76;
-if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
+if(((u32)(p[3]<<28)>>28)==1)Ov002_SwapInts(&a,&b);
 if(((u32)(p[3]<<28)>>28)==0)DrawGradientQuad(0,y,a,y,0,y+14,b,y+14,8,color,0);
 else DrawGradientQuad(256-a,y,256,y,256-b,y+14,256,y+14,8,color,1);
 if(gVersusPlayerCoIndex[((u32)(p[3]<<28)>>28)*24]){
@@ -50,11 +50,11 @@ else DrawVersusPanelArtSmall(208,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>
 }
 }else{
 y=154-(s8)p[2];ResetGxTextureParams();a=97;b=80;
-if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
+if(((u32)(p[3]<<28)>>28)==1)Ov002_SwapInts(&a,&b);
 if(((u32)(p[3]<<28)>>28)==0)DrawFlatQuad(0,y,a,y,0,y+30,b,y+30,9,0);
 else DrawFlatQuad(256-a,y,256,y,256-b,y+30,256,y+30,9,0);
 y=155-(s8)p[2];ResetGxTextureParams();a=90;b=74;
-if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
+if(((u32)(p[3]<<28)>>28)==1)Ov002_SwapInts(&a,&b);
 if(((u32)(p[3]<<28)>>28)==0)DrawGradientQuad(0,y,a,y,0,y+28,b,y+28,8,color,0);
 else DrawGradientQuad(256-a,y,256,y,256-b,y+28,256,y+28,8,color,1);
 if(gVersusPlayerCoIndex[((u32)(p[3]<<28)>>28)*24]){
@@ -116,12 +116,13 @@ func_ov002_021e497c(x,y,((u32)(p[3]<<28)>>28),(s8)p[4]);
 }
 }
 
-void func_ov002_021e5974(s32 *arg0, s32 *arg1) {
-    s32 temp_r3;
+/* Swap two integers through their pointers: mirrors a panel's left/right gauge edges for player 1. */
+void Ov002_SwapInts(s32 *a, s32 *b) {
+    s32 temp;
 
-    temp_r3 = *arg0;
-    *arg0 = *arg1;
-    *arg1 = temp_r3;
+    temp = *a;
+    *a = *b;
+    *b = temp;
 }
 
 /* Flips a tilemap of `rows` 32-tile rows left to right in place: each row's tiles are

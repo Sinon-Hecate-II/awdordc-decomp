@@ -256,10 +256,12 @@ void func_0208ed40(void) {
 
 }
 
-s32 func_0208ed44(s32 arg0) {
+/* Delete callback of a countdown-timer display sprite: free the object and
+ * return it to the caller. */
+s32 TimerDisplay_Delete(s32 display) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return display;
 }
 
 void func_0208ed58(void *p){func_0208eb80(p);}

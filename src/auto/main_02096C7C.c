@@ -70,11 +70,13 @@ void SetSpriteLayerVramBanks(void) {
     GX_SetBankForOBJExtPlttSub(VRAM_BANK_I);
 }
 
-void func_02096da8(void) {
+/* Drop the extended-palette bank grants, then give the current screen OBJ extended
+ * palette bank G. */
+void SetObjExtPaletteBankG(void) {
     M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
-    M2C_UNK func_020b1800();
-    func_020b1800();
-    GX_SetBankForObjExtPalette(0x40);
+    M2C_UNK ReleaseExtPaletteBankGrants();
+    ReleaseExtPaletteBankGrants();
+    GX_SetBankForObjExtPalette(VRAM_BANK_G);
 }
 
 void func_02096dbc(void) {
@@ -175,13 +177,16 @@ void MarkSpriteLayer1Dirty(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_02097128(s8 arg0) {
+/* Set how many text row pairs the message panels show. */
+void SetMessagePanelRowPairs(s8 rowPairs) {
     void *Get3DSpriteManager();
-    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x4A) = arg0;
+    M2C_FIELD(Get3DSpriteManager(), s8 *, DS3D_MANAGER_PANEL_ROW_PAIRS) = rowPairs;
 }
 
-void func_0209713c(s8 arg0) {
-    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x4C) = arg0;
+/* Set the message-panel layout byte: 1 after Reset3DSpriteEngines lays the panels
+ * out, 0 when Reset3DSpriteEngineState clears the 3D-sprite engine state. */
+void SetMessagePanelLayout(s8 layout) {
+    M2C_FIELD(Get3DSpriteManager(), s8 *, DS3D_MANAGER_PANEL_LAYOUT) = layout;
 }
 
 void func_02097150(M2C_UNK arg0, s16 arg1) {

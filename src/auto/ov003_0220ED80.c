@@ -111,6 +111,6 @@ void *ScrollBar_Destroy(void *bar) {
     return bar;
 }
 
-void func_ov003_0220f0b4(void) {
+void ScrollBarThumb_Destroy(void) {
 
 }

@@ -219,9 +219,10 @@ void func_ov009_022255ec() {
     M2C_FIELD(&gLinkState, void **, 0x48) = NULL;
 }
 
-void func_ov009_02225600(void *arg0) {
+/* Submit a link match-start request node's start record to the link. */
+void LinkStartRequest_Submit(void *request) {
     M2C_UNK SubmitLinkStartRecord(void *, s32);
-    SubmitLinkStartRecord(arg0 + 0x38, M2C_FIELD(arg0, s32 *, 0x34));
+    SubmitLinkStartRecord(request + LINK_START_REQUEST_RECORD, M2C_FIELD(request, s32 *, LINK_START_REQUEST_ID));
 }
 
 /* Whether the link's start record was acknowledged while the link is in game
@@ -536,10 +537,12 @@ void func_ov009_02225b7c(void) {
 
 }
 
-s32 func_ov009_02225b80(s32 arg0) {
+/* Deleting destructor of the link actor object (slot 1 of gLinkActorVtbl; its
+ * class has nothing to tear down): free it and return it. */
+s32 LinkActor_Delete(s32 actor) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return actor;
 }
 
 /* Reset the link's packet sender: free the packet still queued for the transfer
@@ -589,50 +592,61 @@ void func_ov009_02225c44(void) {
 
 }
 
-s32 func_ov009_02225c48(s32 arg0) {
+/* Deleting destructor of the link start-request node (slot 1 of
+ * gLinkStartRequestVtbl): the node owns nothing, so only free it. */
+s32 LinkStartRequest_Delete(s32 request) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return request;
 }
 
-void func_ov009_02225c5c(void) {
+void LinkPlayerAnnounce_Destructor(void) {
 
 }
 
-s32 func_ov009_02225c60(s32 arg0) {
+/* Deleting destructor of the link player-announce node (slot 1 of
+ * gLinkPlayerAnnounceVtbl): the node owns nothing, so only free it. */
+s32 LinkPlayerAnnounce_Delete(s32 announce) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return announce;
 }
 
-void func_ov009_02225c74(void) {
+void LinkConnectRequest_Destroy(void) {
 
 }
 
-s32 func_ov009_02225c78(s32 arg0) {
+/* Deleting destructor of the link connect-request node SpawnLinkConnectRequest
+ * builds (slot 1 of gLinkConnectRequestVtbl): the node owns nothing, so only
+ * free it and return it. */
+s32 LinkConnectRequest_Delete(s32 request) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return request;
 }
 
-void func_ov009_02225c8c(void) {
+void LocalMatchRequest_Destructor(void) {
 
 }
 
-s32 func_ov009_02225c90(s32 arg0) {
+/* Deleting destructor of the local match-request node (slot 1 of
+ * gLocalMatchRequestVtbl): the node owns nothing, so only free it. */
+s32 LocalMatchRequest_Delete(s32 request) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return request;
 }
 
-void func_ov009_02225ca4(void) {
+void LinkPlayerInfoAnnounce_Destructor(void) {
 
 }
 
-s32 func_ov009_02225ca8(s32 arg0) {
+/* Deleting destructor of the link player-info announce node (slot 1 of
+ * gLinkPlayerInfoAnnounceVtbl): the node owns nothing, so only free it. */
+s32 LinkPlayerInfoAnnounce_Delete(s32 announce) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return announce;
 }
 
 void func_ov009_02225cbc(void *arg0) {
@@ -640,10 +654,11 @@ void func_ov009_02225cbc(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0xC4) = 0;
 }
 
-void func_ov009_02225ccc(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0) = 0;
-    M2C_FIELD(arg0, s32 *, 4) = 0;
-    M2C_FIELD(arg0, s32 *, 8) = 0;
+/* Clear the first three words of a link node (its vtable, next and state slots). */
+void func_ov009_02225ccc(void *node) {
+    M2C_FIELD(node, s32 *, 0) = 0;
+    M2C_FIELD(node, s32 *, 4) = 0;
+    M2C_FIELD(node, s32 *, 8) = 0;
 }
 
 /* Link-phase predicate for waiting on a target phase: the first argument is unused

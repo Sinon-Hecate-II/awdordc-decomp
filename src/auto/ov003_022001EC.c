@@ -44,12 +44,12 @@ void *DestroyOv003Object(Ov003Object *obj) {
     void RemoveMapViewSprites(void);
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
-    extern M2C_UNK data_ov003_02210104, data_ov003_02210130;
+    extern M2C_UNK gOv003ObjectVTable, gOv003ObjectIfaceVTable;
     void *sub;
     void *child;
 
-    obj->vtable = &data_ov003_02210104;
-    obj->iface = &data_ov003_02210130;
+    obj->vtable = &gOv003ObjectVTable;
+    obj->iface = &gOv003ObjectIfaceVTable;
     sub = obj->sub70;
     if (sub != NULL) {
         HeapFreeBlock(M2C_FIELD(sub, s32 *, 0x14));
@@ -97,11 +97,11 @@ void *DestroyOv003Object(Ov003Object *obj) {
     return obj;
 }
 
-void func_ov003_022003dc(void) {
+void Ov003MapList_Destroy(void) {
 
 }
 
-void func_ov003_022003e0(void) {
+void Ov003OptionList_Destroy(void) {
 
 }
 

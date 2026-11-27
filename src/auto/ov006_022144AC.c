@@ -129,8 +129,8 @@ void func_ov006_02215044(void) {
 }
 
 void func_ov006_02215050(void) {
-    M2C_UNK func_020c52d8();
-    func_020c52d8();
+    M2C_UNK CreateLocalBattleLoadSprite();
+    CreateLocalBattleLoadSprite();
 }
 
 /* Erase the battle save the screen's selected slot summary (+0x4C, slot id at

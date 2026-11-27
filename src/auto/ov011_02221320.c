@@ -2,20 +2,24 @@
 #include "common.h"
 #include "ds3dsprite.h"
 
-void InitIntroObject(void *arg0, s32 arg1) {
-    extern M2C_UNK data_ov011_02228294;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov011_02228294;
-    M2C_FIELD(arg0, s32 *, 0x3C) = arg1;
+/* Install the intro sprite vtable and the presentation mode it was created for. */
+void InitIntroObject(void *sprite, s32 mode) {
+    extern M2C_UNK gIntroSpriteVTable;
+    M2C_FIELD(sprite, M2C_UNK **, 0) = &gIntroSpriteVTable;
+    M2C_FIELD(sprite, s32 *, INTRO_MODE) = mode;
 }
 
-void func_ov011_02221334(void) {
+void IntroSprite_Destroy(void) {
 
 }
 
-s32 func_ov011_02221338(s32 arg0) {
+/* Deleting destructor of an ov011 intro presentation sprite (slot 1 of
+ * gIntroSpriteVTable, installed by InitIntroObject): the sprite owns nothing, so
+ * just free it and hand the pointer back. */
+s32 IntroSprite_Delete(s32 sprite) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return sprite;
 }
 
 #pragma scheduling off

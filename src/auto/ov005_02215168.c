@@ -215,8 +215,10 @@ void RecordsMenu_ToggleRecordEnabled(u8 *row) {
  RecordsMenu_ShuffleList(-1);
 }
 
-void func_ov005_02215650(void) {
+/* The records screen's object (the sprite created from gRecordsMenuClass), or NULL
+ * when the screen has none. */
+M2C_UNK RecordsMenu_FindObject(void) {
     M2C_UNK FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gRecordsMenuClass;
-    FindObjectByClass(&gRecordsMenuClass);
+    return FindObjectByClass(&gRecordsMenuClass);
 }

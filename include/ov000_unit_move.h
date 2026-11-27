@@ -24,6 +24,13 @@
 #define UNIT_MOVE_SPRITE_OFFSET_Y 16
 #define UNIT_MOVE_GFX         0x50 /* s32 unit tile-graphics buffer (freed with HeapFreeBlock) */
 #define UNIT_MOVE_ANIM        0x54 /* s32 unit sprite animation data buffer */
+/* Texture-bank and OBJ extended-palette addresses the moving unit's graphics are
+ * loaded at: one UNIT_MOVE_TILE_STRIDE tile block and one UNIT_MOVE_PALETTE_STRIDE
+ * palette block per controller slot (UNIT_MOVE_SLOT). */
+#define UNIT_MOVE_TILE_BASE      0x30D20
+#define UNIT_MOVE_TILE_STRIDE    0x800
+#define UNIT_MOVE_PALETTE_BASE   0x14C0
+#define UNIT_MOVE_PALETTE_STRIDE 0x20
 #define UNIT_MOVE_PHASE       0x48 /* u16 progress through the current step */
 #define UNIT_MOVE_SPEED       0x4a /* s16 movement speed */
 #define UNIT_MOVE_X           0x4c /* s16 x in 1/16-tile units */

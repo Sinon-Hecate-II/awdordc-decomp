@@ -1,5 +1,6 @@
 /* 9 functions from 0x0221E004 to 0x0221EDA8 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 #include "mapedit.h"
 #include "ds3dsprite.h"
 extern M2C_UNK gMapEditObjectList;
@@ -150,9 +151,10 @@ block_15:
     FocusSpriteSlotById(var_r7);
 }
 
-void func_ov007_0221e6bc(void) {
+/* Map editor glyph-keyboard callback: play the sound for a changed or chosen key. */
+void MapEditorKeyboardPlaySelectSound(void) {
     M2C_UNK PlaySoundEffect(s32);
-    PlaySoundEffect(0x10019);
+    PlaySoundEffect(SOUND_MENU_SELECT);
 }
 
 /* Creates the sprite slots of the map editor's glyph keyboard: a 15x5 grid of

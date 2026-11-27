@@ -205,6 +205,12 @@ enum {
 #define LINK_MSG_START_REQUEST 2 /* the host asks the peers to start the match */
 #define LINK_MSG_START_ACK     3 /* a peer acknowledges a start request */
 
+/* A link match-start request node (class gLinkStartRequestClass): the match id it
+ * asks the peers to start and the 8-byte start record (LINK_START_RECORD_*) it
+ * submits. */
+#define LINK_START_REQUEST_ID     0x34 /* s32: match id both sides compare */
+#define LINK_START_REQUEST_RECORD 0x38 /* start record submitted to the link */
+
 /* Return code of the announcer when no further player slot is left to ask. */
 #define LINK_ANNOUNCE_DONE 0x19
 

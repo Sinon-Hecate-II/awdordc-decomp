@@ -829,6 +829,8 @@ void CreateOnlinePlayerListEmptyNode(s32 owner) {
     M2C_FIELD(node, s32 *, LIST_UNK48) = 0;
 }
 
+/* Drops the cached online player count (a negative value means "not known"), so the
+ * next refresh asks the server for it again. */
 void InvalidateOnlinePlayerCount(void) {
     extern s32 gOnlinePlayerCount;
     gOnlinePlayerCount = -1;
@@ -868,7 +870,7 @@ void func_020e4378(void) {
     M2C_UNK func_02003104(s32);
     M2C_UNK GX_ReleaseBankGrantForAll();
     M2C_UNK InitSystemServices();
-    M2C_UNK func_02006c58();
+    M2C_UNK ClearArenaExtendedMemoryFlag();
     M2C_UNK func_02006c6c();
     M2C_UNK func_02006c7c();
     M2C_UNK InitSystemTick();
@@ -878,7 +880,7 @@ void func_020e4378(void) {
     extern s32 gGxDmaChannel;
     u16 *p;
     u16 *q;
-    func_02006c58();
+    ClearArenaExtendedMemoryFlag();
     InitSystemServices();
     InitSystemTick();
     InitTimerQueue();

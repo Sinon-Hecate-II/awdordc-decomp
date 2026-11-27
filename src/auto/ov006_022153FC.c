@@ -164,7 +164,7 @@ M2C_UNK func_ov006_022157a0(void *arg0) {
     extern u16 **g3DSpriteEngineMain;
     extern void *gTouchState;
     M2C_UNK RectContainsPoint(M2C_UNK, M2C_UNK, void *);
-    M2C_UNK func_020b212c(void);
+    M2C_UNK GetFocusedSpriteSlotId(void);
     void SetTileRectPalette(void *, M2C_UNK, M2C_UNK, M2C_UNK);
 
     u16 **saved;
@@ -200,7 +200,7 @@ M2C_UNK func_ov006_022157a0(void *arg0) {
                  (M2C_UNK)*(u16 *)gTouchState,
                  (M2C_UNK)*((u16 *)gTouchState + 1),
                  buf) != 0) ||
-            (*(u8 *)arg0 == (s32)func_020b212c() && bit != 0)) {
+            (*(u8 *)arg0 == (s32)GetFocusedSpriteSlotId() && bit != 0)) {
             goto draw2;
         }
         goto draw0;

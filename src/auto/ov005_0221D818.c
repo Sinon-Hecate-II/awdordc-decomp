@@ -169,7 +169,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
     void PositionAwardPanelSprites(void *);
     s32 RandomIntRange(s32, s32);
     void SpawnResultSpark(s32, s32, s32);
-    extern M2C_UNK data_ov005_02220db8, data_ov005_02220f90, data_ov005_02220a4c, data_ov005_02220a78;
+    extern M2C_UNK data_ov005_02220db8, gAwardVtbl, data_ov005_02220a4c, data_ov005_02220a78;
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
     extern u16 gMapConfig;
     extern u8 gCoState[];
@@ -179,7 +179,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
     if (!DidPlayerWin()) return;
     medalDisplay = CreateSpriteObject(&data_ov005_02220db8, parent);
     if (medalDisplay) {
-        M2C_FIELD(medalDisplay, void **, 0) = &data_ov005_02220f90;
+        M2C_FIELD(medalDisplay, void **, 0) = &gAwardVtbl;
         M2C_FIELD(medalDisplay, u8 *, 0x44) = 0;
         M2C_FIELD(medalDisplay, u8 *, 0x45) = 0;
         M2C_FIELD(medalDisplay, u8 *, 0x46) = 0;

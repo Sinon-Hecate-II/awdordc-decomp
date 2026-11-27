@@ -288,6 +288,7 @@ void **CreateFaceChildSprite(s32 layer) {
     return result;
 }
 
+/* Delete every live 3D sprite object that is a linked CO face child. */
 void DeleteAllFaceChildren(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gFaceChildSpriteClass;

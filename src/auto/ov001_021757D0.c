@@ -348,6 +348,7 @@ void Ov001_InitMessageArchiveQueue(void) {
     M2C_FIELD((void *)gOv001MessageArchiveFreeList, M2C_UNK *, MESSAGE_POOL_QUEUE) = queue;
 }
 
+/* Free the message archive pool allocated by Ov001_InitMessageArchiveQueue. */
 void Ov001_FreeMessageArchiveQueue(void) {
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern M2C_UNK gOv001MessageArchiveFreeList;

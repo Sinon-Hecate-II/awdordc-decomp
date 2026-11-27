@@ -93,7 +93,7 @@ void Ov003_InitBattleSetup(M2C_UNK layer) {
     M2C_UNK SetMapListCategory(s32);
     extern M2C_UNK data_ov003_0220fca8;
     extern M2C_UNK data_ov003_0220fcdc;
-    extern M2C_UNK data_ov003_0220fd9c;
+    extern M2C_UNK gOv003BattleSetupMenuVTable;
     extern M2C_UNK gOv003BattleSetupVTable;
     extern M2C_UNK data_ov003_0220fdb8;
     M2C_UNK **menu0;
@@ -147,7 +147,7 @@ void Ov003_InitBattleSetup(M2C_UNK layer) {
         M2C_FIELD(setup, M2C_UNK ***, 0x3C) = MemAlloc(0xC);
         selectedMenu = MemAlloc(0xC);
         if (selectedMenu != NULL) {
-            *selectedMenu = &data_ov003_0220fd9c;
+            *selectedMenu = &gOv003BattleSetupMenuVTable;
         }
         M2C_FIELD(setup, M2C_UNK ***, 0x40) = selectedMenu;
     }
@@ -392,10 +392,12 @@ void *DestroyOv003BattleSetup(Ov003BattleSetup *setup) {
     return setup;
 }
 
-s32 func_ov003_021f3df4(s32 arg0) {
+/* Deleting destructor of the battle-setup object's menu (Ov003BattleSetupMenu,
+ * slot 1 of gOv003BattleSetupMenuVTable, setup+0x40): free it and return it. */
+s32 Ov003BattleSetupMenu_Delete(s32 menu) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(menu);
+    return menu;
 }
 
 /* Tears down / reinitialises an object: swaps its vtable, refreshes display-related state, checks its mode and either re-enters mode 4 or does a soft reset, then releases resources and invokes its destructor. */
@@ -457,7 +459,10 @@ void *func_ov003_021f3e08(void *obj) {
     return obj;
 }
 
-void func_ov003_021f3f08(void) {
+/* Non-deleting destructor of the battle-setup object's menu (slot 0 of
+ * gOv003BattleSetupMenuVTable): its class has nothing to tear down.
+ * Ov003BattleSetupMenu_Delete is its deleting twin. */
+void Ov003BattleSetupMenu_Destroy(void) {
 
 }
 

@@ -1,6 +1,7 @@
 /* 29 functions from 0x020B4264 to 0x020B5258 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "sound.h"
 
 /* Base of the current map data: the global map pointer holds it at offset 0. */
 #define MAPBASE ((u8 *)M2C_FIELD(gCurrentMap, u8 **, 0))
@@ -338,12 +339,15 @@ void RestoreBattleFromRecord(void *record) {
     M2C_FIELD(&gBattleViewState, s32 *, 8) = (s32) M2C_FIELD(record, s32 *, 0x10);
 }
 
-void func_020b4b20(void) {
+/* Fade the music out to silence over a few frames (the quick mute used while a
+ * battle panel is open); FadeMusicToFullVolume undoes it. */
+void FadeMusicToSilenceQuickly(void) {
     M2C_UNK FadeMusicToVolume(M2C_UNK, M2C_UNK);
-    FadeMusicToVolume(0, 8);
+    FadeMusicToVolume(SOUND_VOLUME_MUTED, MUSIC_VOLUME_QUICK_FADE_FRAMES);
 }
 
-void func_020b4b34(void) {
+/* Fade the music back to full volume (undoes the quick mute). */
+void RestoreMusicVolume(void) {
     M2C_UNK FadeMusicToFullVolume();
     FadeMusicToFullVolume();
 }
@@ -402,7 +406,7 @@ void ResumeSavedBattle(u8 saveType) {
     if (!SaveTypeHasNoSlot(saveType)) {
         M2C_FIELD(&gOptionBits, u16 *, 6) = (M2C_FIELD(&gOptionBits, u16 *, 6) & ~0x70) | ((u32) ((u16) GetSaveSlot(0, saveType) << 29) >> 25);
     }
-    func_020cfd14();
+    RebuildPropertyStatistics();
     callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 0x50);
     if (callback) callback();
     SetupPlayerTeams();

@@ -176,9 +176,10 @@ s32 func_ov009_022242c8(void) {
     return 0;
 }
 #pragma scheduling reset
+/* Clear every player slot's handled-result bit: all link results are pending again. */
 void ClearLinkResultFlags(void) {
     extern M2C_UNK gLinkState;
-    M2C_FIELD(&gLinkState, s32 *, 0x50) = 0;
+    M2C_FIELD(&gLinkState, s32 *, LINK_STATE_RESULT_FLAGS) = 0;
 }
 
 /* Replace the link's handled-result mask with only `playerSlot`'s bit: the slot
@@ -346,7 +347,7 @@ s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     extern M2C_UNK gLinkPlayers;
     extern M2C_UNK gLinkPeerSlots;
     extern M2C_UNK gLinkActorClass;
-    extern M2C_UNK data_ov009_022266b0;
+    extern M2C_UNK gLinkActorVtbl;
     extern M2C_UNK gLinkSenderClass;
     extern M2C_UNK data_ov009_02226688;
     extern M2C_UNK gLinkReceiverClass;
@@ -431,7 +432,7 @@ test:
     M2C_FIELD(&gLinkDownloadHeader,u16 *,4)=0x60;
     ptr = CreateSpriteFromClass((s32)&gLinkActorClass, 3);
     if (ptr != 0) {
-        M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_022266b0;
+        M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&gLinkActorVtbl;
         M2C_FIELD(ptr, u16 *, 0x34) = 0;
         M2C_FIELD(ptr, u32 *, 0x38) = 0;
         MI_CpuFill32(0, (u8 *)ptr + 0x3c, 0x10);
@@ -494,7 +495,7 @@ s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK gLinkPlayers;
     extern M2C_UNK gLinkPeerSlots;
     extern M2C_UNK gLinkActorClass;
-    extern M2C_UNK data_ov009_022266b0;
+    extern M2C_UNK gLinkActorVtbl;
     extern M2C_UNK gLinkSenderClass;
     extern M2C_UNK data_ov009_02226688;
     extern M2C_UNK gLinkReceiverClass;
@@ -563,7 +564,7 @@ test:
 
     ptr = CreateSpriteFromClass((s32)&gLinkActorClass, 3);
     if (ptr != 0) {
-        M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_022266b0;
+        M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&gLinkActorVtbl;
         M2C_FIELD(ptr, u16 *, 0x34) = 0;
         M2C_FIELD(ptr, u32 *, 0x38) = 0;
         MI_CpuFill32(0, (u8 *)ptr + 0x3c, 0x10);
@@ -729,9 +730,10 @@ void func_ov009_02224d0c(M2C_UNK arg0) {
     func_ov009_0222132c(arg0, 0x20);
 }
 
-void FreeLinkPacket(void *arg0) {
+/* Free a link packet block: its 12-byte header plus the payload it carries. */
+void FreeLinkPacket(void *packet) {
     M2C_UNK FreeLinkBlock(void *, s32);
-    FreeLinkBlock(arg0, M2C_FIELD(arg0, s32 *, 8) + 0xC);
+    FreeLinkBlock(packet, M2C_FIELD(packet, s32 *, LINK_PACKET_LENGTH) + LINK_PACKET_PAYLOAD);
 }
 
 /* Fill in the 12-byte link packet header at `packet` (tag, message id, the two

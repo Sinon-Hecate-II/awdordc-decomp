@@ -46,33 +46,40 @@ void DeleteLinkAnnounceRefreshers(void) {
     DeleteSpriteObjectsOfClass(&gLinkAnnounceRefresherClass);
 }
 
-s32 DeleteLinkAnnounceRefresher(s32 arg0) {
+/* Deleting destructor of the link announce refresher (slot 1 of
+ * gLinkAnnounceRefresherVtable): the refresher owns nothing, so only free it. */
+s32 DeleteLinkAnnounceRefresher(s32 refresher) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return refresher;
 }
 
 void LinkAnnounceRefresherDestructor(void) {
 
 }
 
-s32 func_ov009_022262bc(s32 arg0) {
+/* Deleting destructor of the link-result sprite (slot 1 of
+ * gLinkResultSpriteVtbl): the sprite owns nothing, so only free it. */
+s32 LinkResultSprite_Delete(s32 sprite) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return sprite;
 }
 
-void func_ov009_022262d0(void) {
-
-}
-
-void func_ov009_022262d4(void) {
+void LinkResultSprite_Destructor(void) {
 
 }
 
-s32 func_ov009_022262d8(s32 arg0) {
+void LinkStatusLabel_Destroy(void) {
+
+}
+
+/* Deleting destructor of the link status label CreateLinkStatusLabel builds
+ * (slot 1 of gLinkStatusLabelVTable): the label owns nothing, so only free it
+ * and return it. */
+s32 LinkStatusLabel_Delete(s32 label) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return label;
 }
 

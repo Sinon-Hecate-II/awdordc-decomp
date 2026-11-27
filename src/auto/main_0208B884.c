@@ -496,13 +496,14 @@ u8 IsAnimatedSpriteObjectActive(void) {
     return active;
 }
 
-void func_0208c748(void)
+/* Delete every live 3D sprite object that belongs to the animated-sprite class. */
+void DeleteAllAnimatedSpriteObjects(void)
 {
   M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-  M2C_UNK *new_var;
+  M2C_UNK *spriteClass;
   extern M2C_UNK gAnimatedSpriteObjectClass;
-  new_var = &gAnimatedSpriteObjectClass;
-  DeleteSpriteObjectsOfClass(new_var);
+  spriteClass = &gAnimatedSpriteObjectClass;
+  DeleteSpriteObjectsOfClass(spriteClass);
 }
 
 /* Copy the current OBJ palette shadow's `palette` slot (15 colours, index 0

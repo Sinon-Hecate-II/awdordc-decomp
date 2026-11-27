@@ -143,19 +143,24 @@ offset=M2C_FIELD(thumb,s16 *,0xc); valueRange=M2C_FIELD(bar,s16 *,0x16)-M2C_FIEL
 if(M2C_FIELD(gTouchState,u8 *,TOUCH_RELEASED)!=0)M2C_FIELD(bar,u8 *,6)=0;
 }
 
-void func_020a99f4(void *arg0) {
-    M2C_FIELD(arg0, s8 *, 5) = 1;
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x1C), s8 *, 5) = 1;
+/* Let a scroll bar and its thumb accept touch input (the counterpart of
+ * ScrollBar_DisableTouch, which clears the flags). */
+void ScrollBar_EnableTouch(void *bar) {
+    M2C_FIELD(bar, s8 *, SCROLLBAR_FLAGS) = 1;
+    M2C_FIELD(M2C_FIELD(bar, void **, SCROLLBAR_THUMB), s8 *, SCROLLTHUMB_FLAGS) = 1;
 }
 
-void func_020a9a08(void *arg0) {
-    M2C_FIELD(arg0, s8 *, 5) = 0;
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x1C), s8 *, 5) = 0;
+/* Turn off touch handling for a scroll bar and for the thumb it owns. */
+void ScrollBar_DisableTouch(void *bar) {
+    M2C_FIELD(bar, s8 *, SCROLLBAR_FLAGS) = 0;
+    M2C_FIELD(M2C_FIELD(bar, void **, SCROLLBAR_THUMB), s8 *, SCROLLTHUMB_FLAGS) = 0;
 }
 
-void func_020a9a1c(void *arg0, s16 arg1, s16 arg2) {
-    M2C_FIELD(arg0, s16 *, 0x14) = arg1;
-    M2C_FIELD(arg0, s16 *, 0x16) = arg2;
-    M2C_FIELD(arg0, s16 *, 0xE) = (s16) (arg2 - arg1);
+/* Give a scroll bar the value range [min, max] and cache its span; the volume
+ * sliders set 0..127 through this. */
+void ScrollBar_SetRange(void *bar, s16 min, s16 max) {
+    M2C_FIELD(bar, s16 *, SCROLLBAR_MIN) = min;
+    M2C_FIELD(bar, s16 *, SCROLLBAR_MAX) = max;
+    M2C_FIELD(bar, s16 *, SCROLLBAR_RANGE) = (s16) (max - min);
 }
 

@@ -487,9 +487,10 @@ Ov001_PostTaskMessage(0,M2C_FIELD(gOv001RegionMenu,s32 *,OV001_REGION_TASK));
 M2C_FIELD(gOv001RegionMenu,s32 *,OV001_REGION_TASK)=Ov001_AddTask(1,Ov001_RegionMenuCloseDelay,0,120);
 }
 
+/* Return the region menu's selected item (OV001_REGION_SELECTED_NONE/PENDING when none). */
 s8 Ov001_GetRegionMenuSelection(void) {
     extern void *gOv001RegionMenu;
-    return M2C_FIELD(gOv001RegionMenu, s8 *, 0x1B);
+    return M2C_FIELD(gOv001RegionMenu, s8 *, OV001_REGION_SELECTED);
 }
 
 /* Whether the ov001 region-column menu is open: its column is built. */

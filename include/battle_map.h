@@ -620,6 +620,8 @@ typedef struct MapSettings {
 /* Unit kind ids the battle and command code names directly. */
 #define UNIT_KIND_FLARE      5    /* Flare: fires a flare that reveals fog, spending ammo; available in fog or snow */
 #define UNIT_KIND_SUBMARINE  22   /* submarine: can Dive and Surface, and is hidden while submerged */
+#define UNIT_KIND_MOBILE_INDIRECT 20 /* the indirect kind that may move and fire in the same turn (IsMobileIndirectUnitKind) */
+#define UNIT_DAMAGE_ROW_SUBMERGED 27 /* gUnitKindDamageTable row a submerged submarine is hit on */
 
 /* One 16-byte entry of a map's unit deployment ("dispos") file, the list
  * file, the list PlaceMapDeployment places the map's units from.  Entries are
@@ -1274,6 +1276,12 @@ typedef struct MapRecordStamp {
 
 /* Fields of a per-map data record (0x50 bytes, MapData_GetRecord), the table the
  * map-selection code reads a map's settings from. */
+#define MAP_DATA_RULE_FLAGS    0x04 /* u16 the map's rule bits, tested by the map-selection code */
+#define MAP_DATA_RULE_FOG      0x0001 /* bit 0: the map forces fog of war on (MapData_IsFogOfWar) */
+#define MAP_DATA_RULE_NO_CO    0x0002 /* bit 1: COs are off (MapData_HasNoCoRule): no army is assigned and unit selection is blocked */
+#define MAP_DATA_RULE_RANDOM_PICK 0x0010 /* bit 4: the map takes part in random map selection (MapData_IsRandomSelectable) */
+#define MAP_DATA_RULE_NO_PRODUCTION 0x0004 /* bit 2: owned production sites cannot be used (MapData_IsProductionDisabled) */
+#define MAP_DATA_RULE_NO_ROUT 0x0008 /* bit 3: defeat by rout is off (MapData_HasNoRoutRule); the map suppresses the out-of-units result */
 #define MAP_DATA_TILESET       0x06 /* u8 the map's tileset index (MapData_GetTileset) */
 #define MAP_DATA_PLAYER_COUNT  0x09 /* u8 the number of armies the map is set up for */
 #define MAP_DATA_CATEGORY      0x0A /* u8 the map-data category (MapData_GetCategory) */
@@ -1369,5 +1377,11 @@ enum {
 #define CAMPAIGN_LOAD_QUEUE_IDS     0x36 /* u16[CAMPAIGN_LOAD_QUEUE_MAX] queued map ids */
 #define CAMPAIGN_LOAD_QUEUE_RECORDS 0x4C /* MapRecordHeader *[CAMPAIGN_LOAD_QUEUE_MAX] queued records */
 #define CAMPAIGN_LOAD_QUEUE_MAX     11   /* entries the queue holds (0x4C - 0x36 halves) */
+
+/* The campaign map header loader (class gCampaignMapHeaderLoaderClass): a sprite
+ * that clears and then loads the cached campaign map headers, one campaign map of
+ * the player's fifty per frame.  Its +0x5C is the 0-based campaign map slot it is
+ * loading next. */
+#define CAMPAIGN_HEADER_LOAD_INDEX  0x5C /* s32 next campaign map index */
 
 #endif

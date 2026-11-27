@@ -78,10 +78,13 @@ void CreateMapTransferPanel(M2C_UNK owner, s32 records, s32 chosen) {
     M2C_FIELD(p, s32 *, MAP_TRANSFER_PANEL_CHOSEN) = chosen;
 }
 
-s32 func_ov006_022173fc(s32 arg0) {
+/* Deleting destructor of the map-transfer panel object (slot 1 of
+ * gMapTransferPanelVtable; its class has nothing to tear down): free it and
+ * return it. */
+s32 MapTransferPanel_Delete(s32 panel) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return panel;
 }
 
 void func_ov006_02217410(void) {
@@ -295,6 +298,8 @@ void InitCampaignMapMenuUi(void) {
     SetUiMessageText(0);
 }
 
+/* Campaign map menu UI teardown: release the menu's UI graphics bank and show the
+ * shared frame border again. */
 void ShutdownCampaignMapMenuUi(void) {
     M2C_UNK ShowFrameBorderSprite();
     FreeUiGraphicsBank(4);

@@ -455,7 +455,7 @@ void ResetBattleMapAndBeginPhase(void) {
     M2C_UNK LoadBattleMap(M2C_UNK);
     M2C_UNK InitBattleState();
     M2C_UNK ResetPlayerTurnBonuses();
-    M2C_UNK func_020cfd14();
+    M2C_UNK RebuildPropertyStatistics();
     M2C_UNK CenterMapViewAtBattleStart();
     M2C_UNK BeginPlayerPhase();
     M2C_UNK InitPlayerTurnState();
@@ -466,7 +466,7 @@ void ResetBattleMapAndBeginPhase(void) {
     LoadBattleMap(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
     InitBattleState();
     ResetPlayerTurnBonuses();
-    func_020cfd14();
+    RebuildPropertyStatistics();
     CenterMapViewAtBattleStart();
     BeginPlayerPhase();
     InitPlayerTurnState();

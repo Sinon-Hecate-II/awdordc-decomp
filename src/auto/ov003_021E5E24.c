@@ -54,8 +54,10 @@ M2C_UNK Ov003_ShowMapListScene(M2C_UNK parent) {
     return CreateMapListObject(parent);
 }
 
-void func_ov003_021e6220(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0xC)(arg0);
+/* Class-script action of the ov003 map-info scene: forward to the scene
+ * object's virtual init method at vtable offset 0xC. */
+void Ov003_MapInfoScene_CallInit(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), 0xC)(scene);
 }
 
 /* Sets up rendering layer 0xE1 and its dimensions for the given object. */
@@ -99,8 +101,10 @@ void func_ov003_021e635c(void) {
     func_ov003_021e583c();
 }
 
-void func_ov003_021e6368(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x14)(arg0);
+/* Class-script action of the ov003 map-info scene: forward to the scene object's
+ * virtual show/enter method at vtable offset 0x14. */
+void Ov003_MapInfoScene_CallShow(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_SHOW)(scene);
 }
 
 /* Show the ov003 map-info scene: start its three 12-frame intro tweens (the
@@ -137,7 +141,7 @@ void func_ov003_021e6404(void) {
     Ov003_MapInfoConfirmInput();
 }
 
-void func_ov003_021e6410(void **arg0) {
+void Ov003_MapInfoScene_CallHide(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x18)(arg0);
 }
 

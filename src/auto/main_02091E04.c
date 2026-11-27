@@ -629,8 +629,10 @@ s32 MapScriptShowMessageText(M2C_UNK state, s32 textId) {
     return (s16) result;
 }
 
-void func_020928f4(void *arg0) {
-    MapScriptShowMessageText(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
+/* Map-script command: show the message text named by the current command's wide
+ * operand (MAP_SCRIPT_OPERAND2), handing the wait to MapScriptShowMessageText. */
+void MapScriptShowMessage(void *state) {
+    MapScriptShowMessageText(state, M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_OPERAND2));
 }
 
 void func_02092908(M2C_UNK arg0) {
@@ -807,8 +809,10 @@ s32 MapScriptWaitForKey(void *state) {
     return 0;
 }
 
-s32 func_02092c94(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+/* Map-script opcode: no-op command, just advance the interpreter to the next
+ * command and keep running. */
+s32 MapScriptNoOp(void *state) {
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) = (s32) (M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 

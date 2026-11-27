@@ -10,7 +10,7 @@ typedef struct { u8 b0:1,b1:1,b2:1,b3:1,b4:1,b5:1,b6:1,b7:1; } Unk0220C6C8Bits;
 typedef struct { u8 kind, unk1; u16 unk2, unk4, unk6, unk8, unkA, unkC, unkE, unk10; } Unk0220C6C8Sprite;
 typedef struct { Unk0220C6C8Sprite *sprite; u32 *start, *current; u16 index; u8 unkE, unkF; } Unk0220C6C8Anim;
 extern u8 data_ov003_02210ac4[], data_ov003_02210b0c[], data_ov003_02210c44[];
-extern u8 data_ov003_02210a4c[], data_ov003_02211018[], gOv003OptionRowVTable[];
+extern u8 data_ov003_02210a4c[], gScrollBarThumbVTable[], gOv003OptionRowVTable[];
 extern u8 gOptionBits[];
 typedef struct { void *vtable; u8 unk4,unk5,unk6,unk7; s16 unk8,unkA; u8 unkC,unkD; s16 unkE,unk10,unk12,unk14,unk16; u8 unk18,pad[3]; void *child; } Unk0220C6C8Slider;
 static inline void Unk0220C6C8Reset(Unk0220C6C8Anim *p) { p->unkE=0; p->unkF=0; }
@@ -28,7 +28,7 @@ void *HeapAllocBlock(int);
 void MI_CpuFill8(void *, int, int);
 void SpriteAnim_SetupFrame(void *);
 void SpriteTween_Start(void *, int);
-void func_020a9a1c(void *, int, int);
+void ScrollBar_SetRange(void *, int, int);
 void ScrollBar_PlaceThumb(void *, int, int);
 int GetMusicVolumeSetting(void);
 int GetSoundEffectVolumeSetting(void);
@@ -40,11 +40,11 @@ M2C_FIELD(q,void **,0)=&gScrollBarVTable;
 q[6]=0;q[5]=0;q[4]=0;q[13]=0;q[12]=0;
 M2C_FIELD(q,s16 *,10)=0; M2C_FIELD(q,s16 *,8)=0;
 q[24]=0; M2C_FIELD(q,s16 *,22)=0; M2C_FIELD(q,s16 *,20)=0; M2C_FIELD(q,s16 *,18)=0; M2C_FIELD(q,s16 *,16)=0; M2C_FIELD(q,s16 *,14)=0;
-func_020a9a1c(q,0,127);
+ScrollBar_SetRange(q,0,127);
 q[12]=70;q[13]=24;M2C_FIELD(q,s16 *,8)=145;M2C_FIELD(q,s16 *,10)=y;
 t=MemAlloc(0x1c);
 if(t) {
-M2C_FIELD(t,void **,0)=data_ov003_02211018;
+M2C_FIELD(t,void **,0)=gScrollBarThumbVTable;
 t[6]=0;t[5]=0;t[4]=0;t[17]=0;t[16]=0;
 M2C_FIELD(t,s16 *,14)=0;M2C_FIELD(t,s16 *,12)=0;M2C_FIELD(t,s16 *,10)=0;M2C_FIELD(t,s16 *,8)=0;
 M2C_FIELD(t,s16 *,24)=0;M2C_FIELD(t,s16 *,22)=0;M2C_FIELD(t,s16 *,20)=0;
@@ -202,11 +202,11 @@ M2C_FIELD(q,void **,0)=&gScrollBarVTable;
 q[6]=0;q[5]=0;q[4]=0;q[13]=0;q[12]=0;
 M2C_FIELD(q,s16 *,10)=0; M2C_FIELD(q,s16 *,8)=0;
 q[24]=0; M2C_FIELD(q,s16 *,22)=0; M2C_FIELD(q,s16 *,20)=0; M2C_FIELD(q,s16 *,18)=0; M2C_FIELD(q,s16 *,16)=0; M2C_FIELD(q,s16 *,14)=0;
-func_020a9a1c(q,0,127);
+ScrollBar_SetRange(q,0,127);
 q[12]=70;q[13]=24;M2C_FIELD(q,s16 *,8)=145;M2C_FIELD(q,s16 *,10)=6;
 t=MemAlloc(0x1c);
 if(t) {
-M2C_FIELD(t,void **,0)=data_ov003_02211018;
+M2C_FIELD(t,void **,0)=gScrollBarThumbVTable;
 t[6]=0;t[5]=0;t[4]=0;t[17]=0;t[16]=0;
 M2C_FIELD(t,s16 *,14)=0;M2C_FIELD(t,s16 *,12)=0;M2C_FIELD(t,s16 *,10)=0;M2C_FIELD(t,s16 *,8)=0;
 M2C_FIELD(t,s16 *,24)=0;M2C_FIELD(t,s16 *,22)=0;M2C_FIELD(t,s16 *,20)=0;
@@ -227,11 +227,11 @@ M2C_FIELD(q,void **,0)=&gScrollBarVTable;
 q[6]=0;q[5]=0;q[4]=0;q[13]=0;q[12]=0;
 M2C_FIELD(q,s16 *,10)=0; M2C_FIELD(q,s16 *,8)=0;
 q[24]=0; M2C_FIELD(q,s16 *,22)=0; M2C_FIELD(q,s16 *,20)=0; M2C_FIELD(q,s16 *,18)=0; M2C_FIELD(q,s16 *,16)=0; M2C_FIELD(q,s16 *,14)=0;
-func_020a9a1c(q,0,127);
+ScrollBar_SetRange(q,0,127);
 q[12]=70;q[13]=24;M2C_FIELD(q,s16 *,8)=145;M2C_FIELD(q,s16 *,10)=36;
 t=MemAlloc(0x1c);
 if(t) {
-M2C_FIELD(t,void **,0)=data_ov003_02211018;
+M2C_FIELD(t,void **,0)=gScrollBarThumbVTable;
 t[6]=0;t[5]=0;t[4]=0;t[17]=0;t[16]=0;
 M2C_FIELD(t,s16 *,14)=0;M2C_FIELD(t,s16 *,12)=0;M2C_FIELD(t,s16 *,10)=0;M2C_FIELD(t,s16 *,8)=0;
 M2C_FIELD(t,s16 *,24)=0;M2C_FIELD(t,s16 *,22)=0;M2C_FIELD(t,s16 *,20)=0;
@@ -370,8 +370,11 @@ void *ScrollBar_Delete(void *bar) {
     return bar;
 }
 
-s32 func_ov003_0220ed6c(s32 arg0) {
+/* Deleting destructor of a scroll bar's draggable thumb (slot 1 of
+ * gScrollBarThumbVTable, reached through the bar's SCROLLBAR_THUMB): the thumb
+ * owns nothing, so just free it and hand the pointer back. */
+s32 ScrollBarThumb_Delete(s32 thumb) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return thumb;
 }

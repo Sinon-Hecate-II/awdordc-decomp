@@ -177,8 +177,9 @@ gCur3DSpriteEngine=saved;
 }
 #pragma opt_peephole reset
 #pragma opt_common_subs reset
-s32 ScrollBar_IsGrabbed(void *arg0) {
-    return M2C_FIELD(M2C_FIELD(arg0, void **, 0x1C), u8 *, 6) | M2C_FIELD(arg0, u8 *, 6);
+/* Whether a scroll bar is being dragged: its dragging flag or its thumb's grabbed flag. */
+s32 ScrollBar_IsGrabbed(void *bar) {
+    return M2C_FIELD(M2C_FIELD(bar, void **, SCROLLBAR_THUMB), u8 *, SCROLLTHUMB_GRABBED) | M2C_FIELD(bar, u8 *, SCROLLBAR_DRAGGING);
 }
 
 /* Per-frame update of the ov003 unit-list menu: run the action a mode change

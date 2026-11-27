@@ -218,9 +218,10 @@ void Ov001_StartIconRowSlideOut(void) {
 
 #pragma thumb off
 
+/* Return the bar selected in the shared ov001 icon row (-1 none, -2 not ready). */
 s8 Ov001_GetIconRowSelection(void) {
     extern void *gOv001IconRow;
-    return M2C_FIELD(gOv001IconRow, s8 *, 0x16);
+    return ((Ov001IconRow *)gOv001IconRow)->selected;
 }
 
 /* Select bar `bar` of the icon row, but only if no bar has been selected yet. */

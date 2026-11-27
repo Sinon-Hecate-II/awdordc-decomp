@@ -524,12 +524,12 @@ void InitArenaTable(void) {
     void SetArenaHi(s32, s32);
     s32 GetArenaBottom(s32);
     void SetArenaLo(s32, s32);
-    extern M2C_UNK data_0212defc;
+    extern M2C_UNK gArenaTableState;
 
-    if (M2C_FIELD(&data_0212defc, s32 *, 0) != 0) {
+    if (M2C_FIELD(&gArenaTableState, s32 *, 0) != 0) {
         return;
     }
-    M2C_FIELD(&data_0212defc, s32 *, 0) = 1;
+    M2C_FIELD(&gArenaTableState, s32 *, 0) = 1;
     SetArenaHi(0, func_02006a38(0));
     SetArenaLo(0, GetArenaBottom(0));
     SetArenaLo(2, 0);
@@ -559,10 +559,10 @@ s32 GetArenaLo(s32 arg0) {
 }
 
 s32 func_02006a38(s32 arg0) {
-s32 OS_GetConsoleType(void); extern M2C_UNK data_0212defc,gOsArea; extern char data_00000000[],data_00000800[];
+s32 OS_GetConsoleType(void); extern M2C_UNK gArenaTableState,gOsArea; extern char data_00000000[],data_00000800[];
 switch(arg0) {
 case 0:return 0x23e0000;
-case 2: if(M2C_FIELD(&data_0212defc,s32 *,4)!=0) {if((OS_GetConsoleType()&3)==1)return 0;else goto mainram;} else return 0x2700000;
+case 2: if(M2C_FIELD(&gArenaTableState,s32 *,4)!=0) {if((OS_GetConsoleType()&3)==1)return 0;else goto mainram;} else return 0x2700000;
 case 3:mainram:return 0x2000000;
 case 4:{s32 a=(s32)&gOsArea; s32 c; s32 e; arg0=(s32)data_00000000; c=(s32)data_00000800; e=a+0x3f80; c=e-c;
 if(arg0==0){if((u32)a<0x27e15e0U)a=0x27e15e0;return a;} if(arg0<0)return 0x27e15e0-arg0;return c-arg0;}
@@ -574,13 +574,13 @@ case 5:return 0x27ff680;case 6:return 0x37f8000;default:return 0;
  * console type. */
 s32 GetArenaBottom(s32 arena) {
     s32 OS_GetConsoleType(void);
-    extern M2C_UNK data_0212defc;
+    extern M2C_UNK gArenaTableState;
 
     switch (arena) {
     case 0:
         return 0x0223c840;
     case 2:
-        if (M2C_FIELD(&data_0212defc, s32 *, 4) == 0) {
+        if (M2C_FIELD(&gArenaTableState, s32 *, 4) == 0) {
             goto empty;
         }
         if ((OS_GetConsoleType() & 0x3) != 1) {
@@ -637,9 +637,11 @@ s32 AllocFromArena(s32 arena, s32 size, s32 alignment) {
     return start;
 }
 
-void func_02006c58(void) {
-    extern M2C_UNK data_0212defc;
-    M2C_FIELD(&data_0212defc, s32 *, 4) = 0;
+/* Clear the arena table's extended-memory flag, so the arena sizing sees the
+ * console's base memory map. */
+void ClearArenaExtendedMemoryFlag(void) {
+    extern M2C_UNK gArenaTableState;
+    M2C_FIELD(&gArenaTableState, s32 *, 4) = 0;
 }
 
 /* Install the module's exception handler at start-up: remember any handler the

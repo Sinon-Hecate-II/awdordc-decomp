@@ -130,9 +130,10 @@ void Ov001_HandleLinkEvent(s32 player, u32 event, const u8 *packet) {
     }
 }
 #pragma merge_duplicate_code reset
-void Ov001_SetLinkStatus(s16 arg0) {
+/* Set the ov001 Download Play link's status word. */
+void Ov001_SetLinkStatus(s16 status) {
     extern s16 *gOv001LinkWork;
-    *gOv001LinkWork = arg0;
+    *gOv001LinkWork = status;
 }
 
 u16 Ov001_GetLinkStatus(void) {
@@ -653,9 +654,10 @@ void Ov001_HandleEndLinkResult(void *event) {
     SetWhStatus(WH_STATUS_STOP);
 }
 
-void func_ov001_0218836c(s32 arg0) {
+/* Set the group id the WH link matches players on (the profile's group id). */
+void Ov001_SetLinkGroupId(s32 groupId) {
     extern M2C_UNK gWhWork;
-    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 8) = arg0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION), s32 *, WH_CONN_GROUP_ID) = groupId;
 }
 
 u16 Ov001_GetConnectedChildren(void) {

@@ -469,9 +469,11 @@ gCarriedUnitMenuStackPtr-=8;
 func_020c0634(M2C_FIELD(gCarriedUnitMenuStackPtr,s32 *,4),M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,0),M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,1),M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,2),M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,3));
 }
 #pragma opt_instruction_scheduling reset
-void SetCarriedUnitMenuSelection(s8 arg0) {
+/* Set the chosen row of the carried-unit list menu state on top of the
+ * menu-state stack (read back by GetCarriedUnitMenuSelection). */
+void SetCarriedUnitMenuSelection(s8 selection) {
     extern void *gCarriedUnitMenuStackPtr;
-    M2C_FIELD(gCarriedUnitMenuStackPtr, s8 *, 2) = arg0;
+    ((CarriedUnitMenuState *)gCarriedUnitMenuStackPtr)->selection = selection;
 }
 
 s8 GetCarriedUnitMenuSelection(void) {extern void *gCarriedUnitMenuStackPtr;return M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,2);}

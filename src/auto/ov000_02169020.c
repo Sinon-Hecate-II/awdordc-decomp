@@ -552,8 +552,10 @@ s32 LoadUnitMoveAnim(void *move) {
     LoadFileToBuffer(GetUnitMoveAnimFileId(M2C_FIELD(move, u8 *, UNIT_MOVE_KIND)), 1);
 }
 
-s32 UnitMoveTileOffset(void *arg0) {
-    return (M2C_FIELD(arg0, s8 *, 0x45) << 0xB) + 0x30D20;
+/* Texture-bank address of the moving unit's tile-graphics block, one block per
+ * controller slot (UNIT_MOVE_SLOT). */
+s32 UnitMoveTileOffset(void *move) {
+    return (M2C_FIELD(move, s8 *, UNIT_MOVE_SLOT) << 11) + UNIT_MOVE_TILE_BASE;
 }
 
 s32 UnitMovePaletteOffset(void *arg0) {

@@ -323,7 +323,7 @@ void func_ov002_021e749c(void *arg0) {
     extern M2C_UNK gUnitViews, gPlayerSettings, gOv002EffectResources;
     void SpawnEffectNodeForEvent(void *, s32, s32, s32, s32);
     void func_ov002_021e97d8(void *, s32, s32, s32);
-    void func_ov002_021e42b0(void *);
+    void Ov002_StartUnitViewGauge(void *);
     void PlayOtherSlotStartSound(s32);
     void UpdateSlotEffectSound(s32, s32);
     BattleEffectEvent *event;
@@ -381,7 +381,7 @@ void func_ov002_021e749c(void *arg0) {
                 s32 variantSide = side == 0;
                 s32 armySide = side == 0;
                 if (!settings[armySide].army->variants[(u32)settings[variantSide].variant]) {
-                    func_ov002_021e42b0(view);
+                    Ov002_StartUnitViewGauge(view);
                 }
                 if (!event->skip) {
                     func_ov002_021e97d8(view->units[event->unit], 1,
@@ -404,7 +404,7 @@ void func_ov002_021e749c(void *arg0) {
                 s32 variantSide = side == 0;
                 s32 armySide = side == 0;
                 if (settings[armySide].army->variants[(u32)settings[variantSide].variant]) {
-                    func_ov002_021e42b0(view);
+                    Ov002_StartUnitViewGauge(view);
                 }
                 func_ov002_021e97d8(view->units[event->unit], 2,
                                    (s8)event->effect, (s8)event->flag);
@@ -481,9 +481,10 @@ void DrawBattleSceneUnitView(void) {
     GX_PopMatrixAndSwapBuffers();
 }
 
-void EndBattleScene(void *arg0) {
+/* End the battle scene: clear its ready flag and resume the battle screen's animation. */
+void EndBattleScene(void *state) {
     M2C_UNK ResumeBattleScreenAnimation();
-    M2C_FIELD(arg0, s8 *, 9) = 0;
+    M2C_FIELD(state, u8 *, BATTLE_SCENE_READY) = 0;
     ResumeBattleScreenAnimation();
 }
 

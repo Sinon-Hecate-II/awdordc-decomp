@@ -150,14 +150,20 @@ s32 AxisDistanceDifference(s32 x1, s32 y1, s32 x2, s32 y2) {
     return diff;
 }
 
-s32 GetUnitCaptureRateAtOwnTile(void *arg0) {
+/* Capture points the unit would add this turn at the tile it stands on: its
+ * capture rate for its own position.  Called by WillFinishCaptureThisTurn and
+ * GetCaptureTurnsLeft (GetUnitCaptureRateHere is the same helper for
+ * WillCaptureCompleteThisTurn). */
+s32 GetUnitCaptureRateAtOwnTile(BattleMapUnit *unit) {
     M2C_UNK GetUnitCaptureRate(void *, u8, u8);
-    GetUnitCaptureRate(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
+    GetUnitCaptureRate(unit, unit->x, unit->y);
 }
 
-s32 GetUnitCaptureRateHere(void *arg0) {
+/* Capture points the unit would add this turn at the tile it stands on: its
+ * capture rate for its own position. */
+s32 GetUnitCaptureRateHere(BattleMapUnit *unit) {
     M2C_UNK GetUnitCaptureRate(void *, u8, u8);
-    GetUnitCaptureRate(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
+    GetUnitCaptureRate(unit, unit->x, unit->y);
 }
 
 /* Whether `unit` finishes capturing the property it stands on this turn: it must

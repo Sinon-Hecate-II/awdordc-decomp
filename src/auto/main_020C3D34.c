@@ -512,9 +512,11 @@ M2C_UNK CreateProfileSaveSprite(s32 saveBlock, s32 owner) {
     }
 }
 
-void CreateLocalProfileSaveSprite(M2C_UNK arg0) {
+/* Create the save sprite for the local player's profile, parented to `owner`
+ * (a zero block means CreateProfileSaveSprite binds to the local profile block). */
+void CreateLocalProfileSaveSprite(M2C_UNK owner) {
     M2C_UNK CreateProfileSaveSprite(M2C_UNK, M2C_UNK);
-    CreateProfileSaveSprite(0, arg0);
+    CreateProfileSaveSprite(0, owner);
 }
 
 /* Write the whole battle save block held by save-screen sprite `sprite` (its block

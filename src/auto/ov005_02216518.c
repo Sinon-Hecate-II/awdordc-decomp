@@ -148,12 +148,12 @@ void RecordsMenu_FinishAction(void) {
  * that row exists). */
 void RecordsMenu_BeginAction(s16 record, s8 mode) {
     void CreateSpriteFromClass(void *, s32);
-    s32 func_ov005_02215650(void);
+    s32 RecordsMenu_FindObject(void);
     extern M2C_UNK gRecordsMenuState;
     extern M2C_UNK data_ov005_022204e0;
     M2C_FIELD(&gRecordsMenuState, RecordsScreen **, RECORDS_MENU_SCREEN)->pending = record;
     M2C_FIELD(&gRecordsMenuState, RecordsScreen **, RECORDS_MENU_SCREEN)->actionMode = mode;
-    CreateSpriteFromClass(&data_ov005_022204e0, func_ov005_02215650());
+    CreateSpriteFromClass(&data_ov005_022204e0, RecordsMenu_FindObject());
 }
 
 /* Point the file loader at the CO (shogun) color archive's directory,
@@ -164,7 +164,9 @@ void SetShogunColorFileDirectory(void) {
     SetFileDirectory(&sShogunColorDir);
 }
 
-u8 func_ov005_02217320(void) {
+/* Whether the ov005 CO menu's confirmed selection has changed (its
+ * OV005_MENU_CHANGED flag). */
+u8 Ov005Menu_GetChanged(void) {
     extern u8 *gOv005MenuState;
     return *gOv005MenuState;
 }

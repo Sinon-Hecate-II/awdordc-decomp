@@ -104,9 +104,9 @@ s32 func_ov001_021888a8(s32 mode, s32 option, s32 channel) {
     return 0;
 }
 #pragma peephole reset
-void Ov001_SetChildIndicateCallback(s32 arg0) {
-    extern M2C_UNK gWhWork;
-    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x4C) = arg0;
+/* Install the callback run when a child connects; a callback that returns 0 aborts the connection. */
+void Ov001_SetChildIndicateCallback(s32 callback) {
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION), s32 *, WH_CHILD_INDICATE_CB) = callback;
 }
 
 /* Return player `playerIndex`'s data block in the download-play (data-sharing)
@@ -243,7 +243,7 @@ int Ov001_LeaveProfileSetup(void) {
  * header into the link buffer and clear the link and list-timer flags. */
 void Ov001_BeginProfileTransfer(void) {
 extern void *gOv001ProfileState;
-func_ov001_0218836c(M2C_FIELD(gOv001ProfileState,s32 *,PROFILE_GROUP_ID));
+Ov001_SetLinkGroupId(M2C_FIELD(gOv001ProfileState,s32 *,PROFILE_GROUP_ID));
 M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_STATE)=1;
 M2C_FIELD(gOv001ProfileState,u16 *,PROFILE_PROGRAM_ID)=WM_GetNextTgid();
 MI_CpuCopy8(M2C_FIELD(gOv001ProfileState,void **,PROFILE_SAVE_DATA),(u8 *)gOv001ProfileState+PROFILE_SAVE_COPY,0x40);

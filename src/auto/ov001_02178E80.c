@@ -44,7 +44,7 @@ void Ov001_CloseMessageScreen(void) {
 void Ov001_ShowProfileMessage(void) {
     void *Ov001_GetProfileMessage(void);
     void Ov001_LoadProfileMessageBg(void);
-    void func_ov001_021792ec(void);
+    void Ov001_ConfirmProfileChoice(void);
     void Ov001_FadeInProfileMessage(void);
     s32 CreateTextPanel(s32, s32);
     M2C_UNK FillU16(s32, void *, s32);
@@ -64,7 +64,7 @@ void Ov001_ShowProfileMessage(void) {
     CopyU16(message + 2, textBuf, M2C_FIELD(message, u8 *, 1) * 2);
     DrawPanelText(panel, 8, 53, 240, 28, 2, 0x480, textBuf);
     CloseTextPanel(panel);
-    Ov001_SetProfileScreenCallback(func_ov001_021792ec);
+    Ov001_SetProfileScreenCallback(Ov001_ConfirmProfileChoice);
     Ov001_ShowMessage(29, 4, 0, -1, 0);
     Ov001_SetStepCallback(Ov001_FadeInProfileMessage);
 }
@@ -213,7 +213,8 @@ Ov001_SetStepCallback(&Ov001_InitOptionMenu);return;
 Ov001_SetStepCallback(&Ov001_OpenProfileSetupScreen);
 }
 
-void func_ov001_021792ec(void) {
+/* Profile message callback: record that the player confirmed the choice. */
+void Ov001_ConfirmProfileChoice(void) {
     extern s8 gOv001ProfileChoice;
     gOv001ProfileChoice = 1;
 }

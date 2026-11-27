@@ -10,7 +10,7 @@ void MapListHandleState(void) {
  extern M2C_UNK gMapListState;
  extern M2C_UNK MapListScrollUp,MapListScrollDown;
  s32 GetMenuState(void);
- s32 GetMenuRow(void);
+ s32 Ov001_GetScrollBarHandlePos(void);
  s32 HardwareDivideRemainder(u16,s32);
  void Ov001_FreeSpriteObjects(void);
  void MapListRedrawInfoPanel(void);
@@ -25,11 +25,11 @@ void MapListHandleState(void) {
  case 2:
  if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,65))return;
  Ov001_FreeSpriteObjects();
- M2C_FIELD(&gMapListState,u16 *,4)=GetMenuRow()*145/55;
+ M2C_FIELD(&gMapListState,u16 *,4)=Ov001_GetScrollBarHandlePos()*145/55;
  MapListRedrawInfoPanel();M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,65)=4;return;
  case 3:
  M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,69)=0;
- M2C_FIELD(&gMapListState,u16 *,4)=GetMenuRow()*145/55;
+ M2C_FIELD(&gMapListState,u16 *,4)=Ov001_GetScrollBarHandlePos()*145/55;
  Ov001_PlaySound(19);MapListRedrawInfoPanel();
  remainder=HardwareDivideRemainder(M2C_FIELD(&gMapListState,u16 *,4),29);
  if(remainder==0){MapList_UpdateStateFromRow();return;}

@@ -62,15 +62,17 @@ s32 GetSpriteLayerHead(s32 arg0) {
     return g3DSpriteLayerLists[arg0];
 }
 
-u8 IsLayerParent(u32 arg0) {
-    u8 var_r0;
+/* True when the sprite PARENT value `parent` is a layer index rather than a
+ * parent sprite object. */
+u8 IsLayerParent(u32 parent) {
+    u8 isLayer;
 
-    if (arg0 < 0xBU) {
-        var_r0 = 1;
+    if (parent < DS3D_LAYER_PARENT_LIMIT) {
+        isLayer = 1;
     } else {
-        var_r0 = 0;
+        isLayer = 0;
     }
-    return var_r0;
+    return isLayer;
 }
 
 /* Runs one update of a live, childless 3D sprite object that has no update-callback
@@ -514,10 +516,12 @@ void GotoSpriteAnimationLabel(void *sprite, s32 label) {
     } while (id != 0);
 }
 
-void Set3DSpriteClass(void *arg0, s32 arg1) {
-    M2C_FIELD(arg0, s32 *, 4) = arg1;
-    M2C_FIELD(arg0, s32 *, 8) = arg1;
-    M2C_FIELD(arg0, s32 *, 0x10) = 0;
+/* Point a 3D sprite at `spriteClass`: mark it alive as that class, restart its
+ * animation cursor at the class record and clear the update-callback override. */
+void Set3DSpriteClass(void *sprite, s32 spriteClass) {
+    M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ALIVE) = spriteClass;
+    M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ANIM) = spriteClass;
+    M2C_FIELD(sprite, s32 *, DS3D_SPRITE_UPDATE_CB) = 0;
 }
 
 void Set3DSpriteDeleteCallback(void *arg0, s32 arg1) {
@@ -563,24 +567,33 @@ void ApplyToSpriteClassOnCurrentEngine(M2C_UNK spriteClass, M2C_UNK *callback) {
     } while (i < DS3D_SPRITE_COUNT);
 }
 
-void ResumeAnimationOfSpriteClass(M2C_UNK arg0) {
+/* Resume the animation of every live 3D sprite object of class `spriteClass`,
+ * whichever engine the object belongs to. */
+void ResumeAnimationOfSpriteClass(s32 spriteClass) {
     void Sprite_ResumeAnimation(void *);
-    ApplyToSpriteClass(arg0, (M2C_UNK *) &Sprite_ResumeAnimation);
+    ApplyToSpriteClass(spriteClass, (M2C_UNK *) &Sprite_ResumeAnimation);
 }
 
-void ResumeAnimationOfSpriteClassOnCurrentEngine(M2C_UNK arg0) {
+/* Resume the animation of every live 3D sprite object of class `spriteClass`
+ * that is assigned to the current 3D sprite engine. */
+void ResumeAnimationOfSpriteClassOnCurrentEngine(s32 spriteClass) {
     void Sprite_ResumeAnimation(void *);
-    ApplyToSpriteClassOnCurrentEngine(arg0, (M2C_UNK *)&Sprite_ResumeAnimation);
+
+    ApplyToSpriteClassOnCurrentEngine(spriteClass, (M2C_UNK *)&Sprite_ResumeAnimation);
 }
 
-void DeleteSpriteObjectsOfClass(M2C_UNK arg0) {
+/* Delete every live 3D sprite object of class `spriteClass`, on either engine. */
+void DeleteSpriteObjectsOfClass(M2C_UNK spriteClass) {
     void DeleteSpriteObject(void *);
-    ApplyToSpriteClass(arg0, (M2C_UNK *) &DeleteSpriteObject);
+    ApplyToSpriteClass(spriteClass, (M2C_UNK *) &DeleteSpriteObject);
 }
 
-void DeleteSpriteObjectsOfClassOnCurrentEngine(M2C_UNK arg0) {
+/* Delete every live 3D sprite object of class `spriteClass` that is assigned
+ * to the current 3D sprite engine. */
+void DeleteSpriteObjectsOfClassOnCurrentEngine(s32 spriteClass) {
     void DeleteSpriteObject(void *);
-    ApplyToSpriteClassOnCurrentEngine(arg0, (M2C_UNK *)&DeleteSpriteObject);
+
+    ApplyToSpriteClassOnCurrentEngine(spriteClass, (M2C_UNK *)&DeleteSpriteObject);
 }
 
 /* Delete every live 3D sprite object whose depth (DS3D_SPRITE_Z) is `z`;

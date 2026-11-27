@@ -54,12 +54,12 @@ void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
     ClearSceneLayerOverrides();
     func_ov003_021f14b4();
     switch(kind){
-    case 0: func_ov003_021fd488(entry); return;
+    case 0: Ov003_CreateMapListScene(entry); return;
     case 1: func_ov003_021f01f0(entry); return;
     case 2: func_ov003_021f05fc(entry); return;
     case 3: func_ov003_022056bc(entry); return;
     case 4: func_ov003_021fd850(entry); return;
-    case 5: func_ov003_021fdc1c(entry); return;
+    case 5: Ov003_CreateMapList3Scene(entry); return;
     case 6: Ov003_CreateMapList4Scene(entry); return;
     case 7: CreateOv003SceneView(entry); return;
     case 8:
@@ -76,9 +76,9 @@ void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
         DeleteVoiceChatWidgets();
         CreateMatchNameLabel(0,0x6e0,entry);
         return;
-    case 18: func_ov003_021fe3b4(entry); return;
+    case 18: Ov003_CreateCampaignMapListScene(entry); return;
     case 19: Ov003_CreateMapPick7Scene(entry); return;
-    case 20: func_ov003_021feb4c(entry); return;
+    case 20: Ov003_CreateMapPick8Scene(entry); return;
     case 21: CreateOv003Scene(entry); return;
     default: return;
     }

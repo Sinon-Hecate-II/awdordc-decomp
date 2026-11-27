@@ -557,6 +557,9 @@ typedef struct UiModeState {
     s32 param;     /* +0x08 parameter of the requested mode */
 } UiModeState;
 
+/* UiModeState.current value of the battle map screen (overlay 0). */
+#define UI_MODE_BATTLE_MAP 1
+
 /* UiModeState.current value while the sub screen's own UI is up (StartSubScreenUi /
  * EnterSubScreenUi).  The mode-change helpers skip their screen fade/transition on
  * the sub screen while this mode is current. */
@@ -592,6 +595,7 @@ typedef struct UiModeState {
 /* The engine has twelve layers (indices 0..DS3D_LAYER_COUNT-1); a sprite created
  * with no owner goes to DS3D_SPRITE_DEFAULT_LAYER. */
 #define DS3D_LAYER_COUNT         12
+#define DS3D_LAYER_PARENT_LIMIT  0xB /* IsLayerParent's bound: the original treats parent values below this (one under the layer count) as layer indices */
 #define DS3D_SPRITE_DEFAULT_LAYER 7
 #define DS3D_SPRITE_TEMPLATE     0x44 /* void *: the SpriteQuadTemplate the sprite draws (handed to AddSprite) */
 #define DS3D_SPRITE_SLEEP_FLAG   0x56 /* s16: 0 while the screen is awake, nonzero once it has put the console to sleep */
@@ -626,6 +630,7 @@ typedef struct DS3DStateEntry {
 #define DS3D_SPRITE_COUNT  0x80  /* objects in the pool */
 #define DS3D_SPRITE_SIZE   0x74  /* bytes of one object */
 #define DS3D_SPRITE_Z_NONE 0xFF00 /* DS3D_SPRITE_Z of an object with no depth set */
+#define UI_MODE_SPRITE_Z   0xFF05 /* depth of the UI mode screens' sprite objects (deleted on a mode change) */
 #define DS3D_ALLOC_CURSOR  0x00  /* void *: first free slot in the order array */
 #define DS3D_ALLOC_TAIL    0x234 /* word after the order array; the reset clears it */
 
@@ -728,9 +733,11 @@ typedef struct ScenePanelState {
 #define DS3D_DIALOG_QUEUE_COUNT 8
 #define DS3D_MANAGER_OTHER_SCREEN_MODE 0x44 /* u8[2]: the other screen's screen mode, one byte per engine; 2 = DS3D_SCREEN_MODE_2 */
 #define DS3D_MANAGER_PANEL_ROW_PAIRS 0x4A /* u8: text row pairs of the message panels */
+#define DS3D_MANAGER_PANEL_LAYOUT 0x4C /* u8: message-panel layout setting; Reset3DSpriteEngines sets 1, Reset3DSpriteEngineState clears it */
 #define DS3D_MANAGER_DIALOG_SUSPEND_COUNT 0x4B /* s8: dialogs that suspended the message overlay (SuspendDialogs/ResumeDialogs) */
 #define DS3D_MANAGER_TARGET_MODE 0x49 /* u8 DS3D_TARGET_* the 3D sprites are created on (Get3DSpriteTargetMode / Set3DSpriteTargetMode) */
 #define DS3D_MANAGER_MENU_CURSOR 0x4D /* s8 index of the message panel the menu cursor is on (GetMenuCursor / SetMenuCursor); 2 while both screens show a panel */
+#define DS3D_MANAGER_TOUCH_DISABLED 0x47 /* s8 nonzero: stylus input is disabled (DisableTouchInput / EnableTouchInput, read by IsTouchInputDisabled) */
 
 /* The full-screen message box's state, at g3DSpriteManager+0x46.  Clear/Get/Set
  * and the two predicates (IsMessageBoxIdle, IsMessageBoxActive) all read or write

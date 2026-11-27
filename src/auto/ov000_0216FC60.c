@@ -148,9 +148,10 @@ done:
     }
 }
 
-void func_ov000_0217000c(void) {
+/* Menu callback: play the sound for a changed or chosen list entry. */
+void PlayMenuSelectSound(void) {
     M2C_UNK PlaySoundEffect(s32);
-    PlaySoundEffect(0x10019);
+    PlaySoundEffect(SOUND_MENU_SELECT);
 }
 
 /* Create the unit list's four tab buttons and a highlight button for every visible

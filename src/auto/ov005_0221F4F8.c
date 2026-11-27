@@ -254,20 +254,24 @@ void *ResultsMap_Destroy(void *map) {
     return map;
 }
 
-s32 func_ov005_0221fe28(s32 arg0) {
+/* Deleting destructor of the results-screen background object func_ov005_0221e5a0
+ * builds (slot 1 of gResultsBackgroundVtbl): free the sprite and return it. */
+s32 ResultsBackground_Delete(s32 background) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return background;
 }
 
 void func_ov005_0221fe3c(void) {
 
 }
 
-s32 func_ov005_0221fe40(s32 arg0) {
+/* Deleting destructor of an empty class (its non-deleting twin
+ * func_ov005_0221fe54 does nothing): free the object, then return it. */
+s32 func_ov005_0221fe40(s32 object) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return object;
 }
 
 void func_ov005_0221fe54(void) {
@@ -381,23 +385,28 @@ void *ResultsScreen_Destroy(void *screen) {
     return screen;
 }
 
-void func_ov005_0221ffe8(void) {
+void ResultEffectSprite_Destroy(void) {
 
 }
 
-s32 func_ov005_0221ffec(s32 arg0) {
+/* Deleting destructor of the results effect sprite (the fading 16-colour sparkle
+ * built from gResultEffectSpriteClass by ResultScoreRow_CountUp and the results
+ * hit effect; slot 1 of gResultEffectSpriteVtbl): free it and return it. */
+s32 ResultEffectSprite_Delete(s32 sprite) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return sprite;
 }
 
 void func_ov005_02220000(void) {
 
 }
 
-s32 func_ov005_02220004(s32 arg0) {
+/* Deleting destructor of the results-screen award object (the medal display
+ * func_ov005_0221e22c builds; slot 1 of gAwardVtbl): free it and return it. */
+s32 Award_Delete(s32 award) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return award;
 }
 

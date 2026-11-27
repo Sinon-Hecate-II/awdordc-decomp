@@ -17,7 +17,7 @@ void AddSprite(u16,u16,u16,void *,s32);
 u8 Ov000_InfoPanel_ShouldShowHints(void *);
 s32 IsOnlinePlayerVoiceChatEnabled(u8);
 s32 Divide(s32,s32);
-s32 func_020a88e8(s32);
+s32 MapData_HasNoCoRule(s32);
 void DrawFrameBorderPulse(s16,s16,s32,s32,u16,s32);
 void func_ov000_02174da4(s32,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;
@@ -95,7 +95,7 @@ AddSprite(193,(u16)y4,0x8096,gSpriteDesc8x8,1);
 AddSprite(201,(u16)y4,0x8096,gSpriteDesc8x8,1);
 for(j=0;j<6;j++)AddSprite((u16)((5-j)*8+206),(u16)y5,0x8096,gSpriteDesc8x8,1);
 }
-if(r.flags[2]&&!func_020a88e8(M2C_FIELD(*gCurrentMap,u16 *,0x5142))){
+if(r.flags[2]&&!MapData_HasNoCoRule(M2C_FIELD(*gCurrentMap,u16 *,0x5142))){
 a=r.second;b=a-6;if(b<0)b=0;
 c=a;if(a>6)a=6;
 AddSprite(212,(u16)y6,(u16)((((b%4)*3+(b/4)*32+208)&1023)|0x6000),data_02101f3c,1);

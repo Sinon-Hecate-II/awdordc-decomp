@@ -418,7 +418,7 @@ s32 func_ov000_0219f0d8(void) {
     void AiProduceCargoUnit(void);
     void func_020bc0e0(void);
     void BeginUnitAction(void);
-    void func_020bb028(void);
+    void ClearUnitMoveObjectsAndRefreshMap(void);
     void func_020bb110(void);
     extern u8 gAiCommand[];
     extern void **gCurrentMap;
@@ -522,7 +522,7 @@ s32 func_ov000_0219f0d8(void) {
     }
     default: {
         BeginUnitAction();
-        func_020bb028();
+        ClearUnitMoveObjectsAndRefreshMap();
         gAiCommandState[0] = 2;
         gAiCommandState[1] = 0;
         break;

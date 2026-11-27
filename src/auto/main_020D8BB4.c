@@ -64,9 +64,10 @@ void SetCurrentMapId(s16 mapId) {
     M2C_FIELD(*gCurrentMap, u16 *, MAP_ID) = mapId;
 }
 
-void SetUiModeParameter(s32 arg0) {
+/* Records the parameter (the chosen list row) for the UI mode that was requested. */
+void SetUiModeParameter(s32 param) {
     extern void *gUiMode;
-    M2C_FIELD(gUiMode, s32 *, 8) = arg0;
+    ((UiModeState *)gUiMode)->param = param;
 }
 
 void func_020d8cfc(void) {
@@ -226,9 +227,10 @@ s32 HandleUiCancel(void) {
     return 1;
 }
 
-void func_020d8ff8(void) {
+/* Delete the UI mode screen's sprite objects (those at UI_MODE_SPRITE_Z). */
+void DeleteUiModeSprites(void) {
     M2C_UNK DeleteSpriteObjectsWithZ(s32);
-    DeleteSpriteObjectsWithZ(0xFF05);
+    DeleteSpriteObjectsWithZ(UI_MODE_SPRITE_Z);
 }
 
 void func_020d900c(void) {
@@ -395,9 +397,10 @@ void CreateUiModeChildSprite(s32 owner) {
     CreateSpriteObject(*(M2C_UNK **)((u8 *)&gUiModeSpriteClasses + M2C_FIELD(gUiMode, s16 *, 2) * 12), owner);
 }
 
+/* Starts the sub-screen UI in the battle map mode (mode 1) with no parameter. */
 void CreateSubScreenUi(void) {
     void StartSubScreenUi(M2C_UNK, M2C_UNK);
-    StartSubScreenUi(1, 0);
+    StartSubScreenUi(UI_MODE_BATTLE_MAP, 0);
 }
 
 /* Start the sub-screen UI for the UI mode currently in effect, with that mode's

@@ -330,9 +330,9 @@ void Ov001_OpenNameEntryKeyboard(void) {
 /* Step after the ov001 name-entry keyboard has opened: wait until the player
  * presses a key, then hand the step to the keyboard's input handler. */
 void Ov001_WaitKeyboardFirstKey(void) {
-    s32 GetKeyboardKey();
+    s32 Ov001_GetKeyboardKey();
     void Ov001_KeyboardInputStep(void);
-    if (GetKeyboardKey() == KBD_KEY_NONE) {
+    if (Ov001_GetKeyboardKey() == KBD_KEY_NONE) {
         return;
     }
     Ov001_SetStepCallback(&Ov001_KeyboardInputStep);
@@ -351,7 +351,7 @@ void Ov001_KeyboardInputStep(void) {
 void HandleNameEntryInput(void) {
 extern void *gNameEntryState;
 void Ov001_PrepareFinishNameEntryKeyboard(void);
-s32 key=GetKeyboardKey(); s32 *obj;
+s32 key=Ov001_GetKeyboardKey(); s32 *obj;
 switch(key){
 case KBD_KEY_DELETE:
 if(M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)){

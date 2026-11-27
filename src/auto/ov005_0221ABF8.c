@@ -19,7 +19,7 @@ void ResultScoreRow_CountUp(void *row) {
     extern M2C_UNK gCoState;
     extern u16 *gKeyState;
     extern void *gTouchState;
-    extern M2C_UNK data_ov005_02220aa8, data_ov005_02220fcc, data_ov005_0222120c;
+    extern M2C_UNK gResultEffectSpriteClass, gResultEffectSpriteVtbl, data_ov005_0222120c;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov005_02221218, data_ov005_02221224, gFrameCounter;
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -48,9 +48,9 @@ void ResultScoreRow_CountUp(void *row) {
             LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_0222120c, 0x2c0, 0x20);
         }
         if (M2C_FIELD(row, s32 *, RESULT_ROW_SCORE0) == M2C_FIELD(&gCoState, u8 *, CO_STATE_SPEED)) {
-            effect = CreateSpriteFromClass(&data_ov005_02220aa8, (M2C_UNK)row);
+            effect = CreateSpriteFromClass(&gResultEffectSpriteClass, (M2C_UNK)row);
             if (effect != NULL) {
-                M2C_FIELD(effect, M2C_UNK **, 0) = &data_ov005_02220fcc;
+                M2C_FIELD(effect, M2C_UNK **, 0) = &gResultEffectSpriteVtbl;
                 M2C_FIELD(effect, s32 *, 0x58) = 0x7fff;
                 M2C_FIELD(effect, s32 *, 0x60) = 2;
                 M2C_FIELD(effect, s32 *, 0x64) = 0x10;
@@ -79,9 +79,9 @@ void ResultScoreRow_CountUp(void *row) {
             LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_02221218, 0x2e0, 0x20);
         }
         if (M2C_FIELD(row, s32 *, RESULT_ROW_SCORE1) == M2C_FIELD(&gCoState, u8 *, CO_STATE_POWER)) {
-            effect = CreateSpriteFromClass(&data_ov005_02220aa8, (M2C_UNK)row);
+            effect = CreateSpriteFromClass(&gResultEffectSpriteClass, (M2C_UNK)row);
             if (effect != NULL) {
-                M2C_FIELD(effect, M2C_UNK **, 0) = &data_ov005_02220fcc;
+                M2C_FIELD(effect, M2C_UNK **, 0) = &gResultEffectSpriteVtbl;
                 M2C_FIELD(effect, s32 *, 0x58) = 0x7fff;
                 M2C_FIELD(effect, s32 *, 0x60) = 2;
                 M2C_FIELD(effect, s32 *, 0x64) = 0x10;
@@ -110,9 +110,9 @@ void ResultScoreRow_CountUp(void *row) {
             LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_02221224, 0x300, 0x20);
         }
         if (M2C_FIELD(row, s32 *, RESULT_ROW_SCORE2) == M2C_FIELD(&gCoState, u8 *, CO_STATE_TECHNIQUE)) {
-            effect = CreateSpriteFromClass(&data_ov005_02220aa8, (M2C_UNK)row);
+            effect = CreateSpriteFromClass(&gResultEffectSpriteClass, (M2C_UNK)row);
             if (effect != NULL) {
-                M2C_FIELD(effect, M2C_UNK **, 0) = &data_ov005_02220fcc;
+                M2C_FIELD(effect, M2C_UNK **, 0) = &gResultEffectSpriteVtbl;
                 M2C_FIELD(effect, s32 *, 0x58) = 0x7fff;
                 M2C_FIELD(effect, s32 *, 0x60) = 2;
                 M2C_FIELD(effect, s32 *, 0x64) = 0x10;
@@ -136,9 +136,9 @@ void ResultScoreRow_CountUp(void *row) {
         M2C_FIELD(row, s32 *, RESULT_ROW_SCORE2) != M2C_FIELD(&gCoState, u8 *, CO_STATE_TECHNIQUE)) {
         return;
     }
-    effect = CreateSpriteFromClass(&data_ov005_02220aa8, (M2C_UNK)row);
+    effect = CreateSpriteFromClass(&gResultEffectSpriteClass, (M2C_UNK)row);
     if (effect != NULL) {
-        M2C_FIELD(effect, M2C_UNK **, 0) = &data_ov005_02220fcc;
+        M2C_FIELD(effect, M2C_UNK **, 0) = &gResultEffectSpriteVtbl;
         M2C_FIELD(effect, s32 *, 0x58) = 0x7fff;
         M2C_FIELD(effect, s32 *, 0x60) = 2;
         M2C_FIELD(effect, s32 *, 0x64) = 0x10;

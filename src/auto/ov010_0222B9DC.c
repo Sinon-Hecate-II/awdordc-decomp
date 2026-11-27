@@ -133,30 +133,38 @@ void DeleteOnlineAnnounceRefreshers(void) {
     DeleteSpriteObjectsOfClass(&gOnlineAnnounceRefresherClass);
 }
 
-s32 func_ov010_0222bba0(s32 arg0) {
+/* Deleting destructor of the online player-announce refresher sprite that
+ * SpawnOnlinePlayerAnnounceRefresher builds (slot 1 of
+ * gOnlineAnnounceRefresherVTable): the sprite owns nothing, so just free it. */
+s32 OnlineAnnounceRefresher_Delete(s32 refresher) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return refresher;
 }
 
 void func_ov010_0222bbb4(void) {
 
 }
 
-s32 func_ov010_0222bbb8(s32 arg0) {
+/* Deleting destructor of the online player-name label CreateOnlineNameLabel and
+ * CreateOnlineMatchNameLabel build (slot 1 of gOnlineNameLabelVTable): the label
+ * owns nothing, so only free it. */
+s32 OnlineNameLabel_Delete(s32 label) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return label;
 }
 
 void func_ov010_0222bbcc(void) {
 
 }
 
-s32 func_ov010_0222bbd0(s32 arg0) {
+/* Deleting destructor of the network-error reporter CreateNetErrorReporter builds
+ * (slot 1 of gNetErrorReporterVTable): the reporter owns nothing, so only free it. */
+s32 NetErrorReporter_Delete(s32 reporter) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return reporter;
 }
 
 void func_ov010_0222bbe4(void) {

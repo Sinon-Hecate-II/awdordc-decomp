@@ -255,7 +255,8 @@ void func_ov006_02216bfc(void **arg0) {
  M2C_FIELD(*arg0, void (**)(void *), 8)(arg0);
 }
 
-void func_ov006_02216c10(void) {
+/* Reset the sprite-slot manager's scroll offset to the origin. */
+void ResetSpriteSlotScroll(void) {
     M2C_UNK SetSpriteSlotScroll(M2C_UNK, M2C_UNK);
     SetSpriteSlotScroll(0, 0);
 }

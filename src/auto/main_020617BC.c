@@ -180,9 +180,10 @@ s32 SBServerListGetServerCount(void *list) {
     return Vector_GetCount(M2C_FIELD(list, s32 *, SB_SLIST_SERVERS));
 }
 #pragma scheduling reset
-s32 SBServerListGetServerAt(void *arg0) {
-    s32 *Vector_GetItem(s32);
-    return *Vector_GetItem(M2C_FIELD(arg0, s32 *, 4));
+/* Return the server at `index` in the list's server vector. */
+s32 SBServerListGetServerAt(void *list, s32 index) {
+    s32 *Vector_GetItem(s32, s32);
+    return *Vector_GetItem(M2C_FIELD(list, s32 *, SB_SLIST_SERVERS), index);
 }
 
 /* Free every server the list removed earlier, then empty the list's removed-server

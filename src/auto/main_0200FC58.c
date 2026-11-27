@@ -194,7 +194,7 @@ void RunTransferTask(void *arg0) {
     s32 OS_DisableInterrupts();
     void OS_RestoreInterrupts(s32);
     void MI_CpuCopy8(void *, void *, u32);
-    s32 func_02010438(void);
+    s32 SaveDevice_GetTransferChunk(void);
     void func_02010d14(void *, s32, s32);
     register u32 irq;
     s32 callbackArg;
@@ -214,7 +214,7 @@ void RunTransferTask(void *arg0) {
     chunk = 0x100;
     func_02000b9c(0x02000BC4);
     if (type == 0xB) {
-        chunk = func_02010438();
+        chunk = SaveDevice_GetTransferChunk();
     }
     buffer = arg0 + 0x120;
 loop_3:
@@ -326,9 +326,11 @@ s32 SaveDevice_GetState(void) {
     return M2C_FIELD(gSaveDeviceState, s32 *, SAVE_DEVICE_STATE);
 }
 
-s32 func_02010438(void) {
+/* Bytes a type-0xB backup transfer moves per chunk: the unit size the device
+ * reports in the reply block it keeps at the start of its state. */
+s32 SaveDevice_GetTransferChunk(void) {
     extern void *gSaveDeviceState;
-    return M2C_FIELD(gSaveDeviceState, s32 *, 0x1C);
+    return M2C_FIELD(M2C_FIELD(&gSaveDeviceState, void **, SAVE_DEVICE_RESPONSE), s32 *, SAVE_REPLY_TRANSFER_CHUNK);
 }
 
 #pragma opt_common_subs off
@@ -612,15 +614,15 @@ retry:
 #pragma opt_propagation off
 s32 SaveDevice_ReadChipId(void) {
     extern void *data_020f553c;
-    u32 mask;
     u32 control;
-    u32 value;
+    register u32 mask;
 
-    CARD_SetCommand(0xB8000000, 0);
-    mask = sizeof(u32) * 2048;
+    func_02010628(0xB8000000, 0);
+    mask = 0x2000;
     control = M2C_FIELD(data_020f553c, u32 *, 0x60);
-    value = (control & ~0x07000000) | 0xA7000000;
-    *(volatile u32 *)0x040001A4 = value & -mask;
+    control &= ~0x07000000;
+    control |= 0xA7000000;
+    *(volatile u32 *)0x040001A4 = control & -mask;
     while (!(*(volatile u32 *)0x040001A4 & 0x800000)) {
     }
     return *(volatile s32 *)0x04100010;

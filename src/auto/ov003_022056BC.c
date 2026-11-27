@@ -601,10 +601,12 @@ Ov003OptionsObject *Ov003OptionsObject_Destructor(Ov003OptionsObject *options) {
     return options;
 }
 
-s32 func_ov003_02206160(s32 arg0) {
+/* Deleting destructor of the battle-settings "value flag" option row (slot 1 of
+ * gMapValueFlagOptionVTable): free the 4-byte row and return it. */
+s32 MapValueFlagOption_Delete(s32 row) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(row);
+    return row;
 }
 
 /* Turn the battle config's value flag on or off from option value `enabled`
@@ -642,14 +644,19 @@ s32 func_ov003_022061cc(void) {
     return 0;
 }
 
-void func_ov003_022061d4(void) {
+/* Non-deleting destructor of the battle-settings "value flag" option row (slot 0
+ * of gMapValueFlagOptionVTable): its class has nothing to tear down.
+ * MapValueFlagOption_Delete is its deleting twin. */
+void MapValueFlagOption_Destroy(void) {
 
 }
 
-s32 func_ov003_022061d8(s32 arg0) {
+/* Deleting destructor of the battle-settings "config flags" option row (slot 1 of
+ * gMapConfigFlagsOptionVTable): free the 4-byte row and return it. */
+s32 MapConfigFlagsOption_Delete(s32 row) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(row);
+    return row;
 }
 
 /* Set the map config's config flags from the low three bits of option value
@@ -696,22 +703,27 @@ s32 func_ov003_02206288(void) {
     return 0;
 }
 
-void func_ov003_02206290(void) {
+/* Non-deleting destructor of the battle-settings "config flags" option row (slot 0
+ * of gMapConfigFlagsOptionVTable): its class has nothing to tear down.
+ * MapConfigFlagsOption_Delete is its deleting twin. */
+void MapConfigFlagsOption_Destroy(void) {
 
 }
 
-s32 func_ov003_02206294(s32 arg0) {
+/* Deleting destructor of the battle-settings "income" option row (slot 1 of
+ * gIncomeOptionVTable): free the 4-byte row and return it. */
+s32 IncomeOption_Delete(s32 row) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(row);
+    return row;
 }
 
-void func_ov003_022062a8(s32 arg0, s16 arg1) {
+void SetMapConfigIncome(s32 arg0, s16 arg1) {
     extern M2C_UNK gMapConfig;
     M2C_FIELD(&gMapConfig, s16 *, 0x6) = arg1;
 }
 
-u16 func_ov003_022062b8(void) {
+u16 GetMapConfigIncome(void) {
     extern M2C_UNK gMapConfig;
     return M2C_FIELD(&gMapConfig, u16 *, 6);
 }
@@ -732,14 +744,19 @@ s32 func_ov003_022062e4(void) {
     return 0;
 }
 
-void func_ov003_022062ec(void) {
+/* Non-deleting destructor of the battle-settings "income" option row (slot 0 of
+ * gIncomeOptionVTable): its class has nothing to tear down.
+ * IncomeOption_Delete is its deleting twin. */
+void IncomeOption_Destroy(void) {
 
 }
 
-s32 func_ov003_022062f0(s32 arg0) {
+/* Deleting destructor of the battle-settings "funds" option row (slot 1 of
+ * gFundsOptionVTable): free the 4-byte row and return it. */
+s32 FundsOption_Delete(s32 row) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return row;
 }
 
 void func_ov003_02206304(M2C_UNK arg0, s32 arg1) {
@@ -772,10 +789,12 @@ void func_ov003_02206348(void) {
 
 }
 
-s32 func_ov003_0220634c(s32 arg0) {
+/* Deleting destructor of the battle-settings "additional setting" option row
+ * (slot 1 of gBattleSettingOptionVTable): free the 4-byte row and return it. */
+s32 BattleSettingOption_Delete(s32 row) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return row;
 }
 
 /* Set the battle's additional setting (gMapConfig byte 3); the default setting
@@ -816,10 +835,12 @@ void func_ov003_022063b0(void) {
 
 }
 
-s32 func_ov003_022063b4(s32 arg0) {
+/* Deleting destructor of the battle-settings tileset option row (slot 1 of
+ * gMapTilesetOptionVTable): free the 4-byte row and return it. */
+s32 MapTilesetOption_Delete(s32 row) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(row);
+    return row;
 }
 
 /* Store the battle-setting tileset choice on the current map; the menu's four
@@ -889,10 +910,12 @@ void func_ov003_022064a4(void) {
 
 }
 
-s32 func_ov003_022064a8(s32 arg0) {
+/* Deleting destructor of the battle-settings weather option row (slot 1 of
+ * gWeatherOptionVTable): free the 4-byte row and return it. */
+s32 WeatherOption_Delete(s32 row) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(row);
+    return row;
 }
 
 /* Apply the weather menu option `weatherOption` to the current map: the random
@@ -946,10 +969,12 @@ void func_ov003_0220659c(void) {
 
 }
 
-s32 func_ov003_022065a0(s32 arg0) {
+/* Deleting destructor of the battle-settings fog-of-war option row (slot 1 of
+ * gMapFogOptionVTable): free the 4-byte row and return it. */
+s32 MapFogOption_Delete(s32 row) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(row);
+    return row;
 }
 
 /* Store the battle-settings fog-of-war choice on the current map: a nonzero

@@ -1,5 +1,6 @@
 /* 7 functions from 0x0221D008 to 0x0221E004 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 #include "mapedit.h"
 
 /* Softkey handler for the map editor's text-entry delete and accent buttons.
@@ -163,9 +164,10 @@ done:
     FocusSpriteSlotById(slot);
 }
 
-void func_ov007_0221dcc0(void) {
+/* Text-entry softkey callback: play the sound for a changed or chosen entry. */
+void MapEditTextPlaySelectSound(void) {
     M2C_UNK PlaySoundEffect(s32);
-    PlaySoundEffect(0x10019);
+    PlaySoundEffect(SOUND_MENU_SELECT);
 }
 
 void func_ov007_0221dcd4(void) {
@@ -318,8 +320,10 @@ if(oldSlot==slot)return;
 FocusSpriteSlotById(slot);
 }
 
-void func_ov007_0221dff0(void) {
+/* Map-editor text-entry script action: play the menu-select sound (the second,
+ * byte-identical copy of MapEditTextPlaySelectSound). */
+void MapEditTextPlaySelectSound2(void) {
     M2C_UNK PlaySoundEffect(s32);
-    PlaySoundEffect(0x10019);
+    PlaySoundEffect(SOUND_MENU_SELECT);
 }
 

@@ -32,7 +32,7 @@ void func_ov005_0221e5a0(M2C_UNK parent) {
     s32 GetLocalizedFileName(M2C_UNK *);
     s32 GetCurrentMapPlayerCount(void);
     extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
-    extern M2C_UNK data_ov005_02220c88[], data_ov005_02220f68[], data_ov005_02220a3c[];
+    extern M2C_UNK data_ov005_02220c88[], gResultsBackgroundVtbl[], data_ov005_02220a3c[];
     extern M2C_UNK data_ov005_02220f2c[], data_ov005_02220e7c[], data_ov005_02220a84[];
     extern M2C_UNK data_ov005_02220e9c[], data_ov005_02220efc[], data_ov005_02220a54[], data_ov005_02220a60[];
     extern u8 gCoState[], gBattleResults[];
@@ -46,7 +46,7 @@ void func_ov005_0221e5a0(M2C_UNK parent) {
 
     sprite = CreateSpriteObject(data_ov005_02220c88, parent);
     if (!sprite) return;
-    M2C_FIELD(sprite, void **, 0) = data_ov005_02220f68;
+    M2C_FIELD(sprite, void **, 0) = gResultsBackgroundVtbl;
     SetFileDirectory(data_ov005_02220a3c);
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;

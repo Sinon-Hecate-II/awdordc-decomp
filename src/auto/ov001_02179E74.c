@@ -1,6 +1,6 @@
 /* 17 functions from 0x02179E74 to 0x0217AE38 (ov001), found by ds-decomp. */
 #include "common.h"
-void func_ov001_0217a880(void);
+void MapSelectList_HandleIconRowChoice(void);
 
 /* Hold the save screen for 120 frames: advance its timer once per frame, then
  * hand over to the step that fades the screen out. */
@@ -200,9 +200,15 @@ void MapSelectList_WaitIconRow(void) {
     Ov001_SetStepCallback(&MapSelectList_Update);
 }
 
+/* Per-frame update step of the map-select list: poll and apply this frame's
+ * input, then act on any icon-row choice latched during it. */
 void MapSelectList_Update(void) {
-void MapSelectList_PollInput();void MapSelectList_HandleInput(void);
-MapSelectList_PollInput();MapSelectList_HandleInput();(func_ov001_0217a880)();
+    void MapSelectList_PollInput(void);
+    void MapSelectList_HandleInput(void);
+
+    MapSelectList_PollInput();
+    MapSelectList_HandleInput();
+    MapSelectList_HandleIconRowChoice();
 }
 
 /* Polls the map-select list's touch rows and keys: a tapped/held row becomes the
@@ -247,7 +253,7 @@ void MapSelectList_HandleInput(void) {
  extern M2C_UNK gMapSelectState;
  extern M2C_UNK MapSelectList_ScrollUp,MapSelectList_ScrollDown;
  s32 GetMenuState(void);
- s32 GetMenuRow(void);
+ s32 Ov001_GetScrollBarHandlePos(void);
  s32 HardwareDivide(s32,u16);
  s32 HardwareDivideRemainder(s32,s32);
  M2C_UNK Ov001_LockIconRow();
@@ -268,13 +274,13 @@ void MapSelectList_HandleInput(void) {
  case 2:
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x55)) return;
  Ov001_FreeSpriteObjects();
- M2C_FIELD(&gMapSelectState,u16 *,2)=HardwareDivide(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u16 *,0x40)*GetMenuRow(),M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x53));
+ M2C_FIELD(&gMapSelectState,u16 *,2)=HardwareDivide(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u16 *,0x40)*Ov001_GetScrollBarHandlePos(),M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x53));
  MapSelectList_Redraw();
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x55)=4;return;
  case 3:
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x57)=0;
  Ov001_UnlockIconRow();
- M2C_FIELD(&gMapSelectState,u16 *,2)=HardwareDivide(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u16 *,0x40)*GetMenuRow(),M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x53));
+ M2C_FIELD(&gMapSelectState,u16 *,2)=HardwareDivide(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u16 *,0x40)*Ov001_GetScrollBarHandlePos(),M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x53));
  Ov001_PlaySound(0x13);
  MapSelectList_Redraw();
  remainder=HardwareDivideRemainder(M2C_FIELD(&gMapSelectState,u16 *,2),0x1c);
@@ -309,7 +315,7 @@ void MapSelectList_HandleInput(void) {
 }
 
 #pragma optimize_for_speed off
-void func_ov001_0217a880(void) {
+void MapSelectList_HandleIconRowChoice(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_PlaySound(M2C_UNK);

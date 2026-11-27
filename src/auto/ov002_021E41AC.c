@@ -43,8 +43,10 @@ void func_ov002_021e42a8(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 2) = arg1;
 }
 
-void func_ov002_021e42b0(void *arg0) {
-    M2C_FIELD(arg0, u8 *, 3) = (u8) ((M2C_FIELD(arg0, u8 *, 3) & ~0xF0) | 0x10);
+/* Start the view's HP-gauge fill animation, keeping its player index. */
+void Ov002_StartUnitViewGauge(void *view) {
+    M2C_FIELD(view, u8 *, UNIT_VIEW_FLAGS) =
+        (u8) ((M2C_FIELD(view, u8 *, UNIT_VIEW_FLAGS) & ~UNIT_VIEW_GAUGE_FLAGS) | UNIT_VIEW_GAUGE_RUNNING);
 }
 
 /* One frame of a versus screen unit view: advance its HP-gauge fill animation a

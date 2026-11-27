@@ -390,6 +390,10 @@ typedef struct SoundChannelRecord {
 } SoundChannelRecord;
 
 #define SOUND_VOLUME_MAX 0x7F /* full volume, in the 0..0x7F range */
+#define SOUND_VOLUME_HALF 0x40 /* half volume: music fades down to this while a voice or link panel talks */
+#define MUSIC_VOLUME_FADE_FRAMES 0x1E /* frames FadeMusicToHalfVolume/FadeMusicToFullVolume fade over */
+#define MUSIC_VOLUME_QUICK_FADE_FRAMES 8 /* frames the battle's quick music mute fades the music out over */
+#define SOUND_VOLUME_MUTED 0x00 /* silent */
 #define SOUND_VOLUME_LEVELS 3  /* volume levels (master, user setting, fade) multiplied into a channel's effective volume */
 #define SOUND_VOLUME_LEVEL_MASTER 0 /* SetMusicVolumeLevel level: overall music volume */
 #define SOUND_VOLUME_LEVEL_PLAYER 1 /* SetMusicVolumeLevel level: the player's music setting */

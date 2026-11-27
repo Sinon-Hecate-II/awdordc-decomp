@@ -47,9 +47,10 @@ void UpdateAndDrawBattleScene(void) {
     DrawBattleSceneUnitView(&gBattleSceneState);
 }
 
-void func_ov002_021e1598(void) {
+/* Let the battle scene's per-frame step end the scene. */
+void Ov002_MarkBattleSceneReady(void) {
     extern M2C_UNK gBattleSceneState;
-    M2C_FIELD(&gBattleSceneState, s8 *, 9) = 1;
+    M2C_FIELD(&gBattleSceneState, s8 *, BATTLE_SCENE_READY) = 1;
 }
 
 /* Tear down the battle screen: remove the sprite overlay's per-frame callbacks,

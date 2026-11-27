@@ -382,9 +382,11 @@ void func_ov000_02174da4(s32 x, s32 y) {
     gCur3DSpriteEngine = savedSpriteEngine;
 }
 
+/* The language (LANGUAGE_*) the open map info window was created with, which
+ * picks the graphics used for its frame. */
 s32 GetInfoWindowLanguage(void) {
-    extern Ov000MenuState *gOv000InfoWindow;
-    return M2C_FIELD(gOv000InfoWindow, s32 *, 0x1C);
+    extern Ov000InfoMenu *gOv000InfoWindow;
+    return gOv000InfoWindow->language;
 }
 
 /* Initialize the 0x14-byte sub-object stored at entry+0x10 (allocating it

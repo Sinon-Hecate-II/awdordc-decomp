@@ -27,6 +27,14 @@ typedef struct Ov003Object {
     void *sub70;         /* +0x70 sub-object with a resource handle at +0x14 */
 } Ov003Object;
 
+/* Methods of an ov003 scene class vtable (the object's +0 pointer).  Every scene
+ * class answers the same slots; the per-scene interface forwarders in
+ * src/auto/ov003_*.c dispatch to them through an object's own vtable. */
+#define OV003_SCENE_VT_BUILD   0x0C /* create the scene's sprites, layers and panels */
+#define OV003_SCENE_VT_RESUME  0x10 /* resume the scene's sprite animation */
+#define OV003_SCENE_VT_SHOW    0x14 /* enter/show the scene (slide it in) */
+#define OV003_SCENE_VT_HIDE    0x18 /* leave/hide the scene (slide it out) */
+
 /* The layout a battle-setup scene object (vtable data_ov003_022108b4) was built
  * with: the low six bits of its +0x3A flags byte.  The player-select layout
  * draws the CO faces below the player slots; the wallpaper layout puts the main
@@ -278,7 +286,7 @@ typedef struct MenuEntityFlags39 {
 /* The paged map list of an ov003 map-list menu entity: the five visible map
  * ids (pending and current), the list's slide tween and the map pages. */
 typedef struct Ov003MapList {
-    void *vtable;            /* +0x00 data_ov003_022100d4 */
+    void *vtable;            /* +0x00 gOv003MapListVTable */
     void *iface;             /* +0x04 gMapPickSelectionIfaceVTable */
     u16 current[5];          /* +0x08 map id shown on each visible row */
     u16 pending[5];          /* +0x12 map id picked for each visible row */

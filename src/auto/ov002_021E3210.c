@@ -328,7 +328,7 @@ M2C_UNK SwapBattleScreenCapture(s32 *phase) {
 }
 
 #pragma opt_strength_reduction off
-M2C_UNK func_ov002_021e3a7c(s32 *p) {
+M2C_UNK ConfigureBattleSpriteLayers(s32 *p) {
     extern u8 gPlayerSettings;
     extern u8 gEffectTable;
     void Set3DSpriteLayerBank(s32, s32);
@@ -364,7 +364,7 @@ M2C_UNK func_ov002_021e3a7c(s32 *p) {
     }
 }
 #pragma opt_strength_reduction off
-void func_ov002_021e3b7c(M2C_UNK *p) {
+void DrawBattleSpriteGridTiles(M2C_UNK *p) {
 extern u32 gCur3DSpriteEngine, data_027e00c4;
 extern u8 data_027e008c[];
 s32 x,y,tx,ty; u32 old; u16 v;
@@ -378,22 +378,27 @@ func_01ffaacc((u16)(x&511),v,(u16)(((tx+(ty<<5))&1023)|0xf000),data_027e008c,0);
 gCur3DSpriteEngine=old;
 }
 #pragma opt_strength_reduction on
+/* Per-frame callback: swap the battle screen's 3D and 2D views and advance the
+ * capture phase kept in gBattleSpriteState. */
 void SwapBattleScreen(void) {
     M2C_UNK SwapBattleScreenCapture(M2C_UNK *);
     extern M2C_UNK gBattleSpriteState;
     SwapBattleScreenCapture(&gBattleSpriteState);
 }
 
+/* Per-frame callback: reconfigure the battle overlay's 3D sprite layers for the
+ * currently shown screen half. */
 void UpdateBattleSpriteLayers(void) {
-    M2C_UNK func_ov002_021e3a7c(M2C_UNK *);
+    M2C_UNK ConfigureBattleSpriteLayers(M2C_UNK *);
     extern M2C_UNK gBattleSpriteState;
-    func_ov002_021e3a7c(&gBattleSpriteState);
+    ConfigureBattleSpriteLayers(&gBattleSpriteState);
 }
 
+/* Per-frame callback: redraw the battle sprite overlay's tile grid for the
+ * currently shown screen half. */
 void DrawBattleSpriteGrid(void) {
-
     extern M2C_UNK gBattleSpriteState;
-    func_ov002_021e3b7c(&gBattleSpriteState);
+    DrawBattleSpriteGridTiles(&gBattleSpriteState);
 }
 
 /* Prepare the battle screen's 3D-sprite overlay: clear the two shared VRAM banks,

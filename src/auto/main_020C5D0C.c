@@ -125,7 +125,7 @@ s32 AnyPlayerHasArmy(void) {
     struct bits8 {
         u32 value : 8;
     };
-    s32 func_020a88e8(u16);
+    s32 MapData_HasNoCoRule(u16);
     s32 IsPlayerPresent(s32);
     extern u8 gBattleEndState;
     extern void **gCurrentMap;
@@ -133,7 +133,7 @@ s32 AnyPlayerHasArmy(void) {
     s32 playerOffset;
     u32 armyId;
 
-    if (func_020a88e8(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) {
+    if (MapData_HasNoCoRule(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) {
         return 2;
     }
     if (gBattleEndState != 0) {
@@ -190,7 +190,7 @@ s32 CanUseAfterBattleEndCommandWithUnits(void) {
  * unit-group records is occupied, 0 when at least one is. Returns 2 up front
  * when the map data's +4 flag bit 3 is set. */
 s32 IsCurrentPlayerOutOfUnits(void) {
-    s32 func_020a8910(u16);
+    s32 MapData_HasNoRoutRule(u16);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     s32 count = 0;
@@ -198,7 +198,7 @@ s32 IsCurrentPlayerOutOfUnits(void) {
     void *base;
     u16 start;
 
-    if (func_020a8910(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) {
+    if (MapData_HasNoRoutRule(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) {
         return 2;
     }
     base = *gCurrentMap;
@@ -550,7 +550,9 @@ s32 CanFireFlare(void) {
  return 2;
 }
 
-void func_020c6968(void) {
+/* Map-menu command: save the carried-unit menu state, close the map menu and
+ * reopen the carried-unit menu. */
+void OpenCarriedUnitMenuCommand(void) {
     M2C_UNK PushCarriedUnitMenuState();
     M2C_UNK OpenCarriedUnitMenu();
     M2C_UNK DeleteMapMenuSprites();

@@ -313,9 +313,10 @@ void EndAiTurn(void) {
     }
 }
 
+/* The AI command phase of the current AI turn (AI_COMMAND_STATE_PHASE). */
 u8 GetAiCommandPhase(void) {
     extern u8 *gAiCommandState;
-    return *gAiCommandState;
+    return gAiCommandState[AI_COMMAND_STATE_PHASE];
 }
 
 void SetAiCommandPhase(u8 a){*gAiCommandState=a;}

@@ -149,8 +149,9 @@ u8 GetMessageBoxState(void) {
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x46);
 }
 
-void SetMessageBoxState(s8 arg0) {
-    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x46) = arg0;
+/* Move the full-screen message box to the given MESSAGE_BOX_STATE_* state. */
+void SetMessageBoxState(s8 messageBoxState) {
+    M2C_FIELD(Get3DSpriteManager(), s8 *, DS3D_MANAGER_MESSAGE_BOX_STATE) = messageBoxState;
 }
 
 /* True while a full-screen message box is up: once the box has been triggered

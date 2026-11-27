@@ -126,7 +126,7 @@ u8 Ov003_GetSelectedRowIndex(void *state) {
 void func_ov003_02207c7c(void *arg0) {
 void SpriteCellListSetCellRect(void *,u16,s32,s16,u16,s32);
 s32 func_020a8ce4(s32,s32);
-s32 func_020a8e28(s32,s32);
+s32 GetCenteredMargin(s32,s32);
 s32 Ov003_IsValueInRange(s32,s32,s32);
 void *inner,*inner2;
 u16 selected;
@@ -137,7 +137,7 @@ u8 kind,idx;
 void *p;
 inner=*M2C_FIELD(arg0,void ***,0x5c);
 selected=inner?M2C_FIELD(inner,u16 *,8):minus;
-xpre=func_020a8e28(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,1),constant)+16;
+xpre=GetCenteredMargin(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,1),constant)+16;
 i=11;
 if(M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,0)+11<=11)return;
 x=(s16)xpre;

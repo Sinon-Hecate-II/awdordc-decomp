@@ -347,9 +347,10 @@ s32 func_ov010_02228180(void) {
     return status;
 }
 
+/* Clear all of the online session's step flags. */
 void Ov010Online_ResetStepFlags(void) {
     extern M2C_UNK gOv010OnlineSession;
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) = 0;
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_STEP_FLAGS) = 0;
 }
 
 /* Replace the session's step-flag word with only step flag `flagIndex`
@@ -593,7 +594,7 @@ extern "C" void Ov010Online_InitSession(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f
     extern M2C_UNK data_ov010_0222c128;
     extern M2C_UNK gOv010PlayerRecords;
     extern M2C_UNK gOv010SessionStateClass;
-    extern M2C_UNK data_ov010_0222c3bc;
+    extern M2C_UNK gOv010SessionStateVtbl;
     extern M2C_UNK gOv010ConnectionClass;
     extern M2C_UNK data_ov010_0222c3a8;
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
@@ -678,7 +679,7 @@ extern "C" void Ov010Online_InitSession(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f
     StartNetLogin(&gLocalPlayerStatus,0,(void *)Ov010Online_StartSession,0);
     obj=CreateSpriteFromClass(&gOv010SessionStateClass,3);
     if(obj) {
-        M2C_FIELD(obj,void **,0)=&data_ov010_0222c3bc;
+        M2C_FIELD(obj,void **,0)=&gOv010SessionStateVtbl;
         M2C_FIELD(obj,s32 *,0x34)=0;
         MI_CpuFill32(0,(u8 *)obj+0x38,0x10);
     }
@@ -841,11 +842,12 @@ s32 Ov010_SetPlayerRecordCallback(s32 callback) {
     return previous;
 }
 
-void func_ov010_02228bc8(void) {
-    M2C_UNK LeaveNetMatch();
+/* Leave the online network match, then clear the session's running flag. */
+void Ov010Online_LeaveNetMatch(void) {
+    M2C_UNK LeaveNetMatch(void);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     LeaveNetMatch();
-    Ov010Online_ClearStepFlag(3);
+    Ov010Online_ClearStepFlag(OV010_FLAG_RUNNING);
 }
 
 /* One per-frame step of the ov010 online transfer sprite: while a packet is

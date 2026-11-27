@@ -163,7 +163,7 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_UNK SpriteCellListSetCellRect(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_02089424();
+    M2C_UNK LoadFrameBorderSpriteDefaultPattern();
     void *CreateFrameBorderSprite(void *);
     M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -319,14 +319,14 @@ void func_ov007_02217f8c(void *arg0) {
     SetFileDirectory(&data_ov007_02220094);
     LoadFileToSpriteBuffer(&data_ov007_022200a0, 0x240, 0x20);
     M2C_FIELD(arg0, void **, 0x50) = CreateFrameBorderSprite(arg0);
-    func_02089424();
+    LoadFrameBorderSpriteDefaultPattern();
     Hide3DSprite(M2C_FIELD(arg0, void **, 0x50));
     temp_r2 = M2C_FIELD(arg0, void **, 0x50);
     temp_r1 = (M2C_FIELD(temp_r2, s32 *, 0x40) & ~0x1FF) | 0x10;
     M2C_FIELD(temp_r2, s32 *, 0x40) = temp_r1;
     M2C_FIELD(temp_r2, s32 *, 0x40) = (temp_r1 & 0xFFFC01FF) | 0x2000;
     M2C_FIELD(arg0, void **, 0x54) = CreateFrameBorderSprite(arg0);
-    func_02089424();
+    LoadFrameBorderSpriteDefaultPattern();
     Hide3DSprite(M2C_FIELD(arg0, void **, 0x54));
     temp_r2_2 = M2C_FIELD(arg0, void **, 0x54);
     temp_r1 = (M2C_FIELD(temp_r2_2, s32 *, 0x40) & ~0x1FF) | 0x10;

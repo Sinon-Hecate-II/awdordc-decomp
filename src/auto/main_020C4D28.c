@@ -65,9 +65,11 @@ M2C_UNK CreateBattleSaveSprite(s32 saveBlock, s32 owner) {
     }
 }
 
-void CreateLocalBattleSaveSprite(M2C_UNK arg0) {
+/* Create the save sprite bound to the local battle save block, parented to
+ * `owner`. */
+void CreateLocalBattleSaveSprite(M2C_UNK owner) {
     M2C_UNK CreateBattleSaveSprite(M2C_UNK, M2C_UNK);
-    CreateBattleSaveSprite(0, arg0);
+    CreateBattleSaveSprite(0, owner);
 }
 
 #pragma push
@@ -267,9 +269,11 @@ M2C_UNK CreateBattleLoadSprite(s32 saveBlock, s32 owner) {
     }
 }
 
-void func_020c52d8(M2C_UNK arg0) {
+/* Create the battle-load sprite bound to the local player's battle save block,
+ * parented to `owner`. */
+void CreateLocalBattleLoadSprite(M2C_UNK owner) {
     M2C_UNK CreateBattleLoadSprite(M2C_UNK, M2C_UNK);
-    CreateBattleLoadSprite(0, arg0);
+    CreateBattleLoadSprite(0, owner);
 }
 
 /* Return battle-save slot `slot`'s 12-byte summary, or NULL when there is no

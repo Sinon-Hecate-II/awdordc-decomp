@@ -11,7 +11,7 @@ void SetGxPolygonAttr(s32, s32);
 void func_020a8cf0(s32, s32, s32, s32, u16, s32, u16, u16, u16, volatile u16);
 s32 Ov003_IsValueInRange(s32, s32, s32);
 s32 CampaignSaveSlotInUse(s32);
-s32 func_020a8e28(s32, s32);
+s32 GetCenteredMargin(s32, s32);
 void GetSaveType(s32, s32);
 s32 IsUnitAvailable(void);
 void DrawSolidQuadScaled(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
@@ -80,9 +80,9 @@ func_020a8cf0(x,y,10,256,M2C_FIELD(M2C_FIELD(arg0,void **,68),u8 *,3),3,M2C_FIEL
 }else{
 imageSel=M2C_FIELD(desc,u16 *,4);
 if(Mode856(arg0,9)||Mode856(arg0,11)){GetSaveType(0,i);if(IsUnitAvailable())imageSel=0x9500;else if(!CampaignSaveSlotInUse(i))imageSel=0x8000;}
-if(Pair856(arg0,i)){halfSel=width>>1;align=func_020a8e28(halfSel,sx);func_020a8cf0(x-(width>>2)+align,y,1,(u16)halfSel,24,3,imageSel>>5,1,(u16)sx,(u16)sy);}
+if(Pair856(arg0,i)){halfSel=width>>1;align=GetCenteredMargin(halfSel,sx);func_020a8cf0(x-(width>>2)+align,y,1,(u16)halfSel,24,3,imageSel>>5,1,(u16)sx,(u16)sy);}
 else if(Split856(arg0,i)){
-align=func_020a8e28(half,sx);if(Row856(arg0,i,2)){
+align=GetCenteredMargin(half,sx);if(Row856(arg0,i,2)){
 switch((u8)M2C_FIELD(M2C_FIELD(arg0,void **,64),u32 *,4)){case 0:image2Sel=base-0x2f40;goto sel_tex;case 1:image2Sel=base-0x1f80;goto sel_tex;case 2:image2Sel=base-0x2a00;goto sel_tex;}}
 if(Row856(arg0,i,3)){
 switch((u8)M2C_FIELD(M2C_FIELD(arg0,void **,64),u32 *,28)){case 0:image2Sel=base-0x2f40;goto sel_tex;case 1:image2Sel=0x6a00;goto sel_tex;case 2:image2Sel=base-0x2a00;goto sel_tex;}}

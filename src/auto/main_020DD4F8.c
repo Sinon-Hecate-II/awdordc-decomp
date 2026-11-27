@@ -45,7 +45,7 @@ static inline void PressSprite(void *p) {if(M2C_FIELD(p,s8 *,0x5a)>=0)SetSpriteF
    that unit. */
 void UnitPreviewMenuInput(void *arg0) {
 void MenuSpriteUpdate(void *);void DisableMapConfirm(void);void GotoSpriteAnimationLabel(void *,s32);void PlaySoundEffect(s32);void Sprite_ResumeAnimation(void *);
-s32 func_020b212c(void);M2C_UNK AdvanceLinkRequestToPending(void);s32 GetLinkPlayerUnit(s32);
+s32 GetFocusedSpriteSlotId(void);M2C_UNK AdvanceLinkRequestToPending(void);s32 GetLinkPlayerUnit(s32);
 extern u16 *gKeyState;extern M2C_UNK gUnitSlotIds;
 u16 keys;void *cursorSprite;
 if(M2C_FIELD(arg0,void **,0x50))MenuSpriteUpdate(M2C_FIELD(arg0,void **,0x50));
@@ -64,7 +64,7 @@ if((M2C_FIELD(arg0,s8 *,0x41)>0 || M2C_FIELD(arg0,s8 *,0x42)>0) && M2C_FIELD(arg
 PlaySoundEffect(M2C_FIELD(arg0,s8 *,0x41)<M2C_FIELD(arg0,s8 *,0x42)?0x122:0x123);
 M2C_FIELD(arg0,s8 *,0x41)=M2C_FIELD(arg0,s8 *,0x42);
 }
-if(func_020b212c()<4){
+if(GetFocusedSpriteSlotId()<4){
 /* the unit of the slot under the cursor: the cursor sprite shows it as available or not */
 s32 unitId=(&gUnitSlotIds)[M2C_FIELD(arg0,s8 *,0x43)];
 if(unitId<0)unitId=0;else unitId=GetLinkPlayerUnit(unitId);
@@ -99,7 +99,7 @@ void func_020dd97c(void) {
  * and confirming picks that unit. */
 void UnitDeployMenuInput(void *arg0) {
 void MenuSpriteUpdate(void *);void DisableMapConfirm(void);void GotoSpriteAnimationLabel(void *,s32);void PlaySoundEffect(s32);void Sprite_ResumeAnimation(void *);
-s32 func_020b212c(void);M2C_UNK AdvanceLinkRequestToPending(void);s32 GetLinkPlayerUnit(s32);
+s32 GetFocusedSpriteSlotId(void);M2C_UNK AdvanceLinkRequestToPending(void);s32 GetLinkPlayerUnit(s32);
 extern u16 *gKeyState;extern M2C_UNK gUnitSlotIds;
 u16 keys;void *cursorSprite;
 if(M2C_FIELD(arg0,void **,0x50))MenuSpriteUpdate(M2C_FIELD(arg0,void **,0x50));
@@ -122,9 +122,9 @@ if((M2C_FIELD(arg0,s8 *,0x41)>0 || M2C_FIELD(arg0,s8 *,0x42)>0) && M2C_FIELD(arg
 PlaySoundEffect(M2C_FIELD(arg0,s8 *,0x41)<M2C_FIELD(arg0,s8 *,0x42)?0x122:0x123);
 M2C_FIELD(arg0,s8 *,0x41)=M2C_FIELD(arg0,s8 *,0x42);
 }
-if(func_020b212c()<4){
+if(GetFocusedSpriteSlotId()<4){
 /* the unit of the slot under the cursor: the cursor sprite shows it as available or not */
-if((&gUnitSlotIds)[func_020b212c()]>=0){void *cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite),0);}
+if((&gUnitSlotIds)[GetFocusedSpriteSlotId()]>=0){void *cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite),0);}
 else {void *cursorSprite=M2C_FIELD(arg0,void **,0x50);if(SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite)+2,0);}
 cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))return;
 if(!(SpritePressed(cursorSprite) || (keys&1)))return;

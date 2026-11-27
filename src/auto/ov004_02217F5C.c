@@ -43,7 +43,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK LoadBattleMap(s32);
     M2C_UNK PreloadMapTileset(s32);
     s32 GetLocalizedFileName(M2C_UNK *);
-    M2C_UNK func_ov003_021fef58(void *);
+    M2C_UNK Ov003_CreateMapMenuScene(void *);
     M2C_UNK Ov003_SyncMapMenuMap();
     extern void **g3DSpriteEngineSub;
     extern void **g3DSpriteEngineMain;
@@ -68,7 +68,7 @@ void func_ov004_02217f5c(void *arg0) {
     extern M2C_UNK data_ov004_0223c660;
     extern M2C_UNK data_ov004_0223c66c;
     extern M2C_UNK InitMapView3DRendering;
-    extern M2C_UNK func_ov004_02214904;
+    extern M2C_UNK Ov004_Swap3DBuffers;
     u16 *volatile sp2C;
     u16 *volatile sp28;
     u16 *volatile sp24;
@@ -243,9 +243,9 @@ void func_ov004_02217f5c(void *arg0) {
     Show3DSpriteSlide(temp_r0_5);
     func_020aad18(temp_r0_5);
     gCur3DSpriteEngine = temp_r5;
-    func_ov003_021fef58(arg0);
+    Ov003_CreateMapMenuScene(arg0);
     CreateFrameCallbackTask(&InitMapView3DRendering, 4);
-    CreateFrameCallbackTask(&func_ov004_02214904, 0xA);
+    CreateFrameCallbackTask(&Ov004_Swap3DBuffers, 0xA);
     temp_r0_6 = M2C_FIELD(arg0, s32 *, 0x40);
     if ((temp_r0_6 != 0x800) && (temp_r0_6 != 0x1000)) {
 

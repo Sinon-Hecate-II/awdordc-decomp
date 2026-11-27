@@ -214,7 +214,9 @@ void RunAiMap175MoveOverride(void) {
     PlanAiUnitMove();
 }
 
-void func_ov000_0218049c(void) {
+/* AI step shared by role-4/6 states 0, 2-5, 7 and 8: rebuild the influence maps,
+ * pick the acting unit's target and carry out the attack. */
+void RunAiRole4Or6AttackStep(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK RunAiAttackAction();
     M2C_UNK SelectAiActionTarget();
@@ -223,10 +225,13 @@ void func_ov000_0218049c(void) {
     RunAiAttackAction();
 }
 
-void func_ov000_021804b0(void) {
+/* Role-4/6 action for a unit in AI step 1 or 9 (cases 1 and 9 of the
+ * RunAiRole4Or6Action dispatcher, src/auto/ov000_02180738.c): rebuild the
+ * influence maps, pick the acting unit's target and carry out its attack. */
+void RunAiRole4Or6Step1Or9Action(void) {
     M2C_UNK BuildAiInfluenceMaps();
-    M2C_UNK RunAiAttackAction();
     M2C_UNK SelectAiActionTarget();
+    M2C_UNK RunAiAttackAction();
     BuildAiInfluenceMaps();
     SelectAiActionTarget();
     RunAiAttackAction();

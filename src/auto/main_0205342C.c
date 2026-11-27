@@ -542,9 +542,9 @@ s32 gpiFinishOperation(void **arg0, void *arg1) {
                     return 1;
                 }
                 {
-                    s32 zero = 0;
-                    unsigned long count = 4;
-                    u8 *ptr = buffer;
+                    register s32 zero = 0;
+                    register unsigned long count = 4;
+                    register u8 *ptr = buffer;
                     do {
                         ptr[0] = zero;
                         ptr[1] = zero;

@@ -18,7 +18,7 @@ u8 IsMenuEnabled(void *);void DisableMenuSprite(void *),EnableMenuSprite(void *)
 u8 IsWaypointPanelIdle(void *);s32 IsWaypointPanelOptionsOpen(void *);
 void SetWaypointPanelMode(void *,s32);void Link_SendPacket(void *,s32);
 u8 func_ov003_021ebc88(void *);void func_ov003_021e9e4c(void *);
-u8 func_ov003_021ebc90(s32,s32);void func_ov003_021ebca4(s32,s32,s32);
+u8 GetWaypointSlotOptionCounter(s32,s32);void func_ov003_021ebca4(s32,s32,s32);
 s32 GetWaypointSlotOwner(s32,s32);s8 GetWaypointSlotCoIcon(void *,s32);
 void func_ov003_021e82f0(s32,s32,s32);u8 GetWaypointSlotIndex(s32);
 void func_ov003_021ebde8(void *,s8,s8);
@@ -62,7 +62,7 @@ M2C_FIELD(packet,s32 *,24)=1;Link_SendPacket(packet,36);return;
 if(IsWaypointPanelCompact(arg0)){
 if(IsSessionHost()){
 if(!func_ov003_021ebc88(M2C_FIELD(arg0,void **,0x58)))func_ov003_021e9e4c(M2C_FIELD(arg0,void **,0x58));
-for(j=0;j<count;j++)packet[j+14]=func_ov003_021ebc90(M2C_FIELD(arg0,s32 *,0x6c),j);
+for(j=0;j<count;j++)packet[j+14]=GetWaypointSlotOptionCounter(M2C_FIELD(arg0,s32 *,0x6c),j);
 }
 if(M2C_FIELD(remote,u8 *,8)==0){
 PlaySoundEffect(0x1000f);SetWaypointPanelMode(arg0,0);
@@ -75,7 +75,7 @@ Link_SendPacket(packet,36);return;
 Link_SendPacket(packet,36);
 for(i=0;i<count;i++){
 if(IsSessionGuest()){
-current=func_ov003_021ebc90(M2C_FIELD(arg0,s32 *,0x6c),i);desired=M2C_FIELD((u8 *)remote+i,u8 *,14);
+current=GetWaypointSlotOptionCounter(M2C_FIELD(arg0,s32 *,0x6c),i);desired=M2C_FIELD((u8 *)remote+i,u8 *,14);
 if(current!=desired){PlaySoundEffect(0x10011);func_ov003_021ebca4(M2C_FIELD(arg0,s32 *,0x6c),i,desired);}
 }
 if(player==GetWaypointSlotOwner(M2C_FIELD(arg0,s32 *,0x6c),i))continue;
@@ -288,8 +288,10 @@ u8 func_ov003_021ebc88(void *arg0) {
     return M2C_FIELD(arg0, u8 *, 0x59);
 }
 
-u8 func_ov003_021ebc90(s32 arg0, s32 arg1) {
-    return (u8) M2C_FIELD(((arg1 * 0x18) + arg0), s32 *, 0x18);
+/* The option counter value kept for waypoint-list slot `slot`. */
+u8 GetWaypointSlotOptionCounter(s32 list, s32 slot) {
+    return (u8) M2C_FIELD(((slot * WAYPOINT_LIST_OPTION_COUNTER_STRIDE) + list), s32 *,
+                          WAYPOINT_LIST_OPTION_COUNTERS + WAYPOINT_OPTION_COUNTER_VALUE);
 }
 
 void func_ov003_021ebca4(s32 arg0,s32 arg1,s32 arg2) {

@@ -682,37 +682,44 @@ s32 func_020a85c0(void) {
     return 0;
 }
 
-u8 IsMobileIndirectUnitKind(s32 arg0) {
-    u8 var_r0;
+/* Whether `unitKind` is the indirect kind that may move and fire in the same
+ * turn; the AI plans these differently from the indirect kinds that fire in
+ * place. */
+u8 IsMobileIndirectUnitKind(s32 unitKind) {
+    u8 result;
 
-    if (arg0 == 0x14) {
-        var_r0 = 1;
+    if (unitKind == UNIT_KIND_MOBILE_INDIRECT) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
-u8 IsCarrierUnitKind(s32 arg0) {
-    u8 var_r0;
+/* Whether a unit kind is the Carrier: the transport whose carried units are
+ * named by the unit record's unkC[] chain (UNIT_KIND_CARRIER). */
+u8 IsCarrierUnitKind(s32 kind) {
+    u8 isCarrier;
 
-    if (arg0 == 0x15) {
-        var_r0 = 1;
+    if (kind == UNIT_KIND_CARRIER) {
+        isCarrier = 1;
     } else {
-        var_r0 = 0;
+        isCarrier = 0;
     }
-    return var_r0;
+    return isCarrier;
 }
 
-u8 IsUnitKindCarrier(s32 arg0) {
-    u8 var_r0;
+/* Whether a unit kind is the Carrier (UNIT_KIND_CARRIER); the second,
+ * byte-identical copy of IsCarrierUnitKind used by the unit-status panel. */
+u8 IsUnitKindCarrier(s32 kind) {
+    u8 isCarrier;
 
-    if (arg0 == 0x15) {
-        var_r0 = 1;
+    if (kind == UNIT_KIND_CARRIER) {
+        isCarrier = 1;
     } else {
-        var_r0 = 0;
+        isCarrier = 0;
     }
-    return var_r0;
+    return isCarrier;
 }
 
 /* True for the unit kinds that resupply adjacent units: the Rig and the Carrier. */

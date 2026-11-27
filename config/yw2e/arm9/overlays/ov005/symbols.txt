@@ -64,7 +64,7 @@ RecordsMenu_HandleDPad kind:function(arm,size=0x198) addr:0x022153fc
 RecordsMenu_PickRow kind:function(arm,size=0x2c) addr:0x02215594
 RecordsMenu_SelectRow kind:function(arm,size=0x28) addr:0x022155c0
 RecordsMenu_ToggleRecordEnabled kind:function(arm,size=0x68) addr:0x022155e8
-func_ov005_02215650 kind:function(arm,size=0x14) addr:0x02215650
+RecordsMenu_FindObject kind:function(arm,size=0x14) addr:0x02215650
 func_ov005_02215664 kind:function(arm,size=0xe34) addr:0x02215664
 RecordsMenu_CreateRowSlots kind:function(arm,size=0x80) addr:0x02216498
 func_ov005_02216518 kind:function(arm,size=0xcf4) addr:0x02216518
@@ -74,7 +74,7 @@ RecordsMenu_ClearHighlight kind:function(arm,size=0x24) addr:0x0221727c
 RecordsMenu_FinishAction kind:function(arm,size=0x38) addr:0x022172a0
 RecordsMenu_BeginAction kind:function(arm,size=0x34) addr:0x022172d8
 SetShogunColorFileDirectory kind:function(arm,size=0x14) addr:0x0221730c
-func_ov005_02217320 kind:function(arm,size=0x14) addr:0x02217320
+Ov005Menu_GetChanged kind:function(arm,size=0x14) addr:0x02217320
 Ov005SetDetailSelection kind:function(arm,size=0x80) addr:0x02217334
 Ov005LoadEntryFacePalettes kind:function(arm,size=0x8c) addr:0x022173b4
 Ov005RefreshNameGraphic kind:function(arm,size=0xb4) addr:0x02217440
@@ -187,7 +187,7 @@ func_ov005_0221fd10 kind:function(arm,size=0x10) addr:0x0221fd10
 CreateCampaignHintPanel kind:function(arm,size=0x90) addr:0x0221fd20
 ResultsMap_Delete kind:function(arm,size=0x40) addr:0x0221fdb0
 ResultsMap_Destroy kind:function(arm,size=0x38) addr:0x0221fdf0
-func_ov005_0221fe28 kind:function(arm,size=0x14) addr:0x0221fe28
+ResultsBackground_Delete kind:function(arm,size=0x14) addr:0x0221fe28
 func_ov005_0221fe3c kind:function(arm,size=0x4) addr:0x0221fe3c
 func_ov005_0221fe40 kind:function(arm,size=0x14) addr:0x0221fe40
 func_ov005_0221fe54 kind:function(arm,size=0x4) addr:0x0221fe54
@@ -197,10 +197,10 @@ ResultSlide_Delete kind:function(arm,size=0x34) addr:0x0221ff38
 ResultSlide_Destroy kind:function(arm,size=0x2c) addr:0x0221ff6c
 ResultsScreen_Delete kind:function(arm,size=0x2c) addr:0x0221ff98
 ResultsScreen_Destroy kind:function(arm,size=0x24) addr:0x0221ffc4
-func_ov005_0221ffe8 kind:function(arm,size=0x4) addr:0x0221ffe8
-func_ov005_0221ffec kind:function(arm,size=0x14) addr:0x0221ffec
+ResultEffectSprite_Destroy kind:function(arm,size=0x4) addr:0x0221ffe8
+ResultEffectSprite_Delete kind:function(arm,size=0x14) addr:0x0221ffec
 func_ov005_02220000 kind:function(arm,size=0x4) addr:0x02220000
-func_ov005_02220004 kind:function(arm,size=0x14) addr:0x02220004
+Award_Delete kind:function(arm,size=0x14) addr:0x02220004
 data_ov005_02220018 kind:data(any) addr:0x02220018
 data_ov005_02220030 kind:data(any) addr:0x02220030
 data_ov005_02220048 kind:data(any) addr:0x02220048
@@ -318,7 +318,7 @@ data_ov005_02220a78 kind:data(any) addr:0x02220a78
 data_ov005_02220a84 kind:data(any) addr:0x02220a84
 data_ov005_02220a90 kind:data(any) addr:0x02220a90
 data_ov005_02220a9c kind:data(any) addr:0x02220a9c
-data_ov005_02220aa8 kind:data(any) addr:0x02220aa8
+gResultEffectSpriteClass kind:data(any) addr:0x02220aa8
 data_ov005_02220ad0 kind:data(any) addr:0x02220ad0
 gResultSlideAnimScript kind:data(any) addr:0x02220b00
 gUnlockedCoListScreenClass kind:data(any) addr:0x02220b38
@@ -350,12 +350,12 @@ data_ov005_02220f1c kind:data(any) addr:0x02220f1c
 data_ov005_02220f2c kind:data(any) addr:0x02220f2c
 data_ov005_02220f3c kind:data(any) addr:0x02220f3c
 gResultsMapVtbl kind:data(any) addr:0x02220f54
-data_ov005_02220f68 kind:data(any) addr:0x02220f68
+gResultsBackgroundVtbl kind:data(any) addr:0x02220f68
 data_ov005_02220f7c kind:data(any) addr:0x02220f7c
-data_ov005_02220f90 kind:data(any) addr:0x02220f90
+gAwardVtbl kind:data(any) addr:0x02220f90
 gResultSparkVTable kind:data(any) addr:0x02220fa4
 gResultSlideSpriteVtbl kind:data(any) addr:0x02220fb8
-data_ov005_02220fcc kind:data(any) addr:0x02220fcc
+gResultEffectSpriteVtbl kind:data(any) addr:0x02220fcc
 gResultsScreenVtbl kind:data(any) addr:0x02220fe0
 data_ov005_02220fec kind:data(any) addr:0x02220fec
 data_ov005_02221008 kind:data(any) addr:0x02221008

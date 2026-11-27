@@ -423,12 +423,13 @@ void CreateUnitSpriteButtonTask(void *sprite, u16 buttons) {
     M2C_FIELD(sprite, void **, UNIT_SPRITE_BUTTON_TASK) = task;
 }
 
-u16 GetSpriteButtonMask(void *arg0) {
-    void *temp_r0;
+/* Key mask that presses a unit sprite, from its button task; 0 when it has none. */
+u16 GetSpriteButtonMask(void *sprite) {
+    void *task;
 
-    temp_r0 = M2C_FIELD(arg0, void **, 0x60);
-    if (temp_r0 != NULL) {
-        return M2C_FIELD(temp_r0, u16 *, 0x38);
+    task = M2C_FIELD(sprite, void **, UNIT_SPRITE_BUTTON_TASK);
+    if (task != NULL) {
+        return M2C_FIELD(task, u16 *, UNIT_SPRITE_TASK_BUTTONS);
     }
     return 0U;
 }

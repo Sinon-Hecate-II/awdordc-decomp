@@ -73,8 +73,10 @@ void RemoveDownloadedCampaignMaps(void *view) {
     HeapFreeBlock(copy);
 }
 
-void func_ov003_021e4610(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0xC)(arg0);
+/* Class-script action of the ov003 scene view: forward to the scene object's
+ * virtual init method at vtable offset 0xC. */
+void Ov003_SceneView_CallInit(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), 0xC)(scene);
 }
 
 void func_ov003_021e4624(void) {
@@ -82,8 +84,10 @@ void func_ov003_021e4624(void) {
     func_ov003_021e2518();
 }
 
-void func_ov003_021e4630(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x14)(arg0);
+/* Class-script action of the ov003 scene view: forward to the scene object's
+ * virtual show/enter method at vtable offset 0x14. */
+void Ov003_SceneView_CallShow(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_SHOW)(scene);
 }
 
 /* Intro handler of the ov003 scene view (its +0x14 interface method): arms the
@@ -119,8 +123,10 @@ void func_ov003_021e46bc(void) {
     func_ov003_021e2628();
 }
 
-void func_ov003_021e46c8(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x18)(arg0);
+/* Class-script action of the ov003 scene view: forward to the scene object's
+ * virtual hide method at vtable offset 0x18. */
+void Ov003_SceneView_CallHide(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), 0x18)(scene);
 }
 
 /* Starts the map-transfer panel's slide-out and hides its sprites when the panel is marked unavailable. */
@@ -514,10 +520,12 @@ void *Ov003SceneView_Destructor(void *obj) {
     return obj;
 }
 
-s32 func_ov003_021e4e58(s32 arg0) {
+/* Deleting destructor of the scene view's map-pick selection child
+ * (MapPickSelection, slot 1 of gMapPickSelectionVTable): free it and return it. */
+s32 MapPickSelection_Delete(s32 selection) {
     M2C_UNK MemFree();
-    MemFree();
-    return arg0;
+    MemFree(selection);
+    return selection;
 }
 
 /* Deleting destructor of a scene-view label group: restore the group's vtable,
@@ -630,7 +638,10 @@ SceneViewLabelGroup *ReleaseSceneViewLabelGroup(SceneViewLabelGroup *group) {
     return group;
 }
 
-void func_ov003_021e5030(void) {
+/* Non-deleting destructor of the scene view's map-pick selection child (slot 0 of
+ * gMapPickSelectionVTable): its class has nothing to tear down.
+ * MapPickSelection_Delete is its deleting twin. */
+void MapPickSelection_Destroy(void) {
 
 }
 

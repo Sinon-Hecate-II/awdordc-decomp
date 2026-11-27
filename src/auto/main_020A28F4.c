@@ -312,9 +312,11 @@ u8 IsUnitKindNotClass6(u8 *unit) {
     return notClass6;
 }
 
-void func_020a3088(M2C_UNK arg0) {
+/* Scripted action for a unit: grant it three experience levels at no cost (the
+ * LevelUpUnit charge flag is 0, so no funds are deducted). */
+void LevelUpUnitByThree(M2C_UNK unit) {
     M2C_UNK LevelUpUnit(M2C_UNK, M2C_UNK, M2C_UNK);
-    LevelUpUnit(arg0, 3, 0);
+    LevelUpUnit(unit, 3, 0);
 }
 
 /* Refill a unit's ammo and fuel up to their maxima at no cost (a scripted action

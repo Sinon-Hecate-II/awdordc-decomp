@@ -72,7 +72,7 @@ void MapEditor_ShowIntroMessage(M2C_UNK owner) {
  * back over the ones the map editor used while it was open. */
 void MapEditor_EndMap(void) {
     M2C_UNK FreeUiGraphicsBank(M2C_UNK);
-    M2C_UNK func_0208c748();
+    M2C_UNK DeleteAllAnimatedSpriteObjects();
     M2C_UNK HideAllSpriteSlots();
     M2C_UNK MapSettings_CopyFromGameSettings(M2C_UNK);
     M2C_UNK func_020d4c08();
@@ -83,7 +83,7 @@ void MapEditor_EndMap(void) {
     HideAllSpriteSlots();
     MapEditor_DespawnScene();
     func_020d4c08();
-    func_0208c748();
+    DeleteAllAnimatedSpriteObjects();
     MapSettings_CopyFromGameSettings(0);
 }
 
@@ -684,6 +684,8 @@ u8 MapEditor_PlayerHasTeam(s32 player) {
     return onTeam;
 }
 
+/* Recompute the map editor's cached per-player unit and property counts and
+ * reassign the players' teams from them. */
 void RefreshMapEditor(void) {
     void CachePlayerUnitCounts(void);
     void AssignPlayerTeams(void);

@@ -221,9 +221,9 @@ void EndMapView(void) {
     M2C_UNK DeleteUnitSprites();
     M2C_UNK Ov003_DestroyMapMenu();
     extern M2C_UNK InitMapView3DRendering;
-    extern M2C_UNK func_ov004_02214904;
+    extern M2C_UNK Ov004_Swap3DBuffers;
     Ov003_DestroyMapMenu();
     DeleteUnitSprites();
     DeleteFrameCallbackTask(&InitMapView3DRendering);
-    DeleteFrameCallbackTask(&func_ov004_02214904);
+    DeleteFrameCallbackTask(&Ov004_Swap3DBuffers);
 }

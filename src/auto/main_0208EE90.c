@@ -415,13 +415,16 @@ u8 IsMusicFadingOut(void) {
     return fadingOut;
 }
 
+/* Fade the music down to half volume (used while a voice or link panel talks over
+ * the battle). */
 void FadeMusicToHalfVolume(void) {
     M2C_UNK FadeMusicToVolume(M2C_UNK, M2C_UNK);
-    FadeMusicToVolume(0x40, 0x1E);
+    FadeMusicToVolume(SOUND_VOLUME_HALF, MUSIC_VOLUME_FADE_FRAMES);
 }
 
+/* Fade the music back up to full volume (undoes FadeMusicToHalfVolume). */
 void FadeMusicToFullVolume(void) {
-    FadeMusicToVolume(0x7F, 0x1E);
+    FadeMusicToVolume(SOUND_VOLUME_MAX, MUSIC_VOLUME_FADE_FRAMES);
 }
 
 /* Fade both music players to `targetVolume` (0..SOUND_VOLUME_MAX) over `frames`

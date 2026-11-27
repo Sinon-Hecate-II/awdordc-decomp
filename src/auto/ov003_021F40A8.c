@@ -25,11 +25,11 @@ void func_ov003_021f40a8(void *arg0) {
     extern u16 data_ov003_0220fdee;
     extern u16 data_ov003_0220fdec;
     extern u16 data_ov003_0220fde4;
-    extern u8 data_ov003_022100e4[16];
+    extern u8 gOv003OptionListVTable[16];
     extern u8 gOv003OptionRowVTable[16];
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
-    extern u8 data_ov003_022100f4[16];
+    extern u8 gOv003OptionListScrollVTable[16];
     void *HeapAllocBlock(s32);
     void MI_CpuFill8(void *,s32,s32);
     s32 Modulo(s32,s32);
@@ -110,7 +110,7 @@ void func_ov003_021f40a8(void *arg0) {
         Apply3DSpriteBanks();
         o = MemAlloc(0x68);
         if (o) {
-            M2C_FIELD(o, void **, 0) = &data_ov003_022100e4;
+            M2C_FIELD(o, void **, 0) = &gOv003OptionListVTable;
             M2C_FIELD(o, u8 *, 0x4) = 0;
             M2C_FIELD(o, u16 *, 0x6) = 7;
             M2C_FIELD(o, u16 *, 0x8) = 2;
@@ -192,7 +192,7 @@ M2C_FIELD(o, u8 *, 20) = 1;
 }
 M2C_FIELD(arg0, void **, 0x5c)=o;
 o=MemAlloc(0x34); if(o){
-M2C_FIELD(o, void * *, 0) = &data_ov003_022100f4;
+M2C_FIELD(o, void * *, 0) = &gOv003OptionListScrollVTable;
 M2C_FIELD(o, u16 *, 4) = 0;
 M2C_FIELD(o, void * *, 8) = &gOv003OptionRowVTable;
 M2C_FIELD(o, u32 *, 12) = 0;

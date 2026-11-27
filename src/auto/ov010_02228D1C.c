@@ -711,9 +711,10 @@ if(!(M2C_FIELD(record,u8 *,ONLINE_PLAYER_FLAGS)&ONLINE_PLAYER_FLAG_CONNECTED))re
 return record;
 }
 
-s32 GetOnlinePlayerSlot(s32 arg0) {
+/* Address of the online player record kept for player slot `slotIndex`. */
+s32 GetOnlinePlayerSlot(s32 slotIndex) {
     extern M2C_UNK gOv010PlayerRecords;
-    return (0x6C * arg0) + (s32) &gOv010PlayerRecords;
+    return (ONLINE_PLAYER_RECORD_SIZE * slotIndex) + (s32) &gOv010PlayerRecords;
 }
 
 /* Copy the local player's network panel record (the ONLINE_PLAYER_PANEL block of

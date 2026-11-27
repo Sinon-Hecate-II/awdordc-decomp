@@ -77,13 +77,13 @@ void func_020b17dc(void) {
 }
 
 void func_020b17ec(void) {
-    void func_020b1800(void);
+    void ReleaseExtPaletteBankGrants(void);
     M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
-    func_020b1800();
+    ReleaseExtPaletteBankGrants();
     GX_SetBankForObjExtPalette(0x40);
 }
 
-void func_020b1800(void) {
+void ReleaseExtPaletteBankGrants(void) {
     M2C_UNK GX_ReleaseBankGrantForObjExtPalette();
     M2C_UNK GX_ReleaseBankGrantForBGExtPalette();
     GX_ReleaseBankGrantForBGExtPalette();
@@ -439,9 +439,10 @@ s32 id;
     return 0;
 }
 
-u8 func_020b212c(void) {
+/* Id of the sprite slot that currently has keyboard focus. */
+u8 GetFocusedSpriteSlotId(void) {
     extern void *gSpriteSlotManager;
-    return M2C_FIELD(gSpriteSlotManager, u8 *, 8);
+    return M2C_FIELD(gSpriteSlotManager, u8 *, SPRITE_SLOT_MGR_FOCUS_ID);
 }
 
 /* Clear the sprite-slot manager's "a slot took focus" flag. */

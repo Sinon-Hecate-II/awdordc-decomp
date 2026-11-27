@@ -1,5 +1,6 @@
 /* 9 functions from 0x0221C534 to 0x0221D008 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 #include "mapedit.h"
 
 extern u32 gMapEditObjectList[];
@@ -98,7 +99,7 @@ extern void *g3DSpriteEngineMain;
 extern void *g3DSpriteEngineSub;
 extern u32 data_ov007_0222076c;
 extern u32 data_ov007_02220ab8;
-s32 func_020b212c(void);
+s32 GetFocusedSpriteSlotId(void);
 void MI_CpuCopy32(const void*,void*,u32);
 void Mb_StringCopy(void*,u32);
 int IsLeadByte(void*);
@@ -114,7 +115,7 @@ if(M2C_FIELD(self,u8 *,2)==1&&gCur3DSpriteEngine!=g3DSpriteEngineSub)continue;
 if(M2C_FIELD(self,u8 *,2)==3&&gCur3DSpriteEngine!=old)continue;
 if(!M2C_FIELD(self,u8 *,1))continue;
 rect[0]=M2C_FIELD(self,s16 *,0x14);rect[1]=M2C_FIELD(self,s16 *,0x16);rect[2]=M2C_FIELD(self,s16 *,0x18);rect[3]=M2C_FIELD(self,s16 *,0x1a);
-kind=M2C_FIELD(self,u8 *,0);if((s32)kind<0)kind=func_020b212c();
+kind=M2C_FIELD(self,u8 *,0);if((s32)kind<0)kind=GetFocusedSpriteSlotId();
 if(kind<0||kind>99)ok=1;else{
 table=M2C_FIELD(state,u32 * *,0x34);text=table[kind];oldIndex=M2C_FIELD(state,s8 *,0x3c);
 if(Mb_StringCompare(text,&data_ov007_0222076c)==0){index=FindTextIndex(state);if(index<0){ok=0;goto checked;}SetTextIndex(state,M2C_FIELD(state,s8 *,0x3c)-1);
@@ -135,7 +136,7 @@ width=(s16)width;SetTextIndex(state,oldIndex);ok=width<=64;
 }
 checked:
 if(!ok){SetTileRectPalette((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),6);}else{
-if((M2C_FIELD(gTouchState,u8 *,0x12)&&RectContainsPoint(M2C_FIELD(gTouchState,u16 *,0),M2C_FIELD(gTouchState,u16 *,2),rect))||(M2C_FIELD(self,u8 *,0)==func_020b212c()&&pressed)){SetTileRectPalette((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),7);}else{SetTileRectPalette((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),5);}
+if((M2C_FIELD(gTouchState,u8 *,0x12)&&RectContainsPoint(M2C_FIELD(gTouchState,u16 *,0),M2C_FIELD(gTouchState,u16 *,2),rect))||(M2C_FIELD(self,u8 *,0)==GetFocusedSpriteSlotId()&&pressed)){SetTileRectPalette((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),7);}else{SetTileRectPalette((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),5);}
 }
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 }
@@ -241,9 +242,10 @@ if(oldSlot==slot)return;
 FocusSpriteSlotById(slot);
 }
 
-void func_ov007_0221cfe8(void) {
+/* Map editor callback: play the sound for a changed or chosen list entry. */
+void MapEditor_PlaySelectSound(void) {
     M2C_UNK PlaySoundEffect(s32);
-    PlaySoundEffect(0x10019);
+    PlaySoundEffect(SOUND_MENU_SELECT);
 }
 
 void func_ov007_0221cffc(void) {

@@ -152,7 +152,9 @@ void RunAiRole4Or6Step10Action(void) {
     FinishAiUnitAction();
 }
 
-void func_ov000_02180900(void) {
+/* Role-3 AI step shared by states 0, 2-5, 7 and 8: rebuild the influence maps,
+ * pick the acting unit's target and carry out the attack. */
+void RunAiRole3AttackStep(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK RunAiAttackAction();
     M2C_UNK SelectAiActionTarget();
@@ -607,14 +609,14 @@ func_ov000_02190094();PlanEnemyUnitAttackDestination();FinishAiUnitAction();
 /* Action callback shared by AI role-4 and role-6 units: flag the action plan when
  * the acting unit is set to act in place, then run the handler for its AI step. */
 void RunAiRole4Or6Action(void) {
- s32 IsAiMap175Player2Override(); M2C_UNK func_ov000_0218049c(); M2C_UNK func_ov000_021804b0(); M2C_UNK func_ov000_021804c4();
+ s32 IsAiMap175Player2Override(); M2C_UNK RunAiRole4Or6AttackStep(); M2C_UNK RunAiRole4Or6Step1Or9Action(); M2C_UNK func_ov000_021804c4();
  extern void **gCurrentMap; extern void *gAiCommandState;
  if(IsAiMap175Player2Override()) return;
  if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_ACTION)<<18)>>30)==MAP_UNIT_ACTION_STAY)
  M2C_FIELD(gAiCommandState,u16 *,AI_COMMAND_STATE_ACTION_FLAGS)|=0x80;
  switch((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u8 *,MAP_UNIT_AI_STATE)<<28)>>28) {
- case 0: case 2: case 3: case 4: case 5: case 7: case 8: func_ov000_0218049c(); return;
- case 1: case 9: func_ov000_021804b0(); return;
+ case 0: case 2: case 3: case 4: case 5: case 7: case 8: RunAiRole4Or6AttackStep(); return;
+ case 1: case 9: RunAiRole4Or6Step1Or9Action(); return;
  case 6: func_ov000_021804c4(); return;
  }
 }
@@ -651,7 +653,7 @@ void RunAiRole3ActionByRange(void) {
  if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,8)<<18)>>30)!=2)
  M2C_FIELD(gAiCommandState,u16 *,AI_COMMAND_STATE_ACTION_FLAGS)|=128;
  switch((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u8 *,MAP_UNIT_AI_STATE)<<28)>>28) {
- case 0: case 2: case 3: case 4: case 5: case 7: case 8: func_ov000_02180900(); return;
+ case 0: case 2: case 3: case 4: case 5: case 7: case 8: RunAiRole3AttackStep(); return;
  case 1: case 9: func_ov000_02180914(); return;
  case 6: func_ov000_02180924(); return;
  case 10: RunAiRole3Step10Action(); return;

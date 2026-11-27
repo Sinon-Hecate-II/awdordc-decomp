@@ -195,8 +195,10 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
     } while ((u32) var_r4 < 8U);
 }
 #pragma pop
-void func_ov003_02205400(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0xC)(arg0);
+/* Class-script action of the ov003 battle-setup scene: forward to the scene
+ * object's virtual init method at vtable offset 0xC. */
+void Ov003_BattleSetupScene_CallInit(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_BUILD)(scene);
 }
 
 void func_ov003_02205414(void) {
@@ -204,7 +206,7 @@ void func_ov003_02205414(void) {
     func_ov003_022024a8();
 }
 
-void func_ov003_02205420(void **arg0) {
+void Ov003_BattleSetupScene_CallShow(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x14)(arg0);
 }
 

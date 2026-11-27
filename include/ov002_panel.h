@@ -27,6 +27,9 @@
 #define UNIT_VIEW_GAUGE_LENGTH 0x01 /* u8 frames the gauge fill takes */
 #define UNIT_VIEW_Y            0x02 /* s8 vertical offset of the panel */
 #define UNIT_VIEW_FLAGS        0x03 /* u8 NibbleFlags: low = player index, high nonzero while the gauge animates */
+#define UNIT_VIEW_PLAYER_MASK  0x0F /* low nibble of UNIT_VIEW_FLAGS: the view's player index */
+#define UNIT_VIEW_GAUGE_FLAGS  0xF0 /* high nibble of UNIT_VIEW_FLAGS: nonzero while the gauge fill animates */
+#define UNIT_VIEW_GAUGE_RUNNING 0x10 /* high-nibble value once the gauge fill animation is started */
 #define UNIT_VIEW_EXPRESSION   0x04 /* s8 character expression, -1 = none */
 #define UNIT_VIEW_SHAKE        0x05 /* u8 frames of screenshake left */
 #define UNIT_VIEW_COLOR        0x06 /* u16 gauge/panel colour */

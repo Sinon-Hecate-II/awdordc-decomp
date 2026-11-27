@@ -111,10 +111,12 @@ enum {
 #define WH_DS_PLAYER_MASK 0x00 /* u16: bit per player taking part in the exchange */
 #define WH_DS_KNOWN_MASK  0x02 /* u16: bit per player whose data block has been received */
 #define WH_DS_DATA        0x04 /* the players' data blocks, one per connected player */
+#define WH_CONN_GROUP_ID 0x08 /* s32: group id the link matches players on, copied from the profile's group id */
 #define WH_LINK_STATUS  0x40 /* s32: WH_STATUS_* */
 #define WH_CONN_ERROR   0x54 /* s32: code of the last failed WH step, kept unless the failure was already reported */
 #define WH_CONN_USER_INFO_CB 0x13AC /* s32 (*)(void *userInfo, void *connection): fills the user-info block and returns the WFC user type */
 #define WH_CONN_USER_INFO    0x13C0 /* user-info block handed to WFC_SubmitUserInfo */
+#define WH_CHILD_INDICATE_CB 0x4c /* s32 (*)(void *event): run when a child connects; 0 aborts the connection */
 #define WH_CHILD_PICKED 0x5c /* u16: child picked, one-based, 0 = none */
 #define WH_CHILD_CONNECTED 0x52 /* u16: one bit per connected child, bit 0 = this console */
 #define WH_CHILD_BITS   0x60 /* u16: one bit per child still wanted */

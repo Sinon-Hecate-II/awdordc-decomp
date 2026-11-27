@@ -152,9 +152,10 @@ void MapEditor_OpenFillDialog(s32 messageId, s32 preset) {
     M2C_FIELD(CreateSpriteFromClass(&gMapEditorFillDialogClass, 7), s32 *, MAP_EDITOR_FILL_PRESET) = preset;
 }
 
+/* Ask to fill the whole map with sea: show the sea prompt and arm the fill dialog
+ * with the sea preset. */
 void MapEditor_FillWithSea(void) {
-    void MapEditor_OpenFillDialog(M2C_UNK, M2C_UNK);
-    MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_SEA, 8);
+    MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_SEA, MAP_EDITOR_FILL_SEA);
 }
 
 /* Ask to fill the whole map with plain ground: show the plain prompt and arm
@@ -255,7 +256,7 @@ void func_ov007_02213554(void *arg0) {
     void CloseNarcArchive(void);
     void LoadFileToSpriteBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
     void *CreateFrameBorderSprite(M2C_UNK);
-    void func_02089424(void*);
+    void LoadFrameBorderSpriteDefaultPattern(void*);
     M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void *CreateUnitSprite(M2C_UNK);
     void InitUnitSprite(M2C_UNK, u8, u16, u8, u8);
@@ -286,7 +287,7 @@ void func_ov007_02213554(void *arg0) {
     M2C_FIELD(r4, s32 *, 0x34) = M2C_FIELD(*gCurrentMap, u16 *, 0x5144);
     M2C_FIELD(r4, s32 *, 0x38) = M2C_FIELD(*gCurrentMap, u16 *, 0x5146);
     M2C_FIELD(r4, s32 *, 0x3C) = 0;
-    func_02089424(CreateFrameBorderSprite(r4));
+    LoadFrameBorderSpriteDefaultPattern(CreateFrameBorderSprite(r4));
     {void *engine=gCur3DSpriteEngine;LoadSpriteResource(1, 0, 3, M2C_FIELD(engine,s32*,0x1C)+0x6B80);}
     {void *engine=gCur3DSpriteEngine;LoadSpriteResource(1, 2, 0, M2C_FIELD(engine,s32*,0x30)+0x360);}
     tile=0x39c;{void *engine=gCur3DSpriteEngine;LoadSpriteResource(0, 2, 0x47, M2C_FIELD(engine,s32*,0x30)+0x260);}

@@ -1,6 +1,6 @@
 InitIntroObject kind:function(arm,size=0x14) addr:0x02221320
-func_ov011_02221334 kind:function(arm,size=0x4) addr:0x02221334
-func_ov011_02221338 kind:function(arm,size=0x14) addr:0x02221338
+IntroSprite_Destroy kind:function(arm,size=0x4) addr:0x02221334
+IntroSprite_Delete kind:function(arm,size=0x14) addr:0x02221338
 ConfigureIntroScreens kind:function(arm,size=0xc0) addr:0x0222134c
 InitIntroScene kind:function(arm,size=0x210) addr:0x0222140c
 InitIntroLogo kind:function(arm,size=0x50) addr:0x0222161c
@@ -71,8 +71,8 @@ func_ov011_022273c8 kind:function(arm,size=0xac0) addr:0x022273c8
 IntroMenu_StartIdleAnimation kind:function(arm,size=0x1c) addr:0x02227e88
 SpawnIntroMenuEntry kind:function(arm,size=0x28) addr:0x02227ea4
 CreateIntroMenu kind:function(arm,size=0x24) addr:0x02227ecc
-func_ov011_02227ef0 kind:function(arm,size=0x4) addr:0x02227ef0
-func_ov011_02227ef4 kind:function(arm,size=0x14) addr:0x02227ef4
+IntroMenuEntry_Destroy kind:function(arm,size=0x4) addr:0x02227ef0
+IntroMenuEntry_DestroyAndFree kind:function(arm,size=0x14) addr:0x02227ef4
 data_ov011_02227f08 kind:data(any) addr:0x02227f08
 data_ov011_02227f28 kind:data(any) addr:0x02227f28
 data_ov011_02227f3c kind:data(any) addr:0x02227f3c
@@ -80,7 +80,7 @@ gIntroStateDurations kind:data(any) addr:0x02227f50
 data_ov011_02227f64 kind:data(any) addr:0x02227f64
 gIntroRevealedTiles kind:data(any) addr:0x02227fa0
 gIntroSpriteClass kind:data(any) addr:0x02227fa4
-data_ov011_02228294 kind:data(any) addr:0x02228294
+gIntroSpriteVTable kind:data(any) addr:0x02228294
 data_ov011_022282a0 kind:data(any) addr:0x022282a0
 data_ov011_022282ac kind:data(any) addr:0x022282ac
 data_ov011_022282bc kind:data(any) addr:0x022282bc

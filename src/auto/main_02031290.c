@@ -583,8 +583,10 @@ void SetProfileRecordId(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 4) = arg1;
 }
 
-s32 GetPlayerRecordTypeWord(u32 *arg0) {
-    return 0x1FFFFF & ((u32) *arg0 >> 0xB);
+/* The 21-bit type word of the player record whose first word is at `record`:
+ * the record kind and joined mark in its low bits (PLAYER_RECORD_KIND_*). */
+s32 GetPlayerRecordTypeWord(u32 *record) {
+    return PLAYER_RECORD_TYPE_MASK & ((u32) *record >> PLAYER_RECORD_TYPE_SHIFT);
 }
 
 s32 GetPlayerRecordKind(void) {

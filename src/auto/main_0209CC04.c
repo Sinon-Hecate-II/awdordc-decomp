@@ -101,8 +101,9 @@ s32 func_0209cd64(void) {
     return 1;
 }
 
-s32 func_0209cd6c(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + 8);
+/* 3D-sprite state handler: skip this state entry and continue with the next one. */
+s32 SpriteState_SkipEntry(void *sprite) {
+    M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ANIM) = (s32) (M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
@@ -490,8 +491,10 @@ s32 SpriteState_DeleteOtherIfDuplicate(void *sprite) {
     return 1;
 }
 
-s32 func_0209d3c8(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + 8);
+/* 3D-sprite state handler: skip this state entry and continue with the next one
+ * (a second, byte-identical copy used for another opcode slot). */
+s32 SpriteState_SkipEntry2(void *sprite) {
+    M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ANIM) = (s32) (M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 

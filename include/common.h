@@ -618,6 +618,8 @@ typedef struct MapSelectScreen {
 #define WAYPOINT_LIST_SLOT_OPTIONS 0x0A /* u8[4]: per-slot option, one byte per slot */
 #define WAYPOINT_LIST_SLOT_VARIANTS 0x0E /* u8[4]: per-slot two-state variant toggled by clicking the slot's option cell; 2 draws the alternate option-cell tile */
 #define WAYPOINT_LIST_OPTION_COUNTERS 0x14 /* OptionCounter[4]: per-slot option counters */
+#define WAYPOINT_LIST_OPTION_COUNTER_STRIDE 0x18 /* sizeof(OptionCounter) */
+#define WAYPOINT_OPTION_COUNTER_VALUE 0x04 /* s32 value of an OptionCounter, from its base */
 #define WAYPOINT_LIST_IDS     0x74 /* u8[4]: player id of each slot, 0xFF = no player yet */
 #define WAYPOINT_NO_PLAYER    0xFF /* WAYPOINT_LIST_IDS: the slot has no player yet */
 #define WAYPOINT_LIST_SLOTS   0x78 /* void *[26]: the slot sprites */
@@ -2345,6 +2347,12 @@ typedef struct NetError {
 #define OV010_SESSION_START_RECORD 0x18 /* void *: record of the match being started (see OV010_START_RECORD_*) */
 #define OV010_START_RECORD_ID      0x00 /* s32 match id both sides compare */
 #define OV010_START_RECORD_ACKS    0x04 /* u16 one bit per player that acknowledged the start request */
+
+/* An online match-start request node (class gOv010StartRequestClass): the match id
+ * it asks the peers to start and the 8-byte start record (OV010_START_RECORD_*)
+ * it submits. */
+#define OV010_START_REQUEST_ID     0x34 /* s32: match id both sides compare */
+#define OV010_START_REQUEST_RECORD 0x38 /* start record submitted to the online session */
 #define OV010_SESSION_CALLBACK 0x0c /* void (*)(s32 error, s32 aborted, s32 data): the running match's event callback forwarded by Ov010Online_OnHostJoinEvent */
 #define OV010_SESSION_MATCH_CALLBACK 0x08 /* s32 (*)(s32 status, s32 closed, s32 targetCleared, s32 serving, s32 slot, void *data): the matching/unit scene's match event handler, installed by the serve/join match paths (MatchingUnitSceneCallback) */
 #define OV010_SESSION_SLOT_CALLBACK 0x10 /* void (*)(s32 slot, s32 data): the app's callback for a changed player slot */
@@ -2637,6 +2645,8 @@ typedef struct Ov001IconMenuState {
 #define PROFILE_ID_BLOCK_GAME_ID 0x24 /* u32 game id (0x5957324A, "YW2J"): salt of player codes and key type in their text form */
 #define PROFILE_GAME_ID_CODE 0x5957324A /* u32 game id ("YW2J") stored in the profile-id block */
 #define PROFILE_ID_BLOCK_CRC     0x3C /* u32 CRC32 of the block's first 0x3C bytes */
+#define PROFILE_SYNC_TIME        0x58 /* date/time stamp of the last profile sync (RtcDate + RtcTime) */
+#define PROFILE_GET_REQUEST_TIME 0x74 /* date/time stamp of the current Get request (RtcDate + RtcTime) */
 #define SAVE_SLOT_COUNT         60         /* slot summaries/records in a block */
 #define SAVE_SLOT_SUMMARY_SIZE  12         /* bytes per slot summary */
 #define SAVE_SLOT_RECORD_SIZE   0x28       /* bytes per slot record */
@@ -2702,6 +2712,9 @@ typedef struct Ov001IconMenuState {
  * per-transfer parameters (callback, retries, unit size). */
 #define SAVE_DEVICE_RESPONSE      0x00 /* s32 *: reply block from the ARM7; word 0 is the transfer status */
 #define SAVE_DEVICE_STATE         0x04 /* s32: device state, SAVE_DEVICE_STATE_READY once configured */
+/* Fields of the reply block SAVE_DEVICE_RESPONSE points at (the ARM7's answer to
+ * the last command/transfer). */
+#define SAVE_REPLY_TRANSFER_CHUNK 0x1C /* s32: bytes a type-0xB backup transfer moves per chunk */
 #define SAVE_DEVICE_ADDRESS       0x1C /* u32: source (backup-chip) address of the transfer */
 #define SAVE_DEVICE_DEST          0x20 /* u32: destination RAM address of the transfer */
 #define SAVE_DEVICE_LENGTH        0x24 /* u32: bytes of the transfer still to move */
@@ -3013,6 +3026,7 @@ typedef struct Ov001WfcIcon {
 #define GX_BLDCNT_EFFECT_BRIGHTEN 0x0080 /* BLDY lightens the screen */
 #define GX_BLDCNT_EFFECT_DARKEN   0x00C0 /* BLDY darkens the screen */
 #define GX_VCOUNT        0x04000006 /* u16: current scanline, read by per-scanline effects */
+#define GX_SWAP_BUFFERS  0x04000540 /* u32: write 1 to swap the 3D engine's front/back buffers */
 
 /* Window range registers of the main engine; the sub engine's sit at +0x1000.
  * WIN0 and WIN1 each have a horizontal and a vertical range, packed as high
@@ -3512,6 +3526,12 @@ enum {
  * runs from the start colour to the end colour. */
 #define UI_GRADIENT_COLOR_START 0xD
 #define UI_GRADIENT_COLOR_END   0xE
+
+/* The standard frame-border sprite pattern: its graphics sit at this offset of
+ * the engine's texture area and load into this OBJ palette slot.  Callers needing
+ * another graphic pass their own offset and palette to LoadFrameBorderSpritePattern. */
+#define FRAME_BORDER_TILE    0x1000
+#define FRAME_BORDER_PALETTE 1
 
 /* UI colour id (GetUiColor) of the frame-border sprite's tint. */
 #define UI_COLOR_FRAME_BORDER 9
@@ -4709,6 +4729,7 @@ enum {
 #define SCROLLBAR_Y        0x0A /* s16 y of the track */
 #define SCROLLBAR_TOUCH_W  0x0C /* u8 width of the track's touch rectangle */
 #define SCROLLBAR_TOUCH_H  0x0D /* u8 height of the track's touch rectangle */
+#define SCROLLBAR_RANGE    0x0E /* s16 max minus min, set along with the bounds */
 #define SCROLLBAR_VALUE    0x12 /* s16 current scroll value */
 #define SCROLLBAR_MIN      0x14 /* s16 lowest scroll value */
 #define SCROLLBAR_MAX      0x16 /* s16 highest scroll value */
@@ -4717,6 +4738,8 @@ enum {
 /* The thumb of a scroll bar (ScrollBar_PlaceThumb): its clamped position, the
  * offsets from the track start, its touch box and the bounds it clamps to. */
 #define SCROLLTHUMB_X       0x08 /* s16 thumb x, clamped into [MIN_X,MAX_X] */
+#define SCROLLTHUMB_FLAGS   0x05 /* u8 nonzero while the thumb's touch handler is active */
+#define SCROLLTHUMB_GRABBED 0x06 /* u8 nonzero while the thumb is being dragged */
 #define SCROLLTHUMB_Y       0x0A /* s16 thumb y, clamped into [MIN_Y,MAX_Y] */
 #define SCROLLTHUMB_DX      0x0C /* s16 thumb x minus the track start (MIN_X) */
 #define SCROLLTHUMB_DY      0x0E /* s16 thumb y minus the track start (MIN_Y) */

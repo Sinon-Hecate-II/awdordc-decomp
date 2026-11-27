@@ -241,13 +241,16 @@ void CreateIntroMenu(M2C_UNK owner) {
     InitIntroMenu(menu);
 }
 
-void func_ov011_02227ef0(void) {
+void IntroMenuEntry_Destroy(void) {
 
 }
 
-s32 func_ov011_02227ef4(s32 arg0) {
+/* Deleting destructor of an ov011 intro-menu entry sprite (slot 1 of
+ * gIntroMenuEntryVTable, installed by SpawnIntroMenuEntry): the entry owns
+ * nothing, so just free it and hand the pointer back. */
+s32 IntroMenuEntry_DestroyAndFree(s32 entry) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return entry;
 }
 

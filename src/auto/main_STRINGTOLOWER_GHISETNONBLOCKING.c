@@ -283,6 +283,8 @@ s32 ghiGetSockOpt(s32 socket, s32 level, s32 option, s32 value, s32 *length) {
     return ghiRecordSocketError(0, -1);
 }
 
+/* GameSpy ghi setsockopt stub: the DS socket layer cannot set socket options, so
+ * this always reports success (0), whatever the caller's socket and option are. */
 void ghiSetSockOpt(void) {
     ghiRecordSocketError(0, -1);
 }

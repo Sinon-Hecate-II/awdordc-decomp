@@ -216,14 +216,17 @@ void OpenMapEditListMenu(void) {
     CreateSpriteFromClass(&gMapEditListMenuClass, 7);
 }
 
-void func_ov007_02214394(void) {
+/* Load the map editor's unit sprite graphics and re-apply the current map settings
+ * to the map being edited. */
+void MapEditor_ApplySettingsAndReloadGraphics(void) {
     M2C_UNK LoadUnitGraphics();
     M2C_UNK MapSettings_Apply(M2C_UNK);
     LoadUnitGraphics();
     MapSettings_Apply(0);
 }
 
-void func_ov007_022143a8(void) {
+/* Create the ov003 battle-setup scene (the map settings screen) and flag the map as modified. */
+void MapEditor_CreateBattleSetupScene(void) {
     M2C_UNK func_ov003_022059d0();
     M2C_UNK MapEditor_SetMapModified(M2C_UNK);
     func_ov003_022059d0();

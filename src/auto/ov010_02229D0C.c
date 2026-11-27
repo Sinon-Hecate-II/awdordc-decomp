@@ -11,9 +11,10 @@ extern M2C_UNK gOv010OnlineSession;
 M2C_FIELD(&gOv010OnlineSession, void **, 0x18) = NULL;
 }
 
-void func_ov010_02229d20(void *arg0) {
+/* Submit an online match-start request node's start record to the session. */
+void Ov010StartRequest_Submit(void *request) {
     M2C_UNK Ov010Online_SubmitStartRecord(void *, s32);
-    Ov010Online_SubmitStartRecord(arg0 + 0x38, M2C_FIELD(arg0, s32 *, 0x34));
+    Ov010Online_SubmitStartRecord(request + OV010_START_REQUEST_RECORD, M2C_FIELD(request, s32 *, OV010_START_REQUEST_ID));
 }
 
 void func_ov010_02229d34(s32 arg0) {
@@ -196,14 +197,16 @@ void *CreateOnlineMatchRequest(s32 names, s32 nameCount, s32 type, s32 timeout, 
     return request;
 }
 
-void func_ov010_0222a038(void) {
+void Ov010SessionState_Destructor(void) {
 
 }
 
-s32 func_ov010_0222a03c(s32 arg0) {
+/* Deleting destructor of the online session-state object (slot 1 of
+ * gOv010SessionStateVtbl): the object owns nothing, so only free it. */
+s32 Ov010SessionState_Delete(s32 state) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return state;
 }
 
 /* Reset an ov010 online connection's stream: release the packet it was chunking
@@ -252,40 +255,50 @@ s32 DestroyPacketAssembly(s32 assembly) {
     return assembly;
 }
 
-void func_ov010_0222a100(void) {
+void Ov010StartRequest_Destroy(void) {
 
 }
 
-s32 func_ov010_0222a104(s32 arg0) {
+/* Deleting destructor of the online match start-request node
+ * Ov010Online_CreateStartRequest builds (slot 1 of gOv010StartRequestVtbl): the
+ * node owns nothing, so only free it and return it. */
+s32 Ov010StartRequest_Delete(s32 request) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return request;
 }
 
-void func_ov010_0222a118(void) {
+void OnlinePlayerAnnounce_Destroy(void) {
 
 }
 
-s32 func_ov010_0222a11c(s32 arg0) {
+/* Deleting destructor of the online player-announce sprite
+ * SpawnOnlinePlayerAnnounce builds (slot 1 of gOnlinePlayerAnnounceVtbl): the
+ * sprite owns nothing, so only free it and return it. */
+s32 OnlinePlayerAnnounce_Delete(s32 announce) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return announce;
 }
 
-void func_ov010_0222a130(void) {
+void OnlineMatchRequest_Destroy(void) {
 
 }
 
-s32 func_ov010_0222a134(s32 arg0) {
+/* Deleting destructor of the online match-request node CreateOnlineMatchRequest
+ * builds (slot 1 of gOnlineMatchRequestVtbl): the node owns nothing, so only
+ * free it. */
+s32 OnlineMatchRequest_Delete(s32 request) {
     M2C_UNK MemFree();
     MemFree();
-    return arg0;
+    return request;
 }
 
-void func_ov010_0222a148(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0) = 0;
-    M2C_FIELD(arg0, s32 *, 4) = 0;
-    M2C_FIELD(arg0, s32 *, 8) = 0;
+/* Clear the first three words of an online node (its vtable, next and state slots). */
+void func_ov010_0222a148(void *node) {
+    M2C_FIELD(node, s32 *, 0) = 0;
+    M2C_FIELD(node, s32 *, 4) = 0;
+    M2C_FIELD(node, s32 *, 8) = 0;
 }
 
 /* Per-frame network error check: while an error is pending, report it once — mark

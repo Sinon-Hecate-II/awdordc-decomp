@@ -263,9 +263,11 @@ M2C_UNK LoadFrameBorderSpritePattern(M2C_UNK sprite, M2C_UNK vramOffset, M2C_UNK
     SetFrameBorderSpritePattern((void *)sprite, vramOffset, palette, GetUiColor(UI_COLOR_FRAME_BORDER));
 }
 
-void func_02089424(M2C_UNK arg0) {
+/* Give frame-border sprite `sprite` the standard frame-border pattern: the UI's
+ * fixed texture offset and palette, tinted with the frame-border colour. */
+void LoadFrameBorderSpriteDefaultPattern(void *sprite) {
     M2C_UNK LoadFrameBorderSpritePattern(M2C_UNK, M2C_UNK, M2C_UNK);
-    LoadFrameBorderSpritePattern(arg0, 0x1000, 1);
+    LoadFrameBorderSpritePattern(sprite, FRAME_BORDER_TILE, FRAME_BORDER_PALETTE);
 }
 
 /* Snap a frame-border sprite actor's drawn rectangle to its target: copy the

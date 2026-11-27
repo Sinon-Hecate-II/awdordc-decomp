@@ -325,7 +325,7 @@ void InitBattleMapConfig(void) {
     void ResetPlayerSetupTables(void);
     s32 GetMapPlayerCoId(s32,s32); s32 GetMapPlayerArmyId(s32,s32); s32 GetMapPlayerId(s32,s32); s32 GetMapPlayerFlags(s32,s32);
     void SetPlayerCoId(s32,s32); void SetPlayerArmyId(s32,s32); void SetPlayerIdForSlot(s32,s32); void SetPlayerTeam(s32,s32);
-    s32 func_020a88d4(s32); s32 MapData_GetBattleSetting(s32); s32 MapData_GetMapValue(s32); s32 MapData_GetValueLimitLow(s32); s32 MapData_GetValueLimitHigh(s32); s32 func_020a8a04(s32);
+    s32 MapData_IsFogOfWar(s32); s32 MapData_GetBattleSetting(s32); s32 MapData_GetMapValue(s32); s32 MapData_GetValueLimitLow(s32); s32 MapData_GetValueLimitHigh(s32); s32 func_020a8a04(s32);
     void func_020a88c4(s32); void SetMapWeather(void); s32 MapData_GetTileset(s32);
     s32 player, value, fieldA, fieldB, playerFlags, team;
     u8 *base;
@@ -349,7 +349,7 @@ void InitBattleMapConfig(void) {
         else team = (player != 1) ? 2 : 1;
         SetPlayerTeam(player, team);
     }
-    if (func_020a88d4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) M2C_FIELD(*gCurrentMap, u8 *, 0x5156) = 1;
+    if (MapData_IsFogOfWar(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) != 0) M2C_FIELD(*gCurrentMap, u8 *, 0x5156) = 1;
     setting = MapData_GetBattleSetting(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
     gMapConfig.unk_3 = setting;
     setting = MapData_GetMapValue(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));

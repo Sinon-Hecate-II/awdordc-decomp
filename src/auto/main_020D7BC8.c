@@ -280,7 +280,9 @@ void func_020d8904(void) {
     SetMapConfigMode1();
 }
 
-void func_020d8914(void) {
+/* Reset the map config to its free-play defaults and apply the resulting map
+ * settings (no explicit settings block, so the current defaults) to the players. */
+void ResetMapConfigAndApplyPlayerSettings(void) {
     M2C_UNK ResetMapConfig();
     M2C_UNK ApplyMapSettingsToPlayers(M2C_UNK);
     ResetMapConfig();

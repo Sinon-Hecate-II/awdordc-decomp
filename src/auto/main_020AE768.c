@@ -31,9 +31,10 @@ b=(u32)(tiles+offset);
 M2C_FIELD((void *)b,u16 *,a)=c;
 }
 #pragma opt_lifetimes reset
-s32 GetWallpaperFileSet(s32 arg0) {
-    extern M2C_UNK gWallpaperFileSets;
-    return (0x14 * arg0) + (s32) &gWallpaperFileSets;
+/* Pointer to the wallpaper file set at `index` in the shared wallpaper table. */
+s32 GetWallpaperFileSet(s32 index) {
+    extern WallpaperFileSet gWallpaperFileSets[];
+    return (s32)(&gWallpaperFileSets[index]);
 }
 
 void func_020ae7ec(void *sprite);

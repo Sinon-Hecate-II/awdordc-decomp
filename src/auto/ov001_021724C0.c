@@ -118,14 +118,17 @@ void Ov001_StartKeyboardClose(void) {
     Ov001_SetSlideStep(((Ov001KeyboardState *)gOv001MenuState)->slideTask, Ov001_KeyboardCloseStep5);
 }
 
-u8 GetKeyboardKey(void) {
+/* Return the character/action produced by the last key press, 0xFF when none. */
+u8 Ov001_GetKeyboardKey(void) {
     extern void *gOv001MenuState;
-    return M2C_FIELD(gOv001MenuState, u8 *, 0x11C);
+    return ((Ov001KeyboardState *)gOv001MenuState)->key;
 }
 
-void Ov001_SetKeyboardCanDelete(s8 arg0) {
+/* Enable or disable the ov001 on-screen keyboard's delete key: it is disabled while
+ * the entered text is empty. */
+void Ov001_SetKeyboardCanDelete(s8 enabled) {
     extern void *gOv001MenuState;
-    M2C_FIELD(gOv001MenuState, s8 *, 0x123) = arg0;
+    ((Ov001KeyboardState *)gOv001MenuState)->canDelete = enabled;
 }
 
 void Ov001_SetKeyboardCanAdd(s8 arg0) {

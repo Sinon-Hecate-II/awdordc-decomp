@@ -678,9 +678,10 @@ s32 GetActiveLinkPlayerSlot(s32 player) {
     return slot;
 }
 
-s32 GetLinkPlayerSlot(s32 arg0) {
+/* The gLinkPlayers slot belonging to player `player`. */
+s32 GetLinkPlayerSlot(s32 player) {
     extern M2C_UNK gLinkPlayers;
-    return (0x60 * arg0) + (s32) &gLinkPlayers;
+    return (LINK_PLAYER_SLOT_STRIDE * player) + (s32) &gLinkPlayers;
 }
 
 /* Copy the local link player's record (the LINK_PLAYER_SLOT_RECORD bytes of the

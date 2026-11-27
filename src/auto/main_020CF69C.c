@@ -89,7 +89,7 @@ void UpdateMapCursorByDirectionAndTouch(s32 moveSound) {
  * carry one of the player's production terrains (base, port or airport), have no
  * unit standing on it, and the map data's rule flag 2 must be clear. */
 u8 IsOwnedProductionSite(s32 x, s32 y) {
- s32 func_020a88fc(u16); s32 IsProductionSiteOwnedByPlayer(u8, s32);
+ s32 MapData_IsProductionDisabled(u16); s32 IsProductionSiteOwnedByPlayer(u8, s32);
  extern s32 *gCurrentMap;
  u8 result; void *map; s32 index; u8 terrain;
  map=(void *)*gCurrentMap;
@@ -99,7 +99,7 @@ u8 IsOwnedProductionSite(s32 x, s32 y) {
  index=((u8 *)map)[index];
  if(index!=0) return 0;
  if(IsProductionSiteOwnedByPlayer(terrain, M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER))==0) return 0;
- if(func_020a88fc(M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_ID))==0) result=1; else result=0;
+ if(MapData_IsProductionDisabled(M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_ID))==0) result=1; else result=0;
  return result;
 }
 
@@ -238,10 +238,13 @@ void ClampCursorToMap(void) {
  M2C_FIELD((void *)*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_HEIGHT)-1;
 }
 
-void func_020cfd14(void) {
-    M2C_UNK RebuildMapPropertyCells();
-    M2C_UNK UpdateAiCapabilityFlags();
-    M2C_UNK func_020d2470();
+/* Rebuild the map's property statistics after ownership or terrain changes: the
+ * property-cell list, each army's property counts and income, and the AI's
+ * capability flags. */
+void RebuildPropertyStatistics(void) {
+    M2C_UNK RebuildMapPropertyCells(void);
+    M2C_UNK UpdateAiCapabilityFlags(void);
+    M2C_UNK func_020d2470(void);
     RebuildMapPropertyCells();
     func_020d2470();
     UpdateAiCapabilityFlags();
@@ -361,9 +364,11 @@ void RefreshMapCellUnits(void) {
     }
 }
 
-void func_020d0164(M2C_UNK arg0, M2C_UNK arg1) {
+/* Fill a flat byte-per-cell map layer with `value` (the layer is a full
+ * MAP_CELL_LAYER_BYTES block, so no row offsets are needed). */
+void FillCellLayerBytes(void *layer, M2C_UNK value) {
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, s32);
-    MI_CpuFill8(arg0, arg1, 0x508);
+    MI_CpuFill8(layer, value, MAP_CELL_LAYER_BYTES);
 }
 
 /* For each active player, flood-fill and mark the tiles reachable by its current unit's movement range. */
@@ -373,7 +378,7 @@ s32 IsPlayerActive(s32); void *GetPlayerSelectedUnit(s32); s32 IsUnitCarried(voi
 s32 player; s32 pathState[8]; void *unit; s32 moveRange;
 for(player=1;player<5;player++){
 if(!IsPlayerActive(player))continue;
-func_020d0164(GetPlayerMoveRangeGrid(player),0);
+FillCellLayerBytes(GetPlayerMoveRangeGrid(player),0);
 unit=GetPlayerSelectedUnit(player); if(!unit)continue;
 if(IsUnitCarried() && !(M2C_FIELD(unit,u16 *,4)&4))continue;
 moveRange=GetPlayerCoZoneMoveRange(player); if(GetPlayerArmyVariantIfSet(player))moveRange=6;

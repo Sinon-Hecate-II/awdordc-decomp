@@ -858,9 +858,10 @@ void Ov001_DestroyScrollBar(void) {
     Ov001_FreeAlloc(&gWfcFriendRoster - 1);
 }
 
-u8 GetMenuRow(void) {
+/* The current handle offset, in pixels, of the ov001 friend-roster scroll bar. */
+u8 Ov001_GetScrollBarHandlePos(void) {
     extern void *gOv001Scrollbar;
-    return M2C_FIELD(gOv001Scrollbar, u8 *, 0x1A);
+    return M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_HANDLE_POS);
 }
 
 u8 GetMenuState(void){extern void *gOv001Scrollbar;return M2C_FIELD(gOv001Scrollbar,u8 *,29);}

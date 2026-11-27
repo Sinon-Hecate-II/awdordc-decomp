@@ -227,14 +227,14 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
     u16 GetUnitSpriteHeight(void *);
     void *SpriteCellListSetCellRect(void *, s32, s16, s16, s32, s32);
     void func_ov003_02200dc8(void *, s32);
-    extern u32 data_ov003_022107c4[];
-    extern u32 data_ov003_02210774[];
-    extern u32 data_ov003_0221088c[];
-    extern u32 data_ov003_02210864[];
-    extern u32 data_ov003_0221083c[];
-    extern u32 data_ov003_02210814[];
-    extern u32 data_ov003_022107ec[];
-    extern u32 data_ov003_0221079c[];
+    extern u32 gMapFogOptionVTable[];
+    extern u32 gWeatherOptionVTable[];
+    extern u32 gMapTilesetOptionVTable[];
+    extern u32 gBattleSettingOptionVTable[];
+    extern u32 gFundsOptionVTable[];
+    extern u32 gIncomeOptionVTable[];
+    extern u32 gMapConfigFlagsOptionVTable[];
+    extern u32 gMapValueFlagOptionVTable[];
     extern u16 data_ov003_022104fa[];
     s32 tmp1, tmp2;
     s32 r11, r10, r5, r6;
@@ -254,42 +254,42 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
             switch (i) {
             case 0:
                 option = MemAlloc(4);
-                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_022107c4;
+                if (option != 0) M2C_FIELD(option, void **, 0) = gMapFogOptionVTable;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 1:
                 option = MemAlloc(4);
-                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_02210774;
+                if (option != 0) M2C_FIELD(option, void **, 0) = gWeatherOptionVTable;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 2:
                 option = MemAlloc(4);
-                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_0221088c;
+                if (option != 0) M2C_FIELD(option, void **, 0) = gMapTilesetOptionVTable;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 3:
                 option = MemAlloc(4);
-                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_02210864;
+                if (option != 0) M2C_FIELD(option, void **, 0) = gBattleSettingOptionVTable;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 4:
                 option = MemAlloc(4);
-                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_0221083c;
+                if (option != 0) M2C_FIELD(option, void **, 0) = gFundsOptionVTable;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 5:
                 option = MemAlloc(4);
-                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_02210814;
+                if (option != 0) M2C_FIELD(option, void **, 0) = gIncomeOptionVTable;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 6:
                 option = MemAlloc(4);
-                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_022107ec;
+                if (option != 0) M2C_FIELD(option, void **, 0) = gMapConfigFlagsOptionVTable;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 7:
                 option = MemAlloc(4);
-                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_0221079c;
+                if (option != 0) M2C_FIELD(option, void **, 0) = gMapValueFlagOptionVTable;
                 M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             }

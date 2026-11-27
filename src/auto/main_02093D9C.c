@@ -318,8 +318,10 @@ s32 ScriptCmd_SkipToNextMessage(void *script) {
     return 1;
 }
 
-s32 func_02094310(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+/* Map-script opcode: no-op command (a second opcode slot with the same body as
+ * MapScriptNoOp), just advance to the next command and keep running. */
+s32 MapScriptNoOp2(void *state) {
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) = (s32) (M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -390,8 +392,8 @@ void Reset3DSpriteEngines(void) {
     M2C_UNK Get3DSpriteCount(void);
     M2C_UNK Get3DSpriteTarget(void);
     void *Get3DSpriteManager(void);
-    M2C_UNK func_02097128(M2C_UNK);
-    M2C_UNK func_0209713c(M2C_UNK);
+    M2C_UNK SetMessagePanelRowPairs(M2C_UNK);
+    M2C_UNK SetMessagePanelLayout(M2C_UNK);
     M2C_UNK func_02097150(M2C_UNK, M2C_UNK);
     M2C_UNK func_02097164(M2C_UNK, M2C_UNK);
     M2C_UNK SetScenePanelMode(M2C_UNK, M2C_UNK);
@@ -409,8 +411,8 @@ void Reset3DSpriteEngines(void) {
         if (((Get3DSpriteTarget() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) &&
             ((Get3DSpriteTarget() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) &&
             ((Get3DSpriteTarget() != 3) || (gCur3DSpriteEngine == savedEngine))) {
-            func_02097128(2);
-            func_0209713c(1);
+            SetMessagePanelRowPairs(2);
+            SetMessagePanelLayout(1);
 
             M2C_FIELD(M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0), u16 *, 0x3A) = 0;
             M2C_FIELD(M2C_FIELD((void *)gCur3DSpriteEngine, void **, 0), u16 *, 0x42) = 0;
@@ -537,12 +539,15 @@ u8 GetDialogSuspendCount(void) {
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4B);
 }
 
+/* Turn stylus input off: the map/touch handlers ignore the stylus until
+ * EnableTouchInput clears the manager's flag again. */
 void DisableTouchInput(void) {
-    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x47) = 1;
+    M2C_FIELD(Get3DSpriteManager(), s8 *, DS3D_MANAGER_TOUCH_DISABLED) = 1;
 }
 
+/* Turn stylus input back on after DisableTouchInput. */
 void EnableTouchInput(void) {
-    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x47) = 0;
+    M2C_FIELD(Get3DSpriteManager(), s8 *, DS3D_MANAGER_TOUCH_DISABLED) = 0;
 }
 
 u8 IsTouchInputDisabled(void) {

@@ -100,9 +100,10 @@ void Ov001_StartKeypadClose(void) {
     Ov001_SetSlideStep(M2C_FIELD(gOv001Keypad, s32 *, KEYPAD_SLIDE_TASK), Ov001_KeypadCloseStep5);
 }
 
+/* Return the key code produced by the last keypad press (KEYPAD_CODE_NONE when none). */
 u8 Ov001_GetKeypadCode(void) {
     extern void *gOv001Keypad;
-    return M2C_FIELD(gOv001Keypad, u8 *, 0x60);
+    return M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CODE);
 }
 
 void Ov001_SetKeypadDeleteEnabled(s8 arg0) {

@@ -513,7 +513,7 @@ SwitchThreadContext((s32)next);
 
 #pragma scheduling off
 void func_02005968(void) {
-extern M2C_UNK data_0212dc80,data_0212dca8,data_0212dd74,data_027e0000,data_0212dca4,data_0212dcb4,data_0212defc;
+extern M2C_UNK data_0212dc80,data_0212dca8,data_0212dd74,data_027e0000,data_0212dca4,data_0212dcb4,gArenaTableState;
 extern char data_00000000[],data_00000800[]; void func_02006120(void);
 void func_02005ac0(void *,void *,s32,u8 *,u32,s32);
 s32 size;u8 *end,*start;
@@ -542,7 +542,7 @@ M2C_FIELD(&data_0212dc80,u16 *,36)=0;
 M2C_FIELD(&data_0212dc80,u16 *,38)=0;
 *(void **)0x027fffa0=&data_0212dca4;
 SetThreadSwitchCallback(0);
-func_02005ac0(&data_0212dcb4,func_02006120,0,(u8 *)&data_0212defc,200,31);
+func_02005ac0(&data_0212dcb4,func_02006120,0,(u8 *)&gArenaTableState,200,31);
 M2C_FIELD(&data_0212dc80,s32 *,164)=32;
 M2C_FIELD(&data_0212dc80,s32 *,152)=1;
 }

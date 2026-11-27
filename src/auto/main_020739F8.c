@@ -398,10 +398,12 @@ s32 DestroyEmptyObject(s32 object) {
     return object;
 }
 
-s32 func_02074298(s32 arg0) {
+/* Complete-object (non-deleting) destructor of the empty object: run its
+ * base-object destructor and return the object still allocated. */
+s32 DestroyEmptyObjectComplete(s32 object) {
     M2C_UNK DestroyEmptyObject();
     DestroyEmptyObject();
-    return arg0;
+    return object;
 }
 
 /* Deleting destructor of an object whose class has an empty destructor: run the

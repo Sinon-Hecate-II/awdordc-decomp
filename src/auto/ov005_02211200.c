@@ -24,7 +24,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     void Apply3DSpriteDisplayConfig(void);
     void Reset3DSpriteBankState(void);
     void *CreateFrameBorderSprite(void *);
-    void func_02089424(void);
+    void LoadFrameBorderSpriteDefaultPattern(void);
     void *CreateUnitSprite(void *);
     void InitUnitSprite(void *, s32, s32, s32, s32);
     void Set3DSpriteSlideTargetAndStart(void *, s16, s16, s16, s32);
@@ -42,7 +42,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     void LoadNarcFileToSpriteBuffer(s32,s32,s32);
     void CloseNarcArchive(void);
     void LoadBattleMap(u16);
-    void func_ov003_021ff3d4(void *);
+    void Ov003_CreateMapPanelScene(void *);
     void Sync3DSpriteToTarget(void *);
     void LoadUiGraphicsBank(s32);
 
@@ -61,7 +61,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     }while(i<2);
     gCur3DSpriteEngine = data_027e00c8;
     M2C_FIELD((void *)arg0, void **, 0x4C) = CreateFrameBorderSprite((void *)arg0);
-    func_02089424();
+    LoadFrameBorderSpriteDefaultPattern();
     {
         void *p = M2C_FIELD((void *)arg0, void **, 0x4C);
         M2C_FIELD(p,Menu005Flags*,0x40).x=32;
@@ -149,7 +149,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         void *map = *gCurrentMap;
         LoadBattleMap(M2C_FIELD(map, u16 *, 0x5142));
     }
-    func_ov003_021ff3d4((void *)arg0);
+    Ov003_CreateMapPanelScene((void *)arg0);
     gCur3DSpriteEngine = savedEngine;
     M2C_FIELD((void *)arg0, s32 *, 0x34) = 2;
     {

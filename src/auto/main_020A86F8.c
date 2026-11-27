@@ -104,24 +104,36 @@ u8 func_020a88c4(void) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 7);
 }
 
-s32 func_020a88d4(void) {
-    return M2C_FIELD(MapData_GetRecord(), u16 *, 4) & 1;
+/* Whether the current map forces fog of war on (MAP_DATA_RULE_FOG);
+ * InitBattleMapConfig turns MAP_FOG on when it is set. */
+s32 MapData_IsFogOfWar(void) {
+    return M2C_FIELD(MapData_GetRecord(), u16 *, MAP_DATA_RULE_FLAGS) & MAP_DATA_RULE_FOG;
 }
 
-s32 func_020a88e8(void) {
-    return M2C_FIELD(MapData_GetRecord(), u16 *, 4) & 2;
+/* Whether the current map's rules turn COs off (MAP_DATA_RULE_NO_CO): the battle
+ * then assigns no army to its players and blocks unit selection. */
+s32 MapData_HasNoCoRule(void) {
+    return M2C_FIELD(MapData_GetRecord(), u16 *, MAP_DATA_RULE_FLAGS) & MAP_DATA_RULE_NO_CO;
 }
 
-s32 func_020a88fc(void) {
-    return M2C_FIELD(MapData_GetRecord(), u16 *, 4) & 4;
+/* Whether the current map's rule disables its production sites
+ * (MAP_DATA_RULE_NO_PRODUCTION); IsOwnedProductionSite then finds no usable
+ * property to build from. */
+s32 MapData_IsProductionDisabled(void) {
+    return M2C_FIELD(MapData_GetRecord(), u16 *, MAP_DATA_RULE_FLAGS) & MAP_DATA_RULE_NO_PRODUCTION;
 }
 
-s32 func_020a8910(void) {
-    return M2C_FIELD(MapData_GetRecord(), u16 *, 4) & 8;
+/* Whether the current map's rules turn off defeat by rout
+ * (MAP_DATA_RULE_NO_ROUT): IsCurrentPlayerOutOfUnits then refuses to report the
+ * player as out of units. */
+s32 MapData_HasNoRoutRule(void) {
+    return M2C_FIELD(MapData_GetRecord(), u16 *, MAP_DATA_RULE_FLAGS) & MAP_DATA_RULE_NO_ROUT;
 }
 
+/* Whether the current map may be picked by the random map selection: rule bit 4
+ * marks the maps RandomSelectableMapId draws from. */
 s32 MapData_IsRandomSelectable(void) {
-    return M2C_FIELD(MapData_GetRecord(), u16 *, 4) & 0x10;
+    return M2C_FIELD(MapData_GetRecord(), u16 *, MAP_DATA_RULE_FLAGS) & MAP_DATA_RULE_RANDOM_PICK;
 }
 
 u8 GetMapAiCategory(void) {
@@ -392,8 +404,10 @@ void func_020a8cf0(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,s32 arg5,u16 arg
  }
 }
 
-s32 func_020a8e28(s32 arg0, s32 arg1) {
-    return (s32) ((arg0 - ((s32) (arg0 * arg1) >> 8)) << 0xF) >> 0x10;
+/* Left margin that centres a copy of a `width`-wide span scaled by `scale`
+ * (8.8 fixed point, 256 = unchanged): (width - width*scale/256) / 2. */
+s32 GetCenteredMargin(s32 width, s32 scale) {
+    return (s32) ((width - ((s32) (width * scale) >> 8)) << 0xF) >> 0x10;
 }
 
 /* Draw a solid-colour quad centred on (centerX, centerY) at depth z: the base

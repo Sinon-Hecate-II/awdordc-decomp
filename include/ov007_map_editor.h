@@ -67,6 +67,7 @@ enum {
 #define MAP_EDITOR_RESIZE_HEIGHT 0x38 /* s32 map height */
 
 /* Prompt texts (SetUiMessageText ids) of the fill menu's entries. */
+#define MAP_EDITOR_FILL_SEA              8 /* FillMapTerrain preset: every cell becomes sea (MAP_TILE_SEA on terrain kind 8) */
 #define MAP_EDITOR_FILL_MESSAGE_SEA      0x46000000
 #define MAP_EDITOR_FILL_MESSAGE_PLAIN    0x46000001
 #define MAP_EDITOR_FILL_MESSAGE_WOODS    0x46000002
