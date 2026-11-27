@@ -6,7 +6,7 @@ typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 #include "ov000_unit_entry.h"
 #include "unit_sprite.h"
 static inline s32 unitHealth7074(UnkStruct_ov000_021A860C *p) { s32 Divide(s32,s32);s32 h=p->unk6;if(h==0)return 0;return Divide(h-1,10)+1; }
-extern u8 data_ov000_021b5c6a[], gUnitKindLoadMask[],gUnitKindCargoCount[],gUnitKindLoadClass[];
+extern u8 gUnitKindSpriteVariants[], gUnitKindLoadMask[],gUnitKindCargoCount[],gUnitKindLoadClass[];
 extern void **gCurrentMap;
 
 s32 ProduceUnit(s32 a, s32 b, s32 c) {
@@ -220,10 +220,14 @@ if(n)M2C_FIELD(&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+MAP_UNIT_RECORD
 }
 }}
 
-void func_020a6fcc(void) {
+/* Spawn the area-damage effect sprite on the default layer: it allocates its
+ * covered-cell bitmap (InitAreaDamageEffect), applies the area damage each frame
+ * and resets the current player's units for the new turn.  Called when a turn
+ * ends (EndPlayerTurn) and by the AI weather command. */
+void SpawnAreaDamageEffect(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_021206a0;
-    CreateSpriteFromClass(&data_021206a0, 7);
+    extern M2C_UNK gAreaDamageEffectClass;
+    CreateSpriteFromClass(&gAreaDamageEffectClass, 7);
 }
 
 #pragma scheduling off
@@ -296,7 +300,7 @@ s32 func_020a7290(void) {
     return 0x78;
 }
 
-s32 GetUnitVariantIndex(s32 a,u8 b){return ((u8 *)b)[(s32)data_ov000_021b5c6a+a*0x70];}
+s32 GetUnitVariantIndex(s32 a,u8 b){return ((u8 *)b)[(s32)gUnitKindSpriteVariants+a*0x70];}
 
 /* The sprite tile index (four tiles per sprite variant) that player `player`'s
  * units of `kind` use: the player record's cached sprite state picks the variant. */

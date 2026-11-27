@@ -577,10 +577,13 @@ void SetQr2ReceiveStateCallback(void *connection, s32 callback) {
     M2C_FIELD(target, s32 *, QR2_CB_RECEIVE_STATE) = callback;
 }
 
-void func_0205e864(void *arg0, s32 arg1) {
- extern void *gQr2Connection;
- if (arg0 == NULL) arg0 = gQr2Connection;
- M2C_FIELD(arg0,s32 *,0xA8)=arg1;
+/* Set the public-address callback (QR2_CB_PUBLIC_ADDRESS) of a QR2 connection: the
+ * callback told the public address the master sees.  A NULL `connection` selects the
+ * shared default gQr2Connection. */
+void SetQr2PublicAddressCallback(void *connection, s32 callback) {
+    extern void *gQr2Connection;
+    if (connection == NULL) connection = gQr2Connection;
+    M2C_FIELD(connection, s32 *, QR2_CB_PUBLIC_ADDRESS) = callback;
 }
 
 /* Service a QR2 connection (the global one when `qr2` is NULL): while it reports

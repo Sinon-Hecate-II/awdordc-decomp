@@ -5,10 +5,13 @@ typedef struct { u8 kind:6, flags:2; } UnitKindD1690;
 typedef struct { u16 hp:7, flags:9; } UnitHpD1690;
 static inline u8 PlayerStatusIndex(void *p) { return M2C_FIELD(p,s32 *,0x6810); }
 
-void func_020d166c(s32 a, s32 b) {
-    void RunBattle(s16, s16);
-    if (!b) return;
-    RunBattle((s16)a, (s16)b);
+/* Preview the battle between the unit under the cursor and `defenderId`,
+ * moving the attacker onto `destination` first; do nothing when there is no
+ * defender. */
+void RunBattleIfTarget(s32 attackerId, s32 defenderId, s16 *destination) {
+    void RunBattle(s16, s16, s16 *);
+    if (!defenderId) return;
+    RunBattle((s16)attackerId, (s16)defenderId, destination);
 }
 
 #pragma opt_strength_reduction off
@@ -236,11 +239,11 @@ void ResetUnitSlotCursor(void) {
  * units and unit visibility. */
 void BeginPlayerPhase(void){
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
-void SetupPlayerTeams(void);void FillTeamSightBitmap(s32);void func_020d0270(void);void RefreshUnitVisibility(void);
+void SetupPlayerTeams(void);void FillTeamSightBitmap(s32);void RefreshMapUnitDisplay(void);void RefreshUnitVisibility(void);
 M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_OWNER)=M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)<<5;
 M2C_FIELD(*gCurrentMap,u16 *,MAP_UNIT_GROUP_BASE)=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)];
 M2C_FIELD(*gCurrentMap,u16 *,MAP_ACTIVE_PLAYER)=M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER);
-SetupPlayerTeams();FillTeamSightBitmap((u8)M2C_FIELD(*gCurrentMap,u16 *,MAP_TEAM_A_PLAYER));func_020d0270();RefreshUnitVisibility();
+SetupPlayerTeams();FillTeamSightBitmap((u8)M2C_FIELD(*gCurrentMap,u16 *,MAP_TEAM_A_PLAYER));RefreshMapUnitDisplay();RefreshUnitVisibility();
 }
 
 /* Start the current player's turn: rewind the unit-slot allocation cursor, reset

@@ -326,13 +326,15 @@ u8 AiPropertiesOutnumberAttackUnits(void) {
     return outnumber;
 }
 
+/* Priority score of the AI's property-capture option: the team's capturable
+ * properties minus the attack units it already has (it may be negative). */
 s32 AiPropertyCaptureScore(void) {
     s32 CountCapturableProperties();
     s32 CountTeamAttackUnits();
-    s32 temp_r4;
+    s32 properties;
 
-    temp_r4 = CountCapturableProperties();
-    return temp_r4 - CountTeamAttackUnits();
+    properties = CountCapturableProperties();
+    return properties - CountTeamAttackUnits();
 }
 
 /* AI action planner (unit AI states 3/4, and state 5 without an HQ): enter the

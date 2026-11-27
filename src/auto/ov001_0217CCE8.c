@@ -238,7 +238,7 @@ void InitMapListScreen(void) {
     u8 Ov001_GetLanguage(void);
     M2C_UNK Ov001_ShowMessagePanel(s32, s32, s32);
     void Ov001_OpenMenuForMode(M2C_UNK);
-    void func_ov001_021722c4(void);
+    void Ov001_LoadMapListSlotObjLayout(void);
     M2C_UNK Ov001_CreateScrollBar(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void *CreateTextPanel(s32, s32);
     void *Ov001_CreateSpriteFromLayout(s32, s32);
@@ -269,7 +269,7 @@ void InitMapListScreen(void) {
         Ov001_ShowMessagePanel(0x45, -1, 0);
     }
     Ov001_OpenMenuForMode(1);
-    func_ov001_021722c4();
+    Ov001_LoadMapListSlotObjLayout();
     Ov001_CreateScrollBar(2, 0x55, 0xf1, 0x41,
                         (M2C_FIELD(&gMapListState, u16 *, 4) * 55) / 145);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x14) = CreateTextPanel(0, 1);

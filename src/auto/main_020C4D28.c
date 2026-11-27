@@ -684,12 +684,15 @@ void func_020c5c88(void) {
     DeleteMapMenuSprites();
 }
 
-void func_020c5c94(M2C_UNK arg0, M2C_UNK arg1) {
-M2C_UNK func_020c0b88(M2C_UNK);
-M2C_UNK func_020c7568();
-func_020c0b88(arg1);
-DeleteMapMenuSprites();
-func_020c7568();
+/* Close the carried-unit menu and reopen its parent at `selection` (the row the
+ * parent menu is restored with), dropping the map menus' sprites first. */
+void CloseCarriedUnitMenuWithSelection(M2C_UNK menu, s32 selection) {
+    void SetCarriedUnitMenuSelection(s32);
+    void CloseCarriedUnitMenu();
+
+    SetCarriedUnitMenuSelection(selection);
+    DeleteMapMenuSprites();
+    CloseCarriedUnitMenu();
 }
 
 /* Availability of a battle-menu entry that only free-play battles offer: 0

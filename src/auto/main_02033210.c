@@ -298,12 +298,12 @@ void HttpClientStartTask(void *client, s32 priority) {
     void TaskCreate(void *, void *, void *, void *, s32, s32);
     s32 TaskIsFinished(void *);
     void TaskWake(void *);
-    void InitMutex(void *);
+    void OS_InitMutex(void *);
     extern s32 data_0213d134;
     extern u8 HttpClientTask[];
     M2C_FIELD(client, s32 *, HTTP_TASK_ABORT) = 0;
-    InitMutex(client + HTTP_TASK_MUTEX);
-    InitMutex(client + HTTP_LOCK);
+    OS_InitMutex(client + HTTP_TASK_MUTEX);
+    OS_InitMutex(client + HTTP_LOCK);
     if (M2C_FIELD(client, s32 *, HTTP_OPTION_FLAG) == 1) data_0213d134 = 1; else data_0213d134 = 0;
     if (M2C_FIELD(client, s32 *, HTTP_TASK_READY) != 0 && TaskIsFinished(client + HTTP_TASK) == 0) return;
     TaskCreate(client + HTTP_TASK, HttpClientTask, client, client + HTTP_TASK_STACK, HTTP_TASK_STACK_SIZE, priority);

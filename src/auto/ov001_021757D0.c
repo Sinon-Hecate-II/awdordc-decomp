@@ -292,10 +292,12 @@ u8 Ov001_GetLanguage(void) {
     return gOv001ScreenState;
 }
 
+/* The screen layout the front end was started with: the low nibble of the
+ * screen options word (a OV001_LAYOUT_* value). */
 s32 Ov001_GetScreenLayout(void) {
     extern u8 gOv001ScreenState;
-    typedef struct { u32 a, b; unsigned val : 4; } S;
-    return ((S *)&gOv001ScreenState)->val;
+    typedef struct { u32 languageAndExit; void *work; unsigned layout : 4; } ScreenStateBits;
+    return ((ScreenStateBits *)&gOv001ScreenState)->layout;
 }
 
 /* Whether any of the screen options in `optionMask` is set: the screen options
@@ -388,8 +390,9 @@ void Ov001_ReleaseMessageArchive(M2C_UNK archive) {
     Ov001_QueuePush(M2C_FIELD((void *)gOv001MessageArchiveFreeList, M2C_UNK *, MESSAGE_POOL_QUEUE), archive);
 }
 
-s32 Ov001_GetMessageText(M2C_UNK arg0, u32 arg1) {
-    void **p = (void **)arg0;
-    arg1 = (arg1 << 16) >> 16;
-    return ((s32 *)p[0])[(u32)arg1] + (s32)p[1];
+/* Return message `index`'s text from a loaded archive record: the record's offset
+ * for the message added to its texts base. */
+s32 Ov001_GetMessageText(Ov001MessageArchive *archive, u32 index) {
+    index = (index << 16) >> 16;
+    return archive->offsets[index] + (s32)archive->texts;
 }

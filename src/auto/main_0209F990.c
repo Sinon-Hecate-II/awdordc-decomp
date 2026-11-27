@@ -14,7 +14,7 @@ s32 func_0209f990(void) {
     s32 GetTileTargetKind(s32, s32);
     void *FindMapOrderAtTile(s32, s32);
     u8 AreUnitIdsOnSameTeam(s32, s32);
-    void func_020d166c(s32, s32, void *);
+    void RunBattleIfTarget(s32, s32, void *);
     u8 IsSameTeam(s32, s32);
     void func_020d1690(s32, s32, void *);
     extern s32 *gCurrentMap;
@@ -41,7 +41,7 @@ s32 func_0209f990(void) {
                         visible = GetTileTargetKind(x, y);
                         if (id != 0) {
                             if (AreUnitIdsOnSameTeam(M2C_FIELD((u8 *)*gCurrentMap, u8 *, 0x52d4), id) == 0) {
-                                func_020d166c(M2C_FIELD((u8 *)*gCurrentMap, u8 *, 0x52d4), id, (void *)((u8 *)*gCurrentMap + 0x52dc));
+                                RunBattleIfTarget(M2C_FIELD((u8 *)*gCurrentMap, u8 *, 0x52d4), id, (void *)((u8 *)*gCurrentMap + 0x52dc));
                                 if (M2C_FIELD((u8 *)*gCurrentMap, s16 *, 0x6ed6) != 0) {
                                     AppendTargetEntry(x, y, id, 0);
                                 }

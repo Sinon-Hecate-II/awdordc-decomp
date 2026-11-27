@@ -29,10 +29,13 @@ M2C_UNK InitHeapHead(void *heap, s32 signature, s32 start, M2C_UNK end, s32 attr
     ListAppend(GetHeapParentList(heap), heap);
 }
 
-M2C_UNK UnlinkHeap(void *arg0) {
+/* Unlink heap block `address` from its parent heap's child list, e.g. when the
+ * heap (which is itself a block) is destroyed. */
+M2C_UNK UnlinkHeap(void *address) {
     M2C_UNK GetHeapParentList(void *);
     M2C_UNK ListRemove(M2C_UNK, void *);
-    ListRemove(GetHeapParentList(arg0), arg0);
+
+    ListRemove(GetHeapParentList(address), address);
 }
 
 /* Fill `range` with the payload range of heap block `block`: the payload starts
@@ -758,9 +761,12 @@ void Sound_ResetChannelMasks(void) {
     M2C_FIELD(&gSoundChannelMasks, u32 *, SOUND_CHANNEL_MASK_ALLOC) = 0;
 }
 
-void Sound_SetChannelMixVolume(s32 arg0, s8 arg1) {
-    extern u8 data_0213b724[];
-    data_0213b724[arg0 * 0x24] = (u8)arg1;
+/* Set the mix volume (0..SOUND_VOLUME_MAX) of sound channel `channel`, in its
+ * entry of the per-channel mix-volume table. */
+void Sound_SetChannelMixVolume(s32 channel, s8 volume) {
+    extern u8 gSoundChannelMixVolumes[];
+
+    gSoundChannelMixVolumes[channel * SOUND_CHANNEL_SIZE] = (u8)volume;
 }
 
 /* Store the SOUND_CHANNEL_VOICE_LIMIT word of sound `channel`: how many voices,
@@ -771,9 +777,11 @@ void Sound_SetChannelVoiceLimit(s32 channel, s32 voiceLimit) {
     *(s32 *)(gSoundChannelVoiceLimits + channel * SOUND_CHANNEL_SIZE) = (s32)(u16)voiceLimit;
 }
 
-void func_0202abb4(s32 arg0, s32 arg1) {
-    extern u8 data_0213b720[];
-    *(s32 *)(data_0213b720 + arg0 * 0x24) = arg1;
+/* Store the volume of sound channel `channel` from its archive channel record. */
+void Sound_SetChannelBaseVolume(s32 channel, s32 volume) {
+    extern u8 gSoundChannelVolumes[];
+
+    *(s32 *)(gSoundChannelVolumes + channel * SOUND_CHANNEL_SIZE) = volume;
 }
 
 /* Allocates one of a channel's preallocated sequence-player heaps: a sound data

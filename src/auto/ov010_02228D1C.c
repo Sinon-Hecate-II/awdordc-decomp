@@ -62,8 +62,8 @@ void CreateOnlineSessionObject(M2C_UNK owner) {
 extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     void func_ov010_02226a88(void);
     void Ov010Online_ClearStepFlag(s32);
-    s32 func_ov010_02229450(s32);
-    s32 func_ov010_02229438(s32);
+    s32 Ov010_SetMatchEventCallback(s32);
+    s32 SetOnlineScoreCallback(s32);
     void ClearOnlineEventFlags(void);
     s32 GetEarnedRecordTierTotal(void);
     s32 GetRecordRank(void);
@@ -106,8 +106,8 @@ volatile Ov010CallbackFn d;
     GetProfileSaveBlock();
     Ov010Online_ClearStepFlag(3);
     Ov010Online_ClearStepFlag(4);
-    func_ov010_02229450(arg2);
-    func_ov010_02229438(arg4);
+    Ov010_SetMatchEventCallback(arg2);
+    SetOnlineScoreCallback(arg4);
     ClearOnlineEventFlags();
     a = *(Ov010CallbackFn *)&data_ov010_0222c128;
     b = a;
@@ -157,8 +157,8 @@ volatile Ov010CallbackFn d;
 extern "C" void func_ov010_02228f80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
     void func_ov010_02226a88(void);
     void Ov010Online_ClearStepFlag(s32);
-    s32 func_ov010_02229450(s32);
-    s32 func_ov010_02229438(s32);
+    s32 Ov010_SetMatchEventCallback(s32);
+    s32 SetOnlineScoreCallback(s32);
     void ClearOnlineEventFlags(void);
     s32 GetEarnedRecordTierTotal(void);
     s32 GetRecordRank(void);
@@ -201,8 +201,8 @@ volatile Ov010CallbackFn d;
     GetProfileSaveBlock();
     Ov010Online_ClearStepFlag(3);
     Ov010Online_ClearStepFlag(4);
-    func_ov010_02229450(arg3);
-    func_ov010_02229438(arg5);
+    Ov010_SetMatchEventCallback(arg3);
+    SetOnlineScoreCallback(arg5);
     ClearOnlineEventFlags();
     a = *(Ov010CallbackFn *)&data_ov010_0222c128;
     b = a;
@@ -246,8 +246,8 @@ volatile Ov010CallbackFn d;
 extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5) {
  void func_ov010_02226a88(void);
  void ClearOnlineEventFlags(void);
- s32 func_ov010_02229468(s32);
- s32 func_ov010_02229480(s32);
+ s32 Ov010_SetMatchCallback(s32);
+ s32 Ov010_SetPeerJoinedCallback(s32);
  void Ov010Online_ClearStepFlag(s32);
  s32 GetEarnedRecordTierTotal(void);
  s32 GetRecordRank(void);
@@ -269,8 +269,8 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  func_ov010_02226a88();
  Ov010Online_ClearStepFlag(3);
  Ov010Online_ClearStepFlag(4);
- func_ov010_02229468(arg2);
- func_ov010_02229480(arg4);
+ Ov010_SetMatchCallback(arg2);
+ Ov010_SetPeerJoinedCallback(arg4);
  ClearOnlineEventFlags();
  a = *(Ov010CallbackFn *)&data_ov010_0222c128;
  b = a;
@@ -294,8 +294,8 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
 extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5) {
  void func_ov010_02226a88(void);
  void ClearOnlineEventFlags(void);
- s32 func_ov010_02229468(s32);
- s32 func_ov010_02229480(s32);
+ s32 Ov010_SetMatchCallback(s32);
+ s32 Ov010_SetPeerJoinedCallback(s32);
  void Ov010Online_ClearStepFlag(s32);
  s32 GetEarnedRecordTierTotal(void);
  s32 GetRecordRank(void);
@@ -316,8 +316,8 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  func_ov010_02226a88();
  Ov010Online_ClearStepFlag(3);
  Ov010Online_ClearStepFlag(4);
- func_ov010_02229468(arg2);
- func_ov010_02229480(arg4);
+ Ov010_SetMatchCallback(arg2);
+ Ov010_SetPeerJoinedCallback(arg4);
  ClearOnlineEventFlags();
  a = *(Ov010CallbackFn *)&data_ov010_0222c128;
  b = a;
@@ -339,60 +339,80 @@ StartMatch(arg1,(void *)func_ov010_0222807c,arg3,(void *)Ov010Online_OnPeerJoine
 }
 #pragma cplusplus off
 
-s32 func_ov010_02229438(s32 arg0) {
+/* Install `callback` as the online session's matchmaking score callback
+ * (OV010_SESSION_SCORE_CALLBACK); returns the callback it replaces. */
+s32 SetOnlineScoreCallback(s32 callback) {
     extern u16 gOv010OnlineSession;
-    s32 temp_r2;
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 32);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 32) = arg0;
-    return temp_r2;
+    s32 previous;
+
+    previous = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_SCORE_CALLBACK);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_SCORE_CALLBACK) = callback;
+    return previous;
 }
 
-s32 func_ov010_02229450(s32 arg0) {
+/* Install `callback` as the running online match's event callback
+ * (OV010_SESSION_CALLBACK) and return the callback it replaces. */
+s32 Ov010_SetMatchEventCallback(s32 callback) {
     extern u16 gOv010OnlineSession;
-    s32 temp_r2;
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 12);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 12) = arg0;
-    return temp_r2;
+    s32 previousCallback;
+    previousCallback = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_CALLBACK);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_CALLBACK) = callback;
+    return previousCallback;
 }
 
-s32 func_ov010_02229468(s32 arg0) {
+/* Install `callback` as the online session's match event handler
+ * (OV010_SESSION_MATCH_CALLBACK) and return the callback it replaces. */
+s32 Ov010_SetMatchCallback(s32 callback) {
     extern u16 gOv010OnlineSession;
-    s32 temp_r2;
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 8);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 8) = arg0;
-    return temp_r2;
+    s32 previousCallback;
+    previousCallback = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_MATCH_CALLBACK);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_MATCH_CALLBACK) = callback;
+    return previousCallback;
 }
 
-s32 func_ov010_02229480(s32 arg0) {
+/* Install `callback` as the online session's peer-joined callback
+ * (OV010_SESSION_PEER_JOINED_CALLBACK); returns the callback it replaces. */
+s32 Ov010_SetPeerJoinedCallback(s32 callback) {
     extern u16 gOv010OnlineSession;
-    s32 temp_r2;
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 68);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 68) = arg0;
-    return temp_r2;
+    s32 previous;
+
+    previous = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_PEER_JOINED_CALLBACK);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_PEER_JOINED_CALLBACK) = callback;
+    return previous;
 }
 
-s32 func_ov010_02229498(s32 arg0) {
+/* Install `callback` as the online session's outgoing-packet callback
+ * (OV010_SESSION_SEND_CALLBACK); returns the callback it replaces. */
+s32 Ov010_SetSendCallback(s32 callback) {
     extern u16 gOv010OnlineSession;
-    s32 temp_r2;
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x58);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x58) = arg0;
-    return temp_r2;
+    s32 previous;
+
+    previous = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_SEND_CALLBACK);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_SEND_CALLBACK) = callback;
+    return previous;
 }
 
-s32 func_ov010_022294b0(s32 arg0) {
+/* Install `handler` as the online session's received-packet handler
+ * (OV010_SESSION_RECEIVE_HANDLER, offered each packet from a channel's receive
+ * queue); returns the handler it replaces. */
+s32 Ov010_SetReceiveHandler(s32 handler) {
     extern u16 gOv010OnlineSession;
-    s32 temp_r2;
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x1C);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x1C) = arg0;
-    return temp_r2;
+    s32 previous;
+
+    previous = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_RECEIVE_HANDLER);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_RECEIVE_HANDLER) = handler;
+    return previous;
 }
 
-s32 SetOnlineMessageHandler(s32 arg0) {
+/* Install `handler` as the online session's assembled-message handler
+ * (OV010_SESSION_MESSAGE_HANDLER); returns the handler it replaces. */
+s32 SetOnlineMessageHandler(s32 handler) {
     extern u16 gOv010OnlineSession;
-    s32 temp_r2;
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x50);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x50) = arg0;
-    return temp_r2;
+    s32 previous;
+
+    previous = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_MESSAGE_HANDLER);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_MESSAGE_HANDLER) = handler;
+    return previous;
 }
 
 s32 Ov010Online_CanLeaveSession(void) {
@@ -430,9 +450,11 @@ void Ov010Online_RequestMatchStart(void) {
     RequestMatchStart(&Ov010Online_MatchStartNoop, 0);
 }
 
-void func_ov010_02229568(M2C_UNK arg0) {
-    M2C_UNK func_ov010_022268f4(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_ov010_022268f4(0, arg0, 0x20);
+/* Allocate `size` bytes from the online overlay's heap, 32-byte aligned: the
+ * block every queued online packet and session record is built in. */
+void *Ov010_AllocBlock32(s32 size) {
+    s32 Ov010_AllocBlock(s32, s32, s32);
+    return (void *)Ov010_AllocBlock(0, size, ONLINE_BLOCK_ALIGNMENT);
 }
 
 /* Free a queued online packet: its payload bytes plus the 12-byte header. */
@@ -461,7 +483,7 @@ s32 QueueOnlineLinkPacket(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
     s32 IsOnlineSessionFlagSet(s32);
     u16 GetOnlinePeerMask();
     s32 GetOnlineTransportPlayerId();
-    M2C_UNK func_ov010_022268f4(M2C_UNK, s32, s32);
+    M2C_UNK Ov010_AllocBlock(M2C_UNK, s32, s32);
     void MI_CpuFill8(void *, s32, s32);
     extern u16 gOv010OnlineSession;
     QueueNode *node;
@@ -478,7 +500,7 @@ s32 QueueOnlineLinkPacket(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
     previous = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
     saved = previous;
-    node = (QueueNode *)func_ov010_022268f4(0, arg2 + 0x10, 0x20);
+    node = (QueueNode *)Ov010_AllocBlock(0, arg2 + 0x10, 0x20);
     if (node == NULL) {
         volatile u16 *ime = (volatile u16 *)0x04000208;
         u32 restore = *(volatile u32 *)&saved;
@@ -513,7 +535,7 @@ s32 QueueOnlinePacket(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
     s32 IsOnlineSessionFlagSet(s32);
     u16 GetOnlinePeerMask();
     s32 GetOnlineTransportPlayerId();
-    M2C_UNK func_ov010_022268f4(s32, s32, s32);
+    M2C_UNK Ov010_AllocBlock(s32, s32, s32);
     void MI_CpuFill8(void *, s32, s32);
     extern u16 gOv010OnlineSession;
     void *node;
@@ -528,7 +550,7 @@ s32 QueueOnlinePacket(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
     mode = GetOnlineTransportPlayerId();
     saved = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
-    node = (void *)func_ov010_022268f4(0, arg2 + 0x10, 0x20);
+    node = (void *)Ov010_AllocBlock(0, arg2 + 0x10, 0x20);
     if (node == NULL) {
         (void)*(volatile u16 *)0x04000208;
         *(volatile u16 *)0x04000208 = saved;
@@ -709,13 +731,15 @@ s32 CopyOnlineLocalPlayerRecord(s32 buffer, M2C_UNK length) {
     return buffer;
 }
 
+/* Network panel record of the active online player (the record of the player
+ * this console plays as), or NULL when that player has no connected record. */
 s32 GetActiveOnlinePlayerRecord(void) {
     s32 GetOnlinePlayerRecord();
-    s32 temp_r0;
+    s32 record;
 
-    temp_r0 = GetOnlinePlayerRecord();
-    if (temp_r0 != 0) {
-        return temp_r0 + 0x2C;
+    record = GetOnlinePlayerRecord();
+    if (record != 0) {
+        return record + ONLINE_PLAYER_PANEL;
     }
     return 0;
 }
@@ -735,13 +759,21 @@ s32 CopyActiveOnlinePlayerRecord(s32 playerId, s32 buffer, s32 length) {
     return buffer;
 }
 
+/* Whether this console is the online session's host: the host is the transport
+ * player with id 0 (see IsOnlineGuest for the other side of the check). */
 s32 IsOnlineSessionHost(void) {
-    if (GetOnlineTransportPlayerId() == 0) return 1;
+    if (GetOnlineTransportPlayerId() == 0) {
+        return 1;
+    }
     return 0;
 }
 
+/* Whether this console joins the online session as a guest rather than hosting
+ * it: any transport player id other than 0 (see IsOnlineSessionHost). */
 s32 IsOnlineGuest(void) {
-    if (GetOnlineTransportPlayerId() != 0) return 1;
+    if (GetOnlineTransportPlayerId() != 0) {
+        return 1;
+    }
     return 0;
 }
 

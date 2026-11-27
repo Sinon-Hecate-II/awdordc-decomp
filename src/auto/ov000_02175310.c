@@ -43,7 +43,7 @@ void FillUnitInfo(void *arg0, void *arg1) {
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x28) = GetUnitKindMoveRange((s32)kind);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x2C) = GetUnitMoveBonus(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
     kind = ((UnitKind75310 *)unit)->value;
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x30) = func_020a7bf8((s32)kind);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x30) = GetUnitKindMinAttackRange((s32)kind);
     kind = ((UnitKind75310 *)unit)->value;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x34) = func_020a7bec((s32)kind);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x38) = GetUnitAttackRangeBonus(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
@@ -55,7 +55,7 @@ void FillUnitInfo(void *arg0, void *arg1) {
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x44) = value + tmp2;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x4C) = func_020a788c(unit);
     kind = ((UnitKind75310 *)unit)->value;
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x54) = func_020a7c98((s32)kind);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x54) = GetUnitKindMoveType((s32)kind);
 
     value = GetPlayerArmyVariantIfSet(GetUnitOwner(unit));
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s8 *, 0x48) = (s8)value;
@@ -72,10 +72,10 @@ void FillUnitKindInfo(void *entry, s32 templateIndex, s32 statIndex) {
     s32 GetUnitKindByte0(s32);
     s32 GetUnitKindMoveRange(s32);
     s32 func_020a7bec(s32);
-    s32 func_020a7bf8(s32);
+    s32 GetUnitKindMinAttackRange(s32);
     s32 GetUnitKindMaxFuel(s32);
     s32 GetUnitKindMaxAmmo(s32);
-    s32 func_020a7c98(s32);
+    s32 GetUnitKindMoveType(s32);
     M2C_UNK BuildUnitRecommendations(void *, s32);
     extern s32 *gCurrentMap;
     void *state;
@@ -93,14 +93,14 @@ void FillUnitKindInfo(void *entry, s32 templateIndex, s32 statIndex) {
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x24) = 0;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x28) = GetUnitKindMoveRange(statIndex);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x2C) = 0;
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x30) = func_020a7bf8(statIndex);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x30) = GetUnitKindMinAttackRange(statIndex);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x34) = func_020a7bec(statIndex);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x38) = 0;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x3C) = 0;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x40) = GetUnitKindByte0(statIndex);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x44) = 0;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x4C) = 0x63;
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x54) = func_020a7c98(statIndex);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x54) = GetUnitKindMoveType(statIndex);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s8 *, 0x48) = 0;
     state = M2C_FIELD(entry, void **, 0x10);
     M2C_FIELD(state, s32 *, 0x60) = (s32) M2C_FIELD(((M2C_FIELD(state, s32 *, 0x50) * 0x8C) + *gCurrentMap), u8 *, 0x67C1);

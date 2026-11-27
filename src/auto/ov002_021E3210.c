@@ -457,12 +457,14 @@ void InitEffectDisc(void *arg0, s16 x, s16 y, s16 z, u16 radiusFrom, u16 radiusT
     disc->elapsed = 0;
 }
 
-void func_ov002_021e3e64(void *arg0) {
-    u16 temp_r2;
+/* Advance one frame of a unit-model disc effect: run its elapsed frame counter
+ * up to the disc's duration. */
+void AdvanceEffectDisc(EffectDisc *disc) {
+    u16 elapsed;
 
-    temp_r2 = M2C_FIELD(arg0, u16 *, 6);
-    if ((u32) temp_r2 < (u32) M2C_FIELD(arg0, u16 *, 8)) {
-        M2C_FIELD(arg0, u16 *, 6) = (u16) (temp_r2 + 1);
+    elapsed = disc->elapsed;
+    if ((u32)elapsed < (u32)disc->duration) {
+        disc->elapsed = (u16)(elapsed + 1);
     }
 }
 

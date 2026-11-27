@@ -104,26 +104,23 @@ s32 func_020e352c(s32 arg0, s32 arg1) {
     }
 }
 
-s32 func_020e3580(s32 arg0,s32 arg1) {
+s32 func_020e3580(s32 arg0, s32 arg1) {
 #pragma push
 #pragma opt_global_reg on
-extern s32 gGameHeap;
-s32 result;
-volatile u32 saved;
-u32 temp=*(volatile u16*)0x04000208;
-*(volatile u16*)0x04000208=0;
-saved=temp;
-{
-    s32 direction = -arg1;
-    s32 block = gGameHeap;
-    result = AllocFromExpHeap(block, arg0, direction);
-}
-{
-    volatile u16 *ime = (volatile u16 *)0x04000208;
-    u16 restored = saved;
-    *ime = ((void)*ime, restored);
-}
-return result;
+#pragma opt_common_subs off
+    extern s32 gGameHeap;
+    s32 result;
+    volatile u32 saved;
+    u32 temp = *(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = 0;
+    saved = temp;
+    result = AllocFromExpHeap(gGameHeap, arg0, -arg1);
+    {
+        u32 s = saved;
+        (void)*(volatile u16 *)0x04000208;
+        *(volatile u16 *)0x04000208 = s;
+    }
+    return result;
 #pragma pop
 }
 #pragma push
@@ -195,18 +192,23 @@ void ResumeOnlineListWhenProfileSyncOverdueAlt(M2C_UNK list) {
     Sprite_ResumeAnimation(list);
 }
 
-void func_020e36dc(void) {
-   void func_020e4304();
-   s32 SubmitWebRegisterRequest(void);
-   if (SubmitWebRegisterRequest() == 0) return;
-   func_020e4304();
+/* Submit the online player-registration request and, once it is under way,
+ * invalidate the cached online player count. */
+void SubmitWebRegisterAndInvalidateCount(void) {
+    void InvalidateOnlinePlayerCount();
+    s32 SubmitWebRegisterRequest();
+
+    if (SubmitWebRegisterRequest() == 0) return;
+    InvalidateOnlinePlayerCount();
 }
 
-void func_020e36f4(void) {
+/* Complete the online web register request; once it has succeeded, invalidate the
+ * cached online player count so the next list refresh asks the server again. */
+void FinishWebRegisterAndInvalidateCount(void) {
    s32 FinishWebRegisterRequest(void);
-   void func_020e4304();
+   void InvalidateOnlinePlayerCount();
    if (FinishWebRegisterRequest() == 0) return;
-   func_020e4304();
+   InvalidateOnlinePlayerCount();
 }
 
 /* Wait step of the counted online-player list: once the web transaction has
@@ -827,7 +829,7 @@ void CreateOnlinePlayerListEmptyNode(s32 owner) {
     M2C_FIELD(node, s32 *, LIST_UNK48) = 0;
 }
 
-void func_020e4304(void) {
+void InvalidateOnlinePlayerCount(void) {
     extern s32 gOnlinePlayerCount;
     gOnlinePlayerCount = -1;
 }

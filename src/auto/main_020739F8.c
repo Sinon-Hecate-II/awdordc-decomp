@@ -416,9 +416,11 @@ void func_020742d4(void) {
     StdTerminate();
 }
 
+/* std::terminate: dispatch to the installed terminate handler, whose default
+ * (func_020742c8) flushes the pending socket events. */
 M2C_UNK StdTerminate(void) {
     extern M2C_UNK gCppExceptionHandlers;
-    return M2C_FIELD(&gCppExceptionHandlers, M2C_UNK (**)(), 0)();
+    return M2C_FIELD(&gCppExceptionHandlers, M2C_UNK (**)(), CPP_TERMINATE_HANDLER)();
 }
 
 /* std::unexpected: dispatch to the current unexpected handler.  Its default

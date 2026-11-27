@@ -110,12 +110,16 @@ void func_02081568(void) {
     GetFileSize();
 }
 
-s32 LoadNarcFileRaw(void *arg0, void *arg1) {
-    return LoadFileToAddress(BuildNarcPath(arg0), arg1);
+/* Load the NARC member at `memberPath` into `dest` and return the number of bytes
+ * loaded (0 after halting the system when the member cannot be read). */
+s32 LoadNarcFileRaw(void *memberPath, void *dest) {
+    return LoadFileToAddress(BuildNarcPath(memberPath), dest);
 }
 
-s32 LoadNarcFileDecompressed(void *arg0, void *arg1) {
-    return LoadDecompressedFileTo(BuildNarcPath(arg0), arg1);
+/* Decompress the NARC member at `memberPath` into `dest` and return what
+ * LoadDecompressedFileTo returns (the decompressed size, or 0 when it fails). */
+s32 LoadNarcFileDecompressed(void *memberPath, void *dest) {
+    return LoadDecompressedFileTo(BuildNarcPath(memberPath), dest);
 }
 
 void LoadNarcMemberToBuffer(void) {
@@ -123,8 +127,10 @@ void LoadNarcMemberToBuffer(void) {
     LoadDecompressedFile(BuildNarcPath(), 1);
 }
 
-s32 func_020815bc(void *arg0, void *arg1) {
-    return LoadFileToNewBuffer(BuildNarcPath(arg0), arg1);
+/* Allocate `size` bytes and load the NARC member at `memberPath` into them,
+ * returning the buffer (0 when the member cannot be read). */
+s32 LoadNarcFileToNewBuffer(void *memberPath, void *size) {
+    return LoadFileToNewBuffer(BuildNarcPath(memberPath), size);
 }
 
 /* Copy `size` bytes at `offset` of the NARC member `memberPath` into `dest`.
@@ -169,8 +175,10 @@ void LoadNarcFileToObjExtPalette(M2C_UNK memberPath, M2C_UNK paletteOffset, M2C_
     LoadFileToObjExtPalette(BuildNarcPath(memberPath), paletteOffset, size);
 }
 
-s32 func_0208168c(void *arg0, void *arg1) {
-    return LoadFileToTextureBank(BuildNarcPath(arg0), arg1);
+/* Decompress the NARC member at `memberPath` and upload it into the texture bank
+ * at `destOffset`; returns the decompressed size in bytes. */
+s32 LoadNarcFileToTextureBank(void *memberPath, void *destOffset) {
+    return LoadFileToTextureBank(BuildNarcPath(memberPath), destOffset);
 }
 
 /* Load the NARC member at `memberPath` and draw it as a tile block into
@@ -571,7 +579,13 @@ s8 *func_02081f08(void) { extern M2C_UNK gInputBlockState; volatile s8 *p=(s8 *)
 
 s8 *func_02081f20(void) { extern M2C_UNK gInputBlockState; volatile s8 *p=(s8 *)&gInputBlockState; p[0]++; return (s8 *)p; }
 
-void func_02081f38(void){extern M2C_UNK gInputBlockState;M2C_FIELD(&gInputBlockState,s8 *,0)=M2C_FIELD(&gInputBlockState,s8 *,0)-1;}
+/* Ends one frame of the input lock. */
+void DecrementInputLockFrames(void) {
+    extern M2C_UNK gInputBlockState;
+
+    ((InputBlockState *)&gInputBlockState)->inputLockFrames =
+        ((InputBlockState *)&gInputBlockState)->inputLockFrames - 1;
+}
 
 void func_02081f50(void) {
     extern M2C_UNK gInputBlockState;
@@ -600,12 +614,19 @@ void ForceKeyBInput(void) {
     M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_RELEASED) = 0;
 }
 
-void func_02081fd4(void){extern M2C_UNK data_02101edc;M2C_UNK CreateSpriteFromClass(M2C_UNK *,s32);CreateSpriteFromClass(&data_02101edc,3);}
+/* Create the input-block notice sprite (class gInputBlockSpriteClass), owned by object 3:
+ * its class constructors block injected key presses and force a B press. */
+void CreateInputBlockSprite(void) {
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, s32);
+    extern M2C_UNK gInputBlockSpriteClass;
 
-void func_02081fec(void) {
+    CreateSpriteFromClass(&gInputBlockSpriteClass, 3);
+}
+
+void DeleteInputBlockSprite(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02101edc;
-    DeleteSpriteObjectsOfClass(&data_02101edc);
+    extern M2C_UNK gInputBlockSpriteClass;
+    DeleteSpriteObjectsOfClass(&gInputBlockSpriteClass);
 }
 
 void func_02082000(void){extern M2C_UNK gInputBlockState;M2C_FIELD(&gInputBlockState,u8 *,2)=1;}

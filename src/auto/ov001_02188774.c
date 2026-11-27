@@ -13,17 +13,17 @@ extern M2C_UNK data_ov001_0219166c, data_ov001_02191684, data_ov001_021916cc;
 #pragma push
 #pragma opt_propagation off
 s32 Ov001_ResetLinkWork(void) {
-extern M2C_UNK gWhWork;
-s32 Ov001_StartCommandChannel(void);
-M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,4772)=0;
-M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,4768)=0;
-M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,72)=0;
-M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,80)=0;
-M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,82)=1;
-M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,84)=0;
-M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,0)=0;
-M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,4)=0;
-M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,76)=0;
-return Ov001_StartCommandChannel() == 0 ? 0 : 1;
+    extern M2C_UNK gWhWork;
+
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,4772)=0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,4768)=0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,72)=0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,80)=0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,82)=1;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,84)=0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,0)=0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,4)=0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,76)=0;
+    return (s32)(Ov001_StartCommandChannel() == 0 ? 0 : 1);
 }
 #pragma pop

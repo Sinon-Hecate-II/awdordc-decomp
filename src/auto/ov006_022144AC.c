@@ -146,11 +146,13 @@ void func_ov006_0221507c(void **arg0) {
  M2C_FIELD(*arg0, void (**)(void *), 8)(arg0);
 }
 
-void func_ov006_02215090(void *arg0) {
+/* Tear down a screen's sprites: delete the shared wallpaper sprites on both
+ * display engines, then the screen's own sprite object at +0x38. */
+void DestroyScreenSprites(void *screen) {
     M2C_UNK DeleteSpriteObject(s32);
     M2C_UNK DeleteWallpaperSpritesOnAllEngines();
     DeleteWallpaperSpritesOnAllEngines();
-    DeleteSpriteObject(M2C_FIELD(arg0, s32 *, 0x38));
+    DeleteSpriteObject(M2C_FIELD(screen, s32 *, 0x38));
 }
 
 /* Frame step of an ov006 panel: advance the panel's reveal tween and, once the

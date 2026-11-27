@@ -21,7 +21,7 @@ s32 RectsOverlap(s16,s16,s32,s32,s32,s32,s32,s32);
 void ClearTileRect(void *,s32,s32);
 u8 FindMapPick(void *,void *,u16);
 void func_ov003_021fac2c(u16,u16,s16,s16,s32);
-s32 func_ov003_021f3f0c(s16,s32,s32);
+s32 Ov003_IsValueInRange2(s16,s32,s32);
 void SetTextSpriteValue(void *,s16);
 void DrawTextSprite(void *);
 s32 GetMapListIconTile(u8,u16);
@@ -87,7 +87,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  if((u8)(FindMapPick((u8*)p+4,(u8*)p+18,item)!=255))
  func_ov003_021fac2c((u16)i,item,(s16)tx,(s16)ty,8);}
  }
- if(!func_ov003_021f3f0c((s16)py,24,152)||i>M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s32 *,0x18))continue;
+ if(!Ov003_IsValueInRange2((s16)py,24,152)||i>M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s32 *,0x18))continue;
  SetTextSpriteValue(M2C_FIELD(arg0,void **,0x50),(s16)(i+1));
  p=M2C_FIELD(arg0,void **,0x50);
  M2C_FIELD(p,u8 *,0x28)=(M2C_FIELD(p,u8 *,0x28)&~0xe0)|0x20;

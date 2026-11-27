@@ -16,9 +16,12 @@ void Ov001_SwapHalves(s32 data, s32 size, s32 swapBuffer) {
     Ov001MemCopy(swapBuffer + half, data, half);
     Ov001MemCopy(data, swapBuffer, size);
 }
-s32 func_ov001_0216cd10(s32 arg0, s32 arg1) {
+/* Allocate `size` bytes from the room protocol's installed allocator hook
+ * (data_ov001_021925e0[0], the one Ov001_AllocHook calls); a non-positive size
+ * allocates nothing and returns 0.  The first argument is ignored. */
+s32 Ov001_AllocRoomBuffer(s32 unused, s32 size) {
     extern s32 (*data_ov001_021925e0)(s32);
-    if (arg1 > 0) return data_ov001_021925e0(arg1);
+    if (size > 0) return data_ov001_021925e0(size);
     return 0;
 }
 
@@ -123,7 +126,7 @@ void func_ov001_0216ce80(void) {
     func_0202175c();
 }
 
-/* Reverse the byte order of a 32-bit value (big-endian to little-endian). */
+/* Reverse the byte order of a 32-bit value (big-endian <-> little-endian). */
 s32 Ov001SwapEndian32(s32 value) {
     u32 x = (u32) value;
     return ((x << 0x18) & 0xFF000000) | (((x << 8) & 0xFF0000) | ((u8) (x >> 0x18) | ((x >> 8) & 0xFF00)));

@@ -666,7 +666,7 @@ void UpdateAimingCursor(void) {
  if(keys&0x10){ /* confirm the aimed tile */
  map=*gCurrentMap;
  MoveCursorTo(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y));
- func_0207b040();
+ DeleteAimCursorSprites();
  } else if(keys&0x20) { /* select the unit under the cursor */
  map=M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT);
  StepMapViewToTile(M2C_FIELD(map,u8*,MAP_UNIT_X),M2C_FIELD(map,u8*,MAP_UNIT_Y));
@@ -676,7 +676,7 @@ void UpdateAimingCursor(void) {
  map=M2C_FIELD(map,void**,MAP_CURSOR_UNIT);
  M2C_FIELD(map,u16*,MAP_UNIT_FLAGS)|=0xa;
  }
- RefreshMapView();func_0207a768();func_0207b040();
+ RefreshMapView();DeleteMapCursorSprites();DeleteAimCursorSprites();
  M2C_FIELD(*gCurrentMap,u16*,MAP_MODE)=0;
  DeleteSpriteObjectsOfClass(data_0211fbc4);
  PlaySoundEffect(0x1000f);

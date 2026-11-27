@@ -95,11 +95,11 @@ M2C_FIELD(entry,s32 *,8)--;
 }
 
 static inline void RxQueuePush26d9c(Ov010Packet *h,u32 channel,u8 *queues) {
-void *func_ov010_022268f4(s32,u32,u32);void MI_CpuFill8(void *,s32,u32);
+void *Ov010_AllocBlock(s32,u32,u32);void MI_CpuFill8(void *,s32,u32);
 void Ov010Online_InitPacketHeader(void *,u32,u32,u32,void *,u32,u32);
 volatile u32 saved=*(volatile u16 *)0x4000208;void *node;u8 *entry;void *head;
 *(volatile u16 *)0x4000208=0;
-node=func_ov010_022268f4(0,h->size+16,32);
+node=Ov010_AllocBlock(0,h->size+16,32);
 if(!node){(void)*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;return;}
 MI_CpuFill8(node,0,16);
 Ov010Online_InitPacketHeader((u8 *)node+4,h->kind,h->channel,h->flags,(u8 *)h+12,h->size,h->id);
@@ -112,7 +112,7 @@ M2C_FIELD(entry,u32 *,8)++;
 
 #pragma opt_common_subs off
 void func_ov010_02226d9c(void *a){
-s32 IsOnlineSessionFlagSet(s32);s32 GetOnlineTransportPlayerId();s32 GetOnlinePeerMask();s32 CanStartSend(u8); void *func_ov010_02229568(u32);M2C_UNK Ov010Online_FreePacket(s32);void Ov010Online_InitPacketHeader(void *,u32,u32,u32,void *,u32,u32);void Ov010_FreeBlock(s32,void *,u32);
+s32 IsOnlineSessionFlagSet(s32);s32 GetOnlineTransportPlayerId();s32 GetOnlinePeerMask();s32 CanStartSend(u8); void *Ov010_AllocBlock32(u32);M2C_UNK Ov010Online_FreePacket(s32);void Ov010Online_InitPacketHeader(void *,u32,u32,u32,void *,u32,u32);void Ov010_FreeBlock(s32,void *,u32);
 void Ov010Online_OnTransferStart(s32,s32);void func_ov010_02227954(s32,void *,s32);M2C_UNK Sprite_ResumeAnimation(void *);
 extern M2C_UNK gOv010OnlineSession;
 u32 n; s32 i,self; register u32 one; Ov010Packet *p;
@@ -128,12 +128,12 @@ for(i=0;i<4;i++)if(self!=i && (M2C_FIELD(a,u16 *,0x44)&(1<<i))){if(!CanStartSend
 if(M2C_FIELD(a,u32 *,0x34)!=((Ov010Packet *)M2C_FIELD(a,void **,0x38))->size){
 {Ov010Packet header=*(Ov010Packet *)M2C_FIELD(a,void **,0x38); n=header.size;}
 n=n-M2C_FIELD(a,u32 *,0x34);if(n>0x594)n=0x594;
-p=func_ov010_02229568(n+12);
+p=Ov010_AllocBlock32(n+12);
 {Ov010Packet *h=M2C_FIELD(a,void **,0x38);
 Ov010Online_InitPacketHeader(p,5,h->channel,h->flags,(u8 *)M2C_FIELD(a,void **,0x38)+12+M2C_FIELD(a,u32 *,0x34),n,h->id); }
 M2C_FIELD(a,u32 *,0x34)+=n;M2C_FIELD(a,void **,0x3c)=p;M2C_FIELD(a,u32 *,0x40)=p->size+12;
 }else{
-p=func_ov010_02229568(12);
+p=Ov010_AllocBlock32(12);
 {Ov010Packet *h=M2C_FIELD(a,void **,0x38);
 Ov010Online_InitPacketHeader(p,6,h->channel,h->flags,0,0,h->id); }
 M2C_FIELD(a,void **,0x3c)=p;M2C_FIELD(a,u32 *,0x40)=p->size+12;M2C_FIELD(a,u32 *,0x34)=0;
@@ -144,11 +144,11 @@ M2C_FIELD(a,u16 *,0x44)=QueueMask26d9c();
 M2C_FIELD(a,u16 *,0x44)&=GetOnlinePeerMask();
 for(i=0;i<4;i++)if(self!=i && (M2C_FIELD(a,u16 *,0x44)&(1<<i))){if(!CanStartSend((u8)i))return;}
 M2C_FIELD(a,u32 *,0x40)=QueueSize26d9c();
-p=func_ov010_02229568(M2C_FIELD(a,u32 *,0x40));M2C_FIELD(a,void **,0x3c)=p;
+p=Ov010_AllocBlock32(M2C_FIELD(a,u32 *,0x40));M2C_FIELD(a,void **,0x3c)=p;
 QueuePop26d9c(p);
 if(M2C_FIELD(a,u32 *,0x40)>0x5a0){
 M2C_FIELD(a,u32 *,0x34)=0;M2C_FIELD(a,void **,0x38)=M2C_FIELD(a,void **,0x3c);
-p=func_ov010_02229568(24);
+p=Ov010_AllocBlock32(24);
 {Ov010Packet *h=M2C_FIELD(a,void **,0x38);
 Ov010Online_InitPacketHeader(p,4,h->channel,h->flags,M2C_FIELD(a,void **,0x38),12,h->id); }
 M2C_FIELD(a,void **,0x3c)=p;M2C_FIELD(a,u32 *,0x40)=p->size+12;
@@ -201,10 +201,10 @@ s32 IsOnlineSessionHost();
 s32 GetOnlinePlayerSlot(s32);
 unsigned int Ov010Online_GetQueuedPacketSize(unsigned int);
 s32 func_ov010_02229920(s32,void *);
-void *func_ov010_02229568(u32);
+void *Ov010_AllocBlock32(u32);
 M2C_UNK Ov010Online_FreePacket(s32);
 void Ov010Online_InitPacketHeader(void *,u32,u32,u32,void *,u32,u32);
-void *func_ov010_022268f4(s32,u32,u32);
+void *Ov010_AllocBlock(s32,u32,u32);
 void Ov010_FreeBlock(s32,void *,u32);
 s32 QueueOnlineLinkPacket(u8,void *,s32,u16);
 void SetOnlinePlayerRecord(s32,void *);
@@ -229,7 +229,7 @@ entry=data_ov010_0222ef58+(u8)i*12;
 size=RxQueueSize26d9c((u8 **)entry);
 if(!size)continue;
 keep=1;
-p=func_ov010_02229568(size);
+p=Ov010_AllocBlock32(size);
 RxQueuePop26d9c(entry,p);
 hp=(Ov010Packet *)p;
 chan=hp->channel;
@@ -260,7 +260,7 @@ M2C_FIELD(s,u16 *,4)=0xffff;
 break;
 case 4:
 MI_CpuCopy8((u8 *)p+0xc,&hdr,12);
-node=func_ov010_02229568(hdr.size+12);
+node=Ov010_AllocBlock32(hdr.size+12);
 Ov010Online_InitPacketHeader(node,hdr.kind,hdr.channel,hdr.flags,0,hdr.size,hdr.id);
 M2C_FIELD((u8 *)arg0+chan*8,u32 *,0x34)=0;
 M2C_FIELD((u8 *)arg0+chan*8,void **,0x38)=node;
@@ -310,7 +310,7 @@ for(j=0;j<4;j++){
 size2=Ov010Online_GetQueuedPacketSize((u8)j);
 if(!size2)continue;
 keep2=1;
-p2=func_ov010_02229568(size2);
+p2=Ov010_AllocBlock32(size2);
 func_ov010_02229920((u8)j,p2);
 chan2=((Ov010Packet *)p2)->channel;
 {s32 (*cb)(u8,void *)=M2C_FIELD(state,s32 (**)(u8,void *),0x50);
@@ -321,13 +321,16 @@ Ov010Online_FreePacket(p2);
 }
 }
 #pragma opt_common_subs reset
-s32 func_ov010_0222791c(s32 arg0) {
+/* Install `handler` as the online session's pending-error callback at +0x40 (the
+ * session calls it with the code GetLastNasError reports) and return the handler
+ * it replaces. */
+s32 Ov010Online_SetErrorHandler(s32 handler) {
     extern M2C_UNK gOv010OnlineSession;
-    s32 temp_r2;
+    s32 previous;
 
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x40);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x40) = arg0;
-    return temp_r2;
+    previous = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x40);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x40) = handler;
+    return previous;
 }
 
 /* Forward the transfer layer's "a transfer starts" notification to the online
@@ -353,7 +356,7 @@ void Ov010Online_OnTransferStart(s32 size, s32 playerId) {
 void func_ov010_02227954(s32 a,void *b,s32 c) {
 void MI_CpuCopy8(void *,void *,u32);
 void *FindObjectByClass(void *);
-void *func_ov010_022268f4(s32,u32,u32);
+void *Ov010_AllocBlock(s32,u32,u32);
 void MI_CpuFill8(void *,s32,u32);
 void Ov010Online_InitPacketHeader(void *,u32,u32,u32,void *,u32,u32);
 extern u8 gOv010SessionStateClass[], data_ov010_0222ef58[],data_ov010_0222ef88[];
@@ -379,7 +382,7 @@ u8 *node;
 *(volatile u16 *)0x4000208=0;
 flags=h->flags;
 queue=data_ov010_0222ef58+channel*12;
-node=func_ov010_022268f4(0,size+16,32);
+node=Ov010_AllocBlock(0,size+16,32);
 if(!node) { u32 unused=*(volatile u16 *)0x4000208; *(volatile u16 *)0x4000208=irq; goto callbacks; }
 {
 MI_CpuFill8(node,0,16);
@@ -401,7 +404,7 @@ u8 *node;
 *(volatile u16 *)0x4000208=0;
 flags=h->flags;
 queue=data_ov010_0222ef88+channel*12;
-node=func_ov010_022268f4(0,size+16,32);
+node=Ov010_AllocBlock(0,size+16,32);
 if(!node) { u32 unused=*(volatile u16 *)0x4000208; *(volatile u16 *)0x4000208=irq; goto callbacks; }
 {
 MI_CpuFill8(node,0,16);

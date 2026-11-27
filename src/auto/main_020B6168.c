@@ -9,6 +9,7 @@ typedef struct { u8 pad[0x48]; u32 distance:10; u32 flags:22; } RangeEffect;
 #define AURORA_EFFECT_X            0x38 /* s32: strike cell x, biased by 1 */
 #define AURORA_EFFECT_Y            0x3C /* s32: strike cell y, biased by 1 */
 #define AURORA_EFFECT_FIRST_TARGET 0x6C /* s16: selection-queue index of the first target */
+#define AURORA_EFFECT_STAGE        0x56 /* s16: staged-load step (0..3), see StageAuroraEffect */
 
 /* Fields of the strike sprite StageAuroraEffect builds from the staging object:
  * where the target queue starts and the aim/smoke/damage sheets it loaded. */
@@ -97,7 +98,7 @@ void func_020b6168(void *arg0) {
 
 /* Step the screen-transition down-counter (func_020b524c -> CloseEffectNarcArchive, which
  * fires CloseNarcArchive once the counter wraps to zero), then finalize the current
- * map view and run its registered callbacks (RefreshMapView -> func_020d0270 +
+ * map view and run its registered callbacks (RefreshMapView -> RefreshMapUnitDisplay +
  * func_020cfd38). */
 void func_020b6320(void) {
     M2C_UNK RefreshMapView();
@@ -508,10 +509,13 @@ void ApplyAuroraPendingDamage(void) {
     ApplyPendingDamage();
 }
 
-void func_020b6e58(void *arg0) {
+/* Start handler of the Aurora strike effect task (gAuroraEffectClass +0x2C):
+ * clear the effect sprite pool and rewind the strike's staged sequence so
+ * StageAuroraEffect starts loading its sheets again. */
+void StartAuroraEffect(void *effect) {
     M2C_UNK ResetEffectSpritePool();
     ResetEffectSpritePool();
-    M2C_FIELD(arg0, s16 *, 0x56) = 0;
+    M2C_FIELD(effect, s16 *, AURORA_EFFECT_STAGE) = 0;
 }
 
 /* Advance the staged Aurora strike: the first three frames load the aim, smoke and

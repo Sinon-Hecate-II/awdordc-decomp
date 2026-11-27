@@ -775,17 +775,22 @@ s32 func_ov003_0220634c(s32 arg0) {
     return arg0;
 }
 
-void func_ov003_02206360(s32 arg0, s32 arg1) {
+/* Set the battle's additional setting (gMapConfig byte 3); the default setting
+ * 4 is stored as 0, which the getter maps back to 4. */
+void Ov003_SetBattleSetting(s32 self, s32 setting) {
     extern s32 gMapConfig;
-    if (arg1 == 4) arg1 = 0;
-    ((u8 *)&gMapConfig)[3] = (u8)arg1;
+
+    if (setting == 4) setting = 0;
+    ((u8 *)&gMapConfig)[MAPCONFIG_BATTLE_SETTING] = (u8)setting;
 }
 
-s32 func_ov003_02206378(void) {
+/* Return the battle's additional setting (gMapConfig byte 3); the stored default
+ * 0 maps to setting 4. */
+s32 Ov003_GetBattleSetting(void) {
     extern s32 gMapConfig;
-    u8 v = * (u8 *)((char *)&gMapConfig + 3);
-    if (v == 0) return 4;
-    return v;
+    u8 setting = * (u8 *)((char *)&gMapConfig + MAPCONFIG_BATTLE_SETTING);
+    if (setting == 0) return 4;
+    return setting;
 }
 
 s32 func_ov003_02206390(void) {
@@ -978,10 +983,14 @@ void func_ov003_0220660c(void) {
 
 }
 
-u8 Ov003_IsValueInRange(s32 arg0, s32 arg1, s32 arg2) {
- s32 result;
- if ((arg1 <= arg0) && (arg0 <= arg2)) result = 1;
- else result = 0;
- return result;
+/* Return 1 when value lies within the inclusive range min..max, else 0; the
+ * ov003 menu screens use it to test a row or entry index against its group's
+ * bounds (2..4 for the menu's middle rows). */
+u8 Ov003_IsValueInRange(s32 value, s32 min, s32 max) {
+    s32 inRange;
+
+    if ((min <= value) && (value <= max)) inRange = 1;
+    else inRange = 0;
+    return inRange;
 }
 

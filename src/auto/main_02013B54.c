@@ -255,7 +255,7 @@ M2C_UNK Mb_DispatchPlayerEvent(s32 player, s32 event, M2C_UNK packet) {
 #pragma opt_common_subs off
 void func_020140c4(s32 a, void *b) {
 extern s32 gMbWork;
-void ProcessGroupStartMessages(s32); void MI_CpuFill8(); void MultiBoot_ClearRecordSlot(); void func_02015008(); void DownloadFileSetRoster(); s32 func_02018390(); s32 func_020183a4(); s32 Mb_GetDownloadSendFlags(); void DownloadSendStep(); void func_02015230(); void MI_CpuFill32();
+void ProcessGroupStartMessages(s32); void MI_CpuFill8(); void MultiBoot_ClearRecordSlot(); void func_02015008(); void DownloadFileSetRoster(); s32 func_02018390(); s32 func_020183a4(); s32 Mb_GetDownloadSendFlags(); void DownloadSendStep(); void Mb_ReportPlayerStatus(); void MI_CpuFill32();
 s32 id, idx, off, group; u8 i; s32 x,y,z;
 switch(a) {
 case 17: break;
@@ -296,9 +296,9 @@ M2C_FIELD(gMbWork+off,u16*,0x1d50)=0;
 }}
 x=func_02018390(); y=func_020183a4(); z=Mb_GetDownloadSendFlags(); DownloadSendStep(x,y,z); break;
 case 255:
-switch(*(u16*)((u8*)b+2)){case 1:case 4:case 5:case 6:case 8:case 9:func_02015230(0,9);break;case 0:case 2:case 3:case 7:case 10:case 11:case 12:case 13:case 14:case 15:default:func_02015230(0,8);break;} break;
+switch(*(u16*)((u8*)b+2)){case 1:case 4:case 5:case 6:case 8:case 9:Mb_ReportPlayerStatus(0,9);break;case 0:case 2:case 3:case 7:case 10:case 11:case 12:case 13:case 14:case 15:default:Mb_ReportPlayerStatus(0,8);break;} break;
 case 256:
-switch(*(u16*)b){case 0:case 7:case 8:case 13:case 14:case 15:case 17:case 18:case 21:case 25:case 29:func_02015230(0,9);break;case 1:case 2:case 3:case 4:case 5:case 6:case 9:case 10:case 11:case 12:case 16:case 19:case 20:case 22:case 23:case 24:case 26:case 27:case 28:default:func_02015230(0,8);break;} break;
+switch(*(u16*)b){case 0:case 7:case 8:case 13:case 14:case 15:case 17:case 18:case 21:case 25:case 29:Mb_ReportPlayerStatus(0,9);break;case 1:case 2:case 3:case 4:case 5:case 6:case 9:case 10:case 11:case 12:case 16:case 19:case 20:case 22:case 23:case 24:case 26:case 27:case 28:default:Mb_ReportPlayerStatus(0,8);break;} break;
 }
 if(a==17){void (*cb)(s32,s32,s32)=M2C_FIELD(gMbWork,void (**)(s32,s32,s32),0x14e4);MI_CpuFill32(0,gMbWork,0x7d00);gMbWork=0;if(cb)cb(0,12,0);}
 }

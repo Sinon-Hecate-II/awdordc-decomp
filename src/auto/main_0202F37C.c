@@ -288,20 +288,24 @@ loop_2:
     return index;
 }
 
-void func_0202fa68(u8 arg0,void *arg1,s32 arg2,s32 arg3) {
-M2C_UNK MIi_CpuCopy32(void *,s32,M2C_UNK);
-s32 value;
-u8 byte;
-u16 code;
-void *p;
-p=(void *)(arg3+0x6c);
-M2C_FIELD(p,u8 *,0x401)=arg0;
-code=M2C_FIELD(arg1,u16 *,2);
-value=(s32)code>>2;
-if(!(code&2))value+=25;
-M2C_FIELD(p,volatile u8 *,0x402)=(u8)(value & 0xff);
-M2C_FIELD(p,u8 *,0x403)=(M2C_FIELD(p,u8 *,0x403)&~127)|(arg2&127);
-MIi_CpuCopy32(arg1,arg3+0xbf0,0xc0);
+void func_0202fa68(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
+    M2C_UNK MIi_CpuCopy32(void *, s32, M2C_UNK);
+    s32 value;
+    u16 code;
+    u8 byte;
+    u8 *p;
+
+    p = (u8 *)(arg3 + 0x6c);
+    p[0x401] = arg0;
+    code = M2C_FIELD(arg1, u16 *, 2);
+    value = (s32)code >> 2;
+    if (!(code & 2)) value += 25;
+    byte = (u8)(value & 0xff);
+    p[0x402] = byte;
+    byte = p[0x403];
+    byte = (u8)((byte & ~0x7f) | (arg2 & 0x7f));
+    p[0x403] = byte;
+    MIi_CpuCopy32(arg1, arg3 + 0xbf0, 0xc0);
 }
 #pragma opt_common_subs reset
 #pragma opt_propagation reset

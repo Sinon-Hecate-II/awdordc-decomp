@@ -432,9 +432,12 @@ s32 index=GetBatchTileOffset(sprite);
 return batch->tileBase+batch->tileStride*index;
 }
 
-s32 GetBatchPalette(s32 arg0) {
-extern s32 gSpriteBatch;
-return M2C_FIELD(gSpriteBatch,s32 *,0x50)+arg0;
+/* Return the palette id of the current 3D sprite batch's `index`-th palette,
+ * `index` entries after the batch's first palette id. */
+s32 GetBatchPalette(s32 index) {
+    extern s32 gSpriteBatch;
+
+    return SPRITE_BATCH->paletteBase + index;
 }
 
 #pragma push

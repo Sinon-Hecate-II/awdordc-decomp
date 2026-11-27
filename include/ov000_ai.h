@@ -173,6 +173,7 @@ enum AiCargoDropDirection {
 #define UNIT_KIND_STATS_CAPTURE_MASK 0x54 /* s8 *per terrain: nonzero when the kind may capture/enter that property */
 #define UNIT_KIND_STATS_FUEL_COST    0x58 /* s8 *per-terrain: fuel the kind spends per turn standing there (negative = cannot stand) */
 #define UNIT_KIND_STATS_UNK_6C       0x6C /* u8 nonzero when the save-load fix-up adjusts the kind's saved AI step */
+#define UNIT_KIND_STATS_SPRITE_VARIANTS 0x6E /* u8[2] sprite variant index per cached player sprite state (0/1); GetUnitVariantIndex reads it */
 
 /* Bits of gUnitKindFlags, the +0x13 flag byte of a unit-kind record (indexed
  * by kind * UNIT_KIND_STATS_SIZE).  The sea and air kinds are the ones that

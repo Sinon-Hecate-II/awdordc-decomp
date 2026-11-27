@@ -16,18 +16,22 @@ typedef struct { u8 bytes[8]; } UnkSocketAddress;
 
 /* Polls a single fd for readability/priority/error; sets output flags accordingly. */
 
-#pragma opt_propagation off
+#pragma push
+#pragma opt_if_conversion off
 s8 *StringToLower(s8 *p) {
     extern M2C_UNK data_020eac40;
-    s8 *start = p;
+    s8 *q = p;
     s32 c = *p;
+
     if (c) {
         do {
-            c = c >= 0 ? (c < 128 ? ((const u8 *)&data_020eac40)[c] : c) : c;
+            if (c >= 0 && c < 128) {
+                c = ((const u8 *)&data_020eac40)[c];
+            }
             *p = c;
             c = *++p;
         } while (c);
     }
-    return start;
+    return q;
 }
-#pragma opt_propagation reset
+#pragma pop

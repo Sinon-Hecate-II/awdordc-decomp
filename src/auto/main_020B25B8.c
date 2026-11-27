@@ -279,9 +279,10 @@ if(SpriteSlotHasFlags(slot,0x800))flag=0x400;
 AppendSpriteDescToOam((u16)(M2C_FIELD(slot,s16 *,SPRITE_SLOT_X)&0x1ff),(u16)((M2C_FIELD(slot,s16 *,SPRITE_SLOT_Y)&0xff)|flag),(u16)((0x3ff&(tile>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|((prio<<28)>>16)),GetSpriteDescForSize(w,h));
 }
 
-void InvokeConfirmCallback(void *p) {
-void (*cb)(void *)=M2C_FIELD(p,void (**)(void *),0x2c);
-if(!cb)return;cb(p);
+/* Run the click (A button) callback of the sprite slot `slot`, if it has one. */
+void InvokeConfirmCallback(void *slot) {
+void (*callback)(void *)=M2C_FIELD(slot,void (**)(void *),SPRITE_SLOT_CLICK_CB);
+if(!callback)return;callback(slot);
 }
 
 /* Run the focused sprite slot's cancel (B button) callback: the UI's generic
@@ -300,9 +301,10 @@ void InvokeCancelCallback(void) {
     callback(focusedSlot);
 }
 
-void InvokeSpriteSlotFocusCallback(void *p) {
-void (*cb)(void *)=M2C_FIELD(p,void (**)(void *),0x34);
-if(!cb)return;cb(p);
+/* Run the focus handler of the sprite slot `slot`, if it has one. */
+void InvokeSpriteSlotFocusCallback(void *slot) {
+void (*callback)(void *)=M2C_FIELD(slot,void (**)(void *),SPRITE_SLOT_FOCUS_CB);
+if(!callback)return;callback(slot);
 }
 
 /* Whether the point (x, y) lies inside the rectangle at `rect`: its upper-left

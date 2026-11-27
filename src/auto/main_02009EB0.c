@@ -633,7 +633,13 @@ s32 WriteArchiveImage(FSArchive *archive, void *buffer, s32 offset, s32 length) 
     return 0;
 }
 
-s32 ReadArchiveMemory(s32 a,s32 b,s32 c,s32 d){MI_CpuCopy8(c,b,d);return 0;}
+/* In-memory read callback of an archive whose FAT/FNT index tables were loaded
+ * into a pool (FS_ARCHIVE_IN_MEMORY): the "offset" FileStreamRead hands it is
+ * already the address of the data, so copy length bytes from it into buffer. */
+s32 ReadArchiveMemory(void *archive, void *buffer, void *source, s32 length) {
+    MI_CpuCopy8(source, buffer, length);
+    return 0;
+}
 
 #pragma opt_common_subs off
 /* Picks the next pending request of a file after an operation finishes: drops

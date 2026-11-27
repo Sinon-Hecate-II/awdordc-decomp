@@ -465,9 +465,11 @@ s32 MapEditor_FindPaletteEntryIndex(s32 page, s32 kind) {
     return -1;
 }
 
-s32 MapEditor_GetPaletteKind(s32 a,s32 b){
- s8 *MapEditor_GetPaletteEntries(s32);
- return MapEditor_GetPaletteEntries(a)[b*5];
+/* The kind byte of the map editor palette entry at `index` on `page`
+ * (MAP_EDITOR_PAGE_TERRAIN or MAP_EDITOR_PAGE_UNIT). */
+s32 MapEditor_GetPaletteKind(s32 page, s32 index) {
+    s8 *MapEditor_GetPaletteEntries(s32);
+    return MapEditor_GetPaletteEntries(page)[index * MAP_EDITOR_PALETTE_ENTRY_SIZE];
 }
 
 /* The palette row the icon of palette entry `index` on `page` is drawn with:

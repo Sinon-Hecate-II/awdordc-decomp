@@ -204,9 +204,11 @@ void func_ov011_022250a0(void) {
     StopHBlankIrq();
 }
 
-void func_ov011_022250ac(M2C_UNK arg0) {
+/* Load the ESRB rating screen's image set (opening asset set 22) onto the main
+ * screen; the owner handle is passed straight to the asset loader. */
+void LoadEsrbScreenAssets(M2C_UNK owner) {
     M2C_UNK LoadOpeningAssetSet(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    LoadOpeningAssetSet(arg0, 0x16, 0, 0);
+    LoadOpeningAssetSet(owner, 0x16, 0, 0);
 }
 
 /* Create the intro's opening presentation object as a child of `parent`: a sprite
@@ -341,11 +343,13 @@ void IntroMenu_UpdateEntrySlide(void *arg0, M2C_UNK fromX, M2C_UNK fromY, s16 to
  M2C_FIELD(sprite,s32 *,ANIMATED_SPRITE_X)=x; M2C_FIELD(sprite,s32 *,ANIMATED_SPRITE_Y)=y; M2C_FIELD(sprite,s32 *,ANIMATED_SPRITE_Z)=0;
 }
 
-void func_ov011_022253f0(void *arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4) {
-    M2C_FIELD(arg0, s16 *, 0x3C) = arg1;
-    M2C_FIELD(arg0, s16 *, 0x3E) = arg2;
-    M2C_FIELD(arg0, s16 *, 0x40) = arg3;
-    M2C_FIELD(arg0, s16 *, 0x42) = arg4;
+/* Set where a menu entry's slide starts (slideFromX/Y) and where it ends
+ * (slideToX/Y); IntroMenu_UpdateEntrySlide interpolates between them. */
+void IntroMenu_SetEntrySlide(MenuEntry011 *entry, s16 fromX, s16 fromY, s16 toX, s16 toY) {
+    entry->slideFromX = fromX;
+    entry->slideFromY = fromY;
+    entry->slideToX = toX;
+    entry->slideToY = toY;
 }
 
 void func_ov011_02225408(void *arg0, u8 arg1) {
@@ -538,7 +542,7 @@ func_ov011_02225420(((void **)((u8 *)a+0x40))[i],labels[i]);
 func_ov011_02225408(((void **)((u8 *)a+0x40))[i],(u8)i);
 func_ov011_02225238(((void **)((u8 *)a+0x40))[i]);
 y=60+(128/n)*(i+1)-128/(n*2);
-func_ov011_022253f0(((void **)((u8 *)a+0x40))[i],-16,y,272,y);
+IntroMenu_SetEntrySlide(((void **)((u8 *)a+0x40))[i],-16,y,272,y);
 func_ov011_02225418(((void **)((u8 *)a+0x40))[i],values[i]);
 func_ov011_02225410(((void **)((u8 *)a+0x40))[i],((MenuCount011 *)a)->count);
 }}

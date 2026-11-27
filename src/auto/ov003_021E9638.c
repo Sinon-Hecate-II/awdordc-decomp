@@ -61,8 +61,11 @@ void func_ov003_021e9810(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, s16 *, 0x3E) = arg1;
 }
 
-void func_ov003_021e9818(void *arg0, s32 arg1) {
-    M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg1 << 0x18) >> 6));
+/* Set a sprite actor's OBJ palette row: bits 18..25 of its palette word. */
+void SetSpriteActorPaletteRow(void *sprite, s32 paletteRow) {
+    M2C_FIELD(sprite, s32 *, SPRITE_ACTOR_PALETTE) =
+        (s32) ((M2C_FIELD(sprite, s32 *, SPRITE_ACTOR_PALETTE) & ~SPRITE_ACTOR_PALETTE_MASK)
+            | ((u32) (paletteRow << 0x18) >> 6));
 }
 
 /* Put the sprite tween at rest at `value`: both its ends are set to the value,
@@ -477,8 +480,11 @@ void LoadSpriteImage(s32 family, s32 index, s32 destination) {
     LoadSpriteResource(family, 0, index, destination);
 }
 
-void func_ov003_021ea294(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    LoadSpriteResource(arg0, 2, arg1, arg2);
+/* Load the palette of resource family `family` at `index` into `destination` in
+ * the current 3D sprite engine (LoadSpriteResource with resource kind 2). */
+void LoadSpritePalette(s32 family, s32 index, s32 destination) {
+    M2C_UNK LoadSpriteResource(s32, s32, s32, s32);
+    LoadSpriteResource(family, 2, index, destination);
 }
 
 /* Reset the display state of the current 3D sprite engine's bank: clear the

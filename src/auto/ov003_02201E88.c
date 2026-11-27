@@ -159,15 +159,17 @@ void Ov003_SetSetupPanelState(void *panel, u32 state) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 8;
 }
 
-u8 func_ov003_022021c0(void *arg0) {
-    u8 var_r0;
+/* Whether the setup panel is open (its state byte is SETUP_PANEL_OPEN), so its
+ * entry sprites act on a value change rather than on the menu. */
+u8 IsSetupPanelOpen(void *panel) {
+    u8 open;
 
-    if (M2C_FIELD(arg0, u8 *, 0x39) == 1) {
-        var_r0 = 1;
+    if (M2C_FIELD(panel, u8 *, SETUP_PANEL_STATE) == SETUP_PANEL_OPEN) {
+        open = 1;
     } else {
-        var_r0 = 0;
+        open = 0;
     }
-    return var_r0;
+    return open;
 }
 
 u8 func_ov003_022021d8(void *arg0) {
@@ -237,7 +239,11 @@ void func_ov003_022023c4(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x24) = arg1;
 }
 
-void func_ov003_022023cc(void *arg0,s32 arg1){M2C_FIELD(arg0,u8*,0x20)=(M2C_FIELD(arg0,u8*,0x20)&~0xe0)|((u32)(arg1<<29)>>24);}
+/* Set the scene-view label's three +0x20 flag bits 5..7 (its flags.third
+ * field) to the low three bits of `value`. */
+void func_ov003_022023cc(void *label, s32 value) {
+    M2C_FIELD(label, u8 *, 0x20) = (M2C_FIELD(label, u8 *, 0x20) & ~0xE0) | ((u32)(value << 29) >> 24);
+}
 
 /* Load one sprite image (resource kind 0) of `family` at `index` into the
  * sprite engine's `destination` buffer. */
@@ -395,7 +401,7 @@ void func_ov003_0220277c(void *arg0) {
     void Ov003_IncreaseSelectedEntry(void *, s32);
     u8 func_ov003_02202e94(s32, s32);
     void Ov003_UpdateSelectedEntryText(void *);
-    u8 func_ov003_022021c0(void *);
+    u8 IsSetupPanelOpen(void *);
     void func_ov003_02202ec0(void *, u32);
     void Ov003_RefreshSelectedEntry();
     void Ov003_DecreaseSelectedEntry(void *, s32);
@@ -405,7 +411,7 @@ void func_ov003_0220277c(void *arg0) {
     u8 SetupMenuHasPressedEntry(void *);
     s8 GetSetupMenuPressedEntry(void *);
     void func_ov003_02203710(void *, s32);
-    s32 func_ov003_02200c64(s32, s32, s32);
+    s32 Ov003_IsValueInRange3(s32, s32, s32);
     M2C_UNK IsSessionHostAlt();
     M2C_UNK func_ov003_02204ec4(void *);
     M2C_UNK PlaySoundEffect(s32);
@@ -436,7 +442,7 @@ void func_ov003_0220277c(void *arg0) {
                 PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 8));
                 if (func_ov003_02202e94((s32)arg0, r8) != 0) {
                     Ov003_UpdateSelectedEntryText(arg0);
-                    if (func_ov003_022021c0(arg0) != 0) {
+                    if (IsSetupPanelOpen(arg0) != 0) {
                         func_ov003_02202ec0(arg0, r8);
                     } else {
                         Ov003_RefreshSelectedEntry(arg0, r8);
@@ -450,7 +456,7 @@ void func_ov003_0220277c(void *arg0) {
             if (MenuSpriteIsClicked(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 0x28)) != 0) {
                 Ov003_DecreaseSelectedEntry(M2C_FIELD(arg0, void **, 0x44), r8);
                 PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 0x28));
-                if (func_ov003_022021c0(arg0) != 0) {
+                if (IsSetupPanelOpen(arg0) != 0) {
                     func_ov003_02202ec0(arg0, r8);
                 } else {
                     Ov003_RefreshSelectedEntry(arg0, r8);
@@ -502,7 +508,7 @@ void func_ov003_0220277c(void *arg0) {
         }
         r4 = (s32)func_ov003_022021d8(M2C_FIELD(arg0, void **, 0x44));
         if (r7 != 0 && (r9 & 0x100)) {
-            if (func_ov003_02200c64((r4 << 16) >> 16, 0, 7) != 0) {
+            if (Ov003_IsValueInRange3((r4 << 16) >> 16, 0, 7) != 0) {
                 Ov003_IncreaseSelectedEntry(M2C_FIELD(arg0, void **, 0x44), r4 & 0xFF);
                 PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r4 * 4, void **, 8));
                 if (func_ov003_02202e94((s32)arg0, r4 & 0xFF) != 0) {
@@ -512,7 +518,7 @@ void func_ov003_0220277c(void *arg0) {
             }
         }
         if (r7 != 0 && (r9 & 0x200)) {
-            if (func_ov003_02200c64((r4 << 16) >> 16, 0, 7) != 0) {
+            if (Ov003_IsValueInRange3((r4 << 16) >> 16, 0, 7) != 0) {
                 Ov003_DecreaseSelectedEntry(M2C_FIELD(arg0, void **, 0x44), r4 & 0xFF);
                 PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r4 * 4, void **, 0x28));
                 if (func_ov003_02202e94((s32)arg0, r4 & 0xFF) != 0) {

@@ -1,5 +1,6 @@
 /* 47 functions from 0x02090E0C to 0x02091E04 (main), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 #include "sprite.h"
 #include "battle_map.h"
 #include "sprite_script.h"
@@ -200,8 +201,11 @@ if(ok==0) return 0;
 
 extern void DrawSprite3DFrame();
 
+/* Set the 3D sprite engine's default polygon attribute (its palette base) in the
+ * GX polygon attribute register: polygon id 8, alpha 30.  Used instead of the
+ * object's own palette when a sprite has the fixed-palette flag. */
 void SetSpritePaletteBase(void) {
-    *(s32 *)0x040004A4 = 0x081E4080;
+    REG_GX_POLYGON_ATTR = 0x081E4080;
 }
 
 /* Give the 3D sprite palette row `paletteIndex` (the GX polygon attribute

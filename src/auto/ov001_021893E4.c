@@ -195,9 +195,11 @@ void Ov001_UpdateProfileTask(void) {
     }
 }
 
-void func_ov001_021897a4(void) {
+/* Profile setup state 11: the profile has been obtained, so move the screen on
+ * to the state whose handler saves it and reports the result. */
+void Ov001_EnterProfileObtained(void) {
     extern void *gOv001ProfileState;
-    M2C_FIELD(gOv001ProfileState, s8 *, 0xA90) = 0xC;
+    M2C_FIELD(gOv001ProfileState, s8 *, PROFILE_STATE) = 0xC;
 }
 
 /* Finish the download-play link teardown: when the multiboot task is running
@@ -329,10 +331,12 @@ i++;
 }while(i<16);
 }
 #pragma optimization_level 4
+/* Reads the command the other console sent in its profile entry: the id word at
+ * the start of the second received entry, right after the first 0x44-byte one. */
 u16 Ov001_ReadInputCode(void) {
     extern void *gOv001ProfileState;
-    void *ptr = gOv001ProfileState;
-    return M2C_FIELD((u8 *)ptr + 0x100, u16 *, 0x44);
+    u8 *state = gOv001ProfileState;
+    return M2C_FIELD(state + PROFILE_ENTRY_BASE, u16 *, PROFILE_ENTRY_SIZE);
 }
 
 /* Loads the DWC utility data from "rom:/dwc/utility.bin" into the DWC utility

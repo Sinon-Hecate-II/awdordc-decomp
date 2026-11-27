@@ -583,14 +583,18 @@ s32 GetUnitDamageVarianceMin(void *unit, s32 x, s32 y) {
     return data.stat[1];
 }
 
-s8 func_020a2788(s32 arg0, s32 arg1) {
- extern M2C_UNK data_0211fc18;
- return *(s8 *)(arg1 + (arg0 * 0x48 + (s32)&data_0211fc18));
+/* Whether CO-zone bonus record `bonusRow` lets unit kind `kind` be selected for
+ * orders: the record's second per-kind flag table at CO_ZONE_KIND_SELECTABLE. */
+s8 IsCoZoneKindSelectable(s32 bonusRow, s32 kind) {
+    extern M2C_UNK gCoZoneKindSelectable;
+    return *(s8 *)(kind + (bonusRow * CO_ZONE_RECORD_STRIDE + (s32)&gCoZoneKindSelectable));
 }
 
-s8 func_020a27a0(s32 arg0, s32 arg1) {
- extern M2C_UNK gCoZoneKindEnabled;
- return *(s8 *)(arg1 + (arg0 * 0x48 + (s32)&gCoZoneKindEnabled));
+/* Whether CO-zone bonus record `bonusRow` gives its bonus to unit kind `kind`:
+ * the record's per-kind flag table at CO_ZONE_KIND_ENABLED. */
+s8 IsCoZoneKindEnabled(s32 bonusRow, s32 kind) {
+    extern M2C_UNK gCoZoneKindEnabled;
+    return *(s8 *)(kind + (bonusRow * CO_ZONE_RECORD_STRIDE + (s32)&gCoZoneKindEnabled));
 }
 
 /* Index of `commander`'s CO-zone bonus record in the given power state (0 = CO

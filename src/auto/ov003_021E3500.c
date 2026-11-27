@@ -129,7 +129,7 @@ void func_ov003_021e3708(void) {
 #pragma push
 #pragma opt_common_subs off
 void func_ov003_021e3714(void *arg0) {
-    u8 func_ov003_021e1500(s32, s32, s32);
+    u8 Ov003_IsValueInRange4(s32, s32, s32);
     s32 Modulo(s32, s32);
     void *GetSaveRecordBuffer(void);
     void MI_CpuCopy32(void *, void *, u32);
@@ -166,9 +166,9 @@ void func_ov003_021e3714(void *arg0) {
     id = *(u8 *)((u8 *)*(void **)((u8 *)arg0 + 0x48) + 0x06);
     
 
-    if (func_ov003_021e1500(id, 0, 4)) {
+    if (Ov003_IsValueInRange4(id, 0, 4)) {
         value = *(u16 *)((u8 *)*(void **)((u8 *)arg0 + 0x5C) + (id & 0xff) * 2 + 0x08);
-    } else if (func_ov003_021e1500(id, 5, 9)) {
+    } else if (Ov003_IsValueInRange4(id, 5, 9)) {
         value = (u16)(id + 0x10E);
     }
     index = (u8)Modulo(*(u8 *)((u8 *)*(void **)((u8 *)arg0 + 0x48) + 6), 5);
@@ -280,7 +280,7 @@ void Ov003_DrawPreviewUnitCategoryGrid(void *panel, s16 originX, s16 originY) {
 #pragma opt_propagation on
 #pragma opt_strength_reduction on
 void func_ov003_021e3aec(void *arg0, s32 arg1) {
-    u8 func_ov003_021e1500(s32, s32, s32);
+    u8 Ov003_IsValueInRange4(s32, s32, s32);
     void *GetMapRecord(s32);
     s32 GetMapIconFrameIndex(s32);
     void AddSprite(u16, u8, u16, void *, s32);
@@ -314,9 +314,9 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
     adj = 0;
     id = M2C_FIELD(M2C_FIELD(arg0, void **, 0x48), u8 *, 6);
     
-    if (func_ov003_021e1500(id, 0, 4)) {
+    if (Ov003_IsValueInRange4(id, 0, 4)) {
         value = M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x5c) + (id & 0xff) * 2, u16 *, 8);
-    } else if (func_ov003_021e1500(id, 5, 9)) {
+    } else if (Ov003_IsValueInRange4(id, 5, 9)) {
         value = (u16)(id + 0x10e);
     }
 
@@ -352,9 +352,9 @@ void func_ov003_021e3aec(void *arg0, s32 arg1) {
     DrawFrameBorder((s16)((0xa3 - (w / 2)) + arg1), (s16)(0x6b - (h / 2)), (s16)(w + 2), (s16)(h + 2), color, 0x11, 1);
 
     id = M2C_FIELD(M2C_FIELD(arg0, void **, 0x48), u8 *, 6);
-        if (func_ov003_021e1500(id, 0, 4)) {
+        if (Ov003_IsValueInRange4(id, 0, 4)) {
         value2 = M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x5c) + (id & 0xff) * 2, u16 *, 8);
-    } else if (func_ov003_021e1500(id, 5, 9)) {
+    } else if (Ov003_IsValueInRange4(id, 5, 9)) {
         value2 = (u16)(id + 0x10e);
     }
 

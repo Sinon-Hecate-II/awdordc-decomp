@@ -70,10 +70,10 @@ void Upload3DSpriteLayerTiles(void) {
 }
 
 void func_020b17dc(void) {
-    M2C_UNK func_0207a768();
+    M2C_UNK DeleteMapCursorSprites();
     M2C_UNK RefreshMapView();
     RefreshMapView();
-    func_0207a768();
+    DeleteMapCursorSprites();
 }
 
 void func_020b17ec(void) {
@@ -295,10 +295,12 @@ void SetSpriteSlotScroll(s16 offsetX, s16 offsetY) {
     M2C_FIELD(gSpriteSlotManager, s16 *, SPRITE_SLOT_MGR_FRAME_OFF_Y) = offsetY;
 }
 
-s32 FocusSpriteSlotById(s32 arg0) {
-    s32 FindSpriteSlotById(void);
+/* Move the sprite-slot focus to the active slot with id `id`; returns the slot
+ * that took focus (SetSpriteSlotFocus's result). */
+s32 FocusSpriteSlotById(s32 id) {
+    s32 FindSpriteSlotById(s32);
     M2C_UNK SetSpriteSlotFocus(u8 *, s32);
-    SetSpriteSlotFocus((u8 *)FindSpriteSlotById(), arg0);
+    SetSpriteSlotFocus((u8 *)FindSpriteSlotById(id), id);
 }
 
 /* Move the sprite-slot focus to the slot whose id is `id` and snap the manager's
@@ -442,9 +444,10 @@ u8 func_020b212c(void) {
     return M2C_FIELD(gSpriteSlotManager, u8 *, 8);
 }
 
+/* Clear the sprite-slot manager's "a slot took focus" flag. */
 void ClearSpriteSlotFocusFlag(void) {
 extern void *gSpriteSlotManager;
-M2C_FIELD(gSpriteSlotManager,u8 *,0x25)=0;
+M2C_FIELD(gSpriteSlotManager,u8 *,SPRITE_SLOT_MGR_HAS_FOCUS)=0;
 }
 
 void func_020b2158(s8 arg0) {

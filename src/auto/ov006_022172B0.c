@@ -121,12 +121,12 @@ void CreateMapOfferStateSprite(void *owner) {
  * (UI graphics bank 4, frame border hidden and the map-confirm prompt off). */
 void InitMapOfferObject(void *offer) {
     s32 HeapAllocBlock(s32);
-    M2C_UNK func_020e36dc(void *);
+    M2C_UNK SubmitWebRegisterAndInvalidateCount(void *);
     M2C_FIELD(offer, s32 *, MAP_OFFER_PLAYER_COUNT) = 0;
     M2C_FIELD(offer, s32 *, MAP_OFFER_NAME) = HeapAllocBlock(0x80);
     M2C_FIELD(offer, s32 *, MAP_OFFER_RECORD) = HeapAllocBlock(MAP_OFFER_RECORD_SIZE);
     M2C_FIELD(offer, s32 *, MAP_OFFER_PACKED) = HeapAllocBlock(MAP_OFFER_PACKED_SIZE);
-    func_020e36dc(offer);
+    SubmitWebRegisterAndInvalidateCount(offer);
     LoadUiGraphicsBank(4);
     HideFrameBorderSprite();
     DisableMapConfirm();
@@ -136,7 +136,7 @@ void InitMapOfferObject(void *offer) {
  * map-record and packed-record buffers InitMapOfferObject allocated, release UI
  * graphics bank 4 and show the shared frame border again. */
 void FreeMapOfferObject(void *offer) {
-    func_020e36f4();
+    FinishWebRegisterAndInvalidateCount();
     HeapFreeBlock(M2C_FIELD(offer, s32 *, MAP_OFFER_NAME));
     HeapFreeBlock(M2C_FIELD(offer, s32 *, MAP_OFFER_RECORD));
     HeapFreeBlock(M2C_FIELD(offer, s32 *, MAP_OFFER_PACKED));
@@ -318,7 +318,7 @@ void InitMapTransferObject(void *object) {
     M2C_FIELD(object, s32 *, MAP_TRANSFER_ENTRIES) = HeapAllocBlock(MAP_TRANSFER_SLOTS * MAP_TRANSFER_ENTRY_SIZE);
     M2C_FIELD(object, s32 *, MAP_TRANSFER_RECORDS) = HeapAllocBlock(MAP_TRANSFER_SLOTS * MAP_TRANSFER_RECORD_SIZE);
     M2C_FIELD(object, s32 *, MAP_TRANSFER_CHOSEN) = 0;
-    func_020e36dc(object);
+    SubmitWebRegisterAndInvalidateCount(object);
     LoadUiGraphicsBank(4);
     HideFrameBorderSprite();
     DisableMapConfirm();
@@ -340,8 +340,8 @@ void InitMapTransferObject(void *object) {
  * UI graphics bank 4 and show the shared frame border again. */
 void FreeMapTransferObject(void *transfer) {
     M2C_UNK HeapFreeBlock(s32);
-    M2C_UNK func_020e36f4();
-    func_020e36f4();
+    M2C_UNK FinishWebRegisterAndInvalidateCount();
+    FinishWebRegisterAndInvalidateCount();
     FreeUiGraphicsBank(4);
     ShowFrameBorderSprite();
     HeapFreeBlock(M2C_FIELD(transfer, s32 *, MAP_TRANSFER_ENTRIES));
@@ -599,7 +599,7 @@ void InitMapListObject(void *object) {
     M2C_FIELD(object, s32 *, MAP_LIST_STATUS) = HeapAllocBlock(MAP_LIST_MAX_ENTRIES);
     M2C_FIELD(object, s32 *, MAP_LIST_JOINABLE_IDS) = HeapAllocBlock(MAP_LIST_MAX_JOINABLE * 2);
     M2C_FIELD(object, s8 *, MAP_LIST_DISPLAY_KIND) = 0;
-    func_020e36dc(object);
+    SubmitWebRegisterAndInvalidateCount(object);
     LoadUiGraphicsBank(4);
     HideFrameBorderSprite();
     SetReceivedMapValue(0);
@@ -615,7 +615,7 @@ void FreeMapListObject(void *list) {
     HeapFreeBlock(M2C_FIELD(list, s32 *, MAP_LIST_MAP_IDS));
     HeapFreeBlock(M2C_FIELD(list, s32 *, MAP_LIST_STATUS));
     HeapFreeBlock(M2C_FIELD(list, s32 *, MAP_LIST_JOINABLE_IDS));
-    func_020e36f4(list);
+    FinishWebRegisterAndInvalidateCount(list);
     FreeUiGraphicsBank(4);
     ShowFrameBorderSprite();
 }

@@ -242,9 +242,17 @@ s32 Ov001_IsIconRowIdle(void){
 }
 
 #pragma thumb off
-void Ov001_UnlockIconRow(void){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRow,u8 *,0x18)=0;}
+/* Unlock the shared icon row's touch input. */
+void Ov001_UnlockIconRow(void) {
+    extern void *gOv001IconRow;
+    ((Ov001IconRow *)gOv001IconRow)->inputLocked = 0;
+}
 
-void Ov001_LockIconRow(void){M2C_FIELD(gOv001IconRow,u8 *,0x18)=1;}
+/* Lock the shared icon row's touch input. */
+void Ov001_LockIconRow(void) {
+    extern void *gOv001IconRow;
+    ((Ov001IconRow *)gOv001IconRow)->inputLocked = 1;
+}
 
 /* Places the icon row's sprites at height `y` (the row's y coordinate, passed on
  * as the layout helper's pointer-sized y): the wide backdrop bar at `y` and each

@@ -33,7 +33,7 @@ M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~0xfc0)|0xfc0;
 M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~63)|63;
 M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~0xfc0)|0xfc0;
 M2C_FIELD(SEL,u8 *,11)&=~15;
-func_ov000_02199f38();
+AbortAiUnitAction();
 }
 BuildUnitMoveRange(SEL);MarkAdjacentCells(111);
 if(M2C_FIELD(M2C_FIELD(MAP+uy*4,s8 **,0x52e8),s8 *,ux)>=0&&!IsAllyUnitAtCell((s16)ux,(s16)uy)&&(!IsPropertyTerrain(TILE(ux,uy))||M2C_FIELD(MAP+ux+ROW(uy),u8 *,0x508)==0)&&FindBestAdjacentDestination(ux,uy,point)){
@@ -99,7 +99,7 @@ M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~63)|63;
 M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~0xfc0)|0xfc0;
 M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~63)|63;
 M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~0xfc0)|0xfc0;
-func_ov000_02199f38();
+AbortAiUnitAction();
 }
 PlanMoveDestination(ux,uy);
 }

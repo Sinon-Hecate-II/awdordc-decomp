@@ -240,6 +240,7 @@ enum {
 };
 
 /* The ov001 WFC profile screen's heap work block (gOv001ProfileBlock), 0x1E2A4 bytes. */
+#define OV001_PROFILE_BLOCK_MESSAGE   0x1E280 /* u8[]: player message copied from MultiBoot_GetPlayerInfo (char count at +1, UTF-16 text from +2) */
 #define OV001_PROFILE_BLOCK_CALLBACK  0x1E298 /* s32 completion callback (event code), 0 once fired */
 #define OV001_PROFILE_BLOCK_TASK      0x1E29C /* s32 id of the profile update task */
 #define OV001_PROFILE_BLOCK_DONE      0x1E2A0 /* u8 set once the profile action finished; the update task then fires the callback */
@@ -265,6 +266,14 @@ enum {
 #define MESSAGE_ARCHIVE_COUNT    8    /* archive records in the pool */
 #define MESSAGE_ARCHIVE_SIZE     0x0C /* bytes per archive record */
 #define MESSAGE_ARCHIVE_POOL_SIZE 0x64 /* pool allocation: the records then the queue pointer */
+
+/* The same 12-byte archive record as a struct: Ov001_GetMessageText reads message
+ * `index` as offsets[index] added to texts. */
+typedef struct Ov001MessageArchive {
+    s32 *offsets; /* +0x00 per-message text offsets, added to texts */
+    s32 *texts;   /* +0x04 base of the message texts */
+    void *file;   /* +0x08 loaded (decompressed) file image, freed on release */
+} Ov001MessageArchive;
 
 /* Layout of a loaded message file: a header in front of the message bank, whose
  * per-message offset table sits MESSAGE_BANK_OFFSETS_OFF bytes into the bank and

@@ -55,7 +55,9 @@ s32 FifoUploadVerifiedBlocks(u8 *data) {
     return FifoFinishTransfer() != 0;
 }
 #pragma opt_strength_reduction reset
-void func_02045ffc(M2C_UNK a) { M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK gWfcProfileCode; MI_CpuCopy8(a,&gWfcProfileCode,14); }
+/* Copy the packed 14-byte WFC profile blob `blob` (a save slot's profile area)
+ * into the global packed blob gWfcProfileCode. */
+void func_02045ffc(M2C_UNK blob) { M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK gWfcProfileCode; MI_CpuCopy8(blob,&gWfcProfileCode,14); }
 
 /* Count the set bits of the four bytes at `bytes` (a player code's bit count,
  * used as the WFC code mask's width). */

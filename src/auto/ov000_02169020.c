@@ -611,9 +611,10 @@ s32 GetUnitMoveSpeed(void *move) {
  return (s16)value;
 }
 
-/* File id of the move-animation file (LoadUnitMoveAnim) of the unit kind's variant:
- * its entry in gUnitMoveAnimFileIds is UNIT_MOVE_SOUND_RECORD_SIZE bytes long and
- * holds the file id in its first field. */
+/* File id of the move-animation file (LoadUnitMoveAnim) for a unit kind: the
+ * kind's variant is looked up with a fixed sprite state, and its
+ * UNIT_MOVE_SOUND_RECORD_SIZE-byte entry in gUnitMoveAnimFileIds starts with the
+ * animation file id. */
 s32 GetUnitMoveAnimFileId(u8 kind) {
     s32 GetUnitVariantIndex(s32,s32);
     extern s32 gUnitMoveAnimFileIds[];

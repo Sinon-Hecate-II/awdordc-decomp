@@ -329,9 +329,10 @@ if(gKeyState[KEY_PRESSED]&KEY_LEFT){row-=PageListUp(list)+6;if(row<0)row=0;Redra
 else if(gKeyState[KEY_PRESSED]&KEY_RIGHT){row+=6-PageListDown(list);if(row>=6)row=5;RedrawListRows(M2C_FIELD(list,s16 *,MENU_LIST_SCROLL_OFFSET));}
 done:if(row!=*selection)FocusSpriteSlotById(row);M2C_FIELD(list,s16 *,MENU_LIST_ROW)=row;}
 
-void func_020b88f8(u8 *arg0) {
+/* Set the scrollable menu list's selected row from the byte `rowPtr` points at. */
+void SetMenuListRow(u8 *rowPtr) {
     void *GetMenuList(void);
-    M2C_FIELD(GetMenuList(), s16 *, 0x3a) = *arg0;
+    M2C_FIELD(GetMenuList(), s16 *, MENU_LIST_ROW) = *rowPtr;
 }
 
 /* Creates the six row sprite slots of the scrollable menu list, stacked

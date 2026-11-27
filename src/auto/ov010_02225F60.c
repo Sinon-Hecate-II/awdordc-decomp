@@ -25,7 +25,7 @@ s32 Ov010_InitVoiceChat(void) {
     void VoiceLink_HandleEvent();
     void func_ov010_02225f54();
     s32 GetOnlineTransportPlayerId();
-    s32 func_ov010_02225cd8(s32);
+    s32 StartVoiceChatStream(s32);
     s32 func_ov010_02225640(void *);
     void Ov010_SetVoiceChatCallback();
     void func_ov010_02222c9c();
@@ -47,7 +47,7 @@ s32 Ov010_InitVoiceChat(void) {
     M2C_FIELD(&gVoiceChatLink, s32 *, 36) = 0;
     M2C_FIELD(&gVoiceChatLink, s32 *, 24) = M2C_FIELD(&gVoiceChatLink, s32 *, 0);
     M2C_FIELD(&gVoiceChatLink, s32 *, 28) = 0x6b40;
-    if (!func_ov010_02225cd8(0x6b40)) {
+    if (!StartVoiceChatStream(0x6b40)) {
         return 0;
     }
     if (!func_ov010_02225640(&data_ov010_0222ee78)) {
@@ -587,15 +587,18 @@ s32 func_ov010_022268e0(s32 arg0) {
     return arg0;
 }
 
-void func_ov010_022268f4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void Ov010_AllocBlock(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
  M2C_UNK func_020e3580();
  func_020e3580(arg1,arg2);
 }
 
-M2C_UNK Ov010_FreeBlock(M2C_UNK arg0, s32 arg1, s32 arg2) {
- M2C_UNK HeapFreeBlock();
- if(arg1 == 0) return;
- HeapFreeBlock(arg1);
+/* Free the heap block `block`, ignoring a null pointer. */
+M2C_UNK Ov010_FreeBlock(M2C_UNK unused0, s32 block, M2C_UNK unused2) {
+    M2C_UNK HeapFreeBlock();
+    if (block == 0) {
+        return;
+    }
+    HeapFreeBlock(block);
 }
 
 /* Reinitialize a 0x6C-byte online player record: clear its name area, mark it
@@ -643,7 +646,11 @@ void CopyPlayerNameToStatus(void *status, void *name) {
     CopyU16(name, status, ONLINE_PLAYER_STATUS_NAME_SIZE);
 }
 
-void CopyLocalPlayerPanel(s32 a,s32 b,s32 c){MI_CpuCopy8(b,a+44,c);}
+/* Copy `size` bytes of a network panel record from `source` into the local
+ * player status record's ONLINE_PLAYER_PANEL block. */
+void CopyLocalPlayerPanel(s32 record, s32 source, s32 size) {
+    MI_CpuCopy8(source, record + ONLINE_PLAYER_PANEL, size);
+}
 
 /* Free every queued packet node of the outbound queue `queue`, then reset its
  * head, tail and count, with interrupts disabled so a producer cannot enqueue

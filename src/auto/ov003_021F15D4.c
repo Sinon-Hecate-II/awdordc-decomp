@@ -49,7 +49,7 @@ void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
     void ClearSceneLayerOverrides(void);
     void func_ov003_021f1bc0(void);
     func_ov003_021f1bc0();
-    func_ov003_021f14d8(c,d,e);
+    SetSceneSlideDirections(c,d,e);
     SetOv003SceneClass(0);
     ClearSceneLayerOverrides();
     func_ov003_021f14b4();
@@ -223,10 +223,12 @@ void CreateScene3DSprite(void *definition) {
     M2C_FIELD(&gSceneConfig, void **, 0) = definition;
 }
 
+/* Delete the 3D sprite object the current ov003 scene built. */
 void DeleteOv003SceneSprite(void) {
-    M2C_UNK DeleteSpriteObject(s32);
+    void DeleteSpriteObject(void *);
     extern u8 gOv003SceneState;
-    DeleteSpriteObject(M2C_FIELD(&gOv003SceneState, s32 *, 0x10));
+
+    DeleteSpriteObject(M2C_FIELD(&gOv003SceneState, void **, SCENE_STATE_SPRITE));
 }
 
 /* Clear gSceneLayerOverrides, the scene's per-engine BG-layer override table:

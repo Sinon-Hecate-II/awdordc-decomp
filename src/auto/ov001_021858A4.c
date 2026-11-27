@@ -217,9 +217,11 @@ done:
     return 1;
 }
 #pragma opt_strength_reduction reset
-void Ov001_SetConnectionStatusCallback(s32 arg0) {
+/* Install (or clear, with a null pointer) the WFC connection screen's status
+ * callback, which the lobby's state machine calls with the connection event. */
+void Ov001_SetConnectionStatusCallback(void (*callback)(s32)) {
     extern void *gOv001ConnectionState;
-    M2C_FIELD(gOv001ConnectionState, s32 *, 0x1370) = arg0;
+    M2C_FIELD(gOv001ConnectionState, s32 *, OV001_CONN_CALLBACK) = (s32) callback;
 }
 
 /* Reply callback of the ov001 WFC connection: ignores failed replies, marks the

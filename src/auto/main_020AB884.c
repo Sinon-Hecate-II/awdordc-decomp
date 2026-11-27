@@ -88,6 +88,9 @@ void *GetUnitSpriteAbove(void *unitSprite) {
     return (void *)Find3DSpriteByClassAndZ(&gUnitSpriteClass, M2C_FIELD(unitSprite, u16 *, UNIT_SPRITE_UP));
 }
 
+/* Unit sprite of the menu entry below `unitSprite`: menu entries are unit
+ * sprites whose depth (DS3D_SPRITE_Z) is their entry index, and each one stores
+ * the index its d-pad keys move to in UNIT_SPRITE_UP..RIGHT. */
 void *GetUnitSpriteBelow(void *unitSprite) {
     M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *, u16);
     extern M2C_UNK gUnitSpriteClass;
@@ -95,6 +98,9 @@ void *GetUnitSpriteBelow(void *unitSprite) {
     return (void *)Find3DSpriteByClassAndZ(&gUnitSpriteClass, M2C_FIELD(unitSprite, u16 *, UNIT_SPRITE_DOWN));
 }
 
+/* Unit sprite of the menu entry left of `unitSprite`: menu entries are unit
+ * sprites whose depth (DS3D_SPRITE_Z) is their entry index, and each one stores
+ * the index its d-pad keys move to in UNIT_SPRITE_UP..RIGHT. */
 void *GetUnitSpriteLeft(void *unitSprite) {
     M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *, u16);
     extern M2C_UNK gUnitSpriteClass;
@@ -102,6 +108,9 @@ void *GetUnitSpriteLeft(void *unitSprite) {
     return (void *)Find3DSpriteByClassAndZ(&gUnitSpriteClass, M2C_FIELD(unitSprite, u16 *, UNIT_SPRITE_LEFT));
 }
 
+/* Unit sprite of the menu entry to the right of `unitSprite`: menu entries are
+ * unit sprites whose depth (DS3D_SPRITE_Z) is their entry index, and each one
+ * stores the index its d-pad keys move to in UNIT_SPRITE_UP..RIGHT. */
 void *GetUnitSpriteRight(void *unitSprite) {
     M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *, u16);
     extern M2C_UNK gUnitSpriteClass;

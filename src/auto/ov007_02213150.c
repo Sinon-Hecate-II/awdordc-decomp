@@ -113,8 +113,8 @@ s32 func_ov007_02213358(void) {
 }
 
 void func_ov007_02213360(void) {
-    M2C_UNK func_ov007_0221c51c();
-    func_ov007_0221c51c();
+    M2C_UNK MapStart_SpawnSprite();
+    MapStart_SpawnSprite();
 }
 
 void func_ov007_0221336c(void) {
@@ -157,28 +157,39 @@ void MapEditor_FillWithSea(void) {
     MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_SEA, 8);
 }
 
+/* Ask to fill the whole map with plain ground: show the plain prompt and arm
+ * the fill dialog with the plain terrain preset. */
 void MapEditor_FillWithPlain(void) {
-    MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_PLAIN, 1);
+    MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_PLAIN, MAP_TERRAIN_PLAIN);
 }
 
+/* Ask to fill the whole map with woods: show the woods prompt and arm the fill
+ * dialog with the woods terrain preset. */
 void MapEditor_FillWithWoods(void) {
-    MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_WOODS, 4);
+    MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_WOODS, MAP_TERRAIN_WOODS);
 }
 
+/* Ask to fill the whole map with mountains: show the mountain prompt and arm
+ * the fill dialog with the mountain terrain preset. */
 void MapEditor_FillWithMountain(void) {
-    MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_MOUNTAIN, 3);
+    MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_MOUNTAIN, MAP_TERRAIN_MOUNTAIN);
 }
 
+/* Ask to empty the map: show the clear prompt and arm the fill dialog with the
+ * clear preset (-1, which makes FillMapTerrain blank every cell). */
 void MapEditor_ClearMap(void) {
     MapEditor_OpenFillDialog(MAP_EDITOR_FILL_MESSAGE_CLEAR, -1);
 }
 
-void func_ov007_02213440(M2C_UNK arg0, M2C_UNK arg1) {
-M2C_UNK func_020c0b88(M2C_UNK);
-M2C_UNK PopCarriedUnitMenuState();
-func_020c0b88(arg1);
-DeleteMapMenuSprites();
-PopCarriedUnitMenuState();
+/* Close the map editor's fill menu: restore the parent (carried-unit) menu at
+ * `selection` and drop the map menu's sprites. */
+void CloseMapEditorFillMenu(M2C_UNK menu, s32 selection) {
+    void SetCarriedUnitMenuSelection(s32);
+    void PopCarriedUnitMenuState();
+
+    SetCarriedUnitMenuSelection(selection);
+    DeleteMapMenuSprites();
+    PopCarriedUnitMenuState();
 }
 
 /* Opens the map editor's map-fill menu: saves the carried-unit menu, hides the

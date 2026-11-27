@@ -336,8 +336,8 @@ M2C_UNK func_020db5e8(void *arg0) {
     M2C_UNK DrawTextLine(s32, s32, s32, void *, s32, s32);
     M2C_UNK GetLocalPlayerStatus(void);
     s32 GetLinkPlayerCount(void);
-    s32 GetConnectedPlayerCount(void);
-    u32 GetOnlinePlayerRecord(s32);
+    u32 GetConnectedPlayerCount(void);
+    s32 GetOnlinePlayerRecord(s32);
     s32 IsOnlineSessionFlagSet(s32);
     s32 IsOnlineSessionHost(void);
     M2C_UNK DrawTimerDigits(s32, s32, u16, s32, s32);
@@ -349,73 +349,73 @@ M2C_UNK func_020db5e8(void *arg0) {
     extern char data_0212d2f4[];
     extern u16 data_0212d300[];
 
-    void *saved;
-    s32 temp;
+    void *savedEngine;
+    void *player;
+    s32 animValue;
     u16 scroll;
-    s32 x;
-    s32 r5, r7, r8, r9, r10;
-    s32 threshold;
-    s8 buf[16];
-    s16 vval;
+    s32 x, y, i, z;
+    s32 playerCount;
+    s32 connectedCount;
+    void *engine;
+    s8 nameBuf[16];
+    s16 timeValue;
     u16 f0;
     u32 r3;
     u32 r2;
 
     UpdateSpriteAnimation(M2C_FIELD(arg0, s32 *, 0x68));
-    temp = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x68));
-    SetSpriteSlotScroll(temp, 0);
-    saved = gCur3DSpriteEngine;
-    scroll = (u16)(-temp);
-    gCur3DSpriteEngine = g3DSpriteEngineMain;
-    M2C_FIELD(*g3DSpriteEngineMain, u16 *, 0x3A) = scroll;
+    animValue = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x68));
+    SetSpriteSlotScroll(animValue, 0);
+    savedEngine = gCur3DSpriteEngine;
+    engine = g3DSpriteEngineMain;
+    scroll = -animValue;
+    gCur3DSpriteEngine = engine;
+    M2C_FIELD(*(void **)engine, u16 *, 0x3a) = scroll;
     M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x42) = 0;
     M2C_FIELD(*gCur3DSpriteEngine, u16 *, 0x38) = scroll;
     M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x40) = 0;
     x = (*(s32 *)0x027ffc3c & 1) * 0x180 + 0x124;
-    r5 = (s32)GetLocalPlayerStatus();
-    r10 = GetLinkPlayerCount();
-    threshold = GetConnectedPlayerCount();
+    player = (void *)GetLocalPlayerStatus();
+    playerCount = GetLinkPlayerCount();
+    connectedCount = GetConnectedPlayerCount();
     ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 0x86), 0x14, 2);
-    DrawGlyphString((u16 *)r5, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, 2, x);
-    StringFormat(buf, data_0212d2f4, data_0212d2f0[0], data_0212d2ec[1] + threshold, data_0212d2f0[0], data_0212d2ec[1] + r10);
-    DrawTextLine(0x1a, 2, 1, buf, 0x9000, (u16)(x + 0x28));
-    x = x + 0x34;
-
-    if (r10 > 0) {
-        r9 = 0xe0;
-        r7 = 7;
-        r8 = 0;
-        while (r8 < r10) {
-            r5 = (s32)GetOnlinePlayerRecord(r8);
-            if (r5 != 0 && GetConnectedPlayerCount() >= 2) {
-                ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 0x0e + (r9 << 1)), 0x14, 2);
-                DrawGlyphString((u16 *)r5, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 7, (u16)r7, x);
-            } else {
-                ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 0x0e + (r9 << 1)), 0x14, 2);
-                DrawGlyphString((u16 *)data_0212d300, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 7, (u16)r7, x);
-            }
-            x = x + 0x28;
-            r9 = r9 + 0x60;
-            r7 = r7 + 3;
-            r8 = r8 + 1;
+    DrawGlyphString((u16 *)player, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 3, 2, x);
+    StringFormat(nameBuf, data_0212d2f4, data_0212d2f0[0], data_0212d2ec[1] + connectedCount, data_0212d2f0[0], data_0212d2ec[1] + playerCount);
+    DrawTextLine(0x1a, 2, 1, nameBuf, 0x9000, (u16)(x + 0x28));
+    x += 0x34;
+    y = 7;
+    z = 0xe0;
+    i = 0;
+    while (i < playerCount) {
+        player = (void *)GetOnlinePlayerRecord(i);
+        if (player != NULL && GetConnectedPlayerCount() >= 2) {
+            ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 0x0e + (z << 1)), 0x14, 2);
+            DrawGlyphString((u16 *)player, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 7, (u16)y, x);
+            x += 0x28;
+        } else {
+            ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24) + 0x0e + (z << 1)), 0x14, 2);
+            DrawGlyphString(data_0212d300, M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x10), M2C_FIELD(gCur3DSpriteEngine, u32 *, 0x24), 9, 7, (u16)y, x);
+            x += 0x28;
         }
+        z += 0x60;
+        y += 3;
+        i++;
     }
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-
     if (GetConnectedPlayerCount() >= 2) {
         if (IsOnlineSessionFlagSet(3) != 0) {
             if (IsOnlineSessionHost() != 0) {
-                vval = (s16)M2C_FIELD(arg0, s16 *, 0x4c);
-                if (vval < 0x708) {
+                timeValue = (s16)M2C_FIELD(arg0, s16 *, 0x4c);
+                if (timeValue < 0x708) {
                     f0 = M2C_FIELD(*gCur3DSpriteEngine, u16 *, 0x00);
                     r3 = ((u32)f0 << 17) >> 30;
-                    r2 = (u32)(0x3ff & (0x1e0 >> (s32)r3));
+                    r2 = 0x3ff & (0x1e0 >> (s32)r3);
                     r2 = r2 | 0x7000;
-                    DrawTimerDigits(0xc0, 0xa4, (u16)r2, 0, vval);
-                    gCur3DSpriteEngine = saved;
+                    DrawTimerDigits(0xc0, 0xa4, (u16)r2, 0, timeValue);
+                    gCur3DSpriteEngine = savedEngine;
                     if (GetConnectedPlayerCount() >= 2) {
-                        return 0;
+                        return;
                     }
                 }
             }
@@ -424,7 +424,7 @@ M2C_UNK func_020db5e8(void *arg0) {
     if (IsOnlineSessionFlagSet(3) != 0) {
         M2C_FIELD(arg0, u16 *, 0x48) |= 0x100;
     }
-    return 0;
+    return;
 }
 void func_020db914(void) {
     M2C_UNK func_020db5e8();

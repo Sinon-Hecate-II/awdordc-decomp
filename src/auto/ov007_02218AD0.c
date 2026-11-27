@@ -366,16 +366,18 @@ M2C_UNK MapEditor_SwitchPalettePage(void *panel) {
     return PlaySoundEffect((M2C_UNK)SOUND_MENU_TAB);
 }
 
-M2C_UNK func_ov007_02219418(void) {
+/* Spawn the map editor's palette panel: its sprite class builds the panel's
+ * frame and its palette-page lists. */
+void MapEditor_SpawnPanel(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_0221ff90;
-    return CreateSpriteFromClass(&data_ov007_0221ff90, 7);
+    extern M2C_UNK gMapEditorPanelClass;
+    CreateSpriteFromClass(&gMapEditorPanelClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 M2C_UNK GetPanelObject(void) {
     M2C_UNK FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_ov007_0221ff90;
-    return FindObjectByClass(&data_ov007_0221ff90);
+    extern M2C_UNK gMapEditorPanelClass;
+    return FindObjectByClass(&gMapEditorPanelClass);
 }
 
 /* Enter callback of the CO-power panel's open-animation driver: when the panel
@@ -460,7 +462,17 @@ void ShowCoPowerPanel(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_ov007_022196f4(void *arg0) { M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK); void (*f)(void **,void *)=(void(*)(void**,void*))CreateSpriteObject; extern M2C_UNK data_ov007_0221fdf8; f((void **)&data_ov007_0221fdf8,arg0); }
+/* Create the CO-power panel's open driver: a sprite object of
+ * gCoPowerPanelOpenClass, owned by `owner`, whose child sprites
+ * (BeginPanelOpen / ShowCoPowerPanel / UpdatePanelOpen) run the panel's
+ * opening animation. */
+void CreateCoPowerPanelOpen(void *owner) {
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
+    void (*createObject)(void **, void *) = (void (*)(void **, void *))CreateSpriteObject;
+    extern M2C_UNK gCoPowerPanelOpenClass;
+
+    createObject((void **)&gCoPowerPanelOpenClass, owner);
+}
 
 /* BeginPanelClose: prepare the CO panel for its close animation — when the
    second panel variant is in use, configure the main 3D sprite bank's split and
@@ -564,5 +576,15 @@ void UpdatePanelDisplay(void) {
     }
 }
 
-void func_ov007_02219ab4(void *arg0) { M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK); void (*f)(void **,void *)=(void(*)(void**,void*))CreateSpriteObject; extern M2C_UNK data_ov007_0221fe20; f((void **)&data_ov007_0221fe20,arg0); }
+/* Create the CO-power panel's close driver: a sprite object of
+ * gCoPowerPanelCloseClass, owned by `owner`, whose child sprites
+ * (BeginPanelClose / UpdatePanelDisplay / UpdatePanelClose) run the panel's
+ * closing animation. */
+void CreateCoPowerPanelClose(void *owner) {
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
+    void (*createObject)(void **, void *) = (void (*)(void **, void *))CreateSpriteObject;
+    extern M2C_UNK gCoPowerPanelCloseClass;
+
+    createObject((void **)&gCoPowerPanelCloseClass, owner);
+}
 

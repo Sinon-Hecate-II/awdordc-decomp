@@ -376,7 +376,7 @@ u32 CellMoveScore(s32 x, s32 y, s32 directWeight, s32 indirectWeight) {
  * Returns 0 when there is none. */
 s32 FindBestSelectableUnit(void) {
  extern void **gCurrentMap; extern u16 gMapConfig; extern u16 gPlayerUnitIdBase[]; extern s32 (**gAiSettings)(s32,s32);
- s32 GetPlayerCoZoneBonusIndex(u16); s32 IsPlayerSelectionEnabled(u16); void *GetPlayerSelectedUnit(u16); s32 IsUnitSelected(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 GetUnitActionCost(s32,s32); s32 GetUnitKindBuildCost(s32); s32 AiSettings_DefaultUnitFilter(s32,s32);
+ s32 GetPlayerCoZoneBonusIndex(u16); s32 IsPlayerSelectionEnabled(u16); void *GetPlayerSelectedUnit(u16); s32 IsUnitSelected(void *); s32 func_020cf908(s32,s32,s32,s32); s32 IsCoZoneKindSelectable(s32,s32); s32 GetUnitActionCost(s32,s32); s32 GetUnitKindBuildCost(s32); s32 AiSettings_DefaultUnitFilter(s32,s32);
  s32 commander; u8 *best; s32 id; u8 *unit; s32 offset;
  GetPlayerCoZoneBonusIndex(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
  best=0;
@@ -395,7 +395,7 @@ s32 FindBestSelectableUnit(void) {
  if(IsUnitSelected(unit))continue;
  if(((u32)(unit[11]<<28)>>28)==5 || ((u32)(unit[11]<<28)>>28)==6 || ((u32)(unit[11]<<28)>>28)==8)continue;
  if(!func_020cf908(unit[1],unit[2],M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),(u32)(unit[0]<<26)>>26))continue;
- if(!func_020a2788(commander,(u32)(unit[0]<<26)>>26))continue;
+ if(!IsCoZoneKindSelectable(commander,(u32)(unit[0]<<26)>>26))continue;
  {u8 *map=*gCurrentMap; s32 player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
  if(GetUnitActionCost(player,(u32)(unit[0]<<26)>>26)>M2C_FIELD(map+player*140,s32 *,0x67a4))continue;}
  if(*gAiSettings==0){if(AiSettings_DefaultUnitFilter(commander,(u32)(unit[0]<<26)>>26)){goto select;}goto next;}
@@ -434,9 +434,9 @@ s32 GetCoPowerUnitId(void) {
    7 and 8 as well when it has two, and only 11, 20 and 26 when the row cannot hit
    kind 9 or 14. */
 s32 AiSettings_DefaultUnitFilter(s32 commander,s32 unitKind) {
- s32 func_020a27a0(s32,s32); s32 GetCommanderMoveRange(s32,s32);
- if(!func_020a27a0(commander,unitKind))return 0;
- if(func_020a27a0(commander,9)||func_020a27a0(commander,14)){
+ s32 IsCoZoneKindEnabled(s32,s32); s32 GetCommanderMoveRange(s32,s32);
+ if(!IsCoZoneKindEnabled(commander,unitKind))return 0;
+ if(IsCoZoneKindEnabled(commander,9)||IsCoZoneKindEnabled(commander,14)){
  if(GetCommanderMoveRange(commander,0)<=1){if(unitKind!=9 && unitKind!=14 && unitKind!=16)return 0;}
  else {if(unitKind!=9 && unitKind!=8 && unitKind!=7 && unitKind!=14 && unitKind!=16)return 0;}
  }else {if(unitKind!=26 && unitKind!=11 && unitKind!=20)return 0;}

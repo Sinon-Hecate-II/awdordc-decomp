@@ -60,7 +60,7 @@ MapEditor_FillWithPlain kind:function(arm,size=0x18) addr:0x022133e0
 MapEditor_FillWithWoods kind:function(arm,size=0x18) addr:0x022133f8
 MapEditor_FillWithMountain kind:function(arm,size=0x18) addr:0x02213410
 MapEditor_ClearMap kind:function(arm,size=0x18) addr:0x02213428
-func_ov007_02213440 kind:function(arm,size=0x18) addr:0x02213440
+CloseMapEditorFillMenu kind:function(arm,size=0x18) addr:0x02213440
 OpenMapEditorFillMenu kind:function(arm,size=0x5c) addr:0x02213458
 MapEditor_ApplyMapSize kind:function(arm,size=0x78) addr:0x022134b4
 MapEditor_StartMapResize kind:function(arm,size=0x28) addr:0x0221352c
@@ -155,16 +155,16 @@ func_ov007_022193bc kind:function(arm,size=0xc) addr:0x022193bc
 func_ov007_022193c8 kind:function(arm,size=0xc) addr:0x022193c8
 func_ov007_022193d4 kind:function(arm,size=0xc) addr:0x022193d4
 MapEditor_SwitchPalettePage kind:function(arm,size=0x38) addr:0x022193e0
-func_ov007_02219418 kind:function(arm,size=0x18) addr:0x02219418
+MapEditor_SpawnPanel kind:function(arm,size=0x18) addr:0x02219418
 GetPanelObject kind:function(arm,size=0x14) addr:0x02219430
 BeginPanelOpen kind:function(arm,size=0xc8) addr:0x02219444
 UpdatePanelOpen kind:function(arm,size=0x128) addr:0x0221950c
 ShowCoPowerPanel kind:function(arm,size=0xc0) addr:0x02219634
-func_ov007_022196f4 kind:function(arm,size=0x18) addr:0x022196f4
+CreateCoPowerPanelOpen kind:function(arm,size=0x18) addr:0x022196f4
 BeginPanelClose kind:function(arm,size=0xc8) addr:0x0221970c
 UpdatePanelClose kind:function(arm,size=0x128) addr:0x022197d4
 UpdatePanelDisplay kind:function(arm,size=0x1b8) addr:0x022198fc
-func_ov007_02219ab4 kind:function(arm,size=0x18) addr:0x02219ab4
+CreateCoPowerPanelClose kind:function(arm,size=0x18) addr:0x02219ab4
 MapEditor_BeginPalettePageAnimation kind:function(arm,size=0x1c) addr:0x02219acc
 UpdatePanelRowCollapse kind:function(arm,size=0x50) addr:0x02219ae8
 MapEditor_ApplyPaletteColorStep kind:function(arm,size=0x2c) addr:0x02219b38
@@ -213,7 +213,7 @@ GetSlotForPlayerId kind:function(arm,size=0x34) addr:0x0221c27c
 MapStart_InitState kind:function(arm,size=0x8c) addr:0x0221c2b0
 StartNextMap kind:function(arm,size=0x198) addr:0x0221c33c
 UpdateCampaignSaveMessage kind:function(arm,size=0x48) addr:0x0221c4d4
-func_ov007_0221c51c kind:function(arm,size=0x18) addr:0x0221c51c
+MapStart_SpawnSprite kind:function(arm,size=0x18) addr:0x0221c51c
 func_ov007_0221c534 kind:function(arm,size=0xfc) addr:0x0221c534
 MapEditor_ReloadMap kind:function(arm,size=0x18) addr:0x0221c630
 MapEditor_LoadMapData kind:function(arm,size=0xd0) addr:0x0221c648
@@ -283,13 +283,13 @@ data_ov007_0221fdcc kind:data(any) addr:0x0221fdcc
 data_ov007_0221fdd8 kind:data(any) addr:0x0221fdd8
 data_ov007_0221fde4 kind:data(any) addr:0x0221fde4
 gMapEditorOwnerByColor kind:data(any) addr:0x0221fdf0
-data_ov007_0221fdf8 kind:data(any) addr:0x0221fdf8
-data_ov007_0221fe20 kind:data(any) addr:0x0221fe20
+gCoPowerPanelOpenClass kind:data(any) addr:0x0221fdf8
+gCoPowerPanelCloseClass kind:data(any) addr:0x0221fe20
 gPaletteColorDriverClass kind:data(any) addr:0x0221fe48
 data_ov007_0221fe80 kind:data(any) addr:0x0221fe80
 data_ov007_0221ff07 kind:data(any) addr:0x0221ff07
 data_ov007_0221ff64 kind:data(any) addr:0x0221ff64 ambiguous
-data_ov007_0221ff90 kind:data(any) addr:0x0221ff90
+gMapEditorPanelClass kind:data(any) addr:0x0221ff90
 data_ov007_02220030 kind:data(any) addr:0x02220030
 data_ov007_0222003c kind:data(any) addr:0x0222003c
 data_ov007_0222004c kind:data(any) addr:0x0222004c
@@ -315,7 +315,7 @@ data_ov007_02220158 kind:data(any) addr:0x02220158
 data_ov007_02220164 kind:data(any) addr:0x02220164
 data_ov007_02220170 kind:data(any) addr:0x02220170
 gMapEditorReloadScreenClass kind:data(any) addr:0x02220178
-data_ov007_022201d8 kind:data(any) addr:0x022201d8
+gMapStartSpriteClass kind:data(any) addr:0x022201d8
 data_ov007_02220288 kind:data(any) addr:0x02220288
 data_ov007_0222028c kind:data(any) addr:0x0222028c
 data_ov007_02220290 kind:data(any) addr:0x02220290

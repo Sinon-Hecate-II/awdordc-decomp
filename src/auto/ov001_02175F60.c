@@ -80,9 +80,12 @@ s32 Ov001_IsProfileScreenDone(void) {
     return gOv001ProfileBlock == 0;
 }
 
-void Ov001_SetProfileScreenCallback(s32 arg0) {
+/* Install (or clear, with a null pointer) the profile screen's completion
+ * callback: the screen's update task fires it with the event code once the
+ * profile action has finished. */
+void Ov001_SetProfileScreenCallback(void (*callback)(s32)) {
     extern void *gOv001ProfileBlock;
-    M2C_FIELD(gOv001ProfileBlock, s32 *, 0x1E298) = arg0;
+    M2C_FIELD(gOv001ProfileBlock, s32 *, OV001_PROFILE_BLOCK_CALLBACK) = (s32) callback;
 }
 
 void Ov001_AdvanceProfileSetup(void) {
@@ -90,12 +93,11 @@ void Ov001_AdvanceProfileSetup(void) {
     Ov001_AdvanceLinkState();
 }
 
-void *func_ov001_02176114(void) {
+/* The player message copied into the profile work block from MultiBoot_GetPlayerInfo
+ * and shown by the profile confirmation screen: a length-prefixed UTF-16 string. */
+void *Ov001_GetProfileMessage(void) {
     extern void *gOv001ProfileBlock;
-    u8 *p = (u8 *)gOv001ProfileBlock;
-    p = p + 0x2280;
-    p = p + 0x1C000;
-    return p;
+    return (u8 *)gOv001ProfileBlock + OV001_PROFILE_BLOCK_MESSAGE;
 }
 
 #pragma push
@@ -236,10 +238,13 @@ void Ov001_StoreMatchSetup(void) {
     StoreLinkMatchSetup(matchSetup);
 }
 
-void Ov001_StoreOptionPageState(void *arg0) {
- typedef struct { s32 values[3]; } State;
- extern M2C_UNK gOv001OptionPageState;
- *(State *)gOv001OptionPageState = *(State *)arg0;
+/* Wi-Fi callback of the option page: copy the 12-byte page state handed in by
+ * the receive path into the page's allocated state block. */
+void Ov001_StoreOptionPageState(void *source) {
+    typedef struct { s32 values[3]; } State;
+    extern M2C_UNK gOv001OptionPageState;
+
+    *(State *)gOv001OptionPageState = *(State *)source;
 }
 
 void Ov001_AllocWhBuffer(M2C_UNK arg0) {

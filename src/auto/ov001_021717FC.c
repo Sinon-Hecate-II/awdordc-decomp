@@ -272,9 +272,12 @@ void Ov001_AllocChoiceFrameSprites(void) {
  gOv001ChoiceFrameSprites=Ov001_Alloc(16,4);
 }
 
+/* Tear down the ov001 choice frame: destroy its four corner sprites and free the
+ * sprite-handle array that Ov001_AllocChoiceFrameSprites allocated. */
 void Ov001_FreeChoiceFrame(void) {
-    void Ov001_FreeSpriteObjects();
-    extern M2C_UNK gOv001ChoiceFrameSprites;
+    void Ov001_FreeSpriteObjects(void);
+    M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
+    extern s32 gOv001ChoiceFrameSprites;
     Ov001_FreeSpriteObjects();
     Ov001_FreeAlloc(&gOv001ChoiceFrameSprites);
 }
@@ -363,14 +366,21 @@ M2C_UNK Ov001_LoadObjLayoutBlock(s32 layout) {
     Ov001_AddTask(1, Ov001_UploadHighlightTilemap, 0, 120);
 }
 
+/* Load the object layout of the save slot the current save record belongs to:
+ * the record's physical slot index (0..2) picks one of the per-slot layouts,
+ * which follow the first five screen layouts. */
 void Ov001_LoadSaveSlotObjLayout(void) {
     M2C_UNK Ov001_LoadObjLayoutBlock(s32);
     void *GetCurrentMapRecord();
-    Ov001_LoadObjLayoutBlock(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4) + 5);
+    Ov001_LoadObjLayoutBlock(M2C_FIELD(GetCurrentMapRecord(), u8 *, SAVE_SLOT_INDEX_REL) + 5);
 }
 
-void func_ov001_021722c4(void) {
-    Ov001_LoadObjLayoutBlock(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4) + 2);
+/* Load the map-list screen's object layout for the current save slot: layouts
+ * 2..4 are the three slots' map-list screens. */
+void Ov001_LoadMapListSlotObjLayout(void) {
+    M2C_UNK Ov001_LoadObjLayoutBlock(s32);
+    void *GetCurrentMapRecord();
+    Ov001_LoadObjLayoutBlock(M2C_FIELD(GetCurrentMapRecord(), u8 *, SAVE_SLOT_INDEX_REL) + 2);
 }
 
 /* One-shot upload task: flush the staged highlight tilemap to memory and load

@@ -24,9 +24,11 @@ u8 GetWaypointGroupCount(void) {
     return M2C_FIELD(GetWaypointSlotGroup(), u8 *, 1);
 }
 
-u8 func_ov003_021e6e28(s32 arg0) {
+/* Index of waypoint-list slot `slot` within its slot group: the slot number
+ * minus the group's first slot. */
+u8 GetWaypointSlotIndexInGroup(s32 slot) {
     s32 GetWaypointGroupFirstSlot();
-    return (u8) (arg0 - GetWaypointGroupFirstSlot());
+    return (u8) (slot - GetWaypointGroupFirstSlot());
 }
 
 /* TRUE while the map-select list shows category 3, one of the campaign map groups

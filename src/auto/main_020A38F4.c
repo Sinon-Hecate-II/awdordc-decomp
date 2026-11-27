@@ -388,6 +388,9 @@ void DrawWeatherEffects(void) {
 }
 
 #pragma scheduling reset
+/* Create the sprite that draws the current map's weather (rain, snow or sandstorm
+ * particles) over the battlefield: one sprite of gWeatherEffectSpriteClass, placed
+ * on sprite layer 1 of the active 3D-sprite engine. */
 void CreateWeatherEffectSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gWeatherEffectSpriteClass;

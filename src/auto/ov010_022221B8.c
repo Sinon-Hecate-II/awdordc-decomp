@@ -304,7 +304,7 @@ s32 VoiceStream_ReceiveAudio(void *buffer,s32 packetSize,s32 *players){
 s32 Link_PullChannelPacket(void*,s32,u32,s32*);
 void func_ov010_02225558(void*,void*,void*,s32);
 void MI_CpuFill32(s32,void*,s32);
-void func_ov010_02225304(void*,s32);
+void VoiceCodec_LoadSampleBuffer(void*,s32);
 extern s32 gVoiceChatState;
 extern u8 data_ov010_0222cb54[];
 s32 received;u32 channel,nextChannel;
@@ -323,7 +323,7 @@ func_ov010_02225558(buffer,data_ov010_0222cb54,buffer,packetSize);
 }
 }else MI_CpuFill32(0,buffer,packetSize);
 }else{MI_CpuFill32(0,buffer,packetSize);received=0;}
-if(M2C_FIELD(&gVoiceChatState,s32*,0x18))func_ov010_02225304(buffer,packetSize);
+if(M2C_FIELD(&gVoiceChatState,s32*,0x18))VoiceCodec_LoadSampleBuffer(buffer,packetSize);
 return received;
 }
 

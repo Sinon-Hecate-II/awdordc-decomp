@@ -9,7 +9,7 @@
    ten seconds. */
 s32 UpdateTurnTimer(void) {
     void IncrementCounter(void *);
-    void func_02081fd4(void);
+    void CreateInputBlockSprite(void);
     void PlaySoundEffect(s32);
     extern M2C_UNK gMapData;
     extern void **gCurrentMap;
@@ -37,7 +37,7 @@ s32 UpdateTurnTimer(void) {
                 u32 *elapsed = (u32 *)((u8 *)b + p2 * MAP_PLAYER_STRIDE + PLAYER_TURN_TIME_OFF);
                 s32 remaining = (s32)limit - (s32)*elapsed;
                 if (remaining <= 0) {
-                    func_02081fd4();
+                    CreateInputBlockSprite();
                     b = *gCurrentMap;
                     M2C_FIELD(b, u16 *, MAP_STATE) = 21;
                     return 1;
@@ -84,14 +84,14 @@ s32 UpdateTurnTimer(void) {
  * move on to the end-player-turn step. */
 void StartEndTurn(void) {
     M2C_UNK UpdateMapMode();
-    M2C_UNK func_02081fec();
+    M2C_UNK DeleteInputBlockSprite();
     M2C_UNK func_020b7bbc();
     extern void **gCurrentMap;
     if (M2C_FIELD(*gCurrentMap, u16 *, MAP_MODE) != 0) {
         UpdateMapMode();
         return;
     }
-    func_02081fec();
+    DeleteInputBlockSprite();
     func_020b7bbc();
     M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = MAP_STATE_END_TURN_STEP;
 }
@@ -118,7 +118,7 @@ s32 HandleOverlayResult(void) {
  M2C_UNK GetNetErrorVeneer(M2C_UNK *,M2C_UNK *);
  void SetOnlineSessionFlag(M2C_UNK);
  M2C_UNK GetOverlayEventFlags();
- void func_02081fd4(void);
+ void CreateInputBlockSprite(void);
  extern M2C_UNK gMapData;
  extern void **gCurrentMap;
  s32 overlayResult,eventFlags,errorCode,errorType;
@@ -148,11 +148,11 @@ s32 HandleOverlayResult(void) {
  M2C_FIELD(&gMapData,u8 *,5)=overlayResult;
  M2C_FIELD(&gMapData,u8 *,6)=eventFlags;
  if(overlayResult!=0){
- func_02081fd4();
+ CreateInputBlockSprite();
  M2C_FIELD(*gCurrentMap,u16 *,0x52b2)=M2C_FIELD(*gCurrentMap,u16 *,0x52b0);
  M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=23;
  } else if(eventFlags!=0){
- func_02081fd4();
+ CreateInputBlockSprite();
  M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=24;
  }
  return 1;
@@ -171,7 +171,7 @@ void func_020d3830(void) {
     void CreateNetErrorSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, void *);
     void func_ov010_02228320();
     void Ov010Online_ClearStepFlag(M2C_UNK);
-    M2C_UNK func_02081fec();
+    M2C_UNK DeleteInputBlockSprite();
     extern void **gCurrentMap;
     extern M2C_UNK gMapData;
 
@@ -186,7 +186,7 @@ void func_020d3830(void) {
     case 1:
         CreateLinkStatusLabel(0, 0x25c, GetLinkResultCode(), (void *)7);
         M2C_FIELD(&gMapData, u8 *, 7) = 0;
-        func_02081fec();
+        DeleteInputBlockSprite();
         M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = 0x19;
         break;
     case 2: {
@@ -210,7 +210,7 @@ void func_020d3830(void) {
         case 5:
         case 6:
             M2C_FIELD(&gMapData, u8 *, 7) = 0;
-            func_02081fec();
+            DeleteInputBlockSprite();
             M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = 0x19;
             break;
         case 7:
@@ -272,7 +272,7 @@ void SetupMapViewHold(s32 owner) {
 void AdvanceAfterOverlayEvent(void) {
     M2C_UNK UpdateMapMode();
     M2C_UNK IsTextLayerActive();
-    M2C_UNK func_02081fec();
+    M2C_UNK DeleteInputBlockSprite();
     void CreateSpriteFromClass(void *, s32);
     extern void **gCurrentMap;
     extern char data_0212ba7c[];
@@ -283,7 +283,7 @@ void AdvanceAfterOverlayEvent(void) {
     if (IsTextLayerActive() != 0) {
         return;
     }
-    func_02081fec();
+    DeleteInputBlockSprite();
     M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = 25;
     CreateSpriteFromClass(data_0212ba7c, 7);
 }

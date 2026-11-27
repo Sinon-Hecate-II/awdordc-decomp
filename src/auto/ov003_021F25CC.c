@@ -126,14 +126,18 @@ void ToggleFirstSideMapPick(s32 block, s32 map) {
     ToggleMapPick(block, block + 4, map);
 }
 
-void func_ov003_021f2848(s32 arg0) {
+/* Copy the shared saved map picks back into the panel block's two pick lists
+ * (at +4 and +0xE), dropping whatever the player had toggled. */
+void RestoreMapPickLists(s32 block) {
     M2C_UNK CopyMapPickLists(s32, s32);
-    CopyMapPickLists(arg0 + 4, arg0 + 0xE);
+    CopyMapPickLists(block + 4, block + 0xE);
 }
 
-void func_ov003_021f2860(s32 arg0) {
+/* Fill the panel block's two five-entry map-id pick lists (at +4 and +0xE) from
+ * the saved selection and downloaded lists, leaving the stored lists as they are. */
+void LoadSavedMapPickLists(s32 block) {
     M2C_UNK LoadMapPickLists(s32, s32);
-    LoadMapPickLists(arg0 + 4, arg0 + 0xE);
+    LoadMapPickLists(block + 4, block + 0xE);
 }
 
 #pragma push

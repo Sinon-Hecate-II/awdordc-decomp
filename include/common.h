@@ -788,6 +788,8 @@ typedef struct WaypointSlotGroup {
  * magic once the defaults have been filled in; code that reads the settings
  * re-initialises them when the magic is missing. */
 #define GAME_SETTINGS_MAGIC 0x20070810
+#define GAME_SETTINGS_MUSIC_VOLUME 0x12C /* u8 player music volume */
+#define GAME_SETTINGS_SFX_VOLUME   0x12D /* u8 player sound-effect volume */
 
 /* The saved option halfword (inside data_0215d990, stored as the save file's
  * settingsHalfword): a 3-bit map-view zoom field (GAME_OPTION_ZOOM_MASK), 0 while
@@ -1866,6 +1868,8 @@ typedef struct PeerAddress {
 #define PLAYER_RECORD_CODE       0x04 /* u64 player code of a PLAYER_RECORD_KIND_CODE record */
 #define PLAYER_RECORD_ID         0x04 /* s32 GameSpy profile id of a PLAYER_RECORD_KIND_PROFILE record */
 #define PLAYER_CODE_HIGH_MASK    0x7FF /* low bits of a record's type word (PLAYER_RECORD_TYPE) holding the high 11 bits of a 43-bit player code */
+#define PLAYER_RECORD_TYPE_SHIFT 0xB   /* bit of PLAYER_RECORD_TYPE where a record's 21-bit type word starts */
+#define PLAYER_RECORD_TYPE_MASK  0x1FFFFF /* a record's whole 21-bit type word (bits 11..31 of PLAYER_RECORD_TYPE) */
 
 /* PLAYER_RECORD_TYPE values. */
 #define PLAYER_RECORD_KIND_EMPTY      0 /* no player */
@@ -2090,7 +2094,7 @@ typedef struct MbLockState {
 /* Events a multiboot command callback receives.  The callback pointer lives in
  * MB_EVENT_CALLBACK (set by Mb_SetMatchEventCallback) and is run by Mb_DispatchPlayerEvent as
  * (player, event, packet): func_020140c4 maps the link state machine's commands
- * onto the events, func_02015230 reports a status. */
+ * onto the events, Mb_ReportPlayerStatus reports a status. */
 #define MB_EVENT_JOIN         2  /* a player's join request arrived (packet = its record) */
 #define MB_EVENT_LEAVE        3  /* a player was removed from the link */
 #define MB_EVENT_GROUP_REJECT 4  /* the player could not join a group */
@@ -2277,6 +2281,7 @@ typedef struct NetError {
 #define NET_ERROR_CODE  0x38 /* s32: error code, 0 = no error */
 #define NET_ERROR_PARAM 0x3C /* s32: the error's parameter */
 #define NET_ERROR_CLASS 0x40 /* u32: error class 0..7 */
+#define NET_ERROR_TEXT  0x44 /* StringStorage: the error message text the sprite shows */
 
 /* Step flags of the ov010 online session (gOv010OnlineSession+0x54): their bit
  * index is what SetOnlineSessionFlag/IsOnlineSessionFlagSet take. */
@@ -2336,10 +2341,16 @@ typedef struct NetError {
 #define OV010_SESSION_START_RECORD 0x18 /* void *: record of the match being started (see OV010_START_RECORD_*) */
 #define OV010_START_RECORD_ID      0x00 /* s32 match id both sides compare */
 #define OV010_START_RECORD_ACKS    0x04 /* u16 one bit per player that acknowledged the start request */
-#define OV010_SESSION_CALLBACK 0x0c /* void (*)(s32 error, s32 aborted, s32 data): the running match's event callback */
+#define OV010_SESSION_CALLBACK 0x0c /* void (*)(s32 error, s32 aborted, s32 data): the running match's event callback forwarded by Ov010Online_OnHostJoinEvent */
+#define OV010_SESSION_MATCH_CALLBACK 0x08 /* s32 (*)(s32 status, s32 closed, s32 targetCleared, s32 serving, s32 slot, void *data): the matching/unit scene's match event handler, installed by the serve/join match paths (MatchingUnitSceneCallback) */
 #define OV010_SESSION_SLOT_CALLBACK 0x10 /* void (*)(s32 slot, s32 data): the app's callback for a changed player slot */
+#define OV010_SESSION_STATS_CALLBACK 0x14 /* void (*)(s32 slot, s32 otherSlot, s32 data): the app's callback that folds one player's battle stats into another (the match layer's stats callback) */
 #define OV010_SESSION_PEER_JOINED_CALLBACK 0x44 /* void (*)(s32 slot, s32 data): the app's callback for a peer joining while serving (Ov010Online_OnPeerJoined) */
 #define OV010_SESSION_VOICE_CALLBACK 0x2c /* void (*)(s32 peerId, void *packet, s32 length): receives each packet for the voice chat, 0 when voice chat is off */
+#define OV010_SESSION_PACKET_CALLBACK 0x4c /* void (*)(s32 peerId, void *packet, s32 length): a second per-packet hook invoked right after the voice-chat callback for every received packet, 0 when none is installed */
+#define OV010_SESSION_SEND_CALLBACK 0x58 /* void (*)(u16 recipients, void *packet): the app's hook for each packet the connection prepares to send, called with the addressed-peer mask and the packet */
+#define OV010_SESSION_MESSAGE_HANDLER 0x50 /* s32 (*)(u8 channel, void *packet): handler every assembled online message packet is offered to; set through SetOnlineMessageHandler (wrapped by Link_SetMessageHandler), which returns the previous handler.  It returns nonzero to let the overlay free the packet. */
+#define OV010_SESSION_RECEIVE_HANDLER 0x1C /* s32 (*)(u8 channel, void *packet): handler every packet popped from a channel's receive queue is offered to (func_ov010_022272cc); returns nonzero to let the session free the packet */
 #define OV010_SESSION_PLAYER   0x24 /* void *: the local player's join record (OV010_PLAYER_*) */
 #define OV010_PLAYER_JOINED    0x00 /* u8 nonzero once the local player joined the session */
 #define OV010_PLAYER_MASK      0x02 /* u16 this console's player bit */
@@ -2455,6 +2466,9 @@ typedef struct GpiBuddyStatus {
 #define MATCH_ID_PTCS 0x50544353 /* "PTCS": transfer barrier, multi-card/online */
 #define MATCH_ID_PRCS 0x50524353 /* "PRCS": ready barrier, multi-card/online */
 #define MATCH_ID_GMED 0x474D4544 /* "GMED": the battle-end start record ("game ended") */
+/* "BSLM": the ov003 battle scene's link match start (battle scene link match),
+ * posted by the scene's scripts before its link exchange. */
+#define MATCH_ID_BSLM 0x4D4C5342
 
 /* The local player's link status (GetLocalPlayerStatus): its option bits and
  * the player id the online session assigned to this console. */
@@ -2817,9 +2831,13 @@ typedef struct LinkChannelState {
     s32 id;           /* +0x38 channel id this state belongs to */
     void *current;    /* +0x3C packet currently being played */
     u8 pad40[0x18];
-    u32 lastSeq;      /* +0x58 sequence number of the last packet */
-    u8 pad5c[0x14];
-    s32 hold;         /* +0x70 packets still to hold back */
+    u32 lastSeq;         /* +0x58 sequence number of the last packet */
+    s32 seqInitPending;  /* +0x5C 1 until the first received packet sets the sequence base */
+    s32 seqRollover;     /* +0x60 accumulated 0x10000 added each time the 16-bit sequence wraps */
+    s32 resyncSeq;       /* +0x64 sequence a large gap resyncs at; 0x10001 when none is pending */
+    u16 lastWireSeq;     /* +0x68 last 16-bit sequence number seen on the wire */
+    u8 pad6A[6];         /* +0x6A..+0x6F */
+    s32 hold;            /* +0x70 packets still to hold back */
 } LinkChannelState;   /* 0x94 bytes */
 
 #define LINK_CHANNEL_STRIDE 0x94
@@ -4806,6 +4824,7 @@ typedef struct UsernameFontCache {
  * THREAD_MANAGER_CURRENT and the ready list, kept in priority order and chained
  * through Thread::next, at THREAD_MANAGER_READY. */
  #define THREAD_MANAGER_LOCK    0x04 /* s32 scheduler disable count: OS_DisableScheduler/OS_EnableScheduler step it and the scheduler runs only while it is 0 */
+#define THREAD_MANAGER_NEXT_ID 0x20 /* s32 next thread creation id handed out by NextThreadId */
 #define THREAD_MANAGER_CURRENT 0x28 /* Thread *: the thread that is running */
 #define THREAD_MANAGER_SWITCH_CALLBACK 0x30 /* ThreadSwitchCallback: run with (from, to) just before every switch, 0 when none */
  #define THREAD_MANAGER_READY   0x2c /* Thread *: first thread of the ready list */
@@ -4902,6 +4921,17 @@ typedef struct OSThreadQueue {
 /* Field offsets of an OSThreadQueue, for code that addresses it as a byte block. */
 #define OS_THREAD_QUEUE_HEAD 0x00 /* first waiting thread (void *) */
 #define OS_THREAD_QUEUE_TAIL 0x04 /* last waiting thread (void *) */
+
+/* An OS mutex (the OSMutex a sound or network task locks): the threads asleep
+ * on the mutex, the thread that owns it and how many times that thread has
+ * locked it, and the links that chain it on its owner's locked-mutex list. */
+typedef struct OSMutex {
+    OSThreadQueue queue;      /* +0x00 threads asleep until the mutex is released */
+    void *owner;              /* +0x08 the thread holding the mutex, NULL when free */
+    u32 count;                /* +0x0C nesting level of the owner's locks */
+    struct OSMutex *next;     /* +0x10 next mutex on the owner thread's list */
+    struct OSMutex *prev;     /* +0x14 previous mutex on that list */
+} OSMutex; /* 0x18 bytes */
 
 /* gOsIrqThreadQueue (in the OS work area at gOsArea + 0xE0) is the thread queue
  * OS_WaitIrq parks the current thread on until an IRQ handler signals one of the

@@ -517,16 +517,19 @@ s32 FindDialogSequence(s32 script) {
     return -1;
 }
 
+/* Raise the 3D sprite manager's dialog-suspend count: while it is nonzero the
+ * message overlay stays suspended for the dialogs in flight. */
 void SuspendDialogs(void) {
  void *Get3DSpriteManager(void);
- void *p=Get3DSpriteManager();
- M2C_FIELD(p,s8 *,0x4B)++;
+ void *manager=Get3DSpriteManager();
+ M2C_FIELD(manager,s8 *,DS3D_MANAGER_DIALOG_SUSPEND_COUNT)++;
 }
 
+/* Let the message overlay resume: drop the count of dialogs that suspended it. */
 void ResumeDialogs(void) {
- void *Get3DSpriteManager(void);
- void *p=Get3DSpriteManager();
- M2C_FIELD(p,s8 *,0x4B)--;
+    void *Get3DSpriteManager(void);
+    void *manager = Get3DSpriteManager();
+    M2C_FIELD(manager, s8 *, DS3D_MANAGER_DIALOG_SUSPEND_COUNT)--;
 }
 
 u8 GetDialogSuspendCount(void) {

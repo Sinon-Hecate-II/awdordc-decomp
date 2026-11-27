@@ -216,7 +216,7 @@ StringFormatUnbounded kind:function(arm,size=0x28) addr:0x0200563c
 StringFormatUnboundedVa kind:function(arm,size=0x18) addr:0x02005664
 StringFormatN kind:function(arm,size=0x28) addr:0x0200567c
 VStringFormat kind:function(arm,size=0xc) addr:0x020056a4
-func_020056b0 kind:function(arm,size=0x18) addr:0x020056b0
+NextThreadId kind:function(arm,size=0x18) addr:0x020056b0
 OS_EnqueueThread kind:function(arm,size=0x78) addr:0x020056c8
 DequeueThread kind:function(arm,size=0x34) addr:0x02005740
 UnlinkThreadFromQueue kind:function(arm,size=0x54) addr:0x02005774
@@ -260,7 +260,7 @@ OS_SendMessage kind:function(arm,size=0x94) addr:0x020062fc
 OS_ReceiveMessage kind:function(arm,size=0xa4) addr:0x02006390
 OS_JamMessage kind:function(arm,size=0x9c) addr:0x02006434
 OS_ReadMessage kind:function(arm,size=0x7c) addr:0x020064d0
-InitMutex kind:function(arm,size=0x18) addr:0x0200654c
+OS_InitMutex kind:function(arm,size=0x18) addr:0x0200654c
 LockMutex kind:function(arm,size=0x84) addr:0x02006564
 UnlockMutex kind:function(arm,size=0x5c) addr:0x020065e8
 ReleaseThreadMutexes kind:function(arm,size=0x3c) addr:0x02006644
@@ -572,7 +572,7 @@ Arm7SetValue kind:function(arm,size=0x48) addr:0x0200ec60
 Arm7SetValueWait kind:function(arm,size=0x28) addr:0x0200eca8
 Arm7ReadValue kind:function(arm,size=0x48) addr:0x0200ecd0
 Arm7ReadValueWait kind:function(arm,size=0x28) addr:0x0200ed18
-func_0200ed40 kind:function(arm,size=0x14) addr:0x0200ed40
+CallbackList_Prepend kind:function(arm,size=0x14) addr:0x0200ed40
 CallbackList_Append kind:function(arm,size=0x4c) addr:0x0200ed54
 CallbackList_Remove kind:function(arm,size=0x48) addr:0x0200eda0
 CallbackList_Call kind:function(arm,size=0x28) addr:0x0200ede8
@@ -738,7 +738,7 @@ func_02015008 kind:function(arm,size=0x180) addr:0x02015008
 AdvanceGroupChunkCursor kind:function(arm,size=0x7c) addr:0x02015188
 func_02015204 kind:function(arm,size=0x10) addr:0x02015204
 Mb_IsValidPlayer kind:function(arm,size=0x1c) addr:0x02015214
-func_02015230 kind:function(arm,size=0x18) addr:0x02015230
+Mb_ReportPlayerStatus kind:function(arm,size=0x18) addr:0x02015230
 Mb_GetProgramSize kind:function(arm,size=0x80) addr:0x02015248
 Mb_LoadProgramImage kind:function(arm,size=0x45c) addr:0x020152c8
 Mb_FillOrCopyImageRange kind:function(arm,size=0x78) addr:0x02015724
@@ -906,7 +906,7 @@ OpenRawConnection kind:function(arm,size=0x2c) addr:0x0201d164
 SetConnectionEndpoint kind:function(arm,size=0x60) addr:0x0201d190
 ResetCurrentConnection kind:function(arm,size=0x34) addr:0x0201d1f0
 CloseRawConnection kind:function(arm,size=0x20) addr:0x0201d224
-func_0201d244 kind:function(arm,size=0x18) addr:0x0201d244
+SetThreadRawConnection kind:function(arm,size=0x18) addr:0x0201d244
 SocketStartListen kind:function(arm,size=0x40) addr:0x0201d25c
 SocketSetReceiveCallback kind:function(arm,size=0x1c) addr:0x0201d29c
 ListenTransport kind:function(arm,size=0x38) addr:0x0201d2b8
@@ -1019,7 +1019,7 @@ SocketPoll kind:function(arm,size=0xd0) addr:0x020212cc
 SocketReadableBytes kind:function(arm,size=0x48) addr:0x0202139c
 AlignSize4 kind:function(arm,size=0xc) addr:0x020213e4
 RegisterActiveSocket kind:function(arm,size=0x18) addr:0x020213f0
-func_02021408 kind:function(arm,size=0x10) addr:0x02021408
+SocketListPrepend kind:function(arm,size=0x10) addr:0x02021408
 SocketAddToClosedList kind:function(arm,size=0x18) addr:0x02021418
 SocketRemoveFromActiveList kind:function(arm,size=0x18) addr:0x02021430
 SocketUnlinkFromList kind:function(arm,size=0x1c) addr:0x02021448
@@ -1089,7 +1089,7 @@ TlsComputeFinishedMd5 kind:function(arm,size=0xdc) addr:0x02023520
 TlsComputeFinishedSha1 kind:function(arm,size=0xdc) addr:0x020235fc
 TlsProcessFinished kind:function(arm,size=0xc0) addr:0x020236d8
 IncrementBe64 kind:function(arm,size=0x24) addr:0x02023798
-func_020237bc kind:function(arm,size=0x18) addr:0x020237bc
+TlsDecryptRecord kind:function(arm,size=0x18) addr:0x020237bc
 TlsVerifyRecordMac kind:function(arm,size=0x230) addr:0x020237d4
 TlsAppendRecordMac kind:function(arm,size=0x204) addr:0x02023a04
 ReceiveExactBytes kind:function(arm,size=0x6c) addr:0x02023c08
@@ -1119,7 +1119,7 @@ SetSocketTlsActive kind:function(arm,size=0x30) addr:0x02025188
 func_020251b8 kind:function(arm,size=0xe0) addr:0x020251b8
 ClearTlsSessionCache kind:function(arm,size=0x1c) addr:0x02025298
 CopyDigestBytes kind:function(arm,size=0x18) addr:0x020252b4
-func_020252cc kind:function(arm,size=0x18) addr:0x020252cc
+CopyMessageBlock kind:function(arm,size=0x18) addr:0x020252cc
 MD5_Transform kind:function(arm,size=0x41c) addr:0x020252e4
 MD5_Init kind:function(arm,size=0x48) addr:0x02025700
 MD5_Update kind:function(arm,size=0xb8) addr:0x02025748
@@ -1273,7 +1273,7 @@ Sound_FreeChannel kind:function(arm,size=0x20) addr:0x0202ab40
 Sound_ResetChannelMasks kind:function(arm,size=0x1c) addr:0x0202ab60
 Sound_SetChannelMixVolume kind:function(arm,size=0x18) addr:0x0202ab7c
 Sound_SetChannelVoiceLimit kind:function(arm,size=0x20) addr:0x0202ab94
-func_0202abb4 kind:function(arm,size=0x18) addr:0x0202abb4
+Sound_SetChannelBaseVolume kind:function(arm,size=0x18) addr:0x0202abb4
 Sound_CreateChannelHeap kind:function(arm,size=0x94) addr:0x0202abcc
 Sound_FadeOutPlayerVoice kind:function(arm,size=0x10) addr:0x0202ac60
 Sound_FadeOutAllVoices kind:function(arm,size=0x40) addr:0x0202ac70
@@ -1648,7 +1648,7 @@ gpiMalloc kind:function(arm,size=0x14) addr:0x02037794
 gpiRealloc kind:function(arm,size=0x1c) addr:0x020377a8
 gpiFree kind:function(arm,size=0x18) addr:0x020377c4
 Wfc_CreateConnection kind:function(arm,size=0x60) addr:0x020377dc
-func_0203783c kind:function(arm,size=0x18) addr:0x0203783c
+Wfc_CreateOnlineConnection kind:function(arm,size=0x18) addr:0x0203783c
 SetNasServerEnvironment kind:function(arm,size=0x50) addr:0x02037854
 Wfc_StartConnection kind:function(arm,size=0xb0) addr:0x020378a4
 Wfc_PollConnecting kind:function(arm,size=0x40) addr:0x02037954
@@ -2424,7 +2424,7 @@ HandleNatNegPacket kind:function(arm,size=0x160) addr:0x0205e510
 Qr2_CreateConnection kind:function(arm,size=0x1c4) addr:0x0205e670
 SetQr2StateChangedCallback kind:function(arm,size=0x18) addr:0x0205e834
 SetQr2ReceiveStateCallback kind:function(arm,size=0x18) addr:0x0205e84c
-func_0205e864 kind:function(arm,size=0x18) addr:0x0205e864
+SetQr2PublicAddressCallback kind:function(arm,size=0x18) addr:0x0205e864
 Qr2_Think kind:function(arm,size=0x34) addr:0x0205e87c
 Qr2_ReadPackets kind:function(arm,size=0xac) addr:0x0205e8b0
 Qr2_CheckTimeouts kind:function(arm,size=0x114) addr:0x0205e95c
@@ -2770,8 +2770,8 @@ func_02072a68 kind:function(arm,size=0x10) addr:0x02072a68
 __read_console kind:function(arm,size=0x50) addr:0x02072a78
 __write_console kind:function(arm,size=0x34) addr:0x02072ac8
 func_02072afc kind:function(arm,size=0x8) addr:0x02072afc
-func_02072b04 kind:function(arm,size=0xc) addr:0x02072b04
-func_02072b10 kind:function(arm,size=0x10) addr:0x02072b10
+SaveContext kind:function(arm,size=0xc) addr:0x02072b04
+RestoreContext kind:function(arm,size=0x10) addr:0x02072b10
 DecodeExceptionSignedValue kind:function(arm,size=0x8c) addr:0x02072b20
 DecodeExceptionValue kind:function(arm,size=0x8c) addr:0x02072bac
 FindExceptionTableEntry kind:function(arm,size=0x64) addr:0x02072c38
@@ -2926,7 +2926,7 @@ func_0207a668 kind:function(arm,size=0x4) addr:0x0207a668
 WriteMapTileQuad kind:function(arm,size=0xa4) addr:0x0207a66c
 SpawnMapOrderEffectSprite kind:function(arm,size=0x38) addr:0x0207a710
 SetMapCursorVisible kind:function(arm,size=0x20) addr:0x0207a748
-func_0207a768 kind:function(arm,size=0x14) addr:0x0207a768
+DeleteMapCursorSprites kind:function(arm,size=0x14) addr:0x0207a768
 MapView_UpdateFrame kind:function(arm,size=0x28) addr:0x0207a77c
 func_0207a7a4 kind:function(arm,size=0x380) addr:0x0207a7a4
 CompletePropertyCapture kind:function(arm,size=0x60) addr:0x0207ab24
@@ -2937,7 +2937,7 @@ InitCursorCellBurst kind:function(arm,size=0x140) addr:0x0207ae2c
 FreeCursorCellBurst kind:function(arm,size=0x10) addr:0x0207af6c
 UpdateCursorCellBurst kind:function(arm,size=0xac) addr:0x0207af7c
 CreateCursorCellBurst kind:function(arm,size=0x18) addr:0x0207b028
-func_0207b040 kind:function(arm,size=0x18) addr:0x0207b040
+DeleteAimCursorSprites kind:function(arm,size=0x18) addr:0x0207b040
 InitMapScrollAnimation kind:function(arm,size=0x10c) addr:0x0207b058
 StepMapScrollAnimation kind:function(arm,size=0x18c) addr:0x0207b164
 ClampMapViewToTile kind:function(arm,size=0x2bc) addr:0x0207b2f0
@@ -3103,13 +3103,13 @@ func_02081568 kind:function(arm,size=0x10) addr:0x02081568
 LoadNarcFileRaw kind:function(arm,size=0x18) addr:0x02081578
 LoadNarcFileDecompressed kind:function(arm,size=0x18) addr:0x02081590
 LoadNarcMemberToBuffer kind:function(arm,size=0x14) addr:0x020815a8
-func_020815bc kind:function(arm,size=0x18) addr:0x020815bc
+LoadNarcFileToNewBuffer kind:function(arm,size=0x18) addr:0x020815bc
 LoadNarcFileSection kind:function(arm,size=0x28) addr:0x020815d4
 LoadNarcFileToSpriteBuffer kind:function(arm,size=0x20) addr:0x020815fc
 LoadNarcFileToBGExtPltt kind:function(arm,size=0x28) addr:0x0208161c
 QueueNarcFileToBGExtPltt kind:function(arm,size=0x28) addr:0x02081644
 LoadNarcFileToObjExtPalette kind:function(arm,size=0x20) addr:0x0208166c
-func_0208168c kind:function(arm,size=0x18) addr:0x0208168c
+LoadNarcFileToTextureBank kind:function(arm,size=0x18) addr:0x0208168c
 LoadNarcFileAndDrawTilemapBlock kind:function(arm,size=0x28) addr:0x020816a4
 LoadNarcFileDecompressedAndDrawTilemapBlock kind:function(arm,size=0x28) addr:0x020816cc
 BuildNarcPath kind:function(arm,size=0x30) addr:0x020816f4
@@ -3133,12 +3133,12 @@ ResumeMicTestScreen kind:function(arm,size=0x1c) addr:0x02081ec8
 CreateSleepRequestSprite kind:function(arm,size=0x24) addr:0x02081ee4
 func_02081f08 kind:function(arm,size=0x18) addr:0x02081f08
 func_02081f20 kind:function(arm,size=0x18) addr:0x02081f20
-func_02081f38 kind:function(arm,size=0x18) addr:0x02081f38
+DecrementInputLockFrames kind:function(arm,size=0x18) addr:0x02081f38
 func_02081f50 kind:function(arm,size=0x14) addr:0x02081f50
 func_02081f64 kind:function(arm,size=0x14) addr:0x02081f64
 ForceKeyBInput kind:function(arm,size=0x5c) addr:0x02081f78
-func_02081fd4 kind:function(arm,size=0x18) addr:0x02081fd4
-func_02081fec kind:function(arm,size=0x14) addr:0x02081fec
+CreateInputBlockSprite kind:function(arm,size=0x18) addr:0x02081fd4
+DeleteInputBlockSprite kind:function(arm,size=0x14) addr:0x02081fec
 func_02082000 kind:function(arm,size=0x14) addr:0x02082000
 ClearScreenOffRequest kind:function(arm,size=0x14) addr:0x02082014
 MemAlloc kind:function(arm,size=0xc) addr:0x02082028
@@ -3288,8 +3288,8 @@ func_02085d7c kind:function(arm,size=0x14) addr:0x02085d7c
 AppendLinkCommand kind:function(arm,size=0x68) addr:0x02085d90
 PopLinkQueueEntry kind:function(arm,size=0x58) addr:0x02085df8
 ClearLinkCommandQueue kind:function(arm,size=0x3c) addr:0x02085e50
-func_02085e8c kind:function(arm,size=0x18) addr:0x02085e8c
-func_02085ea4 kind:function(arm,size=0x18) addr:0x02085ea4
+StartVoiceChatIfEnabled kind:function(arm,size=0x18) addr:0x02085e8c
+StopVoiceChatIfEnabled kind:function(arm,size=0x18) addr:0x02085ea4
 func_02085ebc kind:function(arm,size=0x158) addr:0x02085ebc
 UpdateVoiceChatWidget kind:function(arm,size=0x1f4) addr:0x02086014
 CreateVoiceChatWidget kind:function(arm,size=0x128) addr:0x02086208
@@ -3509,7 +3509,7 @@ CapturePaletteFadeTarget kind:function(arm,size=0x40) addr:0x0208c75c
 FillPaletteFadeFrom kind:function(arm,size=0x1c) addr:0x0208c79c
 StartPaletteFadeIn kind:function(arm,size=0x78) addr:0x0208c7b8
 StartPaletteFade kind:function(arm,size=0x78) addr:0x0208c830
-func_0208c8a8 kind:function(arm,size=0x18) addr:0x0208c8a8
+InitPaletteFadeSprite kind:function(arm,size=0x18) addr:0x0208c8a8
 UpdatePaletteFade kind:function(arm,size=0x12c) addr:0x0208c8c0
 func_0208c9ec kind:function(arm,size=0x4) addr:0x0208c9ec
 func_0208c9f0 kind:function(arm,size=0xc) addr:0x0208c9f0
@@ -3568,7 +3568,7 @@ GetCurrentMusicTrack kind:function(arm,size=0x10) addr:0x0208f770
 PlayMusicTrack kind:function(arm,size=0x40) addr:0x0208f780
 func_0208f7c0 kind:function(arm,size=0x10) addr:0x0208f7c0
 ChangeMusicTrackWithFade kind:function(arm,size=0x38) addr:0x0208f7d0
-func_0208f808 kind:function(arm,size=0x18) addr:0x0208f808
+ClearCurrentMusicTrack kind:function(arm,size=0x18) addr:0x0208f808
 WaitForMusicFadeFrames kind:function(arm,size=0x24) addr:0x0208f820
 FadeOutMusicOverFrames kind:function(arm,size=0x4c) addr:0x0208f844
 FadeOutMusicDefault kind:function(arm,size=0x10) addr:0x0208f890
@@ -4274,8 +4274,8 @@ GetUnitAttackRangeBonus kind:function(arm,size=0x30) addr:0x020a26c8
 GetUnitTerrainBonus kind:function(arm,size=0x30) addr:0x020a26f8
 GetUnitMaxLuckBonus kind:function(arm,size=0x30) addr:0x020a2728
 GetUnitDamageVarianceMin kind:function(arm,size=0x30) addr:0x020a2758
-func_020a2788 kind:function(arm,size=0x18) addr:0x020a2788
-func_020a27a0 kind:function(arm,size=0x18) addr:0x020a27a0
+IsCoZoneKindSelectable kind:function(arm,size=0x18) addr:0x020a2788
+IsCoZoneKindEnabled kind:function(arm,size=0x18) addr:0x020a27a0
 GetCoZoneBonusIndex kind:function(arm,size=0x40) addr:0x020a27b8
 IsUnitKindInCoZone kind:function(arm,size=0x70) addr:0x020a27f8
 GetCoZoneAttackBonus kind:function(arm,size=0x8c) addr:0x020a2868
@@ -4419,7 +4419,7 @@ InitAreaDamageEffect kind:function(arm,size=0xbc) addr:0x020a6c00
 func_020a6cbc kind:function(arm,size=0x10) addr:0x020a6cbc
 ApplyAreaDamageEffect kind:function(arm,size=0x1e4) addr:0x020a6ccc
 func_020a6eb0 kind:function(arm,size=0x11c) addr:0x020a6eb0
-func_020a6fcc kind:function(arm,size=0x18) addr:0x020a6fcc
+SpawnAreaDamageEffect kind:function(arm,size=0x18) addr:0x020a6fcc
 CanUnitLoadKind kind:function(arm,size=0x90) addr:0x020a6fe4
 CanUnitsJoin kind:function(arm,size=0x12c) addr:0x020a7074
 DamageUnitAtTile kind:function(arm,size=0xd8) addr:0x020a71a0
@@ -4462,12 +4462,12 @@ ComputeUnitMoveRange kind:function(arm,size=0x80) addr:0x020a7b3c
 GetUnitKindBuildCost kind:function(arm,size=0x18) addr:0x020a7bbc
 GetUnitKindMaxAttackRange kind:function(arm,size=0x18) addr:0x020a7bd4
 func_020a7bec kind:function(arm,size=0xc) addr:0x020a7bec
-func_020a7bf8 kind:function(arm,size=0x18) addr:0x020a7bf8
+GetUnitKindMinAttackRange kind:function(arm,size=0x18) addr:0x020a7bf8
 ComputeUnitMaxAttackRange kind:function(arm,size=0x40) addr:0x020a7c10
 GetUnitKindMaxFuel kind:function(arm,size=0x18) addr:0x020a7c50
 GetUnitKindMaxAmmo kind:function(arm,size=0x18) addr:0x020a7c68
 GetUnitKindClass kind:function(arm,size=0x18) addr:0x020a7c80
-func_020a7c98 kind:function(arm,size=0x18) addr:0x020a7c98
+GetUnitKindMoveType kind:function(arm,size=0x18) addr:0x020a7c98
 HasUnitActed kind:function(arm,size=0x18) addr:0x020a7cb0
 UnitHasCapturePoints kind:function(arm,size=0x1c) addr:0x020a7cc8
 UnitHasCargo kind:function(arm,size=0x18) addr:0x020a7ce4
@@ -4543,7 +4543,7 @@ GetMapPlayerCoId kind:function(arm,size=0x1c) addr:0x020a8a30
 GetMapPlayerId kind:function(arm,size=0x1c) addr:0x020a8a4c
 GetMapPlayerArmyId kind:function(arm,size=0x1c) addr:0x020a8a68
 func_020a8a84 kind:function(arm,size=0x10) addr:0x020a8a84
-func_020a8a94 kind:function(arm,size=0x18) addr:0x020a8a94
+MapData_GetGridPosition kind:function(arm,size=0x18) addr:0x020a8a94
 GetMapFollowupMapId kind:function(arm,size=0x18) addr:0x020a8aac
 MapData_GetPlayerTrack kind:function(arm,size=0x1c) addr:0x020a8ac4
 GetMapPlayerState kind:function(arm,size=0x1c) addr:0x020a8ae0
@@ -4937,7 +4937,7 @@ ApplyPendingDamage kind:function(arm,size=0x2c) addr:0x020b6b80
 AuroraBombardTargets kind:function(arm,size=0xc0) addr:0x020b6bac
 UpdateAuroraEffect kind:function(arm,size=0x1e0) addr:0x020b6c6c
 ApplyAuroraPendingDamage kind:function(arm,size=0xc) addr:0x020b6e4c
-func_020b6e58 kind:function(arm,size=0x18) addr:0x020b6e58
+StartAuroraEffect kind:function(arm,size=0x18) addr:0x020b6e58
 StageAuroraEffect kind:function(arm,size=0x128) addr:0x020b6e70
 CreateAuroraStrikeEffect kind:function(arm,size=0x40) addr:0x020b6f98
 StartMapViewPanEffect kind:function(arm,size=0x1c) addr:0x020b6fd8
@@ -4978,7 +4978,7 @@ CloseMenuList kind:function(arm,size=0x2c) addr:0x020b8740
 func_020b876c kind:function(arm,size=0xc) addr:0x020b876c
 func_020b8778 kind:function(arm,size=0x10) addr:0x020b8778
 HandleListCursorInput kind:function(arm,size=0x170) addr:0x020b8788
-func_020b88f8 kind:function(arm,size=0x18) addr:0x020b88f8
+SetMenuListRow kind:function(arm,size=0x18) addr:0x020b88f8
 CreateMenuListRowSlots kind:function(arm,size=0x4c) addr:0x020b8910
 GetMenuList kind:function(arm,size=0x14) addr:0x020b895c
 func_020b8970 kind:function(arm,size=0x35c) addr:0x020b8970
@@ -5198,7 +5198,7 @@ LoadUiGraphics kind:function(arm,size=0x10) addr:0x020c0a88
 ResetCarriedUnitMenuStack kind:function(arm,size=0x44) addr:0x020c0a98
 PushCarriedUnitMenuState kind:function(arm,size=0x64) addr:0x020c0adc
 PopCarriedUnitMenuState kind:function(arm,size=0x48) addr:0x020c0b40
-func_020c0b88 kind:function(arm,size=0x14) addr:0x020c0b88
+SetCarriedUnitMenuSelection kind:function(arm,size=0x14) addr:0x020c0b88
 GetCarriedUnitMenuSelection kind:function(arm,size=0x14) addr:0x020c0b9c
 DrawCarriedUnitList kind:function(arm,size=0xec) addr:0x020c0bb0
 HandleCarriedUnitListInput kind:function(arm,size=0xb4) addr:0x020c0c9c
@@ -5339,7 +5339,7 @@ RestoreBattleCursorPosition kind:function(arm,size=0x3c) addr:0x020c5b5c
 func_020c5b98 kind:function(arm,size=0xe0) addr:0x020c5b98
 func_020c5c78 kind:function(arm,size=0x10) addr:0x020c5c78
 func_020c5c88 kind:function(arm,size=0xc) addr:0x020c5c88
-func_020c5c94 kind:function(arm,size=0x18) addr:0x020c5c94
+CloseCarriedUnitMenuWithSelection kind:function(arm,size=0x18) addr:0x020c5c94
 CanUseFreePlayOnlyCommand kind:function(arm,size=0x28) addr:0x020c5cac
 CanUseAfterBattleEndCommand kind:function(arm,size=0x1c) addr:0x020c5cd4
 CanUseDuringBattleCommand kind:function(arm,size=0x1c) addr:0x020c5cf0
@@ -5415,7 +5415,7 @@ GetMenuTopY kind:function(arm,size=0x8) addr:0x020c744c
 ClampInt kind:function(arm,size=0x1c) addr:0x020c7454
 GetMapCursorScreenPosition kind:function(arm,size=0xbc) addr:0x020c7470
 OpenBattleMenu kind:function(arm,size=0x3c) addr:0x020c752c
-func_020c7568 kind:function(arm,size=0x14) addr:0x020c7568
+CloseCarriedUnitMenu kind:function(arm,size=0x14) addr:0x020c7568
 OpenCarriedUnitMenu kind:function(arm,size=0x50) addr:0x020c757c
 OpenMapActionMenu kind:function(arm,size=0x88) addr:0x020c75cc
 SetCursorTargetToCursorTile kind:function(arm,size=0x34) addr:0x020c7654
@@ -5430,7 +5430,7 @@ ScriptMarkerSprite_PanMapViewToTile kind:function(arm,size=0x18) addr:0x020c78ac
 CreateMissileBMarkerFromEffect kind:function(arm,size=0x24) addr:0x020c78c4
 CreateScriptMarkerSprite kind:function(arm,size=0x38) addr:0x020c78e8
 DropFlareOnCursorUnitIfVisible kind:function(arm,size=0x8c) addr:0x020c7920
-func_020c79ac kind:function(arm,size=0x18) addr:0x020c79ac
+SpawnFallingFlareStrikeFromSprite kind:function(arm,size=0x18) addr:0x020c79ac
 CreateFlareShotSprite kind:function(arm,size=0x28) addr:0x020c79c4
 GetMapRecordBuffer kind:function(arm,size=0xc) addr:0x020c79ec
 GetMapRecordTerrain kind:function(arm,size=0x10) addr:0x020c79f8
@@ -5477,7 +5477,7 @@ LoadCampaignMapHeaders kind:function(arm,size=0x24) addr:0x020c8e40
 func_020c8e64 kind:function(arm,size=0x14) addr:0x020c8e64
 LoadCampaignMapHeadersFrom kind:function(arm,size=0x28) addr:0x020c8e78
 StepCampaignMapHeaderLoad kind:function(arm,size=0x34) addr:0x020c8ea0
-func_020c8ed4 kind:function(arm,size=0x18) addr:0x020c8ed4
+CreateCampaignMapHeaderLoader kind:function(arm,size=0x18) addr:0x020c8ed4
 ClearCampaignMapHeaders kind:function(arm,size=0x20) addr:0x020c8eec
 ConvertTextToGlyphs kind:function(arm,size=0x134) addr:0x020c8f0c
 ResetCampaignMapLoadQueue kind:function(arm,size=0x20) addr:0x020c9040
@@ -5667,8 +5667,8 @@ RefreshMapView kind:function(arm,size=0x10) addr:0x020cfd28
 func_020cfd38 kind:function(arm,size=0xf4) addr:0x020cfd38
 RefreshMapCellUnits kind:function(arm,size=0x338) addr:0x020cfe2c
 func_020d0164 kind:function(arm,size=0x14) addr:0x020d0164
-func_020d0178 kind:function(arm,size=0xf8) addr:0x020d0178
-func_020d0270 kind:function(arm,size=0x18) addr:0x020d0270
+RefreshMovementRanges kind:function(arm,size=0xf8) addr:0x020d0178
+RefreshMapUnitDisplay kind:function(arm,size=0x18) addr:0x020d0270
 InitAreaScan kind:function(arm,size=0x2c) addr:0x020d0288
 NextAreaTile kind:function(arm,size=0x110) addr:0x020d02b4
 GetPlayerMoveRangeGrid kind:function(arm,size=0x28) addr:0x020d03c4
@@ -5702,7 +5702,7 @@ ApplyBattleParticipantResult kind:function(arm,size=0xe0) addr:0x020d1094
 RecordDestroyedUnit kind:function(arm,size=0x80) addr:0x020d1174
 ApplyBattleResult kind:function(arm,size=0x450) addr:0x020d11f4
 ApplyAttackerBattleResult kind:function(arm,size=0x28) addr:0x020d1644
-func_020d166c kind:function(arm,size=0x24) addr:0x020d166c
+RunBattleIfTarget kind:function(arm,size=0x24) addr:0x020d166c
 func_020d1690 kind:function(arm,size=0x258) addr:0x020d1690
 GetDefenderBonus kind:function(arm,size=0x14) addr:0x020d18e8
 AddPlayerUnitDestroyed kind:function(arm,size=0x3c) addr:0x020d18fc
@@ -5858,7 +5858,7 @@ UpdateAimingCursor kind:function(arm,size=0x214) addr:0x020d50bc
 CloseAimingCursor kind:function(arm,size=0x34) addr:0x020d52d0
 UpdateUnitSelectCursor kind:function(arm,size=0x12c) addr:0x020d5304
 UpdateMapSelectionCursor kind:function(arm,size=0x6c) addr:0x020d5430
-func_020d549c kind:function(arm,size=0x18) addr:0x020d549c
+OpenMapView kind:function(arm,size=0x18) addr:0x020d549c
 func_020d54b4 kind:function(arm,size=0x4) addr:0x020d54b4
 UpdateMapCursorSettle kind:function(arm,size=0x5c) addr:0x020d54b8
 StartEmptyTileSettle kind:function(arm,size=0x40) addr:0x020d5514
@@ -5896,7 +5896,7 @@ UpdateCursorCellDisplayMode kind:function(arm,size=0x58) addr:0x020d8804
 SetMapCategory kind:function(arm,size=0x10) addr:0x020d885c
 GetMapCategory kind:function(arm,size=0x10) addr:0x020d886c
 OpenMapSelectScreen kind:function(arm,size=0x18) addr:0x020d887c
-func_020d8894 kind:function(arm,size=0x18) addr:0x020d8894
+OpenMapSelectScreenKeepingText kind:function(arm,size=0x18) addr:0x020d8894
 CreateEndingScreen kind:function(arm,size=0x18) addr:0x020d88ac
 OpenMode4MapList kind:function(arm,size=0x30) addr:0x020d88c4
 func_020d88f4 kind:function(arm,size=0x10) addr:0x020d88f4
@@ -6292,8 +6292,8 @@ HeapFreeBlock kind:function(arm,size=0x44) addr:0x020e35cc
 ResumeOnlineListWhenProfileSyncOverdue kind:function(arm,size=0x44) addr:0x020e3610
 ResumeOnlineListWhenWebGetTimesOut kind:function(arm,size=0x44) addr:0x020e3654
 ResumeOnlineListWhenProfileSyncOverdueAlt kind:function(arm,size=0x44) addr:0x020e3698
-func_020e36dc kind:function(arm,size=0x18) addr:0x020e36dc
-func_020e36f4 kind:function(arm,size=0x18) addr:0x020e36f4
+SubmitWebRegisterAndInvalidateCount kind:function(arm,size=0x18) addr:0x020e36dc
+FinishWebRegisterAndInvalidateCount kind:function(arm,size=0x18) addr:0x020e36f4
 FinishCountedOnlinePlayerListRequest kind:function(arm,size=0x2c) addr:0x020e370c
 UploadOnlinePlayerRecords kind:function(arm,size=0x50) addr:0x020e3738
 CreateOnlinePlayerListCountedNode kind:function(arm,size=0x54) addr:0x020e3788
@@ -6316,12 +6316,12 @@ CreateOnlinePlayerIdListNode kind:function(arm,size=0x94) addr:0x020e4174
 FinishOnlinePlayerCountRequest kind:function(arm,size=0x38) addr:0x020e4208
 RequestOnlinePlayerCount kind:function(arm,size=0x7c) addr:0x020e4240
 CreateOnlinePlayerListEmptyNode kind:function(arm,size=0x48) addr:0x020e42bc
-func_020e4304 kind:function(arm,size=0x14) addr:0x020e4304
+InvalidateOnlinePlayerCount kind:function(arm,size=0x14) addr:0x020e4304
 OnlinePlayerList_DestroyAndFree kind:function(arm,size=0x34) addr:0x020e4318
 OnlinePlayerList_Destroy kind:function(arm,size=0x2c) addr:0x020e434c
 func_020e4378 kind:function(arm,size=0xe0) addr:0x020e4378
 InstallVBlankHandler kind:function(arm,size=0x38) addr:0x020e4458
-func_020e4490 kind:function(arm,size=0xe0) addr:0x020e4490
+InitGameEngine kind:function(arm,size=0xe0) addr:0x020e4490
 StartDisplay kind:function(arm,size=0x24) addr:0x020e4570
 NitroMain kind:function(arm,size=0xf4) addr:0x020e4594
 VBlankHandler kind:function(arm,size=0xe4) addr:0x020e4688
@@ -7827,7 +7827,7 @@ gKeyState kind:data(any) addr:0x02101e84
 gTouchState kind:data(any) addr:0x02101e88
 gSleepScreenSpriteClass kind:data(any) addr:0x02101e8c
 gSleepRequestSpriteClass kind:data(any) addr:0x02101eac
-data_02101edc kind:data(any) addr:0x02101edc
+gInputBlockSpriteClass kind:data(any) addr:0x02101edc
 gSpriteDesc64x8 kind:data(any) addr:0x02101f0c
 gSpriteDesc64x16 kind:data(any) addr:0x02101f1c
 data_02101f2c kind:data(any) addr:0x02101f2c
@@ -9640,7 +9640,7 @@ gCoZoneAttackPct kind:data(any) addr:0x0211fbf4
 gCoZoneDefensePct kind:data(any) addr:0x0211fbf6
 gCoZoneBaseMoveRange kind:data(any) addr:0x0211fbf8
 gCoZoneKindEnabled kind:data(any) addr:0x0211fbfd
-data_0211fc18 kind:data(any) addr:0x0211fc18
+gCoZoneKindSelectable kind:data(any) addr:0x0211fc18
 data_02120000 kind:data(any) addr:0x02120000
 data_02120001 kind:data(any) addr:0x02120001
 data_02120010 kind:data(any) addr:0x02120010
@@ -9676,7 +9676,7 @@ sStormClName kind:data(any) addr:0x021205bc
 data_021205c8 kind:data(any) addr:0x021205c8
 gOrderEffectSpriteClass kind:data(any) addr:0x02120608
 gUnitExplosionSpriteScript kind:data(any) addr:0x02120670
-data_021206a0 kind:data(any) addr:0x021206a0
+gAreaDamageEffectClass kind:data(any) addr:0x021206a0
 gObjPaletteFadeRamp kind:data(any) addr:0x021206e0
 data_02120700 kind:data(any) addr:0x02120700
 data_02120720 kind:data(any) addr:0x02120720
@@ -10389,7 +10389,7 @@ data_0212ae9c kind:data(any) addr:0x0212ae9c
 gScriptMarkerClass kind:data(any) addr:0x0212aeec
 gMapCursorMenuClass kind:data(any) addr:0x0212afac
 data_0212b00c kind:data(any) addr:0x0212b00c
-data_0212b07c kind:data(any) addr:0x0212b07c
+gCampaignMapHeaderLoaderClass kind:data(any) addr:0x0212b07c
 gCampaignMapLoadQueueClass kind:data(any) addr:0x0212b0ac
 gCampaignErasePanelClass kind:data(any) addr:0x0212b114
 sMapCodeFormat kind:data(any) addr:0x0212b19c
@@ -10464,7 +10464,7 @@ gHistoryMenuSpriteClass kind:data(any) addr:0x0212bf58
 gRecordsMenuSpriteClass kind:data(any) addr:0x0212bf78
 gFrontEndSequenceScreenClass kind:data(any) addr:0x0212bf98
 data_0212bfb8 kind:data(any) addr:0x0212bfb8
-data_0212bfe8 kind:data(any) addr:0x0212bfe8
+gMapSelectScreenKeepingTextClass kind:data(any) addr:0x0212bfe8
 gEndingScreenClass kind:data(any) addr:0x0212c020
 gMapSelectScreenClass kind:data(any) addr:0x0212c058
 gMapEditorScreenAnim kind:data(any) addr:0x0212c098
@@ -10698,8 +10698,8 @@ gTouchCalibration kind:bss addr:0x0212fc8c
 gArm7TransferState kind:bss addr:0x0212fcac
 data_0212fcb0 kind:bss addr:0x0212fcb0
 gArm7CommandState kind:bss addr:0x0212fccc
-data_0212fcd8 kind:bss addr:0x0212fcd8
-data_0212fce0 kind:bss addr:0x0212fce0
+gPreSleepCallbackList kind:bss addr:0x0212fcd8
+gPostSleepCallbackList kind:bss addr:0x0212fce0
 gArm7CommandBusy kind:bss addr:0x0212fce4
 gArm7CommandMutex kind:bss addr:0x0212fcf4
 gArm7CommandReplySlots kind:bss addr:0x0212fd0c
@@ -10818,8 +10818,8 @@ gActiveVoices kind:bss addr:0x0213b2b8
 gVoicePool kind:bss addr:0x0213b2c4
 gSoundChannels kind:bss addr:0x0213b704
 gSoundChannelVoiceLimits kind:bss addr:0x0213b71c
-data_0213b720 kind:bss addr:0x0213b720
-data_0213b724 kind:bss addr:0x0213b724
+gSoundChannelVolumes kind:bss addr:0x0213b720
+gSoundChannelMixVolumes kind:bss addr:0x0213b724
 gPlayingVoicesReady kind:bss addr:0x0213bb84
 gPlayingVoices kind:bss addr:0x0213bb88
 gSoundSegmentOffsets kind:bss addr:0x0213bb94
@@ -10886,7 +10886,7 @@ gDnsQueryPacket kind:bss addr:0x0213db94
 gDnsQueryNameBuffer kind:bss addr:0x0213db99
 gOverrideDnsName kind:bss addr:0x0213dbe0
 gServiceNameBuffer kind:bss addr:0x0213dc20
-data_0213dc60 kind:bss addr:0x0213dc60
+gGhiSocketState kind:bss addr:0x0213dc60
 data_0213dc68 kind:bss addr:0x0213dc68
 data_0213dc78 kind:bss addr:0x0213dc78
 data_0213dc8c kind:bss addr:0x0213dc8c

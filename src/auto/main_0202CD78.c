@@ -300,7 +300,7 @@ return 1;
 s32 Sound_InitArchiveChannels(s32 pool) {
 void *GetSoundArchiveChannelRecord(s32);
 void Sound_SetChannelVoiceLimit(s32,u8);
-void func_0202abb4(s32,u16);
+void Sound_SetChannelBaseVolume(s32,u16);
 s32 Sound_CreateChannelHeap(s32,s32,s32);
 s32 i; SoundChannelRecord *rec; s32 j; s32 saved=pool;
 Sound_GetCurrentArchive();
@@ -308,7 +308,7 @@ for(i=0;i<32;i++) {
 rec=GetSoundArchiveChannelRecord(i);
 if(rec) {
 Sound_SetChannelVoiceLimit(i,rec->count);
-func_0202abb4(i,rec->volume);
+Sound_SetChannelBaseVolume(i,rec->volume);
 if(rec->heapSize && saved)
 for(j=0;j<rec->count;j++)
 if(!Sound_CreateChannelHeap(i,saved,rec->heapSize))return 0;
@@ -478,7 +478,7 @@ s32 Sound_PlaySequenceEntry(s32 player, s32 channel, s32 bankId, s32 priority,
  * list, start the decode lock, initialise the four player slots and create the
  * worker task.  When the worker already exists, only refresh the slots. */
 void Sound_StartWorker(M2C_UNK taskPriority, M2C_UNK heap) {
-    M2C_UNK InitMutex(M2C_UNK *);
+    M2C_UNK OS_InitMutex(M2C_UNK *);
     M2C_UNK InitFileRequest(s32);
     M2C_UNK ListInit(M2C_UNK *, M2C_UNK);
     M2C_UNK ListAppend(M2C_UNK *, s32);
@@ -514,7 +514,7 @@ appendRequest:
     ++request;
 checkRequests:
     if (request < SOUND_REQUEST_COUNT) goto appendRequest;
-    InitMutex(&gSoundDecodeLock);
+    OS_InitMutex(&gSoundDecodeLock);
     slot = 0;
     M2C_FIELD(&gSoundWorkerState, M2C_UNK **, SOUND_TASK_STATE_DECODER) = &gSoundDecodeState;
     slots = (s32)gSoundPlayerSlots;

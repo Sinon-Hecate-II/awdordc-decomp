@@ -386,11 +386,13 @@ void *DestroyMapCodeEntryPanel(void *panel) {
     return panel;
 }
 
-u8 IsValueInRange(s32 arg0, s32 arg1, s32 arg2) {
- s32 result;
- if ((arg1 <= arg0) && (arg0 <= arg2)) result = 1;
- else result = 0;
- return result;
+/* True when value lies within the inclusive range [min, max]. */
+u8 IsValueInRange(s32 value, s32 min, s32 max) {
+    s32 inRange;
+
+    if ((min <= value) && (value <= max)) inRange = 1;
+    else inRange = 0;
+    return inRange;
 }
 
 /* Whether this console hosts an active link session (a session is running and

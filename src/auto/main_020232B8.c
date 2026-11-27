@@ -212,12 +212,15 @@ loop_1:
     goto loop_1;
 }
 
-s32 func_020237bc(s32 x,s32 unused,s32 value) {
- M2C_UNK RC4_Crypt(s32);
- RC4_Crypt(x+0x1E0);return value;
+/* RC4-decrypt a record's payload with the channel's incoming cipher state
+ * (TLS_RC4_IN) and return the payload length. */
+s32 TlsDecryptRecord(u8 *channel, u8 *data, s32 length) {
+    M2C_UNK RC4_Crypt(u8 *, u8 *, s32);
+    RC4_Crypt(channel + TLS_RC4_IN, data, length);
+    return length;
 }
 
-/* Verifies the digest of a message received on a comm channel: the payload is already RC4-decrypted by func_020237bc, then the channel's MD5 (type 4, ctx +0x3FC) or SHA1 (type 5, ctx +0x348) is run twice - key+pad, then key+pad+counter+message - and the result compared with the digest stored at the end of the payload. On mismatch the channel state (+0x455) becomes 9; the channel counter (+0x2EC) is bumped and the message length without the digest is returned. */
+/* Verifies the digest of a message received on a comm channel: the payload is already RC4-decrypted by TlsDecryptRecord, then the channel's MD5 (type 4, ctx +0x3FC) or SHA1 (type 5, ctx +0x348) is run twice - key+pad, then key+pad+counter+message - and the result compared with the digest stored at the end of the payload. On mismatch the channel state (+0x455) becomes 9; the channel counter (+0x2EC) is bumped and the message length without the digest is returned. */
 s32 TlsVerifyRecordMac(void *channel, u8 *msg) {
     M2C_UNK MI_CpuFill8();
     M2C_UNK MD5_Init();
@@ -233,7 +236,7 @@ s32 TlsVerifyRecordMac(void *channel, u8 *msg) {
     s32 digestSize;
     u16 temp_r0;
 
-    dataLen = func_020237bc((s32)channel,(s32)(msg+5),(msg[3] << 8) + msg[4]);
+    dataLen = TlsDecryptRecord((s32)channel,(s32)(msg+5),(msg[3] << 8) + msg[4]);
     switch (*(u16 *)((u8 *)channel + 0x32)) {
     case 4:
         dataLen -= 16;

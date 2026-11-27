@@ -461,8 +461,12 @@ void UpdateCampaignSaveMessage(void) {
 
 #pragma push
 #pragma optimization_level 3
-void func_ov007_0221c51c(void) {
+/* Spawn the scripted sprite that runs the map-start sequence: it holds the map
+ * view, initialises the start panel and, once the player confirms, advances to
+ * the next campaign map (its class callbacks are MapStart_InitState,
+ * IsMapConfirmEnabled, StartNextMap and UpdateCampaignSaveMessage). */
+void MapStart_SpawnSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov007_022201d8;
-    CreateSpriteFromClass(&data_ov007_022201d8, 7);
+    extern M2C_UNK gMapStartSpriteClass;
+    CreateSpriteFromClass(&gMapStartSpriteClass, 7);
 }

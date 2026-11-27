@@ -70,7 +70,7 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
     M2C_UNK DrawTextSprite(void *);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
-    s32 func_ov003_02200c64(u8, M2C_UNK, M2C_UNK);
+    s32 Ov003_IsValueInRange3(u8, M2C_UNK, M2C_UNK);
     s32 Ov003_GetEntryValueIconTile(u8, u8);
     extern u16 **gCur3DSpriteEngine;
     extern M2C_UNK data_ov003_02210484;
@@ -166,7 +166,7 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
             temp_r8_4 = GetUnitSpriteWidth(temp_r9);
             SpriteCellListSetCellRect(M2C_FIELD(temp_r9, void **, 0x64), 1, (s32) temp_r10, (s32) temp_r11_2, (u16) temp_r8_4, (u16) GetUnitSpriteHeight(temp_r9));
         }
-        if (func_ov003_02200c64(var_r4, 3, 5) != 0) {
+        if (Ov003_IsValueInRange3(var_r4, 3, 5) != 0) {
             SetTextSpriteValue(M2C_FIELD(arg0, void **, 0x54), M2C_FIELD(((var_r4 * 0x18) + M2C_FIELD(arg0, s32 *, 0x44)), s32 *, 0xC));
             temp_r1_2 = M2C_FIELD(arg0, void **, 0x54);
             M2C_FIELD(temp_r1_2, s16 *, 6) = (s16) (temp_r6 + 0x1B);

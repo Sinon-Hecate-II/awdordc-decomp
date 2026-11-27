@@ -234,15 +234,17 @@ void DrawMapSelectLabel(void *arg0) {
     gCur3DSpriteEngine=saved;
 }
 
-u8 func_ov003_0220801c(void *arg0) {
-    u8 var_r0;
+/* Whether the menu's action timer (MENU_ACTION) is still running, i.e. a row
+ * animation is playing, so the menu should not play touch-move sounds yet. */
+u8 IsMenuActionRunning(void *menu) {
+    u8 running;
 
-    if (M2C_FIELD(arg0, u8 *, 0x34) != 0) {
-        var_r0 = 1;
+    if (M2C_FIELD(menu, u8 *, MENU_ACTION) != 0) {
+        running = 1;
     } else {
-        var_r0 = 0;
+        running = 0;
     }
-    return var_r0;
+    return running;
 }
 
 /* Builds the map-select label's 3D-sprite transform on the sub-screen engine:

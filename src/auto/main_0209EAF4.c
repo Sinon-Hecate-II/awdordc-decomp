@@ -77,7 +77,7 @@ void InitBattlePreviewSprite(void *panel) {
 }
 
 void func_0209ecf0(s32 arg0, s32 arg1) {
-    void func_020d166c(u8, s32, void *);
+    void RunBattleIfTarget(u8, s32, void *);
     s32 Divide(s32, s32);
     s32 GetMoveRangeCommanderId(s32, s32, s32);
     void AddCoPowerMeterPointsIfEnabled(s32, s32);
@@ -130,7 +130,7 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
         void **mapHandle = gCurrentMap;
         M2C_FIELD(&gBattleCommand, s32 *, 0x8) = seed;
         map = *mapHandle;
-        func_020d166c(M2C_FIELD(map, u8 *, 0x52d4), arg0, map + 0x52dc);
+        RunBattleIfTarget(M2C_FIELD(map, u8 *, 0x52d4), arg0, map + 0x52dc);
     }
 
     {

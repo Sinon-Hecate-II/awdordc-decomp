@@ -443,7 +443,7 @@ loop_7:
 /* Set up the asynchronous WFC send path once: mark it initialized, clear the
  * state left by the last send and create the mutex that serialises sends. */
 void WFC_InitSendState(void) {
-    void InitMutex(void *);
+    void OS_InitMutex(void *);
     extern M2C_UNK gWfcSendState;
     extern M2C_UNK gWfcSendLock;
 
@@ -454,7 +454,7 @@ void WFC_InitSendState(void) {
     ((WfcSendState *)&gWfcSendState)->result = WFC_SEND_OK;
     ((WfcSendState *)&gWfcSendState)->flags = 0;
     ((WfcSendState *)&gWfcSendState)->request = 0;
-    InitMutex(&gWfcSendLock);
+    OS_InitMutex(&gWfcSendLock);
 }
 
 /* Hand a received WFC link data block to the IP stack: if a send callback is

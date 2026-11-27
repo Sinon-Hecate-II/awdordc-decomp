@@ -311,7 +311,7 @@ void func_ov005_0221f084(void *arg0) {
     M2C_UNK OpenNarcArchive(M2C_UNK *);
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
-    s32 func_020815bc(M2C_UNK *, M2C_UNK);
+    s32 LoadNarcFileToNewBuffer(M2C_UNK *, M2C_UNK);
     M2C_UNK Apply3DSpriteDisplayConfig();
     M2C_UNK Configure3DSpriteLayer(M2C_UNK, u16 *);
     M2C_UNK Set3DSpriteVramBanks();
@@ -394,7 +394,7 @@ void func_ov005_0221f084(void *arg0) {
     OpenNarcArchive(&data_ov005_02221238);
     LoadNarcFileDecompressed(&data_ov005_0222124c, M2C_FIELD(data_027e01d8, s32 *, 0x18));
     LoadNarcFileDecompressed(&data_ov005_02221260, M2C_FIELD(data_027e01d8, s32 *, 0x2C));
-    M2C_FIELD(arg0, s32 *, 0x3C) = func_020815bc(&data_ov005_02221274, 0x200);
+    M2C_FIELD(arg0, s32 *, 0x3C) = LoadNarcFileToNewBuffer(&data_ov005_02221274, 0x200);
     QueueBGExtPaletteUpload(M2C_FIELD(arg0, s32 *, 0x3C), 3, 0, 0x200, 0);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
     CloseNarcArchive();
@@ -403,7 +403,7 @@ void func_ov005_0221f084(void *arg0) {
     OpenNarcArchive((data_027e01d8 = (void*)g3DSpriteEngineSub, &data_ov005_022212b0));
     LoadNarcFileDecompressed(&data_ov005_022212c4, M2C_FIELD(data_027e01d8, s32 *, 0x18));
     LoadNarcFileDecompressed(&data_ov005_022212d4, M2C_FIELD(data_027e01d8, s32 *, 0x2C));
-    M2C_FIELD(arg0, s32 *, 0x40) = func_020815bc(&data_ov005_022212e4, 0x200);
+    M2C_FIELD(arg0, s32 *, 0x40) = LoadNarcFileToNewBuffer(&data_ov005_022212e4, 0x200);
     QueueBGExtPaletteUpload(M2C_FIELD(arg0, s32 *, 0x40), 3, 0, 0x200, 0);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
     CloseNarcArchive();

@@ -268,7 +268,7 @@ void Arm7FinishCommand(s32 result) {
  * slots, create the reply mutex and record the current frame as the last LCD
  * power-off. */
 void Arm7CommandInit(void) {
-    M2C_UNK InitMutex(M2C_UNK *);
+    M2C_UNK OS_InitMutex(M2C_UNK *);
     M2C_UNK PXI_Init();
     M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
     s32 IsFifoMessageReady(M2C_UNK,M2C_UNK);
@@ -285,7 +285,7 @@ void Arm7CommandInit(void) {
     do {} while(IsFifoMessageReady(ARM7_CMD_FIFO_TAG,1)==0);
     SetFifoMessageHandler(ARM7_CMD_FIFO_TAG,&Arm7CommandReply);
     for(i=0;i<ARM7_CMD_REPLY_COUNT;i++) ((u16 (*)[4])&gArm7CommandReplySlots)[i][0]=0;
-    InitMutex(&gArm7CommandMutex);
+    OS_InitMutex(&gArm7CommandMutex);
     M2C_FIELD(&gArm7CommandState,s32 *,POWER_SERVICE_LAST_OFF)=*(s32 *)SHARED_FRAME_COUNTER;
 }
 
@@ -537,12 +537,15 @@ s32 WakeDisplayWait(void) {
     return reply;
 }
 
-void Arm7SetAmpParam2(s32 a) {
-Arm7SetAmpParamWait(2,(u16)a);
+/* Set sound-amplifier parameter 2 to `value` and wait for the ARM7 to answer. */
+void Arm7SetAmpParam2(s32 value) {
+    Arm7SetAmpParamWait(2, (u16)value);
 }
 
-void func_0200e880(s32 a) {
-Arm7SetAmpParamWait(3,(u16)a);
+/* Set sound-amplifier parameter 3 to `value` and wait for the ARM7 to answer
+ * (the parameter-3 counterpart of Arm7SetAmpParam2). */
+void func_0200e880(s32 value) {
+    Arm7SetAmpParamWait(3, (u16)value);
 }
 
 /* Reads the ARM7's power-flags word and reports the two backlight-off bits:

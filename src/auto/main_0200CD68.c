@@ -453,7 +453,12 @@ void CalibrateTouchSample(u16 *out, u16 *raw) {
     else if ((s16)out[1] > 191) out[1] = 191;
 }
 
-void TP_WaitBusy(u32 a) {while(M2C_FIELD(&gTouchDriverState,volatile u16 *,0x3a)&a) {}}
+/* Spin until none of the touch commands in `commandMask` is still in flight
+ * (TouchState.flags3a, one bit per command). */
+void TP_WaitBusy(u32 commandMask) {
+    while (((volatile TouchState *)&gTouchDriverState)->flags3a & commandMask) {
+    }
+}
 
 u32 TP_CheckBusy(u32 arg0) { return M2C_FIELD(&gTouchDriverState, u16 *, 0x38) & arg0; }
 

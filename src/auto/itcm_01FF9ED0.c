@@ -238,10 +238,13 @@ s32 CreateSpriteObjectInLayer(s32 spriteClass,s32 owner,s32 engine) {
  return (s32)sprite;
 }
 
-void CreateSpriteFromClass(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK CreateSpriteObjectInLayer(M2C_UNK, M2C_UNK, s32);
+/* Create a 3D sprite object of `spriteClass`, owned by `owner`, in whichever of
+ * the two sprite engines is currently selected, and return it (0 when the class
+ * is invalid). */
+s32 CreateSpriteFromClass(s32 spriteClass, s32 owner) {
+    s32 CreateSpriteObjectInLayer(s32, s32, s32);
     extern s32 gCur3DSpriteEngine;
-    CreateSpriteObjectInLayer(arg0, arg1, gCur3DSpriteEngine);
+    return CreateSpriteObjectInLayer(spriteClass, owner, gCur3DSpriteEngine);
 }
 
 /* Create a 3D sprite object owned by `owner`: build the sprite in the given engine,
@@ -258,10 +261,13 @@ s32 CreateChildSpriteObject(s32 spriteClass, s32 owner, s32 engine) {
     return (s32)sprite;
 }
 
-void CreateSpriteObject(M2C_UNK arg0, M2C_UNK arg1) {
+/* Create a sprite of `spriteClass` on the current 3D-sprite engine: owned by
+ * `owner`, which is a layer index below DS3D_LAYER_COUNT or a parent sprite the
+ * new one becomes a child of. */
+void CreateSpriteObject(M2C_UNK spriteClass, M2C_UNK owner) {
     M2C_UNK CreateChildSpriteObject(M2C_UNK, M2C_UNK, s32);
     extern s32 gCur3DSpriteEngine;
-    CreateChildSpriteObject(arg0, arg1, gCur3DSpriteEngine);
+    CreateChildSpriteObject(spriteClass, owner, gCur3DSpriteEngine);
 }
 
 /* Create a 3D sprite of class `spriteClass` owned by `owner`: a small owner value

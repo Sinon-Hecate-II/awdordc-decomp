@@ -23,7 +23,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
     M2C_UNK LoadNarcFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0208168c(s32, M2C_UNK);
+    M2C_UNK LoadNarcFileToTextureBank(s32, M2C_UNK);
     M2C_UNK Apply3DSpriteLayout(u16 *);
     M2C_UNK Reset3DSpriteBankState();
     M2C_UNK GX_ReleaseBankGrants();
@@ -173,8 +173,8 @@ void func_ov004_02217f5c(void *arg0) {
     LoadFileToTextureBank(&data_ov004_0223c660, 0x30000);
     LoadFileToObjExtPalette(&data_ov004_0223c630, 0x220, 0x20);
     OpenNarcArchive(&data_ov004_0223c624);
-    func_0208168c(GetLocalizedFileName(&data_ov004_0223c5e8), 0x38000);
-    func_0208168c(GetLocalizedFileName(&data_ov004_0223c5dc), 0x39000);
+    LoadNarcFileToTextureBank(GetLocalizedFileName(&data_ov004_0223c5e8), 0x38000);
+    LoadNarcFileToTextureBank(GetLocalizedFileName(&data_ov004_0223c5dc), 0x39000);
     CloseNarcArchive();
     LoadFileToObjExtPalette(&data_ov004_0223c5c8, 0x240, 0xA0);
     LoadFileToObjExtPalette(&data_ov004_0223c5b0, 0x2E0, 0x20);

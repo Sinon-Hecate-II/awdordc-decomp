@@ -360,6 +360,15 @@ enum {
 #define SOUND_CHANNEL_EFFECT_FIRST 1 /* first channel the sound effects are mixed through */
 #define SOUND_CHANNEL_EFFECT_LAST  11 /* last channel the sound effects are mixed through */
 
+/* The sound driver's per-channel runtime mixer table, one SOUND_CHANNEL_SIZE
+ * (0x24-byte) record per channel, filled from the archive's channel table by
+ * Sound_InitArchiveChannels.  The game addresses each field through a symbol of
+ * its own, so the three views overlap at +0/+4/+8 of the same record:
+ * gSoundChannelVoiceLimits (+0), gSoundChannelVolumes (+4) and
+ * gSoundChannelMixVolumes (+8). */
+#define SOUND_CHANNEL_BASE_VOLUME 0x04 /* u32 volume of the channel, from its archive record */
+#define SOUND_CHANNEL_MIX_VOLUME  0x08 /* u8 mix volume, 0..SOUND_VOLUME_MAX; the ARM7 driver mixes the channel at it */
+
 /* A preallocated per-channel sequence-player heap: one of the sound data blocks
  * a channel keeps on its SOUND_CHANNEL_SEQ_LIST until a sequence player takes it
  * over.  The block's payload holds a heap (Sound_CreateHeap) the player then

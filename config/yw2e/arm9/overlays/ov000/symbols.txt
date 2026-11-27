@@ -213,7 +213,7 @@ Ov000_InfoWindow_OpenCell kind:function(arm,size=0x6c) addr:0x021749fc
 Ov000_InfoWindow_ShowUnitStats kind:function(arm,size=0x1c) addr:0x02174a68
 Ov000_InfoWindow_ShowTerrain kind:function(arm,size=0x30) addr:0x02174a84
 Ov000_InfoWindow_TogglePanel kind:function(arm,size=0x134) addr:0x02174ab4
-func_ov000_02174be8 kind:function(arm,size=0x18) addr:0x02174be8
+Ov000_InfoWindow_LoadGlobalAssets kind:function(arm,size=0x18) addr:0x02174be8
 func_ov000_02174c00 kind:function(arm,size=0xc) addr:0x02174c00
 Ov000_InfoWindow_Exists kind:function(arm,size=0x20) addr:0x02174c0c
 Ov000_InfoWindow_Create kind:function(arm,size=0x38) addr:0x02174c2c
@@ -515,7 +515,7 @@ BuildPlayerInfluenceMaps kind:function(arm,size=0x8c) addr:0x021998f0
 PickAiUnitAction kind:function(arm,size=0x364) addr:0x0219997c
 func_ov000_02199ce0 kind:function(arm,size=0x94) addr:0x02199ce0
 SetMapCursor kind:function(arm,size=0x1c4) addr:0x02199d74
-func_ov000_02199f38 kind:function(arm,size=0x18) addr:0x02199f38
+AbortAiUnitAction kind:function(arm,size=0x18) addr:0x02199f38
 SetBattleCommand kind:function(arm,size=0x114) addr:0x02199f50
 UpdateCursorUnitAiKnown kind:function(arm,size=0x7c) addr:0x0219a064
 MarkKnownEnemyUnits kind:function(arm,size=0x114) addr:0x0219a0e0
@@ -587,7 +587,7 @@ SelectAiRole5Unit kind:function(arm,size=0x11c) addr:0x0219e49c
 SelectAiSupplyUnit kind:function(arm,size=0x11c) addr:0x0219e5b8
 StartAiAttackCellScanPhase kind:function(arm,size=0x58) addr:0x0219e6d4
 SelectAiKind5Unit kind:function(arm,size=0x104) addr:0x0219e72c
-func_ov000_0219e830 kind:function(arm,size=0x18) addr:0x0219e830
+ReturnToAiTurnPlan kind:function(arm,size=0x18) addr:0x0219e830
 RunAiUnitSelectionStep kind:function(arm,size=0x88) addr:0x0219e848
 ShouldSkipAiActionView kind:function(arm,size=0x78) addr:0x0219e8d0
 ProcessAiCommandStep kind:function(arm,size=0xac) addr:0x0219e948
@@ -1492,7 +1492,7 @@ gUnitKindSupplyUnit kind:data(any) addr:0x021b5c65
 gUnitKindSupplyFlag kind:data(any) addr:0x021b5c66
 gUnitKindTable kind:data(any) addr:0x021b5c67
 gUnitKindStatusTile kind:data(any) addr:0x021b5c69
-data_ov000_021b5c6a kind:data(any) addr:0x021b5c6a
+gUnitKindSpriteVariants kind:data(any) addr:0x021b5c6a
 gUnitKindInfo kind:data(any) addr:0x021b5c6c
 gAiTargetValueTable kind:data(any) addr:0x021b5efc
 gRecordRankTable kind:data(any) addr:0x021b67cc
@@ -1965,7 +1965,7 @@ data_ov000_021df5ec kind:bss addr:0x021df5ec
 data_ov000_021df5f0 kind:bss addr:0x021df5f0
 gOv000InfoWindow kind:bss addr:0x021df5fc
 data_ov000_021df600 kind:bss addr:0x021df600
-data_ov000_021df604 kind:bss addr:0x021df604
+gAiUnitActionContext kind:bss addr:0x021df604
 gAiUnitTypeTuning kind:bss addr:0x021df644
 gAiPriorityScore kind:bss addr:0x021df648
 gAiPriorityPredicate kind:bss addr:0x021df64c

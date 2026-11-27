@@ -413,11 +413,13 @@ void Link_AdvancePacket(void *state, void *packet) {
     Link_PopPacket(((LinkChannelState *)state)->index);
 }
 
-void Link_ResetChannelSequence(void *arg0, u32 arg1) {
-    M2C_FIELD(arg0, s16 *, 0x68) = (s16)arg1;
-    M2C_FIELD(arg0, s32 *, 0x64) = 0x10001;
-    M2C_FIELD(arg0, s32 *, 0x60) = 0;
-    M2C_FIELD(arg0, s32 *, 0x5C) = 0;
+/* Reset a link channel's sequence tracking to `sequence`: the last wire sequence,
+ * the resync point, the rollover accumulator and the pending-init flag. */
+void Link_ResetChannelSequence(LinkChannelState *channel, u32 sequence) {
+    channel->lastWireSeq = (s16)sequence;
+    channel->resyncSeq = 0x10001;
+    channel->seqRollover = 0;
+    channel->seqInitPending = 0;
 }
 
 /* Keys an incoming link packet with its 32-bit sequence number: the wire carries

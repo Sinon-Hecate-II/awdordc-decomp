@@ -249,8 +249,8 @@ void func_020cfd14(void) {
 
 void RefreshMapView(void) {
     M2C_UNK func_020cfd38();
-    M2C_UNK func_020d0270();
-    func_020d0270();
+    M2C_UNK RefreshMapUnitDisplay();
+    RefreshMapUnitDisplay();
     func_020cfd38();
 }
 
@@ -367,7 +367,7 @@ void func_020d0164(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 /* For each active player, flood-fill and mark the tiles reachable by its current unit's movement range. */
-M2C_UNK func_020d0178(void) {
+M2C_UNK RefreshMovementRanges(void) {
 void InitAreaScan(void *,s32,s32,s32,s32,s32); void SetPlayerMoveRangeCell(s32,s32,s32,s32); s32 GetPlayerMoveRangeGrid(s32);
 s32 IsPlayerActive(s32); void *GetPlayerSelectedUnit(s32); s32 IsUnitCarried(void); s32 GetPlayerCoZoneMoveRange(s32); s32 GetPlayerArmyVariantIfSet(s32); s32 NextAreaTile(void *); void BuildMoveRangeFlags(void);
 s32 player; s32 pathState[8]; void *unit; s32 moveRange;
@@ -383,9 +383,12 @@ for(;;){if(!NextAreaTile(pathState))break;SetPlayerMoveRangeCell(player,pathStat
 BuildMoveRangeFlags();
 }
 
-M2C_UNK func_020d0270(void) {
- M2C_UNK RefreshTeamVisibility(); M2C_UNK func_020d0178(); M2C_UNK Ov000_InfoWindow_RequestCellRefresh();
- RefreshTeamVisibility(); RefreshMapCellUnits(); func_020d0178(); Ov000_InfoWindow_RequestCellRefresh();
+/* Rebuild the battle map's unit display after the units or their owners changed:
+ * recompute the team sight bitmaps, the per-cell unit layers and each player's
+ * movement ranges, then refresh the info window's cell. */
+M2C_UNK RefreshMapUnitDisplay(void) {
+ M2C_UNK RefreshTeamVisibility(); M2C_UNK RefreshMovementRanges(); M2C_UNK Ov000_InfoWindow_RequestCellRefresh();
+ RefreshTeamVisibility(); RefreshMapCellUnits(); RefreshMovementRanges(); Ov000_InfoWindow_RequestCellRefresh();
 }
 
 /* Initialise an area scan: the map size, the scan's origin and mode, and reset

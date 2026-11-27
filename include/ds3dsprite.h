@@ -728,6 +728,7 @@ typedef struct ScenePanelState {
 #define DS3D_DIALOG_QUEUE_COUNT 8
 #define DS3D_MANAGER_OTHER_SCREEN_MODE 0x44 /* u8[2]: the other screen's screen mode, one byte per engine; 2 = DS3D_SCREEN_MODE_2 */
 #define DS3D_MANAGER_PANEL_ROW_PAIRS 0x4A /* u8: text row pairs of the message panels */
+#define DS3D_MANAGER_DIALOG_SUSPEND_COUNT 0x4B /* s8: dialogs that suspended the message overlay (SuspendDialogs/ResumeDialogs) */
 #define DS3D_MANAGER_TARGET_MODE 0x49 /* u8 DS3D_TARGET_* the 3D sprites are created on (Get3DSpriteTargetMode / Set3DSpriteTargetMode) */
 #define DS3D_MANAGER_MENU_CURSOR 0x4D /* s8 index of the message panel the menu cursor is on (GetMenuCursor / SetMenuCursor); 2 while both screens show a panel */
 

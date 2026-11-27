@@ -13,7 +13,7 @@ typedef union RTCStatus {
     } bits;
 } RTCStatus;
 
-void func_0200ed40(void **arg0, void *arg1) {
+void CallbackList_Prepend(void **arg0, void *arg1) {
     if (arg0 != NULL) {
         M2C_FIELD(arg1, void **, 8) = (void *) *arg0;
         *arg0 = arg1;
@@ -84,26 +84,38 @@ void CallbackList_Call(void *head) {
     } while (node != NULL);
 }
 
-void PM_AddPreSleepCallback(void *arg0) { extern M2C_UNK data_0212fcd8; void (*f)(void **,void *)=func_0200ed40; f((void **)&data_0212fcd8,arg0); }
+/* Register `callback` to run before the system suspends: prepend it to the
+ * pre-sleep callback list. */
+void PM_AddPreSleepCallback(void *callback) {
+    extern M2C_UNK gPreSleepCallbackList;
+    void (*prepend)(void **, void *) = CallbackList_Prepend;
+    prepend((void **)&gPreSleepCallbackList, callback);
+}
 
-void PM_AddPostSleepCallback(M2C_UNK arg0) {
+/* Append `callback` to the list of callbacks run after the system wakes from
+ * sleep. */
+void PM_AddPostSleepCallback(M2C_UNK callback) {
     void CallbackList_Append(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212fce0;
-    CallbackList_Append(&data_0212fce0, arg0);
+    extern M2C_UNK gPostSleepCallbackList;
+
+    CallbackList_Append(&gPostSleepCallbackList, callback);
 }
 #pragma scheduling reset
-/* Unlinks a node from the global list rooted at data_0212fcd8. */
+/* Unlinks a node from the global list rooted at gPreSleepCallbackList. */
 void PM_DeletePreSleepCallback(M2C_UNK node) {
-    extern M2C_UNK data_0212fcd8;
+    extern M2C_UNK gPreSleepCallbackList;
     void (*unlinkNode)(M2C_UNK *, M2C_UNK) = CallbackList_Remove;
-    unlinkNode(&data_0212fcd8, node);
+    unlinkNode(&gPreSleepCallbackList, node);
 }
 #pragma peephole reset
 #pragma scheduling reset
-void PM_DeletePostSleepCallback(M2C_UNK arg0) {
+/* Remove `callback` from the list of callbacks run after the system wakes from
+ * sleep. */
+void PM_DeletePostSleepCallback(M2C_UNK callback) {
     void CallbackList_Remove(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212fce0;
-    CallbackList_Remove(&data_0212fce0, arg0);
+    extern M2C_UNK gPostSleepCallbackList;
+
+    CallbackList_Remove(&gPostSleepCallbackList, callback);
 }
 /* Bring the RTC service up once: mark the state initialised, clear the pending
  * request, then install the reply handler on the RTC command FIFO. */

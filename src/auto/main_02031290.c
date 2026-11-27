@@ -610,15 +610,18 @@ void GetPlayerRecordType(void) {
 }
 
 #pragma optimization_level 2
-void SetPlayerRecordTypeWord(M2C_UNK a,M2C_UNK b) { M2C_UNK SetPlayerRecordTypeField(M2C_UNK,M2C_UNK,M2C_UNK,s32); SetPlayerRecordTypeField(a,b,11,0x1fffff); }
-void SetPlayerRecordKind(M2C_UNK arg0, M2C_UNK arg1) {
+/* Store the 21-bit type word (bits 11..31) of the player record at `record`. */
+void SetPlayerRecordTypeWord(M2C_UNK record, M2C_UNK typeWord) { M2C_UNK SetPlayerRecordTypeField(M2C_UNK,M2C_UNK,M2C_UNK,s32); SetPlayerRecordTypeField(record, typeWord, PLAYER_RECORD_TYPE_SHIFT, PLAYER_RECORD_TYPE_MASK); }
+/* Set the kind field (the bits holding a PLAYER_RECORD_KIND_* value) of the player
+ * record at `record` to `kind`, leaving the rest of its type word intact. */
+void SetPlayerRecordKind(M2C_UNK record, M2C_UNK kind) {
     s32 GetPlayerRecordTypeWord(u32 *);
     void SetPlayerRecordTypeWord(M2C_UNK, M2C_UNK);
-    s32 temp_r0;
+    s32 typeWord;
 
-    temp_r0 = GetPlayerRecordTypeWord((u32 *) arg0);
-    temp_r0 = temp_r0 & ~3;
-    SetPlayerRecordTypeWord(arg0, temp_r0 | arg1);
+    typeWord = GetPlayerRecordTypeWord((u32 *) record);
+    typeWord = typeWord & ~PLAYER_RECORD_KIND_MASK;
+    SetPlayerRecordTypeWord(record, typeWord | kind);
 }
 
 /* Mark the player record at `record` as joined when it is a profile record

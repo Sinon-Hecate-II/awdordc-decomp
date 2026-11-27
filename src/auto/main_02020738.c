@@ -658,20 +658,24 @@ s32 AlignSize4(s32 arg0) {
     return (arg0 + 3) & ~3;
 }
 
-void RegisterActiveSocket(void *arg0) {
-    void func_02021408(void **, void *);
+/* Put a socket object on the socket layer's list of active sockets (a singly
+ * linked list through the socket's SOCK_LIST_NEXT field). */
+void RegisterActiveSocket(void *socket) {
+    void SocketListPrepend(void **, void *);
     extern M2C_UNK gActiveSocketList;
-    func_02021408((void **)&gActiveSocketList, arg0);
+    SocketListPrepend((void **)&gActiveSocketList, socket);
 }
 
-void func_02021408(void **arg0, void *arg1) {
+void SocketListPrepend(void **arg0, void *arg1) {
     M2C_FIELD(arg1, void **, 0x7C) = (void *) *arg0;
     *arg0 = arg1;
 }
 
-void SocketAddToClosedList(void *arg0) {
+/* Add a socket object to the socket layer's list of closed sockets (a
+ * singly linked list through the socket's SOCK_LIST_NEXT field). */
+void SocketAddToClosedList(void *socket) {
     extern M2C_UNK gClosedSocketList;
-    func_02021408((void **)&gClosedSocketList, arg0);
+    SocketListPrepend((void **)&gClosedSocketList, socket);
 }
 
 /* Remove a socket object from the socket layer's list of active sockets. */

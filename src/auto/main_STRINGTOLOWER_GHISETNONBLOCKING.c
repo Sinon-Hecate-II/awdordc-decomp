@@ -123,18 +123,18 @@ s32 ghiSocketCanSend(s32 socket) {
     return 0;
 }
 
-void *GetLocalHostAddresses(void){extern M2C_UNK data_0213dc60;extern M2C_UNK data_020fce1c,data_0213dc8c,data_0213dc78,data_0213dc68;
-M2C_FIELD(&data_0213dc60,void **,8)=&data_020fce1c;
-M2C_FIELD(&data_0213dc60,void **,12)=(void *)0x0213dc60;
-M2C_FIELD(&data_0213dc60,u16 *,16)=2;
-M2C_FIELD(&data_0213dc60,u16 *,18)=0;
-M2C_FIELD(&data_0213dc60,void **,20)=&data_0213dc8c;
-M2C_FIELD(&data_0213dc60,s32 *,24)=0;
-IpToBytes(GetLocalIpAddress(&data_0213dc60),&data_0213dc78);
-if(!M2C_FIELD(&data_0213dc60,s32 *,24))return 0;
-M2C_FIELD(&data_0213dc60,void **,44)=&data_0213dc78;
-M2C_FIELD(&data_0213dc60,u16 *,18)=4;
-M2C_FIELD(&data_0213dc60,s32 *,48)=0;
+void *GetLocalHostAddresses(void){extern M2C_UNK gGhiSocketState;extern M2C_UNK data_020fce1c,data_0213dc8c,data_0213dc78,data_0213dc68;
+M2C_FIELD(&gGhiSocketState,void **,8)=&data_020fce1c;
+M2C_FIELD(&gGhiSocketState,void **,12)=(void *)0x0213dc60;
+M2C_FIELD(&gGhiSocketState,u16 *,16)=2;
+M2C_FIELD(&gGhiSocketState,u16 *,18)=0;
+M2C_FIELD(&gGhiSocketState,void **,20)=&data_0213dc8c;
+M2C_FIELD(&gGhiSocketState,s32 *,24)=0;
+IpToBytes(GetLocalIpAddress(&gGhiSocketState),&data_0213dc78);
+if(!M2C_FIELD(&gGhiSocketState,s32 *,24))return 0;
+M2C_FIELD(&gGhiSocketState,void **,44)=&data_0213dc78;
+M2C_FIELD(&gGhiSocketState,u16 *,18)=4;
+M2C_FIELD(&gGhiSocketState,s32 *,48)=0;
 return &data_0213dc68;}
 
 /* Check whether an IPv4 address (stored in network byte order at *addr) is a
@@ -150,7 +150,18 @@ s32 IsPrivateIpAddress(u32 *addr) {
     return 0;
 }
 
-s32 ghiRecordSocketError(s32 a, s32 b) { extern M2C_UNK data_0213dc60; if(a<0){M2C_FIELD(&data_0213dc60,s32 *,4)=a;a=b;} return a; }
+/* GameSpy ghi: store the failed socket result `result` as the stack's last socket
+ * error (ghiGetLastSocketError reports it) and return the fallback `error`; a
+ * non-negative result is returned unchanged. */
+s32 ghiRecordSocketError(s32 result, s32 error) {
+    extern M2C_UNK gGhiSocketState;
+
+    if (result < 0) {
+        M2C_FIELD(&gGhiSocketState, s32 *, GHI_STATE_LAST_ERROR) = result;
+        result = error;
+    }
+    return result;
+}
 
 void ghiSocket(void) {
     s32 SocketCreate();
@@ -282,8 +293,8 @@ s32 ghiInetAddr(s32 hostname) {
 }
 
 s32 ghiGetLastSocketError(void) {
-    extern M2C_UNK data_0213dc60;
-    return M2C_FIELD(&data_0213dc60, s32 *, 4);
+    extern M2C_UNK gGhiSocketState;
+    return M2C_FIELD(&gGhiSocketState, s32 *, 4);
 }
 
 /* GameSpy nonport.c time(): assert the system tick is available, then return the

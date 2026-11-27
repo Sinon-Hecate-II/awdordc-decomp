@@ -83,7 +83,7 @@ void func_020d759c(s32 panelX, s32 panelY, s32 side) {
     extern M2C_UNK gSpriteDesc32x8, gSpriteDesc32x16;
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     s32 GetTileTargetKind(s32, s32);
-    void func_020d166c(s32, s32, void *);
+    void RunBattleIfTarget(s32, s32, void *);
     void func_020d1690(s32, s32, void *);
     void CopyBytesToObjPaletteShadow(const void *, s32, s32);
     void AddSprite(u16, u16, u16, void *, s32);
@@ -119,7 +119,7 @@ void func_020d759c(s32 panelX, s32 panelY, s32 side) {
     unitId = M2C_FIELD(map, u8 *, targetX + M2C_FIELD(map + 2*targetY, u16 *, MAP_ROW_OFFSETS));
     terrainTarget = GetTileTargetKind(targetX, targetY);
     if (unitId) {
-        func_020d166c(M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), unitId, position);
+        RunBattleIfTarget(M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), unitId, position);
         map = *gCurrentMap;
         damage = M2C_FIELD(map, s16 *, MAP_BATTLE_DAMAGE);
         targetHealth = M2C_FIELD(map, s16 *, 0x6ef4);

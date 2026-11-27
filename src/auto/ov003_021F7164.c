@@ -62,7 +62,7 @@ extern void func_ov003_021fca84(void *);
 void func_ov003_021f7164(void *arg0) {
 void MenuSpriteUpdate(void *);void SpriteCellListUpdateTouch(void *);s32 Divide(s32,s32);
 void ListWidgetScrollUp(void *);void ListWidgetScrollDown(void *);void PlaySoundEffect(s32);void Ov003_RefreshMapPreview(void *,s32);
-s32 GetScrollLimit(void *);u8 func_ov003_021f3f0c(s16,s16,s16);
+s32 GetScrollLimit(void *);u8 Ov003_IsValueInRange2(s16,s16,s16);
 void ConfirmMapSelection(void *);void ToggleFirstSideMapPick(void *,u16);void ToggleMapPick(void *,void *,u16);
 void SetTileRectPalette(void *,s32,s32,s32);void SetMenuPanelState(void *,s32);
 void SetTextById(void *,s32);
@@ -110,7 +110,7 @@ ov003_animate_button(button);ListWidgetScrollDown(M2C_FIELD(p,void **,0x4c));Pla
 if(active){
 buttons=M2C_FIELD(p,void ***,0x68);
 button=buttons[0];
-if((u8)ov003_button_pressed(button)||(u8)ov003_button_pressed(button=buttons[2])||(u8)ov003_button_pressed(button=buttons[1])||func_ov003_021f3f0c((s16)keyx,10,(s16)(GetScrollLimit(M2C_FIELD(p,void **,0x4c))+10))){
+if((u8)ov003_button_pressed(button)||(u8)ov003_button_pressed(button=buttons[2])||(u8)ov003_button_pressed(button=buttons[1])||Ov003_IsValueInRange2((s16)keyx,10,(s16)(GetScrollLimit(M2C_FIELD(p,void **,0x4c))+10))){
 if(ov003_menu_kind(p,6)||ov003_menu_kind(p,7)||ov003_menu_kind(p,8))ConfirmMapSelection(p);
 else if(ov003_menu_kind(p,4)){
 mode=(u32)(p[0x3e]<<29)>>29;
@@ -169,7 +169,7 @@ list=M2C_FIELD(p,void **,0x4c);enable=1;
 if((u8)(M2C_FIELD(list,s16 *,0x2a)>GetSpriteAnimValue(list+0x30))){}
 else if(!(u8)(M2C_FIELD(list,s16 *,0x2a)<GetSpriteAnimValue(list+0x30)))enable=0;
 if(!enable){
-if(func_ov003_021f3f0c((s16)keyy,10,(s16)(GetScrollLimit(M2C_FIELD(p,void **,0x4c))+10))&&keyy!=((u32)(p[0x39]<<25)>>25)){
+if(Ov003_IsValueInRange2((s16)keyy,10,(s16)(GetScrollLimit(M2C_FIELD(p,void **,0x4c))+10))&&keyy!=((u32)(p[0x39]<<25)>>25)){
 list=M2C_FIELD(p,void **,0x4c);
 keyx=(s16)(keyy-10+M2C_FIELD(list,s16 *,12));
 if(M2C_FIELD(list,s32 *,24)!=keyx)func_020ab3b0(list,(s16)keyx,1);

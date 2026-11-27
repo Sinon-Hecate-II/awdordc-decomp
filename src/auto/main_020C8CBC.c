@@ -125,7 +125,14 @@ void StepCampaignMapHeaderLoad(void *loader) {
 }
 
 #pragma optimization_level 2
-void func_020c8ed4(M2C_UNK arg0) { M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK); extern M2C_UNK data_0212b07c; CreateSpriteFromClass(&data_0212b07c,arg0); }
+/* Create the campaign map header loader owned by `owner`: its child sprites first
+ * clear and then load the cached campaign map headers. */
+void CreateCampaignMapHeaderLoader(void *owner) {
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    extern M2C_UNK gCampaignMapHeaderLoaderClass;
+
+    CreateSpriteFromClass(&gCampaignMapHeaderLoaderClass, owner);
+}
 /* Clear the cached header of every campaign map (all player slots). */
 s32 ClearCampaignMapHeaders(void) {
     s32 MI_CpuFill32(s32, void *, s32);

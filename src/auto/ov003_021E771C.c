@@ -42,7 +42,7 @@ s32 IsLinkSessionActive(void);u8 *GetLocalNetworkPlayerRecord(void);s32 GetSessi
 u8 *GetNetworkPlayerRecord(s32); u8 GetLocalPlayerIdForOverlay(void);s32 GetPlayerTeam(s32);s32 GetPlayerArmyId(s32);
 s32 InRange(s16,s16,s16); void StepCounter(s32,s32,s32);
 void *CreateUnitSprite(s32);s16 GetWaypointSlotX(u8);s32 Modulo(s32,s32);s32 Divide(s32,s32);
-void InitUnitSprite(void *,s32,s32,s32,s32);void Set3DSpriteSlideTargetAndStart(void *,s32,s32,s32,s32);void MI_CpuCopy8(void *,void *,s32);u16 func_ov003_021e6e28(u8);void StepCounterUp(s32,s32,s32);
+void InitUnitSprite(void *,s32,s32,s32,s32);void Set3DSpriteSlideTargetAndStart(void *,s32,s32,s32,s32);void MI_CpuCopy8(void *,void *,s32);u16 GetWaypointSlotIndexInGroup(u8);void StepCounterUp(s32,s32,s32);
 s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void SpriteCellListSetCellRect(void *,s32,s16,s16,u16,u16);
 u8 *p=arg0,*remote,*q;void *sprite;u16 bounds[4];u16 first;s16 x,y,w,h;s32 next;u8 i,j,k,tmp,n; s8 id; s32 mask;
 p[4]=GetCurrentMapPlayerCount();p[5]=255;if(p[4]<2)p[4]=2;
@@ -112,7 +112,7 @@ M2C_FIELD(sprite,u32 *,0x40)=(((M2C_FIELD(sprite,u32 *,0x40)&~511)|(w&511))&0xff
 ov003_refresh_sprite(sprite);
 MI_CpuCopy8(data_ov003_0220f12c+i*8,bounds,8);
 if(IsLinkSessionActive()){
-first=bounds[0];if(InRange((s16)first,4,7))bounds[0]=func_ov003_021e6e28((u8)first);
+first=bounds[0];if(InRange((s16)first,4,7))bounds[0]=GetWaypointSlotIndexInGroup((u8)first);
 if(InRange((s16)bounds[1],4,7))bounds[1]=25;
 }
 sprite=M2C_FIELD(p+i*4,void **,0x78);

@@ -420,8 +420,11 @@ s32 SocketQueueTask(OSMessageQueue *queue, void *task) {
     return SOCK_TASK_QUEUE_FULL;
 }
 
-s32 SocketSubmitTask(void *arg0, void *arg1) {
-    return SocketQueueTask(GetSocketConnection(arg0), arg1);
+/* Post a socket operation record to the socket's raw connection without waiting
+ * for it to run: the record's caller does not wait for the result
+ * (TASK_WAIT clear), so the queueing call's own result is the operation's. */
+s32 SocketSubmitTask(void *socket, void *task) {
+    return SocketQueueTask(GetSocketConnection(socket), task);
 }
 
 /* Post a socket task to a connection's task queue and return its result.  When
@@ -458,9 +461,11 @@ void SocketSubmitSendTask(void *arg0) {
     SocketPostTask(M2C_FIELD(arg0, s32 *, 0x68));
 }
 
-s32 SocketSubmitTaskAndWait(s32 arg0, s32 arg1) {
+/* Post a socket operation task to `socket`'s connection and hand back its result,
+ * blocking until the task runs when TASK_WAIT asks the caller to wait. */
+s32 SocketSubmitTaskAndWait(s32 socket, s32 task) {
     s32 SocketPostTask();
-    return SocketPostTask(GetSocketConnection(arg0), arg1);
+    return SocketPostTask(GetSocketConnection(socket), task);
 }
 
 void RunSocketWorker(s32 arg0) { s32 p,old,v; loop: OS_ReadMessage(arg0,&p,1); if(!p)goto done; v=M2C_FIELD(p,s32 (**)(s32),0)(p);
@@ -498,7 +503,7 @@ s32 SocketInitTask(void *task) {
  M2C_UNK SetCurrentRawConnection(void *);
  M2C_UNK OpenRawConnection();
  M2C_UNK ResetCurrentConnection();
- M2C_UNK func_0201d244(s32);
+ M2C_UNK SetThreadRawConnection(s32);
  M2C_UNK SocketSetReceiveCallback(M2C_UNK *);
  extern M2C_UNK SocketQueueReceivedData;
  void *sock = M2C_FIELD(task, void **, TASK_SOCKET);
@@ -507,7 +512,7 @@ s32 SocketInitTask(void *task) {
  txConnection = M2C_FIELD(sock, s32 *, SOCK_TX_CONN);
  switch (M2C_FIELD(sock, s8 *, SOCK_STATE)) {
  case SOCK_STATE_IDLE: case SOCK_STATE_CONNECTED:
-     func_0201d244(txConnection + 0x20);
+     SetThreadRawConnection(txConnection + 0x20);
      ResetCurrentConnection();
      break;
  case SOCK_STATE_RECV_ONLY:
@@ -645,14 +650,14 @@ s32 StartSocketWorker(s32 storage, s32 worker, SocketConfigTask *config) {
     M2C_UNK TaskCreate(s32, M2C_UNK *, s32, s32, s32, s32);
     M2C_UNK TaskWake(s32);
     M2C_UNK OS_InitMessageQueue(s32, s32, s32);
-    M2C_UNK InitMutex(s32);
+    M2C_UNK OS_InitMutex(s32);
     s32 GetSocketTaskBlockSize(void *);
     void RunSocketWorker();
     s32 blockSize;
 
     blockSize = GetSocketTaskBlockSize(config);
     OS_InitMessageQueue(worker, storage, config->messageCount);
-    InitMutex(worker + SOCKET_WORKER_MUTEX);
+    OS_InitMutex(worker + SOCKET_WORKER_MUTEX);
     TaskCreate(worker + SOCKET_WORKER_THREAD, (M2C_UNK *)&RunSocketWorker, worker,
                storage + blockSize, (s32)config->stackBytes, (s32)config->priority);
     TaskWake(worker + SOCKET_WORKER_THREAD);

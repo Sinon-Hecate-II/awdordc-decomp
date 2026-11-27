@@ -524,9 +524,13 @@ ret:
 #pragma opt_common_subs reset
 
 #pragma thumb on
-s32 WhSendPacketToAddress(s32 a,s32 b,s32 unused,s32 c,s32 d) {
-s32 func_020216cc(s32,s32,s32,s32,s32);
-s32 r=func_020216cc(a,c,d,0,b);if(r<0)r=-4;return r;
+/* Send `length` bytes from `buffer` to the peer address struct `address` over
+ * `socket`, with no send flags.  A failed send is reported as -4. */
+s32 WhSendPacketToAddress(s32 socket, s32 address, s32 unused, s32 buffer, s32 length) {
+    s32 func_020216cc(s32, s32, s32, s32, s32);
+    s32 result = func_020216cc(socket, buffer, length, 0, address);
+    if (result < 0) result = -4;
+    return result;
 }
 
 #pragma thumb on

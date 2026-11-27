@@ -56,7 +56,7 @@ s32 MoveDestinationScore(s32 x, s32 y, u8 *unit) {
 
 s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
     s32 MoveDestinationScore(s32, s32, u8 *);
-    s32 noResult = MAP_DESTINATION_NONE;
+    long noResult = MAP_DESTINATION_NONE;
     s32 x = arg0;
     s32 y = arg1;
     s16 *out = arg2;
@@ -64,20 +64,20 @@ s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
     s32 rowB;
     s32 offsetB;
     u8 *unitB;
-    s32 rowA;
-    s32 offsetA;
-    u8 *unitA;
     s32 minX;
+    unsigned long offsetA;
     s32 maxY;
+    u8 *unitA;
+    s32 rowA;
     s32 dir;
     register s32 bestScore, tx, dy0, dy1, ty, maxX;
     void *base;
     s32 score;
-    s32 adx;
+    register s32 adx;
     s32 dist;
 
     dir = M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, 0xC);
-    if (dir == 0) return 0;
+    if (!dir) return 0;
     offsetA = dir * MAP_UNIT_STRIDE;
     unitA = (u8 *) *gCurrentMap + MAP_UNIT_RECORDS;
     minX = x - 1;
@@ -117,7 +117,7 @@ s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
                 } while (tx <= maxX);
             }
             ty++;
-        } while (ty <= maxY);
+        } while (ty <= (int)maxY);
     }
     if (out[0] == (s16) noResult) return 0;
 
@@ -130,13 +130,13 @@ s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
     bestScore = 0;
     if (minX < 0) minX = 0;
     ty = y - 1;
-    if (ty < 0) ty = 0;
+    if (0 > ty) ty = 0;
     base = *gCurrentMap;
     maxX = M2C_FIELD(base, u16 *, MAP_WIDTH) - 1;
     if (x + 1 < maxX) maxX = x + 1;
     maxY = M2C_FIELD(base, u16 *, MAP_HEIGHT) - 1;
     if (y + 1 < maxY) maxY = y + 1;
-    if (ty <= maxY) {
+    if ((s32)ty <= maxY) {
         do {
             tx = minX;
             if (tx <= maxX) {
@@ -145,26 +145,26 @@ s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
                     dy1 = ty - y;
                     rowB = ty;
                     adx = x - tx;
-                    if (adx <= 0) adx = tx - x;
+                    if (0 >= adx) adx = tx - x;
                     dist = 0;
                     dist = adx + dist;
-                    if (dy0 > 0) dist = dist + dy0;
+                    if (0 < dy0) dist = dist + dy0;
                     else dist = dist + dy1;
                     if (dist >= 1 && dist <= 1) {
                         if (tx != out[0] || ty != out[1]) {
                             score = MoveDestinationScore(tx, ty, unitB + offsetB);
-                            if (score >= bestScore && (score != bestScore || !(gFrameCounter & 1))) {
+                            if (score >= bestScore && (score != bestScore || !((s32)gFrameCounter & 1))) {
                                 bestScore = score;
                                 out2[0] = (s16) tx;
                                 out2[1] = (s16) rowB;
                             }
                         }
                     }
-                    tx++;
-                } while (tx <= maxX);
+                    ++tx;
+                } while (maxX >= tx);
             }
             ty++;
-        } while (ty <= maxY);
+        } while (maxY >= ty);
     }
     if (out2[0] == (s16) noResult) return 1;
     return 2;

@@ -39,9 +39,11 @@ if(ids.hasFriendCode) return *(u64 *)&ids.friendCode[0]==GetNasPlayerCode(record
 return *(u64 *)&ids.profileCode[0]==GetNasPlayerCode(record);
 }
 
-s32 IsNasKeyRecord(s32 a) {
-s32 GetPlayerRecordKind();
-return GetPlayerRecordKind(a)==1;
+/* True when the record at `record` is a NAS key record: InitNasLoginKey marks a
+ * fresh key with PLAYER_RECORD_KIND_UNRESOLVED until it is looked up. */
+s32 IsNasKeyRecord(s32 record) {
+    s32 GetPlayerRecordKind();
+    return GetPlayerRecordKind(record) == PLAYER_RECORD_KIND_UNRESOLVED;
 }
 
 s32 HasNasKeyRecord(s32 arg0) {
@@ -224,9 +226,11 @@ void AssignPlayerRecordId(void *record, s32 profileId) {
     SetPlayerRecordKind(record, PLAYER_RECORD_KIND_PROFILE);
 }
 
-void FormatPlayerNasId(void *a,s32 b,s32 c) {
+/* Render the NAS id text of the player record `record` into `out`, salted with
+ * the game id of the local profile-id block `profile`. */
+void FormatPlayerNasId(void *profile,s32 record,s32 out) {
 void FormatNasId(s32,s32,s32);
-FormatNasId(b,M2C_FIELD(a,s32 *,0x24),c);
+FormatNasId(record,M2C_FIELD(profile,s32 *,PROFILE_ID_BLOCK_GAME_ID),out);
 }
 
 /* Compares two NAS session/profile records (Unk032Record).  Records of
@@ -320,10 +324,10 @@ return 0;
  * abort flag, and unless the previous task is still running, creates the task
  * that runs NasConnectTask on the connection block's stack and wakes it. */
 void NasStartTask(void) {
-M2C_UNK InitMutex(void *); M2C_UNK TaskCreate(void *,void (*)(void),void *,void *,s32,s32);
+M2C_UNK OS_InitMutex(void *); M2C_UNK TaskCreate(void *,void (*)(void),void *,void *,s32,s32);
 s32 TaskIsFinished(void *); M2C_UNK TaskWake(void *); void NasConnectTask(void);
 extern M2C_UNK gNasConnection; extern M2C_UNK gNasTaskOwner;
-InitMutex(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_MUTEX);
+OS_InitMutex(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_MUTEX);
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_ABORT)=0;
 if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_TASK_ID)!=0 && TaskIsFinished(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_TASK)==0)return;
 TaskCreate(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_TASK,NasConnectTask,&gNasTaskOwner,M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_STACK_TOP,NAS_CONN_STACK_SIZE,NAS_CONN_TASK_PRIORITY);

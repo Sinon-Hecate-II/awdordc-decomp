@@ -403,7 +403,7 @@ void MoveMapCursorByDirection(void *arg0) {
 }
 #pragma opt_strength_reduction reset
 s32 func_020bc910(void) {
-    void func_020d549c(void *);
+    void OpenMapView(void *);
     void OpenBattleMenu(void);
     void CreateMapMenu(void);
     void HandleUiCancel(void);
@@ -425,7 +425,7 @@ s32 func_020bc910(void) {
     y = M2C_FIELD(map, s16 *, 0x52C4);
 
     if (flags & 0x8) {
-        func_020d549c((char *)map + 0x5200);
+        OpenMapView((char *)map + 0x5200);
         return 1;
     }
     if (flags & 0x4) {

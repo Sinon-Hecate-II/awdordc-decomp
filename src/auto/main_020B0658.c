@@ -227,7 +227,7 @@ void func_020b0ccc(void) {
 /* Configures the audio/channel mix for a sound playback: picks amplitude and delegates to the audio driver helpers. */
 void LoadMapThemeFile(M2C_UNK channel, M2C_UNK sound, s32 duration, u32 mode) {
     M2C_UNK QueueMainOBJExtPaletteCopy(s32, M2C_UNK, s32, M2C_UNK);
-    s32 func_020815bc(M2C_UNK, s32);
+    s32 LoadNarcFileToNewBuffer(M2C_UNK, s32);
     M2C_UNK LoadNarcFileToObjExtPalette();
     M2C_UNK BlendPalette(s32, s32, M2C_UNK, M2C_UNK, s32);
     s32 handle;
@@ -237,17 +237,17 @@ void LoadMapThemeFile(M2C_UNK channel, M2C_UNK sound, s32 duration, u32 mode) {
         LoadNarcFileToObjExtPalette(channel, sound, duration);
         return;
     case 1:
-        handle = func_020815bc(channel, duration);
+        handle = LoadNarcFileToNewBuffer(channel, duration);
         BlendPalette(handle, 0x7fff, 14, 2, duration);
         QueueMainOBJExtPaletteCopy(handle, sound, duration, 1);
         return;
     case 2:
-        handle = func_020815bc(channel, duration);
+        handle = LoadNarcFileToNewBuffer(channel, duration);
         BlendPalette(handle, 0x4000, 14, 2, duration);
         QueueMainOBJExtPaletteCopy(handle, sound, duration, 1);
         return;
     case 3:
-        handle = func_020815bc(channel, duration);
+        handle = LoadNarcFileToNewBuffer(channel, duration);
         BlendPalette(handle, 0x3ff, 14, 2, duration);
         QueueMainOBJExtPaletteCopy(handle, sound, duration, 1);
         return;
@@ -264,7 +264,7 @@ void LoadMapTheme(M2C_UNK paletteMode, u32 theme) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK OpenNarcArchive(M2C_UNK *);
     M2C_UNK CloseNarcArchive();
-    M2C_UNK func_0208168c(M2C_UNK *, M2C_UNK);
+    M2C_UNK LoadNarcFileToTextureBank(M2C_UNK *, M2C_UNK);
     M2C_UNK ApplyWeatherEffects();
     extern M2C_UNK data_02128064;
     extern M2C_UNK data_02128070;
@@ -363,7 +363,7 @@ void LoadMapTheme(M2C_UNK paletteMode, u32 theme) {
     switch (theme) {
     case 0:
         OpenNarcArchive(&data_02128070);
-        func_0208168c(&data_02128080, 0);
+        LoadNarcFileToTextureBank(&data_02128080, 0);
         LoadMapThemeFile((s32)&data_02128090, 0, 0x400, mode);
         LoadMapThemeFile((s32)&data_021280a0, 0x400, 0x200, mode);
         LoadMapThemeFile((s32)&data_021280b4, 0x600, 0x200, mode);
@@ -375,7 +375,7 @@ void LoadMapTheme(M2C_UNK paletteMode, u32 theme) {
         return;
     case 3:
         OpenNarcArchive(&data_02128118);
-        func_0208168c(&data_02128128, 0);
+        LoadNarcFileToTextureBank(&data_02128128, 0);
         LoadMapThemeFile((s32)&data_02128138, 0, 0x400, mode);
         LoadMapThemeFile((s32)&data_02128148, 0x400, 0x200, mode);
         LoadMapThemeFile((s32)&data_0212815c, 0x600, 0x200, mode);
@@ -387,7 +387,7 @@ void LoadMapTheme(M2C_UNK paletteMode, u32 theme) {
         return;
     case 1:
         OpenNarcArchive(&data_021281c0);
-        func_0208168c(&data_021281d0, 0);
+        LoadNarcFileToTextureBank(&data_021281d0, 0);
         LoadMapThemeFile((s32)&data_021281e0, 0, 0x400, mode);
         LoadMapThemeFile((s32)&data_021281ec, 0x400, 0x200, mode);
         LoadMapThemeFile((s32)&data_021281fc, 0x600, 0x200, mode);
@@ -399,7 +399,7 @@ void LoadMapTheme(M2C_UNK paletteMode, u32 theme) {
         return;
     case 2:
         OpenNarcArchive(&data_02128258);
-        func_0208168c(&data_02128268, 0);
+        LoadNarcFileToTextureBank(&data_02128268, 0);
         LoadMapThemeFile((s32)&data_02128278, 0, 0x400, mode);
         LoadMapThemeFile((s32)&data_02128288, 0x400, 0x200, mode);
         LoadMapThemeFile((s32)&data_0212829c, 0x600, 0x200, mode);
@@ -411,7 +411,7 @@ void LoadMapTheme(M2C_UNK paletteMode, u32 theme) {
         return;
     case 4:
         OpenNarcArchive(&data_02128300);
-        func_0208168c(&data_02128310, 0);
+        LoadNarcFileToTextureBank(&data_02128310, 0);
         LoadMapThemeFile((s32)&data_02128320, 0, 0x400, mode);
         LoadMapThemeFile((s32)&data_0212832c, 0x400, 0x200, mode);
         LoadMapThemeFile((s32)&data_0212833c, 0x600, 0x200, mode);
@@ -423,7 +423,7 @@ void LoadMapTheme(M2C_UNK paletteMode, u32 theme) {
         return;
     case 5:
         OpenNarcArchive(&data_02128398);
-        func_0208168c(&data_021283a8, 0);
+        LoadNarcFileToTextureBank(&data_021283a8, 0);
         LoadMapThemeFile((s32)&data_021283b8, 0, 0x400, mode);
         LoadMapThemeFile((s32)&data_021283c8, 0x400, 0x200, mode);
         LoadMapThemeFile((s32)&data_021283dc, 0x600, 0x200, mode);
@@ -435,7 +435,7 @@ void LoadMapTheme(M2C_UNK paletteMode, u32 theme) {
         return;
     case 6:
         OpenNarcArchive(&data_02128440);
-        func_0208168c(&data_02128450, 0);
+        LoadNarcFileToTextureBank(&data_02128450, 0);
         LoadMapThemeFile((s32)&data_02128460, 0, 0x400, mode);
         LoadMapThemeFile((s32)&data_0212846c, 0x400, 0x200, mode);
         LoadMapThemeFile((s32)&data_0212847c, 0x600, 0x200, mode);
@@ -447,7 +447,7 @@ void LoadMapTheme(M2C_UNK paletteMode, u32 theme) {
         return;
     case 7:
         OpenNarcArchive(&data_021284d8);
-        func_0208168c(&data_021284e8, 0);
+        LoadNarcFileToTextureBank(&data_021284e8, 0);
         LoadMapThemeFile((s32)&data_021284f8, 0, 0x400, mode);
         LoadMapThemeFile((s32)&data_02128508, 0x400, 0x200, mode);
         LoadMapThemeFile((s32)&data_0212851c, 0x600, 0x200, mode);
@@ -459,7 +459,7 @@ void LoadMapTheme(M2C_UNK paletteMode, u32 theme) {
         return;
     case 8:
         OpenNarcArchive(&data_02128580);
-        func_0208168c(&data_02128590, 0);
+        LoadNarcFileToTextureBank(&data_02128590, 0);
         LoadMapThemeFile((s32)&data_0212859c, 0, 0x400, mode);
         LoadMapThemeFile((s32)&data_021285a8, 0x400, 0x200, mode);
         LoadMapThemeFile((s32)&data_021285b8, 0x600, 0x200, mode);
@@ -471,7 +471,7 @@ void LoadMapTheme(M2C_UNK paletteMode, u32 theme) {
         return;
     case 9:
         OpenNarcArchive(&data_02128608);
-        func_0208168c(&data_02128618, 0);
+        LoadNarcFileToTextureBank(&data_02128618, 0);
         LoadMapThemeFile((s32)&data_02128624, 0, 0x400, mode);
         LoadMapThemeFile((s32)&data_02128630, 0x400, 0x200, mode);
         LoadMapThemeFile((s32)&data_02128640, 0x600, 0x200, mode);

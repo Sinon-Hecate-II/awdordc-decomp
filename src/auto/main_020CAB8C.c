@@ -203,8 +203,8 @@ void ConfirmAttackCommand(void *option) {
 }
 
 void func_020cb00c(void) {
-    M2C_UNK func_0207a768();
-    func_0207a768();
+    M2C_UNK DeleteMapCursorSprites();
+    DeleteMapCursorSprites();
 }
 
 /* Spawn the map's directional option cursor on the default layer and record which

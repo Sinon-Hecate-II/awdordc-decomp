@@ -14,7 +14,7 @@ int GetAiTargetScore(int,s16 *);
 int HasBetterAttackerNearby(void *);
 int SelectAreaEffectTargetForMode(s16 *,u16,int,int);
 void SetMapCursor(s16,s16,int,int,int);
-void func_ov000_02199f38(void);
+void AbortAiUnitAction(void);
 void ClearUnitMoveTarget(void);
 
 typedef struct { u8 kind:6;u8 flags:2;u8 pad[5];u16 health:7;u16 flags2:4;u16 value:5;u8 tail[6]; } Unit1911;
@@ -176,7 +176,7 @@ void func_ov000_0219137c(void){
  SetMapCursor((s16)portX,(s16)portY,19,(u8)position[0],(u8)position[1]);return;
  }}
  if(best==0)return;
- if(((AIState1913 *)gAiCommandState)->active){func_ov000_02199f38();return;}
+ if(((AIState1913 *)gAiCommandState)->active){AbortAiUnitAction();return;}
  ClearUnitMoveTarget();
  SetMapCursor((s16)destX,(s16)destY,4,(u8)unitId,0);
 #pragma pop

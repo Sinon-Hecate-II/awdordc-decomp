@@ -196,6 +196,8 @@ void RunListMenuRowCancelAction(void *menu, s32 row) {
     cancel((s32)entry, (u8)row, M2C_FIELD(menu + row, u8 *, 0x38));
 }
 
+/* Per-frame redraw task of the carried-unit list menu: while the menu object is
+ * still open, redraw its list. */
 void UpdateListMenu(void) {
     s32 GetCarriedUnitMenu(void);
     void DrawCarriedUnitList();
@@ -335,6 +337,8 @@ void CreateMenuAt(M2C_UNK entries, M2C_UNK x, M2C_UNK y, s32 width) {
     CreateMenuFromEntries(entries, x, y, 0, width);
 }
 
+/* Delete the map menu's text-line sprites and every carried-unit list menu
+ * object; the cleanup the map menu runs before switching to another mode. */
 void DeleteMapMenuSprites(void) {
     M2C_UNK DeleteTextLineSprites();
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
@@ -463,7 +467,7 @@ gCarriedUnitMenuStackPtr-=8;
 func_020c0634(M2C_FIELD(gCarriedUnitMenuStackPtr,s32 *,4),M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,0),M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,1),M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,2),M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,3));
 }
 #pragma opt_instruction_scheduling reset
-void func_020c0b88(s8 arg0) {
+void SetCarriedUnitMenuSelection(s8 arg0) {
     extern void *gCarriedUnitMenuStackPtr;
     M2C_FIELD(gCarriedUnitMenuStackPtr, s8 *, 2) = arg0;
 }

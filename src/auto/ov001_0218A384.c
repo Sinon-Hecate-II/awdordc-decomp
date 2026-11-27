@@ -664,11 +664,13 @@ void func_ov001_0218b2bc(s16 arg0, s16 arg1, void *arg2) {
     M2C_FIELD(arg2, s16 *, 2) = arg1;
 }
 
-void SetRect16(s16 arg0, s16 arg1, s16 arg2, s16 arg3, void *arg4) {
-    M2C_FIELD(arg4, s16 *, 0) = arg0;
-    M2C_FIELD(arg4, s16 *, 2) = arg1;
-    M2C_FIELD(arg4, s16 *, 4) = arg2;
-    M2C_FIELD(arg4, s16 *, 6) = arg3;
+/* Fill the four 16-bit window-rect words `rect` that SetWindowRect takes with
+ * `left`, `top`, `right` and `bottom`. */
+void SetRect16(s16 left, s16 top, s16 right, s16 bottom, u16 *rect) {
+    rect[0] = left;
+    rect[1] = top;
+    rect[2] = right;
+    rect[3] = bottom;
 }
 
 /* Build the touch rectangle `rect` (left, top, right, bottom) of a key whose

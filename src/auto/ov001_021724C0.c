@@ -246,8 +246,12 @@ void Ov001_KeyboardSlideStep5(s32 task) {
  Ov001_UpdateKeyboardCursor(); Ov001_SetSlideStep(task,Ov001_KeyboardSlideDone);
 }
 
+/* The keyboard's slide-in has finished: catch up with the touch state as it
+ * stands (keys moved under a finger still down during the slide) by running the
+ * keyboard's touch handlers once — press, hold, release — and then hand over to
+ * the keyboard's regular key input. */
 void Ov001_KeyboardSlideDone(void) {
-    void func_ov001_02172d8c(void);
+    void func_ov001_02172d8c(void); /* the keyboard's held-touch handler */
     void Ov001_HandleKeyboardKeyRelease(void);
     M2C_UNK Ov001_KeyboardInput();
     Ov001_HandleKeyboardKeyPress();

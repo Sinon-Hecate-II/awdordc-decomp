@@ -229,9 +229,13 @@ void SetCurrentRawConnection(s32 arg0) {
     M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0xA4) = arg0;
 }
 
+/* Clear the raw connection the scheduler's running socket object works on, so
+ * the stack stops sending and receiving on it. */
 void ClearCurrentRawConnection(void) {
     extern M2C_UNK gSocketManager;
-    M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0xA4) = 0;
+    void *socketObject = M2C_FIELD(&gSocketManager, void **, SOCKMGR_RUNNING_THREAD);
+
+    M2C_FIELD(socketObject, void **, SOCK_OBJECT_RAW) = 0;
 }
 
 /* Open the current socket as a raw, connectionless one for a plain
@@ -313,9 +317,12 @@ void CloseRawConnection(void) {
     }
 }
 
-void func_0201d244(void *arg0) {
+/* Attach the raw socket the network stack is running on to `thread` (a send
+ * connection's thread), so both directions work on the same socket. */
+void SetThreadRawConnection(void *thread) {
     extern M2C_UNK gSocketManager;
-    M2C_FIELD(arg0, void **, 0xA4) = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
+    M2C_FIELD(thread, void **, SOCK_OBJECT_RAW) =
+        M2C_FIELD(M2C_FIELD(&gSocketManager, void **, SOCKMGR_RUNNING_THREAD), void **, SOCK_OBJECT_RAW);
 }
 
 /* Prepare a socket connection to wait for its peer: hand it a fresh random initial

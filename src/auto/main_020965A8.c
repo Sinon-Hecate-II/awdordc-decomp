@@ -97,10 +97,14 @@ RefreshMapView();
 M2C_FIELD(*gCurrentMap,u16*,MAP_CURSOR_OWNER)=(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)-1)<<6;
 }
 
-void ShowPlayerUnitDialogSequence(void) {
-    M2C_UNK SetUiMessageText();
+/* Show the player-unit dialog: make `textId` (the army- and variant-specific
+ * text ShowPlayerUnitDialog looked up) the UI message text and start the fixed
+ * player-unit dialog script data_02102e14. */
+void ShowPlayerUnitDialogSequence(s32 textId) {
+    void SetUiMessageText(s32);
     extern M2C_UNK data_02102e14;
-    SetUiMessageText();
+    void StartDialogSequence(s32);
+    SetUiMessageText(textId);
     StartDialogSequence(&data_02102e14);
 }
 

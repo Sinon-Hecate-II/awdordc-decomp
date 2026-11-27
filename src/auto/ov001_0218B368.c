@@ -625,9 +625,11 @@ void Ov001_ReleaseSprite(u32 *entry) {
     Ov001_QueuePush(M2C_FIELD(gOv001SpriteArena + (screen << 2), s32 *, OV001_SPRITE_OBJ_FREE_QUEUES), entry);
 }
 
-s32 Ov001_SpriteObjAddr(s32 arg0, s32 arg1) {
+/* Address of OAM entry `index` in the sprite-object arena of `screen`
+ * (0 = main screen, 1 = sub screen). */
+s32 Ov001_SpriteObjAddr(s32 screen, s32 index) {
     extern s32 gOv001SpriteArena;
-    return gOv001SpriteArena + (arg0 << 0xA) + (arg1 * 8);
+    return gOv001SpriteArena + screen * OV001_SPRITE_OBJS_PER_SCREEN + index * OV001_SPRITE_OBJ_STRIDE;
 }
 
 /* Creates the two ov001 tile-range pools (one per tile screen): each gets a list

@@ -42,6 +42,17 @@ typedef struct LinkCompletionEvent {
 #define LINK_STATE_RESULT_CODE    0x0C /* s32 result code last signalled */
 #define LINK_STATE_RESULT_HANDLER 0x2C /* void (*)(s32 result, s32 unused) */
 
+/* gLinkState +0x1C: peer connection-event callback (the ov009 counterpart of
+ * OV010_SESSION_PEER_CALLBACK).  ClearPlayerActive calls it when a player slot is
+ * deactivated, with (error, wasConnected, pending, playerId, arg); set through a
+ * setter that returns the previous callback. */
+#define LINK_STATE_PEER_EVENT 0x1C
+
+/* gLinkState +0x18: callback the link actor notifies with the addressed-player
+ * mask and the packet each time it prepares one to send (seen in
+ * func_ov009_022215a4); set through a setter that returns the previous callback. */
+#define LINK_STATE_SEND_HANDLER 0x18
+
 /* gLinkState link-setup flags and the console's own player slot. */
 #define LINK_STATE_FLAGS        0x156 /* u8: link setup flags */
 #define LINK_STATE_FLAG_LINKED  0x01  /* the link is up: set when a task reports its data step */
@@ -221,6 +232,20 @@ typedef struct LinkRequestRecord {
 #define LINK_STATE_RANDOM 0x5C
  /* gLinkState +0x3C: handler the overlay's general WFC events are forwarded to. */
  #define LINK_STATE_EVENT_HANDLER 0x3C
+ /* gLinkState +0x40: callback told about every link channel command, with the
+ * channel, the packet and its length, after HandleLinkChannelCommand has
+ * dispatched it.  Set through a setter that returns the previous callback. */
+#define LINK_STATE_RECEIVE_CALLBACK 0x40
+/* gLinkState +0x44: callback offered each assembled link command packet after
+ * its command has been dispatched, so it can take the packet over.  Set through
+ * a setter that returns the previous callback; it returns 0 to keep the packet,
+ * nonzero to let the overlay free it. */
+#define LINK_STATE_COMMAND_CALLBACK 0x44
+/* gLinkState +0x54: handler every assembled link message packet is offered to
+ * (channel, packet), set through SetLinkMessageHandler (wrapped by
+ * Link_SetMessageHandler) which returns the previous handler.  It returns 0 to
+ * keep the packet, nonzero to let the overlay free it. */
+#define LINK_STATE_MESSAGE_HANDLER 0x54
  /* gLinkState +0x60: handler the overlay hands a link packet to; set through a
   * setter that returns the previous handler and called with the packet and two
   * words describing it (its length and the addressed player mask). */

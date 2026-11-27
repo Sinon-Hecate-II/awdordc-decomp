@@ -88,7 +88,7 @@ OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20),(u16)Get3DSprit
 break;
 case 0x200:
 M2C_FIELD((s32)(*(u16**)gCur3DSpriteEngine+3+(u32)arg1),u16*,0)|=0x80;
-buffer=func_020815bc(BuildMapBackgroundClName(arg2),0x200);
+buffer=LoadNarcFileToNewBuffer(BuildMapBackgroundClName(arg2),0x200);
 ApplyFacePaletteStyle((u8)GetFacePaletteStyle(),buffer,0x200);
 QueueBGExtPaletteUpload(buffer,arg1,bank<<9,0x200,1);
 OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20),(u16)Get3DSpriteLayerSize((u8)((*(SpriteControl094df0**)gCur3DSpriteEngine)->mode),(u8)arg1),(u16)((bank&15)<<12));

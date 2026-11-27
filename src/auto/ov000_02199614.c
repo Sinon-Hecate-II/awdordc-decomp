@@ -102,7 +102,7 @@ void PickAiUnitAction(void)
 {
     s32 NextRandomValue(void);
     s32 Modulo(s32, s32);
-    s32 func_02072b04(void *);
+    s32 SaveContext(void *);
     s32 GetAiUnitMoveRange(BattleMapUnitHead *);
     extern s32 *gCurrentMap;
     extern u8 *gAiUnitListCursor;
@@ -110,7 +110,7 @@ void PickAiUnitAction(void)
     extern u8 *gAiSettings;
     extern u8 *gAiUnitTypeTuning;
     extern u8 gAiCommand[];
-    extern M2C_UNK data_ov000_021df604;
+    extern M2C_UNK gAiUnitActionContext;
     extern void (*gAiUnitAction)(void);
 
     s32 id = *gAiUnitListCursor;
@@ -178,7 +178,7 @@ void PickAiUnitAction(void)
         gAiCommand[AI_COMMAND_READY] = 0;
     }
 
-    if (func_02072b04(&data_ov000_021df604) == 0)
+    if (SaveContext(&gAiUnitActionContext) == 0)
         gAiUnitAction();
     if (!gAiCommand[AI_COMMAND_READY]) {
         if (*gAiUnitListCursor != AI_UNIT_LIST_NO_UNIT) {
@@ -222,7 +222,7 @@ SendLinkCommand(gBattleCommand,0x14);
 void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     void func_ov000_0217e798(M2C_UNK, M2C_UNK, u8 *, u8 *, u8 *);
     void MarkCaptureUnitHasTarget(s32);
-    M2C_UNK func_02072b10(M2C_UNK *, M2C_UNK);
+    M2C_UNK RestoreContext(M2C_UNK *, M2C_UNK);
     void BuildUnitMoveRange(void *);
     void BuildMovePathForTile(M2C_UNK, M2C_UNK, s32);
     s32 PackCommandPath(void *, void *);
@@ -230,7 +230,7 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     s32 GetUnitMoveFuelCost(s32, s32);
     void func_ov000_02199ce0(void);
     extern s32 *gCurrentMap;
-    extern M2C_UNK data_ov000_021df604;
+    extern M2C_UNK gAiUnitActionContext;
     extern u8 gCommandPath[];
     extern u8 gAiCommand[];
     extern u8 gBattleEndState[];
@@ -249,7 +249,7 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
         (arg2 == 2 || ((u8 *)*gCurrentMap)[0x52D6] != 0)) {
 
         unit[0xA] |= 0x80;
-        func_02072b10(&data_ov000_021df604, 1);
+        RestoreContext(&gAiUnitActionContext, 1);
     }
     BuildUnitMoveRange(unit);
         BuildMovePathForTile(arg0, arg1, (s32)(((u8 *)*gCurrentMap) + 0x5388));
@@ -276,13 +276,16 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     if (*(volatile u8 *)gBattleEndState != 0) {
         func_ov000_02199ce0();
     }
-    func_02072b10(&data_ov000_021df604, 1);
+    RestoreContext(&gAiUnitActionContext, 1);
 }
 
-void func_ov000_02199f38(void) {
-    M2C_UNK func_02072b10(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov000_021df604;
-    func_02072b10(&data_ov000_021df604, 1);
+/* Abandons the AI unit action the handler is planning: resumes the context
+ * PickAiUnitAction saved with SaveContext, which then skips the handler and
+ * moves the AI on to its next unit. */
+void AbortAiUnitAction(void) {
+    M2C_UNK RestoreContext(M2C_UNK *, M2C_UNK);
+    extern M2C_UNK gAiUnitActionContext;
+    RestoreContext(&gAiUnitActionContext, 1);
 }
 
 /* Copies the cursor state into the battle command record gAiCommand: the actor

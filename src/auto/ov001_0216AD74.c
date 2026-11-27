@@ -3,7 +3,16 @@
 #include "ov001_room.h"
 
 #pragma thumb on
-u32 func_ov001_0216b87c(u32 a,u32 b) {u32 t=a&b; b=~b; a=((a&b)+1)|t; if(a>=(b|t)) a=1|t; return a;}
+/* Bit helper: advances the positions of `value` that `mask` leaves clear
+ * ((value & ~mask) + 1) while keeping the positions shared with `mask`, and
+ * falls back to 1 | (value & mask) once the increment reaches the masked limit. */
+u32 func_ov001_0216b87c(u32 value, u32 mask) {
+    u32 shared = value & mask;
+    mask = ~mask;
+    value = ((value & mask) + 1) | shared;
+    if (value >= (mask | shared)) value = 1 | shared;
+    return value;
+}
 
 /* Release the two heap buffers the room session keeps in gRoomState (the one at
  * +0x0C first, then the one at +0x04) and forget them. */

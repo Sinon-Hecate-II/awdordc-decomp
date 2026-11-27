@@ -406,15 +406,15 @@ s32 Ov001_GetFriendSlots(void **arg0) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK, s32);
     extern u8 data_ov001_0218fb64[];
     extern s32 gWfcFriendRoster;
-    WfcFriendSlot *p;
     u8 *emptyCode;
+    WfcFriendSlot *p;
     s32 count;
     s32 i;
 
     count = 0;
+    emptyCode = data_ov001_0218fb64;
     p = (WfcFriendSlot *)((u8 *)gWfcFriendRoster + WFC_FRIEND_SLOTS);
     *arg0 = p;
-    emptyCode = data_ov001_0218fb64;
     for (i = 0; i < WFC_FRIEND_SLOT_COUNT; i++) {
         if (ByteCompareN((M2C_UNK)p->code, (M2C_UNK)emptyCode, sizeof(p->code)) != 0) {
             count = count + 1;
@@ -786,9 +786,11 @@ void Ov001_FormatSavePlayerCode4(s32 output) {
     StringFormatUnbounded(output, (s32)gOv001CodeFormat, saveData[SAVE_PLAYER_CODES + 12], playerCode[1], group2, group3);
 }
 #pragma opt_strength_reduction reset
-u8 Ov001_GetSaveSlotStatus(s32 arg0) {
+/* Return save slot `slot`'s status byte (1 or 2 when written,
+ * SAVE_SLOT_STATUS_ERASED when empty), read from its 0x100-byte slot image. */
+u8 Ov001_GetSaveSlotStatus(s32 slot) {
     extern s32 gSaveData;
-    return *((u8 *)((s8 *)gSaveData + (arg0 << 8) + 0xe7));
+    return *((u8 *)((s8 *)gSaveData + (slot << 8) + SAVE_SLOT_STATUS_REL));
 }
 
 #pragma opt_common_subs off

@@ -348,9 +348,11 @@ void StringFormatUnbounded(char *buffer, char *format, ...) {
     StringFormatUnboundedVa(buffer, format, args);
 }
 
-void StringFormatUnboundedVa(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Format the printf-style `format` and its `args` va_list into `buffer` with no
+ * length bound (INT_MAX capacity); the unbounded counterpart of StringFormatN. */
+void StringFormatUnboundedVa(char *buffer, char *format, char *args) {
     void VStringFormat(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    VStringFormat(arg0, (M2C_UNK)0x7fffffff, arg1, arg2);
+    VStringFormat(buffer, (M2C_UNK)0x7fffffff, format, args);
 }
 
 /* Format the printf-style `format` and its arguments into `buffer`, which holds
@@ -368,8 +370,10 @@ void VStringFormat() {
     func_020195e8();
 }
 
-s32 func_020056b0(void){
-extern s32 gThreadManager;return ++M2C_FIELD(&gThreadManager,s32 *,32);
+/* Return the next thread creation id (TaskCreate stores it in Thread::id). */
+s32 NextThreadId(void) {
+    extern s32 gThreadManager;
+    return ++M2C_FIELD(&gThreadManager, s32 *, THREAD_MANAGER_NEXT_ID);
 }
 
 /* Insert `thread` into `queue` in run-priority order, keeping the queue's head
@@ -555,7 +559,7 @@ void InitThreadContext(); void func_02006198();
 void CpuFill(s32,void *,s32); void TaskExitCurrent(void);
 s32 state; s32 id; u8 *base;
 state=OS_DisableInterrupts();
-id=func_020056b0();
+id=NextThreadId();
 M2C_FIELD(obj,s32 *,0x70)=priority;
 M2C_FIELD(obj,s32 *,0x6c)=id;
 M2C_FIELD(obj,s32 *,0x74)=M2C_FIELD(obj,s32 *,0x64)=0;

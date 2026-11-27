@@ -42,7 +42,7 @@ void Ov001_CloseMessageScreen(void) {
  * buffer and draws it in a text panel, then registers the continuation callback and
  * shows message 29 before the fade-out step takes over. */
 void Ov001_ShowProfileMessage(void) {
-    void *func_ov001_02176114(void);
+    void *Ov001_GetProfileMessage(void);
     void Ov001_LoadProfileMessageBg(void);
     void func_ov001_021792ec(void);
     void Ov001_FadeInProfileMessage(void);
@@ -55,7 +55,7 @@ void Ov001_ShowProfileMessage(void) {
     s32 panel;
     void *message;
 
-    message = func_ov001_02176114();
+    message = Ov001_GetProfileMessage();
     panel = CreateTextPanel(0, 0);
     M2C_FIELD(&gOv001ProfileChoice, u8 *, OV001_CHOICE_OPTION) = 0;
     M2C_FIELD(&gOv001ProfileChoice, u8 *, OV001_CHOICE_CONFIRMED) = 0;

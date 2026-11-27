@@ -19,7 +19,7 @@ u16 *LowerBoundU16(u16 *,u16 *,u16 *,u32);
 extern s32 gMicTestIpc;
 
 #pragma opt_common_subs off
-void func_020e4490(void) {
+void InitGameEngine(void) {
     M2C_UNK func_020e4378();
     M2C_UNK func_02082058();
     M2C_UNK ResetKeyState();

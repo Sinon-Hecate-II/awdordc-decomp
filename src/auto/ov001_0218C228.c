@@ -353,8 +353,9 @@ M2C_UNK Ov001_ReturnTaskNode(s32 group, Ov001TaskNode *node) {
     Ov001_QueuePush(OV001_TASKS[group].freeNodes, (u32)node);
 }
 
-void Ov001_SetTaskGroupEnabled(s32 arg0, s8 arg1) {
+/* Enable (nonzero) or disable (0) the dispatch of task group `group`. */
+void Ov001_SetTaskGroupEnabled(s32 group, s8 enabled) {
     extern s32 gOv001Tasks;
-    M2C_FIELD((gOv001Tasks + (arg0 << 6)), s8 *, 0x38) = arg1;
+    OV001_TASKS[group].enabled = enabled;
 }
 

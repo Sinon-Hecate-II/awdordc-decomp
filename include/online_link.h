@@ -33,6 +33,11 @@
 #define OV010_SESSION_WORK_SIZE  0x10E0 /* bytes of that block */
 #define OV010_SESSION_STEP_FLAGS 0x54   /* s32: OV010_FLAG_* bits (see common.h) */
 #define OV010_SESSION_SCORE_CALLBACK 0x20 /* s32 (*)(s32 index, s32 arg): the app's score for a browsed matchmaking session, added to a base score of 1 */
+#define OV010_SESSION_ERROR_CALLBACK 0x40 /* void (*)(s32 code): the app's handler for a pending session/NAS error (called with GetLastNasError's code) */
+/* gOv010OnlineSession +0x2C: the voice-chat packet handler, called by the
+ * session's packet dispatcher for every received voice-chat packet;
+ * Ov010_SetVoiceChatCallback installs it and clears it on shutdown. */
+#define OV010_SESSION_VOICE_CALLBACK 0x2C
 
 /* The online session's outbound packet queue (gOv010OnlineSession): a singly
  * linked list of nodes {void *next; Ov010Packet packet;}, the packet's kind
@@ -79,6 +84,10 @@ public:
  * immediately by `size` payload bytes.  In a queued node the payload therefore
  * starts at ONLINE_QUEUE_NODE_HEADER (0x10), after the 4-byte link pointer.
  * The magic tags a header as valid when a raw buffer is parsed. */
+/* Alignment the online overlay gives every block it allocates from the game heap
+ * (queue nodes, send/receive buffers, the session work block). */
+#define ONLINE_BLOCK_ALIGNMENT 0x20
+
 #define ONLINE_PACKET_MAGIC       0x5F57464D /* 'MFW_' */
 #define ONLINE_PACKET_HEADER_SIZE 0x0C       /* bytes before the payload */
 typedef struct Ov010Packet {

@@ -5,7 +5,7 @@
 s32 GetUnitAttackClass(s32);s32 IsFootUnitKind(s32);s32 IsAiCombatSpecialUnitKind(s32);s32 IsCaptureTargetAt(void *,s32,s32);s32 GetUnitDamagePercent(s32,s32);s32 CountThreateningEnemies(void *);
 
 extern void **gCurrentMap;extern u8 gUnitKindBuildCosts[],gUnitKindFlags[],gAiTargetValueTable[],gAiProductionSiteAreaBitmap[],gAiSafeDirectRangeBitmap[],gAiSafeIndirectRangeBitmap[],gAiIndirectRangeBitmap[],gAiRangeBitmap[];extern u8 *gAiUnitTypeTuning,*gAiCommandState;
-void func_020d166c(s32,u16,void *);s32 IsUnitSelected(void *);s32 GetKindAttackClass(s32);s32 Divide(s32,s32);s32 GetTileDamageRating(s32,s32,void *,s32);s32 IsCellOwnedByOtherArmy();s32 WillCaptureCompleteThisTurn(void *);
+void RunBattleIfTarget(s32,u16,void *);s32 IsUnitSelected(void *);s32 GetKindAttackClass(s32);s32 Divide(s32,s32);s32 GetTileDamageRating(s32,s32,void *,s32);s32 IsCellOwnedByOtherArmy();s32 WillCaptureCompleteThisTurn(void *);
 static inline u8 Tile76(s32 x,s32 y,s32 offset){u8 *map=*gCurrentMap;return M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,offset);}
 static inline u8 Bit76(u8 *bits,s32 x,s32 y){u32 index=x+y*M2C_FIELD(*gCurrentMap,u16 *,0x5144);return bits[index>>3]&(1<<(index&7));}
 
@@ -18,7 +18,7 @@ s32 IsCellOwnedByOtherArmy();
  * (0 = not worth attacking, 0xFFFF = the forced target of a full-action step). */
 s32 GetAiTargetScore(u32 targetFlags,u32 position){
 u8 *attacker,*defender,*map; s16 *pos=(s16 *)position;s32 loss,gain,value=1,tileRating,cellIndex,attackerKind,defenderKind,unitFlags,attackerFlags,defenderFlags,score;u32 terrainKind;
-func_020d166c(M2C_FIELD((*gCurrentMap),u8 *,MAP_CURSOR_UNIT_ID),(u16)targetFlags,pos);
+RunBattleIfTarget(M2C_FIELD((*gCurrentMap),u8 *,MAP_CURSOR_UNIT_ID),(u16)targetFlags,pos);
 if(!M2C_FIELD((*gCurrentMap),s16 *,MAP_BATTLE_WINNER))return 0;
 attacker=M2C_FIELD((*gCurrentMap),u8 * *,MAP_BATTLE_ATTACKER);defender=M2C_FIELD((*gCurrentMap),u8 * *,MAP_BATTLE_DEFENDER);
 if(((u32)(M2C_FIELD(M2C_FIELD((*gCurrentMap),u8 * *,MAP_CURSOR_UNIT),u8 *,MAP_UNIT_AI_STATE)<<28)>>28)==AI_STEP_FULL_ACTION && IsUnitSelected(defender))return 0xffff;

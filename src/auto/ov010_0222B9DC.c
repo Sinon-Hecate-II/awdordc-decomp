@@ -221,10 +221,12 @@ M2C_UNK StringStorageReplaceWithText(void *storage, M2C_UNK pos, u32 remove, M2C
     return (M2C_UNK)StringStorageReplace(storage, pos, remove, (void *)text, (u8 *)text + StringLength(text), unused);
 }
 
-s32 ReleaseNetErrorSpriteText(s32 arg0) {
+/* Release the message text a network-error message sprite owns (its stored string
+ * at NET_ERROR_TEXT) and hand the sprite back; the sprite itself stays alive. */
+s32 ReleaseNetErrorSpriteText(s32 sprite) {
     M2C_UNK StringStorageFree(s32);
-    StringStorageFree(arg0 + 0x44);
-    return arg0;
+    StringStorageFree(sprite + NET_ERROR_TEXT);
+    return sprite;
 }
 
 /* Destroy a network-error message sprite: release the text it keeps at +0x44 and

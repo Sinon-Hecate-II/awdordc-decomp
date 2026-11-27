@@ -1,6 +1,7 @@
 /* 9 functions from 0x021E8654 to 0x021E9638 (ov003), found by ds-decomp. */
 #include "common.h"
 #include "ov003_menu.h"
+#include "waypoint_panel.h"
 
 extern u16 data_ov003_0220f890;
 extern u16 data_ov003_0220f892;
@@ -142,7 +143,7 @@ void SendWaypointPanelClosed(void) {
 }
 
 void func_ov003_021e8958(void *arg0) {
-    void func_ov003_021e8f80(void *, s32);
+    void SetWaypointPanelTwoPlayer(void *, s32);
     void func_ov003_021e8f98(void *, s32);
     s32 GetCurrentMapPlayerCount(void *);
     void SetSceneLayerOverrideMain(s32, void *);
@@ -159,7 +160,7 @@ void func_ov003_021e8958(void *arg0) {
     s32 Hide3DSprite(void *);
     void *CreateScrollingTextSprite(void *);
     void func_ov003_021e9810(void *, s32);
-    void func_ov003_021e9818(void *, s32);
+    void SetSpriteActorPaletteRow(void *, s32);
     s32 IsMapListCategory3(void);
     void *CreateTimerDisplay(void *);
     void SetTimerDisplayGraphics(void *, s32, s32);
@@ -185,7 +186,7 @@ void func_ov003_021e8958(void *arg0) {
     void LoadFaceTexture(s32, s32, s32);
     void LoadFaceTextureAndPalette(s32, s32, s32);
     void LoadSpriteImage(s32, s32, s32);
-    void func_ov003_021ea294(s32, s32, s32);
+    void LoadSpritePalette(s32, s32, s32);
     void *GetLocalizedFileName(void *);
     void *LoadFileToBuffer(void *, s32);
     void LoadGraphicsBlock(void *, s32);
@@ -203,7 +204,7 @@ void func_ov003_021e8958(void *arg0) {
     u8 i;
     u8 *h;
 
-    if (GetCurrentMapPlayerCount(arg0) == 2) func_ov003_021e8f80(arg0, 1);
+    if (GetCurrentMapPlayerCount(arg0) == 2) SetWaypointPanelTwoPlayer(arg0, 1);
     SetSceneLayerOverrideMain(3, &data_ov003_0220f890);
     SetSceneLayerOverrideMain(0, &data_ov003_0220f892);
     SetSceneLayerOverrideMain(1, &data_ov003_0220f88e);
@@ -230,7 +231,7 @@ void func_ov003_021e8958(void *arg0) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     M2C_FIELD(arg0, void **, 0x54) = CreateScrollingTextSprite(arg0);
     func_ov003_021e9810(M2C_FIELD(arg0, void **, 0x54), 0x180);
-    func_ov003_021e9818(M2C_FIELD(arg0, void **, 0x54), 7);
+    SetSpriteActorPaletteRow(M2C_FIELD(arg0, void **, 0x54), 7);
     Hide3DSprite(M2C_FIELD(arg0, void **, 0x54));
     gCur3DSpriteEngine = t1;
     if (IsMapListCategory3()) {
@@ -275,7 +276,7 @@ void func_ov003_021e8958(void *arg0) {
     for (i = 0; i < 12; i++) LoadFaceTexture(i + 1, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xc) + (((i << 7) + 2) << 5));
     for (i = 0; i < 13; i++) LoadFaceTextureAndPalette(i, ((i << 4) + 0x1f0) << 5, 7);
     LoadSpriteImage(4, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0x3400);
-    func_ov003_021ea294(5, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2c0);
+    LoadSpritePalette(5, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2c0);
     SetFileDirectory(data_ov003_0220fb8c);
     h = LoadFileToBuffer(GetLocalizedFileName(data_ov003_0220fb94), 1);
     LoadGraphicsBlock(h + 0x254, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0xa400);
@@ -311,8 +312,12 @@ void func_ov003_021e8958(void *arg0) {
     gCur3DSpriteEngine = t3;
 }
 
-void func_ov003_021e8f80(void *arg0, s32 arg1) {
-    M2C_FIELD(arg0, u8 *, 0x39) = (u8) ((M2C_FIELD(arg0, u8 *, 0x39) & ~1) | (arg1 & 1));
+/* Set the waypoint panel's two-player flag (bit 0 of the packed panel flags)
+ * for a map that has two players. */
+void SetWaypointPanelTwoPlayer(void *panel, s32 twoPlayer) {
+    M2C_FIELD(panel, u8 *, WAYPOINT_PANEL_FLAGS) =
+        (u8) ((M2C_FIELD(panel, u8 *, WAYPOINT_PANEL_FLAGS) & ~WAYPOINT_PANEL_TWO_PLAYER)
+            | (twoPlayer & WAYPOINT_PANEL_TWO_PLAYER));
 }
 
 #pragma opt_common_subs off

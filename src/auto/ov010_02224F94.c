@@ -111,10 +111,12 @@ void VoiceCodec_ResetState(void) {
     }
 }
 
-void func_ov010_02225304(M2C_UNK arg0, M2C_UNK arg1) {
+/* Copy `size` bytes of freshly received voice samples into the codec's shared
+ * reference sample buffer. */
+void VoiceCodec_LoadSampleBuffer(M2C_UNK samples, M2C_UNK size) {
 M2C_UNK MI_CpuCopy32(M2C_UNK,M2C_UNK *,M2C_UNK);
 extern M2C_UNK gVoiceCodecSampleBuffer;
-MI_CpuCopy32(arg0,&gVoiceCodecSampleBuffer,arg1);
+MI_CpuCopy32(samples,&gVoiceCodecSampleBuffer,size);
 }
 
 void VoiceCodec_ProcessFrame(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK arg2, M2C_UNK arg3) {
@@ -538,7 +540,9 @@ if(result==0){FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1
 return result;
 }
 #pragma pop
-void func_ov010_02225cd8(void) {
+/* Start the streamed voice the voice chat talks over, letting
+ * RefillStreamedVoiceSegment feed its sample buffers in 0x44-ms segments. */
+void StartVoiceChatStream(void) {
     M2C_UNK StartStreamedVoice(M2C_UNK *, M2C_UNK);
     StartStreamedVoice((void *)&RefillStreamedVoiceSegment, 0x44);
 }
@@ -565,9 +569,12 @@ void StartStreamSoundChannels(void) {
     }
 }
 
+/* Stop the streamed voice's sound output: wait for the ARM7 audio transfer to
+ * finish, then stop the stream's sound player if it is playing. */
 void VoiceChat_StopStreamSound(void) {
-    M2C_UNK Arm7TransferEndWait();
-    extern M2C_UNK gStreamSoundPlayer;
+    void Arm7TransferEndWait(void);
+    void Sound_StopIfPlaying(void *);
+    extern s32 gStreamSoundPlayer;
     Arm7TransferEndWait();
     Sound_StopIfPlaying(&gStreamSoundPlayer);
 }

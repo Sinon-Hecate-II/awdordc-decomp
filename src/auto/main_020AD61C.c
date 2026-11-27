@@ -58,12 +58,15 @@ s32 IsMapBackgroundSeen(s32 mapId) {
     return 0;
 }
 
-void MarkRecordsMusicEntryHeard(s32 arg0) {
+/* Marks the records menu's music entry `entryId` as heard (its soundtrack row
+ * gets the "heard" mark); a negative entry, for a track the records menu does
+ * not list, is ignored. */
+void MarkRecordsMusicEntryHeard(s32 entryId) {
     M2C_UNK SetRecordsMusicHeard(s32, M2C_UNK);
-    if (arg0 < 0) {
+    if (entryId < 0) {
         return;
     }
-    SetRecordsMusicHeard(arg0, 1);
+    SetRecordsMusicHeard(entryId, 1);
 }
 
 /* Whether the records screen has marked music entry `entryId` as heard. */

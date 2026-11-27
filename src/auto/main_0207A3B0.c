@@ -111,7 +111,7 @@ void SetMapCursorVisible(s16 visible) {
     M2C_FIELD(CreateSpriteFromClass(&gMapCursorClass, 7), s16 *, 0x6C) = visible;
 }
 
-void func_0207a768(void) {
+void DeleteMapCursorSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gMapCursorClass;
     DeleteSpriteObjectsOfClass(&gMapCursorClass);
@@ -576,11 +576,13 @@ void CreateCursorCellBurst(M2C_UNK owner) {
     CreateSpriteFromClass(&gCursorCellBurstClass, owner);
 }
 
-void func_0207b040(void) {
+/* Remove the aiming cursor's overlay sprites: its cell-burst effect, then the
+ * map cursor itself. */
+void DeleteAimCursorSprites(void) {
  M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
  extern M2C_UNK gCursorCellBurstClass;
  DeleteSpriteObjectsOfClass(&gCursorCellBurstClass);
- func_0207a768();
+ DeleteMapCursorSprites();
 }
 
 /* Save the pan endpoints and build a speed ramp capped at eight view units per frame. */

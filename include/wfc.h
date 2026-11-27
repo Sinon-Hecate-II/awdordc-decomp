@@ -432,6 +432,7 @@ typedef struct WfcMeasureChannelRequest {
 #define WFC_CMD_INFO_PACKET  0x10  /* void *0x100-byte command packet the firmware wrote */
 #define WFC_CMD_INFO_MODE    0x14  /* u16 mode of the channel */
 #define WFC_CMD_INFO_DATA_CACHED 0x16 /* u16 nonzero once the data block has been read */
+#define WFC_CMD_INFO_COMMANDS 0x18 /* s32[0x2c]: per-command argument/callback at info + command*4 */
 #define WFC_CMD_INFO_CALLBACK 0xc8 /* void (*)(void *): general event callback */
 #define WFC_CMD_INFO_CHANNELS 0xcc /* void (*[16])(void *): per-channel callbacks */
 #define WFC_CMD_INFO_VALUES  0x10c /* s32[16]: per-channel argument values */

@@ -288,7 +288,7 @@ void Ov001_UpdateProfileSetup(void) {
     void Ov001_UpdateLinkState(void);
     void Ov001_EnterProfileListSharing(void);
     void Ov001_UpdateProfileTask(void);
-    void func_ov001_021897a4(void);
+    void Ov001_EnterProfileObtained(void);
     s32 Ov001_FinishLinkTeardown(void);
     s32 Ov001_GetTaskStep(void);
     s32 Ov001_EndLink(void);
@@ -330,7 +330,7 @@ void Ov001_UpdateProfileSetup(void) {
         Ov001_UpdateProfileTask();
         return;
     case 11:
-        func_ov001_021897a4();
+        Ov001_EnterProfileObtained();
         return;
     case 16:
         *(u32 *)(state + PROFILE_STATE_TIMER) = 0;

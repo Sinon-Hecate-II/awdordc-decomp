@@ -41,6 +41,10 @@
  * object of that class, or returns 0 before a class has been set. */
 #define SCENE_STATE_CLASS 0x0C /* s32 class descriptor */
 
+/* gOv003SceneState+0x10: the scene's 3D sprite object, set by CreateScene3DSprite
+ * and deleted by DeleteOv003SceneSprite. */
+#define SCENE_STATE_SPRITE 0x10 /* void *the scene's 3D sprite */
+
 /* gOv003SceneState+5: the scene's lifecycle state: 0 while the scene is being
  * built, 1 once it is up and taking input (IsOv003SceneActive), 2 once the
  * player's choice has been confirmed, 3 once the screen starts fading out for

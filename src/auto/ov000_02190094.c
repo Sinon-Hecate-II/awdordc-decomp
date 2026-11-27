@@ -40,7 +40,7 @@ s32 GetAiUnitRange(void);
 void func_ov000_0217a59c(s32,s32,s32,s32);
 s32 IsPropertyCell(s32,s32);
 s32 GetUnitRemainingMoveRange(void *);
-void func_ov000_02199f38(void);
+void AbortAiUnitAction(void);
 void PlanMoveDestination(s32,s32);
 s32 IsRepairPropertyKind(s32);
 void SelectAttackingUnitFallback(void);
@@ -126,7 +126,7 @@ void func_ov000_02190094(void)
         d = GetUnitRemainingMoveRange(*((u8 **) (new_var[1] + 0x52d0)));
         if ((*((s8 **) ((((u8 *) (*gCurrentMap)) + 0x52e8) + (b * 4))))[a] < d)
         {
-          func_ov000_02199f38();
+          AbortAiUnitAction();
           new_var[1] = *gCurrentMap;
           ((Supply_021906a0 *) (new_var[1] + 0x6c60))[*((s8 *) ((new_var[1] + 0x1928) + (a + (*((u16 *) ((new_var[1] + 0x3758) + (b * 2)))))))].count++;
           new_var[1] = *gCurrentMap;

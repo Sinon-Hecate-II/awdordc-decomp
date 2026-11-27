@@ -530,8 +530,8 @@ void Ov004_CreateUraSideEffect(void) {
     LoadUraEffectAssets(CreateSpriteFromClass(&gUraPlaneEffectClass, 7), &sUraSideAssetName);
 }
 
-/* Reload the "ura_bomb" graphics for the ura-plane effect, but only while its
- * effect sprite still exists; the reload reuses the sprite as its context. */
+/* Reload the ura-plane bomb ("ura_bomb") graphics into both screen contexts,
+ * but only while the ura-plane effect object exists. */
 void Ov004_ReloadUraBombGraphics(void) {
     void Ov004_LoadUraBombGraphics(void *effect);
     s32 FindObjectByClass(M2C_UNK *spriteClass);
@@ -543,8 +543,9 @@ void Ov004_ReloadUraBombGraphics(void) {
     Ov004_LoadUraBombGraphics((void *)effect);
 }
 
-/* Reload the "ura_burst" graphics for the ura-plane effect, but only while its
- * effect sprite still exists; the reload reuses the sprite as its context. */
+/* Reload the ura-plane burst ("ura_bomb") graphics for the effect, but only
+ * while its effect sprite still exists; the reload reuses the sprite as its
+ * context. */
 void Ov004_ReloadUraBurstGraphics(void) {
     void Ov004_LoadUraBurstGraphics(void *effect);
     s32 FindObjectByClass(M2C_UNK *spriteClass);

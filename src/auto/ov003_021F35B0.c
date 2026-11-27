@@ -461,11 +461,15 @@ void func_ov003_021f3f08(void) {
 
 }
 
-u8 func_ov003_021f3f0c(s32 arg0, s32 arg1, s32 arg2) {
- s32 result;
- if ((arg1 <= arg0) && (arg0 <= arg2)) result = 1;
- else result = 0;
- return result;
+/* Return 1 when value lies within the inclusive range min..max, else 0.  Used
+ * by the map-select screen on a touch row (between the list's top margin and
+ * its scroll limit) and by the map-list drawing to find the row under the pen. */
+u8 Ov003_IsValueInRange2(s32 value, s32 min, s32 max) {
+    s32 inRange;
+
+    if ((min <= value) && (value <= max)) inRange = 1;
+    else inRange = 0;
+    return inRange;
 }
 
 /* Whether a box at (x, y) of size width x height overlaps the 256x192 screen;
@@ -568,8 +572,10 @@ u8 Ov003Battle_IsLinkSessionGuest(void) {
     return isGuest;
 }
 
-void func_ov003_021f4090(M2C_UNK arg0) {
+/* Another copy of the ov003 battle scene's match start request ('BSLM') posting;
+ * one of the duplicates kept by the battle's scene-setup code. */
+void RequestBattleSceneMatchStart3(M2C_UNK owner) {
     M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
-    Link_CreateStartRequest(0x4D4C5342, arg0);
+    Link_CreateStartRequest(MATCH_ID_BSLM, owner);
 }
 

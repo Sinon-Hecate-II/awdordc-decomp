@@ -549,7 +549,7 @@ return;
  * socket timeout and create the mutex the client state is locked with. Returns
  * 4 if any of that fails or the library is already initialised, 0 on success. */
 s32 Dwc_HttpStartup(Callbacks3506c *cb) {
- M2C_UNK InitMutex(void *); M2C_UNK MI_CpuFill8(void *,M2C_UNK,s32); M2C_UNK Wfc_StartNetCheckTask();
+ M2C_UNK OS_InitMutex(void *); M2C_UNK MI_CpuFill8(void *,M2C_UNK,s32); M2C_UNK Wfc_StartNetCheckTask();
  void *(*alloc)(void *,int)=cb->alloc; void *p;
  if(M2C_FIELD(&gWfcNet,void **,0))return 4;
  p=alloc(&data_020fb7dc,0x11f4); M2C_FIELD(&gWfcNet,void **,0)=p;
@@ -561,7 +561,7 @@ s32 Dwc_HttpStartup(Callbacks3506c *cb) {
  p=alloc(&data_020fb7f0,0x1c14);M2C_FIELD(&gWfcNet,void **,20)=p;
  if(!p)return 4;
  M2C_FIELD(&gWfcNet,int *,4)=0;
- InitMutex((u8 *)M2C_FIELD(&gWfcNet,void **,0)+0x11dc);
+ OS_InitMutex((u8 *)M2C_FIELD(&gWfcNet,void **,0)+0x11dc);
  Wfc_StartNetCheckTask();return 0;
 }
 

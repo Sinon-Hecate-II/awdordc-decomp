@@ -1,16 +1,22 @@
 /* 4 functions from 0x021E1500 to 0x021E16EC (ov003), found by ds-decomp. */
 #include "common.h"
 
-u8 func_ov003_021e1500(s32 arg0, s32 arg1, s32 arg2) {
- s32 result;
- if ((arg1 <= arg0) && (arg0 <= arg2)) result = 1;
- else result = 0;
- return result;
+/* Return 1 when value lies within the inclusive range min..max, else 0; a fourth
+ * copy of Ov003_IsValueInRange, used by the ov003 CO-id setup to split a CO id
+ * into the 0..4 and 5..9 rows of the CO list. */
+u8 Ov003_IsValueInRange4(s32 value, s32 min, s32 max) {
+    s32 inRange;
+
+    if ((min <= value) && (value <= max)) inRange = 1;
+    else inRange = 0;
+    return inRange;
 }
 
-void func_ov003_021e1518(M2C_UNK arg0) {
+/* Post the ov003 battle scene's match start request ('BSLM') with `owner` as the
+ * request's owner, opening the scene's link exchange. */
+void RequestBattleSceneMatchStart(M2C_UNK owner) {
     M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
-    Link_CreateStartRequest(0x4D4C5342, arg0);
+    Link_CreateStartRequest(MATCH_ID_BSLM, owner);
 }
 
 /* Sets up one slot of the table pointed at by state: allocates/recycles an entry via
@@ -27,8 +33,8 @@ void func_ov003_021e1530(void *state, s32 id) {
         M2C_FIELD(state, u8 *, 8) = Divide(id, 5);
         id16 = id;
         M2C_FIELD(state, u8 *, 6) = id;
-        if (func_ov003_021e1500(id16, 0, 4)) M2C_FIELD(state, u8 *, 9) = id;
-        if (func_ov003_021e1500(id16, 5, 9)) M2C_FIELD(state, u8 *, 10) = id - 5;
+        if (Ov003_IsValueInRange4(id16, 0, 4)) M2C_FIELD(state, u8 *, 9) = id;
+        if (Ov003_IsValueInRange4(id16, 5, 9)) M2C_FIELD(state, u8 *, 10) = id - 5;
         return;
     }
     if (id != 10) return;

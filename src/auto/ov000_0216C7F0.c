@@ -152,10 +152,12 @@ s32 GetNameGraphicFile(s32);extern u8 gUnitKindStatusTile;
 return GetNameGraphicFile(1)+((&gUnitKindStatusTile)[kind*0x70]<<8);
 }
 
+/* Base of the 0x80-byte unit icon tile block for the current unit variant in the
+ * unit icon tile table data_02121e08. */
 void *GetUnitIconTiles(void) {
- s32 GetUnitVariantIndex();
- extern M2C_UNK data_02121e08;
- return (u8 *)&data_02121e08 + (GetUnitVariantIndex() << 7);
+    s32 GetUnitVariantIndex();
+    extern M2C_UNK data_02121e08;
+    return (u8 *)&data_02121e08 + (GetUnitVariantIndex() << 7);
 }
 
 void *GetArmyPalette(s32 arg0) {

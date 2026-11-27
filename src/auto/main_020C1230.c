@@ -355,11 +355,15 @@ void RemoveFrameRectSprites(void) {
     DeleteSpriteObjectsOfClass(&gFrameRectSpriteClass);
 }
 
-u8 Main_IsValueInRange(s32 arg0, s32 arg1, s32 arg2) {
- s32 result;
- if ((arg1 <= arg0) && (arg0 <= arg2)) result = 1;
- else result = 0;
- return result;
+/* Return 1 when value lies within the inclusive range min..max, else 0.  The
+ * occupation screen calls it (discarding the result) to note that a terrain
+ * kind's background index names one of the backgrounds. */
+u8 Main_IsValueInRange(s32 value, s32 min, s32 max) {
+    s32 inRange;
+
+    if ((min <= value) && (value <= max)) inRange = 1;
+    else inRange = 0;
+    return inRange;
 }
 
 /* Map property terrain to the occupation screen's background index, using the airport art as the fallback. */

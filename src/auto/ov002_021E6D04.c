@@ -508,15 +508,17 @@ void TeardownBattleScene(void) {
     StopSoundPlayer();
 }
 
-u8 IsBattleSceneIntro(void *arg0) {
-    u8 var_r0;
+/* True while the battle scene is still in its intro, i.e. while it is being set
+ * up or sliding in, before the posed scene is held and its effects played. */
+u8 IsBattleSceneIntro(void *state) {
+    u8 intro;
 
-    if ((u32) M2C_FIELD(arg0, u8 *, 8) <= 1U) {
-        var_r0 = 1;
+    if ((u32) M2C_FIELD(state, u8 *, BATTLE_SCENE_PHASE) <= BATTLE_SCENE_PHASE_SLIDE_IN) {
+        intro = 1;
     } else {
-        var_r0 = 0;
+        intro = 0;
     }
-    return var_r0;
+    return intro;
 }
 
 /* Pick the unit-set variant index for one side (0 or 1) of the battle `settings`:

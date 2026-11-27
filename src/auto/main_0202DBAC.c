@@ -204,12 +204,12 @@ void Sound_ReleaseChannel(void *player) {
 void CreateSoundWorkerTask(void *worker, s32 priority) {
     M2C_UNK TaskCreate(void *, M2C_UNK *, void *, s32, s32, s32);
     M2C_UNK TaskWake(void *);
-    M2C_UNK InitMutex(void *);
+    M2C_UNK OS_InitMutex(void *);
     M2C_UNK ListInit(void *, M2C_UNK);
     extern M2C_UNK Sound_WorkerThread;
     TaskCreate(worker, &Sound_WorkerThread, worker, worker + SOUND_TASK_WAIT_QUEUE, SOUND_WORKER_STACK_SIZE, priority);
     ListInit(worker + SOUND_TASK_REQUEST_QUEUE, 0);
-    InitMutex(worker + SOUND_TASK_LOCK);
+    OS_InitMutex(worker + SOUND_TASK_LOCK);
     M2C_FIELD(worker, s32 *, SOUND_TASK_WAIT_QUEUE_TAIL) = 0;
     M2C_FIELD(worker, s32 *, SOUND_TASK_WAIT_QUEUE) = 0;
     TaskWake(worker);

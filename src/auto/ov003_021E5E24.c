@@ -603,9 +603,10 @@ void *func_ov003_021e6c9c(void *arg0) {
     return Ov003Scene_Destructor((void *)((u32)arg0 + 0xFFFFFFCC));
 }
 
-u8 InRange(s32 arg0, s32 arg1, s32 arg2) {
+/* True (1) when `value` lies between `lower` and `upper`, both ends included. */
+u8 InRange(s32 value, s32 lower, s32 upper) {
  s32 result;
- if ((arg1 <= arg0) && (arg0 <= arg2)) result = 1;
+ if ((lower <= value) && (value <= upper)) result = 1;
  else result = 0;
  return result;
 }
@@ -642,9 +643,12 @@ u8 IsSessionGuest(void) {
     return guest;
 }
 
-void func_ov003_021e6d54(M2C_UNK arg0) {
+/* Post the ov003 battle scene's match start request ('BSLM') with `owner` as the
+ * request's owner.  Second copy of the same helper in the overlay (see
+ * RequestBattleSceneMatchStart). */
+void RequestBattleSceneMatchStart2(M2C_UNK owner) {
     M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
-    Link_CreateStartRequest(0x4D4C5342, arg0);
+    Link_CreateStartRequest(MATCH_ID_BSLM, owner);
 }
 
 /* Return the group record (first slot, count) of the waypoint-list slot that

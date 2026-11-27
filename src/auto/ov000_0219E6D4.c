@@ -75,9 +75,11 @@ void SelectAiKind5Unit(void) {
     gAiCommandState[AI_COMMAND_STATE_PHASE] = 2;
 }
 
-void func_ov000_0219e830(void) {
+/* AI state setter: hand control back to the turn-planning phase, so the next
+ * frame runs the turn plan's order step again. */
+void ReturnToAiTurnPlan(void) {
     extern s8 *gAiCommandState;
-    *gAiCommandState = 4;
+    gAiCommandState[AI_COMMAND_STATE_PHASE] = AI_COMMAND_PHASE_PLAN_TURN;
 }
 
 /* Run the AI's unit-selection step for the current plan phase: call the routine
@@ -564,11 +566,11 @@ void ApplyWeatherCommand(void) {
 extern void **gCurrentMap;
 extern s8 *gAiCommandState;
 extern u8 gAiCommand[];
-void func_020a6fcc(void);
+void SpawnAreaDamageEffect(void);
 s32 i;
 u8 *p;
 M2C_FIELD(*gCurrentMap,u16 *,MAP_STATE)=1;
-func_020a6fcc();
+SpawnAreaDamageEffect();
 p=gAiCommand;
 *gAiCommandState=AI_COMMAND_PHASE_START_TURN;
 M2C_FIELD(*gCurrentMap,u8 *,MAP_WEATHER_START)=p[6];

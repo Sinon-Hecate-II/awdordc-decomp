@@ -610,15 +610,15 @@ retry:
 #pragma opt_propagation off
 s32 SaveDevice_ReadChipId(void) {
     extern void *data_020f553c;
+    u32 mask;
     u32 control;
-    register u32 mask;
+    u32 value;
 
     CARD_SetCommand(0xB8000000, 0);
     mask = sizeof(u32) * 2048;
-    control = M2C_FIELD(data_020f553c, volatile u32 *, 0x60);
-    control &= ~0x07000000;
-    control |= 0xA7000000;
-    *(volatile u32 *)0x040001A4 = control & -mask;
+    control = M2C_FIELD(data_020f553c, u32 *, 0x60);
+    value = (control & ~0x07000000) | 0xA7000000;
+    *(volatile u32 *)0x040001A4 = value & -mask;
     while (!(*(volatile u32 *)0x040001A4 & 0x800000)) {
     }
     return *(volatile s32 *)0x04100010;

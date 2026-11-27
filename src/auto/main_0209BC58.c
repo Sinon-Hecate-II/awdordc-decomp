@@ -212,10 +212,9 @@ void DrawLocalizedTextToTilemap(s32 x, s32 y, s32 tiles, s32 textId, u16 attrs, 
     DrawTextToTilemap(x, y, tiles, GetLocalizedText(textId), (s32) attrs, (s32) variant);
 }
 
-/* Draw the text script `text` at cell (x, y) in the tilemap at `tiles`, with
- * tile attribute base `attrs` and glyph variant `variant`. Forwards to
- * DrawCachedTextToTilemap, which caches each string's glyph positions. */
-s32 DrawTextToTilemap(s32 x, s32 y, s32 tiles, s32 text, u16 attrs, u16 variant) {
+/* Draw text into the tilemap at `tiles`, starting at cell (x, y), with cell
+ * attributes `attrs` and glyph set `variant`. */
+s32 DrawTextToTilemap(s32 x,s32 y,s32 tiles,s32 text,u16 attrs,u16 variant) {
 s32 DrawCachedTextToTilemap(s32,s32,s32,s32,u16,u16);
 DrawCachedTextToTilemap(x,y,tiles,text,attrs,variant);
 }

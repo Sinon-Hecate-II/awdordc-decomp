@@ -428,14 +428,14 @@ void SupplyCommand(void) {
  * starts with, capture a fresh battle-command seed, remember where the player
  * left the cursor, and move the map state machine to its end-of-turn step. */
 void EndPlayerTurn(void) {
- M2C_UNK RollNextWeather(); M2C_UNK GetRandomSeed(); M2C_UNK func_020a6fcc();
+ M2C_UNK RollNextWeather(); M2C_UNK GetRandomSeed(); M2C_UNK SpawnAreaDamageEffect();
  extern void **gCurrentMap; extern u8 gBattleCommand[];
  u8 *p = (u8 *)*gCurrentMap + MAP_NAME;
  p[MAP_WEATHER_START - MAP_NAME] = RollNextWeather();
  *(u32 *)(gBattleCommand + BATTLE_COMMAND_SEED) = GetRandomSeed();
  M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,MAP_PLAYER_STATES+PLAYER_REC_CURSOR_X)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X);
  M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,MAP_PLAYER_STATES+PLAYER_REC_CURSOR_Y)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y);
- func_020a6fcc(); M2C_FIELD(*gCurrentMap,u16 *,MAP_STATE)=1;
+ SpawnAreaDamageEffect(); M2C_FIELD(*gCurrentMap,u16 *,MAP_STATE)=1;
 }
 
 /* Hand the map back to its cursor and re-open the cursor's action menu: spawn

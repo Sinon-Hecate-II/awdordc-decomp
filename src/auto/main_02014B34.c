@@ -206,11 +206,13 @@ s32 Mb_IsValidPlayer(u32 player) {
     return 0;
 }
 
-void func_02015230(M2C_UNK arg0, s16 arg1) {
+/* Report `status` for multiboot player `player` to the match's event callback,
+ * as an MB_EVENT_STATUS event carrying the code (packet = the s16 code). */
+void Mb_ReportPlayerStatus(M2C_UNK player, s16 status) {
     M2C_UNK Mb_DispatchPlayerEvent(M2C_UNK, M2C_UNK, s16 *);
-    s16 sp0;
+    s16 code;
 
-    sp0 = arg1;
-    Mb_DispatchPlayerEvent(arg0, 0xD, &sp0);
+    code = status;
+    Mb_DispatchPlayerEvent(player, MB_EVENT_STATUS, &code);
 }
 

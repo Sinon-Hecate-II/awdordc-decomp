@@ -125,9 +125,10 @@ void AdvanceMapTurn(void) {
     }
 }
 
-u32 IsCoUnlocked(s32 a) {
+/* Whether the CO with id `coId` is unlocked in the CO roster. */
+u32 IsCoUnlocked(s32 coId) {
 extern M2C_UNK gCoUnlocked;
-return (u32)(M2C_FIELD(&gCoUnlocked,u8 *,a)<<31)>>31;
+return ((SaveFlags *)&gCoUnlocked)[coId].enabled;
 }
 
 /* Set (flag 1) or clear (flag 0) the unlock bit of CO `coId` in the CO roster,
@@ -199,9 +200,10 @@ u8 GetMusicVolumeSetting(void) {
     return M2C_FIELD(&gGameSettings, u8 *, 0x12C);
 }
 
-void SetMusicVolumeSetting(s32 a) {
+/* Store the player's music volume `volume` in the game settings and apply it. */
+void SetMusicVolumeSetting(s32 volume) {
 extern M2C_UNK gGameSettings;void ApplyMusicVolumeSetting(void);
-M2C_FIELD(&gGameSettings,u8 *,0x12c)=a;
+M2C_FIELD(&gGameSettings,u8 *,GAME_SETTINGS_MUSIC_VOLUME)=volume;
 ApplyMusicVolumeSetting();
 }
 
@@ -213,10 +215,12 @@ void ApplyMusicVolumeSetting(void) {
 
 s32 GetSoundEffectVolumeSetting(void){return M2C_FIELD(&gGameSettings,u8 *,0x12d);}
 
-void SetSoundEffectVolumeSetting(s32 a) {
-void ApplySoundEffectVolumeSetting(void);
-M2C_FIELD(&gGameSettings,u8 *,0x12d)=a;
-ApplySoundEffectVolumeSetting();
+/* Store the player's sound-effect volume `volume` in the game settings and apply it. */
+void SetSoundEffectVolumeSetting(s32 volume) {
+    void ApplySoundEffectVolumeSetting(void);
+
+    M2C_FIELD(&gGameSettings, u8 *, GAME_SETTINGS_SFX_VOLUME) = volume;
+    ApplySoundEffectVolumeSetting();
 }
 
 /* Push the saved sound-effect volume setting to the sound driver. */

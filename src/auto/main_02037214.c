@@ -316,9 +316,11 @@ M2C_UNK Wfc_CreateConnection(M2C_UNK conn,M2C_UNK mode,M2C_UNK unused,M2C_UNK th
  gWfcConnection=(void *)conn;SetNasServerEnvironment(NAS_SERVER_TEST);func_020220a8(threadPriority);
 }
 
-void func_0203783c(M2C_UNK arg0) {
+/* Create the WFC connection object for an online session at mode 3 (the highest
+ * mode WFC_Init accepts) on the online thread priority, 20. */
+void Wfc_CreateOnlineConnection(M2C_UNK conn) {
     M2C_UNK Wfc_CreateConnection(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    Wfc_CreateConnection(arg0, 3, 1, 0x14);
+    Wfc_CreateConnection(conn, 3, 1, 0x14);
 }
 
 /* Point the NAS library at the server for the chosen environment: the test, dev

@@ -100,7 +100,15 @@ void InitSoundArchive(void *archive, s32 base) {
     gCurrentArchive = (s32)archive;
 }
 
-s32 Sound_SetCurrentArchive(s32 arg0){extern s32 gCurrentArchive;s32 old=gCurrentArchive;gCurrentArchive=arg0;return old;}
+/* Install `archive` as the sound archive that archive lookups read, and return
+ * the archive it replaces. */
+s32 Sound_SetCurrentArchive(s32 archive) {
+    extern s32 gCurrentArchive;
+    s32 previous = gCurrentArchive;
+
+    gCurrentArchive = archive;
+    return previous;
+}
 
 s32 Sound_GetCurrentArchive(void) {
     extern s32 gCurrentArchive;
@@ -368,11 +376,14 @@ u32 Sound_CreateHeap(s32 buffer, s32 size) {
     return 0U;
 }
 
-void Sound_DestroyHeap(s32 *arg0) {
-    M2C_UNK DestroyFrameHeap(s32);
-    M2C_UNK Sound_FreeAllBlocks();
-    Sound_FreeAllBlocks();
-    DestroyFrameHeap(*arg0);
+/* Free every data block of the sound heap at `heap` (resetting its sections)
+ * and destroy the frame heap it allocates from. */
+void Sound_DestroyHeap(s32 *heap) {
+    s32 DestroyFrameHeap(s32);
+    s32 Sound_FreeAllBlocks(void *);
+
+    Sound_FreeAllBlocks(heap);
+    DestroyFrameHeap(M2C_FIELD(heap, s32 *, SOUND_HEAP_FRAME));
 }
 
 /* Frees every block group of the sound player `player`: calls each block's
@@ -518,9 +529,12 @@ void Sound_FlushAndWait(void) {
     Sound_WaitForCommand(commandMark);
 }
 
-s32 Sound_LoadArchiveGroup(void) {
-    s32 Sound_LoadArchiveGroupItems();
-    if (Sound_LoadArchiveGroupItems() == 0) {
+/* Load sound group `groupId`'s items into memory pool `pool` (the items loader
+ * returns an error code, 0 on success): returns 1 once the group loaded, 0 when
+ * loading it failed. */
+s32 Sound_LoadArchiveGroup(s32 groupId, s32 pool) {
+    s32 Sound_LoadArchiveGroupItems(s32, s32);
+    if (Sound_LoadArchiveGroupItems(groupId, pool) == 0) {
         return 1;
     }
     return 0;

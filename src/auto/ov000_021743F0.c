@@ -209,7 +209,8 @@ break; }
 }
 }
 
-void func_ov000_02174be8(void) {
+/* Load the graphics of the currently open ov000 map info window. */
+void Ov000_InfoWindow_LoadGlobalAssets(void) {
     M2C_UNK Ov000_InfoWindow_LoadAssets(void *);
     extern Ov000MenuState *gOv000InfoWindow;
     Ov000_InfoWindow_LoadAssets(gOv000InfoWindow);
@@ -428,10 +429,13 @@ void *Ov000_StatsWindow_Create(void *entry) {
     return entry;
 }
 
-void *Ov000_StatsWindow_FreePanel(void *arg0) {
+/* Free the unit-statistics window's panel descriptor (the 0x104-byte block at
+ * +0x10) and return the window; the window object itself is left to the caller. */
+void *Ov000_StatsWindow_FreePanel(void *window) {
     M2C_UNK MemFree(s32);
-    MemFree(M2C_FIELD(arg0, s32 *, 0x10));
-    return arg0;
+
+    MemFree((s32)((Ov000StatsWindow *)window)->panel);
+    return window;
 }
 
 /* Reset the unit-statistics window: clear the sub engine's three layers, mark

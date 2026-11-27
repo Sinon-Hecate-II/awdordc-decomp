@@ -22,11 +22,15 @@ void StartPaletteFade(void *arg0, s8 duration) {
     fade->flags = DS3D_FADE_ACTIVE;
 }
 
-M2C_UNK func_0208c8a8(void *arg0) {
-    M2C_FIELD(arg0, u8 *, 0x34) = 0;
-    M2C_FIELD(arg0, u8 *, 0x36) = 0;
-    M2C_FIELD(arg0, u8 *, 0x37) = 0;
-    M2C_FIELD(arg0, u8 *, 0x35) = 0;
+/* Init of the palette-fade sprite class: clear the object's palette slot, timer,
+ * duration and flags. */
+M2C_UNK InitPaletteFadeSprite(void *arg0) {
+    DS3DSpritePaletteFade *fade = (DS3DSpritePaletteFade *)arg0;
+
+    fade->palette = 0;
+    fade->timer = 0;
+    fade->duration = 0;
+    fade->flags = 0;
 }
 
 /* Advance a 3D sprite object's palette fade: ease the blend value over
@@ -65,8 +69,8 @@ void func_0208c9ec(void) {
 }
 
 void func_0208c9f0(void) {
-    M2C_UNK func_0208c8a8();
-    func_0208c8a8();
+    M2C_UNK InitPaletteFadeSprite();
+    InitPaletteFadeSprite();
 }
 
 void func_0208c9fc(void) {

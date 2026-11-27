@@ -746,11 +746,14 @@ u8 func_ov003_021f14c8(void) {
     return M2C_FIELD(&gOv003SceneState, u8 *, 1);
 }
 
-void func_ov003_021f14d8(s8 arg0, s8 arg1, s8 arg2) {
+/* Store how the scene was entered (`entryState`, SCENE_ENTRY_*) and the slide
+ * directions toward the next map of the list and back to the previous one. */
+void SetSceneSlideDirections(s8 entryState, s8 nextMapSlide, s8 previousMapSlide) {
     extern M2C_UNK gOv003SceneState;
-    M2C_FIELD(&gOv003SceneState, s8 *, 4) = arg0;
-    M2C_FIELD(&gOv003SceneState, s8 *, 2) = arg1;
-    M2C_FIELD(&gOv003SceneState, s8 *, 3) = arg2;
+
+    M2C_FIELD(&gOv003SceneState, s8 *, SCENE_ENTRY_STATE) = entryState;
+    M2C_FIELD(&gOv003SceneState, s8 *, SCENE_SLIDE_FORWARD) = nextMapSlide;
+    M2C_FIELD(&gOv003SceneState, s8 *, SCENE_SLIDE_BACK) = previousMapSlide;
 }
 
 /* Horizontal offset the ov003 scene slides a page to for a slide direction code
@@ -793,9 +796,11 @@ extern M2C_UNK gOv003SceneState;
 return M2C_FIELD(&gOv003SceneState,u8 *,2);
 }
 
+/* Horizontal offset the scene slides to when the player picks the next map of
+ * the list (SCENE_SLIDE_FORWARD is the direction toward it). */
 s32 GetNextMapSlideOffset(void) {
 extern M2C_UNK gOv003SceneState;
-return GetSlideDirectionOffset(M2C_FIELD(&gOv003SceneState,u8 *,2));
+return GetSlideDirectionOffset(M2C_FIELD(&gOv003SceneState,u8 *,SCENE_SLIDE_FORWARD));
 }
 
 u8 GetPreviousMapSlideDirection(void) {
@@ -803,8 +808,10 @@ u8 GetPreviousMapSlideDirection(void) {
     return M2C_FIELD(&gOv003SceneState, u8 *, 3);
 }
 
+/* Horizontal offset the scene slides to when the player picks the previous map
+ * of the list (SCENE_SLIDE_BACK is the direction back to it). */
 s32 GetPreviousMapSlideOffset(void) {
 extern M2C_UNK gOv003SceneState;
-return GetSlideDirectionOffset(M2C_FIELD(&gOv003SceneState,u8 *,3));
+return GetSlideDirectionOffset(M2C_FIELD(&gOv003SceneState,u8 *,SCENE_SLIDE_BACK));
 }
 

@@ -778,17 +778,23 @@ void ClearLinkCommandQueue(void *queue) {
     q->head = NULL;
 }
 
-void func_02085e8c(void *arg0) {
+/* Sprite-script step that opens the voice chat, doing nothing while the
+ * push-to-talk widget is hidden (its enabled flag is clear). */
+void StartVoiceChatIfEnabled(VoiceChatWidget *widget) {
     M2C_UNK Ov010_InitVoiceChat();
-    if (M2C_FIELD(arg0, s32 *, 0x38) == 0) {
+
+    if (widget->enabled == 0) {
         return;
     }
     Ov010_InitVoiceChat();
 }
 
-void func_02085ea4(void *arg0) {
+/* Sprite-script step that closes the voice chat, doing nothing while the
+ * push-to-talk widget is hidden (its enabled flag is clear). */
+void StopVoiceChatIfEnabled(VoiceChatWidget *widget) {
     M2C_UNK Ov010_ShutdownVoiceChat();
-    if (M2C_FIELD(arg0, s32 *, 0x38) == 0) {
+
+    if (widget->enabled == 0) {
         return;
     }
     Ov010_ShutdownVoiceChat();

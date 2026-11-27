@@ -335,12 +335,14 @@ s32 FindFrameBorderSprite(void) {
     return FindObjectByClass(&gFrameBorderSpriteClass);
 }
 
+/* Hide the frame-border sprite, if the screen currently has one. */
 void HideFrameBorderSprite(void) {
  M2C_UNK Hide3DSprite();
  if (FindFrameBorderSprite() == 0) return;
  Hide3DSprite();
 }
 
+/* Show the frame-border sprite, if the screen currently has one. */
 void ShowFrameBorderSprite(void) {
  M2C_UNK Show3DSprite();
  if (FindFrameBorderSprite() == 0) return;

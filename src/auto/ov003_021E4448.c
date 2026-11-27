@@ -4,13 +4,13 @@
 #include "ov003_scene.h"
 
 void func_ov003_021e4448(void *arg0){
-M2C_UNK func_ov003_021f2860(void *);M2C_UNK SetOv003SceneState(M2C_UNK);M2C_UNK CountMapPicks(M2C_UNK,M2C_UNK *);M2C_UNK CreateMapTransferPanel(M2C_UNK,M2C_UNK,M2C_UNK);s32 LoadMapRecord(s32,s32);
+M2C_UNK LoadSavedMapPickLists(void *);M2C_UNK SetOv003SceneState(M2C_UNK);M2C_UNK CountMapPicks(M2C_UNK,M2C_UNK *);M2C_UNK CreateMapTransferPanel(M2C_UNK,M2C_UNK,M2C_UNK);s32 LoadMapRecord(s32,s32);
 extern M2C_UNK gMapPickSelectionIfaceVTable;
 struct {void *data;u16 buf0[5];u16 buf1[5];}local;
 u32 count;u8 i; void *block;void *base;u16 val;u8 zero;
 local.data=&gMapPickSelectionIfaceVTable;
 for(i=0;i<5;i++){local.buf1[i]=65535;local.buf0[i]=local.buf1[i];}
-func_ov003_021f2860(&local);SetOv003SceneState(1);
+LoadSavedMapPickLists(&local);SetOv003SceneState(1);
 i=0;zero=i;block=&local;
 do{
 count=CountMapPicks((M2C_UNK)block,local.buf0);
@@ -201,7 +201,7 @@ u32 Ov003_UpdateMapTransferAvailability(void *view) {
         picks.secondPicks[i] = MAP_PICK_NONE;
         picks.firstPicks[i] = picks.secondPicks[i];
     }
-    func_ov003_021f2860(&picks);
+    LoadSavedMapPickLists(&picks);
     {
         u8 count;
         u8 i;

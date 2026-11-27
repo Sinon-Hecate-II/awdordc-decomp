@@ -19,6 +19,7 @@
 #define SPRITE_SLOT_CANCEL_CB 0x30 /* void (*)(void *): run on cancel (B) while the slot is focused */
 #define SPRITE_SLOT_UPDATE_CB 0x24 /* void (*)(void *): run for the slot every frame */
 #define SPRITE_SLOT_KEY_CB   0x28 /* void (*)(void *): run on key input while the slot is focused and ready */
+#define SPRITE_SLOT_FOCUS_CB 0x34 /* void (*)(void *): run when the slot takes keyboard focus */
 #define SPRITE_SLOT_STRIDE   0x3c
 #define SPRITE_SLOT_COUNT    85   /* slots in the gSpriteSlots pool */
 
@@ -78,8 +79,8 @@ enum {
 #define SPRITE_SLOT_DEF_UPDATE_CB 0x10 /* void * -> slot +0x24, run every frame */
 #define SPRITE_SLOT_DEF_KEY_CB    0x14 /* void * -> slot +0x28, run on key input */
 #define SPRITE_SLOT_DEF_CLICK_CB  0x18 /* void * -> slot +0x2C */
-#define SPRITE_SLOT_DEF_UNK1C     0x1C /* void * -> slot +0x30 */
-#define SPRITE_SLOT_DEF_UNK20     0x20 /* void * -> slot +0x34 */
+#define SPRITE_SLOT_DEF_CANCEL_CB 0x1C /* void * -> slot +0x30 */
+#define SPRITE_SLOT_DEF_FOCUS_CB  0x20 /* void * -> slot +0x34 */
 #define SPRITE_SLOT_DEF_UNK24     0x24 /* void * -> slot +0x38 */
 #define SPRITE_SLOT_DEF_SIZE      0x28
 

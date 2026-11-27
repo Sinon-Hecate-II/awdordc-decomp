@@ -312,7 +312,12 @@ s32 WFC_ShutdownCommandChannel(void) {
     return 0;
 }
 
-void WFC_SetChannelParam(s32 a,s32 b){extern M2C_UNK gWfcChannelState;M2C_FIELD(M2C_FIELD(&gWfcChannelState,s32 *,4)+a*4,s32 *,24)=b;}
+/* Store `value` as command `command`'s parameter in the WFC channel's info block. */
+void WFC_SetChannelParam(s32 command, s32 value) {
+    extern M2C_UNK gWfcChannelState;
+
+    M2C_FIELD(M2C_FIELD(&gWfcChannelState, s32 *, WFC_CMD_STATE_INFO) + command * 4, s32 *, WFC_CMD_INFO_COMMANDS) = value;
+}
 
 /* Take a free 0x100-byte command block from the channel's free queue: invalidate
  * its cached free bit and hand it out once the firmware has released it.  A block

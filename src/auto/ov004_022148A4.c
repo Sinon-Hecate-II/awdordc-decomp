@@ -7,7 +7,7 @@ void Reset3DSpriteBankState();void *CreateUnitSprite(void *);void *GetLocalizedF
 static inline u8 Visible149(void *p){return M2C_FIELD(M2C_FIELD(p,void **,100),u8 *,18)!=0;}
 
 extern s32 gSaveSlotSummary;extern u32 gMapProgressRecords[];
-void LoadUnitGraphics(void);void *MemAlloc(s32);s32 MapData_GetCategory(s32);u32 func_020a8a94(s32);s32 func_020a8a84(s32);s32 GetMapFollowupMapId(s32,s32);
+void LoadUnitGraphics(void);void *MemAlloc(s32);s32 MapData_GetCategory(s32);u32 MapData_GetGridPosition(s32);s32 func_020a8a84(s32);s32 GetMapFollowupMapId(s32,s32);
 static inline void *Entry149(void *base,s32 i){if(i<0)return 0;if(i>=64)return 0;return (u8 *)base+i*32;}
 static inline void *Cell149(void *base,s32 x,s32 y){if(x<0)return 0;if(y<0)return 0;if(x>=8)return 0;if(y>=8)return 0;return Entry149(base,x+y*8);}
 static inline u8 Flag149(void *p,u32 bit){return (M2C_FIELD(p,u8 *,4)&bit)?1:0;}
@@ -51,7 +51,7 @@ for(i=0;i<64;i++){M2C_FIELD(base+i*32,u16 *,0)=(i%8)*64+32;M2C_FIELD(base+i*32,u
 }
 M2C_FIELD(arg0,void **,92)=base;
 for(i=0;i<275;i++){
-state=MapData_GetCategory(i);pos=func_020a8a94(i);coords[0]=pos;x=coords[0];pos>>=8;coords[1]=pos;y=(u8)pos;coords[3]=y;coords[2]=x;
+state=MapData_GetCategory(i);pos=MapData_GetGridPosition(i);coords[0]=pos;x=coords[0];pos>>=8;coords[1]=pos;y=(u8)pos;coords[3]=y;coords[2]=x;
 if(state==0||state==2){base=M2C_FIELD(arg0,void **,92);p=Cell149(base,x,y);
 M2C_FIELD(p,u8 *,6)=func_020a8a84(i);M2C_FIELD(p,u8 *,7)=i-161;id=(u8)(i-161);
 state=MapData_GetCategory(id+161);selected=Flag149(p,2);M2C_FIELD(p,u8 *,4)=0;
@@ -74,7 +74,7 @@ saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;Apply3DSpriteLay
 LoadFileToTextureBank(data_ov004_0223c5f4,0);LoadFileToObjExtPalette(data_ov004_0223c5b8,0,512);
 LoadFileToTextureBank(data_ov004_0223c5d0,0x28000);LoadFileToObjExtPalette(data_ov004_0223c5c0,512,32);
 LoadFileToTextureBank(data_ov004_0223c660,0x30000);LoadFileToObjExtPalette(data_ov004_0223c630,544,32);
-OpenNarcArchive(data_ov004_0223c624);func_0208168c(GetLocalizedFileName(data_ov004_0223c5e8),0x38000);func_0208168c(GetLocalizedFileName(data_ov004_0223c5dc),0x39000);CloseNarcArchive();
+OpenNarcArchive(data_ov004_0223c624);LoadNarcFileToTextureBank(GetLocalizedFileName(data_ov004_0223c5e8),0x38000);LoadNarcFileToTextureBank(GetLocalizedFileName(data_ov004_0223c5dc),0x39000);CloseNarcArchive();
 LoadFileToObjExtPalette(data_ov004_0223c5c8,576,160);LoadFileToObjExtPalette(data_ov004_0223c5b0,736,32);
 LoadFileToTextureBank(data_ov004_0223c60c,0x3a000);LoadFileToObjExtPalette(data_ov004_0223c600,768,32);
 OpenNarcArchive(data_ov004_0223c66c);LoadNarcFileDecompressed(data_ov004_0223c654,M2C_FIELD(gCur3DSpriteEngine,s32 *,24)+32);LoadNarcFileDecompressed(data_ov004_0223c648,M2C_FIELD(gCur3DSpriteEngine,s32 *,44));LoadNarcFileToSpriteBuffer(data_ov004_0223c618,480,32);CloseNarcArchive();

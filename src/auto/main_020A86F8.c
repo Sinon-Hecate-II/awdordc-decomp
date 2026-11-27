@@ -202,9 +202,13 @@ u8 func_020a8a84(void) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 0x11);
 }
 
-s32 func_020a8a94(s32 a){u8 *p=(u8*)MapData_GetRecord(a);return (p[19]<<8)|p[18];}
+/* The map-selection grid position of the map `mapId`: its row in the high byte
+ * and its column in the low byte. */
+s32 MapData_GetGridPosition(s32 mapId){u8 *p=(u8*)MapData_GetRecord(mapId);return (p[MAP_DATA_GRID_Y]<<8)|p[MAP_DATA_GRID_X];}
 
-u16 GetMapFollowupMapId(s32 a,s32 b){u16 *p=(u16*)MapData_GetRecord(a);return M2C_FIELD(p+b,u16 *,20);}
+/* The id of the map that clearing `mapId` unlocks for follow-up slot `index`
+ * (0..3); 0 when that slot has no follow-up map. */
+u16 GetMapFollowupMapId(s32 mapId,s32 index){u16 *p=(u16*)MapData_GetRecord(mapId);return M2C_FIELD(p+index,u16 *,MAP_DATA_FOLLOWUP_MAPS);}
 
 /* Music track that the map data of `mapId` assigns to player slot `player`
  * (1-based), 0 when the map leaves the army's track in place. */
@@ -305,11 +309,16 @@ u32 GetPlayerRecordArmyId(s32 player) {
                      Bits020a8c10 *, MAP_PLAYER_STATES + PLAYER_REC_SPRITE).value;
 }
 
-u8 IsIndexInRange(s32 arg0, s32 arg1, s32 arg2) {
- s32 result;
- if ((arg1 <= arg0) && (arg0 <= arg2)) result = 1;
- else result = 0;
- return result;
+/* Whether `value` lies within the inclusive range `min`..`max`. */
+u8 IsIndexInRange(s32 value, s32 min, s32 max) {
+    s32 result;
+
+    if ((min <= value) && (value <= max)) {
+        result = 1;
+    } else {
+        result = 0;
+    }
+    return result;
 }
 
 /* Whether a box at (x, y) of size width x height overlaps the 256x192 screen,

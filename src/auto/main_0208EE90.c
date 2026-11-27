@@ -355,9 +355,10 @@ void ChangeMusicTrackWithFade(s32 track) {
     M2C_FIELD(CreateSpriteFromClass(&gMusicPlayAfterFadeClass, 7), s32 *, MUSIC_PLAY_AFTER_FADE_TRACK) = track;
 }
 
-void func_0208f808(void) {
+/* Record that no music track is playing. */
+void ClearCurrentMusicTrack(void) {
     extern s32 gCurrentMusicTrack;
-    gCurrentMusicTrack = 0xffff;
+    gCurrentMusicTrack = MUSIC_NONE;
 }
 
 /* Music fade-out sprite's per-frame wait step: count MUSIC_FADE_FRAMES down and
@@ -418,7 +419,13 @@ void FadeMusicToFullVolume(void) {
     FadeMusicToVolume(0x7F, 0x1E);
 }
 
-s32 FadeMusicToVolume(s32 a,s32 b){s32 Sound_FadeVolume(s32,s32,s32);return Sound_FadeVolume(-1,a,b);}
+/* Fade both music players to `targetVolume` (0..SOUND_VOLUME_MAX) over `frames`
+ * frames without snapping the volume first; returns 0 while the sound system is
+ * off. */
+s32 FadeMusicToVolume(s32 targetVolume, s32 frames) {
+    s32 Sound_FadeVolume(s32, s32, s32);
+    return Sound_FadeVolume(-1, targetVolume, frames);
+}
 
 /* Stop all music: delete the pending fade-out and play-after-fade sprite objects,
  * cut the current track and mark that no track is playing. */

@@ -32,14 +32,14 @@ void GX_ReleaseBankGrants(void);
 void Set3DSpriteVramBanks(void);
 void SetFileDirectory(void *);
 void LoadScenePanelGraphicsOnBothEngines(void);
-void func_020c8ed4(void *);
+void CreateCampaignMapHeaderLoader(void *);
 
 
 #pragma scheduling off
 void func_ov003_022066d8(void *a){
 void Apply3DSpriteLayout(void *);void GX_BeginLoadTexPltt(void);u8 *LoadFileToBuffer(void *,s32);void GX_LoadTexPltt(void *,s32,s32);void HeapFreeBlock(void *);void GX_EndLoadTexPltt(void);void LoadDecompressedFileTo(void *,void *);void LoadFileToBGExtPltt(void *,s32,s32,s32);void SetTileRectPalette(void *,s32,s32,s32);void LoadGraphicsBlock(void *,void *);void CopyToObjPaletteShadow(void *,s32,s32);void LoadScenePanelPalette(s32);void LoadSpriteResource(s32,s32,s32,void *);void *CreateUnitSprite(void *);void InitUnitSprite(void *,s32,s32,s32,s32);void Set3DSpriteSlideTargetAndStart(void *,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void SpriteCellListSetCellRect(void *,s32,s16,s16,u16,u16);void Hide3DSprite(void *);
 void UploadBGExtPalette(void *,s32,s32,s32);void *GetLocalizedFileName(void *);void LoadFileToSpriteBuffer(void *,s32,s32);void func_020af62c(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void func_ov003_02209d0c(void *,s32);void PlayMusicTrack(s32);s32 IsUnitAvailable(s32);void UpdateMapSelectLabelTransform(void *);void GotoSpriteAnimationLabel(void *,s32);s32 GetSpriteAnimValue(void *);s32 n,m;void *saved,*q;u8 *p;
-Init3DRendering(a);GX_ReleaseBankGrants();Set3DSpriteVramBanks();SetFileDirectory(data_ov003_0221106c);LoadScenePanelGraphicsOnBothEngines();if((u8)((u32)(M2C_FIELD(a,u8 *,0x36)<<24)>>28==0))func_020c8ed4(a);
+Init3DRendering(a);GX_ReleaseBankGrants();Set3DSpriteVramBanks();SetFileDirectory(data_ov003_0221106c);LoadScenePanelGraphicsOnBothEngines();if((u8)((u32)(M2C_FIELD(a,u8 *,0x36)<<24)>>28==0))CreateCampaignMapHeaderLoader(a);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;Apply3DSpriteLayout(data_ov003_022109e0);
 {u16 * volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=(*reg&~16)|16;}
 {u16 * volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=(*reg&~32)|0;}

@@ -585,9 +585,11 @@ s32 Mb_IsCartridgeUnchanged(void) {
     return 0;
 }
 
+/* True when the boot state asks for the cartridge's game code to be compared
+ * against the header recorded at boot. */
 u32 Mb_IsGameCodeCompared(void) {
     extern M2C_UNK data_027ffc30;
-    return (u32) (M2C_FIELD(&data_027ffc30, u8 *, 5) << 0x1F) >> 0x1F;
+    return ((MbCartridgeState *)&data_027ffc30)->compareGameCode;
 }
 
 #pragma opt_strength_reduction off

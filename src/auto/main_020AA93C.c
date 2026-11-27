@@ -496,9 +496,10 @@ void AcquireUnitSpriteHold(void) {
     *(&gUnitSpriteInput + UNIT_SPRITE_HOLD_COUNT) += 1;
 }
 
+/* Release one holder of the unit sprites' shared animation hold counter. */
 void ReleaseUnitSpriteHold(void) {
- extern u8 gUnitSpriteInput;
- gUnitSpriteInput -= 1;
+    extern u8 gUnitSpriteInput;
+    *(&gUnitSpriteInput + UNIT_SPRITE_HOLD_COUNT) -= 1;
 }
 
 /* Whether the unit sprites are held: the shared hold counter is nonzero, which

@@ -32,14 +32,20 @@ void ClearTlsSessionCache(void) {
     MI_CpuFill8(&gTlsSessionCache, 0, TLS_CACHE_SIZE);
 }
 
-void CopyDigestBytes(M2C_UNK *arg0, void *arg1, u32 arg2) {
+/* Copy `size` bytes from `src` to `dst`; the digest code uses it to hand the
+ * finished MD5/SHA-1 state to the caller. */
+void CopyDigestBytes(M2C_UNK *dst, void *src, u32 size) {
     void MI_CpuCopy8(s32, void *, u32);
-    MI_CpuCopy8(arg1, arg0, arg2);
+
+    MI_CpuCopy8(src, dst, size);
 }
 
-void func_020252cc(M2C_UNK *arg0, void *arg1, u32 arg2) {
+/* Copy `size` bytes of a message block into `dst`, the MD5 transform's local
+ * word array (argument order reversed for MI_CpuCopy8). */
+void CopyMessageBlock(M2C_UNK *dst, void *src, u32 size) {
     void MI_CpuCopy8(s32, void *, u32);
-    MI_CpuCopy8(arg1, arg0, arg2);
+
+    MI_CpuCopy8(src, dst, size);
 }
 
 /* MD5 compression function: mixes one 64-byte block into the 16-byte state
@@ -48,7 +54,7 @@ void MD5_Transform(void *state,s32 block){
 extern u8 gMd5MessageIndex;extern u32 gMd5Constants;
 u32 a,b,c,d,words[16];s32 offset,i;u32 tmp;
 a=M2C_FIELD(state,u32*,0);b=M2C_FIELD(state,u32*,4);c=M2C_FIELD(state,u32*,8);d=M2C_FIELD(state,u32*,12);
-func_020252cc(words,block,64);offset=0;
+CopyMessageBlock(words,block,64);offset=0;
 for(i=0;i<4;i++){
 tmp=a + (((u32*)&gMd5Constants)[offset+0]+((d ^ (b & (c ^ d)))+words[((u8*)&gMd5MessageIndex)[offset+0]]));
 a=b+((tmp<<7)|(tmp>>25));

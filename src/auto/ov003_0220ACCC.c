@@ -144,7 +144,7 @@ if(((u32)(M2C_FIELD(menu,u8 *,MENU_MODE_HI)<<28)>>28)==((u32)(M2C_FIELD(menu,u8 
 }
 Ov003_ApplyRowSelectionAnimations(menu);
 M2C_FIELD(menu,u8 *,MENU_MODE_HI)=(M2C_FIELD(menu,u8 *,MENU_MODE_HI)&~15)|(((u32)(M2C_FIELD(menu,u8 *,MENU_MODE_HI)<<24)>>28)&15);
-if(!func_ov003_0220801c(menu)&&M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE))PlaySoundEffect(SOUND_MENU_MOVE);
+if(!IsMenuActionRunning(menu)&&M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE))PlaySoundEffect(SOUND_MENU_MOVE);
 M2C_FIELD(menu,u8 *,MENU_FLAGS)&=~32;
 }
 #pragma opt_common_subs reset

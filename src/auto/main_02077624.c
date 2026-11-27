@@ -339,7 +339,7 @@ void func_02077ebc(void) {
     M2C_UNK OpenNarcArchive(M2C_UNK *);
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileToObjExtPalette(M2C_UNK *, s32, M2C_UNK);
-    M2C_UNK func_0208168c(M2C_UNK *, s32);
+    M2C_UNK LoadNarcFileToTextureBank(M2C_UNK *, s32);
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
     extern M2C_UNK data_02100ad8;
     extern M2C_UNK data_02100ae4;
@@ -379,15 +379,15 @@ void func_02077ebc(void) {
     LoadFileToTextureBank(GetLocalizedFileName(&data_02100afc), 0x20000);
     LoadFileToObjExtPalette(&data_02100b0c, 0x1400, 0x40);
     OpenNarcArchive(&data_02100b1c);
-    func_0208168c(&data_02100b28, 0x22F20);
+    LoadNarcFileToTextureBank(&data_02100b28, 0x22F20);
     LoadNarcFileToObjExtPalette(&data_02100b3c, 0x1460, 0x40);
-    func_0208168c(&data_02100b50, 0x21000);
-    func_0208168c(&data_02100b60, 0x21980);
+    LoadNarcFileToTextureBank(&data_02100b50, 0x21000);
+    LoadNarcFileToTextureBank(&data_02100b60, 0x21980);
     LoadNarcFileToObjExtPalette(&data_02100b70, 0x1440, 0x20);
-    func_0208168c(&data_02100b7c, 0x32520);
-    func_0208168c(&data_02100b88, 0x325A0);
+    LoadNarcFileToTextureBank(&data_02100b7c, 0x32520);
+    LoadNarcFileToTextureBank(&data_02100b88, 0x325A0);
     LoadNarcFileToObjExtPalette(&data_02100b94, 0x1520, 0x20);
-    func_0208168c(&data_02100b9c, 0x327A0);
+    LoadNarcFileToTextureBank(&data_02100b9c, 0x327A0);
     LoadNarcFileToObjExtPalette(&data_02100ba4, 0x1540, 0x20);
     CloseNarcArchive();
 }

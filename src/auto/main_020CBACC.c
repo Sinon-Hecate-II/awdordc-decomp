@@ -492,8 +492,8 @@ s32 IsBattlePreviewActive(void) {
 }
 
 void func_020cc834(void) {
-    M2C_UNK func_0207a768();
-    func_0207a768();
+    M2C_UNK DeleteMapCursorSprites();
+    DeleteMapCursorSprites();
 }
 
 #pragma push

@@ -412,11 +412,15 @@ s32 GetMapKindIconFrameIndex(u32 kind) {
     return GetMapIconFrameIndex(iconId);
 }
 
-u8 func_ov003_02200c64(s32 arg0, s32 arg1, s32 arg2) {
- s32 result;
- if ((arg1 <= arg0) && (arg0 <= arg2)) result = 1;
- else result = 0;
- return result;
+/* Return 1 when value lies within the inclusive range min..max, else 0; a third
+ * copy of Ov003_IsValueInRange, used by the ov003 panel code to test an entry
+ * index against its group's bounds. */
+u8 Ov003_IsValueInRange3(s32 value, s32 min, s32 max) {
+    s32 inRange;
+
+    if ((min <= value) && (value <= max)) inRange = 1;
+    else inRange = 0;
+    return inRange;
 }
 
 /* True when the local console hosts an active network session (the twin of
@@ -443,9 +447,11 @@ u8 Ov003_IsLinkSessionGuest(void) {
     return result;
 }
 
-void func_ov003_02200cd4(M2C_UNK arg0) {
+/* Another copy of the ov003 battle scene's match start request ('BSLM') posting;
+ * one of the duplicates kept by the battle's scene-setup code. */
+void RequestBattleSceneMatchStart4(M2C_UNK owner) {
     M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
-    Link_CreateStartRequest(0x4D4C5342, arg0);
+    Link_CreateStartRequest(MATCH_ID_BSLM, owner);
 }
 
 /* Icon tile offset of a setup-menu entry's value: the value indexes the icon

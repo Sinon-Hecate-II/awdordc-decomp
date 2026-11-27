@@ -53,7 +53,7 @@ s32 func_02072afc(void) {
     return 0;
 }
 
-s32 func_02072b04(void *buf) {
+s32 SaveContext(void *buf) {
     /* save context */
     /* can't express stmia of registers in C directly */
     return 0;

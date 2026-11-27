@@ -734,9 +734,12 @@ void FreeMapPreview(void) {
     Ov001_FreeAlloc(&gOv001Scrollbar - 3);
 }
 #pragma opt_propagation reset
+/* Mark the ov001 map preview's tilemap as needing a flush to BG2, which the
+ * preview's task then does on its next run. */
 void RequestMapPreviewUpdate(void) {
     extern void *gOv001MapPreview;
-    M2C_FIELD(gOv001MapPreview, s8 *, 0x604) = 1;
+
+    ((Ov001MapPreview *)gOv001MapPreview)->dirty = 1;
 }
 
 /* Copy `rowCount` rows of `wordsPerRow` u16 tiles from a source tilemap into the
@@ -864,7 +867,19 @@ u8 GetMenuState(void){extern void *gOv001Scrollbar;return M2C_FIELD(gOv001Scroll
 
 void Ov001_UpdateScrollbarHandle(void) { M2C_UNK Ov001_SetScrollbarHandlePos(); Ov001_SetScrollbarHandlePos(); }
 
-void Ov001_UnblockScrollBar(void){extern void *gOv001Scrollbar;M2C_FIELD(gOv001Scrollbar,u8 *,30)=0;}
+/* Clear the ov001 friend-roster scroll bar's blocked flag so its update task
+ * starts handling touches again. */
+void Ov001_UnblockScrollBar(void) {
+    extern void *gOv001Scrollbar;
 
-void Ov001_BlockScrollBar(void){extern void *gOv001Scrollbar;M2C_FIELD(gOv001Scrollbar,u8 *,30)=1;}
+    M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_BLOCKED) = 0;
+}
+
+/* Set the ov001 friend-roster scroll bar's blocked flag so its update task leaves
+ * the bar alone (e.g. while a selection is latched). */
+void Ov001_BlockScrollBar(void) {
+    extern void *gOv001Scrollbar;
+
+    M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_BLOCKED) = 1;
+}
 

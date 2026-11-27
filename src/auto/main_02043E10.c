@@ -503,7 +503,12 @@ void func_020449dc(void) {
     gTransferManager = 0;
 }
 
-void *GetTransferSlot(s32 a){extern s32 gTransferManager;return (void *)(gTransferManager+0x30*a);}
+/* Returns the transfer slot for `playerId`. */
+void *GetTransferSlot(s32 playerId) {
+    extern s32 gTransferManager;
+
+    return &((TransferManager *)gTransferManager)->slots[playerId];
+}
 
 /* Whether player `playerId`'s transfer slot has an outgoing transfer in
  * progress. */

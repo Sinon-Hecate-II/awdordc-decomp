@@ -374,20 +374,26 @@ M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,0x44)=0;
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
 }
 #pragma opt_instruction_scheduling off
-void AddProductionMenuColumnSprites(s32 a,s32 b,s32 c) {
-M2C_UNK AddSpriteSlot(s32,s32,M2C_UNK *,s32);
-extern u8 gProductionChoices[];extern M2C_UNK data_02129150;
-s32 i; s32 y; register s32 x;
+void AddProductionMenuColumnSprites(s32 a, s32 b, s32 c) {
+M2C_UNK AddSpriteSlot(s32, s32, M2C_UNK *, s32);
+extern u8 gProductionChoices[];
+extern M2C_UNK data_02129150;
+s32 i;
+s32 y;
+s32 x;
 Unk020BChoice *p;
-x=a+1; x<<=3;
-b++; y=b<<3;
-p=(Unk020BChoice *)gProductionChoices;
-i=0;
+
+x = a + 1;
+x <<= 3;
+y = (b + 1) << 3;
+i = 0;
+p = (Unk020BChoice *)gProductionChoices;
 do {
-if(p[c+i].value==0)return;
-AddSpriteSlot(x,y,&data_02129150,c+i);
-i++;y+=16;
-}while(i<7);
+    if (p[c + i].value == 0) return;
+    AddSpriteSlot(x, y, &data_02129150, c + i);
+    i++;
+    y += 16;
+} while (i < 7);
 }
 #pragma opt_instruction_scheduling reset
 /* Draw one column of the unit-production menu: the bordered window at (x, y)

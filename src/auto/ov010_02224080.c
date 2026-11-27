@@ -81,10 +81,13 @@ M2C_FIELD(&gLinkConfig,s32*,0x14)=0;
 return 1;
 }
 #pragma opt_strength_reduction reset
+/* Put both exchange-context lists of the voice-chat link back to empty: no
+ * context is in use and none is idle. */
 void VoiceLink_ResetContextLists(void) {
     extern M2C_UNK gVoiceLinkState;
-    M2C_FIELD(&gVoiceLinkState, s32 *, 0x14) = 0;
-    M2C_FIELD(&gVoiceLinkState, s32 *, 0x10) = 0;
+
+    ((VoiceLinkState *)&gVoiceLinkState)->activeList = NULL;
+    ((VoiceLinkState *)&gVoiceLinkState)->freeList = NULL;
 }
 
 /* Drops the voice-chat link's active exchange once it has been idle for longer
@@ -558,10 +561,13 @@ M2C_FIELD(((LinkPacketPool *)&gLinkPacketPool)->base+count*LINK_PACKET_SIZE,void
 return 1;
 }
 
+/* Empty the link's packet allocator: no packet buffer is free and the pool has
+ * no base buffer. */
 void VoiceLink_ResetPacketPool(void) {
     extern M2C_UNK gLinkPacketPool;
-    M2C_FIELD(&gLinkPacketPool, s32 *, 4) = 0;
-    M2C_FIELD(&gLinkPacketPool, s32 *, 8) = 0;
+
+    ((LinkPacketPool *)&gLinkPacketPool)->freeList = NULL;
+    ((LinkPacketPool *)&gLinkPacketPool)->base = NULL;
 }
 
 /* Take a packet buffer off the link's packet free list with interrupts held off;

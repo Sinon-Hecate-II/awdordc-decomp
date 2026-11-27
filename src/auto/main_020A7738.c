@@ -89,11 +89,13 @@ s32 GetUnitMaxLuck(void *unit) {
     return GetUnitMaxLuckBonus(unit, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2)) + 0xA;
 }
 
-s32 GetUnitMinLuck(void *arg0) {
- s32 GetUnitDamageVarianceMin(void *, u8, u8);
- s32 result = 0;
- result += GetUnitDamageVarianceMin(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
- return result;
+/* Lower bound of a unit's damage-variance (luck) roll: the min stat of its stat
+ * block at the unit's own tile (MAP_UNIT_X / MAP_UNIT_Y). */
+s32 GetUnitMinLuck(void *unit) {
+    s32 GetUnitDamageVarianceMin(void *, u8, u8);
+    s32 result = 0;
+    result += GetUnitDamageVarianceMin(unit, M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y));
+    return result;
 }
 
 /* Damage percentage one weapon of attacker kind `attackerKind` deals to a target:
@@ -177,9 +179,11 @@ u8 GetUnitKindByte0(s32 arg0) {
  return gUnitKindTable[arg0 * 0x70];
 }
 
-u8 GetUnitKindMoveRange(s32 arg0) {
- extern u8 gUnitKindMoveRange[];
- return gUnitKindMoveRange[arg0 * 0x70];
+/* Base movement range of a unit kind: byte 0 of the kind's stat record in the
+ * per-kind table (one 0x70-byte record per kind). */
+u8 GetUnitKindMoveRange(s32 kind) {
+    extern u8 gUnitKindMoveRange[];
+    return gUnitKindMoveRange[kind * 0x70];
 }
 
 /* Movement range of a unit of `kind` for player `player`: the kind's base range,
@@ -196,14 +200,18 @@ s32 ComputeUnitMoveRange(s32 kind, s32 weather, s32 player, s32 bonusType, u8 ap
  return range;
 }
 
-u16 GetUnitKindBuildCost(s32 arg0) {
+/* Build cost of a unit kind: the u16 at the start of the kind's record in the
+ * per-kind build-cost table (one 0x70-byte record per kind). */
+u16 GetUnitKindBuildCost(s32 kind) {
  extern u8 gUnitKindBuildCosts[];
- return *(u16 *)(gUnitKindBuildCosts + arg0 * 0x70);
+ return *(u16 *)(gUnitKindBuildCosts + kind * 0x70);
 }
 
-u8 GetUnitKindMaxAttackRange(s32 arg0) {
+/* Maximum attack range of a unit kind: byte 0 of the kind's record in the
+ * per-kind max-attack-range table (one 0x70-byte record per kind). */
+u8 GetUnitKindMaxAttackRange(s32 kind) {
  extern u8 gUnitMaxAttackRange[];
- return gUnitMaxAttackRange[arg0 * 0x70];
+ return gUnitMaxAttackRange[kind * 0x70];
 }
 
 void func_020a7bec(void) {
@@ -211,9 +219,11 @@ void func_020a7bec(void) {
     GetUnitKindMaxAttackRange();
 }
 
-u8 func_020a7bf8(s32 arg0) {
- extern u8 data_ov000_021b5c0c[];
- return data_ov000_021b5c0c[arg0 * 0x70];
+/* Minimum attack range of a unit kind: byte 0 of the kind's record in the
+ * per-kind min-attack-range table (one 0x70-byte record per kind). */
+u8 GetUnitKindMinAttackRange(s32 kind) {
+ extern u8 gUnitMinAttackRange[];
+ return gUnitMinAttackRange[kind * 0x70];
 }
 
 /* Highest attack range of a unit of `kind` for player `player`: the kind's base
@@ -228,14 +238,18 @@ s32 ComputeUnitMaxAttackRange(s32 kind, s32 weather, s32 player, s32 bonusType, 
  return range;
 }
 
-s32 GetUnitKindMaxFuel(u32 arg0) {
+/* Maximum fuel of a unit kind: byte 0 of the kind's record in the per-kind
+ * max-fuel table (one 0x70-byte record per kind). */
+s32 GetUnitKindMaxFuel(u32 kind) {
  extern u8 gUnitKindMaxFuel[];
- return gUnitKindMaxFuel[arg0 * 0x70];
+ return gUnitKindMaxFuel[kind * 0x70];
 }
 
-s32 GetUnitKindMaxAmmo(u32 arg0) {
+/* Maximum ammo of a unit kind: byte 0 of the kind's record in the per-kind
+ * max-ammo table (one 0x70-byte record per kind). */
+s32 GetUnitKindMaxAmmo(u32 kind) {
  extern u8 gUnitKindMaxAmmo[];
- return gUnitKindMaxAmmo[arg0 * 0x70];
+ return gUnitKindMaxAmmo[kind * 0x70];
 }
 
 /* The class byte (a unit-kind record's +0x10 field, UNIT_KIND_STATS_CLASS) of
@@ -247,9 +261,13 @@ s32 kind;
  return gUnitKindClass[kind * 0x70];
 }
 
-u8 func_020a7c98(s32 arg0) {
- extern u8 gMovementTypeTable[];
- return gMovementTypeTable[arg0 * 0x70];
+/* Movement type of a unit kind: byte 0 of the kind's record in the per-kind
+ * movement-type table (one UNIT_KIND_STATS_SIZE-byte record per kind); the value
+ * indexes the terrain movement-cost rows.  The AI unit setup stores it into the
+ * entry's move-type field. */
+u8 GetUnitKindMoveType(s32 kind) {
+    extern u8 gMovementTypeTable[];
+    return gMovementTypeTable[kind * 0x70];
 }
 
 /* Whether the unit has already acted this turn (its UNIT_FLAG_ACTED bit). */

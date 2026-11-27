@@ -169,6 +169,11 @@ typedef struct SendRequest {
 #define REC_ADDR 0x08 /* s32 peer IPv4 address, host order */
 #define REC_DATA 0x0c /* u8 payload */
 
+/* GameSpy ghi's global state block (gGhiSocketState): the last socket error and the
+ * local host records GetLocalHostAddresses fills in. */
+#define GHI_STATE_LAST_ERROR 0x04 /* s32: last failing socket result (<0), 0 when none */
+#define GHI_STATE_HOSTENT    0x08 /* struct hostent: this console's local addresses */
+
 /* The game's network heap interface (gNetAllocator), installed at network init;
  * the alloc/free slots and the socket-task count are used so far. */
 #define NET_ALLOC_ALLOC 0x18 /* void *(*)(s32 size) */

@@ -70,7 +70,7 @@ void InitSoundCommandSystem(void) {
     extern M2C_UNK gSoundMutex;
     if (gSoundCommandSystemReady) return;
     gSoundCommandSystemReady = 1;
-    InitMutex(&gSoundMutex);
+    OS_InitMutex(&gSoundMutex);
     InitSoundCommandQueue();
     ClearSoundChannelCallbacks();
 }

@@ -2,6 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ov000_ai.h"
+#include "sound.h"
 
 /* MAP_MODE 8 handler: after a tile was selected, play the cursor sound and step
  * the cursor toward it; once the input that selected it is released, hide the
@@ -12,14 +13,16 @@ void UpdateMapSelectionCursor(void) {
  UpdateMapCursorByDirectionAndTouch(0x1001a);func_0207a7a4(1,4);MapCursor_StepTowardTarget(1);
  if(!GetMapSelectionKeyAction())return;
  if(!GetMapSelectionTouchAction())return;
- HideTouchCursor();DeleteAllUnitMoveObjects();RefreshMapView();func_0207a768();
+ HideTouchCursor();DeleteAllUnitMoveObjects();RefreshMapView();DeleteMapCursorSprites();
  M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,MAP_MODE)=MAP_MODE_CURSOR;
 }
 
-void func_020d549c(void) {
-    M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK CreateMapViewSprite();
-    PlaySoundEffect(0x10017);
+/* Open the map-view screen (SELECT on the battle map): play the menu-open sound
+ * and spawn the map-view sprite that runs the screen. */
+void OpenMapView(void) {
+    void PlaySoundEffect(s32);
+    void CreateMapViewSprite(void);
+    PlaySoundEffect(SOUND_MENU_OPEN);
     CreateMapViewSprite();
 }
 
@@ -262,7 +265,7 @@ void SelectCarriedUnit(u8 *transport, s32 cargoSlot, s32 menuMode) {
 void MoveCursorTo(s32 x, s32 y) {
     M2C_UNK PlaySoundEffect();
     M2C_UNK CanMoveCursorTo(s32, s32);
-    M2C_UNK func_0207a768();
+    M2C_UNK DeleteMapCursorSprites();
     M2C_UNK ChooseAttackPosition();
     M2C_UNK SetMapCommandPending();
     M2C_UNK UpdateUnitMovePathForCursor();
@@ -295,7 +298,7 @@ void MoveCursorTo(s32 x, s32 y) {
             }
         }
     }
-    func_0207a768();
+    DeleteMapCursorSprites();
     {
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_PATH_X) = (u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT), u8 *, 1);
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_OLD_X) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_PATH_X);

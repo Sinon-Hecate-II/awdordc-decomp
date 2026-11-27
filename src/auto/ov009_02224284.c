@@ -28,9 +28,12 @@ public:
 };
 #pragma cplusplus off
 
+/* Whether the single-card link is still announcing its players: 1 until the
+ * link phase reaches LINK_PHASE_FOUND, the point where the local player is
+ * picked and the player-list panels may animate. */
 s32 IsLinkAnnouncePending(void) {
     s32 GetLinkPhase();
-    if (GetLinkPhase() != 6) {
+    if (GetLinkPhase() != LINK_PHASE_FOUND) {
         return 1;
     }
     return 0;
@@ -59,14 +62,14 @@ s32 func_ov009_022242c8(void) {
     M2C_UNK GetRecordRank(void);
     M2C_UNK GetFavouriteRecordGroup(void);
     M2C_UNK GetFavouriteRecordIndex(void);
-    M2C_UNK func_ov009_022241c4(M2C_UNK);
+    M2C_UNK SetLinkResultHandler(M2C_UNK);
     M2C_UNK func_ov009_02224718(M2C_UNK);
-    M2C_UNK func_ov009_02224140(M2C_UNK);
-    M2C_UNK func_ov009_02224ba4(M2C_UNK);
+    M2C_UNK SetLinkEventHandler(M2C_UNK);
+    M2C_UNK SetLinkPacketHandler(M2C_UNK);
     M2C_UNK func_ov009_02224bbc(M2C_UNK);
-    M2C_UNK func_ov009_02224bd4(M2C_UNK);
-    M2C_UNK func_ov009_02224bec(M2C_UNK);
-    M2C_UNK func_ov009_02224c04(M2C_UNK);
+    M2C_UNK SetLinkPeerEventHandler(M2C_UNK);
+    M2C_UNK SetLinkSendHandler(M2C_UNK);
+    M2C_UNK SetLinkCommandCallback(M2C_UNK);
     M2C_UNK SetLinkMessageHandler(M2C_UNK);
     M2C_UNK func_ov009_02224b8c(M2C_UNK);
     M2C_UNK SetConnectedPlayers(M2C_UNK);
@@ -149,14 +152,14 @@ s32 func_ov009_022242c8(void) {
     M2C_FIELD(&gLinkState, s8 *, 0x159) = (u8)GetFavouriteRecordGroup();
     M2C_FIELD(&gLinkState, s8 *, 0x15a) = (u8)GetFavouriteRecordIndex();
 
-    func_ov009_022241c4(0);
+    SetLinkResultHandler(0);
     func_ov009_02224718(0);
-    func_ov009_02224140(0);
-    func_ov009_02224ba4(0);
+    SetLinkEventHandler(0);
+    SetLinkPacketHandler(0);
     func_ov009_02224bbc(0);
-    func_ov009_02224bd4(0);
-    func_ov009_02224bec(0);
-    func_ov009_02224c04(0);
+    SetLinkPeerEventHandler(0);
+    SetLinkSendHandler(0);
+    SetLinkCommandCallback(0);
     SetLinkMessageHandler(0);
     func_ov009_02224b8c(0);
     SetConnectedPlayers(1);
@@ -178,9 +181,11 @@ void ClearLinkResultFlags(void) {
     M2C_FIELD(&gLinkState, s32 *, 0x50) = 0;
 }
 
-void SetLinkResultFlagMask(s32 arg0) {
+/* Replace the link's handled-result mask with only `playerSlot`'s bit: the slot
+ * that has already handled its result, every other one still pending. */
+void SetLinkResultFlagMask(s32 playerSlot) {
     extern M2C_UNK gLinkState;
-    M2C_FIELD(&gLinkState, s32 *, 0x50) = 1 << arg0;
+    M2C_FIELD(&gLinkState, s32 *, LINK_STATE_RESULT_FLAGS) = 1 << playerSlot;
 }
 
 /* Mark player slot `player`'s link result as handled. */
@@ -598,47 +603,60 @@ s32 func_ov009_02224b8c(s32 arg0) {
     return temp_r2;
 }
 
-s32 func_ov009_02224ba4(s32 arg0) {
+/* Install `handler` as the callback the overlay hands each received link packet
+ * to (LINK_STATE_PACKET_HANDLER); return the handler it replaces. */
+s32 SetLinkPacketHandler(s32 handler) {
     extern M2C_UNK gLinkState;
-    s32 old = M2C_FIELD(&gLinkState,s32 *,0x60);
-    M2C_FIELD(&gLinkState,s32 *,0x60) = arg0;
+    s32 previous = M2C_FIELD(&gLinkState, s32 *, LINK_STATE_PACKET_HANDLER);
+    M2C_FIELD(&gLinkState, s32 *, LINK_STATE_PACKET_HANDLER) = handler;
+    return previous;
+}
+
+/* Set the callback told about each link channel command
+ * (LINK_STATE_RECEIVE_CALLBACK); returns the previous callback, so a caller can
+ * put it back. */
+s32 func_ov009_02224bbc(s32 callback) {
+    extern M2C_UNK gLinkState;
+    s32 previous;
+
+    previous = M2C_FIELD(&gLinkState, s32 *, LINK_STATE_RECEIVE_CALLBACK);
+    M2C_FIELD(&gLinkState, s32 *, LINK_STATE_RECEIVE_CALLBACK) = callback;
+    return previous;
+}
+
+/* Install `handler` as the link's peer connection-event callback
+ * (LINK_STATE_PEER_EVENT); returns the callback it replaces. */
+s32 SetLinkPeerEventHandler(s32 handler) {
+    extern M2C_UNK gLinkState;
+    s32 old = M2C_FIELD(&gLinkState, s32 *, LINK_STATE_PEER_EVENT);
+    M2C_FIELD(&gLinkState, s32 *, LINK_STATE_PEER_EVENT) = handler;
     return old;
 }
 
-s32 func_ov009_02224bbc(s32 arg0) {
+/* Install `handler` as the callback told about each packet the link actor
+ * prepares to send (LINK_STATE_SEND_HANDLER); returns the previous callback. */
+s32 SetLinkSendHandler(s32 handler) {
     extern M2C_UNK gLinkState;
-    s32 temp_r2;
-
-    temp_r2 = M2C_FIELD(&gLinkState, s32 *, 0x40);
-    M2C_FIELD(&gLinkState, s32 *, 0x40) = arg0;
-    return temp_r2;
-}
-
-s32 func_ov009_02224bd4(s32 arg0) {
-    extern M2C_UNK gLinkState;
-    s32 old = M2C_FIELD(&gLinkState,s32 *,0x1c);
-    M2C_FIELD(&gLinkState,s32 *,0x1c) = arg0;
+    s32 old = M2C_FIELD(&gLinkState, s32 *, LINK_STATE_SEND_HANDLER);
+    M2C_FIELD(&gLinkState, s32 *, LINK_STATE_SEND_HANDLER) = handler;
     return old;
 }
 
-s32 func_ov009_02224bec(s32 arg0) {
+/* Install `callback` as the callback offered each received link command packet
+ * (LINK_STATE_COMMAND_CALLBACK); return the callback it replaces. */
+s32 SetLinkCommandCallback(s32 callback) {
  extern M2C_UNK gLinkState;
- s32 old = M2C_FIELD(&gLinkState,s32 *,0x18);
- M2C_FIELD(&gLinkState,s32 *,0x18) = arg0;
+ s32 old = M2C_FIELD(&gLinkState,s32 *,LINK_STATE_COMMAND_CALLBACK);
+ M2C_FIELD(&gLinkState,s32 *,LINK_STATE_COMMAND_CALLBACK) = callback;
  return old;
 }
 
-s32 func_ov009_02224c04(s32 arg0) {
+/* Install `handler` as the handler offered every assembled link message packet
+ * (LINK_STATE_MESSAGE_HANDLER); return the handler it replaces. */
+s32 SetLinkMessageHandler(s32 handler) {
  extern M2C_UNK gLinkState;
- s32 old = M2C_FIELD(&gLinkState,s32 *,0x44);
- M2C_FIELD(&gLinkState,s32 *,0x44) = arg0;
- return old;
-}
-
-s32 SetLinkMessageHandler(s32 arg0) {
- extern M2C_UNK gLinkState;
- s32 old = M2C_FIELD(&gLinkState,s32 *,0x54);
- M2C_FIELD(&gLinkState,s32 *,0x54) = arg0;
+ s32 old = M2C_FIELD(&gLinkState,s32 *,LINK_STATE_MESSAGE_HANDLER);
+ M2C_FIELD(&gLinkState,s32 *,LINK_STATE_MESSAGE_HANDLER) = handler;
  return old;
 }
 

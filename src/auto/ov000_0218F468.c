@@ -27,7 +27,7 @@ static inline void *UnitAtF468(s32 x,s32 y){u8 *m=MapF468();u8 *p=m+x;u16 row=M2
 #pragma opt_strength_reduction off
 void func_ov000_0218f468(void){
 s32 Divide(s32,s32);s32 IsAllyUnitAtCell(s16,s16);s32 IsCurrentPlayerUnit(s16);
-void ClearUnitMoveTarget(void);void func_ov000_02199f38(void);void BuildUnitMoveRange(void *);
+void ClearUnitMoveTarget(void);void AbortAiUnitAction(void);void BuildUnitMoveRange(void *);
 s32 AreUnitIdsOnSameTeam(s32,s32);s32 GetUnitDamagePercent(s32,s32);
 s32 SelectAreaEffectTargetForMode(s16 *,u16,s32,s32);void SetMapCursor(s16,s16,s32,u8,u8);
 s32 CanUnitAttackKind(void *,s32);void FloodFillUnitRange(u8,u8,u8,s32,s32);void PlanMoveDestination(s32,s32);
@@ -40,7 +40,7 @@ u8 terrain=M2C_FIELD(TileF468(x,y),u8 *,0x1420);
 if((terrain&0xe0)==0 || (terrain&31)==15){
 if(IsAllyUnitAtCell((s16)x,(s16)y)==0 || IsCurrentPlayerUnit(M2C_FIELD(TileF468(x,y),u8 *,0x508))!=0)goto prepared;
 }}
-ClearF468();ClearUnitMoveTarget();func_ov000_02199f38();
+ClearF468();ClearUnitMoveTarget();AbortAiUnitAction();
 prepared:
 BuildUnitMoveRange(SelectedF468());
 if(PassF468(x,y)<0){
@@ -50,12 +50,12 @@ right=MinF468(x+2,M2C_FIELD(m,u16 *,0x5144)-1);bottom=MinF468(y+2,M2C_FIELD(m,u1
 for(yy=top;yy<=bottom;yy++)for(xx=left;xx<=right;xx++){
 s32 dist=DistanceF468(x,y,xx,yy);if(dist<0)continue;if(dist>2)continue;
 v=UnitAtF468(xx,yy);
-if(KindF468(v)!=0 && AreUnitIdsOnSameTeam(M2C_FIELD(MapF468(),u8 *,0x52d4),IdF468(v))==0 && M2C_FIELD(v,HealthF468 *,6).health>=50 && GetUnitDamagePercent(KindF468(v),KindF468(SelectedF468()))!=0){ClearF468();ClearUnitMoveTarget();func_ov000_02199f38();}
+if(KindF468(v)!=0 && AreUnitIdsOnSameTeam(M2C_FIELD(MapF468(),u8 *,0x52d4),IdF468(v))==0 && M2C_FIELD(v,HealthF468 *,6).health>=50 && GetUnitDamagePercent(KindF468(v),KindF468(SelectedF468()))!=0){ClearF468();ClearUnitMoveTarget();AbortAiUnitAction();}
 }}
 if(PassF468(x,y)>=0){
-if(data_ov000_021b5500[M2C_FIELD(TileF468(x,y),u8 *,0x1420)&31]==0){ClearF468();func_ov000_02199f38();}
+if(data_ov000_021b5500[M2C_FIELD(TileF468(x,y),u8 *,0x1420)&31]==0){ClearF468();AbortAiUnitAction();}
 if(IsAllyUnitAtCell((s16)x,(s16)y)!=0){
-if(M2C_FIELD(gAiCommandState,FlagF468 *,7).flag)func_ov000_02199f38();return;
+if(M2C_FIELD(gAiCommandState,FlagF468 *,7).flag)AbortAiUnitAction();return;
 }
 m=MapF468();tile=TileF468(x,y);
 if((M2C_FIELD(tile,u8 *,0x1420)&31)==24){
@@ -79,10 +79,10 @@ SetMapCursor(M2C_FIELD(v,u8 *,1),M2C_FIELD(v,u8 *,2),7,0,0);
 }
 i++;offset+=14;
 }while(i<gPlayerUnitIdBase[M2C_FIELD(MapF468(),u16 *,0x52a4)]+51);}
-ClearF468();ClearUnitMoveTarget();func_ov000_02199f38();
+ClearF468();ClearUnitMoveTarget();AbortAiUnitAction();
 }
 u=SelectedF468();FloodFillUnitRange(M2C_FIELD(u,u8 *,1),M2C_FIELD(u,u8 *,2),KindF468(u),110,1);
-if(PassF468(x,y)<0){ClearF468();ClearUnitMoveTarget();func_ov000_02199f38();}
+if(PassF468(x,y)<0){ClearF468();ClearUnitMoveTarget();AbortAiUnitAction();}
 PlanMoveDestination(x,y);
 }
 #pragma push
@@ -98,7 +98,7 @@ s32 GetCaptureTurnsLeft(void *);
 s32 IsAllyUnitAtCell(s16,s16);
 s32 IsCurrentPlayerUnit(s16);
 s32 IsPropertyCell(s32,s32);
-void func_ov000_02199f38(void);
+void AbortAiUnitAction(void);
 s32 SelectAreaEffectTargetForMode(s16 *,u16,s32,s32);
 void ClearUnitMoveTarget(void);
 void SetMapCursor(s16,s16,s32,u8,u8);
@@ -150,14 +150,14 @@ if(bestTransportScore<=cellScore){transportX=cellX;transportY=cellY;bestTranspor
 }
 }
 if(bestTransportScore>bestScore){
-if(IsAllyUnitAtCell((s16)transportX,(s16)transportY))func_ov000_02199f38();
+if(IsAllyUnitAtCell((s16)transportX,(s16)transportY))AbortAiUnitAction();
 pos[0]=transportX;pos[1]=transportY;
 if(SelectAreaEffectTargetForMode(pos,M2C_FIELD(MapF468(),u16 *,0x52a4),1,0)==1){
 SetMapCursor((s16)transportX,(s16)transportY,19,(u8)pos[0],(u8)pos[1]);return;
 }
 }
 if(bestScore==-1)return;
-if(IsAllyUnitAtCell((s16)bestX,(s16)bestY))func_ov000_02199f38();
+if(IsAllyUnitAtCell((s16)bestX,(s16)bestY))AbortAiUnitAction();
 if(GetCaptureTurnsLeft(SelectedF468())>=2){
 map=MapF468();
 record=map+0x6c60+M2C_FIELD(map+(bestX+M2C_FIELD(map+bestY*2,u16 *,0x3758)),s8 *,0x1928)*6;

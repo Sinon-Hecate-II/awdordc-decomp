@@ -373,7 +373,7 @@ void MapEditor_Update(M2C_UNK editor) {
     s32 MapEditor_GetCursorType(s32, s32);
     void MapCursor_StepTowardTarget(s32);
     void CreateMapMenu(void);
-    void func_ov007_02219418(void);
+    void MapEditor_SpawnPanel(void);
     void OpenMapEditorOptionsMenu(void);
     void MapEditor_ShowPageToggleSprite(void);
     u8 GetMapEditorMode(void);
@@ -418,7 +418,7 @@ void MapEditor_Update(M2C_UNK editor) {
     MapCursor_StepTowardTarget(cursorType);
 
     if (keyPressed & KEY_R) { CreateMapMenu(); return; }
-    if (keyPressed & KEY_L) { func_ov007_02219418(); return; }
+    if (keyPressed & KEY_L) { MapEditor_SpawnPanel(); return; }
     if (keyPressed & KEY_START) { OpenMapEditorOptionsMenu(); return; }
     if (keyPressed & KEY_SELECT) { MapEditor_ShowPageToggleSprite(); return; }
     if (!gTouchState[TOUCH_ACTIVE]) goto L_b4c;

@@ -23,13 +23,15 @@ void func_02000b9c(void) {
 
 }
 
-extern void func_020e4490(void);
+extern void InitGameEngine(void);
 extern void StartDisplay(void);
 extern void Init3DSpriteScene(void);
 extern void NitroMain(void);
+/* Program entry point: turn on the displays and create the 3D sprite scene, then
+ * run the game engine's startup in a loop. */
 void main(void)
 {
-  void func_020e4490(void);
+  void InitGameEngine(void);
   void StartDisplay(void);
   void Init3DSpriteScene(void);
   void NitroMain(void);
@@ -38,7 +40,7 @@ void main(void)
   NitroMain();
   for (;;)
   {
-    func_020e4490();
+    InitGameEngine();
   }
 
 }

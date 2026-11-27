@@ -285,6 +285,8 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_TERRAIN_COM_TOWER  0x16
 #define MAP_TERRAIN_RADAR      0x17
 #define MAP_TERRAIN_PLAIN      1    /* plain ground */
+#define MAP_TERRAIN_MOUNTAIN   3    /* rock/mountain ground (tile MAP_TILE_ROCK) */
+#define MAP_TERRAIN_WOODS      4    /* woods/forest ground (tile MAP_TILE_WOODS) */
 #define MAP_TERRAIN_WASTELAND  8    /* barren ground a destroyed owned property leaves */
 #define MAP_TERRAIN_BRIDGE     0x0D /* bridge over a river: the kind the map editor's bridge brush paints */
 #define MAP_TERRAIN_BRIDGE_WASTELAND 0x0E /* the same bridge painted over wasteland; the editor reports it as MAP_TERRAIN_BRIDGE */
@@ -537,6 +539,7 @@ typedef struct MapSettingsPlayer {
 #define MAPCONFIG_MODE_MASK 0x0007 /* low three bits of MAPCONFIG_FLAGS */
 #define MAPCONFIG_MODE_TEAM 0    /* battle mode of the story/team battles, whose maps restrict what may be built */
 #define MAPCONFIG_PROPERTY_LIMIT 0x02 /* u8 properties a player must own to win; 0 disables the rule */
+#define MAPCONFIG_BATTLE_SETTING 0x03 /* u8 additional battle setting (MAP_SETTINGS_SETTING); the default setting 4 is stored as 0 */
 #define MAPCONFIG_CO_POWER  0x1000 /* bit 12 of MAPCONFIG_FLAGS: CO powers are enabled */
 #define MAPCONFIG_ARMY_MODE 0x2000 /* bit 13 of MAPCONFIG_FLAGS: army mode — the map uses per-army movement costs and the CO-zone bonus tables */
 #define MAPCONFIG_LIMIT_FLAG 0x0040 /* bit 6 of MAPCONFIG_FLAGS: the second value limit applies (MAP_SETTINGS_VALUE_FLAG) */
@@ -1019,8 +1022,9 @@ typedef struct PlayerRecordSprite {
  * (commander - 1) * 2 + powerActive.  A record holds the zone's percentages at
  * +0x00 (s8 move), +0x04 (s8 range), +0x06 (s16 attack) and +0x08 (s16
  * defense), then one byte per unit kind at +0x0F saying whether the
- * commander's zone boosts that kind.  The field symbols point at record 0;
- * later records follow every CO_ZONE_RECORD_STRIDE bytes. */
+ * commander's zone boosts that kind, and a second per-kind table at +0x2A
+ * saying whether the kind may be selected for orders.  The field symbols point
+ * at record 0; later records follow every CO_ZONE_RECORD_STRIDE bytes. */
 #define CO_ZONE_RECORD_STRIDE 0x48
 #define CO_ZONE_KIND_COUNT    27
 #define CO_ZONE_MOVE_PCT      0x00 /* s8 movement bonus */
@@ -1029,6 +1033,7 @@ typedef struct PlayerRecordSprite {
 #define CO_ZONE_DEFENSE_PCT   0x08 /* s16 defense percent, damage scales by 100 / (100 + n) */
 #define CO_ZONE_BASE_MOVE     0x0A /* s8 base move range the commander's zone grants (before the charged meter levels) */
 #define CO_ZONE_KIND_ENABLED  0x0F /* s8[CO_ZONE_KIND_COUNT]: nonzero when the kind receives the zone bonus */
+#define CO_ZONE_KIND_SELECTABLE 0x2A /* s8[CO_ZONE_KIND_COUNT]: nonzero when the kind may be selected for orders */
 
 /* gCurrentMap[2] points to the three-slot pool of active unit-move controllers:
  * a byte is nonzero while the controller with that slot exists. */
@@ -1273,6 +1278,8 @@ typedef struct MapRecordStamp {
 #define MAP_DATA_VALUE_LIMIT_HIGH 0x0F /* u8 high bound of the map's value (MapData_GetValueLimitHigh) */
 #define MAP_DATA_VALUE_LIMIT_UNIT 100  /* the value bounds are stored in units of 100 */
 #define MAP_DATA_PLAYER_STATE  0x38 /* u8[4] per-player state used by campaign battles */
+#define MAP_DATA_GRID_X        0x12 /* u8 the map's column in the map-selection grid (MAP_DATA_GRID_POS) */
+#define MAP_DATA_GRID_Y        0x13 /* u8 the map's row in the map-selection grid */
 #define MAP_DATA_PLAYER_CO_ID  0x1C /* u8[4] CO id assigned to each player slot, 0 = random, 15 = the map's own (GetMapPlayerCoId) */
 /* One flags byte per player slot (GetMapPlayerFlags); bit 7 marks a player fighting
  * on the first player's side, bit 6 one whose units the cursor cannot select. */

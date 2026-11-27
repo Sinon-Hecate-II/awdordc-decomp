@@ -65,7 +65,7 @@ extern void **gCurrentMap; extern u16 gMapConfig;
 s32 IsUnitSelected(void *);s32 func_020cf908(s32,s32,s32,s32);
 s32 GetMapPlayerFlags(s32,s32);s32 GetPlayerSelectedUnit(s32);s32 IsPlayerSelectionEnabled(s32);
 s32 func_020a88e8(s32);s32 GetPlayerCoZoneBonusIndex(s32);s32 GetMapUnitKind(void *);
-s32 func_020a2788(s32,s32);s32 GetUnitActionCost(s32,s32);
+s32 IsCoZoneKindSelectable(s32,s32);s32 GetUnitActionCost(s32,s32);
 u8 *map; s32 value; s32 unitKind; s32 player;
 if(((u32)(gMapConfig<<18)>>31)==0)return 2;
 map=*gCurrentMap;
@@ -82,7 +82,7 @@ if(!IsPlayerSelectionEnabled(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))r
 if(func_020a88e8(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)))return 2;
 value=GetPlayerCoZoneBonusIndex(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
 unitKind=GetMapUnitKind(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT));
-if(!func_020a2788(value,unitKind))return 2;
+if(!IsCoZoneKindSelectable(value,unitKind))return 2;
 map=*gCurrentMap;player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
 value=GetUnitActionCost(player,(u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26);
 return value>M2C_FIELD(map+player*MAP_PLAYER_STRIDE,s32 *,MAP_PLAYER_STATES)?2:0;
@@ -291,7 +291,7 @@ void OpenBattleMenu(void) {
     CreateMenuAt(&gBattleMenuEntries, x, GetMenuTopY(), 0x50);
 }
 
-void func_020c7568(void) {
+void CloseCarriedUnitMenu(void) {
     M2C_UNK ResetTextTiles(M2C_UNK);
     M2C_UNK PopCarriedUnitMenuState();
     ResetTextTiles(0);
@@ -485,7 +485,12 @@ void DropFlareOnCursorUnitIfVisible(void *parent) {
     CreateUnitFlareSprite(unit, parent);
 }
 
-void func_020c79ac(void *arg0) { void CreateFallingFlareStrike(s32,s32,void *); CreateFallingFlareStrike(M2C_FIELD(arg0,s32 *,0x34),M2C_FIELD(arg0,s32 *,0x38),arg0); }
+/* Sprite step: spawn the falling-flare strike at the sprite's own tile (+0x34 x,
+ * +0x38 y), owned by the sprite. */
+void SpawnFallingFlareStrikeFromSprite(void *sprite) {
+    void CreateFallingFlareStrike(s32, s32, void *);
+    CreateFallingFlareStrike(M2C_FIELD(sprite, s32 *, 0x34), M2C_FIELD(sprite, s32 *, 0x38), sprite);
+}
 
 /* Create the flare-shot sprite (class data_0212ae9c) at tile (x, y) owned by
  * `owner`: it holds the map view, fades the music down and drops a flare on the

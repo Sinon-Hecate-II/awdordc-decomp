@@ -616,8 +616,7 @@ void func_020d31e4(void) {
     DecrementPlayerUnitCount();
 }
 
-/* Set whether `player` gave up: the AI resigned, or a team-mate was defeated
- * first (PLAYER_REC_GAVE_UP of the player record). */
+/* Set whether `player` has given up: store its record's PLAYER_REC_GAVE_UP flag. */
 void SetPlayerGaveUp(s32 player, u8 gaveUp) {
     extern s32 *gCurrentMap;
     M2C_FIELD(player * MAP_PLAYER_STRIDE + *gCurrentMap, u8 *, MAP_PLAYER_STATES + PLAYER_REC_GAVE_UP) = gaveUp;

@@ -60,6 +60,12 @@ enum {
  * callback) applies it. */
 #define MAP_EDITOR_FILL_PRESET 0x5C /* s32 FillMapTerrain preset (-1 clears the map) */
 
+/* The map editor's resize panel (a 3D sprite that shows and edits the map size):
+ * the width and height the player has entered, drawn as the panel's two numbers
+ * and used when the dialog is confirmed to start the deferred resize. */
+#define MAP_EDITOR_RESIZE_WIDTH  0x34 /* s32 map width */
+#define MAP_EDITOR_RESIZE_HEIGHT 0x38 /* s32 map height */
+
 /* Prompt texts (SetUiMessageText ids) of the fill menu's entries. */
 #define MAP_EDITOR_FILL_MESSAGE_SEA      0x46000000
 #define MAP_EDITOR_FILL_MESSAGE_PLAIN    0x46000001

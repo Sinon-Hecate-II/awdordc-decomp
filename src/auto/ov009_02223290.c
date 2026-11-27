@@ -698,14 +698,15 @@ s32 CopyLinkLocalPlayerRecord(s32 dest, M2C_UNK length) {
     return dest;
 }
 
-s32 GetActiveLinkPlayerRecord(void) {
-    s32 GetActiveLinkPlayerSlot();
-    s32 temp_r0;
+/* The 0x40-byte player record of the connected player in link slot `player`,
+ * or NULL when that slot has no connected player. */
+s32 GetActiveLinkPlayerRecord(s32 player) {
+    s32 GetActiveLinkPlayerSlot(s32);
+    s32 slot;
 
-    temp_r0 = GetActiveLinkPlayerSlot();
-    if (temp_r0 != 0) {
-        return temp_r0 + 0x20;
-    }
+    slot = GetActiveLinkPlayerSlot(player);
+    if (slot != 0)
+        return slot + LINK_PLAYER_SLOT_RECORD;
     return 0;
 }
 
@@ -721,11 +722,14 @@ s32 CopyActiveLinkPlayerRecord(s32 player, s32 dest, s32 length) {
     return dest;
 }
 
-s32 func_ov009_02224140(s32 a){
- extern M2C_UNK gLinkState;
- s32 old=M2C_FIELD(&gLinkState,s32*,0x3c);
- M2C_FIELD(&gLinkState,s32*,0x3c)=a;
- return old;
+/* Set the handler the overlay's general WFC events are forwarded to
+ * (LINK_STATE_EVENT_HANDLER) and return the previous one. */
+s32 SetLinkEventHandler(s32 handler) {
+    extern M2C_UNK gLinkState;
+    s32 previous = M2C_FIELD(&gLinkState, s32 *, LINK_STATE_EVENT_HANDLER);
+
+    M2C_FIELD(&gLinkState, s32 *, LINK_STATE_EVENT_HANDLER) = handler;
+    return previous;
 }
 
 void func_ov009_02224158(void) {
@@ -754,10 +758,12 @@ s32 GetLinkRequestKind(void){extern M2C_UNK gLinkState;return M2C_FIELD(&gLinkSt
 
 s32 GetLinkResultCode(void){extern M2C_UNK gLinkState;return M2C_FIELD(&gLinkState,s32*,12);}
 
-s32 func_ov009_022241c4(s32 arg0) {
+/* Install `handler` as the link's result handler (LINK_STATE_RESULT_HANDLER)
+ * and return the handler it replaces. */
+s32 SetLinkResultHandler(s32 handler) {
     extern M2C_UNK gLinkState;
-    s32 old = M2C_FIELD(&gLinkState, s32 *, 0x2c);
-    M2C_FIELD(&gLinkState, s32 *, 0x2c) = arg0;
+    s32 old = M2C_FIELD(&gLinkState, s32 *, LINK_STATE_RESULT_HANDLER);
+    M2C_FIELD(&gLinkState, s32 *, LINK_STATE_RESULT_HANDLER) = handler;
     return old;
 }
 

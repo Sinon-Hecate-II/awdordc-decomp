@@ -299,7 +299,7 @@ void Ov010Online_MatchStartNoop(void) {
  * status is returned (3 = not available here). */
 s32 func_ov010_02228180(void) {
     M2C_UNK IsOnlineSessionFlagSet(M2C_UNK);
-    M2C_UNK func_ov010_022268f4(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov010_AllocBlock(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov010_FreeBlock(M2C_UNK, s32, s32);
     s32 CheckSaveAndWfcProfile(M2C_UNK);
     void func_02037680(s32, s32);
@@ -307,7 +307,7 @@ s32 func_ov010_02228180(void) {
     M2C_UNK func_ov010_02226a88();
     s32 Transfer_SetChunkSize(u16);
     M2C_UNK ClearOnlineEventFlags();
-    void func_ov010_02228280(M2C_UNK);
+    void Ov010Online_ReplaceStepFlags(M2C_UNK);
     extern M2C_UNK gOv010OnlineSession;
     M2C_UNK statusBuffer;
     M2C_UNK workBlock;
@@ -316,12 +316,12 @@ s32 func_ov010_02228180(void) {
     if (IsOnlineSessionFlagSet(0) != 0) {
         return 0;
     }
-    statusBuffer = func_ov010_022268f4(0, 0x700, 0x20);
+    statusBuffer = Ov010_AllocBlock(0, 0x700, 0x20);
     status = CheckSaveAndWfcProfile(statusBuffer);
     Ov010_FreeBlock(0, statusBuffer, 0x700);
     if (status != 3) {
-        func_02037680((s32)func_ov010_022268f4, (s32)Ov010_FreeBlock);
-        workBlock = func_ov010_022268f4(0, 0x10e0, 0x20);
+        func_02037680((s32)Ov010_AllocBlock, (s32)Ov010_FreeBlock);
+        workBlock = Ov010_AllocBlock(0, 0x10e0, 0x20);
         M2C_FIELD(&gOv010OnlineSession, s32 *, 0x3c) = workBlock;
         DC_InvalidateRange(workBlock, 0x10e0);
         func_ov010_02226a88();
@@ -342,7 +342,7 @@ s32 func_ov010_02228180(void) {
         M2C_FIELD(&gOv010OnlineSession, s32 *, 0x1c) = 0;
         M2C_FIELD(&gOv010OnlineSession, s32 *, 0x50) = 0;
         ClearOnlineEventFlags();
-        func_ov010_02228280(0);
+        Ov010Online_ReplaceStepFlags(0);
     }
     return status;
 }
@@ -352,9 +352,12 @@ void Ov010Online_ResetStepFlags(void) {
     M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) = 0;
 }
 
-void func_ov010_02228280(s32 arg0) {
+/* Replace the session's step-flag word with only step flag `flagIndex`
+ * (OV010_FLAG_*) set, e.g. flag 0 (started) when a fresh session is set up. */
+void Ov010Online_ReplaceStepFlags(s32 flagIndex) {
     extern M2C_UNK gOv010OnlineSession;
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x54) = 1 << arg0;
+
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_STEP_FLAGS) = 1 << flagIndex;
 }
 
 /* Raise one step flag (OV010_FLAG_*) of the ov010 online session. */
@@ -458,7 +461,7 @@ s32 func_ov010_0222832c(s32 arg0, s32 arg1) {
  * connected, so clear the connected flag, tear the old session blocks down, create
  * the 12-byte connection object and start WFC on the production NAS server. */
 void Ov010Online_StartWfcConnection(void) {
-    M2C_UNK func_0203783c(M2C_UNK *);
+    M2C_UNK Wfc_CreateOnlineConnection(M2C_UNK *);
     M2C_UNK SetNasServerEnvironment(M2C_UNK);
     M2C_UNK Wfc_StartConnection();
     M2C_UNK func_ov010_02226a88();
@@ -466,7 +469,7 @@ void Ov010Online_StartWfcConnection(void) {
 
     Ov010Online_ClearStepFlag(OV010_FLAG_CONNECTED);
     func_ov010_02226a88();
-    func_0203783c(&gOv010WfcConnection);
+    Wfc_CreateOnlineConnection(&gOv010WfcConnection);
     SetNasServerEnvironment(NAS_SERVER_PROD);
     Wfc_StartConnection();
 }
@@ -594,17 +597,17 @@ extern "C" void Ov010Online_InitSession(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f
     extern M2C_UNK gOv010ConnectionClass;
     extern M2C_UNK data_ov010_0222c3a8;
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
-    void func_ov010_0222791c(M2C_UNK);
+    void Ov010Online_SetErrorHandler(M2C_UNK);
     void *GetProfileSaveBlock(void);
     void *GetBattleSaveBlock(void);
-    M2C_UNK func_ov010_02228b20(M2C_UNK);
-    M2C_UNK func_ov010_02228b38(M2C_UNK);
-    M2C_UNK func_ov010_02228b68(M2C_UNK);
-    M2C_UNK func_ov010_02228b80(M2C_UNK);
-    M2C_UNK func_ov010_02228b98(M2C_UNK);
+    M2C_UNK SetOnlineTransferStartCallback(M2C_UNK);
+    M2C_UNK Ov010_SetPacketCallback(M2C_UNK);
+    M2C_UNK Ov010_SetPeerCallback(M2C_UNK);
+    M2C_UNK Ov010_SetSlotCallback(M2C_UNK);
+    M2C_UNK Ov010_SetStatsCallback(M2C_UNK);
     M2C_UNK func_ov010_02228bb0(M2C_UNK);
-    void func_ov010_02229498(M2C_UNK);
-    void func_ov010_022294b0(M2C_UNK);
+    void Ov010_SetSendCallback(M2C_UNK);
+    void Ov010_SetReceiveHandler(M2C_UNK);
     void SetOnlineMessageHandler(M2C_UNK);
     s32 GetEarnedRecordTierTotal(void);
     s32 GetRecordRank(void);
@@ -630,19 +633,19 @@ extern "C" void Ov010Online_InitSession(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f
     Ov010CallbackFn cc, aa, bb;
     volatile Ov010CallbackFn dd;
     Ov010Online_ClearStepFlag(2);
-    func_ov010_0222791c(a);
+    Ov010Online_SetErrorHandler(a);
     func_ov010_02226a88();
     r4=GetProfileSaveBlock();
     obj=GetBattleSaveBlock();
     InitNetSession(&data_ov010_0222f1dc,(u8 *)r4+4,0x2b96,&data_ov010_0222c3f0,&data_ov010_0222c3fc,0,0,(u8 *)obj+4,60);
-    func_ov010_02228b20(b);
-    func_ov010_02228b38(c);
-    func_ov010_02228b68(d);
-    func_ov010_02228b80(e);
-    func_ov010_02228b98(f);
+    SetOnlineTransferStartCallback(b);
+    Ov010_SetPacketCallback(c);
+    Ov010_SetPeerCallback(d);
+    Ov010_SetSlotCallback(e);
+    Ov010_SetStatsCallback(f);
     func_ov010_02228bb0(g);
-    func_ov010_02229498(h);
-    func_ov010_022294b0(i);
+    Ov010_SetSendCallback(h);
+    Ov010_SetReceiveHandler(i);
     SetOnlineMessageHandler(j);
     ClearOnlineEventFlags();
     state=&gOv010OnlineSession;
@@ -719,20 +722,20 @@ void *FreePacketAssemblySlot(void *slot) {
 void Ov010Online_EndSession(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK);
     void TeardownNetSession(void);
-    void func_ov010_0222791c(M2C_UNK);
-    s32 func_ov010_02228b20(M2C_UNK);
-    s32 func_ov010_02228b38(M2C_UNK);
+    void Ov010Online_SetErrorHandler(M2C_UNK);
+    s32 SetOnlineTransferStartCallback(M2C_UNK);
+    s32 Ov010_SetPacketCallback(M2C_UNK);
     s32 Ov010_SetVoiceChatCallback(M2C_UNK);
-    s32 func_ov010_02228b68(M2C_UNK);
-    s32 func_ov010_02228b80(M2C_UNK);
-    s32 func_ov010_02228b98(M2C_UNK);
+    s32 Ov010_SetPeerCallback(M2C_UNK);
+    s32 Ov010_SetSlotCallback(M2C_UNK);
+    s32 Ov010_SetStatsCallback(M2C_UNK);
     s32 func_ov010_02228bb0(M2C_UNK);
-    void func_ov010_02229438(M2C_UNK);
-    void func_ov010_02229450(M2C_UNK);
-    void func_ov010_02229468(M2C_UNK);
-    void func_ov010_02229480(M2C_UNK);
-    void func_ov010_02229498(M2C_UNK);
-    void func_ov010_022294b0(M2C_UNK);
+    void SetOnlineScoreCallback(M2C_UNK);
+    void Ov010_SetMatchEventCallback(M2C_UNK);
+    void Ov010_SetMatchCallback(M2C_UNK);
+    void Ov010_SetPeerJoinedCallback(M2C_UNK);
+    void Ov010_SetSendCallback(M2C_UNK);
+    void Ov010_SetReceiveHandler(M2C_UNK);
     void SetOnlineMessageHandler(M2C_UNK);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     extern M2C_UNK gOv010SessionStateClass;
@@ -742,69 +745,88 @@ void Ov010Online_EndSession(void) {
     DeleteSpriteObjectsOfClass(&gOv010ConnectionClass);
     DeleteSpriteObjectsOfClass(&gOv010PacketAssemblyClass);
     TeardownNetSession();
-    func_ov010_0222791c(0);
-    func_ov010_02228b20(0);
-    func_ov010_02228b38(0);
+    Ov010Online_SetErrorHandler(0);
+    SetOnlineTransferStartCallback(0);
+    Ov010_SetPacketCallback(0);
     Ov010_SetVoiceChatCallback(0);
-    func_ov010_02228b68(0);
-    func_ov010_02228b80(0);
-    func_ov010_02228b98(0);
+    Ov010_SetPeerCallback(0);
+    Ov010_SetSlotCallback(0);
+    Ov010_SetStatsCallback(0);
     func_ov010_02228bb0(0);
-    func_ov010_02229438(0);
-    func_ov010_02229450(0);
-    func_ov010_02229468(0);
-    func_ov010_02229480(0);
-    func_ov010_02229498(0);
-    func_ov010_022294b0(0);
+    SetOnlineScoreCallback(0);
+    Ov010_SetMatchEventCallback(0);
+    Ov010_SetMatchCallback(0);
+    Ov010_SetPeerJoinedCallback(0);
+    Ov010_SetSendCallback(0);
+    Ov010_SetReceiveHandler(0);
     SetOnlineMessageHandler(0);
     Ov010Online_ClearStepFlag(2);
 }
 
-s32 func_ov010_02228b20(s32 arg0) {
+/* Install the online session's transfer-start callback (called with the size of a
+ * starting transfer and the destination player id) and return the previous one. */
+s32 SetOnlineTransferStartCallback(s32 callback) {
     extern M2C_UNK gOv010OnlineSession;
-    s32 temp_r2;
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x38);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x38) = arg0;
-    return temp_r2;
+    s32 previous;
+
+    previous = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_TRANSFER_START_CALLBACK);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_TRANSFER_START_CALLBACK) = callback;
+    return previous;
 }
 
-s32 func_ov010_02228b38(s32 arg0) {
+/* Install `callback` as the online session's per-received-packet hook
+ * (OV010_SESSION_PACKET_CALLBACK) and return the callback it replaces. */
+s32 Ov010_SetPacketCallback(s32 callback) {
     extern M2C_UNK gOv010OnlineSession;
-    s32 temp_r2;
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x4C);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x4C) = arg0;
-    return temp_r2;
+    s32 previousCallback;
+
+    previousCallback = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_PACKET_CALLBACK);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_PACKET_CALLBACK) = callback;
+    return previousCallback;
 }
 
-s32 Ov010_SetVoiceChatCallback(s32 arg0) {
+/* Install `handler` as the online session's voice-chat packet handler and return
+ * the handler it replaces (0 when none was installed). */
+s32 Ov010_SetVoiceChatCallback(s32 handler) {
     extern M2C_UNK gOv010OnlineSession;
-    s32 old = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x2c);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x2c) = arg0;
-    return old;
+    s32 previousHandler = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_VOICE_CALLBACK);
+
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_VOICE_CALLBACK) = handler;
+    return previousHandler;
 }
 
-s32 func_ov010_02228b68(s32 arg0) {
+/* Install `callback` as the online session's peer connection event handler
+ * (OV010_SESSION_PEER_CALLBACK) and return the handler it replaces. */
+s32 Ov010_SetPeerCallback(s32 callback) {
     extern M2C_UNK gOv010OnlineSession;
-    s32 temp_r2;
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x34);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x34) = arg0;
-    return temp_r2;
+    s32 previous;
+
+    previous = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_PEER_CALLBACK);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_PEER_CALLBACK) = callback;
+    return previous;
 }
 
-s32 func_ov010_02228b80(s32 arg0) {
+/* Install `callback` as the online session's player-slot change handler
+ * (OV010_SESSION_SLOT_CALLBACK) and return the handler it replaces. */
+s32 Ov010_SetSlotCallback(s32 callback) {
     extern M2C_UNK gOv010OnlineSession;
-    s32 temp_r2;
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x10);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x10) = arg0;
-    return temp_r2;
+    s32 previous;
+
+    previous = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_SLOT_CALLBACK);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_SLOT_CALLBACK) = callback;
+    return previous;
 }
 
-s32 func_ov010_02228b98(s32 arg0) {
+/* Install `callback` as the online session's battle-stats callback (called with
+ * two player slots to fold one player's stats into the other) and return the
+ * callback it replaces. */
+s32 Ov010_SetStatsCallback(s32 callback) {
     extern M2C_UNK gOv010OnlineSession;
-    s32 temp_r2;
-    temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x14);
-    M2C_FIELD(&gOv010OnlineSession, s32 *, 0x14) = arg0;
-    return temp_r2;
+    s32 previous;
+
+    previous = M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_STATS_CALLBACK);
+    M2C_FIELD(&gOv010OnlineSession, s32 *, OV010_SESSION_STATS_CALLBACK) = callback;
+    return previous;
 }
 
 s32 func_ov010_02228bb0(s32 arg0) {

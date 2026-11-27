@@ -110,9 +110,11 @@ void SetLocalPlayerInfoName(s32 record, s32 name) {
     CopyU16(name, record, 0x14);
 }
 
-void CopyLinkPlayerRecordPayload(s32 arg0, M2C_UNK arg1, s32 arg2) {
+/* Copy a slot's player-record payload (`size` bytes) into the payload area
+ * (LINK_PLAYER_SLOT_RECORD) of a gLinkPlayers slot. */
+void CopyLinkPlayerRecordPayload(s32 record, M2C_UNK src, s32 size) {
     M2C_UNK MI_CpuCopy8();
-    MI_CpuCopy8(arg1, arg0 + 0x20, arg2);
+    MI_CpuCopy8(src, record + LINK_PLAYER_SLOT_RECORD, size);
 }
 
 /* Per-frame keep-alive for the Download Play link: every ~240 frames queue a

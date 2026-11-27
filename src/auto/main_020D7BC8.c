@@ -238,10 +238,14 @@ void OpenMapSelectScreen(void) {
     CreateSpriteFromClass(&gMapSelectScreenClass, 7);
 }
 
-M2C_UNK func_020d8894(void) {
+/* Open the map-select screen after the map list runs, keeping the text input:
+ * its class resets the dialog UI and refreshes the save-slot records, then runs
+ * the shared map-list screen (unlike OpenMapSelectScreen it does not clear the
+ * text input). */
+M2C_UNK OpenMapSelectScreenKeepingText(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212bfe8;
-    CreateSpriteFromClass(&data_0212bfe8, 7);
+    extern M2C_UNK gMapSelectScreenKeepingTextClass;
+    CreateSpriteFromClass(&gMapSelectScreenKeepingTextClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
 /* Create the ending screen: the sprite whose class loads the ending resource
@@ -424,8 +428,8 @@ void OpenMicTestScreen(void) {
 }
 
 void func_020d8b28(void) {
-    M2C_UNK func_020d8894();
-    func_020d8894();
+    M2C_UNK OpenMapSelectScreenKeepingText();
+    OpenMapSelectScreenKeepingText();
 }
 
 /* Select the category-specific map-list mode, then run that category's setup callback. */
