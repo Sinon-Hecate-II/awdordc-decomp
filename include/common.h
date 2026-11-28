@@ -1795,6 +1795,7 @@ enum {
 #define CONN_MGR_BROWSER_DEPTH 0x18 /* s32 server-browser callback nesting depth */
 #define CONN_MGR_NATNEG_SHUTDOWN 0x0C /* s32 nonzero requests NAT negotiation be shut down once Think returns */
 #define CONN_MGR_NATNEG_THINKING 0x10 /* s32 nonzero while NatNeg_Think runs */
+#define CONN_MGR_CONNECTION    0x04 /* void *current connection session context (returned by GetConnection) */
 #define CONN_MGR_PLAYER_LIST   0x00 /* void *heap copy of the player list of the match being joined */
 #define CONN_MGR_MATCH_MESSAGE 0x08 /* void *heap copy of the matchmaking message a host sends */
 #define CONN_MGR_MATCH_STARTED 0x1C /* u8 nonzero once a match session has been started */
@@ -1883,6 +1884,7 @@ typedef struct PeerAddress {
 #define MATCH_SESSION_DIRTY        0x1D /* u8 player list changed */
 #define MATCH_SESSION_STATE        0x1E /* u8 match-setup step */
 #define MATCH_SESSION_STEP         0x1F /* u8 pass counter: the session finishes when it reaches 2 */
+#define MATCH_SESSION_PENDING_INFO 0x20 /* s32 nonzero while a GPI player-info request is outstanding */
 #define MATCH_SESSION_EVENT_CB     0x2C /* void (*)(s32 error, u8 dirty, s32 data): session finished or failed */
 #define MATCH_SESSION_EVENT_DATA   0x30 /* s32 data passed to EVENT_CB */
 #define MATCH_SESSION_INFO_CB      0x34 /* void (*)(s32 slot, s32 value, void *out, s32 data): asks for a player's info */
@@ -2054,6 +2056,8 @@ typedef struct MbLockState {
 /* The game's link command callback (gMbState+8, the multiboot context): the
  * dispatcher func_020140c4 runs it with a command/event code and its packet. */
 #define MB_CTX_CALLBACK     0x51C /* s32 (*)(s32 event, void *packet) */
+#define MB_CTX_SEND_CODE    0x08 /* s32 download-play group id handed to WFC with each download submission */
+#define MB_CTX_SEQUENCE     0x0C /* u16 sequence word the download sender stamps into its next packet */
 #define MB_LINK_EVENT_CANCEL 17 /* the link cancel has finished; the game tears the match state down */
 /* gMbState+0xC, the download work block: nonzero once the block has been set up
  * for a download-play session (MultiBoot_StartParent), cleared when it ends. */
@@ -3238,6 +3242,7 @@ enum {
 #define SPRITE_ACTOR_X           0x34 /* s16 current x */
 #define SPRITE_ACTOR_Y           0x36 /* s16 current y */
 #define SPRITE_ACTOR_STATE       0x48 /* u8: bit 0 visible, bits 1-3 screen, bits 4-5 fade mode, bits 6-7 slide mode */
+#define SPRITE_ACTOR_VISIBLE     0x01 /* bit 0 of SPRITE_ACTOR_STATE: the actor is drawn (Show3DSprite / Hide3DSprite) */
 #define SPRITE_ACTOR_SCREEN_MASK 0x0e /* bits 1-3 of SPRITE_ACTOR_STATE: DS3D_TARGET_* engine(s) to draw on */
 #define SPRITE_ACTOR_SLIDE_MODE_MASK 0xc0 /* bits 6-7 of SPRITE_ACTOR_STATE */
 #define SPRITE_ACTOR_SLIDE_TIMER 0x4c /* u8 frames since the slide started */
@@ -3334,6 +3339,12 @@ enum {
  * DS3D_OBJ_PALETTE_BASE (byte offset in the engine's OBJ palette shadow). */
 #define SCENE_PANEL_PALETTE_SLOT   (DS3D_OBJ_PALETTE_BASE << DS3D_PALETTE_SHIFT) /* 0x200 */
 #define SCENE_PANEL_PALETTE_COLORS DS3D_PALETTE_BYTES /* 0x20 bytes of panel palette */
+
+/* The army (player-colour) palettes at gArmyPalettes: eight 16-colour OBJ
+ * palettes of 32 bytes each, selected by the 1-based army index. */
+#define ARMY_PALETTE_COUNT 8
+#define ARMY_PALETTE_SHIFT 5
+#define ARMY_PALETTE_SIZE  (1 << ARMY_PALETTE_SHIFT)
 
 /* Slide mode (SPRITE_ACTOR_STATE bits 6-7). */
 enum {
@@ -4533,6 +4544,7 @@ typedef struct FifoMessage {
 #define ARM7_CMD_SET_AMP     0x64 /* command 0x64: set a sound-amplifier parameter */
 #define ARM7_CMD_SET_VALUE   0x66 /* command 0x66: set the ARM7's system value (its argument byte) */
 #define ARM7_CMD_GET_VALUE   0x67 /* command 0x67: read the ARM7's system value, answered through ARM7_CMD_VALUE_PTR */
+#define ARM7_SYSTEM_VALUE_DEFAULT  0x1 /* system value the ARM7 boots with; overlay 001 restores it when it shuts down */
 #define ARM7_SYSTEM_VALUE_FRONTEND 0xF /* system value overlay 001 keeps the ARM7 at while a front-end screen runs */
 
 /* An ARM7 command is sent as one or two FIFO words: the command word names the
@@ -4622,6 +4634,13 @@ typedef struct MicTestScreen {
 #define SHARED_LID_WORD   0x027FFFA8 /* volatile u16 */
 #define SHARED_LID_CLOSED 0x8000
 
+/* Words the ARM7 keeps in the shared work area for the ARM7 transfer service:
+ * the 32-bit byte position its transfer engine has reached (read by
+ * Arm7TransferGetBytePosition) and the 16-bit progress word a transfer-progress
+ * reply hands back to the waiting caller. */
+#define SHARED_ARM7_TRANSFER_POSITION 0x027FFF90 /* volatile s32 */
+#define SHARED_ARM7_TRANSFER_PROGRESS 0x027FFF94 /* volatile u16 */
+
 /* Frame counter the engine keeps in the shared work area (incremented once per
  * frame, used for parity and short timeouts). */
 #define SHARED_FRAME_COUNTER 0x027FFC3C /* volatile u32 */
@@ -4669,6 +4688,10 @@ typedef struct Ov001MapPreview {
 #define OV001_MAP_LIST_TEXT_PANEL 0x14 /* object: s32 text panel for the info rows */
 #define OV001_MAP_LIST_OBJ_TILEMAP 0x10 /* object: s32 OBJ tilemap of the row/selection icon tiles */
 #define OV001_MAP_LIST_TASK       0x38 /* object: s32 id of the running scroll task, 0 while idle */
+#define OV001_MAP_LIST_EXIT_STATE 0x40 /* object: u8 exit-animation state set before leaving the list */
+#define OV001_MAP_LIST_SAVED_STATE 0x42 /* object: u8 list state saved while a custom row is shown */
+#define OV001_MAP_LIST_INPUT_BLOCKED 0x45 /* object: u8 nonzero while input is gated during a transition */
+#define OV001_MAP_LIST_INPUT_LATCH 0x47 /* object: u8 suppresses repeated boundary/error sounds while a key is held */
 #define OV001_MAP_LIST_BG_DIRTY   0x44 /* object: u8 set when the background scroll needs refreshing */
 #define OV001_MAP_LIST_BG_DIRTY   0x44 /* object: u8 set when the list background must be scrolled */
 #define OV001_MAP_LIST_BG_DIRTY   0x44 /* object: u8 nonzero when the list moved and the background scroll must follow */
@@ -4707,7 +4730,7 @@ enum {
 };
 
 /* The event code the scroll bar's task reports each frame in
- * OV001_SCROLLBAR_EVENT (0 when nothing happened).  GetMenuState returns it and
+ * OV001_SCROLLBAR_EVENT (0 when nothing happened).  Ov001_GetScrollBarEvent returns it and
  * the owning list's state machine switches on it: 4/6 start a cap scroll, 5/7
  * are their releases. */
 enum {
@@ -4986,6 +5009,13 @@ enum {
  * the extended-memory arena (arena 2) stays empty. */
 #define CONSOLE_TYPE_TWL 0x82000001
 
+/* The arena table in the shared work area: one low/high bound word per arena,
+ * indexed by arena number in each array.  InitArenaTable fills it once at boot
+ * (SetArenaLo/SetArenaHi) and AllocFromArena bumps an arena's low bound. */
+#define ARENA_TABLE_BASE 0x027FF000
+#define ARENA_LOW_OFFSET 0xDA0 /* s32[]: low bound of each arena */
+#define ARENA_HIGH_OFFSET 0xDC4 /* s32[]: high bound of each arena */
+
 /* ARM processor mode: the low five bits of CPSR (read by the CPSR reader in
  * main_02006F14).  Code that would sleep or take a blocking mutex refuses to
  * run in IRQ mode. */
@@ -5044,6 +5074,12 @@ typedef struct RtcDate {
 /* An RTC command word carries its command index in bits 8..14 of the FIFO word. */
 #define RTC_COMMAND_SHIFT 8
 #define RTC_COMMAND_MASK  0x7F00
+
+/* RTC command indices (the value sent in bits 8..14). */
+#define RTC_COMMAND_READ_DATE_TIME 0x10 /* read the date and the time in one request */
+#define RTC_COMMAND_READ_DATE      0x11 /* read the date */
+#define RTC_COMMAND_READ_TIME      0x12 /* read the time */
+#define RTC_COMMAND_STATUS         0x27 /* update the RTC status word and read it back */
 
 /* Values of RTC_STATE_KIND. */
 #define RTC_KIND_DATE      0 /* read the date into RTC_STATE_OUT0 */

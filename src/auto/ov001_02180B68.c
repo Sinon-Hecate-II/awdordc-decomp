@@ -279,17 +279,20 @@ void Ov001_AccessPointWaitIconRow(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_UpdateRegionMenu);
 }
 
+/* Per-frame step of the ov001 access-point (region) menu: read touch and button
+ * input, run the menu's empty placeholder callback, then act on the icon row's
+ * selection. */
 void Ov001_UpdateRegionMenu(void) {
-    void func_ov001_02181094(void);
-    void func_ov001_02181188(void);
+    void Ov001_HandleRegionMenuInput(void);
+    void Ov001_RegionMenuNoop(void);
     void Ov001_HandleRegionMenuChoice(void);
-    func_ov001_02181094();
-    func_ov001_02181188();
+    Ov001_HandleRegionMenuInput();
+    Ov001_RegionMenuNoop();
     Ov001_HandleRegionMenuChoice();
 }
 
 /* Scan the seven candidate regions; activate the first matching one, otherwise handle button fallbacks. */
-void func_ov001_02181094(void) {
+void Ov001_HandleRegionMenuInput(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     void Ov001_UpdateMenuCursor(void);
     s32 KeyPressed(s32);
@@ -333,7 +336,7 @@ void func_ov001_02181094(void) {
     Ov001_MoveMenuRegion(2);
 }
 
-void func_ov001_02181188(void) {
+void Ov001_RegionMenuNoop(void) {
 
 }
 

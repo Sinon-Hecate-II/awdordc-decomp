@@ -558,9 +558,11 @@ M2C_FIELD(file,s32 *,FS_FILE_STATE)|=FS_FILE_CANCELLING;
 OS_RestoreInterrupts(key);
 }
 
-s32 FileRead(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Read up to `size` bytes from the open file `request` into `buffer`, waiting
+ * for the read to finish.  Returns the number of bytes read, or -1 on failure. */
+s32 FileRead(s32 request, s32 buffer, s32 size) {
     M2C_UNK func_0200b8e0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    return func_0200b8e0(arg0, arg1, arg2, 0);
+    return func_0200b8e0(request, buffer, size, 0);
 }
 
 /* Move the file request's read window to `offset`, relative to the window start

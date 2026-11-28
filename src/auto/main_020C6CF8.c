@@ -49,10 +49,11 @@ void StartAttackTargetSelection(void) {
     callback();
 }
 
-void func_020c6dec(void) {
+/* Recreate the cursor's directional option sprite, then remove the map action menu. */
+void ReopenMapCursorOptions(void) {
     M2C_UNK DeleteMapMenuSprites();
-    M2C_UNK func_020bbd8c();
-    func_020bbd8c();
+    void SpawnMapCursorOptionSprite(void);
+    SpawnMapCursorOptionSprite();
     DeleteMapMenuSprites();
 }
 

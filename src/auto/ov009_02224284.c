@@ -216,9 +216,11 @@ void ClearLinkResultFlag(s32 playerIndex) {
     M2C_FIELD(&gLinkState, s32 *, LINK_STATE_RESULT_FLAGS) = flags;
 }
 
-void func_ov009_0222454c(void) {
+/* Stop forwarding the peer's connection-data blocks to the link's callback; the
+ * name label calls this as it restarts the download-play link. */
+void ClearLinkConnectionDataFlag(void) {
     extern M2C_UNK gLinkState;
-    M2C_FIELD(&gLinkState, s32 *, 0x30) = 0;
+    M2C_FIELD(&gLinkState, s32 *, LINK_STATE_CONNECTION_DATA) = 0;
 }
 
 #pragma cplusplus on

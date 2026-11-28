@@ -11,7 +11,7 @@ static inline u8 IsUiB8ccc(UiB8ccc *p){return p->state[11]==1 || (p->active && p
 
 #pragma optimization_level 2
 void func_020b8ccc(void *a){
-s32 IsListRowUnavailable(s32);void RedrawListRows(s32);s32 GetUiMode(void);s32 GetScreenTransitionType(void);s32 CanStartScreenTransition(void);void StartShortScreenTransition(s32);void SetUiMode(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void func_020b8778(void);void MenuSpriteUpdate(void *);void ScrollListUp(void *);void ScrollListDown(void *);s32 FX_Div(s32,s32);void DrawFrameBorder(s32,s16,s32,s16,u16,s32,s32);
+s32 IsListRowUnavailable(s32);void RedrawListRows(s32);s32 GetUiMode(void);s32 GetScreenTransitionType(void);s32 CanStartScreenTransition(void);void StartShortScreenTransition(s32);void SetUiMode(s32,s32);M2C_UNK PlaySoundEffect(s32);void func_020b876c(void);void CancelAndCloseMenuList(void);void MenuSpriteUpdate(void *);void ScrollListUp(void *);void ScrollListDown(void *);s32 FX_Div(s32,s32);void DrawFrameBorder(s32,s16,s32,s16,u16,s32,s32);
 extern u16 *gKeyState;extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 s16 step; void *old;s32 size,h,pos,v,t,pal;UiB8ccc *p;
 if(M2C_FIELD(a,s16*,0x3c)==0){
@@ -30,7 +30,7 @@ M2C_FIELD(a,s16*,0x38)=M2C_FIELD(a,s16*,0x40)+M2C_FIELD(a,s16*,0x3a);
 if(M2C_FIELD(a,s16*,0x36)!=M2C_FIELD(a,s16*,0x38)){M2C_FIELD(a,s16*,0x46)=4;PlaySoundEffect(0x10019);}
 p=M2C_FIELD(a,UiB8ccc**,0x48);if(M2C_FIELD(a,s16*,0x40)==0)p->tile=(u16)(p->mode+2);else p->tile=(u16)p->mode;p->reset=0;
 p=M2C_FIELD(a,UiB8ccc**,0x4c);if(M2C_FIELD(a,s16*,0x40)==M2C_FIELD(a,s16*,0x42)-6)p->tile=(u16)(p->mode+2);else p->tile=(u16)p->mode;p->reset=0;
-if(*gKeyState&1){func_020b876c();return;}if(*gKeyState&2){func_020b8778();return;}
+if(*gKeyState&1){func_020b876c();return;}if(*gKeyState&2){CancelAndCloseMenuList();return;}
 MenuSpriteUpdate(M2C_FIELD(a,void**,0x48));MenuSpriteUpdate(M2C_FIELD(a,void**,0x4c));MenuSpriteUpdate(M2C_FIELD(a,void**,0x50));
 if(IsUiB8ccc(M2C_FIELD(a,UiB8ccc**,0x48)))ScrollListUp(a);
 if(IsUiB8ccc(M2C_FIELD(a,UiB8ccc**,0x4c)))ScrollListDown(a);

@@ -221,6 +221,7 @@ void Ov001_InitFades(void) {
     GX_SetBlendControl(GX_BLDCNT_SUB, OV001_BLEND_ALL, 0x10);
 }
 
+/* Free the ov001 screen-fade state block allocated by Ov001_InitFades. */
 void Ov001_FreeFades(void) {
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern M2C_UNK gOv001FadeStates;
@@ -622,8 +623,9 @@ void DrawPanelText(void *panel, s32 x, s32 y, s32 blockWidth, s32 anchor, s32 co
     DrawVerticallyAnchoredText(panel + 0x18, x, y, blockWidth, anchor, color, flags, text, dir);
 }
 
-void TextPanel_ClearText(void *arg0, s32 arg1) {
-M2C_FIELD(M2C_FIELD(arg0,void **,0x14),void (**)(void *,s32),4)(arg0,arg1);
+/* Clear a text panel's surface by calling the panel's drawing ops' clear function. */
+void TextPanel_ClearText(void *panel, s32 arg) {
+    ((Ov001TextPanel *)panel)->ops->clear(panel, arg);
 }
 
 /* Draws a text panel's tile block into a sprite object: resets the object's

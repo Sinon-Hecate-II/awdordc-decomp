@@ -19,7 +19,7 @@ static inline void DisableMenuSprite_02213e98(MenuSprite_02213e98 *s) {
 }
 
 void Hide3DSpriteSlide(void *);
-u32 func_020c5464(s16);
+u32 GetBattleSlotType(s16);
 /* Updates menu state and sprite frames based on selection */
 void func_ov006_02213e98(void *arg0) {
  void *p = M2C_FIELD(arg0, void **, 0x48);
@@ -35,7 +35,7 @@ void func_ov006_02213e98(void *arg0) {
  Hide3DSpriteSlide(sprites[3]);
  Hide3DSpriteSlide(sprites[4]);
  Hide3DSpriteSlide(sprites[5]);
- switch (func_020c5464(M2C_FIELD(M2C_FIELD(arg0, void **, 0x4c), s16 *, 8))) {
+ switch (GetBattleSlotType(M2C_FIELD(M2C_FIELD(arg0, void **, 0x4c), s16 *, 8))) {
  case 0:
  {
   MenuSprite_02213e98 *s = ((MenuSprite_02213e98 **)M2C_FIELD(arg0, void **, 0x3c))[3];

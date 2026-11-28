@@ -177,6 +177,7 @@ typedef struct ResourceArchive {
  * only one resource of a group may be loaded at a time. */
 #define RESOURCE_SLOT_COUNT 12
 #define RESOURCE_FRONT_END  1 /* ov001 front-end (title and menu) overlay */
+#define RESOURCE_UNIT_GRAPHICS 3 /* unit sprite graphics */
 
 /* A file archive handle (the game's main data pack and the overlay archives).
  * The handle keeps the archive image in memory (+0x28) and the two index tables

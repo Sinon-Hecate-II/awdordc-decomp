@@ -188,7 +188,7 @@ void UnitRemoveEffect_Update(void *effect) {
     UnitRemoveEffect_Trigger(effect);
 }
 
-M2C_UNK func_020b567c(M2C_UNK a, s32 arg1) {
+M2C_UNK UnitRemoveEffect_Create(M2C_UNK a, s32 arg1) {
 u8 *unit=(u8 *)a;
 void *CreateAnimatedMapSprite(void *,s16,s16,s32,s32,s32,void *);
 s32 kind, index; void *p;
@@ -208,14 +208,18 @@ M2C_FIELD(p,void (**)(void *),0x70)=(void (*)(void *))UnitRemoveEffect_Trigger;
 M2C_FIELD(p,u32 *,0x44)=(M2C_FIELD(p,u32 *,0x44)&~0x3000000)|0x2000000;
 }
 
-void ExplodeUnit(M2C_UNK arg0) {
-    M2C_UNK func_020b567c(M2C_UNK, M2C_UNK);
-    func_020b567c(arg0, 1);
+/* Spawn the unit's removal effect with the destroy flag set: the unit explodes
+ * and is then destroyed as a real loss, unlike RemoveUnitWithEffect. */
+void ExplodeUnit(M2C_UNK unit) {
+    M2C_UNK UnitRemoveEffect_Create(M2C_UNK, M2C_UNK);
+    UnitRemoveEffect_Create(unit, 1);
 }
 
-void RemoveUnitWithEffect(M2C_UNK arg0) {
-    M2C_UNK func_020b567c(M2C_UNK, M2C_UNK);
-    func_020b567c(arg0, 0);
+/* Plays the unit's removal effect and then removes it from the map without
+ * recording it as destroyed. */
+void RemoveUnitWithEffect(M2C_UNK unit) {
+    M2C_UNK UnitRemoveEffect_Create(M2C_UNK, M2C_UNK);
+    UnitRemoveEffect_Create(unit, 0);
 }
 
 /* Spawn the boss explosion (type 9) on the effect's own tile, on the default

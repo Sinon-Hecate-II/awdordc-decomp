@@ -295,10 +295,10 @@ void func_ov001_0218b860(void) {
 
 void func_ov001_0218b964(void) {
 extern M2C_UNK gOv001Input;
-s32 HardwareDivideRemainder(s32,s32); s32 func_0200d9f4(void);void CalibrateTouchSample(void *);void func_ov001_0218b2bc(u16,u16,void *);
+s32 HardwareDivideRemainder(s32,s32); s32 TP_GetSampleIndex(void);void CalibrateTouchSample(void *);void func_ov001_0218b2bc(u16,u16,void *);
 register s32 i,active,old,delta; register s32 index; u16 xy[4]; InputState *p; InputGlobal *g; u8 *sp;
 old=((InputGlobal *)&gOv001Input)->state->flags.active?1:0;
-active=0;index=func_0200d9f4();
+active=0;index=TP_GetSampleIndex();
 p=((InputGlobal *)&gOv001Input)->state;
 *(InputXY *)((u8 *)p+0x2c)=*(InputXY *)((u8 *)p+0x28);
 for(i=active;i<4;) {

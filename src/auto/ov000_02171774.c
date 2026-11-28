@@ -171,9 +171,12 @@ s32 func_ov000_021724a8(void *arg0, s32 arg1) {
     return M2C_FIELD(data_ov000_021add30, s32 *, arg1 << 5);
 }
 
-s16 GetTerrainNameGraphicIndex(void *arg0, s32 arg1) {
-    extern u8 data_ov000_021add34[];
-    return M2C_FIELD(data_ov000_021add34, s16 *, arg1 << 5);
+/* Index of a terrain kind's name graphic in the terrain-definition table, or -1
+ * when the terrain has no name graphic. The definitions are 0x20 bytes apart, so
+ * this s16 field runs through the table with a stride of 16 elements. */
+s16 GetTerrainNameGraphicIndex(void *context, s32 terrainId) {
+    extern s16 gTerrainNameGraphicIndices[];
+    return gTerrainNameGraphicIndices[terrainId << 4];
 }
 
 s32 GetTerrainNameId(void *arg0, s32 arg1) {

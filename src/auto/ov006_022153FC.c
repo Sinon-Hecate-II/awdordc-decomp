@@ -1,5 +1,6 @@
 /* 16 functions from 0x022153FC to 0x022162F4 (ov006), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 
 extern s8 gFriendCodeKeyChars[];
 extern s8 gFriendCodeInput[];
@@ -368,12 +369,13 @@ void FriendCodeKeypad_EnterDigit(void *arg0) {
     PlaySoundEffect(0x1000D);
 }
 
-void func_ov006_02215b64(void)
+/* Focus callback of a keypad digit key: play the menu-select sound. */
+void FriendCodeKeypad_PlayFocusSound(void)
 {
   M2C_UNK PlaySoundEffect(s32);
   volatile long new_var;
   ;
-  PlaySoundEffect(0x10019);
+  PlaySoundEffect(SOUND_MENU_SELECT);
 }
 
 void func_ov006_02215b78(void) {
@@ -484,9 +486,11 @@ PlaySoundEffect(0x1001d);return;
 }
 }
 #pragma opt_common_subs reset
-void func_ov006_02215dc4(void) {
+/* Friend-code entry screen action: play the menu-select sound (same behaviour as
+ * PlayFriendCodeSelectSound, but called from the screen's class script). */
+void FriendCodeEntry_SelectSound(void) {
     M2C_UNK PlaySoundEffect(s32);
-    PlaySoundEffect(0x10019);
+    PlaySoundEffect(SOUND_MENU_SELECT);
 }
 
 void func_ov006_02215dd8(void) {
@@ -597,10 +601,10 @@ PauseSpriteUpdate();savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteE
 PlaySoundEffect(0x1001d);
 }
 
-void func_ov006_02216188(void)
-{
-  M2C_UNK PlaySoundEffect(s32);
-  PlaySoundEffect((0, 0x10019));
+/* Play the sound that tells the friend-code entry screen its selection changed. */
+void PlayFriendCodeSelectSound(void) {
+    M2C_UNK PlaySoundEffect(s32);
+    PlaySoundEffect(SOUND_MENU_SELECT);
 }
 
 extern u16 **gCur3DSpriteEngine;

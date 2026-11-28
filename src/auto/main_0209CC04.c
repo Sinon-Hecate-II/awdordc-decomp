@@ -886,8 +886,10 @@ void CreateTimedSprite(s32 frames) {
     M2C_FIELD(CreateSpriteFromClass(&gTimedSpriteClass), s32 *, DS3D_SPRITE_LIFETIME_FRAMES) = frames;
 }
 
-void func_0209dad8(void **arg0) {
- M2C_FIELD(*arg0, void (**)(void *), 8)(arg0);
+/* Class-script action: dispatch to the object's virtual base operation at vtable
+ * offset 0x8 (the shared no-op slot the screen and sprite classes inherit). */
+void Object_CallBaseOp(void **object) {
+    M2C_FIELD(*object, void (**)(void *), 8)(object);
 }
 
 /* Empties the 3D sprite list of both engines: each engine's list head and its

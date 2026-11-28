@@ -236,6 +236,7 @@ WFC_SESSION_STATE_WIRELESS   = 4,  /* the wireless start command was queued and 
  * matchmaking walk and the states that end a session. */
 #define WFC_SESSION_STATE_MATCHMAKING 10 /* start the next match: build the host configuration */
 #define WFC_SESSION_STATE_HTTP        14 /* the DWC HTTP matchmaking session is open */
+#define WFC_SESSION_STATE_RESULT      16 /* the friend connection finished: Wfc_ProcessStep returns its result (Wfc_GetFriendConnectResult) */
 #define WFC_SESSION_STATE_ENDED       18 /* the session is over; Wfc_ProcessStep frees the work blocks */
 #define WFC_SESSION_STATUS   0x2264 /* u32 status bits, set by WFC_SetStatusBits */
 /* Connection status bits of WFC_SESSION_STATUS that WFC_SetStatusBits (main_020270B4)

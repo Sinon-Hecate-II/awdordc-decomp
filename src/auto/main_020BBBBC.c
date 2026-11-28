@@ -89,7 +89,7 @@ void CreateAdjacentAllyMarker(s32 dir) {
  M2C_FIELD(marker,void **,0x54)=unit;
 }
 
-void func_020bbd8c(void) {
+void SpawnMapCursorOptionSprite(void) {
     M2C_UNK CreateMapCursorOptionSprite();
     CreateMapCursorOptionSprite();
 }

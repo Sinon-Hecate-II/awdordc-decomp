@@ -132,8 +132,10 @@ s32 Ov001SwapEndian32(s32 value) {
     return ((x << 0x18) & 0xFF000000) | (((x << 8) & 0xFF0000) | ((u8) (x >> 0x18) | ((x >> 8) & 0xFF00)));
 }
 
-u16 Ov001SwapEndian16Alt(s32 arg0) {
-    return (u16) ((u8) (arg0 >> 8) | (0xFF00 & (arg0 << 8)));
+/* Reverse the byte order of the low 16 bits of a value (big-endian <->
+ * little-endian); the upper half of the argument is ignored. */
+u16 Ov001SwapEndian16Alt(s32 value) {
+    return (u16) ((u8) (value >> 8) | (0xFF00 & (value << 8)));
 }
 
 /* Reverse the byte order of a 32-bit value (big-endian to little-endian). */
@@ -142,20 +144,23 @@ s32 Ov001SwapEndian32Alt(s32 value) {
     return ((x << 0x18) & 0xFF000000) | (((x << 8) & 0xFF0000) | ((u8) (x >> 0x18) | ((x >> 8) & 0xFF00)));
 }
 
-u16 Ov001SwapEndian16(s32 arg0) {
-    return (u16) ((u8) (arg0 >> 8) | (0xFF00 & (arg0 << 8)));
+/* Reverse the byte order of the low 16 bits of a value (big-endian <->
+ * little-endian); the upper half of the argument is ignored. */
+u16 Ov001SwapEndian16(s32 value) {
+    return (u16) ((u8) (value >> 8) | (0xFF00 & (value << 8)));
 }
 
-s32 Ov001StringLength(s8 *arg0) {
-    s32 var_r2;
+/* Length of the NUL-terminated string `text`, in bytes. */
+s32 Ov001StringLength(s8 *text) {
+    s32 length;
 
-    var_r2 = 0;
-    if (*arg0 != 0) {
+    length = 0;
+    if (*text != 0) {
         do {
-            var_r2 += 1;
-        } while (*(arg0 + var_r2) != 0);
+            length += 1;
+        } while (*(text + length) != 0);
     }
-    return var_r2;
+    return length;
 }
 
 #pragma thumb on
@@ -215,16 +220,19 @@ void func_ov001_0216d050(s32 *arg0, M2C_UNK arg1, s32 arg2) {
 }
 #pragma thumb on
 
-void func_ov001_0216d060(s32 arg0) {
- void OS_SendMessage(void *, s32, s32);
- extern s32 gWhConnTaskQueue;
- OS_SendMessage(&gWhConnTaskQueue, arg0, 0);
+/* Post `message` to the WH connection task's message queue without blocking. */
+void WhConnTaskPostMessage(s32 message) {
+    void OS_SendMessage(void *, s32, s32);
+    extern s32 gWhConnTaskQueue;
+    OS_SendMessage(&gWhConnTaskQueue, message, OS_MESSAGE_NOBLOCK);
 }
 
-void func_ov001_0216d074(s32 arg0) {
- void OS_SendMessage(void *, s32, s32);
- extern s32 gWhConnTaskQueue;
- OS_SendMessage(&gWhConnTaskQueue, arg0, 0);
+/* Second copy of the WH connection task message poster: post `message` to the
+ * task's queue without blocking. */
+void WhConnTaskPostMessage2(s32 message) {
+    void OS_SendMessage(void *, s32, s32);
+    extern s32 gWhConnTaskQueue;
+    OS_SendMessage(&gWhConnTaskQueue, message, OS_MESSAGE_NOBLOCK);
 }
 
 /* After WhConnTaskProcessLinkStep reports that a WFC link step was queued, wait
@@ -275,7 +283,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  MI_CpuCopy8((s32)((u8 *)p+44),(s32)&packet[2+20*ready],M2C_FIELD(p,s32 *,40));
  WFC_ClearPlayerList();
  if(func_ov001_0216d8e4(0,(u8 *)p+4,M2C_FIELD(p,s32 *,0),0x30bffe)){
- tries=0;InitTimer(timer);ScheduleTimer(timer,0x3fec42,0,(void *)func_ov001_0216d074,18);
+ tries=0;InitTimer(timer);ScheduleTimer(timer,0x3fec42,0,(void *)WhConnTaskPostMessage2,18);
  goto test;
  do {
  OS_ReceiveMessage(&gWhConnTaskQueue,&msg,1);
@@ -314,7 +322,14 @@ void func_ov001_0216d564(void) {
     SleepMilliseconds();
 }
 
-s32 func_ov001_0216d56c(s32 a){extern s32 (*data_ov001_021925e0)(s32);void (*f)(s32)=M2C_FIELD(&data_ov001_021925e0,void (**)(s32),4);if(f)f(a);return 0;}
+/* Forward `value` to the room protocol's optional installed callback (the
+ * +0x04 hook); does nothing and reports success while none is installed. */
+s32 Ov001_InvokeRoomCallback(s32 value) {
+    extern s32 (*data_ov001_021925e0)(s32);
+    void (*callback)(s32) = M2C_FIELD(&data_ov001_021925e0, void (**)(s32), OV001_ROOM_HOOK_CALLBACK);
+    if (callback) callback(value);
+    return 0;
+}
 
 /* Lock the WFC player list and copy up to maxRecords of its 0xC0-byte
  * connection records into dest, then unlock it.  Returns the total number of

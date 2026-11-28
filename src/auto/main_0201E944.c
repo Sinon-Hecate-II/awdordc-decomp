@@ -200,7 +200,7 @@ s32 NetworkInitSocketLayer(void) {
 
 void NetworkInitStack(void) {
     void func_02007f8c(void *, s32, s32);
-    void func_0201a4f8(s32);
+    void NetStackSetClosedSocketReaper(s32);
     void SetNetworkThreadPriority(s32);
     void func_0201f030(void);
     void NetTask_MarkReady(void);
@@ -260,7 +260,7 @@ void NetworkInitStack(void) {
         SetNetworkThreadPriority(r0v);
     }
     WFC_SetSendCallback((s32)NetStackQueueAndWakeSender);
-    func_0201a4f8((s32)ReapClosedSockets);
+    NetStackSetClosedSocketReaper((s32)ReapClosedSockets);
     func_0201a26c(base);
 }
 
@@ -454,13 +454,16 @@ void *task;
     return result;
 }
 
-void SocketSubmitRecvTask(void *arg0) {
-    M2C_UNK SocketPostTask();
-    SocketPostTask(M2C_FIELD(arg0, s32 *, 0x64));
+/* Post the receive task `task` to socket `socket`'s raw connection (SOCK_RAW)
+ * without waiting for it to run. */
+s32 SocketSubmitRecvTask(void *socket, void *task) {
+    s32 SocketPostTask();
+    return SocketPostTask(M2C_FIELD(socket, void **, SOCK_RAW), task);
 }
 
-void SocketSubmitSendTask(void *arg0) {
-    SocketPostTask(M2C_FIELD(arg0, s32 *, 0x68));
+/* Submit the socket's send operation to its transmit connection's task queue. */
+void SocketSubmitSendTask(void *socket) {
+    SocketPostTask(M2C_FIELD(socket, s32 *, SOCK_TX_CONN));
 }
 
 /* Post a socket operation task to `socket`'s connection and hand back its result,

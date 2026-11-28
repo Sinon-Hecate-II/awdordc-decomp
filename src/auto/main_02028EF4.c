@@ -918,11 +918,12 @@ s32 ListNext(void *list, s32 node) {
     return M2C_FIELD((node + M2C_FIELD(list, u16 *, DLIST_NODE_OFFSET)), s32 *, DLIST_LINK_NEXT);
 }
 
-s32 ListPrev(void *arg0, s32 arg1) {
-    if (arg1 == 0) {
-        return M2C_FIELD(arg0, s32 *, 4);
+/* Return the node before `node` in `list`, or the list's tail when `node` is NULL. */
+s32 ListPrev(void *list, s32 node) {
+    if (node == 0) {
+        return M2C_FIELD(list, s32 *, DLIST_TAIL);
     }
-    return M2C_FIELD((arg1 + M2C_FIELD(arg0, u16 *, 0xA)), s32 *, 0);
+    return M2C_FIELD((node + M2C_FIELD(list, u16 *, DLIST_NODE_OFFSET)), s32 *, DLIST_LINK_PREV);
 }
 
 /* Find the heap whose memory area covers `address`, walking the heap list `list`

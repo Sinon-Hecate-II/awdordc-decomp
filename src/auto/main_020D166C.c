@@ -91,9 +91,11 @@ void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
     unit[2] = saved2;
 }
 #pragma opt_strength_reduction reset
-s32 GetDefenderBonus(s32 *arg0) {
+/* Percentage damage bonus of a defending battle side.  The game grants none:
+ * the participant's owner is looked up, but the bonus is always 0. */
+s32 GetDefenderBonus(BattleUnit *side) {
     M2C_UNK GetUnitOwner(s32);
-    GetUnitOwner(*arg0);
+    GetUnitOwner((s32)side->unit);
     return 0;
 }
 
@@ -252,7 +254,7 @@ SetupPlayerTeams();FillTeamSightBitmap((u8)M2C_FIELD(*gCurrentMap,u16 *,MAP_TEAM
  * the tile the player left it on and reload the player's palettes. */
 void InitPlayerTurnState(void) {
     extern void **gCurrentMap;
-    void func_020d2d80(s32);  /* clears the player's unit-sprite state bits 8..9 */
+    void ClearPlayerSpriteAuxBits(s32);  /* clears the player's unit-sprite state bits 8..9 */
     void EnablePlayerSelectionIfNoneSelected(s32);  /* re-enables selection while the player has none */
     void PayPlayerIncome(s32);
     s32 IsPlayerCursorOwner(s32);   /* nonzero when the map cursor belongs to the player */
@@ -261,7 +263,7 @@ void InitPlayerTurnState(void) {
     u8 *p; /* the player's record at MAP_PLAYER_STATES */
 
     M2C_FIELD(*gCurrentMap, u16 *, MAP_UNIT_SLOT_CURSOR) = 0;
-    func_020d2d80(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
+    ClearPlayerSpriteAuxBits(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
     EnablePlayerSelectionIfNoneSelected(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
     PayPlayerIncome(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
     if (IsPlayerCursorOwner(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
@@ -340,7 +342,7 @@ void InitMapPlayers(void) {
     s32 GetPlayerIdForSlot(s32);
     s32 SetPlayerRecordArmyId(s32, s32);
     s32 GetPlayerCoId(s32);
-    s32 func_020a2390(s32);
+    s32 GetInitialCoPowerMeter(s32);
     void SetCoPowerMeterPoints(s32, s32);
     s32 GetPlayerArmyId(s32);
     s32 GetPlayerOwnerGroup(s32);
@@ -387,7 +389,7 @@ void InitMapPlayers(void) {
                 SetPlayerRecordArmyId(r8, GetPlayerCoId(r8));
             }
 
-            SetCoPowerMeterPoints(r8, func_020a2390(r8));
+            SetCoPowerMeterPoints(r8, GetInitialCoPowerMeter(r8));
 
             r10 = (u8 *)*gCurrentMap + 0x67a4 + r9;
             r10[0x26] = (u8)GetPlayerArmyId(r8);

@@ -5,6 +5,7 @@
 #include "ds3dsprite.h"
 extern M2C_UNK gSoundTimerState;
 extern u32 gSoundTimerTicks[9], gSoundTimerElapsed[9];
+extern s32 gCurrentMusicTrack;
 
 #pragma push
 #pragma optimization_level 3
@@ -216,8 +217,9 @@ void func_0208f5cc(void) {
     FadeOutMusicDefault();
 }
 
-void func_0208f5d8(void) {
-    PlayMusicTrack(4);
+/* Start the front-end menu music (track 4). */
+void PlayMenuMusic(void) {
+    PlayMusicTrack(MUSIC_MENU_TRACK);
 }
 
 /* The console's language as an index the front end supports: the six localized
@@ -259,7 +261,7 @@ void GX_SetVBlankIrq(s32);
 void ShutdownSound(void);
 void EnsureFrontEndOverlayLoaded(void);
 void SetNasServerEnvironment(s32);
-void *func_020e3580(s32,s32);
+void *AllocGameHeap(s32,s32);
 void Ov001_RunFrontEnd(void *,s32,s32);
 M2C_UNK HeapFreeBlock();
 void EnsureResource0Loaded(void);
@@ -276,7 +278,7 @@ GX_SetVBlankIrq(0);
 ShutdownSound();
 EnsureFrontEndOverlayLoaded();
 SetNasServerEnvironment(2);
-workBuffer=func_020e3580(0x40000,0x20);
+workBuffer=AllocGameHeap(0x40000,0x20);
 if(GetLanguageIndex()==0) Ov001_RunFrontEnd(workBuffer,GetLanguageIndex(),0x10);
 else Ov001_RunFrontEnd(workBuffer,GetLanguageIndex(),0);
 HeapFreeBlock(workBuffer);
@@ -317,8 +319,8 @@ s32 func_0208f75c(s32 object) {
     return object;
 }
 
+/* Return the music track currently playing (MUSIC_NONE when no track plays). */
 s32 GetCurrentMusicTrack(void) {
-    extern s32 gCurrentMusicTrack;
     return gCurrentMusicTrack;
 }
 

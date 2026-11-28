@@ -206,8 +206,10 @@ void func_ov003_02205414(void) {
     func_ov003_022024a8();
 }
 
-void Ov003_BattleSetupScene_CallShow(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x14)(arg0);
+/* Class-script action of the ov003 battle-setup scene: forward to the scene
+ * object's virtual show/enter method at vtable offset 0x14. */
+void Ov003_BattleSetupScene_CallShow(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_SHOW)(scene);
 }
 
 /* Prepare an ov003 scene object's display: reset its two status sprites to the scene's
@@ -264,8 +266,11 @@ void func_ov003_02205564(void) {
     func_ov003_0220277c();
 }
 
-void func_ov003_02205570(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x18)(arg0);
+/* Class-script action of the ov003 battle-setup scene: forward to the scene
+ * object's virtual hide method at vtable offset 0x18, which slides the setup
+ * panels out again. */
+void Ov003_BattleSetupScene_CallHide(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_HIDE)(scene);
 }
 
 /* Closes an ov003 scene object's display: tweens the two status sprites out (the
@@ -305,8 +310,11 @@ void CloseSceneObjectDisplay(void *entity) {
     } while (i < 8U);
 }
 
-void func_ov003_02205638(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x10)(arg0);
+/* Class-script action of the ov003 battle-setup scene: forward to the scene
+ * object's virtual resume method at vtable offset 0x10, which restarts the
+ * scene's sprite animation. */
+void Ov003_BattleSetupScene_CallResume(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_RESUME)(scene);
 }
 
 /* True while the ov003 scene display's upper tween sprite is still sliding:

@@ -248,6 +248,8 @@ void Ov001_WaitWfcConnectIconRow(void) {
     Ov001_UnlockIconRow();
     Ov001_SetStepCallback(&Ov001_WfcConnectIconRowStep);
 }
+/* Per-frame step of the Wi-Fi connect screen's icon row: take the A/B input, let
+ * the screen's (empty) idle hook run, then apply the row's choice. */
 void Ov001_WfcConnectIconRowStep(void) {
  void Ov001_HandleWfcConnectMenuInput(void);
  void func_ov001_02182f08(void);
@@ -463,6 +465,9 @@ void Ov001_UsbConnectWaitIconRow(void) {
     Ov001_SetStepCallback(&Ov001_UpdateConnectionWait);
 }
 
+/* Per-frame update of the Wi-Fi connection-wait screen: take its cancel input,
+ * run the screen's (empty) idle hook, and give up the connection once the
+ * player backs out of it. */
 void Ov001_UpdateConnectionWait(void) {
     void Ov001_HandleConnectionWaitInput(void);
     void func_ov001_021832c8(void);
@@ -864,7 +869,13 @@ u8 Ov001_GetScrollBarHandlePos(void) {
     return M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_HANDLE_POS);
 }
 
-u8 GetMenuState(void){extern void *gOv001Scrollbar;return M2C_FIELD(gOv001Scrollbar,u8 *,29);}
+/* The event code (OV001_SCROLLBAR_EVENT_*) the friend-roster scroll bar's update
+ * task reported this frame; 0 when nothing happened. */
+u8 Ov001_GetScrollBarEvent(void) {
+    extern void *gOv001Scrollbar;
+
+    return M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_EVENT);
+}
 
 void Ov001_UpdateScrollbarHandle(void) { M2C_UNK Ov001_SetScrollbarHandlePos(); Ov001_SetScrollbarHandlePos(); }
 

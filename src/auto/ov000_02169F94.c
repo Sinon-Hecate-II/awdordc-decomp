@@ -247,8 +247,10 @@ s32 GetFavouriteRecord(s32 byGroup) {
     return empty ? -1 : (s8)bestIndex;
 }
 
-void GetFavouriteRecordGroup(void) {
-    M2C_UNK GetFavouriteRecord(M2C_UNK);
+/* Return the player's favourite record group (-1 when no record has a value,
+ * else 0..2): GetFavouriteRecord with byGroup clear. */
+s32 GetFavouriteRecordGroup(void) {
+    M2C_UNK GetFavouriteRecord();
     GetFavouriteRecord(0);
 }
 
@@ -261,7 +263,9 @@ s32 GetFavouriteGroupTextId(s32 group) {
     return table.values[group];
 }
 
-void GetFavouriteRecordIndex(void) {
+/* Return the index of the player's favourite record (-1 when no record has a
+ * value): GetFavouriteRecord with byGroup set. */
+s32 GetFavouriteRecordIndex(void) {
     GetFavouriteRecord(1);
 }
 
@@ -453,7 +457,7 @@ s32 RunEndingEvent(void) {
 }
 
 /* Run the map's menu event (script slot MAP_EVENT_MAP_MENU, +0x28): the map-menu
- * action func_020c5da4 runs it after closing the menu, and IsMapEventConditionMet
+ * action RunMapMenuEventCommand runs it after closing the menu, and IsMapEventConditionMet
  * tests the same list to decide whether that action is available; returns nonzero
  * when a condition of the event matched. */
 s32 RunMapMenuEvent(void) {

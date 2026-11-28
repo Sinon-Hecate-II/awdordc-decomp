@@ -644,8 +644,10 @@ void ResetEffectSpritePool(void) {
     gEffectSpritePoolOffset = 0;
 }
 
+/* Return the next free byte of the battle-effect sprite texture pool. */
 s32 GetEffectSpritePoolOffset(void) {
     extern s32 gEffectSpritePoolOffset;
+
     return gEffectSpritePoolOffset;
 }
 

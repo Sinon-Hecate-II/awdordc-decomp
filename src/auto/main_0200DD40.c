@@ -31,7 +31,7 @@ void Arm7TransferInit(void) {
     M2C_FIELD(&gArm7TransferState, s32 *, 8) = 0;
     PXI_Init();
     do {} while (IsFifoMessageReady(9, 1) == 0);
-    *(s32 *)0x027FFF90 = 0;
+    *(s32 *)SHARED_ARM7_TRANSFER_POSITION = 0;
     SetFifoMessageHandler(9, (M2C_UNK *)&Arm7TransferFifoHandler);
 }
 
@@ -131,8 +131,9 @@ s32 Arm7TransferEndWait(void) {
     return M2C_FIELD(&gArm7TransferState, s32 *, ARM7_XFER_STATE_RESULT);
 }
 
-s32 func_0200dfa8(void) {
-    return *(s32 *)0x027FFF90;
+/* Byte position the ARM7's transfer engine has reached so far. */
+s32 Arm7TransferGetBytePosition(void) {
+    return *(volatile s32 *)SHARED_ARM7_TRANSFER_POSITION;
 }
 
 #pragma scheduling off
@@ -151,7 +152,7 @@ cb=M2C_FIELD(&gArm7TransferState,void (**)(s32,s32),20);
 if(cb)cb(result,M2C_FIELD(&gArm7TransferState,s32 *,24));
 return;
 }
-if(cmd==64 && M2C_FIELD(&gArm7TransferState,u16 **,28)) *M2C_FIELD(&gArm7TransferState,u16 **,28)=*(volatile u16 *)0x027fff94;
+if(cmd==64 && M2C_FIELD(&gArm7TransferState,u16 **,28)) *M2C_FIELD(&gArm7TransferState,u16 **,28)=*(volatile u16 *)SHARED_ARM7_TRANSFER_PROGRESS;
 if(M2C_FIELD(&gArm7TransferState,s32 *,4))M2C_FIELD(&gArm7TransferState,s32 *,4)=0;
 cb=M2C_FIELD(&gArm7TransferState,void (**)(s32,s32),8);
 if(cb){M2C_FIELD(&gArm7TransferState,s32 *,8)=0;cb(result,M2C_FIELD(&gArm7TransferState,s32 *,12));}
@@ -196,9 +197,10 @@ s32 Arm7TransferSendStopCommand(void) {
     return 0;
 }
 
-void Arm7TransferResultCallback(s32 arg0) {
+/* Save the completed ARM7 transfer's result in the shared transfer state. */
+void Arm7TransferResultCallback(s32 result) {
     extern M2C_UNK gArm7TransferState;
-    M2C_FIELD(&gArm7TransferState, s32 *, 0x10) = arg0;
+    M2C_FIELD(&gArm7TransferState, s32 *, ARM7_XFER_STATE_RESULT) = result;
 }
 
 s32 Arm7TransferWaitCompletion(void) {

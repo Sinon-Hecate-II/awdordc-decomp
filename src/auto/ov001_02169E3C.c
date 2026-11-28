@@ -399,11 +399,13 @@ s32 func_ov001_0216ace0(void *arg0,s32 arg1) {
  p=M2C_FIELD(arg0,u8 **,0);shift=arg1-n;M2C_FIELD(arg0,u8 **,0)=p+1;M2C_FIELD(arg0,u8 *,5)=*p;M2C_FIELD(arg0,s8 *,4)=8;value=func_ov001_0216ace0(arg0,shift)|(byte<<shift);
  } return value & (0xff>>(8-arg1));
 }
-u16 DecodeFontChar(u16 **arg0) {
-u16 *p=*arg0;
-u16 v=*p++;
-*arg0=p;
-return v;
+/* Read the next 16-bit character code of a font text stream and advance the
+ * caller's cursor past it; the default Ov001Font.decodeChar decoder. */
+u16 Ov001_DecodeFontChar(u16 **cursor) {
+    u16 *p = *cursor;
+    u16 ch = *p++;
+    *cursor = p;
+    return ch;
 }
 
 #pragma thumb on

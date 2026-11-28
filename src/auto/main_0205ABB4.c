@@ -76,9 +76,12 @@ p=M2C_FIELD(connection,void **,GT2_CONNECTION_FILTERS);if(p)Vector_Free(p);
 gpiFree(connection);
 }
 
-void Gt2CreateSocket(s32 a,s32 b,s32 c,s32 d,s32 e) {
-void gti2CreateSocket(s32,s32,s32,s32,s32);
-gti2CreateSocket(a,b,c,d,e);
+/* Create a GameSpy GT2 socket bound to `localAddress` with the given incoming and
+ * outgoing buffer sizes, storing it in *socket; the error callback is kept for
+ * socket failures.  Returns the GT2 result code. */
+s32 Gt2CreateSocket(void **socket, char *localAddress, s32 incomingBufferSize, s32 outgoingBufferSize, void (*errorCallback)(s32 *)) {
+    s32 gti2CreateSocket(void **, char *, s32, s32, void (*)(s32 *));
+    return gti2CreateSocket(socket, localAddress, incomingBufferSize, outgoingBufferSize, errorCallback);
 }
 
 /* Close a GT2 socket: fail every connection it still owns, then free it. */
@@ -156,13 +159,17 @@ void gt2Send(void *connection, const u8 *message, s32 length, s32 reliable) {
     gti2Send(connection, message, length, reliable);
 }
 
-void GT2FailConnectionAttempt(M2C_UNK arg0) {
+/* Abort a connection attempt that has not finished its handshake by closing the
+ * connection locally (the peer is not notified). */
+void GT2FailConnectionAttempt(M2C_UNK connection) {
     M2C_UNK gti2HandleConnectionClose(M2C_UNK, M2C_UNK);
-    gti2HandleConnectionClose(arg0, 1);
+    gti2HandleConnectionClose(connection, 1);
 }
 
-void gti2FailTableConnection(s32 *arg0) {
-    GT2FailConnectionAttempt(*arg0);
+/* TableMapSafe callback: fail the connection whose pointer the visited table
+ * element (`connectionSlot`) holds. */
+void gti2FailTableConnection(s32 *connectionSlot) {
+    GT2FailConnectionAttempt(*connectionSlot);
 }
 
 /* Fail every connection a GT2 socket owns (the socket is closing), run from a
@@ -181,8 +188,10 @@ u16 GT2SocketPort(void *arg0) {
     return M2C_FIELD(arg0, u16 *, 8);
 }
 
-s32 gti2GetConnectionSendFreeSpace(void *arg0) {
-    return M2C_FIELD(arg0, s32 *, 0x54) - M2C_FIELD(arg0, s32 *, 0x58);
+/* Bytes still free in a connection's send buffer. */
+s32 gti2GetConnectionSendFreeSpace(void *connection) {
+    Gt2Buffer *sendBuffer = (Gt2Buffer *)((u8 *)connection + GT2_CONNECTION_SEND_BUFFER);
+    return sendBuffer->size - sendBuffer->len;
 }
 
 s32 GT2SocketHandle(s32 *arg0) {
@@ -222,10 +231,16 @@ s32 Gt2ReadShort(u8 *data, s32 offset) {
     return (u16)value | data[offset + 1];
 }
 
-void Gt2WriteShort(u8 *a,s32 b,s32 c){a[b]=c>>8;a[b+1]=c;}
+/* Write the 16-bit big-endian (network order) value at `offset` in `data`. */
+void Gt2WriteShort(u8 *data, s32 offset, s32 value) {
+    data[offset] = value >> 8;
+    data[offset + 1] = value;
+}
 
-s16 Gt2CompareSequence(s32 arg0, s32 arg1) {
-    return (s16) (arg0 - arg1);
+/* Signed distance from `sequence2` to `sequence1` in GT2's wrapping 16-bit
+ * sequence space: positive when sequence1 is ahead, negative when behind. */
+s16 Gt2CompareSequence(u32 sequence1, u32 sequence2) {
+    return (s16)(sequence1 - sequence2);
 }
 
 /* Shared teardown path of a GT2 connection.  A connection that is still

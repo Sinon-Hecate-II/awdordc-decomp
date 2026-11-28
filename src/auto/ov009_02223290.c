@@ -745,9 +745,11 @@ u16 GetConnectedPlayers(void) {
     return gLinkSession;
 }
 
-void SetLinkPhaseRaw(s32 arg0) {
+/* Write the link state machine's phase (LINK_PHASE_*) without the side effects
+ * SetLinkPhase runs before and after it. */
+void SetLinkPhaseRaw(s32 phase) {
     extern M2C_UNK gLinkState;
-    M2C_FIELD(&gLinkState, s32 *, 0x10) = arg0;
+    M2C_FIELD(&gLinkState, s32 *, LINK_STATE_PHASE) = phase;
 }
 
 s32 GetLinkPhase(void) {

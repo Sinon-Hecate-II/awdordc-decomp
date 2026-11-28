@@ -314,9 +314,10 @@ s32 GetPlayerUnitSpriteTile(s32 player, s32 kind) {
     return GetUnitVariantIndex(kind, M2C_FIELD(((player * MAP_PLAYER_STRIDE) + (s32)*gCurrentMap), u8 *, PLAYER_SPRITE_STATE_OFF)) * 4;
 }
 
-void *func_020a72e8(s32 arg0) {
+/* The 32-byte, 16-colour OBJ palette of army `armyIndex` (1-based). */
+void *Main_GetArmyPalette(s32 armyIndex) {
     extern M2C_UNK gArmyPalettes;
-    return (u8 *)&gArmyPalettes + ((arg0 - 1) << 5);
+    return (u8 *)&gArmyPalettes + ((armyIndex - 1) << ARMY_PALETTE_SHIFT);
 }
 
 /* Damage-table row a hit on a target of `targetKind` reads: when the target is a

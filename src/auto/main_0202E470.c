@@ -31,7 +31,7 @@ M2C_FIELD(state,s16 *,0)=(s16)sample;M2C_FIELD(state,u8 *,2)=index;
 return (s16)sample;
 }
 s32 Sound_OpenFileSource(void *,s32);
-void Sound_ReleaseFileSource(s32);
+void Sound_ReleaseFileSource(void *);
 void Sound_ReadFileSource(void *,s32,s32,s32);
 void Sound_CloseFileSource(s32);
 s32 Sound_OpenMemorySource(void *,s32);
@@ -357,9 +357,11 @@ s32 Sound_OpenFileSource(void *player, s32 fileId) {
     return 1;
 }
 
-void Sound_ReleaseFileSource(s32 arg0) {
-    M2C_UNK CloseFileRequest(s32);
-    CloseFileRequest(arg0 + 0x5C);
+/* Release the file request a sound player streams its sample data through;
+ * installed as SOUND_HANDLE_RELEASE_CB by Sound_SetPlayerCallbacks. */
+void Sound_ReleaseFileSource(void *player) {
+    s32 CloseFileRequest(void *);
+    CloseFileRequest(player + SOUND_HANDLE_FILE_REQUEST);
 }
 
 void Sound_ReadFileSource(void *player, M2C_UNK destination, M2C_UNK byteCount, s32 sourceOffset) {
@@ -371,9 +373,11 @@ void Sound_ReadFileSource(void *player, M2C_UNK destination, M2C_UNK byteCount, 
     FileRead(player + SOUND_HANDLE_FILE_REQUEST, destination, byteCount);
 }
 
-void Sound_CloseFileSource(s32 arg0) {
+/* Close a file-backed sound source: cancel the player's pending sample file
+ * request. */
+void Sound_CloseFileSource(s32 player) {
     M2C_UNK CancelFileRequest(s32);
-    CancelFileRequest(arg0 + 0x5C);
+    CancelFileRequest(player + SOUND_HANDLE_FILE_REQUEST);
 }
 
 /* Open a sound player's sample data straight from the loaded archive memory of

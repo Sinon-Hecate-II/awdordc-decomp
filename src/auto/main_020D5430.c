@@ -420,7 +420,7 @@ void UpdateMapTargetCursor(void) {
     } else {
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = 6;
         SetAiCommandPhase(3);
-        func_ov000_0219c7d8(0);
+        SetAiCommandStep(0);
         UpdateMapCommandReplay();
         return;
     }

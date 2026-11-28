@@ -648,8 +648,10 @@ u8 GetOnlineLocalPlayerSlot(void) {
     return M2C_FIELD(&gOv010OnlineSession, u8 *, 0xFB);
 }
 
+/* One bit per player slot of the peers in the online session's active
+ * connection list, as a 16-bit mask; 0 when no session is running. */
 u16 GetOnlinePeerMask(void) {
-    s32 GetOnlinePlayerMask();
+    s32 GetOnlinePlayerMask(void);
     return (u16)GetOnlinePlayerMask();
 }
 
@@ -662,6 +664,8 @@ s32 GetConnectedPlayerCount(void) {
     return GetNetSessionPlayerCount() & 0xFF;
 }
 
+/* Clear the online session's pending event flags: one bit per player whose
+ * connection changed (OV010_SESSION_CHANGED_PLAYERS). */
 void ClearOnlineEventFlags(void) {
     extern u16 gOv010OnlineSession;
     gOv010OnlineSession = 0;

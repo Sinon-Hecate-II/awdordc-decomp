@@ -20,6 +20,11 @@
 #define MAP_CONFIRM_ENABLED  1
 #define MAP_CONFIRM_DISABLED 2
 
+/* gOv003SceneState+1: nonzero once the scene's contents have been loaded and it
+ * may take input; Ov003_StartBattleScene clears it before it creates the next
+ * scene. */
+#define SCENE_READY 0x01 /* u8 nonzero once the scene is loaded */
+
 /* gOv003SceneState+4: the slide the scene was entered with (set by the battle
  * scene start and the link map-transfer start); the scene entry offset helper
  * turns it into the offset the scene's sprites start from. */

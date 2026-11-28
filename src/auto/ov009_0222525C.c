@@ -136,16 +136,18 @@ u8 GetLinkLocalPlayerSlot(void) {
     return M2C_FIELD(&gLinkState, u8 *, 0x157);
 }
 
-void GetLinkConnectedPlayerCount(void) {
-    M2C_UNK CountBits();
-    M2C_UNK GetConnectedPlayers();
-    GetConnectedPlayers();
-    CountBits();
+/* Counts the players in the link session's connected-player bitmask. */
+u32 GetLinkConnectedPlayerCount(void) {
+    u32 CountBits(u32 playerMask);
+    s32 GetConnectedPlayers(void);
+    return CountBits(GetConnectedPlayers());
 }
 
+/* Clear the per-player link event bits raised by the session's task (a player
+ * joining or leaving, for example) so each is only handled once. */
 void ClearLinkEventFlags(void) {
     extern M2C_UNK gLinkState;
-    M2C_FIELD(&gLinkState, s16 *, 8) = 0;
+    M2C_FIELD(&gLinkState, u16 *, LINK_STATE_EVENT_FLAGS) = 0;
 }
 
 u16 GetLinkEventFlags(void) {
@@ -214,9 +216,11 @@ s32 IsLinkStartAcknowledged(s32 arg0) {
     return acknowledged;
 }
 
-void func_ov009_022255ec() {
+/* Detach the in-flight link match-start record from the link state (the start
+ * request's clear action; the caller's record is not touched). */
+void ClearLinkStartRecord(s32 unused) {
     extern M2C_UNK gLinkState;
-    M2C_FIELD(&gLinkState, void **, 0x48) = NULL;
+    M2C_FIELD(&gLinkState, void **, LINK_STATE_START_RECORD) = NULL;
 }
 
 /* Submit a link match-start request node's start record to the link. */
@@ -238,8 +242,8 @@ s32 IsLinkStartAcknowledgedInGame(s32 state) {
 }
 
 void func_ov009_02225644(s32 arg0) {
-    void func_ov009_022255ec();
-    func_ov009_022255ec(arg0 + 0x38);
+    void ClearLinkStartRecord();
+    ClearLinkStartRecord(arg0 + 0x38);
 }
 
 /* Create the link match-start request node (class gLinkStartRequestClass) owned by
@@ -292,9 +296,11 @@ s32 IsPlayerAnnouncePending(s32 actor) {
     return pending;
 }
 
-void func_ov009_02225768(s32 arg0) {
+/* Detach the in-flight player-announcement request record from the link state
+ * (the announce object's clear action; the record itself is left alone). */
+void ClearPlayerAnnounceRequest(s32 unused) {
     extern M2C_UNK gLinkState;
-    M2C_FIELD(&gLinkState, void **, 0x20) = NULL;
+    M2C_FIELD(&gLinkState, void **, LINK_STATE_ANNOUNCE_REQUEST) = NULL;
 }
 
 void func_ov009_0222577c(s32 arg0) {
@@ -308,8 +314,8 @@ void func_ov009_0222578c(s32 arg0) {
 }
 
 void func_ov009_0222579c(s32 arg0) {
-    void func_ov009_02225768(s32);
-    func_ov009_02225768(arg0 + 0x34);
+    void ClearPlayerAnnounceRequest(s32);
+    ClearPlayerAnnounceRequest(arg0 + 0x34);
 }
 
 /* Create the link player-announce object owned by `owner` and install its
@@ -352,9 +358,11 @@ s32 IsConnectRequestPending(s32 actor) {
     return pending;
 }
 
-void func_ov009_02225864() {
+/* Clear the connected-players request the link state machine is polling, so a
+ * finished request is not polled again. */
+void ClearLinkConnectRequest(void) {
     extern M2C_UNK gLinkState;
-    M2C_FIELD(&gLinkState, void **, 0x24) = NULL;
+    M2C_FIELD(&gLinkState, void **, LINK_STATE_CONNECT_REQUEST) = NULL;
 }
 
 void func_ov009_02225878(s32 arg0) {
@@ -368,8 +376,8 @@ void func_ov009_02225888(s32 arg0) {
 }
 
 void func_ov009_02225898(s32 arg0) {
-    void func_ov009_02225864();
-    func_ov009_02225864(arg0 + 0x34);
+    void ClearLinkConnectRequest();
+    ClearLinkConnectRequest(arg0 + 0x34);
 }
 
 /* Create the link connect-request node owned by `owner` and install its vtable at
@@ -489,9 +497,11 @@ s32 IsLinkAnnounceIncomplete(s32 unused) {
     return 0;
 }
 
-void func_ov009_02225ae0(s32 arg0) {
+/* Class-script action of the player-info announce sprite: drop the in-flight
+ * announcement mask from the link state (the sprite argument is not used). */
+void ClearLinkAnnounceInFlight(s32 unused) {
     extern M2C_UNK gLinkState;
-    M2C_FIELD(&gLinkState, void **, 0x28) = NULL;
+    M2C_FIELD(&gLinkState, void **, LINK_STATE_ANNOUNCE) = NULL;
 }
 
 void func_ov009_02225af4(s32 arg0) {
@@ -511,8 +521,8 @@ s32 IsLinkAnnounceIncompleteInGame(s32 sprite) {
 }
 
 void func_ov009_02225b34(s32 arg0) {
-    void func_ov009_02225ae0(s32);
-    func_ov009_02225ae0(arg0 + 0x34);
+    void ClearLinkAnnounceInFlight(s32);
+    ClearLinkAnnounceInFlight(arg0 + 0x34);
 }
 
 void func_ov009_02225b44(void *arg0) {
@@ -922,7 +932,7 @@ void CreateLinkNameLabel(s32 unusedX, s32 unusedY, void *owner) {
     M2C_UNK SetLinkPlayerName(s32, M2C_UNK);
     s32 func_ov009_022242c8();
     M2C_UNK ClearLinkResultFlag(M2C_UNK);
-    M2C_UNK func_ov009_0222454c();
+    M2C_UNK ClearLinkConnectionDataFlag();
     extern M2C_UNK gLinkNameLabelClass;
     if (GetLinkPhase() != LINK_PHASE_IDLE) {
         EnableMapConfirm();
@@ -931,7 +941,7 @@ void CreateLinkNameLabel(s32 unusedX, s32 unusedY, void *owner) {
     DisableMapConfirm();
     ClearLinkResultFlag(1);
     if (func_ov009_022242c8() == 0) return;
-    func_ov009_0222454c();
+    ClearLinkConnectionDataFlag();
     SetLinkDownloadCode(0x654);
     SetLinkPlayerName(GetLocalPlayerName(), 0x14);
     ClearLinkCommandQueues();

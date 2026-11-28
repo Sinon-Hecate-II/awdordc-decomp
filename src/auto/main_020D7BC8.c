@@ -2,7 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ds3dsprite.h"
-#include "ds3dsprite.h"
+extern s32 gMapCategory;
 static inline u16 TerrainSpriteY(s32 y) { return (u16)y; }
 /* The OBJ boundary value, bits 13..14 of the current sprite bank's flags word
  * (DS3D_BANK_OBJ_BOUNDARY_MASK >> 13): the shift the terrain and unit sprites
@@ -219,13 +219,16 @@ void UpdateCursorCellDisplayMode(void) {
     }
 }
 
-void SetMapCategory(s32 arg0) {
+/* Set the category of map the map-select list is browsing (read back with
+ * GetMapCategory; it picks the list mode and setup callback). */
+void SetMapCategory(s32 category) {
     extern s32 gMapCategory;
-    gMapCategory = arg0;
+    gMapCategory = category;
 }
 
+/* Return the category of map the map-select list is browsing (set by
+ * SetMapCategory when the list opens). */
 s32 GetMapCategory(void) {
-    extern s32 gMapCategory;
     return gMapCategory;
 }
 
@@ -266,17 +269,21 @@ M2C_UNK OpenMode4MapList(void) {
     CreateSpriteFromClass(&data_0212bfb8, 7);
 }
 
-void func_020d88f4(void) {
+/* Open the map-list screen in battle mode 1 (free play/versus): run the mode's
+ * scene hook (an empty stub in this build) and then select mode 1.  Its twin
+ * SetMapConfigMode1WithNoOpCallback is byte-identical. */
+void OpenMode1MapList(void) {
+    M2C_UNK NoOpMapConfigCallback();
     M2C_UNK SetMapConfigMode1();
-    M2C_UNK func_020d8cc4();
-    func_020d8cc4();
+    NoOpMapConfigCallback();
     SetMapConfigMode1();
 }
 
-void func_020d8904(void) {
+/* Run the no-op map-config callback, then select config mode 1 and create its UI sprite. */
+void SetMapConfigMode1WithNoOpCallback(void) {
     M2C_UNK SetMapConfigMode1();
-    M2C_UNK func_020d8cc4();
-    func_020d8cc4();
+    M2C_UNK NoOpMapConfigCallback();
+    NoOpMapConfigCallback();
     SetMapConfigMode1();
 }
 
@@ -353,17 +360,23 @@ void CreateRecordsMenuSprite(void) {
     CreateSpriteFromClass(&gRecordsMenuSpriteClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
-void func_020d8a18(void) {
-    M2C_UNK func_020cd480(M2C_UNK);
-    func_020cd480(0);
+/* Campaign menu entry: start the campaign in save slot 0, or resume the campaign
+ * already saved there. */
+void StartCampaignSlot0(void) {
+    M2C_UNK StartCampaignFromSlot(M2C_UNK);
+    StartCampaignFromSlot(0);
 }
 
-void func_020d8a28(void) {
-    func_020cd480(1);
+/* Campaign menu entry: start the campaign in save slot 1, or resume the campaign
+ * already saved there. */
+void StartCampaignSlot1(void) {
+    StartCampaignFromSlot(1);
 }
 
-void func_020d8a38(void) {
-    func_020cd480(2);
+/* Campaign menu entry: start the campaign in save slot 2, or resume the campaign
+ * already saved there. */
+void StartCampaignSlot2(void) {
+    StartCampaignFromSlot(2);
 }
 
 /* Spawn the scripted sprite that loads and opens the History menu. */

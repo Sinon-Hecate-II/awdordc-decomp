@@ -6,6 +6,7 @@ extern s32 data_ov010_0222d95c[];
 extern s32 data_ov010_0222d944[];
 extern s32 data_ov010_0222d920[4];
 extern s32 data_ov010_0222d914;
+extern s32 gStreamVoiceState;
 
 #pragma opt_strength_reduction off
 s32 func_ov010_02224f94(s32 a, u32 b, u8 *c) {
@@ -389,9 +390,11 @@ return 0;
 return 0;
 }
 #pragma opt_instruction_scheduling reset
-void func_ov010_02225934(void) {
- extern s32 gStreamVoiceState;
- M2C_FIELD(&gStreamVoiceState,s32 *,0x10)=1;
+/* ARM7 transfer-end callback of DisableVoiceStream: mark the streaming voice paused
+ * (read back by IsVoiceStreamPaused). */
+void PauseVoiceStream(void) {
+    extern s32 gStreamVoiceState;
+    M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_PAUSED) = 1;
 }
 
 /* ARM7 transfer-end callback of the streamed voice (posted by
@@ -415,10 +418,10 @@ void StreamedVoice_TransferEnded(void) {
 void RefillStreamedVoiceSegment(s32 mode, s32 noteCount, s32 *noteOffsets, s32 segmentBytes, s32 playMode, s32 altBuffer) {
     extern s32 gStreamVoiceState;
     extern s32 data_ov010_0222edf8;
-    void func_ov010_02225934(void);
+    void PauseVoiceStream(void);
     void MI_CpuFill8(void *, u32, u32);
     void Arm7TransferStart(void *, void *, u32);
-    s32 func_0200dfa8(void);
+    s32 Arm7TransferGetBytePosition(void);
     void *VoiceStream_ReceiveAudio(void *, s32, s32);
     void VoiceStream_SendAudio(s32, s32);
     void DC_FlushRange(void *, s32);
@@ -445,13 +448,13 @@ void RefillStreamedVoiceSegment(s32 mode, s32 noteCount, s32 *noteOffsets, s32 s
 
     if (M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_ACTIVE) != 0) {
         if (M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_PAUSED) == 0) {
-            Arm7TransferStart(&data_ov010_0222edf8, (void *)func_ov010_02225934, 0);
+            Arm7TransferStart(&data_ov010_0222edf8, (void *)PauseVoiceStream, 0);
             M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_ACTIVE) = 0;
         }
     }
 
     pos = *(volatile s32 *)&altBuffer;
-    elapsed = (u32)func_0200dfa8() - (u32)pos;
+    elapsed = (u32)Arm7TransferGetBytePosition() - (u32)pos;
     changed = 0;
     if ((u32)elapsed < (u32)segmentBytes) {
         if (M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_FLIP) != 0) {
@@ -547,9 +550,10 @@ void StartVoiceChatStream(void) {
     StartStreamedVoice((void *)&RefillStreamedVoiceSegment, 0x44);
 }
 
+/* Nonzero once the stream's segment callback has received a voice packet: set on
+ * every buffer refill from the received-audio result (STREAM_VOICE_DATA_READY). */
 s32 IsVoiceDataReady(void) {
-    extern s32 gStreamVoiceState;
-    return gStreamVoiceState;
+    return M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_DATA_READY);
 }
 
 /* Start the streamed voice's sound player channels and let the sound driver run
@@ -579,9 +583,10 @@ void VoiceChat_StopStreamSound(void) {
     Sound_StopIfPlaying(&gStreamSoundPlayer);
 }
 
+/* Turn the streaming voice on; DisableVoiceStream turns it off again. */
 void EnableVoiceStream(void) {
-extern s32 gStreamVoiceState;
-M2C_FIELD(&gStreamVoiceState,s32 *,4)=1;
+    extern s32 gStreamVoiceState;
+    M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_ACTIVE) = 1;
 }
 
 /* Turn the streaming voice off: finish the ARM7 audio transfer with the callback
@@ -593,7 +598,7 @@ void DisableVoiceStream(void) {
     M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_ACTIVE) = 0;
 }
 
-s32 func_ov010_02225d8c(void) {
+s32 IsVoiceStreamPaused(void) {
     extern M2C_UNK gStreamVoiceState;
     return M2C_FIELD(&gStreamVoiceState, s32 *, 0x10);
 }

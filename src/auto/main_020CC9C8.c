@@ -302,7 +302,7 @@ return 0;
 }
 
 void func_020cd544(s32);
-void func_020cd480(s32 a){
+void StartCampaignFromSlot(s32 a){
 extern u16 gMapConfig;extern s32 *data_027e0058;extern M2C_UNK data_0212b804;extern u32 gSaveSlotSummary[];u32 v;
 EnsureResource4Loaded();if(CampaignSaveSlotInUse(a)){func_020cd544(a);return;}
 ResetCampaignProgress();gSaveSlotSummary[0]=(gSaveSlotSummary[0]&~15)|(a&15);

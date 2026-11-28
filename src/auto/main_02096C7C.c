@@ -80,8 +80,8 @@ void SetObjExtPaletteBankG(void) {
 }
 
 void func_02096dbc(void) {
-    M2C_UNK func_020b17ec();
-    func_020b17ec();
+    M2C_UNK SetBattleMapObjExtPaletteBankG();
+    SetBattleMapObjExtPaletteBankG();
 }
 
 /* Enables the five layers of the 3D-sprite engine(s) whose display target matches
@@ -189,12 +189,18 @@ void SetMessagePanelLayout(s8 layout) {
     M2C_FIELD(Get3DSpriteManager(), s8 *, DS3D_MANAGER_PANEL_LAYOUT) = layout;
 }
 
-void func_02097150(M2C_UNK arg0, s16 arg1) {
+/* Store the tile attribute word `tileAttr` in scene panel `panelIndex`'s state
+ * record (ScenePanelState.tileAttr, +0x04). */
+void SetScenePanelTileAttr(s32 panelIndex, s16 tileAttr) {
     s32 *GetScenePanelState();
-    M2C_FIELD(GetScenePanelState(), s16 *, 4) = arg1;
+    M2C_FIELD(GetScenePanelState(panelIndex), s16 *, 4) = tileAttr;
 }
 
-void func_02097164(s32 a,s8 b) { s32 *GetScenePanelState(); M2C_FIELD(GetScenePanelState(),s8 *,6)=b; }
+/* Draw scene panel `panelIndex` with OBJ palette slot `palette`. */
+void SetScenePanelPaletteSlot(s32 panelIndex, s8 palette) {
+    s32 *GetScenePanelState();
+    M2C_FIELD(GetScenePanelState(panelIndex), s8 *, 6) = palette;
+}
 
 /* Store `mode` as scene panel `panelIndex`'s text layout mode and set the panel's
  * child-flip flag to match: mode 1 flips the panel's two face sprites, anything

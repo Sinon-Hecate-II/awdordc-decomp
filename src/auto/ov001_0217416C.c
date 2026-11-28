@@ -106,17 +106,26 @@ u8 Ov001_GetKeypadCode(void) {
     return M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CODE);
 }
 
-void Ov001_SetKeypadDeleteEnabled(s8 arg0) {
+/* Enable or disable the ov001 keypad's delete key: it is disabled while the
+ * entered code is empty. */
+void Ov001_SetKeypadDeleteEnabled(s8 enabled) {
     extern void *gOv001Keypad;
-    M2C_FIELD(gOv001Keypad, s8 *, 0x66) = arg0;
+    M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_CAN_DELETE) = enabled;
 }
 
-void Ov001_SetKeypadDigitsEnabled(s8 arg0) {
+/* Enable or disable the ov001 keypad's number keys: they are disabled while the
+ * entered code is full. */
+void Ov001_SetKeypadDigitsEnabled(s8 enabled) {
     extern void *gOv001Keypad;
-    M2C_FIELD(gOv001Keypad, s8 *, 0x67) = arg0;
+    M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_DIGITS_ON) = enabled;
 }
 
-void Ov001_SetKeypadNextEnabled(s8 arg0){extern void *gOv001Keypad;M2C_FIELD(gOv001Keypad,s8*,0x68)=arg0;}
+/* Enable or disable the ov001 keypad's next-slot key: it is disabled while the
+ * entered code is full. */
+void Ov001_SetKeypadNextEnabled(s8 enabled) {
+    extern void *gOv001Keypad;
+    M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_CAN_NEXT) = enabled;
+}
 
 /* Whether the ov001 on-screen keypad is up (its object has been created and not
  * yet freed). */

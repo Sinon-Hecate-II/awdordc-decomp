@@ -290,9 +290,10 @@ void *IsNetworkTaskFinished(void) {
 }
 #pragma opt_common_subs on
 
-void func_0201a4f8(s32 arg0) {
+/* Install the callback used by the network stack to reap closed sockets. */
+void NetStackSetClosedSocketReaper(s32 reaperCallback) {
     extern M2C_UNK gNetStack;
-    M2C_FIELD(&gNetStack, s32 *, 0x3C) = arg0;
+    M2C_FIELD(&gNetStack, s32 *, NETSTACK_CLOSED_SOCKET_REAPER) = reaperCallback;
 }
 
 /* Stops the network workers: waits for the network task to finish and joins its

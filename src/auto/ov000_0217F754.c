@@ -237,7 +237,9 @@ void RunAiRole4Or6Step1Or9Action(void) {
     RunAiAttackAction();
 }
 
-void func_ov000_021804c4(void) {
+/* Role-4/6 AI step-6 handler (case 6 of the RunAiRole4Or6Action callback): clear
+ * the influence maps and pick the acting unit's attack target. */
+void RunAiRole4Or6Step6TargetAction(void) {
     M2C_UNK SelectUnitAttackTarget();
     M2C_UNK ClearAiInfluenceMaps();
     ClearAiInfluenceMaps();

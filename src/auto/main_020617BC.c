@@ -334,13 +334,13 @@ s32 SBServerListCheckQueryError(void *list) {
 }
 
 s32 StringHashMod(void *arg0, s32 arg1) {
-    extern volatile u8 data_020eac40[128];
+    extern volatile u8 gAsciiLower[128];
     s64 U32DivideRem(s32, s32);
     s8 *p = (s8 *)arg0;
     s8 c;
     s32 h = 0;
     while ((c = *p) != 0) {
-        h = 0x9CCF9319 * h + (c >= 0 && c < 0x80 ? data_020eac40[c] : c);
+        h = 0x9CCF9319 * h + (c >= 0 && c < 0x80 ? gAsciiLower[c] : c);
         p++;
     }
     return (s32)((U32DivideRem(h, arg1)) >> 32);

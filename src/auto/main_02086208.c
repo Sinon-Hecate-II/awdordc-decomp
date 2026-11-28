@@ -317,11 +317,13 @@ s32 IsMessageTextIdValid(s32 textId) {
     return 1;
 }
 
-void SetUiMessageText(s32 arg0) {
+/* Set the text id of the message the UI is currently showing. */
+void SetUiMessageText(s32 textId) {
     extern s32 gUiMessageText;
-    gUiMessageText = arg0;
+    gUiMessageText = textId;
 }
 
+/* Text id of the message the UI is currently showing (as set by SetUiMessageText). */
 s32 GetUiMessageText(void) {
     extern s32 gUiMessageText;
     return gUiMessageText;

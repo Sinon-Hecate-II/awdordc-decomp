@@ -369,7 +369,7 @@ M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void**,8),s32*,88)=0;
 /* Advance the registered communication session by one step. */
 void func_0203aabc(void) {
 extern M2C_UNK gMatchSessionMgr;
-s32 HasNetError(void *); s32 MatchSession_Think(void); s32 func_0203bcf8(s32); s32 IsGpiInfoSocketOpen(void);
+s32 HasNetError(void *); s32 MatchSession_Think(void); s32 MatchSession_HasPendingInfo(s32); s32 IsGpiInfoSocketOpen(void);
 void gpiInfoReadSocket(void); void gpiInfoCloseSocket(void); void SyncSessionPlayerConnections(s32,s32); void MatchSession_Finish(void);
 void *ctx,*child; u32 status;
 ctx=M2C_FIELD(&gMatchSessionMgr,void **,8);
@@ -381,7 +381,7 @@ child=M2C_FIELD(ctx,void **,4);
 if(child && M2C_FIELD(child,s32 *,0))MatchSession_Think();
 return;
 }
-if(func_0203bcf8(M2C_FIELD(ctx,s32 *,0x18)) || IsGpiInfoSocketOpen()){
+if(MatchSession_HasPendingInfo(M2C_FIELD(ctx,s32 *,0x18)) || IsGpiInfoSocketOpen()){
 M2C_FIELD(&gMatchSessionMgr,s32 *,0)=1;
 M2C_FIELD(&gMatchSessionMgr,s32 *,12)=0;
 gpiInfoReadSocket();

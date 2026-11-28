@@ -181,14 +181,17 @@ PlaySoundAtTile(0x85,x,y);break;
 }
 }
 
-void SpawnRippleIn(M2C_UNK arg0) {
+/* Play the "ripple in" effect (mode 0) when a unit submerges; the unit id is
+ * passed on although the effect places itself on the cursor tile. */
+void SpawnRippleIn(M2C_UNK unitId) {
     void SpawnRippleEffect(M2C_UNK, M2C_UNK);
-    SpawnRippleEffect(arg0, 0);
+    SpawnRippleEffect(unitId, 0);
 }
 
-void SpawnRippleOut(M2C_UNK arg0) {
+/* Play the "ripple out" effect on the current map cursor's unit. */
+void SpawnRippleOut(M2C_UNK unitId) {
     void SpawnRippleEffect(M2C_UNK, M2C_UNK);
-    SpawnRippleEffect(arg0, 1);
+    SpawnRippleEffect(unitId, 1);
 }
 
 /* Set the rules message the battle map screen shows: campaign battles show
@@ -204,10 +207,13 @@ void SetBattleRulesMessage(void) {
     SetUiMessageText(TEXT_ID_BATTLE_RULES);
 }
 
-void func_020cbfe4(void) {
+/* Create the battle-end sprite (class gBattleEndSpriteClass) in layer 7: it
+ * takes a hold on the map view and runs the battle-end flow. */
+void CreateBattleEndSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212b5f4;
-    CreateSpriteFromClass(&data_0212b5f4, 7);
+    extern M2C_UNK gBattleEndSpriteClass;
+
+    CreateSpriteFromClass(&gBattleEndSpriteClass, 7);
 }
 
 /* Mark the battle's current player as having given up, then schedule the check

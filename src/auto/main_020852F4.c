@@ -814,12 +814,12 @@ void StopVoiceChatIfEnabled(VoiceChatWidget *widget) {
 
 #pragma optimization_level 3
 void func_02085ebc(void *arg0) {
- s32 IsWfcLinkActive(); s32 Ov002_QueryBattleScreenSwapped(); s32 func_ov010_02225d8c(); s32 VoiceActivity_IsSpeaking();
+ s32 IsWfcLinkActive(); s32 Ov002_QueryBattleScreenSwapped(); s32 IsVoiceStreamPaused(); s32 VoiceActivity_IsSpeaking();
  extern M2C_UNK gSpriteDesc16x16; extern u16 **g3DSpriteEngineMain; extern u16 **gCur3DSpriteEngine;
  s32 flag; u16 **saved; u16 v; u16 state=3;
  if(IsWfcLinkActive() && M2C_FIELD(arg0,s32 *,0x38) && M2C_FIELD(arg0,s32 *,0x3c)){
  if(IsSpriteReady(arg0)){
- if(func_ov010_02225d8c()){
+ if(IsVoiceStreamPaused()){
  v=VoiceActivity_IsSpeaking()?2:1; state=v;
  }else state=0;
  }}

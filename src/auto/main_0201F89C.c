@@ -450,9 +450,11 @@ s32 SocketReleaseRecvWindow(void *sock) {
     return SocketSubmitRecvTask(sock, task);
 }
 
-void SocketReleaseRecvWindowTask(void *arg0) {
+/* Task half of SocketReleaseRecvWindow: hand the bytes the socket's raw
+ * connection has queued to the connection's receive-data consumer. */
+void SocketReleaseRecvWindowTask(void *task) {
     M2C_UNK ConsumeSocketReceivedBytes(s32);
-    ConsumeSocketReceivedBytes(M2C_FIELD(arg0, s32 *, 4));
+    ConsumeSocketReceivedBytes(M2C_FIELD(task, s32 *, TASK_SOCKET));
 }
 
 #pragma dont_inline on

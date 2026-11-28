@@ -15,7 +15,7 @@ u64 Div_GetResult64(void);
 #pragma opt_common_subs reset
 
 #pragma opt_propagation off
-s32 func_02002030(s32 arg0) {
+s32 Div_StartReciprocal(s32 arg0) {
 M2C_FIELD((void *)0x04000280,s16 *,0)=1;
 M2C_FIELD((void *)0x04000280,s32 *,0x10)=0;
 M2C_FIELD((void *)0x04000280,s32 *,0x14)=0x1000;

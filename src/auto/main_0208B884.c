@@ -1,6 +1,7 @@
 /* 33 functions from 0x0208B884 to 0x0208C830 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "battle_map.h"
 
 
 typedef struct { u32 low:16, mode:3, a:1, b:1, c:1, d:2, e:2, high:6; } Flags0208;
@@ -255,14 +256,17 @@ s32 TakeSpriteAnimCommand(void *arg0) {
     return Sprite_TakeCommand(M2C_FIELD(arg0, s32 *, 0x4C));
 }
 
+/* Map tile column an effect sprite's map-view x position (+0x34, in pixels) falls on. */
 s32 GetObjectTileX(void *arg0) {
     M2C_UNK Divide(s32, M2C_UNK);
-    return Divide(M2C_FIELD(arg0, s32 *, 0x34), 0x300);
+    return Divide(M2C_FIELD(arg0, s32 *, 0x34), MAP_TILE_SUBPIXEL);
 }
 
-s32 GetObjectTileY(void *arg0) {
+/* Map tile row a map sprite sits on: its y position (map-position units) divided
+ * by one tile's size. */
+s32 GetObjectTileY(void *object) {
     M2C_UNK Divide(s32, M2C_UNK);
-    return Divide(M2C_FIELD(arg0, s32 *, 0x38), 0x300);
+    return Divide(M2C_FIELD(object, s32 *, 0x38), MAP_TILE_SIZE);
 }
 
 /* Create method of the animated sprite object: run the object's one-time init

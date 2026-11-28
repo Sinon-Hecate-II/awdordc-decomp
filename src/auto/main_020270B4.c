@@ -464,6 +464,7 @@ M2C_FIELD(p+0x2000,u32 *,0x264)=v|(old&~mask);
 OS_RestoreInterrupts(s);return old;
 }
 
+/* The current WFC session object (gWfcSession), or NULL when no session is open. */
 s32 GetSession(void) {
     extern s32 gWfcSession;
     return gWfcSession;

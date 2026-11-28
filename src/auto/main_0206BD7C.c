@@ -318,7 +318,7 @@ len--;
  * characters of `text` to the WideFormatBuffer, clamped to the space left after
  * the characters already written, and return the copy's result. */
 s32 StringFormatWideWrite(WideFormatBuffer *state, const u16 *text, s32 count) {
-    s32 func_0206adc0(s32, const u16 *, s32);
+    s32 CopyWideChars(s32, const u16 *, s32);
     s32 position;
     s32 writeCount;
     u32 size;
@@ -330,7 +330,7 @@ s32 StringFormatWideWrite(WideFormatBuffer *state, const u16 *text, s32 count) {
     if ((u32)(position + writeCount) > size) {
         writeCount = size - position;
     }
-    result = func_0206adc0((s32)(state->buffer + position), text, writeCount);
+    result = CopyWideChars((s32)(state->buffer + position), text, writeCount);
     state->count = state->count + writeCount;
     return result;
 }

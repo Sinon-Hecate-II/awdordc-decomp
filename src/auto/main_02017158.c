@@ -316,7 +316,7 @@ M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x528)=0;
 M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x52a)=0;
 M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x526)=0;
 M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x548)=0;
-func_02018254(10); p=&gMbState;
+Mb_SetStateParam(10); p=&gMbState;
 if(!M2C_FIELD(M2C_FIELD(p,void **,12),s32 *,0x1320)) {
 do { v=WFC_StartCommandChannel(M2C_FIELD(&gMbState,s32 *,4),M2C_FIELD(M2C_FIELD(&gMbState,void **,8),s32 *,0x508),M2C_FIELD(&gMbState,u16 *,0)); } while(v==4);
 if(v!=2)return 8;

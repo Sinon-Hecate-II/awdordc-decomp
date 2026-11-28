@@ -37,6 +37,11 @@ typedef struct LinkCompletionEvent {
  * handler down with the last one. */
 #define LINK_STATE_LISTENER_COUNT 0x00
 
+/* gLinkState +0x08: u16 per-player link event bits (bit n = the event the link
+ * task raised for player slot n, e.g. a player joining or leaving).  The game
+ * clears them once it has handled each one. */
+#define LINK_STATE_EVENT_FLAGS 0x08
+
 /* gLinkState +0x0C: the result code most recently signalled, and +0x2C the
  * handler that is told about it (result code, 0). */
 #define LINK_STATE_RESULT_CODE    0x0C /* s32 result code last signalled */
@@ -66,6 +71,12 @@ typedef struct LinkCompletionEvent {
 #define LINK_STATE_EXTRA_LEN    0x14 /* s32: bytes of gLinkTransferExtra */
 #define LINK_STATE_TRANSFER_LEN 0x34 /* s32: bytes of gLinkTransferData */
 
+/* gLinkState +0x30: nonzero while the link expects the peer's connection-data
+ * block; the connect task forwards a valid block it received to the callback at
+ * +0x4C only when this is set. */
+#define LINK_STATE_CONNECTION_DATA 0x30
+#define LINK_STATE_CONNECTION_DATA_CALLBACK 0x4C /* void (*)(void *): told about a valid peer data block */
+
 /* The download-play data block SubmitLinkDownloadData hands to WFC. */
 #define LINK_STATE_DOWNLOAD_DATA 0x100 /* void *: the payload block to send */
 #define LINK_STATE_DOWNLOAD_CODE 0x108 /* s32: send code (transfer id) handed to WFC */
@@ -88,6 +99,7 @@ typedef struct LinkCompletionEvent {
 #define LINK_WFC_KIND_HOST_READY 0x10 /* the Download Play host is serving: reset the retry count */
 
 /* Phases of the link state machine (gLinkState +0x10). */
+#define LINK_STATE_PHASE 0x10 /* s32: current LINK_PHASE_* value; SetLinkPhaseRaw writes it directly */
 enum {
     LINK_PHASE_IDLE    = 0,
     LINK_PHASE_READY   = 1, /* a setup command finished; the next step may start */

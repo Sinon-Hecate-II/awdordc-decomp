@@ -35,7 +35,7 @@ s32 Wfc_StepMatch(void) {
             state = Wfc_StepHttp(ctx);
             break;
         case 5:                                 /* switch 1 */
-            state = func_02031518(ctx);
+            state = Wfc_StepFinishMatchmaking(ctx);
             break;
         case 1:                                 /* switch 1 */
             state = Wfc_StepCloseNetwork();
@@ -44,7 +44,7 @@ s32 Wfc_StepMatch(void) {
     } else {
         switch (state) {                       /* switch 2; irregular */
         case 15:                               /* switch 2 */
-            state = func_02031518(ctx);
+            state = Wfc_StepFinishMatchmaking(ctx);
             break;
         case 11:                               /* switch 2 */
             state = Wfc_StepCloseNetwork();
@@ -151,10 +151,13 @@ s32 Wfc_StepHttp(void *state) {
     return 0xE;
 }
 
-s32 func_02031518(void *arg0) {
+/* Last step of the WFC matchmaking walk (state 0xF): record which save slot the
+ * resolved friend belongs to in the control block, then report the friend
+ * connection finished (WFC_SESSION_STATE_RESULT). */
+s32 Wfc_StepFinishMatchmaking(void *state) {
     M2C_UNK Wfc_SetFriendSlot(u8);
-    Wfc_SetFriendSlot(M2C_FIELD(arg0, u8 *, 0xD0D));
-    return 0x10;
+    Wfc_SetFriendSlot(M2C_FIELD(state, u8 *, WFC_STATE_RESULT_ID));
+    return WFC_SESSION_STATE_RESULT;
 }
 
 /* Session step 0xB (connection error): wait for the closing sockets to go, then
@@ -550,13 +553,14 @@ s32 GetNasRecordCheckWord(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 8);
 }
 
-u64 GetPlayerCodeValue(void *arg0) {
-    u32 hi;
-    u32 lo;
+/* Return a player record's 64-bit player code (PLAYER_RECORD_CODE). */
+u64 GetPlayerCodeValue(void *record) {
+    u32 codeHigh;
+    u32 codeLow;
 
-    hi = M2C_FIELD(arg0, u32 *, 8);
-    lo = M2C_FIELD(arg0, u32 *, 4);
-    return ((u64) hi << 32) | lo;
+    codeHigh = M2C_FIELD(record, u32 *, PLAYER_RECORD_CODE + 4);
+    codeLow = M2C_FIELD(record, u32 *, PLAYER_RECORD_CODE);
+    return ((u64) codeHigh << 32) | codeLow;
 }
 
 s32 GetProfileRecordId(void *arg0) {

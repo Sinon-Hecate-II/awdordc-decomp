@@ -229,7 +229,7 @@ void SelectMapListChoice(u32 choice) {
     MapList_ApplyRowLayout();
 }
 
-void func_ov001_0217f1f0(s32 event) {
+void MapList_ApplyInputEvent(s32 event) {
     void *GetCurrentMapRecord(void);
     M2C_UNK Ov001_PlaySound(s32);
     s32 Ov001_AddTask(s32, void (*)(s32), s32, s32);

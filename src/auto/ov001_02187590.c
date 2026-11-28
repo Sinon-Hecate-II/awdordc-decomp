@@ -136,9 +136,11 @@ void Ov001_SetLinkStatus(s16 status) {
     *gOv001LinkWork = status;
 }
 
+/* The ov001 Download Play link's status word (one of the link status values; see
+ * OV001_LINK_STATUS_* and Ov001_SetLinkStatus). */
 u16 Ov001_GetLinkStatus(void) {
     extern s16 *gOv001LinkWork;
-    return *(u16 *)gOv001LinkWork;
+    return M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_STATUS);
 }
 
 #pragma common_subs off
@@ -331,9 +333,9 @@ void Ov001_HandleUserInfoResult(void *event) {
 s32 Ov001_StartChildIndicate(void) {
 extern M2C_UNK gWhWork;
 extern M2C_UNK HandleChildIndicate;
-s32 func_02012474(void *);
+s32 WFC_WatchForChildConnections(void *);
 if((u32)(M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,WH_LINK_STATUS)-4)<=2) return 1;
-if(func_02012474(&HandleChildIndicate)!=2) {SetWhError();return 0;}
+if(WFC_WatchForChildConnections(&HandleChildIndicate)!=2) {SetWhError();return 0;}
 M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,0x50)=0;
 M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,WH_CHILD_CONNECTED)=1;
 return 1;
@@ -660,14 +662,18 @@ void Ov001_SetLinkGroupId(s32 groupId) {
     M2C_FIELD(M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION), s32 *, WH_CONN_GROUP_ID) = groupId;
 }
 
+/* Mask of the Wi-Fi link children connected so far (one bit per child, bit 0 is
+ * this console). */
 u16 Ov001_GetConnectedChildren(void) {
-extern M2C_UNK gWhWork;
-return M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x52);
+    extern M2C_UNK gWhWork;
+    return M2C_FIELD(M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION), u16 *, WH_CHILD_CONNECTED);
 }
 
-s32 Ov001_GetTaskStep(void) {
-extern M2C_UNK gWhWork;
-return M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x40);
+/* Current state of the ov001 WH link machine for the menus that wait on it: one
+ * of WH_STATUS_* (WH_STATUS_IDLE until the connection starts). */
+s32 Ov001_GetWhStatus(void) {
+    extern M2C_UNK gWhWork;
+    return M2C_FIELD(M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION), s32 *, WH_LINK_STATUS);
 }
 
 s32 WhStartChildScan(void) {

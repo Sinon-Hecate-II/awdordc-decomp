@@ -137,8 +137,10 @@ s16 GetWaypointSlotOffsetX(s32 index) {
     return (s16)offset;
 }
 
-s32 GetShogunBgFileName(s32 arg0) {
-    return sShogunBgFileNames[arg0 - 1];
+/* The select-screen background file for a battle of `playerCount` players
+ * (1..4). */
+s32 GetShogunBgFileName(s32 playerCount) {
+    return sShogunBgFileNames[playerCount - 1];
 }
 
 /* BGR555 colour of the flag drawn on the select-screen background for player id

@@ -36,7 +36,7 @@ int GetUnitSpriteHeight(void *);
 void SpriteCellListSetCellRect(void *,int,int,int,int,int);
 void AddSprite32x16(int,int,int,int);
 void *GetBattleSlotRecord(int);
-int func_020c5464(int);
+int GetBattleSlotType(int);
 void ClearTileRect(void *,int,int);
 void LoadRankIconGraphics(int,int,int);
 void DrawTextLine(int,int,int,void *,int,int);
@@ -167,7 +167,7 @@ ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,u8 **,36)+0x550,4,2);
 ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,u8 **,36)+0x55a,4,2);
 ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,u8 **,36)+0x564,4,2);
 ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,u8 **,36)+0x572,4,2);
-if(item && func_020c5464(M2C_FIELD(M2C_FIELD(p,void **,0x4c),s16 *,8))==3) {
+if(item && GetBattleSlotType(M2C_FIELD(M2C_FIELD(p,void **,0x4c),s16 *,8))==3) {
 if(M2C_FIELD(item,s8 *,32)!=-1) {
 i=(u16)((((*(u32 *)0x027ffc3c)&1)<<3)+0x21c);
 LoadRankIconGraphics(M2C_FIELD(item,s8 *,32),i<<5,8);

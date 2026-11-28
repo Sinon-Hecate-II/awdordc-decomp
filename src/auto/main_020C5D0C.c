@@ -61,16 +61,16 @@ u8 CanContinueBattle(void) {
     return available;
 }
 
-void func_020c5da4(void) {
-    M2C_UNK RunMapMenuEvent();
-    M2C_UNK DeleteMapMenuSprites();
+/* Map-menu command "Run Map Event": close the map menu, then run the map's
+ * MAP_EVENT_MAP_MENU script (RunMapMenuEvent). */
+void RunMapMenuEventCommand(void) {
     DeleteMapMenuSprites();
     RunMapMenuEvent();
 }
 
-void func_020c5db4(void) {
-    M2C_UNK CreateWinRuleWindow();
-    M2C_UNK DeleteMapMenuSprites();
+/* Map-menu command "Win Rule": close the map menu, then open the map's win-rule
+ * window (CreateWinRuleWindow). */
+void ShowMapWinRuleCommand(void) {
     DeleteMapMenuSprites();
     CreateWinRuleWindow();
 }
@@ -584,30 +584,31 @@ void OpenSituationScreenCommand(void) {
     CreateSituationScreenSprite();
 }
 
-void func_020c69b8(void) {
-    M2C_UNK OpenMapInfoScreen();
-    M2C_UNK DeleteMapMenuSprites();
+/* Map-menu command "Map Info": close the map menu, then open the map info
+ * screen (OpenMapInfoScreen). */
+void OpenMapInfoCommand(void) {
     DeleteMapMenuSprites();
     OpenMapInfoScreen();
 }
 
-void func_020c69c8(void) {
+/* Map-menu command "Player Name": close the map menu, then open the
+ * player-name entry screen (OpenUsernameScreen). */
+void OpenUsernameScreenCommand(void) {
     M2C_UNK OpenUsernameScreen();
     M2C_UNK DeleteMapMenuSprites();
     DeleteMapMenuSprites();
     OpenUsernameScreen();
 }
 
-void func_020c69d8(void) {
-    M2C_UNK func_020cbfe4();
-    M2C_UNK DeleteMapMenuSprites();
+/* Close the map menu before starting the battle-end flow sprite. */
+void CloseMapMenuAndCreateBattleEndSprite(void) {
     DeleteMapMenuSprites();
-    func_020cbfe4();
+    CreateBattleEndSprite();
 }
 
-void func_020c69e8(void) {
-    M2C_UNK CreateGiveUpScript();
-    M2C_UNK DeleteMapMenuSprites();
+/* Map-menu command "Give Up": close the map menu, then open the give-up
+ * confirmation script (CreateGiveUpScript). */
+void ConfirmGiveUpCommand(void) {
     DeleteMapMenuSprites();
     CreateGiveUpScript();
 }
@@ -648,16 +649,17 @@ void OpenOptionsCommand(void) {
     CreateSpriteFromClass(&gOptionsScreenClass, 7);
 }
 
-void func_020c6a54(void) {
+/* Map-menu command "Save": close the map menu, then open the battle save screen
+ * (OpenSaveBattleScreen). */
+void OpenSaveBattleScreenCommand(void) {
     M2C_UNK OpenSaveBattleScreen();
     M2C_UNK DeleteMapMenuSprites();
     DeleteMapMenuSprites();
     OpenSaveBattleScreen();
 }
 
-void func_020c6a64(void) {
-    M2C_UNK OpenContinueBattleScreen();
-    M2C_UNK DeleteMapMenuSprites();
+/* Close the map menu before opening the saved-battle continue screen. */
+void OpenContinueBattleScreenCommand(void) {
     DeleteMapMenuSprites();
     OpenContinueBattleScreen();
 }
@@ -702,7 +704,9 @@ void ConfirmProduceUnitCommand(void) {
     SetBattleCommand(AI_COMMAND_PRODUCE_UNIT, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
 }
 
-void func_020c6b68(void) {
+/* Map-menu command: close the map menu, then re-open the cursor's action menu
+ * (OpenMapCursorMenu). */
+void OpenMapCursorMenuCommand(void) {
     M2C_UNK OpenMapCursorMenu();
     M2C_UNK DeleteMapMenuSprites();
     DeleteMapMenuSprites();

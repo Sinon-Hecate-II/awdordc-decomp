@@ -140,7 +140,7 @@ extern u8 data_ov005_02220f1c[],data_ov005_02220e5c[],data_ov005_02220eec[],gRes
 void SpriteCellListUpdateTouch(void *);
 void SpriteCellListSelectTile(void *,s16);
 void CopyToObjPaletteShadow(s32,s32,s32);
-s32 func_020a72e8(u8);
+s32 Main_GetArmyPalette(u8);
 s32 GetTerrainPalette(s32,u8);
 s32 GetCurrentMapPlayerCount(void);
 void *GetLocalizedFileName(void *);
@@ -174,7 +174,7 @@ void func_ov005_0221d160(void *arg0){
                 s32 offset = (M2C_FIELD(arg0, s32 *, 0x50) + 1) * 140;
                 void *saved = gCur3DSpriteEngine;
                 gCur3DSpriteEngine = g3DSpriteEngineMain;
-                CopyToObjPaletteShadow(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
+                CopyToObjPaletteShadow(Main_GetArmyPalette(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = g3DSpriteEngineSub;
                 CopyToObjPaletteShadow(GetTerrainPalette(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = saved;
@@ -199,7 +199,7 @@ void func_ov005_0221d160(void *arg0){
                 s32 offset = (M2C_FIELD(arg0, s32 *, 0x50) + 1) * 140;
                 void *saved = gCur3DSpriteEngine;
                 gCur3DSpriteEngine = g3DSpriteEngineMain;
-                CopyToObjPaletteShadow(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
+                CopyToObjPaletteShadow(Main_GetArmyPalette(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = g3DSpriteEngineSub;
                 CopyToObjPaletteShadow(GetTerrainPalette(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = saved;
@@ -218,7 +218,7 @@ void func_ov005_0221d160(void *arg0){
                 s32 offset = (M2C_FIELD(arg0, s32 *, 0x50) + 1) * 140;
                 void *saved = gCur3DSpriteEngine;
                 gCur3DSpriteEngine = g3DSpriteEngineMain;
-                CopyToObjPaletteShadow(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
+                CopyToObjPaletteShadow(Main_GetArmyPalette(M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = g3DSpriteEngineSub;
                 CopyToObjPaletteShadow(GetTerrainPalette(16, M2C_FIELD((u8 *)*gCurrentMap + offset, u8 *, 0x67c1)), 960, 32);
                 gCur3DSpriteEngine = saved;

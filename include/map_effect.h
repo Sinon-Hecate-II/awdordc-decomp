@@ -114,6 +114,13 @@ typedef struct UnitRemoveEffect {
 #define RANGE_EFFECT_TILE_Y 0x5C /* s32 map tile y */
 #define RANGE_EFFECT_DAMAGE 0x60 /* s32 damage dealt to the unit on the tile */
 
+/* The map-clear result banner (SpawnMapClearEffect, main_020B8078.c): the effect
+ * sprite's fade task ramps its frame counter at +0x54 from 0 to the duration at
+ * +0x52.  UpdateMapClearFadeIn fades in from the clear colour, UpdateMapClearFade
+ * fades back out. */
+#define MAP_CLEAR_FADE_DURATION 0x52 /* s16 frames the fade runs for */
+#define MAP_CLEAR_FADE_COUNTER  0x54 /* s16 frames elapsed */
+
 /* A fuel-crash effect: the sprite a unit that ran out of fuel plays while the
  * map view pans to its tile; once the pan is done the unit explodes.  Its only
  * own field is the starving unit record (a BattleMapUnit). */

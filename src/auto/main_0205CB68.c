@@ -70,9 +70,11 @@ if(address!=otherAddress)return address-otherAddress;
 return (s16)(M2C_FIELD(key,u16 *,GT2_CONNECTION_PORT)-M2C_FIELD(other,u16 *,GT2_CONNECTION_PORT));
 }
 
-void func_0205cc90(s32 *arg0) {
+/* Element destructor of a GT2 socket's connection vector: free the connection
+ * pointer the element holds. */
+void gti2FreeConnectionElement(s32 *element) {
     M2C_UNK gti2FreeConnection(s32);
-    gti2FreeConnection(*arg0);
+    gti2FreeConnection(*element);
 }
 
 /* Find this socket's connection to a remote address and port, or 0 when it has
@@ -125,7 +127,7 @@ M2C_FIELD(p,s32 *,0x38)=c;
 M2C_FIELD(p,s32 *,0x24)=e;
 M2C_FIELD(p,s32 *,0xc)=TableNew2(4,0x20,2,HashConnectionLookup,CompareConnectionLookups,0);
 if(!M2C_FIELD(p,s32 *,0xc)){gpiFree(p);return 1;}
-M2C_FIELD(p,s32 *,0x10)=Vector_New(4,4,(void (*)(void *))func_0205cc90);
+M2C_FIELD(p,s32 *,0x10)=Vector_New(4,4,(void (*)(void *))gti2FreeConnectionElement);
 if(!M2C_FIELD(p,s32 *,0x10)){TableFree(M2C_FIELD(p,s32 *,0xc));gpiFree(p);return 1;}
 M2C_FIELD(p,s32 *,0)=ghiSocket(2,2,0);
 if(M2C_FIELD(p,s32 *,0)==-1){TableFree(M2C_FIELD(p,s32 *,0xc));Vector_Free(M2C_FIELD(p,s32 *,0x10));gpiFree(p);return 3;}
@@ -157,9 +159,10 @@ void gti2SocketSetConnectAttempt(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x20) = arg1;
 }
 
-void *func_0205cf44(void) {
+/* Allocates a GT2 connection object (gti2CreateConnection zeroes and fills it). */
+void *gti2AllocateConnection(void) {
     M2C_UNK gpiMalloc(M2C_UNK);
-    return (void *)gpiMalloc(0xA0);
+    return (void *)gpiMalloc(GT2_CONNECTION_SIZE);
 }
 
 /* Create a GT2 connection for remote address/port on the given owner (socket
@@ -169,7 +172,7 @@ void *func_0205cf44(void) {
  * success, 5 if the connection already exists and 1 on allocation failure. */
 s32 gti2CreateConnection(void *owner, s32 connOut, s32 address, s16 port) {
     s32 gti2FindConnection(void *, s32, s32);
-    void *func_0205cf44(void);
+    void *gti2AllocateConnection(void);
     void MemSet(void *, s32, s32);
     s32 GetSystemTickMilliseconds(void);
     s32 gti2AllocateBuffer(void *, s32);
@@ -186,7 +189,7 @@ s32 gti2CreateConnection(void *owner, s32 connOut, s32 address, s16 port) {
         return 5;
     }
 
-    conn = func_0205cf44();
+    conn = gti2AllocateConnection();
     if (conn == 0) {
         goto fail;
     }

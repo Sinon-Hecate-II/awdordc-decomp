@@ -10,7 +10,7 @@ typedef struct { u32 w[2]; } ClearBlk2;
 extern u32 gOv001LinkMatchSetup[];
 void func_ov001_0216f78c(void);
 s32 func_ov001_0216e34c(s32);
-s32 func_02005ab0(void);
+s32 OS_IsThreadAvailable(void);
 void TaskCreate(void *,void (*)(void),s32,s32,s32,s32);
 void TaskWake(void *);
 void func_ov001_021713a8(void);
@@ -46,11 +46,27 @@ void Ov001_LoadWordsLittleEndian(u32 *words, u8 *data, u32 bytes) {
 }
 
 #pragma thumb on
-void Ov001_CopyBytes(u8 *a,u8 *b,u32 n){u32 i;for(i=0;i<n;i++)a[i]=b[i];}
+/* Copy `count` bytes from `src` to `dest` (the byte copy the room protocol's
+ * packet builder uses). */
+void Ov001_CopyBytes(u8 *dest, u8 *src, u32 count) {
+    u32 i;
+
+    for (i = 0; i < count; i++) {
+        dest[i] = src[i];
+    }
+}
 #pragma thumb off
 
 #pragma thumb on
-void Ov001_MemSet(s8 *a,s32 b,u32 n){u32 i;for(i=0;i<n;i++)*a++=(s8)b;}
+/* Fill `count` bytes at `dest` with the byte `value` (the room protocol's own
+ * byte memset). */
+void Ov001_MemSet(s8 *dest, s32 value, u32 count) {
+    u32 i;
+
+    for (i = 0; i < count; i++) {
+        *dest++ = (s8)value;
+    }
+}
 
 /* Compute the MD5 digest of `length` bytes at `data` into the 16-byte `digest`. */
 void Ov001_MD5Digest(u8 *digest, s32 data, u32 length) {
@@ -106,7 +122,7 @@ s32 r;u32 i;u32 *p;
 if(gWhState[14]>=1 && gWhState[14]<=5)return -10;
 gWhPacketInfo[4]=b;gWhState[14]=7;gWhState[31]=c;((s32 (**)(s32))gWhState)[1]=d;gWhState[3]=e;gWhPacketInfo[2]=f;
 r=func_ov001_0216e34c(b);gWhState[29]=1;if(r<0){gWhState[30]=r;return r;}
-r=((s32 (**)(s32))gWhState)[1](gWhPacketInfo[2]);gWhState[12]=r;if(!r){gWhState[30]=-1;return -1;}if(func_02005ab0()!=1){gWhState[30]=-9;return -9;}
+r=((s32 (**)(s32))gWhState)[1](gWhPacketInfo[2]);gWhState[12]=r;if(!r){gWhState[30]=-1;return -1;}if(OS_IsThreadAvailable()!=1){gWhState[30]=-9;return -9;}
 TaskCreate(data_ov001_0219283c,func_ov001_0216f78c,0,gWhState[12]+(gWhPacketInfo[2]&~7),gWhPacketInfo[2],a);gWhState[14]=1;gWhPacketInfo[3]=((s32 (*)(void))WhGetTime)()+60000;gWhState[4]=0;
 p=gOv001LinkMatchSetup;i=58;do{*p++=0;}while(--i);
 func_ov001_021713a8();TaskWake(data_ov001_0219283c);gWhState[25]=1;return 1;
@@ -232,7 +248,12 @@ void Ov001_LatchIconRowSelection(s8 bar) {
     }
 }
 
-void Ov001_SetIconRowSelection(s8 a){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRow,s8 *,0x16)=a;}
+/* Select bar `selected` of the shared ov001 icon row (-1 none, -2 not ready),
+ * replacing any selection already latched there. */
+void Ov001_SetIconRowSelection(s8 selected) {
+    extern void *gOv001IconRow;
+    ((Ov001IconRow *)gOv001IconRow)->selected = selected;
+}
 
 /* Is the shared icon row idle?  True while no row exists yet, or until the row
  * has slid in and become active (it takes no input before then). */

@@ -1,6 +1,9 @@
 /* 31 functions from 0x02223114 to 0x02224080 (ov010), found by ds-decomp. */
 #include "common.h"
 
+/* The pending-send queue: +0x00 head (oldest packet), +0x04 tail. */
+extern s32 gLinkPendingList;
+
 s32 VoiceChat_DecodePendingPackets(void) {
     s32 Link_GetPendingHead(void);
     s32 Link_GetPendingCount(s32);
@@ -142,8 +145,9 @@ s32 Link_AppendPendingPacket(void *packet) {
     return gLinkPendingCounts[M2C_FIELD(packet, u8 *, LINK_PACKET_CHANNEL)];
 }
 
+/* Head of the pending-send queue: the oldest packet not yet sent, or NULL when
+ * nothing is waiting (the queue's tail is at +0x04). */
 s32 Link_GetPendingHead(void) {
-    extern s32 gLinkPendingList;
     return gLinkPendingList;
 }
 

@@ -224,9 +224,11 @@ s32 NetStackRandom(void) {
     return (s32)(next >> 32);
 }
 
-void SetCurrentRawConnection(s32 arg0) {
+/* Point the scheduler's running socket object at `connection`, the raw socket the
+ * network stack sends and receives on. */
+void SetCurrentRawConnection(s32 connection) {
     extern M2C_UNK gSocketManager;
-    M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0xA4) = arg0;
+    M2C_FIELD(M2C_FIELD(&gSocketManager, void **, SOCKMGR_RUNNING_THREAD), s32 *, SOCK_OBJECT_RAW) = connection;
 }
 
 /* Clear the raw connection the scheduler's running socket object works on, so

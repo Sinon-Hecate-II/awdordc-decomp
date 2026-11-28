@@ -105,7 +105,7 @@ void *Ov001_GetProfileMessage(void) {
 void func_ov001_0217612c(void *arg0) {
 void Ov001_UpdateProfileSetup(void); s32 Ov001_PollProfileState(void*,void*); extern void *gOv001ProfileBlock;
 M2C_UNK Ov001_PostTaskMessage(M2C_UNK,M2C_UNK); M2C_UNK Ov001_FreeAlloc(M2C_UNK*);
-void *func_ov001_02189308(void); void CopyU16(const void*,void*,u32);
+void *Ov001_GetParentPlayerInfo(void); void CopyU16(const void*,void*,u32);
 u8 sp1,sp0; u8 *main; void (*fp)(s32);
 Ov001_UpdateProfileSetup();
 if(M2C_FIELD(gOv001ProfileBlock,u8*,0x1e2a0)!=0 && M2C_FIELD(gOv001ProfileBlock,u8*,0x1e2a1)==0){
@@ -145,7 +145,7 @@ high29:if(v==34)goto tail;return;
 block5:
 
 if(sp0==0)return;
-main=(u8*)gOv001ProfileBlock+0x2280;CopyU16(func_ov001_02189308(),main+0x1c000,0x16);
+main=(u8*)gOv001ProfileBlock+0x2280;CopyU16(Ov001_GetParentPlayerInfo(),main+0x1c000,0x16);
 fp=(void(*)(s32))M2C_FIELD(gOv001ProfileBlock,void**,0x1e298);
 if(fp==0){M2C_FIELD(gOv001ProfileBlock,u8*,0x1e2a0)=1;return;}fp(0);return;
 block13:
@@ -516,12 +516,15 @@ void Ov001_WaitWifiMenuIconRow(void) {
     Ov001_SetStepCallback(&Ov001_UpdateWifiMenu);
 }
 
+/* Per-frame step of the ov001 Wi-Fi menu: read the menu's input, run its
+ * (empty) idle hook, then act on the latched icon-row choice. */
 void Ov001_UpdateWifiMenu(void) {
     void Ov001_HandleChoiceInput(void);
-    void func_ov001_02176c18(void);
+    void Ov001_WifiMenuNoop(void);
     void Ov001_HandleWifiMenuChoice(void);
+
     Ov001_HandleChoiceInput();
-    func_ov001_02176c18();
+    Ov001_WifiMenuNoop();
     Ov001_HandleWifiMenuChoice();
 }
 
@@ -562,7 +565,7 @@ if(!KeyHeld(KEY_RIGHT))return;
 Ov001_MoveChoiceSelection(2);
 }
 #pragma opt_strength_reduction reset
-void func_ov001_02176c18(void) {
+void Ov001_WifiMenuNoop(void) {
 
 }
 

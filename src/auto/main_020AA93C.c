@@ -462,12 +462,14 @@ void *CreateUnitSprite(s32 layer) {
     return sprite;
 }
 
+/* Delete every unit sprite: remove the sprite engine's objects of the unit
+ * sprite class.  The original reaches the deleter through a register. */
 void DeleteUnitSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gUnitSpriteClass;
-    M2C_UNK (*fp)(M2C_UNK *) = (M2C_UNK (*)(M2C_UNK *))DeleteSpriteObjectsOfClass;
-    M2C_UNK *p = &gUnitSpriteClass;
-    fp(p);
+    M2C_UNK (*deleteClass)(M2C_UNK *) = (M2C_UNK (*)(M2C_UNK *))DeleteSpriteObjectsOfClass;
+    M2C_UNK *spriteClass = &gUnitSpriteClass;
+    deleteClass(spriteClass);
 }
 
 /* Whether this unit sprite shows its pressed frame: its touch-hit cell is cell 1,

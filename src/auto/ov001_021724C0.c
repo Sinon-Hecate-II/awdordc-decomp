@@ -131,9 +131,11 @@ void Ov001_SetKeyboardCanDelete(s8 enabled) {
     ((Ov001KeyboardState *)gOv001MenuState)->canDelete = enabled;
 }
 
-void Ov001_SetKeyboardCanAdd(s8 arg0) {
- extern void *gOv001MenuState;
- M2C_FIELD(gOv001MenuState, s8 *, 0x124) = arg0;
+/* Enable or disable the ov001 on-screen keyboard's character keys: they are
+ * disabled while the entered text is full. */
+void Ov001_SetKeyboardCanAdd(s8 enabled) {
+    extern void *gOv001MenuState;
+    ((Ov001KeyboardState *)gOv001MenuState)->canAdd = enabled;
 }
 
 /* True while the ov001 on-screen keyboard is up (gOv001MenuState holds its state). */

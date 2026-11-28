@@ -687,12 +687,14 @@ void DeleteAllSpriteWrappers(void) {
     DeleteSpriteObjectsOfClass(&gChildSprite3DClass);
 }
 
-u16 Sprite_TakeCommand(void *arg0) {
-    u16 temp_r2;
+/* Pop the sprite's pending animation-script command: return the command word
+ * and clear it so it is handled only once. */
+u16 Sprite_TakeCommand(void *sprite) {
+    u16 command;
 
-    temp_r2 = M2C_FIELD(arg0, u16 *, 0x24);
-    M2C_FIELD(arg0, u16 *, 0x24) = 0U;
-    return temp_r2;
+    command = M2C_FIELD(sprite, u16 *, SPRITE_COMMAND);
+    M2C_FIELD(sprite, u16 *, SPRITE_COMMAND) = 0U;
+    return command;
 }
 
 #pragma push

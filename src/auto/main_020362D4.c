@@ -196,7 +196,7 @@ fail:return 0;
  * profile, then uploads the region, type and tab-separated player-name
  * parameters. Returns 1 on success, 0 on failure. */
 M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOut,s32 countOut,s8 *region) {
- s32 StringLengthWide();void StringCopyWide();void MI_CpuFill8();M2C_UNK HeapAlloc();M2C_UNK HeapFree();void StringCopyPad();void *StringFind();void MI_CpuCopy8();s32 HttpClientInit();s32 BuildLocalFriendProfile();s32 func_02033988();s32 func_020346d0();s32 HttpBufferAppendString();s32 HttpAppendConnectionHeaders();s32 GetThreadPriority();void HttpClientStartTask();M2C_UNK HttpClientCleanup(void *);void func_020371f4();void func_02037204();
+ s32 StringLengthWide();void StringCopyWide();void MI_CpuFill8();M2C_UNK HeapAlloc();M2C_UNK HeapFree();void StringCopyPad();void *StringFind();void MI_CpuCopy8();s32 HttpClientInit();s32 BuildLocalFriendProfile();s32 func_02033988();s32 func_020346d0();s32 HttpBufferAppendString();s32 HttpAppendConnectionHeaders();s32 GetThreadPriority();void HttpClientStartTask();M2C_UNK HttpClientCleanup(void *);void WfcHttpAlloc();void WfcHttpFree();
  s32 options[7];u8 work[0x94];s32 totalLen,i,pos,n;u16 *namesBuf=0;void *p;
  if(!names||count<=0||count>50||!flagsOut||!countOut)return 0;
  totalLen=0;for(i=0;i<count;i++)totalLen+=StringLengthWide(((s32 *)names)[i])+1;
@@ -217,7 +217,7 @@ M2C_UNK CreateWfcMatch(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOu
  if(!p)goto fail;
  MI_CpuCopy8(sWfcProfilePath,p,4);
  p=gWfcMatchSession+0x1c18;
- options[0]=(s32)p;options[1]=0;options[2]=0x400;options[3]=(s32)func_020371f4;options[4]=(s32)func_02037204;options[5]=0;if(timeout<=0)options[6]=10000;else options[6]=timeout;
+ options[0]=(s32)p;options[1]=0;options[2]=0x400;options[3]=(s32)WfcHttpAlloc;options[4]=(s32)WfcHttpFree;options[5]=0;if(timeout<=0)options[6]=10000;else options[6]=timeout;
  if(HttpClientInit(gWfcMatchSession,options)!=0)goto fail;
  M2C_FIELD(gWfcMatchSession,s32 *,0x1c14)=1;
  if(!BuildLocalFriendProfile(work))goto fail;
@@ -346,13 +346,17 @@ else {M2C_FIELD(gWfcMatchSession,u8 **,WFC_MATCH_FLAGS)[i]=1; ++*M2C_FIELD(gWfcM
 SetNetError(18,-33020);return 0;
 }
 
-void func_020371f4(void) {
-    M2C_UNK HeapAlloc(M2C_UNK);
-    HeapAlloc(0);
+/* HTTP client allocator callback: ignore the block name and allocate `size`
+ * bytes from heap 0; the new block is left in r0 as the return value. */
+void WfcHttpAlloc(const char *name, u32 size) {
+    M2C_UNK HeapAlloc();
+    HeapAlloc(0, size);
 }
 
-void func_02037204(void) {
-    M2C_UNK HeapFree(M2C_UNK);
-    HeapFree(0);
+/* HTTP client deallocator callback: ignore the block name and return `block`
+ * to heap 0. */
+void WfcHttpFree(const char *name, void *block) {
+    M2C_UNK HeapFree();
+    HeapFree(0, block);
 }
 

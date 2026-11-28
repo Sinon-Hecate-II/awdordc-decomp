@@ -30,7 +30,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     s32 GetOtherScreenMode(M2C_UNK);
     s32 GetOther3DSpriteScreenMode(M2C_UNK);
     M2C_UNK Set3DSpriteTargetMode(s32);
-    M2C_UNK func_02094410(s32);
+    M2C_UNK SetFacePaletteStyle(s32);
     M2C_UNK ShowScenePanelUnlessMessageBox();
     M2C_UNK CloseScenePanel();
     M2C_UNK SetScenePanelFaceUnlessMessageBox(s32, s32, s32);
@@ -473,7 +473,7 @@ loop_1:
         Text_SkipLineEnds(arg0);
         return 3;
     case 23:
-        func_02094410(M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
+        SetFacePaletteStyle(M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
         Text_AdvanceScript(arg0);
         Text_SkipLineEnds(arg0);
         goto return_two;

@@ -374,9 +374,12 @@ s32 GetUnixTime(void) {
     return MakeTime(&date, &time) + RTC_EPOCH_OFFSET;
 }
 
-void func_020220a8(s32 arg0) {
+/* Set the run priority the RSA/TLS work raises the running thread to: the
+ * gTlsCipherSuites block's TLS_BOOST_PRIORITY word, right after the cipher-suites
+ * array. */
+void SetTlsBoostPriority(s32 priority) {
     extern M2C_UNK gTlsCipherSuites;
-    M2C_FIELD(&gTlsCipherSuites, s32 *, 4) = arg0;
+    M2C_FIELD(&gTlsCipherSuites, s32 *, TLS_BOOST_PRIORITY) = priority;
 }
 
 /* Raise the running thread's run priority to the configured TLS boost priority

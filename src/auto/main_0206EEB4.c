@@ -5,7 +5,7 @@
 extern u8 data_02100894[],data_02100888[],data_02100874[],data_021008b8[];
 typedef union {double d;u64 u;} DoubleBits;
 typedef struct Decimal38 { s8 sign;u8 pad;s16 exponent;u8 length;u8 digits[33]; } Decimal38;
-extern u8 data_020eac40[128];
+extern u8 gAsciiLower[128];
 extern u32 data_02100734[6];
 extern u32 data_0210074c[4];
 
@@ -124,7 +124,9 @@ s32 CountBits64(unsigned long long value) {
  return (u32)value&255;
 }
 
-u32 DoubleSignBit(double x, ...) { return ((u32 *)&x)[1] & 0x80000000; }
+/* The sign bit (DOUBLE_SIGN_HI) of the double `x`'s high word: nonzero for a
+ * negative value, 0 otherwise. */
+u32 DoubleSignBit(double x, ...) { return ((u32 *)&x)[1] & DOUBLE_SIGN_HI; }
 
 /* Classify the double `x` for the software-float layer: a DOUBLE_CLASS_* value
  * from its exponent and mantissa fields. */
@@ -152,8 +154,8 @@ double Ldexp(double x, s32 n) {
 s32 func_0206f844(u8 *a,u8 *b) {
  u32 c,d;
  do {
- c=*a++; c=(u8)((s32)c<0?c:((s32)c<128?data_020eac40[c]:c));
- d=*b++; d=(u8)((s32)d<0?d:((s32)d<128?data_020eac40[d]:d));
+ c=*a++; c=(u8)((s32)c<0?c:((s32)c<128?gAsciiLower[c]:c));
+ d=*b++; d=(u8)((s32)d<0?d:((s32)d<128?gAsciiLower[d]:d));
  if(c<d)return -1;
  if(c>d)return 1;
  }while(c);
@@ -213,9 +215,12 @@ s32 DynamicCastDefaultDeleteCharArray(s32 object, TypeInfo *typeInfo) {
     return 0;
 }
 
-void func_0206f984(void *arg0) {
+/* Virtual release method of the scoped char-array owner (the
+ * default_delete<char[]> object whose vtable is data_0210074c): free the char
+ * array it holds at +0xC, leaving the owner itself to DeleteScopedCharArrayDeleter. */
+void FreeScopedCharArrayBuffer(void *owner) {
     M2C_UNK MemFreeArray(s32);
-    MemFreeArray(M2C_FIELD(arg0, s32 *, 0xC));
+    MemFreeArray(M2C_FIELD(owner, s32 *, 0xC));
 }
 
 void *func_0206f994(void *self) {

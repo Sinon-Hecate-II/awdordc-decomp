@@ -590,19 +590,25 @@ void Ov001_FreeSaveData(void) {
     Ov001_FreeAlloc(&gSaveData);
 }
 
+/* The working copy of the current ov001 save slot (the slot being edited in
+ * gSaveData, at SAVE_WORK_SLOT). */
 s32 GetCurrentMapRecord(void) {
     extern s32 gSaveData;
-    return gSaveData + 0x400;
+    return gSaveData + SAVE_WORK_SLOT;
 }
 
-void Ov001_SetSaveExtraEmptyA(s8 arg0) {
+/* Record whether the first pair of players' dotted codes is absent from the
+ * working save slot. */
+void Ov001_SetSaveExtraEmptyA(s8 empty) {
     extern s32 gSaveData;
-    M2C_FIELD((void *)gSaveData, s8 *, 0x4f5) = arg0;
+    M2C_FIELD((void *)gSaveData, s8 *, SAVE_EXTRA_EMPTY_A) = empty;
 }
 
-void Ov001_SetSaveExtraEmptyB(s8 arg0) {
+/* Set whether the current map's second optional player code is absent
+ * (SAVE_EXTRA_EMPTY_B) in the working save slot. */
+void Ov001_SetSaveExtraEmptyB(s8 empty) {
     extern s32 gSaveData;
-    M2C_FIELD((void *)gSaveData, s8 *, 0x4f6) = arg0;
+    M2C_FIELD((void *)gSaveData, s8 *, SAVE_EXTRA_EMPTY_B) = empty;
 }
 
 /* Store a 32-byte map name in the working save slot and mark the slot unwritten. */

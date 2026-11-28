@@ -144,7 +144,7 @@ void func_ov006_0221661c(void *spriteList) {
     extern u8 data_ov006_02218778[], data_ov006_022187a0[], data_ov006_022187c8[];
     void *AddSpriteSlot(u8, u8, void *, s32);
     void SelectSpriteSlot(s32);
-    void func_020b2158(s32);
+    void SetSpriteSlotFocusFlag(s32);
     void AddSpriteCell(s32, s16, s16, s32, s32, u16, s32);
     void *savedEngine = gCur3DSpriteEngine;
     s32 i, j, k;
@@ -159,7 +159,7 @@ void func_ov006_0221661c(void *spriteList) {
         M2C_FIELD(AddSpriteSlot(entry[0], entry[1], data_ov006_022187c8, k), void **, 0x10) = spriteList;
     gCur3DSpriteEngine = savedEngine;
     SelectSpriteSlot(4);
-    func_020b2158(0);
+    SetSpriteSlotFocusFlag(0);
     for (y = 0; y < 2; y++)
         for (x = 0; x < 6; x++)
             AddSpriteCell(M2C_FIELD(spriteList, s32 *, 0x40), (s16)(x * 24 + 56), (s16)(y * 24 + 8), 24, 24, (u16)(x + y * 6), 14);
@@ -251,8 +251,11 @@ void UpdateMapCodeEntryPanel(void *panel) {
     UpdateSpriteAnimation(tween);
 }
 
-void func_ov006_02216bfc(void **arg0) {
- M2C_FIELD(*arg0, void (**)(void *), 8)(arg0);
+/* Class-script action of the ov006 map-code entry panel: forward to the panel
+ * object's virtual per-frame update/input method at the base class's vtable
+ * slot 8 (gMapCodeEntryPanelVTable+8 is the code-entry input handler). */
+void Ov006_MapCodeEntryPanel_CallUpdate(void **panel) {
+    M2C_FIELD(*panel, void (**)(void *), 8)(panel);
 }
 
 /* Reset the sprite-slot manager's scroll offset to the origin. */

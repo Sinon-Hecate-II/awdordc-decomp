@@ -470,6 +470,8 @@ void ResetRejectedAiTargetCandidates(void) {
     } while (i < (s32)*state);
 }
 
+/* Release the AI's targets between build phases: unclaim every target group and
+ * make the skipped candidates pickable again. */
 void ReleaseAiTargets(void) {
     void ResetAiTargetCandidates(void);
     void ReleaseAiTargetGroups(void);

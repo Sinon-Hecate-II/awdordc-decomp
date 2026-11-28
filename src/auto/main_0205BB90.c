@@ -102,8 +102,8 @@ s32 gti2HandleResendRequest(void *session, void *message, s32 size) {
 }
 
 s32 func_0205be04(s32 a, void *b, s32 c) {
-    s32 func_0205cb38(s32, void *, s32);
-    return func_0205cb38(a,b,c);
+    s32 gti2SendPingAck(s32, void *, s32);
+    return gti2SendPingAck(a,b,c);
 }
 
 /* Handle a GT2 ping control message (type 103): the eight-byte payload is the
@@ -601,7 +601,15 @@ if((u32)arg2!=(u32)arg1){Gt2WriteShort(buf,n,arg2); n+=2;}
 if(gti2SendRaw(p,buf,n)==0)return 0; return 1;
 }
 
-s32 func_0205cb38(s32 a,void *b,s32 c) { s32 gti2SendRaw(s32,void *,s32); M2C_FIELD(b,u8 *,2)=103; return gti2SendRaw(a,b,c); }
+/* Answer a GT2 ping request: send the received message (its magic, then the
+ * request's "time" payload) back with the ping-acknowledgement command id in
+ * place of the request's, so the peer can time the round trip.  Returns 1 when
+ * the send succeeded, 0 when it failed. */
+s32 gti2SendPingAck(s32 connection, void *message, s32 length) {
+    s32 gti2SendRaw(s32, void *, s32);
+    M2C_FIELD(message, u8 *, 2) = GTI2_LARGE_PING_ACK;
+    return gti2SendRaw(connection, message, length);
+}
 
 /* Send a "connection closed" control message to a peer the connection has,
  * through its socket at the connection's remote address and port. */

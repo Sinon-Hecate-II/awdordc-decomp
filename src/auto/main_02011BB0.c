@@ -405,9 +405,12 @@ s32 WFC_StartChildIndication(s32 handler, s32 param) {
     return result;
 }
 
-void func_02012474(M2C_UNK arg0) {
+/* Watch for child clients connecting to this host over WFC: install `handler` as
+ * the child-indication (command 8) completion callback, queued with argument 1.
+ * Returns WFC_StartChildIndication's result, LINK_TASK_QUEUED (2) once queued. */
+s32 WFC_WatchForChildConnections(M2C_UNK handler) {
     M2C_UNK WFC_StartChildIndication(M2C_UNK, M2C_UNK);
-    WFC_StartChildIndication(arg0, 1);
+    return WFC_StartChildIndication(handler, 1);
 }
 
 /* Queue WFC command 9: once the command channel is in state 7, install `callback`

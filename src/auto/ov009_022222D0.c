@@ -430,7 +430,7 @@ void HandleLinkDownloadPlayResult(void *result) {
  * otherwise this console marks itself connected and clears the handled link results.  A
  * link already up (phase 4 or 5) needs nothing. */
 s32 StartLinkChildIndicate(void) {
-    s32 func_02012474(void (*)(void *));
+    s32 WFC_WatchForChildConnections(void (*)(void *));
     M2C_UNK SetConnectedPlayers(s32);
     M2C_UNK ClearLinkEventFlags();
     void SignalLinkError();
@@ -440,7 +440,7 @@ s32 StartLinkChildIndicate(void) {
     case LINK_PHASE_ACTIVE:
     case LINK_PHASE_INGAME: return 1;
     default:
-        if (func_02012474(&HandleLinkChildIndicate) != LINK_TASK_QUEUED) {
+        if (WFC_WatchForChildConnections(&HandleLinkChildIndicate) != LINK_TASK_QUEUED) {
             SignalLinkError();
             return 0;
         }

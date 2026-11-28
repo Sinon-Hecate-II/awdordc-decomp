@@ -46,9 +46,11 @@ s32 IsNasKeyRecord(s32 record) {
     return GetPlayerRecordKind(record) == PLAYER_RECORD_KIND_UNRESOLVED;
 }
 
-s32 HasNasKeyRecord(s32 arg0) {
+/* True when a profile-id block's NAS player key record is unresolved (not yet
+ * looked up). */
+s32 HasNasKeyRecord(s32 block) {
     M2C_UNK IsNasKeyRecord(s32);
-    return IsNasKeyRecord(arg0 + 0x10);
+    return IsNasKeyRecord(block + PROFILE_ID_BLOCK_KEY);
 }
 
 /* True when the player record `record` holds a player (its kind field is not
@@ -282,9 +284,11 @@ void FormatProfilePlayerIds(void *block) {
     FormatPlayerRecordId((s32)block, (s32)block + PROFILE_ID_BLOCK_KEY);
 }
 
-void SetNasServerUrl(s32 arg0) {
+/* Point the NAS client at a server URL string (the test, dev or production
+ * NAS host; see NAS_SERVER_*). */
+void SetNasServerUrl(const char *url) {
     extern s32 gNasServer;
-    gNasServer = arg0;
+    M2C_FIELD(&gNasServer, const char **, 0) = url;
 }
 
 /* Create the NAS client's connection block for a login request. Fails with 2 if

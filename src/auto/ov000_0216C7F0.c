@@ -160,9 +160,11 @@ void *GetUnitIconTiles(void) {
     return (u8 *)&data_02121e08 + (GetUnitVariantIndex() << 7);
 }
 
-void *GetArmyPalette(s32 arg0) {
-    extern M2C_UNK gArmyPalettes;
-    return (u8 *)&gArmyPalettes + ((arg0 - 1) << 5);
+/* The 16-colour (32-byte) palette army `armyId` uses to tint its units; army ids
+ * are 1-based, so id 1 is the first entry of the palette table. */
+void *GetArmyPalette(s32 armyId) {
+    extern u8 gArmyPalettes[];
+    return gArmyPalettes + ((armyId - 1) << DS3D_PALETTE_SHIFT);
 }
 
 /* Address of the terrain tile graphics for terrain `terrainId` in the loaded name

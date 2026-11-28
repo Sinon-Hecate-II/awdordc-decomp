@@ -530,6 +530,7 @@ typedef struct SoundChannelRecord {
 /* The running music track (gCurrentMusicTrack) and the object that fades it out
  * (class gMusicFadeOutClass, spawned by FadeOutMusicOverFrames). */
 #define MUSIC_NONE        0xFFFF /* gCurrentMusicTrack value when no track plays */
+#define MUSIC_MENU_TRACK  4      /* the front-end menu music (also restarted when the records screen closes) */
 #define MUSIC_FADE_FRAMES 0x6C   /* s16 frames left before the fade-out object stops the track */
 
 /* The object ChangeMusicTrackWithFade spawns to start a track once the current

@@ -332,7 +332,7 @@ void GX_BuildOrthoMatrix(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 *p
     s64 q3;
     s64 product;
 
-    func_02002030(d - c);
+    Div_StartReciprocal(d - c);
 
     p[1] = 0;
     p[2] = 0;
@@ -384,17 +384,25 @@ void GX_BuildOrthoMatrix(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 *p
     p[14] = (s32)(((q3 * (f + e)) + 0x80000000ULL) >> 32);
 }
 #pragma pop
-void FX_Div(void) {
-    M2C_UNK Div_GetResultRounded();
-    M2C_UNK Div_Start64By32();
-    Div_Start64By32();
-    Div_GetResultRounded();
+/* Divide `numerator` by `denominator` in 20.12 fixed point: run the ARM9
+ * divider on (numerator << 32) / denominator and return the quotient rounded to
+ * Q12 (the scaling divisions of the 3D and menu code). */
+s32 FX_Div(s32 numerator, s32 denominator) {
+    void Div_Start64By32(s32, s32);
+    s32 Div_GetResultRounded(void);
+
+    Div_Start64By32(numerator, denominator);
+    return Div_GetResultRounded();
 }
 
-void func_02001fc4(void) {
-    M2C_UNK func_02002030();
-    func_02002030();
-    Div_GetResultRounded();
+/* Return the Q12 reciprocal of `value` (1.0 / value in 20.12 fixed point),
+ * computed on the ARM9 hardware divider. */
+s32 FX_Reciprocal(s32 value) {
+    s32 Div_StartReciprocal(s32);
+    s32 Div_GetResultRounded(void);
+
+    Div_StartReciprocal(value);
+    return Div_GetResultRounded();
 }
 
 /* Wait for the ARM9 hardware divider to finish, then return both 32-bit result

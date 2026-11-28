@@ -158,8 +158,11 @@ u32 SlideOutMapTransferPanelWhenEmpty(void *panel) {
     return Hide3DSpriteSlide(M2C_FIELD(spritePair, s32 *, 4));
 }
 
-void func_ov003_021e4764(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x10)(arg0);
+/* Class-script action of the ov003 scene view: forward to the scene object's
+ * virtual resume method at vtable offset 0x10, which restarts the view's sprite
+ * animation after it was paused. */
+void Ov003_SceneView_CallResume(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_RESUME)(scene);
 }
 
 /* Whether the scene view's top intro tween is still running (its frame counter
@@ -238,8 +241,8 @@ u32 Ov003_UpdateMapTransferAvailability(void *view) {
 }
 
 void func_ov003_021e48dc(void) {
-    M2C_UNK func_ov003_021f14a0();
-    func_ov003_021f14a0();
+    M2C_UNK Ov003_SetSceneReady();
+    Ov003_SetSceneReady();
 }
 
 /* Reset the map-select state after leaving the screen: keep map confirmation

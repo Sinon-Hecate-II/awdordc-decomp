@@ -46,8 +46,8 @@ void Ov001_UpdateLinkState(void) {
     void Ov001_StartMultibootProgramTransfer(M2C_UNK, M2C_UNK);
     s32 Ov001_AreJoinedPlayersReady(void);
     void func_ov001_02187454(void);
-    void func_ov001_0218754c(void);
-    s32 Ov001_GetTaskStep(void);
+    void Ov001_CloseFailedLink(void);
+    s32 Ov001_GetWhStatus(void);
     s32 Ov001_EndLink(void);
     extern void *gOv001ProfileState;
 
@@ -98,12 +98,12 @@ void Ov001_UpdateLinkState(void) {
         return;
     }
     case 7: {
-        func_ov001_0218754c();
+        Ov001_CloseFailedLink();
         M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) = 0x1;
         return;
     }
     case 0: {
-        switch(Ov001_GetTaskStep()){
+        switch(Ov001_GetWhStatus()){
         case 1:Ov001_EndLink();return;
         case 0:
             M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_STATE)=0x1f;
@@ -139,14 +139,14 @@ void Ov001_EnterProfileListSharing(void) {
  * feeds the profile entries to the underlying multiboot task and, when the list has settled,
  * turns the current input code into the next screen state. */
 void Ov001_UpdateProfileTask(void) {
-    s32 Ov001_GetTaskStep(void);
+    s32 Ov001_GetWhStatus(void);
     void func_ov001_021888a8(s32, u16, u16, s32);
     void Ov001_StepProfileSharing(s32, s32, void *);
     void Ov001_UpdateProfileLink(void);
     u16 Ov001_ReadInputCode(void);
     extern void *gOv001ProfileState;
 
-    s32 step = Ov001_GetTaskStep();
+    s32 step = Ov001_GetWhStatus();
     switch (step) {
     case 1: {
         u16 mapWidth = *(u16 *)((u8 *)gOv001ProfileState + PROFILE_MAP_W);
@@ -206,11 +206,11 @@ void Ov001_EnterProfileObtained(void) {
  * (step 1), end the link and return to the initial setup state so the exit
  * result is processed; otherwise do nothing and report 0. */
 s32 Ov001_FinishLinkTeardown(void) {
-    s32 Ov001_GetTaskStep(void);
+    s32 Ov001_GetWhStatus(void);
     s32 Ov001_EndLink(void);
     extern void *gOv001ProfileState;
 
-    if (Ov001_GetTaskStep() != 1) {
+    if (Ov001_GetWhStatus() != 1) {
         return 0;
     }
     Ov001_EndLink();
@@ -253,7 +253,7 @@ M2C_UNK Ov001_InitProfileSharing(void) {
  * reports progress, collect the children's entries into this console's two profile
  * slots, or leave the list when not both children replied. */
 void Ov001_StepProfileSharing(s32 entryId, s32 row, void *entry) {
-    M2C_UNK Ov001_GetTaskStep(void);
+    M2C_UNK Ov001_GetWhStatus(void);
     M2C_UNK DWCi_MOV_WH_StepDataSharing(void *);
     M2C_UNK Ov001_GetConnectedChildren(void);
     M2C_UNK Ov001_GetPlayerData(s32);
@@ -271,7 +271,7 @@ void Ov001_StepProfileSharing(s32 entryId, s32 row, void *entry) {
         ((u8 *)M2C_FIELD(gOv001ProfileState, void **, PROFILE_SEND_ENTRY))[4] = M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_LOCAL_BYTE);
     }
 
-    if (Ov001_GetTaskStep() != 5) {
+    if (Ov001_GetWhStatus() != 5) {
         return;
     }
     if (DWCi_MOV_WH_StepDataSharing(gOv001ProfileState) == 0) {
@@ -455,9 +455,11 @@ s32 Ov001_UtilityArchiveRead(void *archive, s32 buffer, s32 offset, s32 length) 
     return 6;
 }
 
-void Ov001_UtilityArchiveReadDone(M2C_UNK arg0) {
+/* Completion callback of an ov001 utility-archive read: report the transfer as
+ * successful to the file's operation completion. */
+void Ov001_UtilityArchiveReadDone(M2C_UNK file) {
     M2C_UNK FileOperationCompleted(M2C_UNK, M2C_UNK);
-    FileOperationCompleted(arg0, 0);
+    FileOperationCompleted(file, 0);
 }
 
 s32 func_ov001_02189dc0(void) {

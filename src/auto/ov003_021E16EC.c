@@ -4,7 +4,7 @@ extern u16 data_ov003_0220f34a,data_ov003_0220f346,data_ov003_0220f342,data_ov00
 void SetSceneLayerOverrideMain(s32,void*);void SetSceneLayerOverrideSub(s32,void*);void LoadSavedMapPickLists(void*);
 u32 CountDownloadedMapIds(void);u32 CountSelectedMapIds(void);
 void *GetCampaignMapHeader(u16);void MI_CpuCopy32(void*,void*,s32);
-void func_ov003_021f14a0(void);void Apply3DSpriteBanks(void);
+void Ov003_SetSceneReady(void);void Apply3DSpriteBanks(void);
 void *CreateUnitSprite(void*);void InitUnitSprite(void*,s32,s32,s32,s32);
 void Set3DSpriteSlideTargetAndStart(void*,s32,s32,s32,s32);void Hide3DSprite(void*);
 s32 GetUnitSpriteWidth(void*);s32 GetUnitSpriteHeight(void*);void SpriteCellListSetCellRect(void*,s32,s16,s16,u16,u16);
@@ -47,7 +47,7 @@ SetSceneLayerOverrideMain(0,&data_ov003_0220f34a);SetSceneLayerOverrideMain(1,&d
 SetSceneLayerOverrideSub(0,&data_ov003_0220f344);SetSceneLayerOverrideSub(1,&data_ov003_0220f340);SetSceneLayerOverrideSub(3,&data_ov003_0220f348);
 LoadSavedMapPickLists(M2C_FIELD(p,u8**,0x5c)+4);
 for(i=0;i<VisibleEntries(p);i++)MI_CpuCopy32(M2C_FIELD(p,u8**,0x6c)+i*0x6f8,GetCampaignMapHeader((u16)(i+50)),84);
-func_ov003_021f14a0();Apply3DSpriteBanks();
+Ov003_SetSceneReady();Apply3DSpriteBanks();
 q=M2C_FIELD(p,u8**,0x44);
 M2C_FIELD(q,void**,0)=CreateUnitSprite(p);InitUnitSprite(M2C_FIELD(q,void**,0),32,320,3,0);
 sprite=M2C_FIELD(q,u8**,0);Set3DSpriteSlideTargetAndStart(sprite,112,164,112,192);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=GetUnitSpriteWidth(sprite);s32 sh=GetUnitSpriteHeight(sprite);SpriteCellListSetCellRect(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}Hide3DSprite(M2C_FIELD(q,void**,0));

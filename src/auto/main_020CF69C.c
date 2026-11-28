@@ -250,15 +250,18 @@ void RebuildPropertyStatistics(void) {
     UpdateAiCapabilityFlags();
 }
 
+/* Redraw the map after its units or terrain changed: rebuild the unit display
+ * (sight bitmaps, per-cell units, movement ranges) and then the view's render
+ * state (cell scroll offsets, registered callbacks, cell corner data). */
 void RefreshMapView(void) {
-    M2C_UNK func_020cfd38();
+    M2C_UNK RefreshMapViewRender();
     M2C_UNK RefreshMapUnitDisplay();
     RefreshMapUnitDisplay();
-    func_020cfd38();
+    RefreshMapViewRender();
 }
 
 /* Sets up the screen render target and dispatches the map/render callbacks. */
-M2C_UNK func_020cfd38(void) {
+M2C_UNK RefreshMapViewRender(void) {
     void (*callback)(void);
     void func_0207a668(void);
     void func_02076980(s32, s32, s32, s32);
@@ -500,19 +503,20 @@ u8 IsTerrainKindAtTile(s32 x, s32 y, s32 terrainKind) {
  return IsTerrainKind(M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN),terrainKind);
 }
 
-s32 func_020d0528(s32 arg0) {
+s32 ShiftTerrainOwnerBits(s32 arg0) {
     return arg0 >> 5;
 }
 
-s32 func_020d0530(s32 arg0) {
+s32 MaskTerrainOwnerBits(s32 arg0) {
     return arg0 & 0xE0;
 }
 
+/* Extract the owner index from a terrain byte by keeping its top three bits and shifting them down. */
 void GetTerrainOwner(void) {
-    M2C_UNK func_020d0528();
-    M2C_UNK func_020d0530();
-    func_020d0530();
-    func_020d0528();
+    M2C_UNK ShiftTerrainOwnerBits();
+    M2C_UNK MaskTerrainOwnerBits();
+    MaskTerrainOwnerBits();
+    ShiftTerrainOwnerBits();
 }
 
 /* Whether (x, y) lie inside the screen rectangle 0..256 across by 0..192 down.

@@ -739,17 +739,19 @@ u8 GetMapListCategory(void) {
     return M2C_FIELD(&gOv003SceneState, u8 *, 6);
 }
 
-void func_ov003_021f14a0(void) {
+/* Mark the ov003 scene as loaded, so it may take input. */
+void Ov003_SetSceneReady(void) {
     extern M2C_UNK gOv003SceneState;
-    M2C_FIELD(&gOv003SceneState, u8 *, 1) = 1;
+    M2C_FIELD(&gOv003SceneState, u8 *, SCENE_READY) = 1;
 }
 
-void func_ov003_021f14b4(void) {
+/* Mark the ov003 scene as not loaded yet, so the next scene start rebuilds it. */
+void Ov003_ClearSceneReady(void) {
     extern M2C_UNK gOv003SceneState;
-    M2C_FIELD(&gOv003SceneState, u8 *, 1) = 0;
+    M2C_FIELD(&gOv003SceneState, u8 *, SCENE_READY) = 0;
 }
 
-u8 func_ov003_021f14c8(void) {
+u8 Ov003_IsSceneReady(void) {
     extern M2C_UNK gOv003SceneState;
     return M2C_FIELD(&gOv003SceneState, u8 *, 1);
 }

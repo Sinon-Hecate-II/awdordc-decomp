@@ -69,9 +69,10 @@ void Wfc_PublishState(u8 state) {
  }
 }
 
+/* The WFC session state Wfc_PublishState last recorded in the control block. */
 u8 Wfc_GetSessionState(void) {
     extern M2C_UNK gWfcManager;
-    return M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, 9);
+    return M2C_FIELD(((WfcManager *)&gWfcManager)->control, u8 *, WFC_CONTROL_STATE);
 }
 
 /* Record the result code of the current connection step in the WFC control
@@ -85,9 +86,12 @@ void Wfc_SetResultCode(s32 resultCode) {
     M2C_FIELD(control, s8 *, WFC_CONTROL_STEP_STATE) = Wfc_GetSessionState();
 }
 
+/* The result code of the last WFC connection step (WFC_CONTROL_RESULT of the
+ * control work block). */
 s32 Wfc_GetResultCode(void) {
- extern M2C_UNK gWfcManager;
- return M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), s32 *, 0xC);
+    extern M2C_UNK gWfcManager;
+
+    return M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), s32 *, WFC_CONTROL_RESULT);
 }
 
 /* Publish the save slot of the friend id the WFC session is match-making with

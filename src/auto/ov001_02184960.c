@@ -108,8 +108,11 @@ p[0xf5]=1;p[0xf6]=1;
 func_ov001_02184960();
 }
 #pragma scheduling reset
+/* Return the base address of the ov001 save data: four save-slot images followed
+ * by the working copy of the current slot. */
 s32 GetSaveData(void) {
     extern s32 gSaveData;
+
     return gSaveData;
 }
 

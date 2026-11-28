@@ -89,8 +89,9 @@ s32 gti2AllocateBuffer(Gt2Buffer *buffer, s32 size) {
     return 1;
 }
 
-s32 gti2GetBufferFreeSpace(void *arg0) {
-    return M2C_FIELD(arg0, s32 *, 4) - M2C_FIELD(arg0, s32 *, 8);
+/* Bytes left in a GT2 buffer: its capacity minus the bytes already used. */
+s32 gti2GetBufferFreeSpace(Gt2Buffer *buffer) {
+    return buffer->size - buffer->len;
 }
 
 /* Append the byte `value` to `buffer`, asserting there is still room for it. */

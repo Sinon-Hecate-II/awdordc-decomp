@@ -103,11 +103,15 @@ void CloseNarcArchive(void) {
     gNarcFileData = 0;
 }
 
-void func_02081568(void) {
+/* Size in bytes of the NARC member whose name the caller just set up:
+ * BuildNarcPath assembles its path (picking the name up from r0) and GetFileSize
+ * opens it and returns its length.  The map-background loader switches on it to
+ * tell a 0x100-byte palette from a 0x200-byte one. */
+s32 GetNarcMemberSize(void) {
     M2C_UNK GetFileSize();
     M2C_UNK BuildNarcPath();
     BuildNarcPath();
-    GetFileSize();
+    return GetFileSize();
 }
 
 /* Load the NARC member at `memberPath` into `dest` and return the number of bytes
@@ -612,9 +616,11 @@ void BlockKeyInjection(void) {
     ((InputBlockState *)&gInputBlockState)->keyInjectBlocked = 1;
 }
 
-void func_02081f64(void) {
-extern M2C_UNK gInputBlockState;
-M2C_FIELD(&gInputBlockState,u8 *,3) = 0;
+/* Let InjectKeyPress inject virtual key presses again (the input-block notice
+ * sprite is gone). */
+void UnblockKeyInjection(void) {
+    extern M2C_UNK gInputBlockState;
+    ((InputBlockState *)&gInputBlockState)->keyInjectBlocked = 0;
 }
 
 /* Override this frame's input: make KEY_B appear newly pressed, auto-repeating
@@ -650,9 +656,19 @@ void DeleteInputBlockSprite(void) {
     DeleteSpriteObjectsOfClass(&gInputBlockSpriteClass);
 }
 
-void func_02082000(void){extern M2C_UNK gInputBlockState;M2C_FIELD(&gInputBlockState,u8 *,2)=1;}
+/* Request that the current screen be turned off: raise the input-block state's
+ * screen-off (suspend) flag, which SuspendDisplayIfRequested picks up. */
+void RequestScreenOff(void) {
+    extern M2C_UNK gInputBlockState;
+    ((InputBlockState *)&gInputBlockState)->suspendRequested = 1;
+}
 
-void ClearScreenOffRequest(void){extern M2C_UNK gInputBlockState;M2C_FIELD(&gInputBlockState,u8 *,2)=0;}
+/* Cancel a pending screen-off request: clear the input-block state's suspend
+ * flag so SuspendDisplayIfRequested leaves the display on. */
+void ClearScreenOffRequest(void) {
+    extern M2C_UNK gInputBlockState;
+    ((InputBlockState *)&gInputBlockState)->suspendRequested = 0;
+}
 
 void MemAlloc(void) {
     M2C_UNK HeapAllocBlock();
@@ -672,10 +688,12 @@ void MemFreeArray(void) {
     HeapFreeBlock();
 }
 
-void func_02082058(void) {
+/* Engine start-up step: copy the firmware's personal settings into the game's
+ * user profile block (gUserProfile: language, nickname and greeting). */
+void InitUserProfile(void) {
     M2C_UNK GetSystemUserProfile(u8 *);
-    extern u8 data_0214c1b8;
-    GetSystemUserProfile(&data_0214c1b8);
+    extern u8 gUserProfile;
+    GetSystemUserProfile(&gUserProfile);
 }
 
 M2C_UNK *GetLocalPlayerName(void) {
@@ -684,11 +702,11 @@ M2C_UNK *GetLocalPlayerName(void) {
 }
 
 u8 func_02082078(void) {
-    extern u8 data_0214c1b8;
-    return data_0214c1b8;
+    extern u8 gUserProfile;
+    return gUserProfile;
 }
 
-u16 GetLocalPlayerNameLength(void){extern u8 data_0214c1b8;return M2C_FIELD(&data_0214c1b8,u16 *,0x1a);}
+u16 GetLocalPlayerNameLength(void){extern u8 gUserProfile;return M2C_FIELD(&gUserProfile,u16 *,0x1a);}
 
 /* Point one 3D sprite layer at a VRAM bank: store that bank's VRAM address for the
  * layer and record the bank number in bits 2..5 of the layer's packed tile word. */

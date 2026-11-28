@@ -1276,6 +1276,7 @@ typedef struct MapRecordStamp {
 
 /* Fields of a per-map data record (0x50 bytes, MapData_GetRecord), the table the
  * map-selection code reads a map's settings from. */
+#define MAP_DATA_RECORD_SIZE   0x50 /* bytes per record in the map data table */
 #define MAP_DATA_RULE_FLAGS    0x04 /* u16 the map's rule bits, tested by the map-selection code */
 #define MAP_DATA_RULE_FOG      0x0001 /* bit 0: the map forces fog of war on (MapData_IsFogOfWar) */
 #define MAP_DATA_RULE_NO_CO    0x0002 /* bit 1: COs are off (MapData_HasNoCoRule): no army is assigned and unit selection is blocked */
@@ -1318,7 +1319,7 @@ typedef struct MapRecordStamp {
 #define MAP_EVENT_UNIT          0x1C /* run for a unit lifecycle event: the first value is the event code (14 = unit built, 0x31 = unit destroyed, or a carried unit kind), the unit is the second */
 #define MAP_EVENT_BATTLE_END    0x20 /* run when a battle ends (EnterBattleEnd, main_020C8CBC) */
 #define MAP_EVENT_ENDING        0x24 /* run while the final campaign map's ending scene plays (state 7 of the ending sprite, ov004_02211200.c) */
-#define MAP_EVENT_MAP_MENU      0x28 /* run when a map-menu action is taken (func_020c5da4, main_020C5D0C.c); IsMapEventConditionMet tests the same list to enable the action */
+#define MAP_EVENT_MAP_MENU      0x28 /* run when a map-menu action is taken (RunMapMenuEventCommand, main_020C5D0C.c); IsMapEventConditionMet tests the same list to enable the action */
 #define MAP_EVENT_UNIT_GONE     0x2C /* run once a unit has left the map: after its removal effect destroyed or removed it (UnitRemoveEffect_Trigger, main_020B5258.c) */
 #define MAP_EVENT_CURSOR_IDLE   0x30 /* run while the battle cursor rests (UpdateMapCursor, main_020D4430) */
 

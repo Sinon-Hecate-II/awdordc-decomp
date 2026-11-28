@@ -53,7 +53,7 @@ typedef struct SaveSettingsSnapshot {
 #pragma opt_common_subs off
 void SnapshotGameSettings(SaveSettingsSnapshot *save) {
     extern M2C_UNK gGameSettings, data_0215d990, data_0215d9c0;
-    extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
+    extern M2C_UNK data_0215d9d0, data_0215d9e0, gBattleSaveRecords;
     extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, gCampaignSaveRecords;
     extern M2C_UNK gEventFlagsMid, gSeenMapBackgroundFlags, gRecordsMusicHeard, gListRowFlags;
     extern M2C_UNK gMapListFlags, gCampaignMapPlayed, gCampaignMapCleared, gCampaignMapSaved;
@@ -67,7 +67,7 @@ void SnapshotGameSettings(SaveSettingsSnapshot *save) {
     save->settingsGroup0 = *(SaveHalfwords14 *)&data_0215d9c0;
     save->settingsGroup1 = *(SaveWords16 *)&data_0215d9d0;
     save->settingsGroup2 = *(SaveWords12 *)&data_0215d9e0;
-    save->settingsGroup3 = *(SaveWords32 *)&data_0215d9ec;
+    save->settingsGroup3 = *(SaveWords32 *)&gBattleSaveRecords;
     save->mapSettings = *(SaveWords16 *)&gMapSettings;
     save->coUnlocked = *(SaveBytes15 *)&gCoUnlocked;
     save->recordValues = *(SaveWords376 *)&gRecordValues;
@@ -97,7 +97,7 @@ void func_020e4b24(void);
 #pragma opt_loop_invariants off
 void func_020beabc(SaveSettingsSnapshot *save) {
     extern M2C_UNK gGameSettings, data_0215d990, data_0215d9c0;
-    extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
+    extern M2C_UNK data_0215d9d0, data_0215d9e0, gBattleSaveRecords;
     extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, gCampaignSaveRecords;
     extern M2C_UNK gEventFlagsMid, gSeenMapBackgroundFlags, gRecordsMusicHeard, gListRowFlags;
     extern M2C_UNK gMapListFlags, gCampaignMapPlayed, gCampaignMapCleared, gCampaignMapSaved;
@@ -110,7 +110,7 @@ void func_020beabc(SaveSettingsSnapshot *save) {
     *(SaveHalfwords14 *)&data_0215d9c0 = save->settingsGroup0;
     *(SaveWords16 *)&data_0215d9d0 = save->settingsGroup1;
     *(SaveWords12 *)&data_0215d9e0 = save->settingsGroup2;
-    *(SaveWords32 *)&data_0215d9ec = save->settingsGroup3;
+    *(SaveWords32 *)&gBattleSaveRecords = save->settingsGroup3;
     *(SaveWords16 *)&gMapSettings = save->mapSettings;
     *(SaveBytes15 *)&gCoUnlocked = save->coUnlocked;
     *(SaveWords376 *)&gRecordValues = save->recordValues;

@@ -412,9 +412,11 @@ void EnablePlayerSelectionIfNoneSelected(s32 player) {
     EnablePlayerSelection(player);
 }
 
-void func_020d2d80(M2C_UNK arg0) {
-    M2C_UNK SetPlayerSpriteAuxBits(M2C_UNK, M2C_UNK);
-    SetPlayerSpriteAuxBits(arg0, 0);
+/* Clear the two auxiliary bits (8..9) of player `player`'s PLAYER_REC_SPRITE
+ * word. */
+void ClearPlayerSpriteAuxBits(s32 player) {
+    void SetPlayerSpriteAuxBits(s32, u32);
+    SetPlayerSpriteAuxBits(player, 0);
 }
 
 /* Pay `player` its per-turn property income, once the battle has started. */
@@ -703,9 +705,10 @@ void DisableBattleTurnTimer2(void) {
     M2C_FIELD(&gMapData, s32 *, MAPDATA_TURN_TIMER) = 0;
 }
 
+/* Start accumulating the current player's battle time each frame. */
 void EnableBattleTurnTimer(void) {
     extern M2C_UNK gMapData;
-    M2C_FIELD(&gMapData, s32 *, 8) = 1;
+    M2C_FIELD(&gMapData, s32 *, MAPDATA_TURN_TIMER) = 1;
 }
 
 /* Disable the battle's turn timer: stop accumulating the current player's battle

@@ -244,9 +244,11 @@ u8 IsFaceSpriteLoaded(void *face) {
     return loaded;
 }
 
-M2C_UNK func_0209902c(void *arg0) {
- M2C_FIELD(arg0,s8 *,0x58)=0;
- M2C_FIELD(arg0,s8 *,0x59)=1;
+/* Unload the CO face sprite's face (FACE_SPRITE_FACE) and reset its expression
+ * to the default pose 1 (FACE_SPRITE_EXPRESSION). */
+M2C_UNK ResetFaceSprite(void *face) {
+    M2C_FIELD(face, s8 *, FACE_SPRITE_FACE) = 0;
+    M2C_FIELD(face, s8 *, FACE_SPRITE_EXPRESSION) = 1;
 }
 
 /* Per-frame update of a CO face sprite: once a face is loaded, advance its fade
@@ -262,8 +264,8 @@ M2C_UNK UpdateFaceSprite(void *face) {
 }
 
 void func_02099070(void) {
-    M2C_UNK func_0209902c();
-    func_0209902c();
+    M2C_UNK ResetFaceSprite();
+    ResetFaceSprite();
 }
 
 void func_0209907c(void) {
@@ -446,6 +448,7 @@ void **CreateFaceSprite(s32 owner) {
     return result;
 }
 
+/* Delete every live 3D sprite object of the CO face sprite class. */
 void DeleteAllFaceSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gFaceSpriteClass;

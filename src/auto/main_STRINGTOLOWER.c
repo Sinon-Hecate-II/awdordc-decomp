@@ -19,14 +19,14 @@ typedef struct { u8 bytes[8]; } UnkSocketAddress;
 #pragma push
 #pragma opt_if_conversion off
 s8 *StringToLower(s8 *p) {
-    extern M2C_UNK data_020eac40;
+    extern M2C_UNK gAsciiLower;
     s8 *q = p;
     s32 c = *p;
 
     if (c) {
         do {
             if (c >= 0 && c < 128) {
-                c = ((const u8 *)&data_020eac40)[c];
+                c = ((const u8 *)&gAsciiLower)[c];
             }
             *p = c;
             c = *++p;

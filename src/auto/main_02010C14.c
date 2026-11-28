@@ -378,9 +378,11 @@ extern M2C_UNK gWfcFreeBufferQueue;s32 SendFifoMessage();s32 OS_SendMessage();vo
 u16 *block=WFC_AllocBuffer();s32 result;if(!block)return WFC_CMD_NO_BUFFER;MI_CpuCopy8(packet,block,length);DC_CleanRange(block,length);result=SendFifoMessage(WFC_CMD_FIFO_TAG,block,0);OS_SendMessage(&gWfcFreeBufferQueue,block,OS_MESSAGE_BLOCK);return result<0?WFC_CMD_NO_BUFFER:WFC_CMD_OK;
 }
 
-s32 WFC_GetInfoBlock(void) {
+/* The WFC command channel's info block: the work-area buffer pointers, the
+ * link state object and the per-channel callbacks (WFC_CMD_INFO_*). */
+void *WFC_GetInfoBlock(void) {
     extern M2C_UNK gWfcChannelState;
-    return M2C_FIELD(&gWfcChannelState, s32 *, 4);
+    return M2C_FIELD(&gWfcChannelState, void **, WFC_CMD_STATE_INFO);
 }
 
 /* Whether the WFC command channel can take commands: returns 0 once the channel

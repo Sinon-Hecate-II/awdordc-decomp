@@ -199,9 +199,11 @@ M2C_UNK OS_LockByWord(M2C_UNK lockId, M2C_UNK lockAddress, M2C_UNK onLock, M2C_U
     } while (OSi_DoLockByWord(lockId, lockAddress, onLock, maskFiq) > 0);
 }
 
-void OS_LockByWordNoFiq(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK OS_LockByWord(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    OS_LockByWord(arg0, arg1, arg2, 0);
+/* Take the lock word at `lockAddress` for `lockId` with FIQ left enabled: the
+ * blocking OS_LockByWord take runs with maskFiq 0 (IRQ only).  `onLock` runs
+ * when the lock is acquired. */
+void OS_LockByWordNoFiq(s32 lockId, s32 lockAddress, s32 onLock) {
+    OS_LockByWord(lockId, lockAddress, onLock, 0);
 }
 
 /* Release a lock word owned by lockId, running the optional cleanup with interrupts masked. */
@@ -233,9 +235,11 @@ s32 OSi_DoUnlockByWord(s32 lockId, s32 lockAddress, s32 onUnlock, s32 maskFiq) {
     return 0;
 }
 
-void OS_UnlockByWordNoFiq(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK OSi_DoUnlockByWord(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    OSi_DoUnlockByWord(arg0, arg1, arg2, 0);
+/* Release the lock word at `lockAddress` held for `lockId` with FIQ left
+ * enabled: OSi_DoUnlockByWord runs with maskFiq 0 (IRQ only), and `onUnlock`
+ * runs once the word is free. */
+void OS_UnlockByWordNoFiq(s32 lockId, s32 lockAddress, s32 onUnlock) {
+    OSi_DoUnlockByWord(lockId, lockAddress, onUnlock, 0);
 }
 
 /* Take the lock word at `lockAddress` for `lockId`: mask interrupts, atomically swap
@@ -547,9 +551,11 @@ M2C_FIELD(&data_0212dc80,s32 *,164)=32;
 M2C_FIELD(&data_0212dc80,s32 *,152)=1;
 }
 #pragma scheduling reset
-s32 func_02005ab0(void) {
-    extern s32 data_0212dc8c;
-    return data_0212dc8c;
+/* Whether the OS thread system has been brought up (its init sets the flag);
+ * code that creates tasks checks for 1 first. */
+s32 OS_IsThreadAvailable(void) {
+    extern s32 gThreadSystemInitialized;
+    return gThreadSystemInitialized;
 }
 
 /* Initializes a managed memory-block object (obj) backed by buffer (buf) of (bufLen) bytes, with priority (priority) and callback (callback); registers it in the global block list. */

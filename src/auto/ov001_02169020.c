@@ -57,9 +57,9 @@ s32 GetFontCmapGlyphIndex(void *cmap, u32 ch) {
  * the default wide-character decoder. */
 void Ov001_InitFontSet(Ov001Font *font, Ov001FontResource *resource) {
     M2C_UNK func_ov001_0216aab0(Ov001FontResource *, Ov001FontResource **);
-    u16 DecodeFontChar(u16 **);
+    u16 Ov001_DecodeFontChar(u16 **);
     func_ov001_0216aab0(resource, &font->resource);
-    font->decodeChar = (s32 (*)(s32 *))DecodeFontChar;
+    font->decodeChar = (s32 (*)(s32 *))Ov001_DecodeFontChar;
 }
 
 /* Glyph index of character code `ch` in the font resource `resourcePtr`: walk the

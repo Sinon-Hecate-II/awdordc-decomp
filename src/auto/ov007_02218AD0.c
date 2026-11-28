@@ -374,6 +374,8 @@ void MapEditor_SpawnPanel(void) {
     CreateSpriteFromClass(&gMapEditorPanelClass, DS3D_SPRITE_DEFAULT_LAYER);
 }
 
+/* The map editor's palette panel object, found by its sprite class (0 until
+ * MapEditor_SpawnPanel has spawned it). */
 M2C_UNK GetPanelObject(void) {
     M2C_UNK FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gMapEditorPanelClass;

@@ -84,7 +84,9 @@ s32 func_020a886c(void) {
     return 0;
 }
 
-s32 *MapData_GetRecord(a) s32 a; {extern u8 data_ov000_021afe90[];return (s32 *)(80*a+(s32)data_ov000_021afe90);}
+/* The per-map data record (MAP_DATA_* fields) of map `mapId`; old-style
+ * declaration so the callers that pass no argument keep the register they set. */
+s32 *MapData_GetRecord(mapId) s32 mapId; {extern u8 gMapDataRecords[];return (s32 *)(MAP_DATA_RECORD_SIZE * mapId + (s32)gMapDataRecords);}
 
 s32 MapData_GetNameTextId(void) {
     s32 *MapData_GetRecord();

@@ -17,6 +17,7 @@
 #define NETSTACK_SOCKET_RAW_CONNECTION 0xA4 /* void *raw transport connection of the current socket */
 #define NETSTACK_TLS_CLOSE_WAIT 39 /* tick count before abandoning a pending TLS close alert */
 #define NETSTACK_UPDATE 0x18 /* void (*)(void): stack upkeep callback run once per waiting step */
+#define NETSTACK_CLOSED_SOCKET_REAPER 0x3C /* void (*)(void): callback that reaps sockets closed by the network layer */
 
 /* gNetStack single-producer/single-consumer packet ring.  The producer appends
  * a record at NETSTACK_RING_WRITE (a u16 length followed by the packet data) and

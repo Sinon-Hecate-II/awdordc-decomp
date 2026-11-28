@@ -522,9 +522,10 @@ void Ov010_PlayMapChoiceLabel(void *label) {
     GotoSpriteAnimationLabel(label, 1);
 }
 
-void func_ov010_0222b91c(M2C_UNK arg0) {
+/* Put the online matchmaking label on its matchmaking-wait animation. */
+void Ov010_PlayMatchmakingWaitAnimation(M2C_UNK label) {
     M2C_UNK GotoSpriteAnimationLabel(M2C_UNK, M2C_UNK);
-    GotoSpriteAnimationLabel(arg0, 1);
+    GotoSpriteAnimationLabel(label, 1);
 }
 
 /* Online-match label update: create the split-screen transition on each screen

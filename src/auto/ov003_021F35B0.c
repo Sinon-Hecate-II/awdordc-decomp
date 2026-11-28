@@ -341,7 +341,7 @@ void *DestroyOv003BattleSetup(Ov003BattleSetup *setup) {
     void SetOv003SceneState(s32);
     s32 GetSceneSlideOffset(void);
     void Ov003_StartScreenFade(void);
-    void func_ov003_021f18a4(void);
+    void Ov003_SetSceneBattleState(void);
     void DeleteWallpaperSpritesOnAllEngines(void);
     void DeleteOv003SceneSprite(void);
     M2C_UNK MemFree();
@@ -378,7 +378,7 @@ void *DestroyOv003BattleSetup(Ov003BattleSetup *setup) {
             Ov003_StartScreenFade();
             setup->pending = 0;
         }
-        func_ov003_021f18a4();
+        Ov003_SetSceneBattleState();
     }
     DeleteWallpaperSpritesOnAllEngines();
     DeleteOv003SceneSprite();
@@ -409,7 +409,7 @@ void *func_ov003_021f3e08(void *obj) {
     void SetOv003SceneState(s32);
     s32 GetSceneSlideOffset(void);
     void Ov003_StartScreenFade(void);
-    void func_ov003_021f18a4(void);
+    void Ov003_SetSceneBattleState(void);
     void DeleteWallpaperSpritesOnAllEngines(void);
     void DeleteOv003SceneSprite(void);
     M2C_UNK MemFree();
@@ -446,7 +446,7 @@ void *func_ov003_021f3e08(void *obj) {
             Ov003_StartScreenFade();
             M2C_FIELD(obj, u8 *, 0x44) = 0;
         }
-        func_ov003_021f18a4();
+        Ov003_SetSceneBattleState();
     }
     DeleteWallpaperSpritesOnAllEngines();
     DeleteOv003SceneSprite();

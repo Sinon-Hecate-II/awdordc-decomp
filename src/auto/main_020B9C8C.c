@@ -315,9 +315,11 @@ if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTabl
 return 1;
 }
 
-void CanDropFirstCarriedUnit(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK CanDropCarriedUnit(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    CanDropCarriedUnit(arg0, arg1, arg2, 0);
+/* Whether the unit carried in a transport's first slot may be dropped at tile
+ * (x, y). */
+s32 CanDropFirstCarriedUnit(s32 carrier, s32 x, s32 y) {
+    s32 CanDropCarriedUnit(s32, s32, s32, s32);
+    return CanDropCarriedUnit(carrier, x, y, 0);
 }
 
 void CanDropSecondCarriedUnit(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

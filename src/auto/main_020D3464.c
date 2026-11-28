@@ -221,9 +221,12 @@ void func_020d3830(void) {
     }
 }
 
-void func_020d39a4(void) {
-    M2C_UNK data_ov004_0222866c(M2C_UNK);
-    data_ov004_0222866c(0);
+/* Open the WFC HTTP connection through the online overlay with the default
+ * timeout (0 is passed down to OpenWfcHttpConnection, which substitutes its own
+ * default). */
+void OpenHttpConnectionDefault(void) {
+    M2C_UNK Ov010Online_OpenHttpConnectionEntry(M2C_UNK);
+    Ov010Online_OpenHttpConnectionEntry(0);
 }
 
 /* Per-frame update of the online match view-hold sprite (its class update slot):

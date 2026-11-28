@@ -54,8 +54,8 @@ void SetLinkPhase(void) {
 }
 
 s32 func_ov009_0222132c(s32 size,s32 align) {
-    M2C_UNK func_020e3580();
-    return func_020e3580();
+    M2C_UNK AllocGameHeap();
+    return AllocGameHeap();
 }
 
 /* Free a link packet block (`size` is not used by the allocator). */

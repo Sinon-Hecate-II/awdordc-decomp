@@ -49,12 +49,14 @@ void Ov001_EnableWfcSettingsMenuInput(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_UpdateWfcSettingsMenu);
 }
 
+/* Per-frame step of the Wi-Fi settings screen: read the menu's input, run its
+ * (empty) row hook and then act on the latched choice. */
 void Ov001_UpdateWfcSettingsMenu(void) {
     void Ov001_HandleWfcSettingsMenuInput(void);
-    void func_ov001_02176ffc(void);
+    void Ov001_WfcSettingsMenuNoop(void);
     void Ov001_HandleWfcSettingsChoice(void);
     Ov001_HandleWfcSettingsMenuInput();
-    func_ov001_02176ffc();
+    Ov001_WfcSettingsMenuNoop();
     Ov001_HandleWfcSettingsChoice();
 }
 
@@ -70,7 +72,7 @@ void Ov001_HandleWfcSettingsMenuInput(void) {
     Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
-void func_ov001_02176ffc(void) {
+void Ov001_WfcSettingsMenuNoop(void) {
 
 }
 
@@ -247,12 +249,14 @@ void Ov001_WaitResetProfileMenu(void) {
     Ov001_SetStepCallback(&Ov001_UpdateResetProfileMenu);
 }
 
+/* Per-frame step of the reset-profile confirmation menu: read the menu's input,
+ * run its (empty) hook and then act on the latched choice. */
 void Ov001_UpdateResetProfileMenu(void) {
     void Ov001_ResetProfileMenuConfirmInput(void);
-    void func_ov001_02177374(void);
+    void Ov001_ResetProfileMenuNoop(void);
     void Ov001_HandleResetProfileMenuChoice(void);
     Ov001_ResetProfileMenuConfirmInput();
-    func_ov001_02177374();
+    Ov001_ResetProfileMenuNoop();
     Ov001_HandleResetProfileMenuChoice();
 }
 
@@ -267,7 +271,7 @@ void Ov001_ResetProfileMenuConfirmInput(void) {
     Ov001_LatchIconRowSelection(0);
 }
 
-void func_ov001_02177374(void) {
+void Ov001_ResetProfileMenuNoop(void) {
 
 }
 
@@ -409,6 +413,8 @@ void Ov001_MacAddressWaitIconRow(void) {
     Ov001_SetStepCallback(&Ov001_UpdateMacAddressMenu);
 }
 
+/* Per-frame update of the MAC address menu: take its cancel input, run the
+ * menu's (empty) idle hook, and close the menu once it is backed out of. */
 void Ov001_UpdateMacAddressMenu(void) {
     void Ov001_MacAddressMenuCancelInput(void);
     void func_ov001_021777b4(void);
@@ -603,6 +609,8 @@ void Ov001_OptionMenuWaitIconRow(void) {
     Ov001_SetStepCallback(&Ov001_UpdateOptionMenu);
 }
 
+/* Per-frame update of the Wi-Fi option menu: take its input, run the menu's
+ * (empty) idle hook, and act on the icon row choice. */
 void Ov001_UpdateOptionMenu(void) {
     void Ov001_HandleOptionMenuInput(void);
     void func_ov001_02177ce4(void);

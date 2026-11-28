@@ -230,8 +230,11 @@ void func_ov003_021fd094(void) {
     func_ov003_021f7164();
 }
 
-void func_ov003_021fd0a0(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x18)(arg0);
+/* Class-script action of the ov003 map-list scene: forward to the scene object's
+ * virtual hide method at vtable offset 0x18, which slides the scene (and its map
+ * list) out of view. */
+void Ov003_MapListScene_CallHide(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_HIDE)(scene);
 }
 
 /* Refreshes an entity's display data: reinitializes its two display objects and then releases the pending handles stored in its part list (plus an extra handle when the low state nibble equals 2). */
@@ -278,8 +281,10 @@ void func_ov003_021fd0b4(void *entity) {
     Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(entity, void **, 0x6c), s32 *, 4));
 }
 
-void func_ov003_021fd18c(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x10)(arg0);
+/* Class-script action of the ov003 map-list scene: forward to the scene object's
+ * virtual resume method at vtable offset 0x10, which resumes its sprite animation. */
+void Ov003_MapListScene_CallResume(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_RESUME)(scene);
 }
 
 /* True while the map-list menu entity's first row is still sliding into

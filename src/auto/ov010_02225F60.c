@@ -4,6 +4,7 @@
 #define ONLINE_USE_INTERRUPT_GUARD
 #include "online_link.h"
 #include "ghttp.h"
+extern s32 gWebRequestError;
 typedef struct Ov010MemberCall { s32 function; s32 adjustment; } Ov010MemberCall;
 static inline void ov010CallMember(void *object, Ov010MemberCall *call) {
 s32 adj=call->adjustment;
@@ -112,8 +113,8 @@ void Ov010_ShutdownVoiceChat(void) {
 }
 
 s32 AllocAlignedBuffer() {
-    M2C_UNK func_020e3580();
-    func_020e3580();
+    M2C_UNK AllocGameHeap();
+    AllocGameHeap();
 }
 
 /* Free an allocation made by AllocAlignedBuffer (a NULL block is left alone). */
@@ -196,13 +197,14 @@ s32 SubmitWebRegisterRequest(void) {
     return success;
 }
 
+/* Return the code of the last failed online web request (0 when the last one
+ * succeeded); SetWebRequestError records it. */
 s32 GetWebRequestError(void) {
-    extern s32 gWebRequestError;
     return gWebRequestError;
 }
 
+/* Reset the last web request error to 0 (no error). */
 void ClearWebRequestError(void) {
-    M2C_UNK SetWebRequestError(M2C_UNK);
     SetWebRequestError(0);
 }
 
@@ -590,9 +592,11 @@ s32 Ov010RegisterSprite_Delete(s32 sprite) {
     return sprite;
 }
 
-void Ov010_AllocBlock(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
- M2C_UNK func_020e3580();
- func_020e3580(arg1,arg2);
+/* Heap-allocator callback: allocate `size` bytes aligned to `alignment` from the
+ * game heap (the callback's heap handle is unused). */
+M2C_UNK Ov010_AllocBlock(M2C_UNK unusedHeap, M2C_UNK size, M2C_UNK alignment) {
+    M2C_UNK AllocGameHeap();
+    return AllocGameHeap(size, alignment);
 }
 
 /* Free the heap block `block`, ignoring a null pointer. */

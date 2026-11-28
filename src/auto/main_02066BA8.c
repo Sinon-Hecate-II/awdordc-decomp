@@ -270,7 +270,8 @@ s32 Rand(void) {
     return RAND_MASK & (value >> RAND_SHIFT);
 }
 
-void SetRandSeed(s32 arg0) {
+/* Seed the game's global pseudo-random generator (the LCG advanced by Rand). */
+void SetRandSeed(s32 seed) {
     extern s32 gRandSeed;
-    gRandSeed = arg0;
+    gRandSeed = seed;
 }

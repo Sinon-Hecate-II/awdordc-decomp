@@ -137,13 +137,16 @@ M2C_FIELD(peer,s32 *,0x10)=gpiGetTime(0)+0x12c;
 return 0;
 }
 
-s32 HashBuddyProfileId(s32 *arg0) {
-unsigned long long RuntimeIntDivMod(s32);
-return (s32)(RuntimeIntDivMod(*arg0)>>32);
+/* Hashtable hash callback: the bucket a buddy profile id belongs in, i.e. the id
+ * divided by the table's bucket count. */
+s32 HashBuddyProfileId(s32 *key, s32 bucketCount) {
+    unsigned long long RuntimeIntDivMod(s32, s32);
+    return (s32)(RuntimeIntDivMod(*key, bucketCount) >> 32);
 }
 
-s32 CompareBuddyProfileId(s32 *arg0, s32 *arg1) {
-    return *arg0 - *arg1;
+/* Hashtable compare callback: order two buddy records by profile id. */
+s32 CompareBuddyProfileId(s32 *keyA, s32 *keyB) {
+    return *keyA - *keyB;
 }
 
 /* Release callback of the buddy table: free a GpiBuddyStatus record's presence

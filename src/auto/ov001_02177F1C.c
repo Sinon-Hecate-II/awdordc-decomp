@@ -243,6 +243,8 @@ void Ov001_ProfileSavedWaitIconRow(void) {
     Ov001_SetStepCallback(&Ov001_ProfileSavedIconRowStep);
 }
 
+/* Per-frame update of the WFC profile-saved popup's icon row: take its input,
+ * run the popup's (empty) idle hook, and close it once its button is chosen. */
 void Ov001_ProfileSavedIconRowStep(void) {
     void Ov001_HandleProfileSavedPopupInput(void);
     void func_ov001_02178394(void);
@@ -372,6 +374,8 @@ void Ov001_WfcEraseMessageWaitIconRow(void) {
     Ov001_SetStepCallback(&Ov001_UpdateWfcEraseMessageIconRow);
 }
 
+/* Per-frame step of the Wi-Fi erase-in-progress message's icon row: handle the
+ * row's input, run its (empty) update hook, then act on the choice it reports. */
 void Ov001_UpdateWfcEraseMessageIconRow(void) {
     void Ov001_HandleWfcEraseMessageInput(void);
     void func_ov001_021785b4(void);
@@ -390,6 +394,8 @@ void Ov001_HandleWfcEraseMessageInput(void) {
     Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
+/* Empty per-frame row update hook the Wi-Fi erase-in-progress message step calls
+ * between its input and choice handlers; the original gives it no body. */
 void func_ov001_021785b4(void) {
 
 }
@@ -521,12 +527,14 @@ void Ov001_WfcEraseWaitIconRow(void) {
     Ov001_SetStepCallback(&Ov001_UpdateWfcEraseMenu);
 }
 
+/* Per-frame step of the Wi-Fi data-erase screen: read the menu's input, run its
+ * (empty) row hook and then act on the latched choice. */
 void Ov001_UpdateWfcEraseMenu(void) {
     void Ov001_HandleWfcEraseMenuInput(void);
-    void func_ov001_02178848(void);
+    void Ov001_WfcEraseMenuNoop(void);
     void Ov001_HandleWfcEraseChoice(void);
     Ov001_HandleWfcEraseMenuInput();
-    func_ov001_02178848();
+    Ov001_WfcEraseMenuNoop();
     Ov001_HandleWfcEraseChoice();
 }
 
@@ -542,7 +550,7 @@ void Ov001_HandleWfcEraseMenuInput(void) {
     Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
-void func_ov001_02178848(void) {
+void Ov001_WfcEraseMenuNoop(void) {
 
 }
 
@@ -792,6 +800,8 @@ void Ov001_ProfileReturnWaitIconRow(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_UpdateMessageMenu);
 }
 
+/* Per-frame update of the Wi-Fi settings message popup: take its A/B input, run
+ * the popup's (empty) idle hook, and act on the choice once one is latched. */
 void Ov001_UpdateMessageMenu(void) {
     void Ov001_HandleMessageMenuInput(void);
     void func_ov001_02178da0(void);

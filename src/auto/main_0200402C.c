@@ -692,7 +692,7 @@ void func_02004ed4(void) {
 
 }
 
-void func_02004ed8(s32 arg0) {
+void OSi_StopIrqCallback(s32 arg0) {
  void OS_DisableIrqMask(s32);
  extern M2C_UNK gDmaTimerIrqHandlers, data_020f5208, data_0212dc24, gOsArea, data_0212dc20;
  s32 field20; u16 shift;
@@ -709,37 +709,54 @@ void func_02004ed8(s32 arg0) {
  if(field20==0) OS_DisableIrqMask(mask);
 }
 
-void func_02004f60(void) {
-    void func_02004ed8(s32);
-    func_02004ed8(0);
+/* Stop DMA channel 0: unregister its shared IRQ callback and disable its
+ * interrupt request. */
+void OS_StopDma0(void) {
+    void OSi_StopIrqCallback(s32);
+
+    OSi_StopIrqCallback(0);
 }
 
-void func_02004f70(void) {
-    func_02004ed8(1);
+/* Stop DMA channel 1: unregister its shared IRQ callback and disable its
+ * interrupt request. */
+void OS_StopDma1(void) {
+    OSi_StopIrqCallback(1);
 }
 
-void func_02004f80(void) {
-    func_02004ed8(2);
+/* Stop DMA channel 2: unregister its shared IRQ callback and disable its
+ * interrupt request. */
+void OS_StopDma2(void) {
+    OSi_StopIrqCallback(2);
 }
 
-void func_02004f90(void) {
-    func_02004ed8(3);
+/* Stop DMA channel 3: unregister its shared IRQ callback and disable its
+ * interrupt request. */
+void OS_StopDma3(void) {
+    OSi_StopIrqCallback(3);
 }
 
-void func_02004fa0(void) {
-    func_02004ed8(4);
+/* Stop timer 0: unregister its shared IRQ callback and disable its interrupt
+ * request. */
+void OS_StopTimer0(void) {
+    OSi_StopIrqCallback(4);
 }
 
-void func_02004fb0(void) {
-    func_02004ed8(5);
+/* Stop timer 1: unregister its shared IRQ callback and disable its interrupt
+ * request. */
+void OS_StopTimer1(void) {
+    OSi_StopIrqCallback(5);
 }
 
-void func_02004fc0(void) {
-    func_02004ed8(6);
+/* Stop timer 2: unregister its shared IRQ callback and disable its interrupt
+ * request. */
+void OS_StopTimer2(void) {
+    OSi_StopIrqCallback(6);
 }
 
-void func_02004fd0(void) {
-    func_02004ed8(7);
+/* Stop timer 3: unregister its shared IRQ callback and disable its interrupt
+ * request. */
+void OS_StopTimer3(void) {
+    OSi_StopIrqCallback(7);
 }
 
 /* Clear the IRQ wait queue at boot: OS_WaitIrq parks the current thread on it,

@@ -106,10 +106,14 @@ s32 GetPlayerMusicTrack(u8 player) {
     return M2C_FIELD(&data_02126180, s32 *, ((u32)(M2C_FIELD(*gCurrentMap + player * MAP_PLAYER_STRIDE, s32 *, MAP_PLAYER_STATES + PLAYER_REC_SPRITE) << 24) >> 24) * ARMY_DATA_SIZE);
 }
 
-void PlayPlayerMusic(s32 arg0) {
+/* Start the battle music of `player`'s army: its track is looked up and, left in
+ * r0, handed straight to ChangeMusicTrackWithFade (declared unprototyped, as the
+ * original's call does). */
+void PlayPlayerMusic(s32 player) {
     M2C_UNK ChangeMusicTrackWithFade();
     M2C_UNK GetPlayerMusicTrack(u8);
-    GetPlayerMusicTrack((u8)(arg0 & 0xFF));
+
+    GetPlayerMusicTrack((u8)(player & 0xFF));
     ChangeMusicTrackWithFade();
 }
 
@@ -480,9 +484,11 @@ void func_020a348c(void) {
     CreatePlayerUnitView();
 }
 
-void SetPlayerCoAnimationToIdle(M2C_UNK arg0) {
+/* Put `player`'s CO animation back to idle by clearing its army variant (bits
+ * 10-11 of the player's sprite state). */
+void SetPlayerCoAnimationToIdle(s32 player) {
     void SetPlayerArmyVariant(s32, s32);
-    SetPlayerArmyVariant(arg0, 0);
+    SetPlayerArmyVariant(player, 0);
 }
 
 #pragma opt_common_subs off

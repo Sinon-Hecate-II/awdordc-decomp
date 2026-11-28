@@ -2,6 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ds3dsprite.h"
+#include "map_effect.h"
 #include "menu_list.h"
 
 extern M2C_UNK gMenuListRowSlotDef;
@@ -78,9 +79,12 @@ return;
 return;
 }
 
-void func_020b8208(void *arg0) {
-s16 *p=(s16 *)arg0;
-p[42]=0; p[41]=4;
+/* Initialise the map-clear banner's fade-in: restart its frame counter and run
+ * the fade for four frames. */
+void InitMapClearFadeIn(void *effect) {
+    s16 *p = (s16 *)effect;
+    p[MAP_CLEAR_FADE_COUNTER / 2] = 0;
+    p[MAP_CLEAR_FADE_DURATION / 2] = 4;
 }
 
 /* Per-frame callback of the map-clear effect that ramps its blend the other way
@@ -115,9 +119,12 @@ void UpdateMapClearFadeIn(void *effect) {
     DeleteSpriteObject(effect);
 }
 
-void func_020b8338(void *arg0) {
-s16 *p=(s16 *)arg0;
-p[42]=0; p[41]=2;
+/* Restart the map-clear effect's fade: its frame counter returns to 0 and the
+ * fade runs for 2 frames. */
+void InitMapClearFade(void *arg0) {
+    s16 *p = (s16 *)arg0;
+    p[MAP_CLEAR_FADE_COUNTER / 2] = 0;
+    p[MAP_CLEAR_FADE_DURATION / 2] = 2;
 }
 
 /* Per-frame callback of the map-clear effect: step its frame counter, set the 3D
@@ -309,9 +316,10 @@ void func_020b876c(void) {
     CloseMenuList();
 }
 
-void func_020b8778(void) {
+/* Cancel any active screen transition, then close the menu list. */
+void CancelAndCloseMenuList(void) {
     M2C_UNK CloseMenuList();
-    M2C_UNK CancelScreenTransition();
+    s32 CancelScreenTransition(void);
     CancelScreenTransition();
     CloseMenuList();
 }

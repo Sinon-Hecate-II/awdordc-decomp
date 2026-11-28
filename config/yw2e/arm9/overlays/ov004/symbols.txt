@@ -570,7 +570,7 @@ data_ov004_02228338 kind:data(any) addr:0x02228338
 data_ov004_02228418 kind:data(any) addr:0x02228418
 data_ov004_02228508 kind:data(any) addr:0x02228508
 data_ov004_022285f8 kind:data(any) addr:0x022285f8
-data_ov004_0222866c kind:data(any) addr:0x0222866c ambiguous
+Ov010Online_OpenHttpConnectionEntry kind:data(any) addr:0x0222866c ambiguous
 data_ov004_022286e8 kind:data(any) addr:0x022286e8
 data_ov004_022287d8 kind:data(any) addr:0x022287d8
 data_ov004_02228a08 kind:data(any) addr:0x02228a08

@@ -435,6 +435,7 @@ void LoadUiLayerGraphics(s32 layer) {
     Load3DSpritePattern(0x1000, 1, GetUiColor(9), 2);
 }
 
+/* Load the shared UI graphics into 3D sprite engine layer 2. */
 void LoadUiGraphics(void) {
     LoadUiLayerGraphics(2);
 }
@@ -476,7 +477,12 @@ void SetCarriedUnitMenuSelection(s8 selection) {
     ((CarriedUnitMenuState *)gCarriedUnitMenuStackPtr)->selection = selection;
 }
 
-s8 GetCarriedUnitMenuSelection(void) {extern void *gCarriedUnitMenuStackPtr;return M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,2);}
+/* The chosen row of the carried-unit list menu state on top of the menu-state
+ * stack (the counterpart of SetCarriedUnitMenuSelection). */
+s8 GetCarriedUnitMenuSelection(void) {
+    extern void *gCarriedUnitMenuStackPtr;
+    return ((CarriedUnitMenuState *)gCarriedUnitMenuStackPtr)->selection;
+}
 
 /* Draws the cargo list of the unit under the cursor: one row per carried-unit
  * slot (the row's +0x24 slot, 0xFFFF when empty), with the carried unit's icon

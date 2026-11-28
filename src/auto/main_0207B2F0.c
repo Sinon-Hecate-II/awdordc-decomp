@@ -2,6 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ds3dsprite.h"
+extern s32 gRandomSeed;
 /* The current 3D sprite batch: gSpriteBatch holds a pointer to one. Up to ten sprites are
  * placed into the sprite engine's tile memory. */
 typedef struct SpriteBatch {
@@ -18,7 +19,7 @@ typedef struct SpriteBatch {
     s32 field58;        /* +0x58 */
     s32 field5C;        /* +0x5C */
     s32 tileStride;     /* +0x60 tiles between two placed sprites (GetBatchSpriteTile) */
-    s32 field64;        /* +0x64 kind drawn with the alternate palette */
+    s32 field64;        /* +0x64 sprite kind drawn with the highlight palette (SetSpriteBatchHighlightKind), 0 = none */
 } SpriteBatch;
 
 #define SPRITE_BATCH ((SpriteBatch *)gSpriteBatch)
@@ -346,9 +347,11 @@ s32 ScreenToMapPosition(s32 screenX, s32 screenY, s32 *mapPos) {
     return inside;
 }
 
-void SetCurrentSpriteBatch(s32 arg0) {
+/* Make the given 3D sprite batch the current one: gSpriteBatch, which every
+ * per-batch helper reads (see SPRITE_BATCH). */
+void SetCurrentSpriteBatch(s32 batch) {
     extern s32 gSpriteBatch;
-    gSpriteBatch = arg0;
+    gSpriteBatch = batch;
 }
 
 /* Initialises the current 3D sprite batch: remembers the two layers it draws on,
@@ -357,7 +360,7 @@ void SetCurrentSpriteBatch(s32 arg0) {
  * list and sets the batch's default tile stride. */
 void InitSpriteBatch(s32 layer, s32 layer2, s32 tileOffset, s32 paletteBase) {
     void SetSpriteBatchLimits(s32, s32);
-    void func_0207bcb0(s32);
+    void SetSpriteBatchTileStride(s32);
     extern s32 gSpriteBatch;
     extern u16 **gCur3DSpriteEngine;
     s32 i;
@@ -371,15 +374,17 @@ void InitSpriteBatch(s32 layer, s32 layer2, s32 tileOffset, s32 paletteBase) {
     SPRITE_BATCH->baseX = 0;
     SPRITE_BATCH->baseY = 0;
     SetSpriteBatchLimits(10, 2);
-    func_0207bcb0(0x20);
+    SetSpriteBatchTileStride(0x20);
     for (i = 0; i < 10; i++) {
         SPRITE_BATCH->kind[i] = 0;
     }
 }
 
-void SetSpriteBatchHighlightKind(s32 arg0) {
+/* Draw the current 3D sprite batch's sprites of kind `kind` with the highlight
+ * palette instead of the normal one; 0 highlights nothing. */
+void SetSpriteBatchHighlightKind(s32 kind) {
     extern s32 gSpriteBatch;
-    M2C_FIELD((void *)gSpriteBatch, s32 *, 0x64) = arg0;
+    SPRITE_BATCH->field64 = kind;
 }
 
 /* Set the current 3D sprite batch's two setup limits; InitSpriteBatch always
@@ -390,9 +395,11 @@ void SetSpriteBatchLimits(s32 spriteLimit, s32 secondLimit) {
     SPRITE_BATCH->field5C = secondLimit;
 }
 
-void func_0207bcb0(s32 arg0) {
-extern s32 gSpriteBatch;
-M2C_FIELD(gSpriteBatch,s32 *,0x60)=arg0;
+/* Set the tile distance between two sprites placed in the current 3D sprite
+ * batch. */
+void SetSpriteBatchTileStride(s32 tileStride) {
+    extern s32 gSpriteBatch;
+    M2C_FIELD(gSpriteBatch, s32 *, 0x60) = tileStride;
 }
 
 /* Append a sprite of the given kind and selection state to the current 3D sprite
@@ -645,12 +652,14 @@ void SeedRandomFromRtc(void) {
     gRandomSeed = 0x12345678;
 }
 
-void SetRandomSeed(s32 arg0) {
+/* Set the pseudo-random generator's seed gRandomSeed (read back with
+ * GetRandomSeed and advanced a step at a time by NextRandomValue). */
+void SetRandomSeed(s32 seed) {
     extern s32 gRandomSeed;
-    gRandomSeed = arg0;
+    gRandomSeed = seed;
 }
 
+/* Return the pseudo-random generator's current seed (see NextRandomValue). */
 s32 GetRandomSeed(void) {
-    extern s32 gRandomSeed;
     return gRandomSeed;
 }

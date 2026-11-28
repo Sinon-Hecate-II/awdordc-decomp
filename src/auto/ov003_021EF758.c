@@ -305,8 +305,11 @@ void func_ov003_021efe90(void) {
     func_ov003_021eaed0();
 }
 
-void func_ov003_021efe9c(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x18)(arg0);
+/* Class-script action of the ov003 battle scene: forward to the scene object's
+ * virtual hide method at vtable offset 0x18, which slides the map and its
+ * panels back out. */
+void Ov003_BattleScene_CallHide(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_HIDE)(scene);
 }
 
 /* Resets the battle scene's slide: starts a 12-frame tween of the map and the
@@ -324,8 +327,11 @@ tween=M2C_FIELD(scene,void **,BATTLE_SCENE_SLIDE_C); ((SpriteTween *)tween)->fro
 tween=M2C_FIELD(scene,void **,BATTLE_SCENE_SLIDE_B); ((SpriteTween *)tween)->from=GetSpriteAnimValue(tween);((SpriteTween *)tween)->to=BATTLE_SCENE_PANEL_HOME_X;((SpriteTween *)tween)->duration=BATTLE_SCENE_SLIDE_FRAMES;((SpriteTween *)tween)->current=((SpriteTween *)tween)->start;
 Hide3DSpriteSlide(M2C_FIELD(scene,s32 *,BATTLE_SCENE_PANEL_SPRITE));if(GetSceneSlideDirection()==0)return;tween=M2C_FIELD(scene,void **,BATTLE_SCENE_SPRITES);Hide3DSpriteSlide(M2C_FIELD(tween,s32 *,0));Hide3DSpriteSlide(M2C_FIELD(tween,s32 *,4));}
 
-void func_ov003_021effb8(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x10)(arg0);
+/* Class-script action of the ov003 battle scene: forward to the scene object's
+ * virtual resume method at vtable offset 0x10, which restarts the map's sprite
+ * animation after it was paused. */
+void Ov003_BattleScene_CallResume(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_RESUME)(scene);
 }
 
 /* Whether the battle scene's map slide tween is still running (its frame

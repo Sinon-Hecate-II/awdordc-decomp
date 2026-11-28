@@ -209,8 +209,10 @@ void Ov001_UpdateArm7Value(void) {
     Arm7SetValueWait(ARM7_SYSTEM_VALUE_FRONTEND);
 }
 
-void func_ov001_0218c668(void) {
-    Arm7SetValueWait(1);
+/* Put the ARM7's system value back to its default (1) while overlay 001 shuts
+ * down, undoing the front-end value Ov001_UpdateArm7Value keeps it at. */
+void Ov001_RestoreArm7SystemValue(void) {
+    Arm7SetValueWait(ARM7_SYSTEM_VALUE_DEFAULT);
 }
 
 /* Task-group array behind the untyped gOv001Tasks slot; each access reloads
@@ -286,9 +288,11 @@ Ov001_ReturnTaskNode(n,p);
 }
 }
 
-void Ov001_AddTask(s32 a,s32 b,s32 c,s32 d) {
-void *Ov001_AddTaskNode(s32,s32,s32,s32,u8);
-Ov001_AddTaskNode(a,b,c,d,0);
+/* Schedule `callback(arg)` as a task in `group` at `priority`, without an owned
+ * argument buffer (see Ov001_AddTaskNode). */
+void Ov001_AddTask(s32 group, s32 callback, s32 arg, s32 priority) {
+    void *Ov001_AddTaskNode(s32, s32, s32, s32, u8);
+    Ov001_AddTaskNode(group, callback, arg, priority, 0);
 }
 
 /* Take a free node from task group `group`, fill in the callback, its argument,

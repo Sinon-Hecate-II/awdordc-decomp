@@ -3,7 +3,7 @@
 #include "ov003_mapselect.h"
 #include "ov003_scene.h"
 static inline s32 IsTerrain2878(s32 v) { switch(v) { case 6: case 18: case 19: case 20: case 21: return 1; default: return 0; } }
-static inline s32 Active2878(void) { s32 func_ov003_021f14c8(void); return func_ov003_021f14c8()!=0; }
+static inline s32 Active2878(void) { s32 Ov003_IsSceneReady(void); return Ov003_IsSceneReady()!=0; }
 static inline u8 Block2878(s32 entry) { void *p; if(Active2878()) return 1; p=M2C_FIELD(entry,void **,0x40); return IsTerrain2878(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)]) != 0; }
 static inline s32 IsSpecial2e98(s32 v) {
  switch(v-8) {case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9: return 1; default:return 0;}
@@ -154,7 +154,7 @@ void func_ov003_021f2878(s32 entry) {
     s32 GetOverlayEventFlags(void);
     s32 GetSessionPlayerCount(void);
     s32 Ov003SceneObjectHasChildren(void);
-    M2C_UNK func_ov003_021f14c8(void);
+    M2C_UNK Ov003_IsSceneReady(void);
     s32 var_sp4;
     s32 var_sp0;
 
@@ -393,7 +393,7 @@ void func_ov003_021f2e98(s32 entry) {
  s32 GetMapConfirmState(void); void EnableMapConfirm(void); void DisableMapConfirm(void);
  void DeleteVoiceChatWidgets(void); void CreateMatchNameLabel(s32,s32,s32);
  void SetOv003SceneState(s32); s32 GetSceneSlideOffset(void);
- void Ov003_StartScreenFade(void); void func_ov003_021f18a4(void);
+ void Ov003_StartScreenFade(void); void Ov003_SetSceneBattleState(void);
  s32 IsOv003SceneClosed(void); void Ov003_StartBattleScene(s32,s32,s32,s32,s32);
  s32 direction; u8 next; s32 prev; void *p;
  func_ov003_021f2878(entry);
@@ -420,14 +420,14 @@ void func_ov003_021f2e98(s32 entry) {
  M2C_FIELD(entry,u8 *,0x34)=3;
  p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) SetOv003SceneState(4);
- else {if(!GetSceneSlideOffset()){Ov003_StartScreenFade();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
+ else {if(!GetSceneSlideOffset()){Ov003_StartScreenFade();M2C_FIELD(entry,u8 *,0x44)=0;}Ov003_SetSceneBattleState();}
  p=M2C_FIELD(entry,void **,0x40);M2C_FIELD(p,s8 *,5)++;return;
  case 2:
  if(AtStart2e98(M2C_FIELD(entry,void **,0x40))) {DisableMapConfirm();DeleteVoiceChatWidgets();CreateMatchNameLabel(0,0x6e0,entry);Sprite_ResumeAnimation(entry);return;}
  M2C_FIELD(entry,u8 *,0x34)=3;
  p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) SetOv003SceneState(4);
- else {if(!GetSceneSlideOffset()){Ov003_StartScreenFade();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
+ else {if(!GetSceneSlideOffset()){Ov003_StartScreenFade();M2C_FIELD(entry,u8 *,0x44)=0;}Ov003_SetSceneBattleState();}
  p=M2C_FIELD(entry,void **,0x40);M2C_FIELD(p,s8 *,5)--;return;
  }
  case 3:

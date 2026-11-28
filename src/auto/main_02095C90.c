@@ -139,9 +139,10 @@ void DeleteTelopWindow(void) {
     DeleteSpriteObjectsOfClass(&gTelopWindowClass);
 }
 
+/* Switch the full-screen message box off (MESSAGE_BOX_STATE_OFF). */
 void ClearMessageBoxState(void) {
-void *Get3DSpriteManager(void);
-M2C_FIELD(Get3DSpriteManager(),s8 *,0x46)=0;
+    void *Get3DSpriteManager(void);
+    M2C_FIELD(Get3DSpriteManager(), s8 *, DS3D_MANAGER_MESSAGE_BOX_STATE) = MESSAGE_BOX_STATE_OFF;
 }
 
 u8 GetMessageBoxState(void) {

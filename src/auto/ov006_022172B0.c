@@ -541,11 +541,13 @@ void CreateMapTransferObjectMode1(s32 mapId) {
  M2C_FIELD(transfer,s32 *,MAP_TRANSFER_MAP_ID)=mapId;M2C_FIELD(transfer,s32 *,MAP_TRANSFER_MODE)=1;
 }
 
-void func_ov006_02217c54(void) {
+/* Map-transfer screen enter step: load UI graphics bank 4. */
+void LoadMapTransferUiGraphics(void) {
     LoadUiGraphicsBank(4);
 }
 
-void func_ov006_02217c64(void) {
+/* Release UI graphics bank 4 when the map-transfer screen closes. */
+void FreeMapTransferUiGraphics(void) {
     FreeUiGraphicsBank(4);
 }
 
@@ -581,9 +583,11 @@ void ShowMapPickHint7(M2C_UNK owner) {
     CreateSpriteObject(&gMapPickHintClass, owner);
 }
 
-void SetReceivedMapValue(s32 arg0) {
+/* Set the value of the map just received in an online map transfer, pegged from
+ * the sender's entry (0 clears it; GetReceivedMapDisplayValue scales it). */
+void SetReceivedMapValue(s32 value) {
     extern s32 gReceivedMapValue;
-    gReceivedMapValue = arg0;
+    gReceivedMapValue = value;
 }
 
 /* The received map's value gReceivedMapValue scaled to tenths (value * 10 / 256),

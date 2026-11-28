@@ -354,23 +354,29 @@ s32 ScriptCmd_SuppressMessageBox(void *script) {
     return 1;
 }
 
-void SetMenuCursor(s8 arg0) {
+/* Point the menu cursor at message panel `panel` in the 3D sprite manager
+ * (negative clears it); GetMenuCursor reads the same byte. */
+void SetMenuCursor(s8 panel) {
     void *Get3DSpriteManager();
-    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x4D) = arg0;
+    M2C_FIELD(Get3DSpriteManager(), s8 *, DS3D_MANAGER_MENU_CURSOR) = panel;
 }
 
-void Set3DSpriteTargetMode(s8 arg0) {
+/* Choose the screen (DS3D_TARGET_*) the 3D sprite system creates its sprites on. */
+void Set3DSpriteTargetMode(s8 target) {
     void *Get3DSpriteManager(void);
-    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x49) = arg0;
+    M2C_FIELD(Get3DSpriteManager(), s8 *, DS3D_MANAGER_TARGET_MODE) = target;
 }
 
-void func_020943d0(void) {
-    Set3DSpriteTargetMode(1);
+/* Draw the 3D sprites on the sub engine (DS3D_TARGET_SUB). */
+void Set3DSpriteTargetSub(void) {
+    Set3DSpriteTargetMode(DS3D_TARGET_SUB);
 }
 
-void func_020943e0(s8 arg0) {
+/* Store the 3D sprite manager's byte at DS3D_MANAGER_UNK_48 (reset to 0 when the
+ * dialog UI is reset); what the byte selects is not known yet. */
+void SetManagerUnk48(s8 value) {
     void *Get3DSpriteManager(void);
-    M2C_FIELD(Get3DSpriteManager(), s8 *, 0x48) = arg0;
+    M2C_FIELD(Get3DSpriteManager(), s8 *, DS3D_MANAGER_UNK_48) = value;
 }
 
 /* Remember the screen mode the other screen shows for 3D sprite engine `engine`
@@ -381,7 +387,11 @@ void StoreOtherScreenMode(s32 engine, s8 mode) {
     M2C_FIELD(Get3DSpriteManager() + engine, s8 *, DS3D_MANAGER_OTHER_SCREEN_MODE) = mode;
 }
 
-void func_02094410(s8 arg0) { void *Get3DSpriteManager(); M2C_FIELD(Get3DSpriteManager(),s8 *,0x4E)=arg0; }
+/* Pick the palette style (FACE_PALETTE_*) applied to the CO face sprites. */
+void SetFacePaletteStyle(s8 style) {
+    void *Get3DSpriteManager();
+    M2C_FIELD(Get3DSpriteManager(), s8 *, DS3D_MANAGER_FACE_PALETTE_STYLE) = style;
+}
 
 /* Resets both 3D sprite engines (main and sub) and, for each, points the three
  * layer records at its tile memory and reinitialises the three layers. */
@@ -394,8 +404,8 @@ void Reset3DSpriteEngines(void) {
     void *Get3DSpriteManager(void);
     M2C_UNK SetMessagePanelRowPairs(M2C_UNK);
     M2C_UNK SetMessagePanelLayout(M2C_UNK);
-    M2C_UNK func_02097150(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02097164(M2C_UNK, M2C_UNK);
+    M2C_UNK SetScenePanelTileAttr(M2C_UNK, M2C_UNK);
+    M2C_UNK SetScenePanelPaletteSlot(M2C_UNK, M2C_UNK);
     M2C_UNK SetScenePanelMode(M2C_UNK, M2C_UNK);
     M2C_UNK SetPanelFaceHidden(M2C_UNK, M2C_UNK);
 
@@ -443,8 +453,8 @@ void Reset3DSpriteEngines(void) {
 
             tileBase = 0x124;
             for (layer = 0; layer < 3; layer = layer + 1) {
-                func_02097150(layer, tileBase);
-                func_02097164(layer, layer);
+                SetScenePanelTileAttr(layer, tileBase);
+                SetScenePanelPaletteSlot(layer, layer);
                 SetScenePanelMode(layer, 0);
                 SetPanelFaceHidden(layer, 0);
                 tileBase = tileBase + 0x80;
@@ -471,7 +481,7 @@ void ResetDialogUI(void) {
  ClearEventFlagsLow();EnableTouchInput();ClearMessageBoxState();
  for(i=0;i<3;i++)M2C_FIELD(GetScenePanelState(i),s16*,8)=0;
  for(i=0;i<2;i++)StoreOtherScreenMode(i,2);
- SetMenuCursor(-1);Set3DSpriteTargetMode(3);func_020943e0(0);func_02094410(0);Reset3DSpriteEngines();
+ SetMenuCursor(-1);Set3DSpriteTargetMode(3);SetManagerUnk48(0);SetFacePaletteStyle(0);Reset3DSpriteEngines();
 }
 
 /* Whether one of the game's dialog sequences (gDialogSequences) is running. */
@@ -613,13 +623,13 @@ void StartNextQueuedDialog(void) {
 #pragma optimization_level 2
 void *StartDialogSequence(s32 arg0) {
 s32 FindDialogSequence(s32);
-void SetMenuCursor(s8); void Set3DSpriteTargetMode(s8);void func_020943e0(s8);void func_02094410(s8);
+void SetMenuCursor(s8); void Set3DSpriteTargetMode(s8);void SetManagerUnk48(s8);void SetFacePaletteStyle(s8);
 M2C_UNK ClearMessageBoxState(void);void DisableTouchInput(void);void AcquireMapViewHold(void);
 extern M2C_UNK gDialogSequences,data_02157fec,data_02157ff0,data_02157ff4;
 s16 index; s32 offset; u8 *base;
 index=FindDialogSequence(0);
 if(index==-1)return NULL;
-SetMenuCursor(-1);Set3DSpriteTargetMode(3);func_020943e0(0);func_02094410(0);
+SetMenuCursor(-1);Set3DSpriteTargetMode(3);SetManagerUnk48(0);SetFacePaletteStyle(0);
 ClearMessageBoxState();DisableTouchInput();AcquireMapViewHold();
 offset=index*24;
 base=(u8 *)&gDialogSequences;

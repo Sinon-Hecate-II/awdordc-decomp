@@ -231,9 +231,12 @@ void ApplySoundEffectVolumeSetting(void) {
     SetSoundEffectVolumeLevel(1, GetSoundEffectVolumeSetting());
 }
 
-void *GetBattleRecord(s32 a) {
-extern M2C_UNK data_0215d9ec;
-return (u8 *)&data_0215d9ec+((a-5)<<3);
+/* The battle save record of save type `saveType` (SAVE_RECORD_TYPE_CAMPAIGN + slot
+ * or SAVE_RECORD_TYPE_VERSUS): one BATTLE_RECORD_SIZE-byte entry of
+ * gBattleSaveRecords. */
+void *GetBattleRecord(s32 saveType) {
+extern M2C_UNK gBattleSaveRecords;
+return (u8 *)&gBattleSaveRecords+((saveType-SAVE_RECORD_TYPE_CAMPAIGN)<<3);
 }
 
 M2C_UNK *GetMapSettings(void) {

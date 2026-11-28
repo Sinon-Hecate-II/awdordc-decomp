@@ -271,7 +271,7 @@ s32 GetRtcDateTime(s32 dateOut, s32 timeOut) {
 void func_0200f0e4(s32 arg0, u32 arg1, s32 arg2) {
  extern M2C_UNK gRtcState;
  s32 func_0200fa50(void *);
- s32 func_0200f6fc(void);
+ s32 SendRtcStatusCommand(void);
  u8 command;
  u8 status;
  s32 result;
@@ -344,12 +344,12 @@ void func_0200f0e4(s32 arg0, u32 arg1, s32 arg2) {
       if ((((RTCStatus *)0x27ffdea)->bits.mode) != 4) {
        M2C_FIELD(&gRtcState, s32 *, 0x1c)++;
        *(u16 *)0x27ffdea = (*(u16 *)0x27ffdea & ~15) | 4;
-       if (!func_0200f6fc()) { M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0; result = 3; }
+       if (!SendRtcStatusCommand()) { M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0; result = 3; }
       }
      } else if ((((RTCStatus *)0x27ffdea)->bits.mode) != 0) {
       M2C_FIELD(&gRtcState, s32 *, 0x1c)++;
       *(u16 *)0x27ffdea = *(u16 *)0x27ffdea & ~15;
-      if (!func_0200f6fc()) { M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0; result = 3; }
+      if (!SendRtcStatusCommand()) { M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0; result = 3; }
      }
     } else M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0;
     break;
@@ -359,12 +359,12 @@ void func_0200f0e4(s32 arg0, u32 arg1, s32 arg2) {
       if ((((u32)*(u16 *)0x27ffdea << 25) >> 31) == 0) {
        M2C_FIELD(&gRtcState, s32 *, 0x1c)++;
        *(u16 *)0x27ffdea = *(u16 *)0x27ffdea | 64;
-       if (!func_0200f6fc()) { M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0; result = 3; }
+       if (!SendRtcStatusCommand()) { M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0; result = 3; }
       }
      } else if (((u32)*(u16 *)0x27ffdea << 25) >> 31) {
       M2C_FIELD(&gRtcState, s32 *, 0x1c)++;
       *(u16 *)0x27ffdea = *(u16 *)0x27ffdea & ~64;
-      if (!func_0200f6fc()) { M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0; result = 3; }
+      if (!SendRtcStatusCommand()) { M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0; result = 3; }
      }
     } else M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0;
     break;
@@ -421,9 +421,10 @@ loop_1:
     goto loop_1;
 }
 
-void RtcResultCallback(s32 arg0) {
+/* Completion callback: record the finished RTC request's result. */
+void RtcResultCallback(s32 result) {
     extern M2C_UNK gRtcState;
-    M2C_FIELD(&gRtcState, s32 *, 0x24) = arg0;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_RESULT) = result;
 }
 
 #pragma opt_common_subs off
@@ -434,21 +435,25 @@ while ((v = *p) == 1) {}
 return v;
 }
 #pragma opt_common_subs reset
+/* Ask the RTC to read the current date and time in one request. */
 s32 SendRtcReadDateTimeCommand(void) {
     s32 SendRtcCommand(s32);
-    return SendRtcCommand(0x10);
+    return SendRtcCommand(RTC_COMMAND_READ_DATE_TIME);
 }
 
+/* Ask the RTC to read the current date. */
 s32 SendRtcReadDateCommand(void) {
-    return SendRtcCommand(0x11);
+    return SendRtcCommand(RTC_COMMAND_READ_DATE);
 }
 
+/* Ask the RTC to read the current time. */
 s32 SendRtcReadTimeCommand(void) {
-    return SendRtcCommand(0x12);
+    return SendRtcCommand(RTC_COMMAND_READ_TIME);
 }
 
-s32 func_0200f6fc(void) {
-    return SendRtcCommand(0x27);
+/* Ask the RTC to update its status word and return the refreshed status. */
+s32 SendRtcStatusCommand(void) {
+    return SendRtcCommand(RTC_COMMAND_STATUS);
 }
 
 /* Queue a one-frame RTC command over the RTC FIFO: the command byte travels in

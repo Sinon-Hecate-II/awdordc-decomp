@@ -544,18 +544,18 @@ void InitArenaTable(void) {
     SetArenaLo(6, GetArenaBottom(6));
 }
 
-s32 GetArenaHi(s32 arg0) {
-    u32 a = arg0 * 4;
-    a = a + 0x02700000;
-    a = a + 0x000FF000;
-    return M2C_FIELD(a, s32 *, 0xDC4);
+/* Return arena `arena`'s high bound from the OS arena table. */
+s32 GetArenaHi(s32 arena) {
+    return M2C_FIELD((((u32)arena * 4) + (s32)ARENA_TABLE_BASE), s32 *, ARENA_HIGH_OFFSET);
 }
 
-s32 GetArenaLo(s32 arg0) {
-    u32 a = arg0 * 4;
-    a = a + 0x02700000;
-    a = a + 0x000FF000;
-    return M2C_FIELD(a, s32 *, 0xDA0);
+/* Return the low bound of heap arena `arena` from the OS arena table (the two
+ * words at 0x027FFDA0 and 0x027FFDC4, indexed by arena id); 0 means unused. */
+s32 GetArenaLo(s32 arena) {
+    u32 table = arena * 4;
+    table = table + 0x02700000;
+    table = table + 0x000FF000;
+    return M2C_FIELD(table, s32 *, 0xDA0);
 }
 
 s32 func_02006a38(s32 arg0) {
@@ -604,12 +604,14 @@ extended:
     }
 }
 
-void SetArenaHi(s32 arg0, s32 arg1) {
-    M2C_FIELD((((u32)arg0 * 4) + (s32)0x027FF000), s32 *, 0xDC4) = arg1;
+/* Set arena `arena`'s high bound (one past its top) in the arena table. */
+void SetArenaHi(s32 arena, s32 high) {
+    M2C_FIELD((((u32)arena * 4) + (s32)ARENA_TABLE_BASE), s32 *, ARENA_HIGH_OFFSET) = high;
 }
 
-void SetArenaLo(s32 arg0, s32 arg1) {
-    M2C_FIELD(((arg0 * 4) + (unsigned)0x027FF000), s32 *, 0xDA0) = arg1;
+/* Set the low bound of heap arena `arena` in the OS arena table. */
+void SetArenaLo(s32 arena, s32 low) {
+    M2C_FIELD(((arena * 4) + (unsigned)0x027FF000), s32 *, 0xDA0) = low;
 }
 
 /* Allocate size bytes with the given alignment from an arena: align the arena's

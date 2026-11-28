@@ -96,6 +96,8 @@ s32 GetScriptSoundId(s32 arg0) {
     return gScriptSoundIds[arg0];
 }
 
+/* Return the records screen's music-list entry at `index` (see RecordTrack); the
+ * callers read its trackId at +0, colour at +4 and length at +8. */
 s32 *RecordsMenu_GetRecord(s32 index) {
     extern RecordTrack gRecordTracks[];
     return (s32 *) &gRecordTracks[index];

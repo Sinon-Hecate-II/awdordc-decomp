@@ -513,9 +513,11 @@ u16 bl=(ab*x+bb*y)>>5;
 return (r&31)|((g&31)<<5)|((bl&31)<<10);
 }
 
-void FadePaletteTowardsBlack(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    void BlendPalette(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    BlendPalette(arg0, arg1, arg2, arg3, 0x20);
+/* Blend a 16-colour (32-byte) palette in place towards `blend`, using `keep` and
+ * `mix` sixteenths of the entry's and the blend's channels. */
+void FadePaletteTowardsBlack(u16 *palette, s32 blend, s32 keep, s32 mix) {
+    void BlendPalette(s32, s32, s32, s32, s32);
+    BlendPalette((s32)palette, blend, keep, mix, DS3D_PALETTE_BYTES);
 }
 
 void func_020ae480(u16 *p,s32 a,s32 b,s32 c) {

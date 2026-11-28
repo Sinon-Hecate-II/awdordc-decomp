@@ -144,6 +144,8 @@ void Ov001_WaitIconRowSelection(void) {
 extern void Ov001_HandleIconMenuInput(void);
 extern void func_ov001_02181ee4(void);
 extern void Ov001_ApplyIconMenuChoice(void);
+/* Per-frame step of the ov001 icon menu: read the icon row's input, let its
+ * update hook run, then carry out the icon the player chose. */
 void Ov001_IconMenuIconRowStep(void) {
     void Ov001_HandleIconMenuInput(void);
     void func_ov001_02181ee4(void);
@@ -458,6 +460,8 @@ void Ov001_WaitWfcConnectFadeIn(void) {
     Ov001_SetStepCallback(&Ov001_WfcConnectFadeDone);
 }
 
+/* Step that runs once the Wi-Fi connect screen's fade-in has finished: run the
+ * screen's three (empty) idle hooks. */
 void Ov001_WfcConnectFadeDone(void) {
     void func_ov001_021824bc(void);
     void func_ov001_021824c0(void);
@@ -557,9 +561,11 @@ void Ov001_WfcConnectStep(s32 task) {
     Ov001_PostTaskMessage(0, task);
 }
 
-void func_ov001_02182614(s32 arg0, s32 arg1) {
+/* WFC allocator callback: allocate `size` bytes aligned to 0x20 from the overlay
+ * heap (the first argument is unused). */
+void Ov001_AllocWfcBlock(s32 unused, s32 size) {
     M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK);
-    Ov001_Alloc(arg1, 0x20);
+    Ov001_Alloc(size, 0x20);
 }
 
 void func_ov001_02182628(s32 arg0, s32 arg1) {

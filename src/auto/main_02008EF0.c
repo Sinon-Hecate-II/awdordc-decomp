@@ -75,13 +75,19 @@ void InitSoundCommandSystem(void) {
     ClearSoundChannelCallbacks();
 }
 
+/* Lock the sound layer's shared OSMutex, guarding the ARM7 command queue. */
 void Sound_LockMutex(void) {
-    M2C_UNK LockMutex(M2C_UNK *);
+    void LockMutex(OSMutex *);
     extern M2C_UNK gSoundMutex;
-    LockMutex(&gSoundMutex);
+    LockMutex((OSMutex *)&gSoundMutex);
 }
 
-void Sound_UnlockMutex(void){M2C_UNK UnlockMutex(M2C_UNK *);extern M2C_UNK gSoundMutex;UnlockMutex(&gSoundMutex);}
+/* Release the mutex that guards the sound command queue. */
+void Sound_UnlockMutex(void) {
+    void UnlockMutex(void *);
+    extern M2C_UNK gSoundMutex;
+    UnlockMutex((OSMutex *)&gSoundMutex);
+}
 
 #pragma opt_strength_reduction off
 #pragma peephole off

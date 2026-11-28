@@ -14,7 +14,7 @@ void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,s32);void Clos
 void LoadFileSectionToSpriteBuffer(void *,s32,s32,s32);void SetTileRectPalette(s32,s32,s32,s32);
 s32 LoadSpriteResource(s32,s32,s32,s32);void Clear3DSpriteLayerVram(s32);void LoadScenePanelPalette(s32);
 s32 GetUiColor(s32);void Load3DSpritePattern(s32,s32,s32,s32);void Set3DSpriteDrawCallback(void *,void *);void Show3DSprite(void *);void Show3DSpriteSlide(void *);
-u32 func_020c5464(s16);
+u32 GetBattleSlotType(s16);
 void func_ov006_02215010(void);
 u16 text[13];u16 *volatile p0,*volatile p1,*volatile p2,*volatile p3,*volatile p4,*volatile p5;
 MenuSprite_02213e98 **sprites;void *savedEngine; s32 id,tile;u64 code;
@@ -73,7 +73,7 @@ Show3DSpriteSlide(sprites[0]);
 {MenuSprite_02213e98 *s=sprites[1];s->frame=(u16)(s->base+2);s->timer=0;}
 {MenuSprite_02213e98 *s=sprites[2];s->frame=(u16)(s->base+2);s->timer=0;}
 Show3DSpriteSlide(sprites[3]);Show3DSpriteSlide(sprites[4]);Show3DSpriteSlide(sprites[5]);
-switch(func_020c5464(M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,8))){
+switch(GetBattleSlotType(M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,8))){
 case 0:
 {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(arg0,void **,0x3c))[3];u32 frame=s->base;u8 disabled=(s->base+2!=(u16)s->frame);if(!disabled){s->frame=(u16)frame;s->timer=0;}}
 {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(arg0,void **,0x3c))[4];u32 frame=s->base+2;u8 disabled=(s->base+2!=(u16)s->frame);if(disabled){s->frame=(u16)frame;s->timer=0;}}
@@ -142,8 +142,11 @@ void EraseSelectedBattleSave(void *screen) {
     M2C_FIELD(screen, s8 *, 0x34) = 1;
 }
 
-void func_ov006_0221507c(void **arg0) {
- M2C_FIELD(*arg0, void (**)(void *), 8)(arg0);
+/* Class-script action of the ov006 battle-save screen: forward to the screen
+ * object's virtual per-frame update at the base class's vtable slot 8, which
+ * the screen subclass overrides with its input/update handler. */
+void Ov006_BattleSaveScreen_CallUpdate(void **screen) {
+    M2C_FIELD(*screen, void (**)(void *), 8)(screen);
 }
 
 /* Tear down a screen's sprites: delete the shared wallpaper sprites on both

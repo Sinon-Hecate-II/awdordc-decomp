@@ -290,7 +290,7 @@ void Ov001_UpdateProfileSetup(void) {
     void Ov001_UpdateProfileTask(void);
     void Ov001_EnterProfileObtained(void);
     s32 Ov001_FinishLinkTeardown(void);
-    s32 Ov001_GetTaskStep(void);
+    s32 Ov001_GetWhStatus(void);
     s32 Ov001_EndLink(void);
     void func_ov001_02188b20(void);
     void MultiBoot_CloseLink(void);
@@ -346,7 +346,7 @@ void Ov001_UpdateProfileSetup(void) {
         ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 22;
         return;
     case 19:
-        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY && Ov001_GetTaskStep() == WH_STATUS_IDLE) {
+        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY && Ov001_GetWhStatus() == WH_STATUS_IDLE) {
             Ov001_EndLink();
             ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 20;
         }
@@ -357,7 +357,7 @@ void Ov001_UpdateProfileSetup(void) {
         ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 22;
         return;
     case 22:
-        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY && Ov001_GetTaskStep() == WH_STATUS_IDLE) {
+        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY && Ov001_GetWhStatus() == WH_STATUS_IDLE) {
             Ov001_EndLink();
             ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 23;
         }
@@ -368,7 +368,7 @@ void Ov001_UpdateProfileSetup(void) {
         ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 25;
         return;
     case 25:
-        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY && Ov001_GetTaskStep() == WH_STATUS_IDLE) {
+        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY && Ov001_GetWhStatus() == WH_STATUS_IDLE) {
             Ov001_EndLink();
             ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 26;
         }
@@ -381,7 +381,7 @@ void Ov001_UpdateProfileSetup(void) {
     case 28:
         if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ <= PROFILE_STATE_DELAY)
             return;
-        if (Ov001_GetTaskStep() == WH_STATUS_IDLE) {
+        if (Ov001_GetWhStatus() == WH_STATUS_IDLE) {
             Ov001_EndLink();
             ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 29;
             return;
@@ -398,7 +398,7 @@ void Ov001_UpdateProfileSetup(void) {
         ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 33;
         return;
     case 33:
-        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY && Ov001_GetTaskStep() == WH_STATUS_IDLE) {
+        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY && Ov001_GetWhStatus() == WH_STATUS_IDLE) {
             Ov001_EndLink();
             ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 34;
         }
@@ -421,7 +421,8 @@ if(M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_STATE)!=M2C_FIELD(gOv001ProfileStat
 M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_PREV_STATE)=M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_STATE);
 }
 
-void func_ov001_02189308(void) {
+/* Return the parent's (player 1) multiboot info block, the source of the profile message. */
+void Ov001_GetParentPlayerInfo(void) {
     MultiBoot_GetPlayerInfo(1);
 }
 
@@ -433,7 +434,7 @@ void Ov001_UpdateChildSearch(void) {
     M2C_UNK SystemHalt();
     extern void *gOv001ProfileState;
     s32 child;
-    switch (Ov001_GetTaskStep()) {
+    switch (Ov001_GetWhStatus()) {
     case WH_STATUS_IDLE:
         WhStartChildScan();
         return;

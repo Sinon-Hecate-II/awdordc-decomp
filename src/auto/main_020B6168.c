@@ -24,6 +24,13 @@ typedef struct { u8 pad[0x48]; u32 distance:10; u32 flags:22; } RangeEffect;
 #define GAS_EFFECT_TARGET_Y     0x40 /* s32: target cell y */
 #define GAS_EFFECT_FIRST_TARGET 0x44 /* s32: target-list index of the order's first target */
 
+/* Fields of the falling-flare sprite CreateFallingFlareSprite builds: where it is,
+ * the y it starts its descent from and the y it lands on. */
+#define FALLING_FLARE_Y        0x38 /* s32: current y */
+#define FALLING_FLARE_START_Y  0x58 /* s32: y the descent starts from */
+#define FALLING_FLARE_TARGET_Y 0x5C /* s32: y the flare lands on */
+#define FALLING_FLARE_DESCENT  0x600 /* distance the flare falls */
+
 void func_020b6168(void *arg0) {
     extern void **gCurrentMap;
     M2C_UNK PlaySoundAtTile(M2C_UNK, s32, s32);
@@ -99,7 +106,7 @@ void func_020b6168(void *arg0) {
 /* Step the screen-transition down-counter (func_020b524c -> CloseEffectNarcArchive, which
  * fires CloseNarcArchive once the counter wraps to zero), then finalize the current
  * map view and run its registered callbacks (RefreshMapView -> RefreshMapUnitDisplay +
- * func_020cfd38). */
+ * RefreshMapViewRender). */
 void func_020b6320(void) {
     M2C_UNK RefreshMapView();
     M2C_UNK func_020b524c();
@@ -230,12 +237,14 @@ s32 b=EaseInterpolate(4,0,0x40000,top,bottom);
 func_0208c0d0(arg0,(u8)a);M2C_FIELD(arg0,s32 *,0x40)=b;
 }
 #pragma opt_propagation reset
-void InitFallingFlarePosition(void *arg0) {
-    s32 temp_r2;
+/* Initialise a falling flare's descent: it starts FALLING_FLARE_DESCENT above its
+ * current y and eases down onto that y (the cell it was spawned over). */
+void InitFallingFlarePosition(void *flare) {
+    s32 targetY;
 
-    temp_r2 = M2C_FIELD(arg0, s32 *, 0x38);
-    M2C_FIELD(arg0, s32 *, 0x58) = (s32) (temp_r2 - 0x600);
-    M2C_FIELD(arg0, s32 *, 0x5C) = temp_r2;
+    targetY = M2C_FIELD(flare, s32 *, FALLING_FLARE_Y);
+    M2C_FIELD(flare, s32 *, FALLING_FLARE_START_Y) = (s32) (targetY - FALLING_FLARE_DESCENT);
+    M2C_FIELD(flare, s32 *, FALLING_FLARE_TARGET_Y) = targetY;
 }
 
 /* Per-frame update of a falling "flare" sprite: eases its y from the descent start

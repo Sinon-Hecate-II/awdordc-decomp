@@ -316,9 +316,10 @@ s32 ghiInetAddr(s32 hostname) {
     return address;
 }
 
+/* GameSpy ghi: return the last socket result that failed (<0), or 0 when none. */
 s32 ghiGetLastSocketError(void) {
     extern M2C_UNK gGhiSocketState;
-    return M2C_FIELD(&gGhiSocketState, s32 *, 4);
+    return M2C_FIELD(&gGhiSocketState, s32 *, GHI_STATE_LAST_ERROR);
 }
 
 /* GameSpy nonport.c time(): assert the system tick is available, then return the

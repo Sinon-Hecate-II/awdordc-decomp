@@ -368,9 +368,10 @@ void TP_StopSampling(void) {
     }
 }
 #pragma opt_instruction_scheduling reset
-u16 func_0200d9f4(void) {
+/* Index of the slot the touch driver will store the next sample in. */
+u16 TP_GetSampleIndex(void) {
     extern M2C_UNK gTouchDriverState;
-    return M2C_FIELD(&gTouchDriverState, u16 *, 0x10);
+    return ((TouchState *)&gTouchDriverState)->sampleIndex;
 }
 
 #pragma opt_instruction_scheduling off
@@ -460,5 +461,9 @@ void TP_WaitBusy(u32 commandMask) {
     }
 }
 
-u32 TP_CheckBusy(u32 arg0) { return M2C_FIELD(&gTouchDriverState, u16 *, 0x38) & arg0; }
+/* Return which of the touch commands in `commandMask` have reported an error
+ * (TouchState.flags38 holds one bit per failed command). */
+u32 TP_CheckBusy(u32 commandMask) {
+    return ((TouchState *)&gTouchDriverState)->flags38 & commandMask;
+}
 

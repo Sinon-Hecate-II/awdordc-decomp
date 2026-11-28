@@ -294,12 +294,14 @@ void Ov001_WaitWfcEraseResultMenu(void) {
     Ov001_SetStepCallback(&Ov001_UpdateWfcEraseResultMenu);
 }
 
+/* Per-frame step of the WFC-erase result menu: read the menu's input, run its
+ * (empty) hook and then act on the latched choice. */
 void Ov001_UpdateWfcEraseResultMenu(void) {
  void Ov001_HandleWfcEraseResultMenuInput(void);
- void func_ov001_021794bc(void);
+ void Ov001_WfcEraseResultMenuNoop(void);
  void Ov001_HandleWfcEraseResultChoice(void);
  Ov001_HandleWfcEraseResultMenuInput();
- func_ov001_021794bc();
+ Ov001_WfcEraseResultMenuNoop();
  Ov001_HandleWfcEraseResultChoice();
 }
 
@@ -319,7 +321,7 @@ void Ov001_HandleWfcEraseResultMenuInput(void) {
     Ov001_LatchIconRowSelection(OV001_CHOICE_BACK);
 }
 
-void func_ov001_021794bc(void) {
+void Ov001_WfcEraseResultMenuNoop(void) {
 
 }
 

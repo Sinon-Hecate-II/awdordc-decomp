@@ -816,9 +816,11 @@ s32 Sound_CreateChannelHeap(s32 channel, void *soundPlayer, s32 heapSize) {
     return 1;
 }
 
-void Sound_FadeOutPlayerVoice(s32 *arg0) {
-    M2C_UNK Sound_FadeOutVoice(s32);
-    Sound_FadeOutVoice(*arg0);
+/* Fade the driver voice attached to sound player `player` out over `fadeLength`
+ * frames (0 releases it at once); a player with no voice is left alone. */
+void Sound_FadeOutPlayerVoice(void *volatile *player, s32 fadeLength) {
+    void Sound_FadeOutVoice(void *, s32);
+    Sound_FadeOutVoice(*player, fadeLength);
 }
 
 /* Fade every active driver voice out over `fadeLength` frames; 0 releases the
@@ -853,15 +855,19 @@ void Sound_DetachPlayerVoice(void *volatile *player) {
     *player = NULL;
 }
 
-void Sound_SetVoiceExpression(void **arg0, s8 arg1) {
-if (*(void * volatile *)arg0 != NULL) {
-M2C_FIELD(*(void * volatile *)arg0,s8 *,0x41)=arg1;
-}
+/* Set the expression level (the second volume level, 0..127) of the driver voice
+ * attached to a sound player; nothing happens while the player has no voice. */
+void Sound_SetVoiceExpression(void *player, s8 expression) {
+    if (M2C_FIELD(player, void * volatile *, SOUND_PLAYER_VOICE) != NULL) {
+        M2C_FIELD(M2C_FIELD(player, void * volatile *, SOUND_PLAYER_VOICE), s8 *, SOUND_VOICE_EXPRESSION) = expression;
+    }
 }
 
-void Sound_SetVoiceVolume(void **arg0, s8 arg1) {
-    if (*(void * volatile *)arg0 != NULL) {
-        M2C_FIELD(*(void * volatile *)arg0, s8 *, 0x40) = arg1;
+/* Set the volume level (0..127) of the driver voice attached to a sound player;
+ * nothing happens while the player has no voice. */
+void Sound_SetVoiceVolume(void *player, s8 volume) {
+    if (M2C_FIELD(player, void * volatile *, SOUND_PLAYER_VOICE) != NULL) {
+        M2C_FIELD(M2C_FIELD(player, void * volatile *, SOUND_PLAYER_VOICE), s8 *, SOUND_VOICE_VOLUME) = volume;
     }
 }
 

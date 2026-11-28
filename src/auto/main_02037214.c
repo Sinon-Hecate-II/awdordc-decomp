@@ -236,9 +236,11 @@ void SetHeapCallbacks(void *(*allocate)(s32 heap, s32 size, s32 align),
     M2C_FIELD(&gHeapCallbacks, void (**)(s32, void *, s32), 0) = freeBlock;
 }
 
-void HeapAlloc(M2C_UNK arg0, M2C_UNK arg1) {
+/* Allocate `size` bytes from heap `heap` with the default 0x20-byte alignment;
+ * the new block is left in the return register. */
+void HeapAlloc(M2C_UNK heap, M2C_UNK size) {
     M2C_UNK HeapAllocAligned(M2C_UNK, M2C_UNK, M2C_UNK);
-    HeapAllocAligned(arg0, arg1, 0x20);
+    HeapAllocAligned(heap, size, HEAP_ALIGN_DEFAULT);
 }
 
 /* Allocate `size` bytes aligned to `align` from heap `heap` through the heap's
@@ -265,11 +267,13 @@ void HeapFree(M2C_UNK heap, M2C_UNK block, M2C_UNK size) {
         heap, GetHeapBlockHeader(block), size);
 }
 
-M2C_UNK HeapRealloc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+/* Grow or shrink the heap block `block` to `size` bytes, keeping the default
+ * HEAP_ALIGN_DEFAULT alignment: forwards to HeapReallocAligned. */
+M2C_UNK HeapRealloc(M2C_UNK heap, M2C_UNK block, M2C_UNK oldSize, M2C_UNK size) {
     M2C_UNK HeapReallocAligned(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 dummy = 0;
     (void)dummy;
-    return HeapReallocAligned(arg0, arg1, arg2, arg3, 0x20);
+    return HeapReallocAligned(heap, block, oldSize, size, HEAP_ALIGN_DEFAULT);
 }
 
 /* Reallocate a heap block: allocate a new aligned block of size bytes, copy the old
@@ -317,11 +321,11 @@ void gpiFree(M2C_UNK block) {
 M2C_UNK Wfc_CreateConnection(M2C_UNK conn,M2C_UNK mode,M2C_UNK unused,M2C_UNK threadPriority){
  extern void *gWfcConnection;
  void SetNasServerEnvironment(s32);
- void MI_CpuFill8(void *,s32,s32);void func_020220a8(s32);
+ void MI_CpuFill8(void *,s32,s32);void SetTlsBoostPriority(s32);
  if(gWfcConnection)return;
  MI_CpuFill8((void *)conn,0,12);
  M2C_FIELD(conn,u16 *,WFC_CONN_MODE)=mode;M2C_FIELD(conn,u16 *,WFC_CONN_SUBMODE)=1;M2C_FIELD(conn,u16 *,WFC_CONN_STATE)=WFC_CONN_IDLE;M2C_FIELD(conn,u16 *,WFC_CONN_LINK_READY)=0;
- gWfcConnection=(void *)conn;SetNasServerEnvironment(NAS_SERVER_TEST);func_020220a8(threadPriority);
+ gWfcConnection=(void *)conn;SetNasServerEnvironment(NAS_SERVER_TEST);SetTlsBoostPriority(threadPriority);
 }
 
 /* Create the WFC connection object for an online session at mode 3 (the highest

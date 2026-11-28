@@ -517,9 +517,11 @@ after_loop:
     M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), u8 *, MATCH_SESSION_DIRTY) = 1;
 }
 
-s32 func_0203bcf8(void) {
- extern M2C_UNK gMatchSessionMgr;
- return M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,0x20);
+/* Whether the match session has a GPI player-info request outstanding (the
+ * session pump reads the info socket while this or the socket itself is up). */
+s32 MatchSession_HasPendingInfo(void) {
+    extern M2C_UNK gMatchSessionMgr;
+    return M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION), s32 *, MATCH_SESSION_PENDING_INFO);
 }
 
 /* Shut the NAT negotiation session down, or, while NatNeg_Think is running,

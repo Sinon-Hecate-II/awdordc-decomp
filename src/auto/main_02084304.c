@@ -50,7 +50,7 @@ void BeginLinkAiCommand(void) {
     s32 PopLinkCommand(u8, u8 *);
     s32 IsAiCommandKindValid(u8 *);
     void SetAiCommandPhase(s32);
-    void func_ov000_0219c7d8(s32);
+    void SetAiCommandStep(s32);
     u8 control;
     u8 queue;
     void **map;
@@ -73,7 +73,7 @@ void BeginLinkAiCommand(void) {
         return;
     }
     SetAiCommandPhase(AI_COMMAND_PHASE_ACT);
-    func_ov000_0219c7d8(0); /* the new phase starts at its first step */
+    SetAiCommandStep(0); /* the new phase starts at its first step */
     gLinkAiCommandStage = AI_COMMAND_STAGE_BUSY;
 }
 
@@ -754,9 +754,9 @@ s32 GetNetworkPlayerRecord(M2C_UNK playerId) {
     }
 }
 
-void GetLocalNetworkPlayerRecord(void) {
-    M2C_UNK GetNetworkPlayerRecord(M2C_UNK);
-    GetNetworkPlayerRecord(0);
+/* The network record of the local player (player id 0) in the running session. */
+void *GetLocalNetworkPlayerRecord(void) {
+    return (void *)GetNetworkPlayerRecord(0);
 }
 
 /* Send what the active network session owes: in a single-card link announce
@@ -1002,9 +1002,10 @@ s32 CreateLinkStatusSprite(s32 x, s32 y, s32 tile, s32 palette) {
     return linkMode;
 }
 
-void CreateLinkStatusSpriteAt(M2C_UNK arg0, M2C_UNK arg1) {
+/* Create the link status sprite at (x, y) with the default tile and palette. */
+void CreateLinkStatusSpriteAt(s32 x, s32 y) {
     M2C_UNK CreateLinkStatusSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    return (void)CreateLinkStatusSprite(arg0, arg1, 0, 0);
+    return (void)CreateLinkStatusSprite(x, y, 0, 0);
 }
 
 /* Put the small session-status indicator on the sub (top) screen: make the sub
@@ -1021,6 +1022,8 @@ void CreateSubScreenLinkIndicator(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
+/* Remove the sub-screen session-status indicator sprite (the one
+ * CreateSubScreenLinkIndicator put at the top-right corner). */
 void DeleteSubScreenLinkIndicator(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gLinkStatusSpriteClass;

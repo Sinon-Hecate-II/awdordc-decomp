@@ -241,8 +241,11 @@ void func_ov007_0221f244(void) {
     MapEditorFreeGlyphKeyboard();
 }
 
-void func_ov007_0221f250(void **arg0) {
- M2C_FIELD(*arg0, void (**)(void *), 8)(arg0);
+/* Class-script action of the ov007 map editor's name-entry list: forward to the
+ * list object's virtual input/update method at the base class's vtable slot 8
+ * (gMapEditListVTable+8 is MapEditListInput). */
+void Ov007_MapEditList_CallInput(void **list) {
+    M2C_FIELD(*list, void (**)(void *), 8)(list);
 }
 
 void func_ov007_0221f264(void) {

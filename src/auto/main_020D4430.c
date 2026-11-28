@@ -403,14 +403,19 @@ M2C_UNK RestoreBattleMapView(void) {
     RefreshMapView();
 }
 
-void func_020d4c08(void) {
+/* Reset the battle scene's presentation: rebuild the sub-screen UI on the sub
+ * engine and tear the main engine's battle-map presentation down.  The map
+ * script's rebuild-scene command runs this for the both-engines target, and the
+ * map editor runs it as it closes. */
+void RebuildBattleScene(void) {
     M2C_UNK ShutdownBattleMapPresentation();
     M2C_UNK RebuildSubScreenUi();
     RebuildSubScreenUi();
     ShutdownBattleMapPresentation();
 }
 
-void func_020d4c18(void) {
+/* Restore the battle map presentation and recreate the battle map UI on the sub screen. */
+void RestoreBattleMapAndSubScreenUi(void) {
     M2C_UNK CreateSubScreenUi();
     M2C_UNK RestoreBattleMapView();
     RestoreBattleMapView();

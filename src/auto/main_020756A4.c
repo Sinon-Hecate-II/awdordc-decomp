@@ -276,13 +276,16 @@ s32 GetSaveRecordSize(s32 recordId) {
     return GetSaveBlockChainSize(&gSaveManager, recordId);
 }
 
-void IsSaveTaskRunning(void) {
+/* True while a save task (the depth-1 save sprite) is running. */
+s32 IsSaveTaskRunning(void) {
     IsTaskSpriteRunning(1);
 }
 
+/* True once the save archive has failed and been marked unusable
+ * (SAVE_MANAGER_STATE on the save manager). */
 u8 IsSaveArchiveUnusable(void) {
-    extern M2C_UNK data_02140a18;
-    return M2C_FIELD(&data_02140a18, u8 *, 0x52);
+    extern M2C_UNK gSaveManager;
+    return M2C_FIELD(&gSaveManager, u8 *, SAVE_MANAGER_STATE);
 }
 
 u8 IsSaveListDirty(void){extern M2C_UNK data_02140a18;return M2C_FIELD(&data_02140a18,u8*,0x53);}

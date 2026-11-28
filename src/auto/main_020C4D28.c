@@ -375,7 +375,8 @@ s32 GetBattleSlotPlayerType(void *record) {
     return GetPlayerRecordType();
 }
 
-void func_020c5464(void) {
+/* Return the player-record kind stored in a battle-save slot, or zero if absent. */
+void GetBattleSlotType(void) {
     M2C_UNK GetBattleSlotPlayerType();
     M2C_UNK GetBattleSlotSummary();
     GetBattleSlotSummary();
@@ -551,7 +552,7 @@ loop:
 
 double func_0206e2d8(double, double);
 s32 FX_Div(s32, s32);
-s32 func_02001fc4(s32);
+s32 FX_Reciprocal(s32);
 void ConvergeSyncedPositions(s32 mode, s32 *first, s32 *second)
 {
     s32 start, end, forward, backward;
@@ -578,8 +579,8 @@ void ConvergeSyncedPositions(s32 mode, s32 *first, s32 *second)
         }
         backward = (s32)rounded;
     }
-    forward = func_02001fc4(forward + POS_FX_ONE);
-    backward = func_02001fc4(backward + POS_FX_ONE);
+    forward = FX_Reciprocal(forward + POS_FX_ONE);
+    backward = FX_Reciprocal(backward + POS_FX_ONE);
     switch (mode) {
     case 0:
         *first += (s32)(((long long)(POS_FX_ONE - forward) * POS_CONVERGE_CELL + 0x800) >> 12);

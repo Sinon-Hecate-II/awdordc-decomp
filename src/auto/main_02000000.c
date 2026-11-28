@@ -48,7 +48,7 @@ void main(void)
 #pragma push
 #pragma opt_strength_reduction off
 s32 MTX_Inverse33(void *arg0,void *arg1){
-void func_02002030(s32,s32);
+void Div_StartReciprocal(s32,s32);
 s32 Div_GetResultRounded(void);
 void MTX_Copy33(void *,void *);
 s32 *m=arg0,*d=arg1; s32 temp[9];
@@ -59,7 +59,7 @@ c1=(s32)(((s64)m[4]*m[8]-(s64)m[5]*m[7]+0x800)>>12);
 c2=(s32)(((s64)m[3]*m[7]-(s64)m[4]*m[6]+0x800)>>12);
 det=(s32)(((s64)m[0]*c1-(s64)m[1]*c0+(s64)m[2]*c2+0x800)>>12);
 if(det==0)return -1;
-func_02002030(det,0);
+Div_StartReciprocal(det,0);
 a=(s32)(((s64)m[1]*m[8]-(s64)m[7]*m[2])>>12);
 b=(s32)(((s64)m[1]*m[5]-(s64)m[4]*m[2])>>12);
 c=(s32)(((s64)m[0]*m[8]-(s64)m[6]*m[2])>>12);

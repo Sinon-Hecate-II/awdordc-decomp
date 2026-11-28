@@ -592,9 +592,11 @@ void Sound_UnlinkPlayingVoice(void *player) {
     M2C_FIELD(player, s32 *, SOUND_PLAYER_FLAGS) = (s32)(M2C_FIELD(player, s32 *, SOUND_PLAYER_FLAGS) & ~SOUND_PLAYER_FLAG_PLAYING);
 }
 
-void Sound_AdvanceVoice(M2C_UNK arg0) {
+/* Segment-timer callback: advance the playing voice `player` to its next sample
+ * segment. */
+void Sound_AdvanceVoice(M2C_UNK player) {
     M2C_UNK Sound_StartSegment(M2C_UNK, M2C_UNK);
-    Sound_StartSegment(arg0, 1);
+    Sound_StartSegment(player, 1);
 }
 
 /* Start the player's current sample segment: split its note bytes into one

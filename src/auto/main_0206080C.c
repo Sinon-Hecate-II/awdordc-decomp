@@ -92,10 +92,12 @@ void Qr2Query_UnlinkServer(void *list, void *server) {
     Qr2Query_RemoveRequest((u8 *)list + SB_LIST_WAITING, server);
 }
 
-void HashInternedString(s8 **arg0, s32 arg1) {
-    s32 func_02060fe8(s8 *, s32);
+/* String-intern table hash callback: the bucket of an interned entry, from the
+ * hash of the case-folded key string the entry holds. */
+s32 HashInternedString(s8 **entry, s32 bucketCount) {
+    s32 HashStringBuckets(s8 *, s32);
 
-    func_02060fe8(*arg0, arg1);
+    return HashStringBuckets(*entry, bucketCount);
 }
 
 /* String-intern table comparison callback: compare the key strings of two
@@ -105,9 +107,11 @@ void CompareInternedStrings(s32 *keyA, s32 *keyB) {
     StringCompareNoCase(*keyA, *keyB);
 }
 
-void FreeInternedString(s32 *arg0) {
+/* Element destructor of the string-intern table: frees the entry's canonical copy
+ * of the interned string. */
+void FreeInternedString(InternedString *entry) {
     M2C_UNK gpiFree(s32);
-    gpiFree(*arg0);
+    gpiFree(entry->string);
 }
 
 /* The QR2 parser's shared string-intern table, built on first use: 100 buckets of
@@ -351,10 +355,10 @@ p+=len;n-=len;key+=StringLength(key)+1;
 }
 }
 #pragma peephole on
-s32 func_02060fe8(s8 *arg0,s32 arg1) {
-extern u8 data_020eac40[];s64 U32DivideRem(s32,s32);
+s32 HashStringBuckets(s8 *arg0,s32 arg1) {
+extern u8 gAsciiLower[];s64 U32DivideRem(s32,s32);
 s32 hash=0; s32 c=*arg0;
-if(c){do{if(c>=0 && c<128){c=(u32)data_020eac40[c];}else{c=(s32)c;}hash=hash*0x9CCF9319+c;c=*++arg0;}while(c);}
+if(c){do{if(c>=0 && c<128){c=(u32)gAsciiLower[c];}else{c=(s32)c;}hash=hash*0x9CCF9319+c;c=*++arg0;}while(c);}
 return U32DivideRem(hash,arg1)>>32;
 }
 /* Free one key/value entry of a server record's table (the TableNew2 free
@@ -365,10 +369,12 @@ void FreeServerKeyValue(s32 *pair) {
     StringInternRelease(0, pair[1]);
 }
 
-void HashServerKey(s8 **arg0, s32 arg1) {
-    s32 func_02060fe8(s8 *, s32);
+/* Key/value table hash callback: the bucket of a server key/value entry, from
+ * the hash of the interned key string the entry holds. */
+s32 HashServerKey(s8 **entry, s32 bucketCount) {
+    s32 HashStringBuckets(s8 *, s32);
 
-    func_02060fe8(*arg0, arg1);
+    return HashStringBuckets(*entry, bucketCount);
 }
 
 /* Key/value table comparison callback: compare the key strings of two server
@@ -619,19 +625,25 @@ s32 SBServerListGetStatus(void *browser) {
     return SB_BROWSER_STATUS_CONNECTED;
 }
 
-void SBServerListGetServer(s32 arg0) {
-    M2C_UNK SBServerListGetServerAt(s32);
-    SBServerListGetServerAt(arg0 + 0x4C);
+/* Return the server record at `index` in the server browser's list, which lives
+ * at SB_LIST_QUERY of the game's browser object. */
+s32 SBServerListGetServer(s32 browser, s32 index) {
+    s32 SBServerListGetServerAt(s32, s32);
+    return SBServerListGetServerAt(browser + SB_LIST_QUERY, index);
 }
 
-void SBServerListGetCount(s32 arg0) {
+/* Server-browser accessor: the number of servers held by the list's QR2 query
+ * record, which starts SB_LIST_QUERY bytes into the browser object. */
+void SBServerListGetCount(s32 list) {
     M2C_UNK SBServerListGetServerCount(s32);
-    SBServerListGetServerCount(arg0 + 0x4C);
+    SBServerListGetServerCount(list + SB_LIST_QUERY);
 }
 
-void SBServerListSort(s32 arg0) {
-    M2C_UNK SBServerListSortServers(s32);
-    SBServerListSortServers(arg0 + 0x4C);
+/* Sort the server browser's list by the key in `field` (see
+ * SBServerListSortServers); the SBServerList record starts at SB_LIST_QUERY. */
+void SBServerListSort(s32 browser, s32 descending, s32 field, s32 sortKind) {
+    M2C_UNK SBServerListSortServers(s32, s32, s32, s32);
+    SBServerListSortServers(browser + SB_LIST_QUERY, descending, field, sortKind);
 }
 
 s32 func_020617b4(void *arg0) {

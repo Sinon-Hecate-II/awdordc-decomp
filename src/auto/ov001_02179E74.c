@@ -252,7 +252,7 @@ if(KeyReleased(KEY_DOWN)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0
 void MapSelectList_HandleInput(void) {
  extern M2C_UNK gMapSelectState;
  extern M2C_UNK MapSelectList_ScrollUp,MapSelectList_ScrollDown;
- s32 GetMenuState(void);
+ s32 Ov001_GetScrollBarEvent(void);
  s32 Ov001_GetScrollBarHandlePos(void);
  s32 HardwareDivide(s32,u16);
  s32 HardwareDivideRemainder(s32,s32);
@@ -267,7 +267,7 @@ void MapSelectList_HandleInput(void) {
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)) return;
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x55))
  --M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x55);
- switch(GetMenuState()) {
+ switch(Ov001_GetScrollBarEvent()) {
  case 1:
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x57)=1;
  Ov001_LockIconRow();return;

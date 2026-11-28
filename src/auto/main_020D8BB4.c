@@ -49,7 +49,7 @@ k++;
 }while(k<=1);
 }
 
-void func_020d8cc4(void) {
+void NoOpMapConfigCallback(void) {
 
 }
 
@@ -192,7 +192,11 @@ s32 SetUiMode(s32 mode, s32 param) {
     return 1;
 }
 
-s32 GetUiMode(void){extern void *gUiMode;return M2C_FIELD(gUiMode,s16 *,2);}
+/* The UI mode in effect (UiModeState.current). */
+s32 GetUiMode(void) {
+    extern void *gUiMode;
+    return ((UiModeState *)gUiMode)->current;
+}
 
 /* Whether the X (cancel) key does anything in the current UI mode: mode 1 (the
  * battle map) can toggle the map info window's panel and mode 2 can cancel its
@@ -796,43 +800,43 @@ void func_020d9828(void) {
 }
 
 void func_020d9834(void) {
-    M2C_UNK func_020deb74();
-    func_020deb74();
+    M2C_UNK SetupUnitPreviewSceneSide0();
+    SetupUnitPreviewSceneSide0();
 }
 
 void func_020d9840(void) {
-    M2C_UNK func_020deb84();
-    func_020deb84();
+    M2C_UNK SetupUnitPreviewSceneSide1();
+    SetupUnitPreviewSceneSide1();
 }
 
 void func_020d984c(void) {
-    M2C_UNK func_020deb94();
-    func_020deb94();
+    M2C_UNK SetupSceneSide0();
+    SetupSceneSide0();
 }
 
 void func_020d9858(void) {
-    M2C_UNK func_020deba4();
-    func_020deba4();
+    M2C_UNK SetupSceneSide1();
+    SetupSceneSide1();
 }
 
 void func_020d9864(void) {
-    M2C_UNK func_020debb4();
-    func_020debb4();
+    M2C_UNK SetupMatchSceneSide0();
+    SetupMatchSceneSide0();
 }
 
 void func_020d9870(void) {
-    M2C_UNK func_020debc4();
-    func_020debc4();
+    M2C_UNK SetupMatchSceneSide1();
+    SetupMatchSceneSide1();
 }
 
 void func_020d987c(void) {
-    M2C_UNK func_020debd4();
-    func_020debd4();
+    M2C_UNK SetupMatchingUnitSceneSide0();
+    SetupMatchingUnitSceneSide0();
 }
 
 void func_020d9888(void) {
-    M2C_UNK func_020debe4();
-    func_020debe4();
+    M2C_UNK SetupMatchingUnitSceneSide1();
+    SetupMatchingUnitSceneSide1();
 }
 
 void func_020d9894(void) {

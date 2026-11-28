@@ -9,7 +9,7 @@ static inline void SetSpriteXY(u32 *p,s32 y,s32 x){*p=(*p&0xfe00ff00)|(u8)y|((u3
 void MapListHandleState(void) {
  extern M2C_UNK gMapListState;
  extern M2C_UNK MapListScrollUp,MapListScrollDown;
- s32 GetMenuState(void);
+ s32 Ov001_GetScrollBarEvent(void);
  s32 Ov001_GetScrollBarHandlePos(void);
  s32 HardwareDivideRemainder(u16,s32);
  void Ov001_FreeSpriteObjects(void);
@@ -20,7 +20,7 @@ void MapListHandleState(void) {
  s32 remainder;
  if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,56))return;
  if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,65))--M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,65);
- switch(GetMenuState()){
+ switch(Ov001_GetScrollBarEvent()){
  case 1:M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,69)=1;return;
  case 2:
  if(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,65))return;

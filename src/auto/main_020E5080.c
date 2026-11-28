@@ -113,7 +113,7 @@ void CreateMicTestObject(s32 owner) {
     void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
     s16 Divide(s32, M2C_UNK);
-    s32 func_020e3580(M2C_UNK, M2C_UNK);
+    s32 AllocGameHeap(M2C_UNK, M2C_UNK);
     extern M2C_UNK gMicTestClass;
     extern M2C_UNK gMicTestVtbl;
     extern s32 gMicTestIpc, g3DSpriteEngineMain, gCur3DSpriteEngine;
@@ -129,7 +129,7 @@ void CreateMicTestObject(s32 owner) {
         screen->flags = 0;
         screen->timer = Divide(0x2BF20, 0x3E8);
         screen->levelIndex = 0;
-        gMicTestIpc = func_020e3580(MIC_TEST_SAMPLE_COUNT, MIC_TEST_SAMPLE_COUNT);
+        gMicTestIpc = AllocGameHeap(MIC_TEST_SAMPLE_COUNT, MIC_TEST_SAMPLE_COUNT);
         MI_CpuFill8(screen->levels, 0, sizeof(screen->levels));
     }
     gCur3DSpriteEngine = saved;

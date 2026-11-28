@@ -567,7 +567,7 @@ M2C_FIELD(sequence,s32 *,4)+=16;return 0;
  * text and sprite engines, then create the message sprite on each screen the
  * current 3D-sprite target requires. Returns 1 when the text could not be set up. */
 s32 ShowMessageText(s32 textId) {
- s32 GetLocalizedText(s32); void Text_GetScreenCount(void); void func_020943e0(void); void Reset3DSpriteEngines(void);
+ s32 GetLocalizedText(s32); void Text_GetScreenCount(void); void SetManagerUnk48(void); void Reset3DSpriteEngines(void);
  s32 Text_IsPlainMessage(s32); void SetMessageBoxState(s32); s32 IsMessageBoxActive(void);
  u8 Get3DSpriteTarget(void); s32 GetScenePanelTextLineX(s32); s32 Get3DSpriteManager(void); s32 GetScenePanelState(s32);
  s32 CreateMessageSprite(s32,s32,s32,s32,s32,s32,u16,u16);
@@ -575,7 +575,7 @@ s32 ShowMessageText(s32 textId) {
  extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain; extern void *g3DSpriteEngineSub;
  s32 text; void *savedEngine; s32 screen,style; void *managerA,*managerB,*layerA,*layerB,*layerC,*sprite; u32 attr;
  text=GetLocalizedText(textId);
- Text_GetScreenCount(); func_020943e0(); Reset3DSpriteEngines();
+ Text_GetScreenCount(); SetManagerUnk48(); Reset3DSpriteEngines();
  if(Text_IsPlainMessage(text)==0){SetMessageBoxState(3);} if(IsMessageBoxActive()!=0)goto abort;
  savedEngine=gCur3DSpriteEngine;
  for(screen=0;screen<2;screen++){

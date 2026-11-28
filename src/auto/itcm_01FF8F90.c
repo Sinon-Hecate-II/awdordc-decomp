@@ -142,7 +142,7 @@ void DS3D_AddSpriteQuad(s32 x, s32 y, u32 tile, u16 *template_)
 #pragma push
 #pragma opt_strength_reduction off
 void Apply3DSpriteBankMain(void) {
- void GX_ConfigureDisplay(s32,s32,s32); void GX_SetMasterBrightness(void *,s32); void func_02003f24(s32);
+ void GX_ConfigureDisplay(s32,s32,s32); void GX_SetMasterBrightness(void *,s32); void GX_SetBG0Scroll(s32);
  extern u16 *g3DSpriteBankMain;
  extern s32 g3DSpriteEngineMain;
  s32 a,b,c,d,e;
@@ -172,7 +172,7 @@ void Apply3DSpriteBankMain(void) {
  *disp=a|mode;
  if((u32)(M2C_FIELD(g3DSpriteBankMain,volatile u16 *,0)<<16)>>31) *disp &=~0x800000;else *disp|=0x800000;
  if((u32)(M2C_FIELD(g3DSpriteBankMain,volatile u16 *,0)<<28)>>31) {
- func_02003f24(M2C_FIELD(g3DSpriteBankMain,u16 *,56)-M2C_FIELD((void *)g3DSpriteEngineMain,s16 *,0x3c));
+ GX_SetBG0Scroll(M2C_FIELD(g3DSpriteBankMain,u16 *,56)-M2C_FIELD((void *)g3DSpriteEngineMain,s16 *,0x3c));
  } else
 {void *engine=(void *)g3DSpriteEngineMain; void *bank=(void *)g3DSpriteBankMain; s32 y=M2C_FIELD(bank,u16 *,64)-M2C_FIELD(engine,s16 *,0x3e); s32 x=M2C_FIELD(bank,u16 *,56)-M2C_FIELD(engine,s16 *,0x3c); regs[0]=(x&0x1ff)|((0x1ff<<16)&(y<<16));}
 {void *engine=(void *)g3DSpriteEngineMain; void *bank=(void *)g3DSpriteBankMain; s32 y=M2C_FIELD(bank,u16 *,66)-M2C_FIELD(engine,s16 *,0x3e); s32 x=M2C_FIELD(bank,u16 *,58)-M2C_FIELD(engine,s16 *,0x3c); regs[1]=(x&0x1ff)|((0x1ff<<16)&(y<<16));}

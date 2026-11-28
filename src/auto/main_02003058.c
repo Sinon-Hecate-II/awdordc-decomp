@@ -663,8 +663,10 @@ void G3X_InitTable(void) {
     } while (i < 32);
 }
 
-void func_02003f24(s32 arg0) {
-    *(s32 *)0x04000010 = arg0;
+/* Write the main engine's packed BG0 scroll offset: the low half is the
+ * horizontal offset, the high half the vertical one. */
+void GX_SetBG0Scroll(s32 offset) {
+    REG_BG0OFS = offset;
 }
 
 /* Builds the orthographic projection matrix for the given top/bottom, left/right

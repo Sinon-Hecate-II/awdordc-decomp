@@ -45,9 +45,11 @@ M2C_FIELD((u8*)M2C_FIELD(&gMbState,void**,12)+0x1500,u16*,0x36)&=~(1<<arg0);
 M2C_FIELD((u8*)M2C_FIELD(&gMbState,void**,12)+i*4+0x1000,u32*,0x4e8)=0;
 }
 #pragma optimization_level reset
-void func_02018254(s16 arg0) {
+/* Set the multiboot state's word at gMbState+0x26: the match setup defaults it
+ * to 200 when it is zero, and the command-channel setup lowers it to 10. */
+void Mb_SetStateParam(s16 value) {
     extern M2C_UNK gMbState;
-    M2C_FIELD(&gMbState, s16 *, 0x26) = arg0;
+    M2C_FIELD(&gMbState, s16 *, 0x26) = value;
 }
 
 /* Send one multiboot channel packet: queue `data` (length bytes) for the players
@@ -93,14 +95,19 @@ return result;
 return 1;
 }
 
-s32 func_02018390(void) {
+/* The download-play parent's send code (its link group id), handed to WFC with
+ * every download submission. */
+s32 GetDownloadSendCode(void) {
     extern M2C_UNK gMbState;
-    return M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), s32 *, 8);
+    return M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), s32 *, MB_CTX_SEND_CODE);
 }
 
-u16 func_020183a4(void) {
+/* The sequence word the DS Download Play sender stamps into its next packet,
+ * kept in the multiboot context (MB_CTX_SEQUENCE). */
+u16 Mb_GetDownloadSequence(void) {
     extern M2C_UNK gMbState;
-    return M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, 0xC);
+
+    return M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, MB_CTX_SEQUENCE);
 }
 
 /* Pack the multiboot parent context's four send-status words into the flag byte

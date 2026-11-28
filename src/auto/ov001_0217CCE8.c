@@ -118,6 +118,9 @@ void Ov001_WfcErrorWaitIconRow(void) {
     Ov001_SetStepCallback(&Ov001_UpdateWfcErrorScreen);
 }
 
+/* Per-frame update of the ov001 Wi-Fi error screen: take the OK button's input,
+ * let the screen's (empty) idle hook run, and advance once the choice is
+ * confirmed. */
 void Ov001_UpdateWfcErrorScreen(void) {
     void Ov001_WfcErrorMenuConfirmInput(void);
     void func_ov001_0217d110(void);
@@ -398,14 +401,16 @@ void Ov001_StartMapListInput(void) {
     Ov001_SetStepCallback(&Ov001_UpdateMapListInput);
 }
 
+/* Poll map-list keyboard and touch input, then apply the scrollbar movement state. */
 void Ov001_UpdateMapListInput(void) {
     M2C_UNK MapListHandleState();
-    void func_ov001_0217d754(void);
-    func_ov001_0217d754();
+    void Ov001_HandleMapListInput(void);
+    Ov001_HandleMapListInput();
     MapListHandleState();
 }
 
-void func_ov001_0217d754(void) {
+/* Handle touch and button input on the map-list screen, including row navigation and scroll repeats. */
+void Ov001_HandleMapListInput(void) {
     extern M2C_UNK gMapListState;
     extern M2C_UNK MapListScrollDown;
     extern M2C_UNK MapListScrollUp;
@@ -417,84 +422,84 @@ void func_ov001_0217d754(void) {
     M2C_UNK Ov001_PlaySound(s32);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void *Ov001_AddTask(s32, void (*)(void), s32, s32);
-    M2C_UNK func_ov001_0217f1f0(s32);
-    void *obj;
+    M2C_UNK MapList_ApplyInputEvent(s32);
+    void *mapListObject;
 
-    obj = M2C_FIELD(&gMapListState, void **, 8);
-    if (M2C_FIELD(obj, void **, 0x38) != 0 || M2C_FIELD(obj, u8 *, 0x45) != 0) {
+    mapListObject = M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT);
+    if (M2C_FIELD(mapListObject, void **, OV001_MAP_LIST_TASK) != 0 || M2C_FIELD(mapListObject, u8 *, OV001_MAP_LIST_INPUT_BLOCKED) != 0) {
         return;
     }
     if (HandleMapListTouchChoice() != 0) {
         return;
     }
-    if (KeyPressed(1) != 0) {
+    if (KeyPressed(KEY_A) != 0) {
         DispatchMapListChoice(M2C_FIELD(&gMapListState, u8 *, 0));
         return;
     }
-    if (KeyPressed(2) != 0) {
+    if (KeyPressed(KEY_B) != 0) {
         Ov001_PlaySound(7);
-        M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x40) = 0xd;
+        M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), u8 *, OV001_MAP_LIST_EXIT_STATE) = 0xd;
         Ov001_SetStepCallback((M2C_UNK *)&MapList_BeginExit);
         return;
     }
-    if (KeyHeld(0x200) != 0) {
-        if (M2C_FIELD(&gMapListState, u16 *, 4) == 0x91) {
-            if (M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x47) == 0) {
+    if (KeyHeld(KEY_L) != 0) {
+        if (M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL) == OV001_MAP_LIST_SCROLL_MAX) {
+            if (M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), u8 *, OV001_MAP_LIST_INPUT_LATCH) == 0) {
                 Ov001_PlaySound(9);
-                M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x47) = 1;
+                M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), u8 *, OV001_MAP_LIST_INPUT_LATCH) = 1;
             }
             return;
         }
         Ov001_PlaySound(0x13);
-        M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x38) =
+        M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), void **, OV001_MAP_LIST_TASK) =
             Ov001_AddTask(0, (void (*)(void))&MapListScrollDown, 0, 0x78);
         return;
     }
-    if (KeyReleased(0x200) != 0) {
-        M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x47) = 0;
+    if (KeyReleased(KEY_L) != 0) {
+        M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), u8 *, OV001_MAP_LIST_INPUT_LATCH) = 0;
         return;
     }
-    if (KeyHeld(0x100) != 0) {
-        if (M2C_FIELD(&gMapListState, u16 *, 4) == 0) {
-            if (M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x47) == 0) {
+    if (KeyHeld(KEY_R) != 0) {
+        if (M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL) == 0) {
+            if (M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), u8 *, OV001_MAP_LIST_INPUT_LATCH) == 0) {
                 Ov001_PlaySound(9);
-                M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x47) = 1;
+                M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), u8 *, OV001_MAP_LIST_INPUT_LATCH) = 1;
             }
             return;
         }
         Ov001_PlaySound(0x13);
-        M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x38) =
+        M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), void **, OV001_MAP_LIST_TASK) =
             Ov001_AddTask(0, (void (*)(void))&MapListScrollUp, 0, 0x78);
         return;
     }
-    if (KeyReleased(0x100) != 0) {
-        M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x47) = 0;
+    if (KeyReleased(KEY_R) != 0) {
+        M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), u8 *, OV001_MAP_LIST_INPUT_LATCH) = 0;
         return;
     }
-    if (KeyHeld(0x40) != 0) {
-        func_ov001_0217f1f0(1);
+    if (KeyHeld(KEY_UP) != 0) {
+        MapList_ApplyInputEvent(1);
         return;
     }
-    if (KeyReleased(0x40) != 0) {
-        M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x47) = 0;
+    if (KeyReleased(KEY_UP) != 0) {
+        M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), u8 *, OV001_MAP_LIST_INPUT_LATCH) = 0;
         return;
     }
-    if (KeyHeld(0x80) != 0) {
-        func_ov001_0217f1f0(3);
+    if (KeyHeld(KEY_DOWN) != 0) {
+        MapList_ApplyInputEvent(3);
         return;
     }
-    if (KeyReleased(0x80) != 0) {
-        M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x47) = 0;
+    if (KeyReleased(KEY_DOWN) != 0) {
+        M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), u8 *, OV001_MAP_LIST_INPUT_LATCH) = 0;
         return;
     }
-    if (KeyHeld(0x20) != 0) {
-        func_ov001_0217f1f0(0);
+    if (KeyHeld(KEY_LEFT) != 0) {
+        MapList_ApplyInputEvent(0);
         return;
     }
-    if (KeyHeld(0x10) == 0) {
+    if (KeyHeld(KEY_RIGHT) == 0) {
         return;
     }
-    func_ov001_0217f1f0(2);
+    MapList_ApplyInputEvent(2);
 }
 
 /* Handle a touch selection on the ov001 map list: ignore an untouched frame,

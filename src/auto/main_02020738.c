@@ -432,7 +432,7 @@ M2C_UNK ReapClosedSockets(void) {
    the task-pool result (negative on failure). */
 s32 NetworkShutdown(void) {
     M2C_UNK SleepMilliseconds(M2C_UNK);
-    M2C_UNK func_0201a4f8(s32);
+    M2C_UNK NetStackSetClosedSocketReaper(s32);
     M2C_UNK NetworkStopWorkers();
     s32 NetworkFreeTaskPool();
     extern void *gNetAllocator;
@@ -447,7 +447,7 @@ s32 NetworkShutdown(void) {
     result = NetworkFreeTaskPool();
     if (result >= 0) {
         NetworkStopWorkers();
-        func_0201a4f8(0);
+        NetStackSetClosedSocketReaper(0);
         if (M2C_FIELD(gNetAllocator, s32 *, 0x28) == 0) {
             M2C_FIELD(gNetAllocator, void (**)(s32), 0x1C)(M2C_FIELD(&gNetStackState, s32 *, 0x1C));
         }
@@ -666,9 +666,11 @@ void RegisterActiveSocket(void *socket) {
     SocketListPrepend((void **)&gActiveSocketList, socket);
 }
 
-void SocketListPrepend(void **arg0, void *arg1) {
-    M2C_FIELD(arg1, void **, 0x7C) = (void *) *arg0;
-    *arg0 = arg1;
+/* Put socket at the front of the singly linked list whose head listHead points
+ * at (linked through the socket's SOCK_LIST_NEXT field). */
+void SocketListPrepend(void **listHead, void *socket) {
+    M2C_FIELD(socket, void **, SOCK_LIST_NEXT) = (void *) *listHead;
+    *listHead = socket;
 }
 
 /* Add a socket object to the socket layer's list of closed sockets (a

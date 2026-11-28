@@ -121,7 +121,9 @@ void Configure3DSpriteView6x16(void) {
     Reset3DSpriteEngineState();
 }
 
-void func_020b0ab4(void) {
+/* Select the alternate layer ordering, then clear the current 3D sprite
+ * engine's bank so no layers are configured. */
+void Reset3DSpriteViewAlt(void) {
     M2C_UNK Reset3DSpriteBankState();
     M2C_UNK Set3DSpriteLayerModesAlt();
     Set3DSpriteLayerModesAlt();
@@ -216,7 +218,8 @@ CopyBytesToObjPaletteShadow((char *)&data_020f4160+((gFrameCounter>>2)%15)*2+2,2
 }
 
 #pragma opt_strength_reduction reset
-void func_020b0cbc(void) {
+/* Reload the shared UI sprite palette into palette slot 3. */
+void ReloadUiSpritePalette(void) {
     LoadUiSpritePalette(3);
 }
 

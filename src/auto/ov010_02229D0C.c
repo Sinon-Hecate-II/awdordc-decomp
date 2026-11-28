@@ -6,9 +6,11 @@ typedef struct { u8 value; } UnkA750Flag;
 typedef struct { u32 flag:1; u32 rest:31; } UnkA750Bits;
 static inline void *GetTextA320(void *s) { if (!((UnkA750Bits *)s)->flag) return (u8 *)s+1; return M2C_FIELD(s,void **,8); }
 
-void func_ov010_02229d0c(s32 arg0) {
-extern M2C_UNK gOv010OnlineSession;
-M2C_FIELD(&gOv010OnlineSession, void **, 0x18) = NULL;
+/* Forget the record of the online match being started, so the next start
+ * request installs its own. */
+void Ov010Online_ClearStartRecord(s32 arg0) {
+    extern M2C_UNK gOv010OnlineSession;
+    M2C_FIELD(&gOv010OnlineSession, void **, OV010_SESSION_START_RECORD) = NULL;
 }
 
 /* Submit an online match-start request node's start record to the session. */
@@ -23,8 +25,8 @@ void func_ov010_02229d34(s32 arg0) {
 }
 
 void func_ov010_02229d44(s32 arg0) {
-    void func_ov010_02229d0c(s32);
-    func_ov010_02229d0c(arg0 + 0x38);
+    void Ov010Online_ClearStartRecord(s32);
+    Ov010Online_ClearStartRecord(arg0 + 0x38);
 }
 
 /* Create the online (Wi-Fi) match start-request node tagged with `matchId` and
@@ -86,9 +88,10 @@ ready:
     return v;
 }
 
-void func_ov010_02229e70(s32 arg0) {
-extern M2C_UNK gOv010OnlineSession;
-M2C_FIELD(&gOv010OnlineSession, void **, 0x24) = NULL;
+/* Forget the local player's join record, so the next announce installs its own. */
+void Ov010Online_ClearPlayerRecord(s32 arg0) {
+    extern M2C_UNK gOv010OnlineSession;
+    M2C_FIELD(&gOv010OnlineSession, void **, OV010_SESSION_PLAYER) = NULL;
 }
 
 void func_ov010_02229e84(s32 arg0) {
@@ -102,8 +105,8 @@ void func_ov010_02229e94(s32 arg0) {
 }
 
 void func_ov010_02229ea4(s32 arg0) {
-    void func_ov010_02229e70(s32);
-    func_ov010_02229e70(arg0 + 0x34);
+    void Ov010Online_ClearPlayerRecord(s32);
+    Ov010Online_ClearPlayerRecord(arg0 + 0x34);
 }
 
 /* Spawn the online (Wi-Fi) player-announce sprite under `owner`: it refreshes the

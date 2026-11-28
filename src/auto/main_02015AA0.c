@@ -338,13 +338,13 @@ void DownloadSendStep(s32 sendCode, s32 sequence, s32 flags) {
  * send state machine into the sending step. */
 s32 DownloadStartNextFile(void) {
  extern M2C_UNK gDownloadSendState;extern M2C_UNK gDownloadPacket;
- s32 func_02018390(void);s32 func_020183a4(void);
+ s32 GetDownloadSendCode(void);s32 Mb_GetDownloadSequence(void);
  void WFC_SubmitDownloadData(s32,void *,s32,s32,s32,s32);
  void DownloadResetProgress(void);
  void *file;
  if(M2C_FIELD(&gDownloadSendState,void **,DL_QUEUE)==0){
- s32 sendCode=func_02018390();
- WFC_SubmitDownloadData(0,&gDownloadPacket,0x70,sendCode,func_020183a4(),8);return 0;
+ s32 sendCode=GetDownloadSendCode();
+ WFC_SubmitDownloadData(0,&gDownloadPacket,0x70,sendCode,Mb_GetDownloadSequence(),8);return 0;
  }
  file=M2C_FIELD(&gDownloadSendState,void **,DL_CURRENT);
  if(file!=0 && M2C_FIELD(file,void **,DL_FILE_NEXT)!=0)file=M2C_FIELD(file,void **,DL_FILE_NEXT);

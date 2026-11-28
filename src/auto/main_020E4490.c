@@ -21,7 +21,7 @@ extern s32 gMicTestIpc;
 #pragma opt_common_subs off
 void InitGameEngine(void) {
     M2C_UNK func_020e4378();
-    M2C_UNK func_02082058();
+    M2C_UNK InitUserProfile();
     M2C_UNK ResetKeyState();
     M2C_UNK func_02081a48();
     M2C_UNK func_02082d08();
@@ -59,7 +59,7 @@ void InitGameEngine(void) {
     gFramePending = 0;
     gSpriteUpdateBusy = 0;
     func_020e4378();
-    func_02082058();
+    InitUserProfile();
     ResetKeyState();
     func_02081a48();
     func_02082d08();

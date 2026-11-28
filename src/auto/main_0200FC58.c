@@ -60,6 +60,8 @@ void func_0200fc58(void) {
     SaveDevice_SetEnabled(1);
 }
 #pragma optimization_level reset
+/* Whether the save device is up: SaveDevice_Init enables it on a non-multiboot
+ * boot, and SaveDevice_AssertEnabled halts the system when this is clear. */
 s32 SaveDevice_IsEnabled(void) {
     extern s32 gSaveDeviceEnabled;
     return gSaveDeviceEnabled;
@@ -130,9 +132,10 @@ void CARD_UnlockRom(M2C_UNK lockId) {
     SaveDevice_Unlock(lockId, 1);
 }
 
-void CARD_LockBackup(M2C_UNK arg0) {
+/* Take the backup (save chip) lock for `lockId` in the save-device layer. */
+void CARD_LockBackup(u16 lockId) {
     M2C_UNK SaveDevice_Lock(M2C_UNK, M2C_UNK);
-    SaveDevice_Lock(arg0, 2);
+    SaveDevice_Lock(lockId, SAVE_DEVICE_LOCK_BACKUP);
 }
 
 /* Unlock the backup device for the caller's `lockId`: if a save transfer is still

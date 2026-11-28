@@ -39,10 +39,10 @@ args.a=a;args.c=c;args.d=d;args.e=e;args.b=b;
 
 #pragma opt_common_subs off
 /* Set the WFC session's connection state: leaving state 9 stops the session's
- * timer, entering state 9 (re)starts it with WFC_StateTimerCallback, and state
+ * timer, entering state 9 (re)starts it with WFC_ConnectionDataTimerCallback, and state
  * 11 is final - no later state is stored.  Runs with interrupts held off. */
 void WFC_SetState(s32 state) {
-    void WFC_StateTimerCallback(void);
+    void WFC_ConnectionDataTimerCallback(void);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void CancelTimer(void *);
@@ -54,13 +54,13 @@ void WFC_SetState(s32 state) {
     if (M2C_FIELD(gWfcSession, s32 *, 0x2260) != 11)
         M2C_FIELD(gWfcSession, s32 *, 0x2260) = state;
     if (state == 9)
-        ScheduleTimer((u8 *)gWfcSession + 0x22cc, 0x22f5341, 0, WFC_StateTimerCallback, 0);
+        ScheduleTimer((u8 *)gWfcSession + 0x22cc, 0x22f5341, 0, WFC_ConnectionDataTimerCallback, 0);
     OS_RestoreInterrupts(irq);
 }
 #pragma opt_common_subs on
 /* Restarts the one-shot state timer while the session is waiting for its peer. */
 M2C_UNK WFC_RearmStateTimer(void) {
-    void WFC_StateTimerCallback(void);
+    void WFC_ConnectionDataTimerCallback(void);
     extern void *gWfcSession;
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
@@ -71,11 +71,12 @@ M2C_UNK WFC_RearmStateTimer(void) {
     CancelTimer((u8 *)gWfcSession + WFC_SESSION_TIMER);
     if (M2C_FIELD(gWfcSession, s32 *, WFC_SESSION_STATE) == WFC_SESSION_STATE_LINKING)
         ScheduleTimer((u8 *)gWfcSession + WFC_SESSION_TIMER,
-            WFC_STATE_TIMER_PERIOD, 0, WFC_StateTimerCallback, 0);
+            WFC_STATE_TIMER_PERIOD, 0, WFC_ConnectionDataTimerCallback, 0);
     OS_RestoreInterrupts(interruptState);
 }
 
-void WFC_StateTimerCallback(void) {
+/* Request the next connection-data packet, then rearm the WFC state timer. */
+void WFC_ConnectionDataTimerCallback(void) {
     M2C_UNK WFC_RearmStateTimer();
     M2C_UNK WFC_SendConnDataRequest();
     WFC_SendConnDataRequest();

@@ -166,7 +166,7 @@ void MapEditorInitGlyphKeyboard(void *editor) {
     extern EditorCellDesc gMapEditorGlyphGridCells[], gMapEditorButtonCells1[], gMapEditorButtonCells2[], gMapEditorButtonCells3[];
     void *AddSpriteSlot(s32, s32, void *, s32);
     void SelectSpriteSlot(s32);
-    void func_020b2158(s32);
+    void SetSpriteSlotFocusFlag(s32);
     void AddSpriteCell(s32, s16, s16, s32, s32, u16, s32);
     void *saved = gCur3DSpriteEngine;
     EditorCellDesc *desc;
@@ -210,7 +210,7 @@ void MapEditorInitGlyphKeyboard(void *editor) {
     } while (c < 2);
     gCur3DSpriteEngine = saved;
     SelectSpriteSlot(0);
-    func_020b2158(0);
+    SetSpriteSlotFocusFlag(0);
     for (i = 0; i < 17; i++)
         AddSpriteCell(M2C_FIELD(editor, s32 *, 0x38), (s16)(i * 8 + 16), 16, 8, 16, i, 14);
 }

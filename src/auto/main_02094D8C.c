@@ -78,7 +78,7 @@ LoadNarcFileDecompressed(BuildMapBackgroundScName(arg2),M2C_FIELD(gCur3DSpriteEn
 if(arg1==2)bank=0;
 if(arg1==3)bank=1;
 BuildMapBackgroundClName(arg2);
-switch(func_02081568()){
+switch(GetNarcMemberSize()){
 case 0x100:
 amount=(u8)(bank*6+4); bank=amount<<5;
 M2C_FIELD((s32)(*(u16**)gCur3DSpriteEngine+3+arg1),u16*,0)&=~0x80;

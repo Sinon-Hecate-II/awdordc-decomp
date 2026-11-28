@@ -265,7 +265,8 @@ void EnsureResource2Loaded(void) {
     LoadResource(2);
 }
 
-void func_020885ec(void) {
+/* Release archive resource slot 2 (the counterpart of EnsureResource2Loaded). */
+void UnloadResource2(void) {
     UnloadResource(2);
 }
 
@@ -273,15 +274,16 @@ void func_020885ec(void) {
  * already loaded, otherwise free the resources sharing its memory group and load
  * it. */
 void LoadUnitGraphics(void) {
-    if (IsResourceLoaded(3) != 0) {
+    if (IsResourceLoaded(RESOURCE_UNIT_GRAPHICS) != 0) {
         return;
     }
-    UnloadConflictingResources(3);
-    LoadResource(3);
+    UnloadConflictingResources(RESOURCE_UNIT_GRAPHICS);
+    LoadResource(RESOURCE_UNIT_GRAPHICS);
 }
 
+/* Release the unit sprite graphics resource from memory. */
 void UnloadUnitGraphics(void) {
-    UnloadResource(3);
+    UnloadResource(RESOURCE_UNIT_GRAPHICS);
 }
 
 /* Make sure resource slot 4 is in memory: if it already is, do nothing;
@@ -575,7 +577,11 @@ if(((u32)(M2C_FIELD(p,u8 *,SPRITE_ACTOR_STATE)<<24)>>30)==SPRITE_SLIDE_REVERSE)H
 M2C_FIELD(p,u8 *,SPRITE_ACTOR_STATE)&=~0xc0;
 }
 
-void Show3DSprite(void *p){M2C_FIELD(p,u8 *,0x48)=(M2C_FIELD(p,u8 *,0x48)&~1)|1;}
+/* Make a 3D sprite actor visible to the next draw by setting its visible bit. */
+void Show3DSprite(void *sprite) {
+    M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) =
+        (M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) & ~SPRITE_ACTOR_VISIBLE) | SPRITE_ACTOR_VISIBLE;
+}
 
 void Hide3DSprite(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x48) = (u8) (M2C_FIELD(arg0, u8 *, 0x48) & ~1);

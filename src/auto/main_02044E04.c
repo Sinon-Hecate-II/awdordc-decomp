@@ -474,9 +474,11 @@ s32 PollWebTransaction(void) {
     return 0;
 }
 
+/* Return the high-level web request's current status (one of WEB_TXN_*). */
 s32 GetWebTransactionStatus(void) {
     extern s32 gWebTransaction;
-    return gWebTransaction;
+
+    return ((WebRequest *)&gWebTransaction)->status;
 }
 
 s32 HasNetError(void);

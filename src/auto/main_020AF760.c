@@ -28,8 +28,11 @@ void LoadEffectSoundGroups(void) {
     } while (side < 2);
 }
 
+/* Stop the sound player where it is: rewind the music player's stream to its
+ * first frame (used when the battle scene is torn down). */
 void StopSoundPlayer(void) {
-    M2C_UNK RewindMusicPlayerHeapByFrames(M2C_UNK);
+    void RewindMusicPlayerHeapByFrames(s32);
+
     RewindMusicPlayerHeapByFrames(0);
 }
 

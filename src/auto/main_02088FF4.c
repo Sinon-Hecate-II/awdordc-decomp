@@ -331,8 +331,9 @@ void CreateFrameBorderSprite(M2C_UNK owner) {
     InitFrameBorderSprite(sprite);
 }
 
-s32 FindFrameBorderSprite(void) {
-    M2C_UNK FindObjectByClass(M2C_UNK *);
+/* Find the UI's frame-border sprite object, or NULL when none was created. */
+void *FindFrameBorderSprite(void) {
+    void *FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gFrameBorderSpriteClass;
     return FindObjectByClass(&gFrameBorderSpriteClass);
 }
@@ -370,6 +371,8 @@ void CreateTextLayerPanelProxy(s32 panel) {
     M2C_FIELD(CreateSpriteFromClass(&gTextLayerPanelProxyClass, 6), s32 *, TEXT_LAYER_PANEL_PROXY_PANEL) = panel;
 }
 
+/* Delete every text-layer panel proxy sprite (the objects CreateTextLayerPanelProxy
+ * makes). */
 void DeleteTextLayerPanelProxies(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gTextLayerPanelProxyClass;
@@ -419,6 +422,7 @@ void CreateTextLayerGradientProxy(void *panel) {
     M2C_FIELD(CreateSpriteFromClass(&gTextLayerGradientProxyClass, 1), s32 *, 0x34) = (s32) panel;
 }
 
+/* Delete every live gradient-bar proxy sprite of the text layers. */
 void DeleteTextLayerGradientProxies(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gTextLayerGradientProxyClass;

@@ -478,14 +478,18 @@ void *CreateMapUnitAndRefreshView(s32 x, s32 y, s32 kind, s32 player) {
     return unit;
 }
 
-void RemoveUnit(M2C_UNK arg0) {
-    void RemoveMapUnit(M2C_UNK, M2C_UNK);
-    RemoveMapUnit(arg0, 0);
+/* Removes the unit with the given id from the map without recording it as a loss
+ * (a withdrawal, not a kill). */
+void RemoveUnit(s32 unitId) {
+    void RemoveMapUnit(s32, s32);
+    RemoveMapUnit(unitId, 0);
 }
 
-void DestroyUnit(M2C_UNK arg0) {
-    void RemoveMapUnit(M2C_UNK, M2C_UNK);
-    RemoveMapUnit(arg0, 1);
+/* Removes the unit with the given id from the map, recording it as a loss (a
+ * kill, unlike RemoveUnit). */
+void DestroyUnit(s32 unitId) {
+    void RemoveMapUnit(s32, s32);
+    RemoveMapUnit(unitId, 1);
 }
 
 /* Remove the unit with id `unitId` (and every unit it carries) from the battle

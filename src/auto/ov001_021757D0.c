@@ -226,11 +226,11 @@ void Ov001_ShutdownCore(void) {
     M2C_UNK Ov001_RemoveVBlankHandler();
     M2C_UNK Ov001_FreeSpriteObjs();
     M2C_UNK func_ov001_0218c4c0();
-    M2C_UNK func_ov001_0218c668();
+    M2C_UNK Ov001_RestoreArm7SystemValue();
     M2C_UNK Ov001_FreeTasks();
     GX_TurnOffDisplay();
     *(s32 *)0x04001000 &= ~0x10000;
-    func_ov001_0218c668();
+    Ov001_RestoreArm7SystemValue();
     Ov001_StopInput();
     Ov001_RemoveVBlankHandler();
     func_ov001_02184ff8();
@@ -249,10 +249,12 @@ void Ov001_SetStepCallback(s32 arg0) {
     M2C_FIELD(&gOv001ScreenState, s32 *, 0xc) = arg0;
 }
 
-void Ov001_SetNextScreenMode(s32 arg0, s32 arg1) {
+/* Ask the front end to switch to screen `mode` with `argument` next; read back by
+ * Ov001_GetNextScreenMode. */
+void Ov001_SetNextScreenMode(s32 mode, s32 argument) {
     extern u8 gOv001ScreenState;
-    M2C_FIELD(&gOv001ScreenState, s32 *, 0x10) = arg0;
-    M2C_FIELD(&gOv001ScreenState, s32 *, 0x14) = arg1;
+    M2C_FIELD(&gOv001ScreenState, s32 *, OV001_SCREEN_NEXT_MODE) = mode;
+    M2C_FIELD(&gOv001ScreenState, s32 *, OV001_SCREEN_NEXT_ARG) = argument;
 }
 
 /* Copy the next screen mode and the argument it is entered with, as stored by
@@ -268,10 +270,12 @@ void Ov001_GetNextScreenMode(s32 *mode, s32 *argument) {
     }
 }
 
-void Ov001_SetNameEntryMode(s32 arg0, s32 arg1) {
+/* Store the name-entry screen mode and the argument it is entered with, read
+ * back by Ov001_GetNameEntryMode. */
+void Ov001_SetNameEntryMode(s32 mode, s32 argument) {
     extern u8 gOv001ScreenState;
-    M2C_FIELD(&gOv001ScreenState, s32 *, 0x18) = arg0;
-    M2C_FIELD(&gOv001ScreenState, s32 *, 0x1c) = arg1;
+    M2C_FIELD(&gOv001ScreenState, s32 *, OV001_SCREEN_ENTRY_MODE) = mode;
+    M2C_FIELD(&gOv001ScreenState, s32 *, OV001_SCREEN_ENTRY_ARG) = argument;
 }
 
 /* Read the name-entry screen mode and its argument that a previous screen asked
@@ -311,9 +315,10 @@ s32 Ov001_HasScreenOption(s32 optionMask) {
     return 0;
 }
 
+/* Ask the ov001 screen loop to leave the running screen on its next iteration. */
 void Ov001_RequestScreenExit(void) {
     extern u8 gOv001ScreenState;
-    M2C_FIELD(&gOv001ScreenState, u8 *, 1) = 1;
+    M2C_FIELD(&gOv001ScreenState, u8 *, OV001_SCREEN_EXIT) = 1;
 }
 
 /* The id this console advertises in its download-play data-sharing connect

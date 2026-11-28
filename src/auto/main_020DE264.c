@@ -346,44 +346,56 @@ void MatchingUnitSceneCallback(s32 status, s32 closed, s32 targetCleared, s32 se
     if (serving != 0) *flags |= 0x100;
 }
 
-void func_020deb74(M2C_UNK arg0) {
+/* Scene entry point: sets up the unit-preview scene for side 0 on the given
+ * menu work object. */
+void SetupUnitPreviewSceneSide0(M2C_UNK menu) {
     M2C_UNK SetupUnitPreviewScene(M2C_UNK, M2C_UNK);
-    SetupUnitPreviewScene(arg0, 0);
+    SetupUnitPreviewScene(menu, 0);
 }
 
-void func_020deb84(M2C_UNK arg0) {
+/* Thunk that prepares the ov009 3D unit preview menu for side 1, the
+ * other-player/link view. */
+void SetupUnitPreviewSceneSide1(M2C_UNK menu) {
     M2C_UNK SetupUnitPreviewScene(M2C_UNK, M2C_UNK);
-    SetupUnitPreviewScene(arg0, 1);
+    SetupUnitPreviewScene(menu, 1);
 }
 
-void func_020deb94(M2C_UNK arg0) {
+/* Set up the online scene for side 0 (see SetupScene). */
+void SetupSceneSide0(M2C_UNK setup) {
     M2C_UNK SetupScene(M2C_UNK, M2C_UNK);
-    SetupScene(arg0, 0);
+    SetupScene(setup, 0);
 }
 
-void func_020deba4(M2C_UNK arg0) {
+/* Scene entry point: sets up the scene for side 1 on the given work object. */
+void SetupSceneSide1(M2C_UNK setup) {
     M2C_UNK SetupScene(M2C_UNK, M2C_UNK);
-    SetupScene(arg0, 1);
+    SetupScene(setup, 1);
 }
 
-void func_020debb4(M2C_UNK arg0) {
+/* Set up the 1v1 match scene for side 0 (see SetupMatchScene). */
+void SetupMatchSceneSide0(M2C_UNK setup) {
     M2C_UNK SetupMatchScene(M2C_UNK, M2C_UNK);
-    SetupMatchScene(arg0, 0);
+    SetupMatchScene(setup, 0);
 }
 
-void func_020debc4(M2C_UNK arg0) {
+/* Set up the 1v1 match scene for side 1 (see SetupMatchScene). */
+void SetupMatchSceneSide1(M2C_UNK setup) {
     M2C_UNK SetupMatchScene(M2C_UNK, M2C_UNK);
-    SetupMatchScene(arg0, 1);
+    SetupMatchScene(setup, 1);
 }
 
-void func_020debd4(M2C_UNK arg0) {
+/* Scene entry point: sets up the matching unit scene for side 0 on the given
+ * menu work object. */
+void SetupMatchingUnitSceneSide0(M2C_UNK menu) {
     void SetupMatchingUnitScene(M2C_UNK, M2C_UNK);
-    SetupMatchingUnitScene(arg0, 0);
+    SetupMatchingUnitScene(menu, 0);
 }
 
-void func_020debe4(M2C_UNK arg0) {
+/* Scene entry point: sets up the matching unit scene for side 1 on the given
+ * menu work object. */
+void SetupMatchingUnitSceneSide1(M2C_UNK menu) {
     void SetupMatchingUnitScene(M2C_UNK, M2C_UNK);
-    SetupMatchingUnitScene(arg0, 1);
+    SetupMatchingUnitScene(menu, 1);
 }
 
 #pragma opt_strength_reduction off

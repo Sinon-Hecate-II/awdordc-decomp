@@ -88,6 +88,14 @@
 #define WIFI_AP_KEY         0x2c /* char[]: WEP key text, at most WIFI_AP_KEY_MAX bytes */
 #define WIFI_AP_KEY_MAX     13   /* longest key accepted (104-bit WEP in ASCII) */
 
+/* The room protocol's host-installed hook table at data_ov001_021925e0: the
+ * allocator Ov001_AllocRoomBuffer calls, an optional callback invoked through
+ * Ov001_InvokeRoomCallback, and a reserved word; the free hook follows the
+ * table at data_ov001_021925ec (Ov001_FreeHook). */
+#define OV001_ROOM_HOOK_ALLOC    0x00 /* s32 (*)(s32 size) */
+#define OV001_ROOM_HOOK_CALLBACK 0x04 /* void (*)(s32 value), may be null */
+#define OV001_ROOM_HOOK_RESERVED 0x08 /* unused */
+
 /* The request record the ov001 request builders fill in before the transfer is
  * written into the buffer: a status byte, a flag word and the transfer length
  * so far, followed by the record itself (a type byte, a zero byte, a

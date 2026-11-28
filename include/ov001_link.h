@@ -20,6 +20,10 @@
  * moves it on to 5) and Ov001_TryStartTransfer closes the link from it. */
 #define OV001_LINK_STATUS_READY 4
 
+/* Value the OV001_LINK_STATUS word is put into while a failed link is torn down:
+ * Ov001_CloseFailedLink sets it right before it closes the multiboot link. */
+#define OV001_LINK_STATUS_CLOSING 6
+
 /* Per-player records that follow the header, OV001_LINK_RECORD_SIZE bytes each,
  * player 1 first. */
 #define OV001_LINK_RECORDS          0x0e /* work-block offset of the first record */

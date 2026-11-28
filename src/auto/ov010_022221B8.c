@@ -97,9 +97,10 @@ i=0;goto test;loop:{gVoiceChatContexts[i]=0;func_ov010_02223654(i);Link_InitChan
 Link_InitPendingPackets();VoiceCodec_ResetState();return 1;
 }
 #pragma opt_strength_reduction reset
-void VoiceChat_ClearContextCount(s32 arg0) {
-    extern M2C_UNK gVoiceChatState;
-    M2C_FIELD(&gVoiceChatState, void **, 0x20) = NULL;
+/* Detach every voice-exchange context at once by clearing the attached count. */
+void VoiceChat_ClearContextCount(void) {
+    extern s32 gVoiceChatState;
+    M2C_FIELD(&gVoiceChatState, s32 *, VOICE_CHAT_CONTEXT_COUNT) = 0;
 }
 
 #pragma optimization_level 2

@@ -69,20 +69,25 @@ void Upload3DSpriteLayerTiles(void) {
  MI_CpuCopy32(tiles,vram,0x800); LoadUiGraphics();
 }
 
-void func_020b17dc(void) {
+/* Refresh the map view and drop the map cursor sprites, run after the map
+ * graphics are uploaded. */
+void RefreshMapViewAndDeleteCursorSprites(void) {
     M2C_UNK DeleteMapCursorSprites();
     M2C_UNK RefreshMapView();
     RefreshMapView();
     DeleteMapCursorSprites();
 }
 
-void func_020b17ec(void) {
+/* Drop the extended-palette bank grants, then give the battle map's OBJ extended
+ * palette bank G. */
+void SetBattleMapObjExtPaletteBankG(void) {
     void ReleaseExtPaletteBankGrants(void);
     M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
     ReleaseExtPaletteBankGrants();
-    GX_SetBankForObjExtPalette(0x40);
+    GX_SetBankForObjExtPalette(VRAM_BANK_G);
 }
 
+/* Release the main engine's BG and OBJ extended-palette VRAM grants. */
 void ReleaseExtPaletteBankGrants(void) {
     M2C_UNK GX_ReleaseBankGrantForObjExtPalette();
     M2C_UNK GX_ReleaseBankGrantForBGExtPalette();
@@ -135,7 +140,7 @@ void InitBattleMapView(void) {
     if (callback != NULL) callback();
     ApplyMapViewTilesetWeather();
     Upload3DSpriteLayerTiles();
-    func_020b17dc();
+    RefreshMapViewAndDeleteCursorSprites();
     ClearAll3DSpriteLayers();
     gCur3DSpriteEngine = savedEngine;
 }
@@ -154,7 +159,7 @@ Reset3DSpriteCorners();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x1c);if(callback)callback();
 Apply3DSpriteBanks();LoadScenePanelGraphicsOnBothEngines();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);if(callback)callback();
-UploadMapViewOverlayTiles();ApplyMapViewTilesetWeather();Upload3DSpriteLayerTiles();func_020b17dc();
+UploadMapViewOverlayTiles();ApplyMapViewTilesetWeather();Upload3DSpriteLayerTiles();RefreshMapViewAndDeleteCursorSprites();
 }
 
 /* Copy colour `colorIndex` of the shared 16-entry grey ramp (data_020f3c20)
@@ -451,9 +456,11 @@ extern void *gSpriteSlotManager;
 M2C_FIELD(gSpriteSlotManager,u8 *,SPRITE_SLOT_MGR_HAS_FOCUS)=0;
 }
 
-void func_020b2158(s8 arg0) {
-extern void *gSpriteSlotManager;
-M2C_FIELD(gSpriteSlotManager,s8 *,0x25)=arg0;
+/* Set the sprite-slot manager's "a slot took focus" flag (0 clears it, as
+ * ClearSpriteSlotFocusFlag does). */
+void SetSpriteSlotFocusFlag(s8 flag) {
+    extern void *gSpriteSlotManager;
+    M2C_FIELD(gSpriteSlotManager, s8 *, SPRITE_SLOT_MGR_HAS_FOCUS) = flag;
 }
 
 void func_020b216c(void *arg0) {

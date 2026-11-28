@@ -14,7 +14,7 @@ static inline void ButtonFlash12DFC(u8 *w) {if(M2C_FIELD(w,s8 *,0x5a)>=0)ButtonS
 void UpdateSpriteAnimation(void *);
 void MenuSpriteUpdate(void *);
 void UpdateSpriteGrid(void *);
-int func_020c5464(int);
+int GetBattleSlotType(int);
 void PlaySoundEffect(int);
 void Sprite_ResumeAnimation(void *);
 void GotoSpriteAnimationLabel(void *,int);
@@ -24,7 +24,7 @@ int CanScrollSpriteGridUp(void *);
 int CanScrollSpriteGridDown(void *);
 /* Frame step of the ov006 battle-save screen: update its reveal animation,
  * the six menu buttons and the battle-slot grid, enable the three action
- * buttons that fit the selected slot's record kind (func_020c5464), then handle
+ * buttons that fit the selected slot's record kind (GetBattleSlotType), then handle
  * the button presses and the B/A and up/down keys, flashing the pressed button
  * and animating the screen on to its next step. */
 void UpdateBattleSaveScreen(void *arg0) {
@@ -38,7 +38,7 @@ MenuSpriteUpdate(buttons[4]);
 MenuSpriteUpdate(buttons[5]);
 UpdateSpriteGrid(M2C_FIELD(screen,void **,0x4c));
 /* Enable the action buttons (12/16/20) allowed for the selected slot kind. */
-switch(func_020c5464(M2C_FIELD(M2C_FIELD(screen,void **,0x4c),s16 *,8))) {
+switch(GetBattleSlotType(M2C_FIELD(M2C_FIELD(screen,void **,0x4c),s16 *,8))) {
 case 0:
 ButtonEnable12DFC(M2C_FIELD(M2C_FIELD(screen,u8 **,0x3c),u8 **,12));
 ButtonDisable12DFC(M2C_FIELD(M2C_FIELD(screen,u8 **,0x3c),u8 **,16));
@@ -76,7 +76,7 @@ if(ButtonEnabled12DFC(M2C_FIELD(M2C_FIELD(screen,u8 **,0x3c),u8 **,4)) && Button
 if(CanScrollSpriteGridUp(M2C_FIELD(screen,void **,0x4c)))ButtonEnable12DFC(M2C_FIELD(M2C_FIELD(screen,u8 **,0x3c),u8 **,4));else ButtonSet12DFC(M2C_FIELD(M2C_FIELD(screen,u8 **,0x3c),u8 **,4),ButtonBase12DFC(M2C_FIELD(M2C_FIELD(screen,u8 **,0x3c),u8 **,4))+2,0);
 if(CanScrollSpriteGridDown(M2C_FIELD(screen,void **,0x4c)))ButtonEnable12DFC(M2C_FIELD(M2C_FIELD(screen,u8 **,0x3c),u8 **,8));else ButtonSet12DFC(M2C_FIELD(M2C_FIELD(screen,u8 **,0x3c),u8 **,8),ButtonBase12DFC(M2C_FIELD(M2C_FIELD(screen,u8 **,0x3c),u8 **,8))+2,0);
 /* Re-apply the enabled state after the input moved the selection. */
-switch(func_020c5464(M2C_FIELD(M2C_FIELD(screen,void **,0x4c),s16 *,8))) {
+switch(GetBattleSlotType(M2C_FIELD(M2C_FIELD(screen,void **,0x4c),s16 *,8))) {
 case 0:
 ButtonEnable12DFC(M2C_FIELD(M2C_FIELD(screen,u8 **,0x3c),u8 **,12));
 ButtonDisable12DFC(M2C_FIELD(M2C_FIELD(screen,u8 **,0x3c),u8 **,16));

@@ -47,12 +47,12 @@ s32 GetSceneSlideOffset(void) {
  * and neighbour flags (c, d, e), then start the scene type picked by kind. */
 void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
     void ClearSceneLayerOverrides(void);
-    void func_ov003_021f1bc0(void);
-    func_ov003_021f1bc0();
+    void Ov003_ResetMapConfirmState(void);
+    Ov003_ResetMapConfirmState();
     SetSceneSlideDirections(c,d,e);
     SetOv003SceneClass(0);
     ClearSceneLayerOverrides();
-    func_ov003_021f14b4();
+    Ov003_ClearSceneReady();
     switch(kind){
     case 0: Ov003_CreateMapListScene(entry); return;
     case 1: func_ov003_021f01f0(entry); return;
@@ -142,8 +142,9 @@ u16 func_ov003_021f1894(void) {
     return M2C_FIELD(&gOv003SceneState, u16 *, 8);
 }
 
-void func_ov003_021f18a4(void) {
-    SetOv003SceneState(3);
+/* Mark the current map-select scene as transitioning out to battle. */
+void Ov003_SetSceneBattleState(void) {
+    SetOv003SceneState(SCENE_STATE_BATTLE);
 }
 
 /* Set up the scene's wallpaper sprites from its 6-byte layer descriptor and
@@ -313,19 +314,24 @@ void SetSceneLayerOverrideSub(s32 layer, s32 value) {
     M2C_FIELD(&gSceneLayerOverridesSub, s32 *, layer * 4) = value;
 }
 
-void func_ov003_021f1bc0(void) {
+/* Clear the shared map-select confirm state (MAP_CONFIRM_UNSET) when a new
+ * ov003 scene starts. */
+void Ov003_ResetMapConfirmState(void) {
     extern u8 gOv003SceneState;
-    gOv003SceneState = 0;
+    gOv003SceneState = MAP_CONFIRM_UNSET;
 }
 
+/* Let the ov003 map-select screen confirm its chosen map. */
 void Ov003_SetMapConfirmEnabled(void) {
     extern u8 gOv003SceneState;
-    gOv003SceneState = 1;
+    gOv003SceneState = MAP_CONFIRM_ENABLED;
 }
 
+/* Stop the ov003 map-select screen from confirming its chosen map (the player
+ * went back instead of picking one). */
 void Ov003_SetMapConfirmDisabled(void) {
     extern u8 gOv003SceneState;
-    gOv003SceneState = 2;
+    gOv003SceneState = MAP_CONFIRM_DISABLED;
 }
 
 u8 GetMapConfirmState(void) {

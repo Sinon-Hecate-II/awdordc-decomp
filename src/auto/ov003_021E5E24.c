@@ -141,16 +141,21 @@ void func_ov003_021e6404(void) {
     Ov003_MapInfoConfirmInput();
 }
 
-void Ov003_MapInfoScene_CallHide(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x18)(arg0);
+/* Class-script action of the ov003 map-info scene: forward to the scene object's
+ * virtual hide method at vtable offset 0x18, which slides the scene out again. */
+void Ov003_MapInfoScene_CallHide(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_HIDE)(scene);
 }
 
 void func_ov003_021e6424(void *arg0) {
     if (M2C_FIELD(arg0, u8 *, 0x60)) return;
 }
 
-void func_ov003_021e6430(void **arg0) {
-    M2C_FIELD(*arg0, void (**)(void *), 0x10)(arg0);
+/* Class-script action of the ov003 map-info scene: forward to the scene object's
+ * virtual resume method at vtable offset 0x10, which restarts the map-info
+ * sprites' animation after it was paused. */
+void Ov003_MapInfoScene_CallResume(void **scene) {
+    M2C_FIELD(*scene, void (**)(void *), OV003_SCENE_VT_RESUME)(scene);
 }
 
 /* Whether the map-info scene's top intro tween is still running (its frame

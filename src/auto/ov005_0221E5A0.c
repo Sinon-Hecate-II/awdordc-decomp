@@ -123,7 +123,7 @@ s32 IsCampaignBattleRules(void);
 s32 GetLanguage(void);
 s32 func_020a7290(void);
 s32 func_020a7278(void);
-s32 func_020a72e8(s32);
+s32 Main_GetArmyPalette(s32);
 s32 func_020a8a84(s32);
 s32 GetDigitCount(s32);
 s32 GetArmyStateTiles(s32);
@@ -184,7 +184,7 @@ i++; j+=4; k+=0x8c;
 gCur3DSpriteEngine=*(void ***)&g3DSpriteEngineMain;
 k=func_020a7290()<<5; saved=(void **) (M2C_FIELD(gCur3DSpriteEngine,u8 *volatile *,28)+0x3580);
 MI_CpuCopy32(func_020a7278(),(u8 *)saved+0x4000,k);
-CopyToObjPaletteShadow(func_020a72e8(M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s32 *,0x50)+1)*140,u8 *,0x67c1)),0x3c0,32);
+CopyToObjPaletteShadow(Main_GetArmyPalette(M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s32 *,0x50)+1)*140,u8 *,0x67c1)),0x3c0,32);
 b=data_ov005_02220a1c; gCur3DSpriteEngine=g3DSpriteEngineSub;
 k=0; if(*b) { saved=(void **)0x3ac; do {
 dst=M2C_FIELD(gCur3DSpriteEngine,u8 *volatile *,28)+((s32)saved<<5);

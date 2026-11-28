@@ -639,11 +639,10 @@ s32 Map_MinDistanceThreshold(s32 baseDistance) {
     return Divide((s32) (baseDistance * mapSize), HardwareSquareRoot(MAP_DISTANCE_REFERENCE_AREA_FIXED8));
 }
 
+/* Scale a random distance by the current map's size: the random value from
+ * RandomIntRange is passed through Map_MinDistanceThreshold. */
 void Map_RandomScaledValue(void) {
-    M2C_UNK Map_MinDistanceThreshold();
-    M2C_UNK RandomIntRange();
-    RandomIntRange();
-    Map_MinDistanceThreshold();
+    Map_MinDistanceThreshold(RandomIntRange());
 }
 
 /* Pick a random coordinate in [min, max] that lies inside the map's width (axis

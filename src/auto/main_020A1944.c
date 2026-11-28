@@ -358,9 +358,10 @@ void func_020a233c(s32 arg0, s8 arg1) {
     M2C_FIELD(&data_0215c390, s8 *, arg0) = arg1;
 }
 
-void func_020a234c(s32 arg0, s16 arg1) {
- extern M2C_UNK data_0215c396;
- M2C_FIELD(&data_0215c396, s16 *, arg0 * 2) = arg1;
+/* Store the CO power meter points a player slot starts the battle with. */
+void SetInitialCoPowerMeter(s32 player, s16 points) {
+    extern M2C_UNK gInitialCoPowerMeter;
+    M2C_FIELD(&gInitialCoPowerMeter, s16 *, player * 2) = points;
 }
 
 u8 GetPlayerIdForSlot(s32 arg0) {
@@ -378,9 +379,11 @@ u8 GetPlayerOwnerGroup(s32 arg0) {
     return M2C_FIELD(&data_0215c390, u8 *, arg0);
 }
 
-u16 func_020a2390(s32 arg0) {
- extern M2C_UNK data_0215c396;
- return M2C_FIELD(&data_0215c396, u16 *, arg0 * 2);
+/* A player slot's initial CO power meter points, restored into the slot's map
+ * player record by InitMapPlayers when a battle starts. */
+u16 GetInitialCoPowerMeter(s32 player) {
+    extern M2C_UNK gInitialCoPowerMeter;
+    return M2C_FIELD(&gInitialCoPowerMeter, u16 *, player * 2);
 }
 
 void SetPlayerTeam(s32 arg0, s32 arg1) {

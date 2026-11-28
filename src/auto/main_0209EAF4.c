@@ -258,7 +258,8 @@ void RestoreBattleMapPresentation(void) {
     Reset3DSpriteEngineState();
 }
 
-void func_0209f2a8(void) {
+/* Refresh the map view and mark a map command pending. */
+void RefreshMapViewAndQueueCommand(void) {
     M2C_UNK SetMapCommandPending();
     M2C_UNK RefreshMapView();
     RefreshMapView();
@@ -378,7 +379,7 @@ void ResetPlayerSetupTables(void) {
     void SetPlayerIdForSlot(s32, s32);
     void SetPlayerArmyId(s32, s32);
     void func_020a233c(s32, s32);
-    void func_020a234c(s32, s32);
+    void SetInitialCoPowerMeter(s32, s32);
     void SetPlayerTeam(s32, s32);
     extern void **gCurrentMap;
     extern MapConfigRecord gMapConfig;
@@ -408,10 +409,10 @@ void ResetPlayerSetupTables(void) {
     SetPlayerCoId(2, 0);
     SetPlayerCoId(3, 0);
     SetPlayerCoId(4, 0);
-    func_020a234c(1, 0);
-    func_020a234c(2, 0);
-    func_020a234c(3, 0);
-    func_020a234c(4, 0);
+    SetInitialCoPowerMeter(1, 0);
+    SetInitialCoPowerMeter(2, 0);
+    SetInitialCoPowerMeter(3, 0);
+    SetInitialCoPowerMeter(4, 0);
     SetPlayerArmyId(1, 1);
     SetPlayerArmyId(2, 2);
     SetPlayerArmyId(3, 3);
@@ -523,7 +524,12 @@ s32 GetTargetCount(void) {
     return M2C_FIELD(&gTargetList, s32 *, 8);
 }
 
-void *GetTargetPosition(s32 n){extern M2C_UNK gTargetList;return M2C_FIELD(&gTargetList,u8 **,4)+n*8;}
+/* Pointer to entry n of the shared battle target list (the list the cursor code
+ * builds: one MapTargetEntry per targeted cell). */
+void *GetTargetPosition(s32 n) {
+    extern M2C_UNK gTargetList;
+    return M2C_FIELD(&gTargetList, u8 **, MAP_TARGET_LIST_ARRAY) + n * 8;
+}
 
 /* Append a battle-target entry for cell (x, y) to the shared target list
  * gTargetList: the id of the unit standing there and the damage to deal (or the

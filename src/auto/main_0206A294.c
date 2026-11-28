@@ -287,9 +287,10 @@ s32 func_0206ad4c(void *arg0, s32 arg1) {
     return var_r1;
 }
 #pragma opt_propagation reset
-void func_0206adc0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
+/* Copy `count` UTF-16 characters from src to dest. */
+void CopyWideChars(u16 *dest, const u16 *src, s32 count) {
     M2C_UNK MemCopy(M2C_UNK, M2C_UNK, s32);
-    MemCopy(arg0, arg1, arg2 * 2);
+    MemCopy(dest, src, count * 2);
 }
 
 /* Find the first of the len wide characters at text whose value equals value

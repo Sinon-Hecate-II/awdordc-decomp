@@ -319,9 +319,13 @@ u8 GetAiCommandPhase(void) {
     return gAiCommandState[AI_COMMAND_STATE_PHASE];
 }
 
-void SetAiCommandPhase(u8 a){*gAiCommandState=a;}
+/* Move the AI's command state machine to the given AI_COMMAND_PHASE_* phase. */
+void SetAiCommandPhase(u8 phase) {
+    *gAiCommandState = phase;
+}
 
-void func_ov000_0219c7d8(u8 arg0) {
-    gAiCommandState[1] = arg0;
+/* Set the step within the current AI command phase (AI_COMMAND_STATE_STEP). */
+void SetAiCommandStep(u8 step) {
+    gAiCommandState[AI_COMMAND_STATE_STEP] = step;
 }
 

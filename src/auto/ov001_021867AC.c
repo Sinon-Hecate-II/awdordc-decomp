@@ -10,6 +10,8 @@ typedef struct { u16 value[7]; } Ov001LinkHeader;
 typedef struct { u8 low:4, high:4; u8 len; u16 name[10]; } MbParentInfo;
 static inline void ClearLinkHeader(Ov001LinkHeader *p) { p->value[0]=0; p->value[1]=0; p->value[2]=0; p->value[3]=0; p->value[4]=0; p->value[5]=0; p->value[6]=0; }
 extern void *gOv001LinkWork;
+void Ov001_SetLinkStatus(s16);
+void MultiBoot_CloseLink(void);
 extern void *gOv001RegionMenu;
 extern const u8 data_ov001_0218fc66[], gOv001RegionItemSlot[];
 extern const u16 gOv001RegionItemPos[], data_ov001_0218fcce[];
@@ -398,9 +400,10 @@ if(remainingPlayers==0)Ov001_SetLinkStatus(7);
 else Ov001_SetLinkStatus(4);
 }
 
-void func_ov001_0218754c(void) {
-M2C_UNK MultiBoot_CloseLink();M2C_UNK Ov001_SetLinkStatus(M2C_UNK);
-Ov001_SetLinkStatus(6);MultiBoot_CloseLink();
+/* The link setup failed: mark the link as closing, then close its multiboot link. */
+void Ov001_CloseFailedLink(void) {
+    Ov001_SetLinkStatus(OV001_LINK_STATUS_CLOSING);
+    MultiBoot_CloseLink();
 }
 
 /* Close the Download Play link once every joined player has been given up on:

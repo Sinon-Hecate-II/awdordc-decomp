@@ -177,19 +177,26 @@ void SetActiveConnection(s32 arg0) {
     M2C_FIELD(&gConnectionMgr, s32 *, 4) = arg0;
 }
 
+/* Return the connection manager's current session context, or 0 when no
+ * connection is active. */
 s32 GetConnection(void) {
     extern M2C_UNK gConnectionMgr;
-    return M2C_FIELD(&gConnectionMgr, s32 *, 4);
+    return M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_CONNECTION);
 }
 
-void SetConnectionState(s32 arg0) {
- extern M2C_UNK gConnectionMgr;
- M2C_FIELD(M2C_FIELD(&gConnectionMgr, void **, 4), s32 *, 0x1A0) = arg0;
+/* Set the connection session's state (one of CONN_STATE_*); the context is the
+ * one gConnectionMgr points at in its CONN_MGR_CONNECTION slot. */
+void SetConnectionState(s32 state) {
+    extern M2C_UNK gConnectionMgr;
+    M2C_FIELD(M2C_FIELD(&gConnectionMgr, void **, CONN_MGR_CONNECTION), s32 *, CONN_SESSION_STATE) = state;
 }
 
-void CanStartSend(M2C_UNK arg0) {
-    M2C_UNK CanStartTransfer(M2C_UNK, M2C_UNK);
-    CanStartTransfer(arg0, 1);
+/* Whether a kind-1 (send) transfer can start on `channel` now; the answer is
+ * CanStartTransfer's return value. */
+s32 CanStartSend(s32 channel) {
+    s32 CanStartTransfer(s32, s32);
+
+    return CanStartTransfer(channel, 1);
 }
 
 /* Returns whether a transfer of `kind` can start on `channel` now: no network
